@@ -25,6 +25,7 @@
             UmaClient umaClient = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
+            string policyId = null;
             string ticketId = null;
 
             "and a properly configured token client".x(
@@ -65,29 +66,11 @@
                         new Uri("https://localhost/.well-known/uma2-configuration"));
                 });
 
-            "when creating resource set".x(
-                async () =>
-                {
-                    var resourceSet = new ResourceSet
-                    {
-                        Uri = "http://localhost",
-                        Name = "Local",
-                        Scopes = new[] { "api1" },
-                        Type = "url"
-                    };
-
-                    var resourceResponse = await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
-                    resourceSetResponse = resourceResponse.Content;
-
-                    Assert.False(resourceResponse.ContainsError);
-                });
-
             "and setting a policy".x(
                 async () =>
                 {
                     var policy = new PostPolicy
                     {
-                        ResourceSetIds = new[] { resourceSetResponse.Id },
                         Rules = new[]
                         {
                             new PostPolicyRule
@@ -102,10 +85,25 @@
                     var policyResponse = await umaClient.AddPolicy(policy, result.AccessToken).ConfigureAwait(false);
                     Assert.False(policyResponse.ContainsError);
 
-                    await umaClient.SetResourceSetPolicy(
-                        policyResponse.Content.PolicyId,
-                        new AddResourceSet { ResourceSets = new[] { resourceSetResponse.Id } },
-                        result.AccessToken).ConfigureAwait(false);
+                    policyId = policyResponse.Content.PolicyId;
+                });
+
+            "when creating resource set".x(
+                async () =>
+                {
+                    var resourceSet = new ResourceSet
+                    {
+                        Uri = "http://localhost",
+                        Name = "Local",
+                        Scopes = new[] { "api1" },
+                        Type = "url",
+                        AuthorizationPolicies = new[] { policyId }
+                    };
+
+                    var resourceResponse = await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
+                    resourceSetResponse = resourceResponse.Content;
+
+                    Assert.False(resourceResponse.ContainsError);
                 });
 
             "then can get redirection".x(

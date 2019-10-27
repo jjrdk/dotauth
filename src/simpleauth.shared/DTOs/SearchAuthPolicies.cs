@@ -19,15 +19,6 @@
         public string[] Ids { get; set; } = Array.Empty<string>();
 
         /// <summary>
-        /// Gets or sets the resource ids.
-        /// </summary>
-        /// <value>
-        /// The resource ids.
-        /// </value>
-        [DataMember(Name = "resource_ids")]
-        public string[] ResourceIds { get; set; } = Array.Empty<string>();
-
-        /// <summary>
         /// Gets or sets the start index.
         /// </summary>
         /// <value>

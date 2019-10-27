@@ -27,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
 
     /// <summary>
     /// Defines the resource set controller.
@@ -150,6 +151,7 @@ namespace SimpleAuth.Controllers
             }
 
             var owner = User.GetSubject();
+            postResourceSet.Id = Id.Create();
             var result = await _addResourceSet.Execute(owner, postResourceSet, cancellationToken).ConfigureAwait(false);
             var response = new AddResourceSetResponse { Id = result };
             return new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Created };

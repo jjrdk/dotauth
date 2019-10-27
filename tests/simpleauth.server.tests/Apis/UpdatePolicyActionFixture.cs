@@ -56,7 +56,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task WhenRulesAreNotPassedThenReturnsFalse()
         {
-            var updatePolicyParameter = new PutPolicy {PolicyId = "not_valid_policy_id"};
+            var updatePolicyParameter = new PutPolicy { PolicyId = "not_valid_policy_id" };
             InitializeFakeObjects();
 
             var results = await _updatePolicyAction.Execute(updatePolicyParameter, CancellationToken.None)
@@ -89,7 +89,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 PolicyId = "policy_id",
                 Rules = new[] { new PutPolicyRule { Scopes = new[] { "invalid_scope" } } }
             };
-            var policy = new Policy { ResourceSetIds = new[] { "resource_id" } };
+            var policy = new Policy();
             InitializeFakeObjects(policy);
 
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -119,7 +119,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     }
                 }
             };
-            var policy = new Policy { ResourceSetIds = new[] { "resource_id" } };
+            var policy = new Policy {  };
             InitializeFakeObjects(policy);
 
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))

@@ -35,9 +35,10 @@ namespace SimpleAuth.Shared.Repositories
         /// <summary>
         /// Gets all.
         /// </summary>
+        /// <param name="owner">The policy owner.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<Policy[]> GetAll(CancellationToken cancellationToken);
+        Task<Policy[]> GetAll(string owner, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the specified identifier.

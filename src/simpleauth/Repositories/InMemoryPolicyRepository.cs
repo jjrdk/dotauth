@@ -74,9 +74,9 @@
         }
 
         /// <inheritdoc />
-        public Task<Policy[]> GetAll(CancellationToken cancellationToken = default)
+        public Task<Policy[]> GetAll(string owner, CancellationToken cancellationToken)
         {
-            var result = _policies.ToArray();
+            var result = _policies.Where(p => p.Owner == owner).ToArray();
             return Task.FromResult(result);
         }
 
@@ -94,11 +94,6 @@
             if (parameter.Ids != null && parameter.Ids.Any())
             {
                 result = result.Where(r => parameter.Ids.Contains(r.Id));
-            }
-
-            if (parameter.ResourceIds != null && parameter.ResourceIds.Any())
-            {
-                result = result.Where(p => p.ResourceSetIds.Any(r => parameter.ResourceIds.Contains(r)));
             }
 
             var nbResult = result.Count();
@@ -130,7 +125,6 @@
                 return Task.FromResult(false);
             }
 
-            rec.ResourceSetIds = policy.ResourceSetIds;
             rec.Rules = policy.Rules;
             return Task.FromResult(true);
         }

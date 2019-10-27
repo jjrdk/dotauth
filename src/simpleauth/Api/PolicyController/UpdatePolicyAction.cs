@@ -66,21 +66,7 @@ namespace SimpleAuth.Api.PolicyController
             {
                 return false;
             }
-
-            // Check all the scopes are valid.
-            foreach (var resourceSetId in policy.ResourceSetIds)
-            {
-                var resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
-                if (updatePolicyParameter.Rules.Any(
-                    r => r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
-                {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidScope,
-                        ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
-                }
-            }
-
-
+            
             // Update the authorization policy.
             policy.Rules = updatePolicyParameter.Rules.Select(
                     ruleParameter => new PolicyRule

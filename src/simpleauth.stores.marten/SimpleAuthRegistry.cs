@@ -33,7 +33,7 @@
                 .GinIndexJsonData();
             For<Policy>()
                 .Duplicate(x => x.Id)
-                .Duplicate(x => x.ResourceSetIds)
+                .Duplicate(x => x.Owner)
                 .GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)

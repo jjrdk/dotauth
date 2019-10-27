@@ -40,7 +40,6 @@ namespace SimpleAuth.Controllers
         private readonly AddAuthorizationPolicyAction _addpolicy;
         private readonly DeleteAuthorizationPolicyAction _deletePolicy;
         private readonly DeleteResourcePolicyAction _deleteResourceSet;
-        private readonly AddResourceSetToPolicyAction _addResourceSet;
         private readonly UpdatePolicyAction _updatePolicy;
 
         /// <summary>
@@ -53,7 +52,6 @@ namespace SimpleAuth.Controllers
             _policyRepository = policyRepository;
             _addpolicy = new AddAuthorizationPolicyAction(policyRepository, resourceSetRepository);
             _deletePolicy = new DeleteAuthorizationPolicyAction(policyRepository);
-            _addResourceSet = new AddResourceSetToPolicyAction(policyRepository, resourceSetRepository);
             _deleteResourceSet = new DeleteResourcePolicyAction(policyRepository, resourceSetRepository);
             _updatePolicy = new UpdatePolicyAction(policyRepository, resourceSetRepository);
         }
@@ -119,9 +117,9 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetPolicies(CancellationToken cancellationToken)
         {
-            var policies = await _policyRepository.GetAll(cancellationToken).ConfigureAwait(false);
-            var policyNames = policies.Select(x => x.Id);
-            return new OkObjectResult(policyNames);
+            var owner = User.GetSubject();
+            var policies = await _policyRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
+            return new OkObjectResult(policies.Select(p => p.ToResponse()).ToArray());
         }
 
         /// <summary>
@@ -159,57 +157,7 @@ namespace SimpleAuth.Controllers
             }
 
             var isPolicyExists = await _updatePolicy.Execute(putPolicy, cancellationToken).ConfigureAwait(false);
-            return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int) HttpStatusCode.NoContent);
-        }
-
-        /// <summary>
-        /// Adds the resource set.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="addResourceSet">The post add resource set.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        [HttpPost("{id}/resources")]
-        [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> SetResourceSetPolicy(
-            string id,
-            [FromBody] AddResourceSet addResourceSet,
-            CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "the identifier must be specified",
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (addResourceSet == null)
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (addResourceSet.ResourceSets == null)
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "The parameter resources needs to be specified",
-                    HttpStatusCode.BadRequest);
-            }
-
-            var addResult = await _addResourceSet.Execute(
-                    new AddResourceSetParameter { PolicyId = id, ResourceSets = addResourceSet.ResourceSets },
-                    cancellationToken)
-                .ConfigureAwait(false);
-            if (!addResult)
-            {
-                return GetNotFoundPolicy();
-            }
-
-            return new StatusCodeResult((int) HttpStatusCode.NoContent);
+            return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -249,7 +197,7 @@ namespace SimpleAuth.Controllers
                 return GetNotFoundPolicy();
             }
 
-            return new StatusCodeResult((int) HttpStatusCode.NoContent);
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -272,10 +220,11 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var policyId = await _addpolicy.Execute(postPolicy, cancellationToken).ConfigureAwait(false);
-            var content = new AddPolicyResponse {PolicyId = policyId};
+            var owner = User.GetSubject();
+            var policyId = await _addpolicy.Execute(owner, postPolicy, cancellationToken).ConfigureAwait(false);
+            var content = new AddPolicyResponse { PolicyId = policyId };
 
-            return new ObjectResult(content) {StatusCode = (int) HttpStatusCode.Created};
+            return new ObjectResult(content) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         /// <summary>
@@ -302,20 +251,20 @@ namespace SimpleAuth.Controllers
                 return GetNotFoundPolicy();
             }
 
-            return new StatusCodeResult((int) HttpStatusCode.NoContent);
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         private static ActionResult GetNotFoundPolicy()
         {
-            var errorResponse = new ErrorDetails {Title = "not_found", Detail = "policy cannot be found"};
+            var errorResponse = new ErrorDetails { Title = "not_found", Detail = "policy cannot be found" };
 
-            return new ObjectResult(errorResponse) {StatusCode = (int) HttpStatusCode.NotFound};
+            return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };
         }
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
-            return new JsonResult(error) {StatusCode = (int) statusCode};
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return new JsonResult(error) { StatusCode = (int)statusCode };
         }
     }
 }

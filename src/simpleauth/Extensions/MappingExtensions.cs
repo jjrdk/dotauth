@@ -63,7 +63,6 @@ namespace SimpleAuth.Extensions
             return new PolicyResponse
             {
                 Id = policy.Id,
-                ResourceSetIds = policy.ResourceSetIds,
                 Rules = rules
             };
         }

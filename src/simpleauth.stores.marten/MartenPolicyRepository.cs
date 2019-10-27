@@ -37,22 +37,25 @@
             {
                 parameter.StartIndex++;
                 var results = await session.Query<Policy>()
-                    .Where(x => x.Id.IsOneOf(parameter.Ids) || x.ResourceSetIds.Any(r => r.IsOneOf(parameter.ResourceIds)))
+                    .Where(x => x.Id.IsOneOf(parameter.Ids))
                     .ToPagedListAsync(parameter.StartIndex, parameter.TotalResults, cancellationToken)
                     .ConfigureAwait(false);
                 return new GenericResult<Policy>
                 {
-                    Content = results.ToArray(), StartIndex = parameter.StartIndex, TotalResults = results.TotalItemCount
+                    Content = results.ToArray(),
+                    StartIndex = parameter.StartIndex,
+                    TotalResults = results.TotalItemCount
                 };
             }
         }
 
         /// <inheritdoc />
-        public async Task<Policy[]> GetAll(CancellationToken cancellationToken = default)
+        public async Task<Policy[]> GetAll(string owner, CancellationToken cancellationToken)
         {
             using (var session = _sessionFactory())
             {
                 var policies = await session.Query<Policy>()
+                    .Where(p => p.Owner == owner)
                     .ToListAsync(token: cancellationToken)
                     .ConfigureAwait(false);
                 return policies.ToArray();
