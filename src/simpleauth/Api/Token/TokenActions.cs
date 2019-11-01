@@ -234,7 +234,9 @@ namespace SimpleAuth.Api.Token
                         allowedTokenScopes,
                         issuerName,
                         cancellationToken: cancellationToken,
-                        additionalClaims: client.Claims.Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type))).ToArray())
+                        additionalClaims: client.Claims.Where(
+                                c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
+                            .ToArray())
                     .ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(

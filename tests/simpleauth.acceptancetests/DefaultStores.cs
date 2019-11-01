@@ -215,9 +215,9 @@ namespace SimpleAuth.AcceptanceTests
                     {
                         new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "clientCredentials"}
                     },
-                    Claims = new[] {new Claim("test", "test")},
+                    Claims = new[] {new Claim("test", "test"), new Claim("sub", "ClientCredentials"), },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-
+                    UserClaimsToIncludeInAuthToken = new []{new Regex("^sub$", RegexOptions.Compiled) },
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"api1", "uma_protection"},
@@ -236,7 +236,6 @@ namespace SimpleAuth.AcceptanceTests
                     ClientName = "basic_client",
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "basic_client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
-
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"api1"},
@@ -253,7 +252,7 @@ namespace SimpleAuth.AcceptanceTests
                     ClientName = "post_client",
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "post_client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-
+                    UserClaimsToIncludeInAuthToken = new []{new Regex("^sub$", RegexOptions.Compiled) },
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"api1", "uma_protection"},

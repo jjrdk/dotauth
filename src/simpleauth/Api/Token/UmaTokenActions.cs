@@ -114,22 +114,25 @@ namespace SimpleAuth.Api.Token
             var authorizationResult = await _authorizationPolicyValidator
                 .IsAuthorized(ticket, client.ClientId, claimTokenParameter, cancellationToken)
                 .ConfigureAwait(false);
-            if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
+
+            if (authorizationResult.Type == AuthorizationPolicyResultEnum.Authorized
+                || authorizationResult.Type == AuthorizationPolicyResultEnum.RequestSubmitted)
             {
-                await _eventPublisher.Publish(
-                        new UmaRequestNotAuthorized(Id.Create(), parameter.Ticket, parameter.ClientId, DateTimeOffset.UtcNow))
-                    .ConfigureAwait(false);
-                throw new SimpleAuthException(
-                    ErrorCodes.RequestSubmitted,
-                    ErrorDescriptions.TheAuthorizationPolicyIsNotSatisfied);
+                var grantedToken =
+                    await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
+                await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
+                await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
+                return grantedToken;
             }
 
             // 5. Generate a granted token.
             //var grantedToken = await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
-            var grantedToken = await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
-            await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
-            await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
-            return grantedToken;
+            await _eventPublisher.Publish(
+                    new UmaRequestNotAuthorized(Id.Create(), parameter.Ticket, parameter.ClientId, DateTimeOffset.UtcNow))
+                .ConfigureAwait(false);
+            throw new SimpleAuthException(
+                ErrorCodes.RequestSubmitted,
+                ErrorDescriptions.TheAuthorizationPolicyIsNotSatisfied);
         }
 
         private async Task<GrantedToken> GenerateToken(

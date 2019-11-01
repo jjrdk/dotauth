@@ -151,6 +151,10 @@ namespace SimpleAuth.Controllers
             }
 
             var owner = User.GetSubject();
+            if (string.IsNullOrWhiteSpace(owner))
+            {
+                return BadRequest("subject not defined");
+            }
             postResourceSet.Id = Id.Create();
             var result = await _addResourceSet.Execute(owner, postResourceSet, cancellationToken).ConfigureAwait(false);
             var response = new AddResourceSetResponse { Id = result };

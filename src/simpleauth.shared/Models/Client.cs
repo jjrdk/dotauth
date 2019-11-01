@@ -52,7 +52,8 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The user claims to include in authentication token.
         /// </value>
-        public Regex[] UserClaimsToIncludeInAuthToken { get; set; }
+        public Regex[] UserClaimsToIncludeInAuthToken { get; set; } = Array.Empty<Regex>();
+
         /// <summary>
         /// Gets or sets the logo uri
         /// </summary>
