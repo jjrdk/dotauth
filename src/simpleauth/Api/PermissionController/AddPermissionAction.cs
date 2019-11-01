@@ -55,26 +55,24 @@ namespace SimpleAuth.Api.PermissionController
                 throw new ArgumentNullException(nameof(addPermissionParameters));
             }
 
-            await CheckAddPermissionParameter(addPermissionParameters, cancellationToken).ConfigureAwait(false);
-            var ticketLifetimeInSeconds = _configurationService.TicketLifeTime;
+            var resourceOwner = await CheckAddPermissionParameter(addPermissionParameters, cancellationToken).ConfigureAwait(false);
             var ticket = new Ticket
             {
                 Id = Id.Create(),
                 ClientId = clientId,
-                CreateDateTime = DateTimeOffset.UtcNow,
-                ExpiresIn = (int)ticketLifetimeInSeconds.TotalSeconds,
-                ExpirationDateTime = DateTimeOffset.UtcNow.Add(ticketLifetimeInSeconds)
+                ResourceOwner = resourceOwner,
+                Created = DateTimeOffset.UtcNow,
+                Expires = DateTimeOffset.UtcNow.Add(_configurationService.TicketLifeTime),
+                // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
+                Lines = addPermissionParameters.Select(
+                        addPermissionParameter => new TicketLine
+                        {
+                            Scopes = addPermissionParameter.Scopes,
+                            ResourceSetId = addPermissionParameter.ResourceSetId
+                        })
+                    .ToArray()
             };
-            // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
-            var ticketLines = addPermissionParameters.Select(
-                    addPermissionParameter => new TicketLine
-                    {
-                        Scopes = addPermissionParameter.Scopes,
-                        ResourceSetId = addPermissionParameter.ResourceSetId
-                    })
-                .ToArray();
 
-            ticket.Lines = ticketLines;
             if (!await _ticketStore.Add(ticket, cancellationToken).ConfigureAwait(false))
             {
                 throw new SimpleAuthException(ErrorCodes.InternalError, ErrorDescriptions.TheTicketCannotBeInserted);
@@ -83,7 +81,7 @@ namespace SimpleAuth.Api.PermissionController
             return ticket.Id;
         }
 
-        private async Task CheckAddPermissionParameter(
+        private async Task<string> CheckAddPermissionParameter(
             PermissionRequest[] addPermissionParameters,
             CancellationToken cancellationToken)
         {
@@ -91,6 +89,14 @@ namespace SimpleAuth.Api.PermissionController
                         cancellationToken,
                         addPermissionParameters.Select(p => p.ResourceSetId).ToArray())
                     .ConfigureAwait(false);
+
+            if (resourceSets.Select(r => r.Owner).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().Count() != 1)
+            {
+                // All resource sets must belong to same owner
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.InvalidResourceSetRequest);
+            }
 
             // 2. Check parameters & scope exist.
             foreach (var addPermissionParameter in addPermissionParameters)
@@ -129,6 +135,8 @@ namespace SimpleAuth.Api.PermissionController
                     throw new SimpleAuthException(ErrorCodes.InvalidScope, ErrorDescriptions.TheScopeAreNotValid);
                 }
             }
+
+            return resourceSets.ElementAt(0).Owner;
         }
     }
 }

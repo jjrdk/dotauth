@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Controllers
 {
+    using System;
     using Api.PermissionController;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
@@ -35,6 +36,7 @@ namespace SimpleAuth.Controllers
     [Route(UmaConstants.RouteValues.Permission)]
     public class PermissionsController : ControllerBase
     {
+        private readonly ITicketStore _ticketStore;
         private readonly AddPermissionAction _addPermission;
 
         /// <summary>
@@ -48,7 +50,18 @@ namespace SimpleAuth.Controllers
             ITicketStore ticketStore,
             RuntimeSettings options)
         {
+            _ticketStore = ticketStore;
             _addPermission = new AddPermissionAction(resourceSetRepository, ticketStore, options);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> GetPermissionRequests(CancellationToken cancellationToken)
+        {
+            var owner = User.GetSubject();
+            var tickets = await _ticketStore.GetAll(owner, cancellationToken).ConfigureAwait(false);
+
+            return new OkObjectResult(tickets.Select(x => !x.IsAuthorizedByRo).ToArray());
         }
 
         /// <summary>
@@ -82,8 +95,8 @@ namespace SimpleAuth.Controllers
 
             var ticketId = await _addPermission.Execute(clientId, cancellationToken, permissionRequest)
                 .ConfigureAwait(false);
-            var result = new PermissionResponse {TicketId = ticketId};
-            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
+            var result = new PermissionResponse { TicketId = ticketId };
+            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         /// <summary>
@@ -118,14 +131,14 @@ namespace SimpleAuth.Controllers
 
             var ticketId = await _addPermission.Execute(clientId, cancellationToken, parameters)
                 .ConfigureAwait(false);
-            var result = new PermissionResponse {TicketId = ticketId};
-            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
+            var result = new PermissionResponse { TicketId = ticketId };
+            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails {Title = code, Detail = message};
-            return new JsonResult(error) {StatusCode = (int) statusCode};
+            var error = new ErrorDetails { Title = code, Detail = message };
+            return new JsonResult(error) { StatusCode = (int)statusCode };
         }
     }
 }

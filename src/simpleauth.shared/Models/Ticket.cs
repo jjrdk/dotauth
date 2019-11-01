@@ -38,6 +38,11 @@ namespace SimpleAuth.Shared.Models
         public string ClientId { get; set; }
 
         /// <summary>
+        /// Gets or sets the resource owner for the ticket resources.
+        /// </summary>
+        public string ResourceOwner { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this instance is authorized by ro.
         /// </summary>
         /// <value>
@@ -51,7 +56,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The expiration date time.
         /// </value>
-        public DateTimeOffset ExpirationDateTime { get; set; }
+        public DateTimeOffset Expires { get; set; }
 
         /// <summary>
         /// Gets or sets the create date time.
@@ -59,15 +64,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The create date time.
         /// </value>
-        public DateTimeOffset CreateDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the expires in.
-        /// </summary>
-        /// <value>
-        /// The expires in.
-        /// </value>
-        public int ExpiresIn { get; set; }
+        public DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// Gets or sets the lines.

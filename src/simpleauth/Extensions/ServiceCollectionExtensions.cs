@@ -294,7 +294,7 @@ namespace SimpleAuth.Extensions
                 .AddSingleton(sp => options.AccountFilters?.Invoke(sp) ?? new InMemoryFilterStore())
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
-                .AddTransient<IAuthorizationPolicy, BasicAuthorizationPolicy>();
+                .AddTransient<IAuthorizationPolicy, DefaultAuthorizationPolicy>();
             s.AddDataProtection();
             return mvcBuilder;
         }

@@ -60,6 +60,26 @@
             }
         }
 
+        public async Task<IReadOnlyList<Ticket>> GetAll(string owner, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(owner))
+            {
+                throw new ArgumentNullException(nameof(owner));
+            }
+
+            try
+            {
+                await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+                var now = DateTimeOffset.UtcNow;
+                bool Predicate(Ticket x) => x.ResourceOwner == owner && x.Created <= now && x.Expires > now;
+                return _tickets.Values.Where(Predicate).ToArray();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
         /// <inheritdoc />
         public async Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
         {
@@ -85,7 +105,7 @@
             {
                 await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                 var toRemove = _tickets
-                    .Where(x => x.Value.ExpirationDateTime >= DateTimeOffset.UtcNow)
+                    .Where(x => x.Value.Expires >= DateTimeOffset.UtcNow)
                     .Select(x => x.Key);
                 foreach (var id in toRemove)
                 {

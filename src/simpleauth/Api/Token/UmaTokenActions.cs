@@ -99,7 +99,7 @@ namespace SimpleAuth.Api.Token
             }
 
             // 4. Check the ticket.
-            if (ticket.ExpirationDateTime < DateTimeOffset.UtcNow)
+            if (ticket.Expires < DateTimeOffset.UtcNow)
             {
                 throw new SimpleAuthException(ErrorCodes.ExpiredTicket, ErrorDescriptions.TheTicketIsExpired);
             }

@@ -35,7 +35,7 @@ namespace SimpleAuth.Server.Tests.Policies
 
         public BasicAuthorizationPolicyFixture()
         {
-            _authorizationPolicy = new BasicAuthorizationPolicy(new Mock<IClientStore>().Object, new InMemoryJwksRepository());
+            _authorizationPolicy = new DefaultAuthorizationPolicy(new Mock<IClientStore>().Object, new InMemoryJwksRepository());
         }
 
         [Fact]

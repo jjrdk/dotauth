@@ -29,11 +29,12 @@
                 .Index(x => x.ExternalLogins, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<Consent>()
+                .Identity(x => x.Id)
                 .Duplicate(x => x.ResourceOwner.Subject)
                 .GinIndexJsonData();
             For<Policy>()
-                .Duplicate(x => x.Id)
-                .Duplicate(x => x.Owner)
+                .Identity(x => x.Id)
+                .Duplicate(x => x.Owner, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)
@@ -44,11 +45,19 @@
                 .Index(x => x.Claims, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<ResourceSetModel>()
-                .Duplicate(x => x.Name)
-                .Duplicate(x => x.Owner)
-                .Duplicate(x => x.Type)
+                .Identity(x => x.Id)
+                .Duplicate(x => x.Name, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Owner, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Type, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
-            For<Ticket>().GinIndexJsonData();
+            For<Ticket>()
+                .Identity(x => x.Id)
+                .Duplicate(x => x.ResourceOwner, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Created, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Expires, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.IsAuthorizedByRo, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Boolean)
+                .Duplicate(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })
+                .GinIndexJsonData();
             For<AuthorizationCode>()
                 .Identity(x => x.Code)
                 .Duplicate(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })

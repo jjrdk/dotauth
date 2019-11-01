@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Repositories
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Models;
@@ -15,7 +16,7 @@
         /// <param name="ticket">The ticket.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<bool> Add(Ticket ticket, CancellationToken cancellationToken);
+        Task<bool> Add(Ticket ticket, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes the specified ticket identifier.
@@ -23,7 +24,7 @@
         /// <param name="ticketId">The ticket identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<bool> Remove(string ticketId, CancellationToken cancellationToken);
+        Task<bool> Remove(string ticketId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the specified ticket identifier.
@@ -31,6 +32,8 @@
         /// <param name="ticketId">The ticket identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<Ticket> Get(string ticketId, CancellationToken cancellationToken);
+        Task<Ticket> Get(string ticketId, CancellationToken cancellationToken = default);
+
+        Task<IReadOnlyList<Ticket>> GetAll(string owner, CancellationToken cancellationToken = default);
     }
 }

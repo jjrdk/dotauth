@@ -41,7 +41,7 @@ namespace SimpleAuth.Policies
             IResourceSetRepository resourceSetRepository,
             IEventPublisher eventPublisher)
         {
-            _authorizationPolicy = new BasicAuthorizationPolicy(clientStore, jwksStore);
+            _authorizationPolicy = new DefaultAuthorizationPolicy(clientStore, jwksStore);
             _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
             _eventPublisher = eventPublisher;
@@ -75,13 +75,27 @@ namespace SimpleAuth.Policies
                 var resource = resources.First(r => r.Id == ticketLine.ResourceSetId);
                 validationResult =
                     await Validate(ticketLineParameter, resource, claimTokenParameter, cancellationToken).ConfigureAwait(false);
-                if (validationResult.Type != AuthorizationPolicyResultEnum.Authorized)
-                {
-                    await _eventPublisher
-                        .Publish(new AuthorizationPolicyNotAuthorized(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
-                        .ConfigureAwait(false);
 
-                    return validationResult;
+                switch (validationResult.Type)
+                {
+                    case AuthorizationPolicyResultEnum.RequestSubmitted:
+                        await _eventPublisher
+                            .Publish(new AuthorizationRequestSubmitted(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
+                            .ConfigureAwait(false);
+
+                        return validationResult;
+                    case AuthorizationPolicyResultEnum.Authorized:
+                        break;
+                    case AuthorizationPolicyResultEnum.NotAuthorized:
+                    case AuthorizationPolicyResultEnum.NeedInfo:
+                    default:
+                        {
+                            await _eventPublisher
+                                .Publish(new AuthorizationPolicyNotAuthorized(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
+                                .ConfigureAwait(false);
+
+                            return validationResult;
+                        }
                 }
             }
 
@@ -95,6 +109,11 @@ namespace SimpleAuth.Policies
             CancellationToken cancellationToken)
         {
             var policies = await Task.WhenAll(resource.AuthorizationPolicyIds.Select(x => _policyRepository.Get(x, cancellationToken))).ConfigureAwait(false);
+
+            if (policies.Length == 0)
+            {
+                return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.RequestSubmitted };
+            }
 
             foreach (var authorizationPolicy in resource.Policies.Concat(policies))
             {

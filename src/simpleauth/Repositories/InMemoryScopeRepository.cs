@@ -13,7 +13,7 @@
     /// <summary>
     /// Defines the in-memory scope repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IScopeRepository" />
+    /// <seealso cref="IScopeRepository" />
     public sealed class InMemoryScopeRepository : IScopeRepository
     {
         private readonly ICollection<Scope> _scopes;
