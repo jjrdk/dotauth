@@ -103,7 +103,7 @@ namespace SimpleAuth.Policies
                 return claimAuthorizationResult;
             }
 
-            return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.NotAuthorized };
+            return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.Authorized };
         }
 
         private AuthorizationPolicyResult GetNeedInfoResult(Claim[] claims, string openidConfigurationUrl)

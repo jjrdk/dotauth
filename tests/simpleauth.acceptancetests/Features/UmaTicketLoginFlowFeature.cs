@@ -156,7 +156,7 @@
                 });
         }
 
-        [Scenario(DisplayName = "Successful ticket authentication")]
+        [Scenario(DisplayName = "Default policy ticket authentication")]
         public void DefaultPolicyTicketAuthentication()
         {
             GrantedTokenResponse umaToken = null;
@@ -281,6 +281,7 @@
             UmaClient umaClient = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
+            string policyId = null;
             string ticketId = null;
 
             "and a properly configured token client".x(
@@ -321,6 +322,28 @@
                         new Uri("https://localhost/.well-known/uma2-configuration"));
                 });
 
+            "and setting a policy".x(
+                async () =>
+                {
+                    var policy = new PostPolicy
+                    {
+                        Rules = new[]
+                        {
+                            new PostPolicyRule
+                            {
+                                Scopes = new[] {"anotherApi"},
+                                Claims = new[] {new PostClaim {Type = "sub", Value = "user"}},
+                                ClientIdsAllowed = new[] {"post_client"},
+                                IsResourceOwnerConsentNeeded = false
+                            }
+                        }
+                    };
+                    var policyResponse = await umaClient.AddPolicy(policy, result.AccessToken).ConfigureAwait(false);
+                    Assert.False(policyResponse.ContainsError);
+
+                    policyId = policyResponse.Content.PolicyId;
+                });
+
             "when creating resource set".x(
                 async () =>
                 {
@@ -329,7 +352,8 @@
                         Uri = "http://localhost",
                         Name = "Local",
                         Scopes = new[] { "api1" },
-                        Type = "url"
+                        Type = "url",
+                        AuthorizationPolicies = new[] { policyId }
                     };
 
                     var resourceResponse = await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
@@ -337,32 +361,6 @@
 
                     Assert.False(resourceResponse.ContainsError);
                 });
-
-            //"and setting a policy".x(
-            //    async () =>
-            //    {
-            //        var policy = new PostPolicy
-            //        {
-            //            ResourceSetIds = new[] { resourceSetResponse.Id },
-            //            Rules = new[]
-            //            {
-            //                new PostPolicyRule
-            //                {
-            //                    Scopes = new[] {"api1"},
-            //                    Claims = new[] {new PostClaim {Type = "sub", Value = "user"}},
-            //                    ClientIdsAllowed = new[] {"post_client"},
-            //                    IsResourceOwnerConsentNeeded = false
-            //                }
-            //            }
-            //        };
-            //        var policyResponse = await umaClient.AddPolicy(policy, result.AccessToken);
-            //        Assert.False(policyResponse.ContainsError);
-
-            //        await umaClient.AddResource(
-            //                                policyResponse.Content.PolicyId,
-            //                                new AddResourceSet { ResourceSets = new[] { resourceSetResponse.Id } },
-            //                                result.AccessToken);
-            //    });
 
             "and requesting permission".x(
                 async () =>
