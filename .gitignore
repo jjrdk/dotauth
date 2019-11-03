@@ -211,6 +211,12 @@ FakesAssemblies/
 # Ignore the bower files
 SimpleIdentityServer/VNEXT/src/SimpleIdentityServer.Host/wwwroot/lib/*
 
+# System Files
+.DS_Store
+Thumbs.db
+package-lock.json
+
+dist
 log-*.txt
 secrets.json
 appsettings.json
