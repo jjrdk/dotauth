@@ -63,7 +63,7 @@ namespace SimpleAuth.Api.Authorization
             if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                     authorizationParameter.State);
@@ -72,7 +72,7 @@ namespace SimpleAuth.Api.Authorization
             if (!client.CheckGrantTypes(GrantTypes.Implicit))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
                         "implicit"),

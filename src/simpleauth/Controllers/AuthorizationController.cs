@@ -217,7 +217,7 @@ namespace SimpleAuth.Controllers
                 if (result == null)
                 {
                     throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidRequestCode,
+                        ErrorCodes.InvalidRequest,
                         ErrorDescriptions.TheRequestParameterIsNotCorrect,
                         authorizationRequest.state);
                 }
@@ -234,7 +234,7 @@ namespace SimpleAuth.Controllers
                     if (!httpResult.IsSuccessStatusCode)
                     {
                         throw new SimpleAuthExceptionWithState(
-                            ErrorCodes.InvalidRequestCode,
+                            ErrorCodes.InvalidRequest,
                             ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
                             authorizationRequest.state);
                     }
@@ -248,7 +248,7 @@ namespace SimpleAuth.Controllers
                     if (result == null)
                     {
                         throw new SimpleAuthExceptionWithState(
-                            ErrorCodes.InvalidRequestCode,
+                            ErrorCodes.InvalidRequest,
                             ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
                             authorizationRequest.state);
                     }

@@ -64,7 +64,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter grant_type is missing", error.Detail);
         }
 
@@ -86,7 +86,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter username is missing", error.Detail);
         }
 
@@ -109,7 +109,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter password is missing", error.Detail);
         }
 
@@ -133,7 +133,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter scope is missing", error.Detail);
         }
 
@@ -263,7 +263,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter scope is missing", error.Detail);
         }
 
@@ -363,7 +363,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter refresh_token is missing", error.Detail);
         }
 
@@ -454,7 +454,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter code is missing", error.Detail);
         }
 
@@ -477,7 +477,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("Based on the RFC-3986 the redirection-uri is not well formed", error.Detail);
         }
 

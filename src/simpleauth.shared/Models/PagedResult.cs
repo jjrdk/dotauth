@@ -6,7 +6,7 @@
     /// Defines the generic result.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class GenericResult<T>
+    public class PagedResult<T>
     {
         /// <summary>
         /// Gets or sets the total results.

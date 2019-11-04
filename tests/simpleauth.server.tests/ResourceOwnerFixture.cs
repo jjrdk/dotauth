@@ -34,7 +34,7 @@
             var result = await _resourceOwnerClient.GetResourceOwner(resourceOwnerId).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
             Assert.Equal(
                 string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, resourceOwnerId),
                 result.Error.Detail);

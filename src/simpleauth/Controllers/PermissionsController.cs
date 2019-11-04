@@ -79,7 +79,7 @@ namespace SimpleAuth.Controllers
             if (permissionRequest == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -88,7 +88,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the client_id cannot be extracted",
                     HttpStatusCode.BadRequest);
             }
@@ -114,7 +114,7 @@ namespace SimpleAuth.Controllers
             if (postPermissions == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -124,7 +124,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the client_id cannot be extracted",
                     HttpStatusCode.BadRequest);
             }

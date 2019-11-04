@@ -16,7 +16,7 @@
         /// <param name="parameter">The parameter.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<GenericResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken);
+        Task<PagedResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the specified name.

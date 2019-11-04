@@ -64,13 +64,11 @@ namespace SimpleAuth.Manager.Client
                 };
             var result = new GenericResponse<PagedResponse<Client>>
             {
-                ContainsError = true,
-                HttpStatus = httpResult.StatusCode
+                HttpStatus = httpResult.StatusCode,
+                Error = string.IsNullOrWhiteSpace(content)
+                    ? new ErrorDetails {Status = httpResult.StatusCode}
+                    : JsonConvert.DeserializeObject<ErrorDetails>(content)
             };
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                result.Error = JsonConvert.DeserializeObject<ErrorDetails>(content);
-            }
 
             return result;
 

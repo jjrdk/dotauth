@@ -46,21 +46,22 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Passing_No_Request_Then_Exception_Is_Thrown()
+        public async Task When_Passing_No_Request_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
-            await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                        null,
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None))
+            var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+                    null,
+                    null,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
+
+            Assert.True(result.ContainsError);
         }
 
         [Fact]
-        public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
+        public async Task When_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             const string clientAssertion = "clientAssertion";
@@ -78,20 +79,20 @@ namespace SimpleAuth.Tests.Api.Token
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+            var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
                         resourceOwnerGrantTypeParameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheClientDoesntExist, exception.Message);
+
+            Assert.Equal(ErrorCodes.InvalidClient, result.Error.Title);
+            Assert.Equal(string.Format(ErrorDescriptions.MissingParameter, "username"), result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Client_GrantType_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_Client_GrantType_Is_Not_Valid_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             const string clientAssertion = "clientAssertion";
@@ -109,30 +110,30 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
-                GrantTypes = new[] {GrantTypes.AuthorizationCode}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                        resourceOwnerGrantTypeParameter,
-                        authenticationHeader,
-                        null,
-                        null,
-                        CancellationToken.None))
+            var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+                    resourceOwnerGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
+
+            Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
             Assert.Equal(
                 string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, clientId, GrantTypes.Password),
-                exception.Message);
+                result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Client_ResponseTypes_Are_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_Client_ResponseTypes_Are_Not_Valid_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             const string clientAssertion = "clientAssertion";
@@ -150,30 +151,30 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ResponseTypes = Array.Empty<string>(),
                 ClientId = clientId,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
-                GrantTypes = new[] {GrantTypes.Password}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                GrantTypes = new[] { GrantTypes.Password }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                        resourceOwnerGrantTypeParameter,
-                        authenticationHeader,
-                        null,
-                        null,
-                        CancellationToken.None))
+            var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+                    resourceOwnerGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
+
+            Assert.Equal(ErrorCodes.InvalidResponse, result.Error.Title);
             Assert.Equal(
                 string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, clientId, "token id_token"),
-                exception.Message);
+                result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_The_Resource_Owner_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_The_Resource_Owner_Is_Not_Valid_Then_Error_Is_Returned()
         {
             const string clientAssertion = "clientAssertion";
             const string clientAssertionType = "clientAssertionType";
@@ -208,20 +209,19 @@ namespace SimpleAuth.Tests.Api.Token
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                        resourceOwnerGrantTypeParameter,
-                        authenticationHeader,
-                        null,
-                        null,
-                        CancellationToken.None))
+            var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+                    resourceOwnerGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
-            Assert.Equal(ErrorDescriptions.ResourceOwnerCredentialsAreNotValid, exception.Message);
+            Assert.Equal(ErrorCodes.InvalidCredentials, result.Error.Title);
+            Assert.Equal(ErrorDescriptions.ResourceOwnerCredentialsAreNotValid, result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Passing_A_Not_Allowed_Scopes_Then_Exception_Is_Throw()
+        public async Task When_Passing_A_Not_Allowed_Scopes_Then_Error_Is_Returned()
         {
             const string clientAssertion = "clientAssertion";
             const string clientAssertionType = "clientAssertionType";
@@ -239,9 +239,9 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = "id",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
-                GrantTypes = new[] {GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                GrantTypes = new[] { GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
             };
 
             var resourceOwner = new ResourceOwner();
@@ -260,15 +260,15 @@ namespace SimpleAuth.Tests.Api.Token
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+            var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
                         resourceOwnerGrantTypeParameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidScope, exception.Code);
+
+            Assert.Equal(ErrorCodes.InvalidScope, result.Error.Title);
         }
 
         [Fact]
@@ -290,15 +290,15 @@ namespace SimpleAuth.Tests.Api.Token
             };
             var client = new Client
             {
-                AllowedScopes = new[] {invalidScope},
+                AllowedScopes = new[] { invalidScope },
                 ClientId = clientId,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 JsonWebKeys =
                     TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
-                GrantTypes = new[] {GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token}
+                GrantTypes = new[] { GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
             };
             var resourceOwner = new ResourceOwner();
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
@@ -313,7 +313,7 @@ namespace SimpleAuth.Tests.Api.Token
             InitializeFakeObjects(authenticateService.Object);
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             _scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-                .ReturnsAsync(new[] {new Scope {Name = invalidScope}});
+                .ReturnsAsync(new[] { new Scope { Name = invalidScope } });
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",

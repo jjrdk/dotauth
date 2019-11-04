@@ -49,7 +49,7 @@ namespace SimpleAuth.Api.Introspection
             if (string.IsNullOrWhiteSpace(introspectionParameter.Token))
             {
                 throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
             }
 

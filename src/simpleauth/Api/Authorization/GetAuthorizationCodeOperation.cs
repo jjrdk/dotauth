@@ -74,7 +74,7 @@ namespace SimpleAuth.Api.Authorization
             if (!client.CheckGrantTypes(GrantTypes.AuthorizationCode))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(
                         ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
@@ -87,7 +87,7 @@ namespace SimpleAuth.Api.Authorization
                 if (claimsPrincipal == null)
                 {
                     throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidRequestCode,
+                        ErrorCodes.InvalidRequest,
                         ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated,
                         authorizationParameter.State);
                 }

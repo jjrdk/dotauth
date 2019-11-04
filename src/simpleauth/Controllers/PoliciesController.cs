@@ -71,7 +71,7 @@ namespace SimpleAuth.Controllers
             if (searchAuthPolicies == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -93,7 +93,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -135,7 +135,7 @@ namespace SimpleAuth.Controllers
             if (putPolicy == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -143,7 +143,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(putPolicy.PolicyId))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the parameter id needs to be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -151,7 +151,7 @@ namespace SimpleAuth.Controllers
             if (putPolicy.Rules == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the parameter rules needs to be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -177,7 +177,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -185,7 +185,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(resourceId))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the resource_id must be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -215,7 +215,7 @@ namespace SimpleAuth.Controllers
             if (postPolicy == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -240,7 +240,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }

@@ -72,13 +72,11 @@ namespace SimpleAuth.Manager.Client
 
             var result = new GenericResponse<PagedResponse<ResourceOwner>>
             {
-                ContainsError = true,
+                Error = string.IsNullOrWhiteSpace(content)
+                    ? new ErrorDetails { Status = httpResult.StatusCode }
+                    : Serializer.Default.Deserialize<ErrorDetails>(content),
                 HttpStatus = httpResult.StatusCode
             };
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                result.Error = Serializer.Default.Deserialize<ErrorDetails>(content);
-            }
 
             return result;
 

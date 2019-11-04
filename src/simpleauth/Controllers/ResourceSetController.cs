@@ -62,14 +62,14 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets(
+        public async Task<ActionResult<PagedResult<ResourceSet>>> SearchResourceSets(
             [FromBody] SearchResourceSet searchResourceSet,
             CancellationToken cancellationToken)
         {
             if (searchResourceSet == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
@@ -77,7 +77,7 @@ namespace SimpleAuth.Controllers
             var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken)
                 .ConfigureAwait(false);
             return new OkObjectResult(
-                new GenericResult<ResourceSet>
+                new PagedResult<ResourceSet>
                 {
                     Content = result.Content.Select(x => x.ToResponse()).ToArray(),
                     StartIndex = result.StartIndex,
@@ -115,7 +115,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -145,7 +145,7 @@ namespace SimpleAuth.Controllers
             if (postResourceSet == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
@@ -176,7 +176,7 @@ namespace SimpleAuth.Controllers
             if (resourceSet == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
@@ -207,7 +207,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }

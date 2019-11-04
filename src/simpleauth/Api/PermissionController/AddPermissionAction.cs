@@ -94,7 +94,7 @@ namespace SimpleAuth.Api.PermissionController
             {
                 // All resource sets must belong to same owner
                 throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.InvalidResourceSetRequest);
             }
 
@@ -104,7 +104,7 @@ namespace SimpleAuth.Api.PermissionController
                 if (string.IsNullOrWhiteSpace(addPermissionParameter.ResourceSetId))
                 {
                     throw new SimpleAuthException(
-                        ErrorCodes.InvalidRequestCode,
+                        ErrorCodes.InvalidRequest,
                         string.Format(
                             ErrorDescriptions.TheParameterNeedsToBeSpecified,
                             UmaConstants.AddPermissionNames.ResourceSetId));
@@ -113,7 +113,7 @@ namespace SimpleAuth.Api.PermissionController
                 if (addPermissionParameter.Scopes == null || !addPermissionParameter.Scopes.Any())
                 {
                     throw new SimpleAuthException(
-                        ErrorCodes.InvalidRequestCode,
+                        ErrorCodes.InvalidRequest,
                         string.Format(
                             ErrorDescriptions.TheParameterNeedsToBeSpecified,
                             UmaConstants.AddPermissionNames.Scopes));

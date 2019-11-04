@@ -30,7 +30,7 @@ namespace SimpleAuth.Extensions
 
     internal static class MappingExtensions
     {
-        public static SearchAuthPoliciesResponse ToResponse(this GenericResult<Policy> searchAuthPoliciesResult)
+        public static SearchAuthPoliciesResponse ToResponse(this PagedResult<Policy> searchAuthPoliciesResult)
         {
             return new SearchAuthPoliciesResponse
             {

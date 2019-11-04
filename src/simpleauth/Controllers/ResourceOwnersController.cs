@@ -61,7 +61,6 @@ namespace SimpleAuth.Controllers
         /// <param name="clientRepository"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
-        /// <param name="tokenStore">The token cache</param>
         /// <param name="scopeRepository"></param>
         /// <param name="jwksRepository"></param>
         public ResourceOwnersController(
@@ -76,7 +75,6 @@ namespace SimpleAuth.Controllers
             IEventPublisher eventPublisher)
         {
             _refreshOperation = new GetTokenByRefreshTokenGrantTypeAction(
-                settings,
                 eventPublisher,
                 tokenStore,
                 scopeRepository,
@@ -122,7 +120,7 @@ namespace SimpleAuth.Controllers
                     {
                         Status = HttpStatusCode.BadRequest,
                         Detail = string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id),
-                        Title = ErrorCodes.InvalidRequestCode
+                        Title = ErrorCodes.InvalidRequest
                     });
             }
 
@@ -219,7 +217,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest(
                     new ErrorDetails
                     {
-                        Title = ErrorCodes.InvalidRequestCode,
+                        Title = ErrorCodes.InvalidRequest,
                         Detail = "Parameter in request body not valid",
                         Status = HttpStatusCode.BadRequest
                     });
@@ -334,7 +332,7 @@ namespace SimpleAuth.Controllers
 
             var client = await _clientRepository.GetById(existingToken.ClientId, cancellationToken)
                 .ConfigureAwait(false);
-            var refreshedToken = await _refreshOperation.Execute(
+            var refreshedResponse = await _refreshOperation.Execute(
                     new RefreshTokenGrantTypeParameter
                     {
                         ClientId = existingToken.ClientId,
@@ -346,6 +344,12 @@ namespace SimpleAuth.Controllers
                     Request.GetAbsoluteUriWithVirtualPath(),
                     cancellationToken)
                 .ConfigureAwait(false);
+            if (refreshedResponse.ContainsError)
+            {
+                return new BadRequestObjectResult(refreshedResponse.Error);
+            }
+
+            var refreshedToken = refreshedResponse.Content;
             refreshedToken.ParentTokenId = existingToken.ParentTokenId;
             refreshedToken.RefreshToken = existingToken.RefreshToken;
             await _tokenStore.RemoveAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
@@ -467,7 +471,7 @@ namespace SimpleAuth.Controllers
             if (searchResourceOwnersRequest == null)
             {
                 searchResourceOwnersRequest = new SearchResourceOwnersRequest { Descending = true, NbResults = 50, StartIndex = 0 };
-                //return BadRequest(new ErrorDetails {Title = ErrorCodes.InvalidRequestCode, Detail = "Parameter in request body not valid", Status = HttpStatusCode.BadRequest});
+                //return BadRequest(new ErrorDetails {Title = ErrorCodes.InvalidRequest, Detail = "Parameter in request body not valid", Status = HttpStatusCode.BadRequest});
             }
 
             var result = await _resourceOwnerRepository.Search(searchResourceOwnersRequest, cancellationToken)

@@ -66,7 +66,7 @@ namespace SimpleAuth.Sms.Controllers
             if (string.IsNullOrWhiteSpace(confirmationCodeRequest?.PhoneNumber))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "parameter phone_number is missing",
                     HttpStatusCode.BadRequest);
             }

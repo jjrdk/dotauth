@@ -62,7 +62,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addPermissionAction.Execute(clientId, CancellationToken.None, addPermissionParameter))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.TheParameterNeedsToBeSpecified,
@@ -80,7 +80,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addPermissionAction.Execute(clientId, CancellationToken.None, addPermissionParameter))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes),
                 exception.Message);

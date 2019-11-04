@@ -53,7 +53,7 @@ namespace SimpleAuth.Controllers
         /// <exception cref="ArgumentNullException">request</exception>
         [HttpPost(".search")]
         [Authorize(Policy = "manager")]
-        public async Task<ActionResult<GenericResult<Scope>>> Search(
+        public async Task<ActionResult<PagedResult<Scope>>> Search(
             [FromBody] SearchScopesRequest request,
             CancellationToken cancellationToken)
         {
@@ -114,7 +114,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest(
                     new ErrorDetails
                     {
-                        Title = ErrorCodes.InvalidRequestCode,
+                        Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(ErrorDescriptions.TheScopeDoesntExist, id),
                         Status = HttpStatusCode.BadRequest
                     });
@@ -127,7 +127,7 @@ namespace SimpleAuth.Controllers
                 : BadRequest(
                     new ErrorDetails
                     {
-                        Title = ErrorCodes.InvalidRequestCode,
+                        Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(ErrorDescriptions.TheScopeDoesntExist, id),
                         Status = HttpStatusCode.BadRequest
                     });

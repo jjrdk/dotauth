@@ -52,7 +52,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("no parameter in body request", error.Detail);
         }
 
@@ -75,7 +75,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("no parameter in body request", error.Detail);
         }
 

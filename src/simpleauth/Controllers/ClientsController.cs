@@ -75,7 +75,7 @@ namespace SimpleAuth.Controllers
             if (request == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -96,14 +96,14 @@ namespace SimpleAuth.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "identifier is missing", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequest, "identifier is missing", HttpStatusCode.BadRequest);
             }
 
             var result = await _clientStore.GetById(id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.TheClientDoesntExist,
                     HttpStatusCode.NotFound);
             }
@@ -123,7 +123,7 @@ namespace SimpleAuth.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "identifier is missing", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequest, "identifier is missing", HttpStatusCode.BadRequest);
             }
 
             if (!await _clientRepository.Delete(id, cancellationToken).ConfigureAwait(false))
@@ -147,7 +147,7 @@ namespace SimpleAuth.Controllers
             if (updateClientRequest == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -189,7 +189,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(client?.ClientId))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }

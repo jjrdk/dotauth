@@ -24,6 +24,7 @@ namespace SimpleAuth.Api.Token.Actions
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;
+    using System.Net;
     using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
@@ -33,7 +34,6 @@ namespace SimpleAuth.Api.Token.Actions
 
     internal sealed class GetTokenByRefreshTokenGrantTypeAction
     {
-        private readonly RuntimeSettings _settings;
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
         private readonly IJwksStore _jwksRepository;
@@ -43,7 +43,6 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly AuthenticateClient _authenticateClient;
 
         public GetTokenByRefreshTokenGrantTypeAction(
-            RuntimeSettings settings,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
             IScopeRepository scopeRepository,
@@ -51,7 +50,6 @@ namespace SimpleAuth.Api.Token.Actions
             IResourceOwnerRepository resourceOwnerRepository,
             IClientStore clientStore)
         {
-            _settings = settings;
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
             _jwksRepository = jwksRepository;
@@ -61,7 +59,7 @@ namespace SimpleAuth.Api.Token.Actions
             _authenticateClient = new AuthenticateClient(clientStore, jwksRepository);
         }
 
-        public async Task<GrantedToken> Execute(
+        public async Task<GenericResponse<GrantedToken>> Execute(
             RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
@@ -77,18 +75,34 @@ namespace SimpleAuth.Api.Token.Actions
             var client = authResult.Client;
             if (authResult.Client == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidClient,
+                        Detail = authResult.ErrorMessage
+                    }
+                };
             }
 
             // 2. Check client
             if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.RefreshToken))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClient,
-                    string.Format(
-                        ErrorDescriptions.TheClientDoesntSupportTheGrantType,
-                        client.ClientId,
-                        GrantTypes.RefreshToken));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(
+                            ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                            client.ClientId,
+                            GrantTypes.RefreshToken)
+                    }
+                };
             }
 
             // 3. Validate parameters
@@ -96,9 +110,16 @@ namespace SimpleAuth.Api.Token.Actions
                 .ConfigureAwait(false);
             if (grantedToken.ClientId != client.ClientId)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidGrant,
-                    ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer);
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer
+                    }
+                };
             }
 
             var sub = grantedToken.UserInfoPayLoad?.Sub;
@@ -123,7 +144,7 @@ namespace SimpleAuth.Api.Token.Actions
                     additionalClaims)
                 .ConfigureAwait(false);
             generatedToken.ParentTokenId = grantedToken.Id;
-            // 5. Fill-in the idtoken
+            // 5. Fill-in the id token
             if (generatedToken.IdTokenPayLoad != null)
             {
                 _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, authResult.Client?.TokenLifetime);
@@ -139,15 +160,14 @@ namespace SimpleAuth.Api.Token.Actions
             await _eventPublisher.Publish(
                     new TokenGranted(
                         Id.Create(),
-                        generatedToken?.UserInfoPayLoad?.Sub,
+                        generatedToken.UserInfoPayLoad?.Sub,
                         generatedToken.ClientId,
                         generatedToken.Scope,
                         GrantTypes.RefreshToken,
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
-            return generatedToken;
+            return new GenericResponse<GrantedToken> {HttpStatus = HttpStatusCode.OK, Content = generatedToken};
         }
-
 
         private async Task<GrantedToken> ValidateParameter(
             RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,

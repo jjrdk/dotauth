@@ -43,7 +43,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter name needs to be specified", resource.Error.Detail);
         }
 
@@ -54,7 +54,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.Detail);
         }
 
@@ -67,7 +67,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the url invalid is not well formed", resource.Error.Detail);
         }
 
@@ -96,7 +96,7 @@ namespace SimpleAuth.Server.Tests
             var resource = await _umaClient.UpdateResource(new ResourceSet(), "header").ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter id needs to be specified", resource.Error.Detail);
         }
 
@@ -109,7 +109,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter name needs to be specified", resource.Error.Detail);
         }
 
@@ -120,7 +120,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.Detail);
         }
 
@@ -133,7 +133,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the url invalid is not well formed", resource.Error.Detail);
         }
 

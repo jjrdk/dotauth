@@ -78,7 +78,7 @@ namespace SimpleAuth.Api.Authorization
             if (!redirectionUrls.Any())
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.RedirectUrlIsNotValid, authorizationParameter.RedirectUrl),
                     authorizationParameter.State);
             }
@@ -105,7 +105,7 @@ namespace SimpleAuth.Api.Authorization
             if (!responseTypes.Any())
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
@@ -115,7 +115,7 @@ namespace SimpleAuth.Api.Authorization
             if (!client.CheckResponseTypes(responseTypes.ToArray()))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(
                         ErrorDescriptions.TheClientDoesntSupportTheResponseType,
                         authorizationParameter.ClientId,
@@ -176,7 +176,7 @@ namespace SimpleAuth.Api.Authorization
                 if (!canRead)
                 {
                     throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidRequestCode,
+                        ErrorCodes.InvalidRequest,
                         ErrorDescriptions.TheIdTokenHintParameterIsNotAValidToken,
                         authorizationParameter.State);
                 }
@@ -190,7 +190,7 @@ namespace SimpleAuth.Api.Authorization
                 if (jwsPayload?.Aud == null || !jwsPayload.Aud.Contains(issuerName))
                 {
                     throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidRequestCode,
+                        ErrorCodes.InvalidRequest,
                         ErrorDescriptions.TheIdentityTokenDoesntContainSimpleAuthAsAudience,
                         authorizationParameter.State);
                 }
@@ -205,7 +205,7 @@ namespace SimpleAuth.Api.Authorization
                 if (currentSubject != expectedSubject)
                 {
                     throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidRequestCode,
+                        ErrorCodes.InvalidRequest,
                         ErrorDescriptions.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken,
                         authorizationParameter.State);
                 }
@@ -221,7 +221,7 @@ namespace SimpleAuth.Api.Authorization
             if (prompts == null || !prompts.Any())
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.TheAuthorizationRequestCannotBeProcessedBecauseThereIsNotValidPrompt,
                     authorizationParameter.State);
             }
@@ -276,7 +276,7 @@ namespace SimpleAuth.Api.Authorization
             }
 
             throw new SimpleAuthExceptionWithState(
-                ErrorCodes.InvalidRequestCode,
+                ErrorCodes.InvalidRequest,
                 string.Format(ErrorDescriptions.ThePromptParameterIsNotSupported, string.Join(",", prompts)),
                 authorizationParameter.State);
         }

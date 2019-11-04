@@ -44,7 +44,7 @@ namespace SimpleAuth.Api.PolicyController
         {
             if (addPolicyParameter.Rules == null || !addPolicyParameter.Rules.Any())
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthException(ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
                         UmaConstants.AddPolicyParameterNames.Rules));
             }

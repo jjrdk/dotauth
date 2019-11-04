@@ -1,24 +1,21 @@
-﻿using SimpleAuth.Shared.Repositories;
-
-namespace SimpleAuth.Api.Token
+﻿namespace SimpleAuth.Api.Token
 {
     using Authenticate;
     using JwtToken;
-    using Newtonsoft.Json.Linq;
     using Parameters;
     using Policies;
     using Shared;
     using Shared.Events.Uma;
     using Shared.Models;
     using Shared.Responses;
+    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Errors;
     using System;
-    using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Net;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -57,7 +54,7 @@ namespace SimpleAuth.Api.Token
             _eventPublisher = eventPublisher;
         }
 
-        public async Task<GrantedToken> GetTokenByTicketId(
+        public async Task<GenericResponse<GrantedToken>> GetTokenByTicketId(
             GetTokenViaTicketIdParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
@@ -66,9 +63,16 @@ namespace SimpleAuth.Api.Token
         {
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.RptClaims.Ticket));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.RptClaims.Ticket)
+                    }
+                };
             }
 
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(parameter, certificate);
@@ -77,31 +81,63 @@ namespace SimpleAuth.Api.Token
             var client = authResult.Client;
             if (client == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidClient,
+                        Detail = authResult.ErrorMessage
+                    }
+                };
             }
 
             if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.UmaTicket))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidGrant,
-                    string.Format(
-                        ErrorDescriptions.TheClientDoesntSupportTheGrantType,
-                        client.ClientId,
-                        GrantTypes.UmaTicket));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(
+                            ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                            client.ClientId,
+                            GrantTypes.UmaTicket)
+                    }
+                };
             }
 
             var ticket = await _ticketStore.Get(parameter.Ticket, cancellationToken).ConfigureAwait(false);
             if (ticket == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidTicket,
-                    string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidTicket,
+                        Detail = string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket)
+                    }
+                };
             }
 
             // 4. Check the ticket.
             if (ticket.Expires < DateTimeOffset.UtcNow)
             {
-                throw new SimpleAuthException(ErrorCodes.ExpiredTicket, ErrorDescriptions.TheTicketIsExpired);
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.ExpiredTicket,
+                        Detail = ErrorDescriptions.TheTicketIsExpired
+                    }
+                };
             }
 
             var claimTokenParameter = new ClaimTokenParameter
@@ -122,17 +158,27 @@ namespace SimpleAuth.Api.Token
                     await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
-                return grantedToken;
+                return new GenericResponse<GrantedToken>
+                {
+                    Content = grantedToken,
+                    HttpStatus = HttpStatusCode.OK
+                };
             }
 
             // 5. Generate a granted token.
-            //var grantedToken = await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
             await _eventPublisher.Publish(
                     new UmaRequestNotAuthorized(Id.Create(), parameter.Ticket, parameter.ClientId, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
-            throw new SimpleAuthException(
-                ErrorCodes.RequestSubmitted,
-                ErrorDescriptions.TheAuthorizationPolicyIsNotSatisfied);
+            return new GenericResponse<GrantedToken>
+            {
+                HttpStatus = HttpStatusCode.BadRequest,
+                Error = new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.RequestDenied,
+                    Detail = ErrorDescriptions.TheAuthorizationPolicyIsNotSatisfied
+                }
+            };
         }
 
         private async Task<GrantedToken> GenerateToken(

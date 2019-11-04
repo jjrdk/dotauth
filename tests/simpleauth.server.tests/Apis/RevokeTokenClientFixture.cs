@@ -53,7 +53,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter token is missing", error.Detail);
         }
 
@@ -75,7 +75,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter token is missing", error.Detail);
         }
 

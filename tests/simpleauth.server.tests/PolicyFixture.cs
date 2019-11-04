@@ -42,7 +42,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, response.Error.Title);
             Assert.Equal("the parameter rules needs to be specified", response.Error.Detail);
         }
 
@@ -78,7 +78,7 @@ namespace SimpleAuth.Server.Tests
             var response = await _umaClient.UpdatePolicy(new PutPolicy { }, "header").ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, response.Error.Title);
             Assert.Equal("the parameter id needs to be specified", response.Error.Detail);
         }
 
@@ -89,7 +89,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, response.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, response.Error.Title);
             Assert.Equal("the parameter rules needs to be specified", response.Error.Detail);
         }
 

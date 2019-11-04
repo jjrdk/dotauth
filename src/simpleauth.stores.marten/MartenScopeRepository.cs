@@ -29,11 +29,11 @@
         }
 
         /// <inheritdoc />
-        public async Task<GenericResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
         {
             if (parameter == null)
             {
-                return new GenericResult<Scope>();
+                return new PagedResult<Scope>();
             }
 
             using (var session = _sessionFactory())
@@ -44,7 +44,7 @@
                     .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)
                     .ConfigureAwait(false);
 
-                return new GenericResult<Scope>
+                return new PagedResult<Scope>
                 {
                     Content = results.ToArray(),
                     StartIndex = parameter.StartIndex,

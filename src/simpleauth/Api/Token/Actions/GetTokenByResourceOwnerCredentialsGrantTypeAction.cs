@@ -26,6 +26,7 @@ namespace SimpleAuth.Api.Token.Actions
     using SimpleAuth.Shared.Errors;
     using System;
     using System.Linq;
+    using System.Net;
     using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
@@ -58,7 +59,7 @@ namespace SimpleAuth.Api.Token.Actions
             _eventPublisher = eventPublisher;
         }
 
-        public async Task<GrantedToken> Execute(
+        public async Task<GenericResponse<GrantedToken>> Execute(
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
@@ -74,30 +75,55 @@ namespace SimpleAuth.Api.Token.Actions
             var client = authResult.Client;
             if (authResult.Client == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidClient,
+                        Detail = string.Format(
+                            ErrorDescriptions.MissingParameter,
+                            StandardTokenRequestParameterNames.UserName)
+                    }
+                };
             }
 
             // 2. Check the client.
             if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantTypes.Password))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClient,
-                    string.Format(
-                        ErrorDescriptions.TheClientDoesntSupportTheGrantType,
-                        client.ClientId,
-                        GrantTypes.Password));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(
+                            ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                            client.ClientId,
+                            GrantTypes.Password)
+                    }
+                };
             }
 
             if (client.ResponseTypes == null
                 || !client.ResponseTypes.Contains(ResponseTypeNames.Token)
                 || !client.ResponseTypes.Contains(ResponseTypeNames.IdToken))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClient,
-                    string.Format(
-                        ErrorDescriptions.TheClientDoesntSupportTheResponseType,
-                        client.ClientId,
-                        "token id_token"));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidResponse,
+                        Detail = string.Format(
+                            ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                            client.ClientId,
+                            "token id_token")
+                    }
+                };
             }
 
             // 3. Try to authenticate a resource owner
@@ -109,9 +135,16 @@ namespace SimpleAuth.Api.Token.Actions
                 .ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidGrant,
-                    ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidCredentials,
+                        Detail = ErrorDescriptions.ResourceOwnerCredentialsAreNotValid
+                    }
+                };
             }
 
             // 4. Check if the requested scopes are valid
@@ -121,7 +154,16 @@ namespace SimpleAuth.Api.Token.Actions
                 var scopeValidation = resourceOwnerGrantTypeParameter.Scope.Check(client);
                 if (!scopeValidation.IsValid)
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
+                    return new GenericResponse<GrantedToken>
+                    {
+                        HttpStatus = HttpStatusCode.BadRequest,
+                        Error = new ErrorDetails
+                        {
+                            Status = HttpStatusCode.BadRequest,
+                            Title = ErrorCodes.InvalidScope,
+                            Detail = scopeValidation.ErrorMessage
+                        }
+                    };
                 }
 
                 allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
@@ -131,7 +173,7 @@ namespace SimpleAuth.Api.Token.Actions
             var claims = resourceOwner.Claims;
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var authorizationParameter = new AuthorizationParameter { Scope = resourceOwnerGrantTypeParameter.Scope };
+            var authorizationParameter = new AuthorizationParameter {Scope = resourceOwnerGrantTypeParameter.Scope};
             var payload = await _jwtGenerator
                 .GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
@@ -151,15 +193,17 @@ namespace SimpleAuth.Api.Token.Actions
                         payload,
                         payload,
                         cancellationToken,
-                        claimsIdentity.Claims
-                            .Where(c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
+                        claimsIdentity.Claims.Where(
+                                c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
                             .ToArray())
                     .ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)
                 {
                     _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client?.TokenLifetime);
-                    generatedToken.IdToken = await client
-                        .GenerateIdToken(generatedToken.IdTokenPayLoad, _jwksStore, cancellationToken)
+                    generatedToken.IdToken = await client.GenerateIdToken(
+                            generatedToken.IdTokenPayLoad,
+                            _jwksStore,
+                            cancellationToken)
                         .ConfigureAwait(false);
                 }
 
@@ -175,7 +219,7 @@ namespace SimpleAuth.Api.Token.Actions
                     .ConfigureAwait(false);
             }
 
-            return generatedToken;
+            return new GenericResponse<GrantedToken> {HttpStatus = HttpStatusCode.OK, Content = generatedToken};
         }
     }
 }

@@ -53,7 +53,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     () => _addAuthorizationPolicyAction.Execute("owner", addPolicyParameter, CancellationToken.None))
                 .ConfigureAwait(false);
 
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.TheParameterNeedsToBeSpecified,
@@ -70,7 +70,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addAuthorizationPolicyAction.Execute("owner", addPolicyParameter, CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.True(
                 exception.Message
                 == string.Format(

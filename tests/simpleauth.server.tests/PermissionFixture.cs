@@ -52,7 +52,7 @@ namespace SimpleAuth.Server.Tests
             UmaUserStore.Instance().ClientId = "client";
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
             Assert.Equal("the client_id cannot be extracted", ticket.Error.Detail);
         }
 
@@ -63,7 +63,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
             Assert.Equal("the parameter resource_set_id needs to be specified", ticket.Error.Detail);
         }
 
@@ -74,7 +74,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, ticket.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
             Assert.Equal("the parameter scopes needs to be specified", ticket.Error.Detail);
         }
 

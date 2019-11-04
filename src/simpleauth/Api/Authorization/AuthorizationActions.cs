@@ -100,7 +100,7 @@ namespace SimpleAuth.Api.Authorization
                 && (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId),
                     parameter.State);
             }

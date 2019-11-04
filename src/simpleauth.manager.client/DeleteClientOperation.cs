@@ -33,7 +33,7 @@ namespace SimpleAuth.Manager.Client
 
         public async Task<GenericResponse<Client>> Execute(Uri clientsUri, string authorizationHeaderValue = null)
         {
-            var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = clientsUri};
+            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = clientsUri };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue(
@@ -47,7 +47,8 @@ namespace SimpleAuth.Manager.Client
             {
                 return new GenericResponse<Client>
                 {
-                    ContainsError = true, Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
+                    HttpStatus = httpResult.StatusCode,
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
                 };
             }
 

@@ -79,7 +79,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             if (client == null)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.ClientIsNotValid, authorizationParameter.ClientId),
                     authorizationParameter.State);
             }
@@ -147,7 +147,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             if (responseTypes == null)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
             }
@@ -157,7 +157,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             if (record == null)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
             }

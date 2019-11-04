@@ -99,10 +99,8 @@
                     new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidRequestCode,
-                        Detail = string.Format(
-                            ErrorDescriptions.MissingParameter,
-                            RequestTokenNames.GrantType)
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(ErrorDescriptions.MissingParameter, RequestTokenNames.GrantType)
                     });
             }
 
@@ -113,12 +111,20 @@
             }
 
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var result = await GetGrantedToken(tokenRequest, cancellationToken, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+            var result = await GetGrantedToken(
+                    tokenRequest,
+                    cancellationToken,
+                    authenticationHeaderValue,
+                    certificate,
+                    issuerName)
+                .ConfigureAwait(false);
 
-            return new OkObjectResult(result.ToDto());
+            return result.HttpStatus == HttpStatusCode.OK
+                ? (IActionResult) new OkObjectResult(result.Content.ToDto())
+                : new BadRequestObjectResult(result.Error);
         }
 
-        private async Task<GrantedToken> GetGrantedToken(
+        private async Task<GenericResponse<GrantedToken>> GetGrantedToken(
             TokenRequest tokenRequest,
             CancellationToken cancellationToken,
             AuthenticationHeaderValue authenticationHeaderValue,
@@ -178,7 +184,7 @@
             }
         }
 
-        private Task<GrantedToken> GetClientCredentialsGrantedToken(
+        private Task<GenericResponse<GrantedToken>> GetClientCredentialsGrantedToken(
             TokenRequest tokenRequest,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,

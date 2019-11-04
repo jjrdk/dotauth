@@ -29,7 +29,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<GenericResult<Policy>> Search(
+        public async Task<PagedResult<Policy>> Search(
             SearchAuthPolicies parameter,
             CancellationToken cancellationToken = default)
         {
@@ -40,7 +40,7 @@
                     .Where(x => x.Id.IsOneOf(parameter.Ids))
                     .ToPagedListAsync(parameter.StartIndex, parameter.TotalResults, cancellationToken)
                     .ConfigureAwait(false);
-                return new GenericResult<Policy>
+                return new PagedResult<Policy>
                 {
                     Content = results.ToArray(),
                     StartIndex = parameter.StartIndex,

@@ -344,7 +344,7 @@
                     policyId = policyResponse.Content.PolicyId;
                 });
 
-            "when creating resource set".x(
+            "when creating resource set with deviating scopes".x(
                 async () =>
                 {
                     var resourceSet = new ResourceSet
@@ -362,7 +362,7 @@
                     Assert.False(resourceResponse.ContainsError);
                 });
 
-            "and requesting permission".x(
+            "and requesting permission ticket".x(
                 async () =>
                 {
                     var permission =
@@ -373,7 +373,7 @@
                     Assert.Null(permissionResponse.Error);
                 });
 
-            "when requesting token".x(
+            "and requesting token from ticket".x(
                 async () =>
                 {
                     ticketResponse = await client.GetToken(TokenRequest.FromTicketId(ticketId, result.IdToken))

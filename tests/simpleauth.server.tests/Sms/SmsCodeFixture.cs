@@ -31,7 +31,7 @@
             // ASSERT : NO PHONE NUMBER
             Assert.True(noPhoneNumberResult.ContainsError);
             Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.HttpStatus);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, noPhoneNumberResult.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, noPhoneNumberResult.Error.Title);
             Assert.Equal("parameter phone_number is missing", noPhoneNumberResult.Error.Detail);
         }
 

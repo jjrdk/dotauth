@@ -61,7 +61,7 @@ namespace SimpleAuth.Controllers
             if (introspectionRequest.token == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }

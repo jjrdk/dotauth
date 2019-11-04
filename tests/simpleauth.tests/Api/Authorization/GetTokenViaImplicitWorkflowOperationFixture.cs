@@ -66,7 +66,7 @@
                         null,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.MissingParameter,
@@ -88,7 +88,7 @@
                         null,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, ex.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, ex.Code);
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.TheClientDoesntSupportTheGrantType,

@@ -174,7 +174,7 @@
                 if (resourceOwner == null)
                 {
                     throw new SimpleAuthException(
-                        ErrorCodes.InvalidRequestCode,
+                        ErrorCodes.InvalidRequest,
                         "The resource owner credentials are not correct");
                 }
 

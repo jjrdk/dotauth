@@ -31,7 +31,7 @@
         /// <value>
         ///   <c>true</c> if [contains error]; otherwise, <c>false</c>.
         /// </value>
-        public bool ContainsError { get; set; }
+        public bool ContainsError => Error != null;
 
         /// <summary>
         /// Gets or sets the error.

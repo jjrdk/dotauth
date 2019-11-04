@@ -3,6 +3,7 @@
     using Microsoft.IdentityModel.Tokens;
     using Shared;
     using System;
+    using System.Linq;
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
@@ -21,6 +22,11 @@
         {
             var jwks = new JsonWebKeySet();
             jwks.Keys.Add(jwk);
+            if (jwks.Keys.Any(x => x.Kty == "oct"))
+            {
+                jwks.SkipUnresolvedJsonWebKeys = false;
+            }
+
             return jwks;
         }
 
@@ -39,7 +45,7 @@
                 var keyAlg = certificate.SignatureAlgorithm.FriendlyName;
                 if (keyAlg.Contains("RSA"))
                 {
-                    var rsa = (RSA) certificate.PrivateKey;
+                    var rsa = (RSA)certificate.PrivateKey;
                     var parameters = rsa.ExportParameters(true);
                     jwk = new JsonWebKey
                     {
@@ -89,7 +95,7 @@
 
             return jwk;
         }
-        
+
         /// <summary>
         /// Creates a <see cref="JsonWebKey"/> from the passed secret.
         /// </summary>
