@@ -27,7 +27,6 @@ namespace SimpleAuth.ResourceServer.Authentication
     using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
     using SimpleAuth.Client;
-    using SimpleAuth.Shared.DTOs;
 
     public class UmaAuthenticationHandler : AuthenticationHandler<UmaAuthenticationOptions>
     {
@@ -56,7 +55,7 @@ namespace SimpleAuth.ResourceServer.Authentication
             if (!Request.Headers.ContainsKey(HeaderNames.Authorization))
             {
                 //Authorization header not in request
-                return AuthenticateResult.NoResult();
+                return AuthenticateResult.Fail("Missing Authorization header.");
             }
 
             if (!AuthenticationHeaderValue.TryParse(
@@ -64,13 +63,13 @@ namespace SimpleAuth.ResourceServer.Authentication
                 out var headerValue))
             {
                 //Invalid Authorization header
-                return AuthenticateResult.NoResult();
+                return AuthenticateResult.Fail("Invalid Authorization header.");
             }
 
             if (!"Bearer".Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase))
             {
                 //Not Bearer authentication header
-                return AuthenticateResult.NoResult();
+                return AuthenticateResult.Fail("Authorization header is not a bearer token.");
             }
 
             try
@@ -94,7 +93,7 @@ namespace SimpleAuth.ResourceServer.Authentication
             catch (Exception exception)
             {
                 Logger.LogError(exception, "Failed to validate token");
-                return AuthenticateResult.NoResult();
+                return AuthenticateResult.Fail("Token cannot be validated.");
             }
         }
 
