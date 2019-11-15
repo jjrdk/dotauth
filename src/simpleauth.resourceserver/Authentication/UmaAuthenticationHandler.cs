@@ -104,7 +104,7 @@ namespace SimpleAuth.ResourceServer.Authentication
                 || !Options.UmaResourcePaths.Any(r => r.IsMatch(Request.Path))
                 || permissionRequests?.Length == 0)
             {
-                Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 Response.Headers[HeaderNames.WWWAuthenticate] = "Bearer";
                 return;
             }
@@ -123,7 +123,8 @@ namespace SimpleAuth.ResourceServer.Authentication
             else
             {
                 Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                var realm = string.IsNullOrWhiteSpace(Options.Realm) ? string.Empty : "realm=\"{Options.Realm}\", ";
+                var s = Options.Realm ?? Options.RealmResolver?.Invoke(Request);
+                var realm = string.IsNullOrWhiteSpace(s) ? string.Empty : "realm=\"{Options.Realm}\", ";
                 Response.Headers[HeaderNames.WWWAuthenticate] =
                     $"UMA {realm}as_uri=\"{Options.Authority}\", ticket=\"{ticket.Content.TicketId}\"";
             }

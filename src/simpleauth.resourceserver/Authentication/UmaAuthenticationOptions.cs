@@ -29,6 +29,8 @@ namespace SimpleAuth.ResourceServer.Authentication
 
         public string Realm { get; set; }
 
+        public Func<HttpRequest, string> RealmResolver { get; set; } = r => string.Empty;
+
         public Regex[] UmaResourcePaths { get; set; } = Array.Empty<Regex>();
 
         public Func<HttpRequest, PermissionRequest[]> ResourceSetRequest { get; set; } = r => Array.Empty<PermissionRequest>();

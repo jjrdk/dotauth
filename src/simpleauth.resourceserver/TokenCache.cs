@@ -47,7 +47,7 @@
             try
             {
                 await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-                return _jsonWebKeySet ?? (_jsonWebKeySet = await _client.GetJwks().ConfigureAwait(false));
+                return _jsonWebKeySet ??= await _client.GetJwks().ConfigureAwait(false);
             }
             finally
             {
