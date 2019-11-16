@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\simpleauth.resourceserver\simpleauth.resourceserver.csproj" />
     <ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
   </ItemGroup>
