@@ -28,12 +28,11 @@ namespace SimpleAuth.Extensions
     using System;
     using System.Linq;
     using System.Net.Http;
+    using System.Reflection;
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
     using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Events;
 
@@ -155,8 +154,8 @@ namespace SimpleAuth.Extensions
                             }
 
                             var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                            var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
-                            if (claimRole == null && !claimScopes.Any())
+                            var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
+                            if (claimRole == null && claimScopes.Length == 0)
                             {
                                 return false;
                             }
@@ -235,25 +234,28 @@ namespace SimpleAuth.Extensions
         /// <param name="options">The options.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
         /// <param name="authPolicies"></param>
+        /// <param name="applicationParts">Assemblies with additional application parts.</param>
         /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">options</exception>
         public static IMvcBuilder AddSimpleAuth(
             this IServiceCollection services,
             SimpleAuthOptions options,
             string[] authPolicies,
-            IRequestThrottle requestThrottle = null)
+            IRequestThrottle requestThrottle = null,
+            params Assembly[] applicationParts)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var mvcBuilder = services
-                     .AddControllersWithViews()
-                     .AddApplicationPart(typeof(ServiceCollectionExtensions).Assembly)
-                     .AddRazorRuntimeCompilation()
-                     .AddNewtonsoftJson()
-                     .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            var mvcBuilder = services.AddControllersWithViews()
+                .AddRazorRuntimeCompilation()
+                .AddNewtonsoftJson()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            mvcBuilder = applicationParts.Concat(new[] { typeof(ServiceCollectionExtensions).Assembly })
+                .Distinct()
+                .Aggregate(mvcBuilder, (b, a) => b.AddApplicationPart(a));
             services.AddRazorPages();
             Globals.ApplicationName = options.ApplicationName ?? "SimpleAuth";
             var runtimeConfig = GetRuntimeConfig(options);
@@ -266,8 +268,7 @@ namespace SimpleAuth.Extensions
                 .ConfigureOptions<ConfigureMvcNewtonsoftJsonOptions>()
                 .AddSingleton(runtimeConfig)
                 .AddSingleton(requestThrottle ?? NoopThrottle.Default)
-                //.AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
-                .AddTransient(sp=>options.HttpClientFactory.Invoke())
+                .AddTransient(sp => options.HttpClientFactory.Invoke())
                 .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
                 .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
                 .AddSingleton(sp => options.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
@@ -341,19 +342,6 @@ namespace SimpleAuth.Extensions
                 claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,
                 rptLifeTime: options.RptLifeTime,
                 ticketLifeTime: options.TicketLifeTime);
-        }
-    }
-
-    internal class ConfigureMvcNewtonsoftJsonOptions : IConfigureOptions<MvcNewtonsoftJsonOptions>
-    {
-        public void Configure(MvcNewtonsoftJsonOptions options)
-        {
-            var settings = options.SerializerSettings;
-            settings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
-            settings.DefaultValueHandling = DefaultValueHandling.Ignore;
-            settings.MissingMemberHandling = MissingMemberHandling.Ignore;
-            settings.NullValueHandling = NullValueHandling.Include;
-            settings.MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead;
         }
     }
 }

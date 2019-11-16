@@ -28,8 +28,16 @@ namespace SimpleAuth.AuthServer
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.ResourceServer;
+    using SimpleAuth.ResourceServer.Authentication;
+    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
 
     public class Startup
     {
@@ -52,6 +60,9 @@ namespace SimpleAuth.AuthServer
                         sp.GetService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
+                ResourceSets =
+                    sp => new InMemoryResourceSetRepository(
+                        new[] {new ResourceSetModel {Id = "abc", Owner = "user", Scopes = new[] {"read"}}}),
                 EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
                 HttpClientFactory = () => client,
                 ClaimsIncludedInUserCreation = new[]
@@ -75,6 +86,7 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddUmaClient(new Uri("https://localhost:5001/.well-known/uma2-configuration"));
             services.AddResponseCompression(
                     x =>
                     {
@@ -108,7 +120,16 @@ namespace SimpleAuth.AuthServer
                             ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
                         };
                         cfg.RequireHttpsMetadata = false;
-                    });
+                    })
+                .AddUmaTicket(configureOptions: options =>
+                {
+                    options.Authority = "https://localhost:5001/";
+                    options.RequireHttpsMetadata = false;
+                    options.ClientId = "web";
+                    options.ClientSecret = "secret";
+                    options.UmaResourcePaths = new[] { new Regex("/x", RegexOptions.Compiled) };
+                    options.ResourceSetRequest = r => new[] { new PermissionRequest { ResourceSetId = "abc", Scopes = new[] { "read" } } };
+                });
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
@@ -130,12 +151,30 @@ namespace SimpleAuth.AuthServer
 
             services.AddSimpleAuth(
                 _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme });
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme },
+                applicationParts: GetType().Assembly);
+
+            services.AddAuthorization(
+                o =>
+                {
+                    o.AddPolicy("uma_auth", builder => builder.RequireUmaTicket(UmaAuthenticationDefaults.AuthenticationScheme));
+                });
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseResponseCompression().UseSimpleAuthMvc();
+        }
+    }
+
+    [Route("x")]
+    public class ResourceController : ControllerBase
+    {
+        [HttpGet]
+        [Authorize(Policy = "uma_auth")]
+        public Task<IActionResult> Get(string resourceId)
+        {
+            return Task.FromResult<IActionResult>(Ok(resourceId));
         }
     }
 }

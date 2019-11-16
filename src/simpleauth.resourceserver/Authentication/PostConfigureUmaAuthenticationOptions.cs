@@ -43,7 +43,14 @@ namespace SimpleAuth.ResourceServer.Authentication
 
             if (options.Configuration == null && options.DiscoveryDocumentUri == null)
             {
-                throw new InvalidOperationException("Options must provide either configuration document or discovery uri.");
+                if (options.Authority != null)
+                {
+                    options.DiscoveryDocumentUri = new Uri(options.Authority.TrimEnd('/') + "/.well-known/uma2-configuration");
+                }
+                else
+                {
+                    throw new InvalidOperationException("Options must provide either configuration document or discovery uri.");
+                }
             }
 
             if (options.Configuration == null

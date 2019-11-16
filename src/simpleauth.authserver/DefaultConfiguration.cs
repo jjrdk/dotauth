@@ -80,9 +80,11 @@
                             GrantTypes.Password,
                             GrantTypes.Implicit,
                             GrantTypes.AuthorizationCode,
-                            GrantTypes.RefreshToken
+                            GrantTypes.RefreshToken,
+                            GrantTypes.ClientCredentials
                         },
                     RedirectionUrls = new[] {new Uri("http://localhost:4200/callback"),},
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     ResponseTypes =
                         new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},

@@ -54,10 +54,6 @@
             }
 
             var rec = _resources.FirstOrDefault(p => p.Id == id);
-            if (rec == null)
-            {
-                return Task.FromResult((ResourceSetModel)null);
-            }
 
             return Task.FromResult(rec);
         }
@@ -71,6 +67,7 @@
             }
 
             var result = _resources.Where(r => ids.Contains(r.Id)).ToArray();
+            
             return Task.FromResult(result);
         }
 
