@@ -129,6 +129,11 @@ namespace SimpleAuth.AuthServer
                     options.ClientSecret = "secret";
                     options.UmaResourcePaths = new[] { new Regex("/x", RegexOptions.Compiled) };
                     options.ResourceSetRequest = r => new[] { new PermissionRequest { ResourceSetId = "abc", Scopes = new[] { "read" } } };
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false,
+                        ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
+                    };
                 });
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {

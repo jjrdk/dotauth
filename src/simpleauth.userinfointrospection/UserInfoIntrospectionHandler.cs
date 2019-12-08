@@ -41,6 +41,12 @@ namespace SimpleAuth.UserInfoIntrospection
             _userInfoClient = userInfoClient;
         }
 
+        protected override string ResolveTarget(string scheme)
+        {
+            var target = base.ResolveTarget(scheme);
+            return target;
+        }
+
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             string authorization = Request.Headers[HeaderNames.Authorization];

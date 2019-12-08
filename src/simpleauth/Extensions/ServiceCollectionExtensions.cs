@@ -268,7 +268,7 @@ namespace SimpleAuth.Extensions
                 .ConfigureOptions<ConfigureMvcNewtonsoftJsonOptions>()
                 .AddSingleton(runtimeConfig)
                 .AddSingleton(requestThrottle ?? NoopThrottle.Default)
-                .AddTransient(sp => options.HttpClientFactory.Invoke())
+                .AddSingleton(sp => options.HttpClientFactory.Invoke())
                 .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
                 .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
                 .AddSingleton(sp => options.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())

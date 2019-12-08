@@ -105,7 +105,11 @@ namespace SimpleAuth.Server.Tests
                 async (context, next) =>
                 {
                     var claimsIdentity = new ClaimsIdentity(
-                        new List<Claim> { new Claim("client_id", "resource_server") },
+                        new List<Claim>
+                        {
+                            new Claim("client_id", "resource_server"),
+                            new Claim("sub", "resource_server")
+                        },
                         "fakests");
                     context.User = new ClaimsPrincipal(claimsIdentity);
                     await next.Invoke().ConfigureAwait(false);
