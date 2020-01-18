@@ -28,7 +28,6 @@ namespace SimpleAuth.AuthServer
     using System.IO.Compression;
     using System.Linq;
     using System.Net.Http;
-    using System.Reflection;
     using System.Security.Claims;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.IdentityModel.Tokens;
