@@ -28,7 +28,13 @@ namespace SimpleAuth.Extensions
     using System;
     using System.Linq;
     using System.Net.Http;
+    using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
+    using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Events;
 
     /// <summary>
@@ -185,34 +191,38 @@ namespace SimpleAuth.Extensions
         }
 
         /// <summary>
-        /// Adds SimpleAuth.
+        /// Adds SimpleAuth type registrations.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSimpleAuth(
+        /// <param name="authPolicies"></param>
+        /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
+        public static IMvcBuilder AddSimpleAuth(
             this IServiceCollection services,
             Action<SimpleAuthOptions> configuration,
+            string[] authPolicies,
             IRequestThrottle requestThrottle = null)
         {
             var options = new SimpleAuthOptions();
             configuration(options);
 
-            return AddSimpleAuth(services, options, requestThrottle);
+            return AddSimpleAuth(services, options, authPolicies, requestThrottle);
         }
 
         /// <summary>
-        /// Adds the SimpleAuth.
+        /// Adds SimpleAuth type registrations.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="options">The options.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
-        /// <returns></returns>
+        /// <param name="authPolicies"></param>
+        /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">options</exception>
-        public static IServiceCollection AddSimpleAuth(
+        public static IMvcBuilder AddSimpleAuth(
             this IServiceCollection services,
             SimpleAuthOptions options,
+            string[] authPolicies,
             IRequestThrottle requestThrottle = null)
         {
             if (options == null)
@@ -220,10 +230,22 @@ namespace SimpleAuth.Extensions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            Globals.ApplicationName = options.ApplicationName ?? string.Empty;
+            var mvcBuilder = services
+                     .AddControllersWithViews()
+                     .AddApplicationPart(typeof(ServiceCollectionExtensions).Assembly)
+                     .AddRazorRuntimeCompilation()
+                     .AddNewtonsoftJson()
+                     .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddRazorPages();
+            Globals.ApplicationName = options.ApplicationName ?? "SimpleAuth";
             var runtimeConfig = GetRuntimeConfig(options);
+            services.AddAuthentication();
+            var policies = authPolicies?.Length > 0 ? authPolicies : new[] { CookieNames.CookieName };
+            services.AddAuthorization(opts => { opts.AddAuthPolicies(policies); });
+
             var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
                 .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
+                .AddTransient<IConfigureOptions<MvcNewtonsoftJsonOptions>, ConfigureMvcNewtonsoftJsonOptions>()
                 .AddSingleton(runtimeConfig)
                 .AddSingleton(requestThrottle ?? NoopThrottle.Default)
                 .AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
@@ -254,8 +276,8 @@ namespace SimpleAuth.Extensions
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
-            services.AddDataProtection();
-            return s;
+            s.AddDataProtection();
+            return mvcBuilder;
         }
 
         /// <summary>
@@ -265,13 +287,31 @@ namespace SimpleAuth.Extensions
         /// <returns></returns>
         public static IApplicationBuilder UseSimpleAuthMvc(this IApplicationBuilder app)
         {
-            return app.UseMvc(
-                routes =>
-                {
-                    routes.MapRoute("areaexists", "{area:exists}/{controller=Authenticate}/{action=Index}");
-                    routes.MapRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
-                    routes.MapRoute("default", "{controller=Authenticate}/{action=Index}");
-                });
+            var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
+            return app.UseMiddleware<ExceptionHandlerMiddleware>(publisher)
+                //.UseResponseCompression()
+                .UseStaticFiles(
+                    new StaticFileOptions
+                    {
+                        FileProvider = new EmbeddedFileProvider(
+                            typeof(ServiceCollectionExtensions).Assembly,
+                            "SimpleAuth.wwwroot")
+                    })
+                .UseRouting()
+                .UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseCors("AllowAll")
+                .UseEndpoints(
+                    endpoint =>
+                    {
+                        endpoint.MapRazorPages();
+                        endpoint.MapControllerRoute(
+                            "areaexists",
+                            "{area:exists}/{controller=Authenticate}/{action=Index}");
+                        endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
+                        endpoint.MapControllerRoute("default", "{controller=Authenticate}/{action=Index}");
+                    });
         }
 
         private static RuntimeSettings GetRuntimeConfig(SimpleAuthOptions options)
@@ -282,6 +322,19 @@ namespace SimpleAuth.Extensions
                 claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,
                 rptLifeTime: options.RptLifeTime,
                 ticketLifeTime: options.TicketLifeTime);
+        }
+    }
+
+    internal class ConfigureMvcNewtonsoftJsonOptions : IConfigureOptions<MvcNewtonsoftJsonOptions>
+    {
+        public void Configure(MvcNewtonsoftJsonOptions options)
+        {
+            var settings = options.SerializerSettings;
+            settings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+            settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            settings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            settings.NullValueHandling = NullValueHandling.Include;
+            settings.MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead;
         }
     }
 }

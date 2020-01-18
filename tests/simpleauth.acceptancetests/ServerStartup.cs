@@ -58,18 +58,22 @@
                 Scopes = sp => new InMemoryScopeRepository(DefaultStores.Scopes()),
                 Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users()),
-                ClaimsIncludedInUserCreation = new[] { "acceptance_test" }
+                ClaimsIncludedInUserCreation = new[] { "acceptance_test" },
+                HttpClientFactory = () => _context.Client
             };
             _context = context;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // 1. Add the dependencies needed to enable CORS
+            var mockSmsClient = new Mock<ISmsClient>();
+            mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync((true, null));
+
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-            // 2. Configure server
-            services.AddSimpleAuth(_options).AddLogging().AddAccountFilter().AddSingleton(sp => _context.Client);
+            services.AddSimpleAuth(_options, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme }).AddSmsAuthentication(mockSmsClient.Object);
+            services.AddLogging().AddAccountFilter();
             services.AddAuthentication(
                     cfg =>
                     {
@@ -96,23 +100,12 @@
             services.AddAuthorization(
                 opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
 
-            var mockSmsClient = new Mock<ISmsClient>();
-            mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync((true, null));
-            var mvc = services.AddMvc()
-                //.AddApplicationPart(typeof(TestController).Assembly)
-                .AddSmsAuthentication(mockSmsClient.Object);
-
             return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseAuthentication()
-                .UseCors("AllowAll")
-                .UseSimpleAuthExceptionHandler()
-                .UseSimpleAuthExceptionHandler()
-                .UseSimpleAuthMvc();
+            app.UseSimpleAuthMvc();
         }
     }
 }

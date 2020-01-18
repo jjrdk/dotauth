@@ -9,7 +9,9 @@
     public class TestServerFixture : IDisposable
     {
         public TestServer Server { get; }
+
         public HttpClient Client { get; }
+
         public SharedContext SharedCtx { get; }
 
         public TestServerFixture(params string[] urls)

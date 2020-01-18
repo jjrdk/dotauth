@@ -126,6 +126,7 @@
             public EnumStorage EnumStorage { get; } = EnumStorage.AsString;
             public Casing Casing { get; } = Casing.CamelCase;
             public CollectionStorage CollectionStorage { get; } = CollectionStorage.AsArray;
+            public NonPublicMembersStorage NonPublicMembersStorage { get; } = NonPublicMembersStorage.Default;
         }
     }
 }

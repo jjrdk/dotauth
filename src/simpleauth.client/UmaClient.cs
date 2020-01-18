@@ -638,7 +638,7 @@ namespace SimpleAuth.Client
                 RequestUri = new Uri(_configurationResponse.ResourceRegistrationEndpoint)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            //.Add(AuthorizationHeader, Bearer + token);
+
             var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
