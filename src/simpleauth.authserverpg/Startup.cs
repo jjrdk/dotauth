@@ -33,6 +33,8 @@ namespace SimpleAuth.AuthServerPg
     using System.Reflection;
     using System.Security.Claims;
     using Marten;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
     using SimpleAuth.Stores.Marten;
 
@@ -118,7 +120,18 @@ namespace SimpleAuth.AuthServerPg
                     options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
                 .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); });
             services.AddAuthentication(CookieNames.CookieName)
-                .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; });
+                .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                    cfg =>
+                    {
+                        //cfg.Authority = _configuration.TokenService;
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false,
+                            //ValidIssuers = _configuration.ValidIssuers
+                        };
+                        cfg.RequireHttpsMetadata = false;
+                    });
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
@@ -138,23 +151,14 @@ namespace SimpleAuth.AuthServerPg
                         });
             }
 
-            services.AddAuthorization(opts => { opts.AddAuthPolicies(CookieNames.CookieName); })
-                .AddMvc(options => { })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddApplicationPart(_assembly);
-            services.AddSimpleAuth(_options);
+            services.AddSimpleAuth(
+                _options,
+                new[] {CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme});
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
-                .UseAuthentication()
-                .UseCors("AllowAll")
-                .UseStaticFiles(
-                    new StaticFileOptions { FileProvider = new EmbeddedFileProvider(_assembly, "SimpleAuth.wwwroot") })
-                .UseSimpleAuthExceptionHandler()
-                .UseResponseCompression()
-                .UseSimpleAuthMvc();
+            app.UseResponseCompression().UseSimpleAuthMvc();
         }
     }
 }

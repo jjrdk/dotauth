@@ -19,9 +19,12 @@ namespace SimpleAuth.Server.Tests
     using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -46,7 +49,6 @@ namespace SimpleAuth.Server.Tests
             }
 
             // 1. Add the dependencies.
-            RegisterServices(services);
             // 2. Add authorization policies.
             services.AddAuthentication(
                     opts =>
@@ -70,13 +72,30 @@ namespace SimpleAuth.Server.Tests
             // 3. Add the dependencies needed to enable CORS
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-            // 4. Add authentication.
-            services.AddAuthentication();
-            // 5. Add the dependencies needed to run ASP.NET API.
-            var mvc = services.AddMvc();
-            var parts = mvc.PartManager.ApplicationParts;
-            parts.Clear();
-            parts.Add(new AssemblyPart(typeof(TokenController).GetTypeInfo().Assembly));
+
+            services
+                .AddControllersWithViews()
+                .AddRazorRuntimeCompilation()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .AddApplicationPart(typeof(HostConstants).Assembly);
+            services.AddRazorPages();
+            services.AddSimpleAuth(
+                new SimpleAuthOptions
+                {
+                    Clients = sp => new InMemoryClientRepository(
+                        new HttpClient(),
+                        sp.GetService<IScopeStore>(),
+                        new Mock<ILogger<InMemoryClientRepository>>().Object,
+                        OAuthStores.GetClients()),
+                    Scopes = sp => new InMemoryScopeRepository(OAuthStores.GetScopes()),
+                    ResourceSets = sp => new InMemoryResourceSetRepository(UmaStores.GetResources())
+                },
+                new[] { DefaultSchema });
+
+            // 3. Enable logging.
+            services.AddLogging();
+            // 5. Register other classes.
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             return services.BuildServiceProvider();
         }
 
@@ -91,36 +110,13 @@ namespace SimpleAuth.Server.Tests
                 async (context, next) =>
                 {
                     var claimsIdentity = new ClaimsIdentity(
-                        new List<Claim> {new Claim("client_id", "resource_server")},
+                        new List<Claim> { new Claim("client_id", "resource_server") },
                         "fakests");
                     context.User = new ClaimsPrincipal(claimsIdentity);
                     await next.Invoke().ConfigureAwait(false);
                 });
 
-            // 3. Enable CORS
-            app.UseCors("AllowAll").UseSimpleAuthExceptionHandler().UseMvcWithDefaultRoute();
-            //(routes => { routes.MapRoute(name: "default", template: "{controller}/{action}/{id?}"); });
-        }
-
-        private void RegisterServices(IServiceCollection services)
-        {
-            // 1. Add CORE.
-            services.AddSimpleAuth(
-                new SimpleAuthOptions
-                {
-                    Clients = sp => new InMemoryClientRepository(
-                        new HttpClient(),
-                        sp.GetService<IScopeStore>(),
-                        new Mock<ILogger<InMemoryClientRepository>>().Object,
-                        OAuthStores.GetClients()),
-                    Scopes = sp => new InMemoryScopeRepository(OAuthStores.GetScopes()),
-                    ResourceSets = sp => new InMemoryResourceSetRepository(UmaStores.GetResources())
-                });
-
-            // 3. Enable logging.
-            services.AddLogging();
-            // 5. Register other classes.
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            app.UseSimpleAuthMvc();
         }
     }
 }

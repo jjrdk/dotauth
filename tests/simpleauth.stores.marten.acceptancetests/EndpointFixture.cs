@@ -46,7 +46,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
         }
 
         [Theory]
-        [InlineData("", HttpStatusCode.Moved)]
+        [InlineData("", HttpStatusCode.OK)]
         [InlineData("home", HttpStatusCode.Moved)]
         [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
         [InlineData("authenticate", HttpStatusCode.OK)]

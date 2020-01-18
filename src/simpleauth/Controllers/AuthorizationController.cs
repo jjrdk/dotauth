@@ -116,7 +116,6 @@ namespace SimpleAuth.Controllers
             {
                 case ActionResultType.RedirectToCallBackUrl:
                     {
-                        //var redirectUrl = new Uri();
                         return this.CreateRedirectHttpTokenResponse(
                             authorizationRequest.redirect_uri,
                             actionResult.GetRedirectionParameters(),
