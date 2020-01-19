@@ -27,34 +27,28 @@
         /// <inheritdoc />
         public async Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Store(ticket);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Store(ticket);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Delete<Ticket>(ticketId);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Delete<Ticket>(ticketId);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
 
-                return ticket;
-            }
+            return ticket;
         }
     }
 }

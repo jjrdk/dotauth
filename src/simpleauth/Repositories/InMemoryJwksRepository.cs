@@ -26,21 +26,19 @@
 
         public InMemoryJwksRepository()
         {
-            using (var rsa = RSA.Create())
+            using var rsa = RSA.Create();
+            var privateKeys = new[]
             {
-                var privateKeys = new[]
-                {
-                    rsa.CreateJwk("1", JsonWebKeyUseNames.Sig, true, KeyOperations.Sign, KeyOperations.Verify),
-                    rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, true, KeyOperations.Encrypt, KeyOperations.Decrypt)
-                };
-                var publicKeys = new[]
-                {
-                    rsa.CreateJwk("1", JsonWebKeyUseNames.Sig, false, KeyOperations.Sign, KeyOperations.Verify),
-                    rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, false, KeyOperations.Encrypt, KeyOperations.Decrypt)
-                };
-                _privateKeySet = privateKeys.ToJwks();
-                _publicKeySet = publicKeys.ToJwks();
-            }
+                rsa.CreateJwk("1", JsonWebKeyUseNames.Sig, true, KeyOperations.Sign, KeyOperations.Verify),
+                rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, true, KeyOperations.Encrypt, KeyOperations.Decrypt)
+            };
+            var publicKeys = new[]
+            {
+                rsa.CreateJwk("1", JsonWebKeyUseNames.Sig, false, KeyOperations.Sign, KeyOperations.Verify),
+                rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, false, KeyOperations.Encrypt, KeyOperations.Decrypt)
+            };
+            _privateKeySet = privateKeys.ToJwks();
+            _publicKeySet = publicKeys.ToJwks();
         }
 
         public Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default)

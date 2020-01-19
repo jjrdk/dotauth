@@ -26,13 +26,11 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
 
         private SharedContext()
         {
-            using (var rsa = new RSACryptoServiceProvider(2048))
-            {
-                SignatureKey = rsa.CreateSignatureJwk("1", true);
-                ModelSignatureKey = rsa.CreateSignatureJwk("2", true);
-                EncryptionKey = rsa.CreateEncryptionJwk("3", true);
-                ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
-            }
+            using var rsa = new RSACryptoServiceProvider(2048);
+            SignatureKey = rsa.CreateSignatureJwk("1", true);
+            ModelSignatureKey = rsa.CreateSignatureJwk("2", true);
+            EncryptionKey = rsa.CreateEncryptionJwk("3", true);
+            ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
         }
 
         public JsonWebKey EncryptionKey { get; }

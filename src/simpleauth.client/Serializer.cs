@@ -28,23 +28,17 @@
 
         public string Serialize<T>(T item)
         {
-            using (var writer = new StringWriter())
-            {
-                _serializer.Serialize(writer, item, typeof(T));
-                writer.Flush();
-                return writer.GetStringBuilder().ToString();
-            }
+            using var writer = new StringWriter();
+            _serializer.Serialize(writer, item, typeof(T));
+            writer.Flush();
+            return writer.GetStringBuilder().ToString();
         }
 
         public T Deserialize<T>(string json)
         {
-            using (var reader = new StringReader(json))
-            {
-                using (var jsonReader = new JsonTextReader(reader))
-                {
-                    return _serializer.Deserialize<T>(jsonReader);
-                }
-            }
+            using var reader = new StringReader(json);
+            using var jsonReader = new JsonTextReader(reader);
+            return _serializer.Deserialize<T>(jsonReader);
         }
 
         private class ClaimConverter : JsonConverter<Claim>

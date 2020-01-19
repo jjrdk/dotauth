@@ -104,18 +104,14 @@
 
             public T FromJson<T>(TextReader reader)
             {
-                using (var jsonReader = new JsonTextReader(reader))
-                {
-                    return _innerSerializer.Deserialize<T>(jsonReader);
-                }
+                using var jsonReader = new JsonTextReader(reader);
+                return _innerSerializer.Deserialize<T>(jsonReader);
             }
 
             public object FromJson(Type type, TextReader reader)
             {
-                using (var jsonReader = new JsonTextReader(reader))
-                {
-                    return _innerSerializer.Deserialize(jsonReader, type);
-                }
+                using var jsonReader = new JsonTextReader(reader);
+                return _innerSerializer.Deserialize(jsonReader, type);
             }
 
             public string ToCleanJson(object document)
