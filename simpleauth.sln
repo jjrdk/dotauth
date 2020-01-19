@@ -48,6 +48,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.stores.marten.ac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.authserverpg", "src\simpleauth.authserverpg\simpleauth.authserverpg.csproj", "{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleauth.stores.redis", "src\simpleauth.stores.redis\simpleauth.stores.redis.csproj", "{720E8AA4-DDAE-4187-A5FB-16260C10BE79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +108,10 @@ Global
 		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{720E8AA4-DDAE-4187-A5FB-16260C10BE79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{720E8AA4-DDAE-4187-A5FB-16260C10BE79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{720E8AA4-DDAE-4187-A5FB-16260C10BE79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{720E8AA4-DDAE-4187-A5FB-16260C10BE79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
