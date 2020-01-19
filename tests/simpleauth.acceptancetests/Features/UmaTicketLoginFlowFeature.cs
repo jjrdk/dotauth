@@ -164,7 +164,6 @@
             UmaClient umaClient = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
-            string policyId = null;
             string ticketId = null;
 
             "and a properly configured token client".x(
