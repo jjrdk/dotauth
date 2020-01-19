@@ -31,92 +31,78 @@
         /// <inheritdoc />
         public async Task<GenericResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                parameter.StartIndex++;
-                var results = await session.Query<Scope>()
-                    .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
-                    .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = _sessionFactory();
+            parameter.StartIndex++;
+            var results = await session.Query<Scope>()
+                .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
+                .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)
+                .ConfigureAwait(false);
 
-                return new GenericResult<Scope>
-                {
-                    Content = results.ToArray(),
-                    StartIndex = parameter.StartIndex,
-                    TotalResults = results.TotalItemCount
-                };
-            }
+            return new GenericResult<Scope>
+            {
+                Content = results.ToArray(),
+                StartIndex = parameter.StartIndex,
+                TotalResults = results.TotalItemCount
+            };
         }
 
         /// <inheritdoc />
         public async Task<Scope> Get(string name, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                var scope = await session.LoadAsync<Scope>(name, cancellationToken).ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var scope = await session.LoadAsync<Scope>(name, cancellationToken).ConfigureAwait(false);
 
-                return scope;
-            }
+            return scope;
         }
 
         /// <inheritdoc />
         public async Task<Scope[]> SearchByNames(CancellationToken cancellationToken = default, params string[] names)
         {
-            using (var session = _sessionFactory())
-            {
-                var scopes = await session.Query<Scope>()
-                    .Where(x => x.Name.IsOneOf(names))
-                    .ToListAsync(cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var scopes = await session.Query<Scope>()
+                .Where(x => x.Name.IsOneOf(names))
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-                return scopes.ToArray();
-            }
+            return scopes.ToArray();
         }
 
         /// <inheritdoc />
         public async Task<Scope[]> GetAll(CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                var scopes = await session.Query<Scope>()
-                    .ToListAsync(cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var scopes = await session.Query<Scope>()
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-                return scopes.ToArray();
-            }
+            return scopes.ToArray();
         }
 
         /// <inheritdoc />
         public async Task<bool> Insert(Scope scope, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Store(scope);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Store(scope);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<bool> Delete(Scope scope, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Delete(scope.Name);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Delete(scope.Name);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<bool> Update(Scope scope, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Update(scope);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Update(scope);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
     }
 }

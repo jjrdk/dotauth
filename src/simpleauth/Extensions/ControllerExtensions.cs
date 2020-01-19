@@ -156,10 +156,8 @@ namespace SimpleAuth.Extensions
             string html;
             using (var stream = assembly.GetManifestResourceStream(resourceName))
             {
-                using (var reader = new StreamReader(stream))
-                {
-                    html = reader.ReadToEnd();
-                }
+                using var reader = new StreamReader(stream);
+                html = reader.ReadToEnd();
             }
 
             return html;

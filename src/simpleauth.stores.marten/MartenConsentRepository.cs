@@ -31,38 +31,32 @@
             string subject,
             CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                var consents = await session.Query<Consent>()
-                    .Where(x => x.ResourceOwner.Subject == subject)
-                    .ToListAsync(cancellationToken)
-                    .ConfigureAwait(false);
-                return consents;
-            }
+            using var session = _sessionFactory();
+            var consents = await session.Query<Consent>()
+                .Where(x => x.ResourceOwner.Subject == subject)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+            return consents;
         }
 
         /// <inheritdoc />
         public async Task<bool> Insert(Consent record, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Store(record);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            using var session = _sessionFactory();
+            session.Store(record);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-                return true;
-            }
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<bool> Delete(Consent record, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Delete(record.Id);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            using var session = _sessionFactory();
+            session.Delete(record.Id);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-                return true;
-            }
+            return true;
         }
     }
 }

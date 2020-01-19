@@ -27,35 +27,29 @@
         /// <inheritdoc />
         public async Task<ConfirmationCode> Get(string code, CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                var authorizationCode =
-                    await session.LoadAsync<ConfirmationCode>(code, cancellationToken).ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var authorizationCode =
+                await session.LoadAsync<ConfirmationCode>(code, cancellationToken).ConfigureAwait(false);
 
-                return authorizationCode;
-            }
+            return authorizationCode;
         }
 
         /// <inheritdoc />
         public async Task<bool> Add(ConfirmationCode confirmationCode, CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Store(confirmationCode);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Store(confirmationCode);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<bool> Remove(string code, CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Delete<ConfirmationCode>(code);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Delete<ConfirmationCode>(code);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
     }
 }
