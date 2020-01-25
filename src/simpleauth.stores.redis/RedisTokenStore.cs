@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -13,10 +14,12 @@
     public class RedisTokenStore : ITokenStore
     {
         private readonly IDatabaseAsync _database;
+        private readonly IJwksStore _jwksStore;
 
-        public RedisTokenStore(IDatabaseAsync database)
+        public RedisTokenStore(IDatabaseAsync database, IJwksStore jwksStore)
         {
             _database = database;
+            _jwksStore = jwksStore;
         }
 
         public async Task<GrantedToken> GetToken(
@@ -31,8 +34,11 @@
                 ? JsonConvert.DeserializeObject<GrantedToken[]>(token)
                 : Array.Empty<GrantedToken>();
             return options.FirstOrDefault(x =>
-                idTokenJwsPayload.All(x.IdTokenPayLoad.Contains) &&
-                userInfoJwsPayload.All(x.UserInfoPayLoad.Contains));
+            {
+                var hasSameIdToken = (idTokenJwsPayload == null && x.IdTokenPayLoad == null) || idTokenJwsPayload?.All(a => x.IdTokenPayLoad?.Contains(a) == true) == true;
+                var hasSameUserInfoToken = (userInfoJwsPayload == null && x.UserInfoPayLoad == null) || userInfoJwsPayload?.All(a => x.UserInfoPayLoad?.Contains(a) == true) == true;
+                return hasSameIdToken && hasSameUserInfoToken;
+            });
         }
 
         public async Task<GrantedToken> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)

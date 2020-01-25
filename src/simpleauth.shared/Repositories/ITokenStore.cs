@@ -19,7 +19,7 @@
         /// <param name="userInfoJwsPayload"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<GrantedToken> GetToken(string scopes, string clientId, JwtPayload idTokenJwsPayload, JwtPayload userInfoJwsPayload, CancellationToken cancellationToken);
+        Task<GrantedToken> GetToken(string scopes, string clientId, JwtPayload idTokenJwsPayload, JwtPayload userInfoJwsPayload, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the refresh token.
