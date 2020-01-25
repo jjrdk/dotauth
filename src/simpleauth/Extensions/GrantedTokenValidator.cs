@@ -15,12 +15,17 @@
 namespace SimpleAuth.Extensions
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal static class GrantedTokenValidator
     {
-        public static GrantedTokenValidationResult CheckGrantedToken(this GrantedToken grantedToken)
+        public static async Task<GrantedTokenValidationResult> CheckGrantedToken(this GrantedToken grantedToken, IJwksStore jwksStore, CancellationToken cancellationToken = default)
         {
             if (grantedToken == null)
             {
@@ -44,10 +49,63 @@ namespace SimpleAuth.Extensions
                 };
             }
 
-            return new GrantedTokenValidationResult
+            var signingKey = await jwksStore.GetSigningKey(new JwtSecurityToken(grantedToken.AccessToken).SignatureAlgorithm, cancellationToken).ConfigureAwait(false);
+            var validator = new JwtSecurityTokenHandler();
+
+            var tokenValidationParameters = new TokenValidationParameters
             {
-                IsValid = true
+                RequireExpirationTime = false,
+                RequireSignedTokens = false,
+                SaveSigninToken = false,
+                ValidateActor = false,
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = false,
+                ValidateTokenReplay = false,
+                IssuerSigningKey = signingKey.Key
             };
+            try
+            {
+                validator.ValidateToken(grantedToken.AccessToken, tokenValidationParameters, out _);
+                return new GrantedTokenValidationResult
+                {
+                    IsValid = true
+                };
+            }
+            catch (Exception e)
+            {
+                return new GrantedTokenValidationResult
+                {
+                    IsValid = false,
+                    MessageErrorDescription = e.Message
+                };
+            }
+        }
+
+        public static async Task<GrantedToken> GetValidGrantedToken(
+            this ITokenStore tokenStore,
+            IJwksStore jwksStore,
+            string scopes,
+            string clientId,
+            CancellationToken cancellationToken = default,
+            JwtPayload idTokenJwsPayload = null,
+            JwtPayload userInfoJwsPayload = null)
+        {
+            var token = await tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload, cancellationToken)
+                .ConfigureAwait(false);
+            if (token == null)
+            {
+                return null;
+            }
+
+            if ((await token.CheckGrantedToken(jwksStore, cancellationToken).ConfigureAwait(false)).IsValid)
+            {
+                return token;
+            }
+
+            await tokenStore.RemoveAccessToken(token.AccessToken, cancellationToken).ConfigureAwait(false);
+            return null;
         }
     }
 }
