@@ -24,9 +24,11 @@ namespace SimpleAuth.Tests.Common
     using SimpleAuth.Shared.Requests;
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Events.OAuth;
@@ -42,9 +44,11 @@ namespace SimpleAuth.Tests.Common
         private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly Mock<IClientStore> _clientStore;
         private readonly Mock<IConsentRepository> _consentRepository;
+        private readonly InMemoryJwksRepository _inMemoryJwksRepository;
 
         public GenerateAuthorizationResponseFixture()
         {
+            IdentityModelEventSource.ShowPII = true;
             _authorizationCodeRepositoryFake = new Mock<IAuthorizationCodeStore>();
             _tokenStore = new Mock<ITokenStore>();
             _eventPublisher = new Mock<IEventPublisher>();
@@ -56,13 +60,14 @@ namespace SimpleAuth.Tests.Common
             var scopeRepository = new Mock<IScopeRepository>();
             scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(new[] { new Scope { Name = "openid" } });
+            _inMemoryJwksRepository = new InMemoryJwksRepository();
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 _authorizationCodeRepositoryFake.Object,
                 _tokenStore.Object,
                 scopeRepository.Object,
                 _clientStore.Object,
                 _consentRepository.Object,
-                new InMemoryJwksRepository(),
+                _inMemoryJwksRepository,
                 _eventPublisher.Object);
         }
 
@@ -178,21 +183,33 @@ namespace SimpleAuth.Tests.Common
         public async Task
             When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_A_GrantedToken_Then_Token_Is_Added_To_The_Parameters()
         {
-            //const string idToken = "idToken";
             const string clientId = "clientId";
             const string scope = "openid";
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
+            var claimsIdentity = new ClaimsIdentity("fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var authorizationParameter = new AuthorizationParameter
             {
                 ResponseType = ResponseTypeNames.Token,
                 ClientId = clientId,
                 Scope = scope
             };
+            var handler = new JwtSecurityTokenHandler();
+            var issuedAt = DateTime.UtcNow;
+            const int expiresIn = 20000;
+            var defaultSigningKey = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
+            var accessToken = handler.CreateEncodedJwt(
+                "test",
+                "test",
+                claimsIdentity,
+                null,
+                issuedAt.AddSeconds(expiresIn),
+                issuedAt,
+                defaultSigningKey);
             var grantedToken = new GrantedToken
             {
-                AccessToken = Id.Create(),
-                CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = 10000
+                AccessToken = accessToken,
+                CreateDateTime = issuedAt,
+                ExpiresIn = expiresIn
             };
             var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
 
@@ -210,14 +227,13 @@ namespace SimpleAuth.Tests.Common
                     authorizationParameter,
                     claimsPrincipal,
                     new Client { ClientId = "client" },
-                    null,
+                    "test",
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Contains(
-                actionResult.RedirectInstruction.Parameters,
-                p => p.Name == StandardAuthorizationResponseNames.AccessTokenName);
-            Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Value == grantedToken.AccessToken);
+            Assert.Equal(
+                grantedToken.AccessToken,
+                actionResult.RedirectInstruction.Parameters.First(x => x.Name == StandardAuthorizationResponseNames.AccessTokenName).Value);
         }
 
         [Fact]

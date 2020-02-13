@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>SimpleAuth UserInfoIntrospection Library</Description>
     <Title>SimpleAuth UserInfoIntrospection</Title>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>simpleauth.userinfointrospection</AssemblyName>
     <PackageId>simpleauth.userinfointrospection</PackageId>
     <RootNamespace>SimpleAuth.UserInfoIntrospection</RootNamespace>

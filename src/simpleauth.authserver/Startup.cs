@@ -82,10 +82,10 @@ namespace SimpleAuth.AuthServer
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                     })
                 .AddHttpContextAccessor()
                 .AddCors(
@@ -93,16 +93,14 @@ namespace SimpleAuth.AuthServer
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        //cfg.Authority = _configuration.TokenService;
-                        cfg.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateAudience = false,
-                            //ValidIssuers = _configuration.ValidIssuers
-                        };
+                        cfg.TokenValidationParameters = new TokenValidationParameters {ValidateAudience = false,};
+#if DEBUG
                         cfg.RequireHttpsMetadata = false;
+#endif
                     });
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
@@ -116,16 +114,15 @@ namespace SimpleAuth.AuthServer
                             opts.ClientSecret = _configuration["Google:ClientSecret"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
                             var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
-                            foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()))
+                            foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Trim()))
                             {
                                 opts.Scope.Add(scope);
                             }
                         });
             }
 
-            services.AddSimpleAuth(
-                _options,
-                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme});
+            services.AddSimpleAuth(_options, new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme});
         }
 
         public void Configure(IApplicationBuilder app)

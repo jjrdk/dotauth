@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -67,8 +68,7 @@
             httpRequest.Headers.Add("User-Agent", "twilio-csharp/5.13.4 (.NET Framework 4.5.1+)");
             httpRequest.Headers.Add("Accept", "application/json");
             httpRequest.Headers.Add("Accept-Encoding", "utf-8");
-            httpRequest.Headers.Add("Authorization",
-                "Basic " + CreateBasicAuthenticationHeader(_credentials.AccountSid, _credentials.AuthToken));
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", CreateBasicAuthenticationHeader(_credentials.AccountSid, _credentials.AuthToken));
             var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {

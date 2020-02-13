@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using SimpleAuth.Shared;
@@ -26,7 +27,7 @@
             var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = resourceOwnerUri};
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);

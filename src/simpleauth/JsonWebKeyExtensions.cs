@@ -39,7 +39,7 @@
                 var keyAlg = certificate.SignatureAlgorithm.FriendlyName;
                 if (keyAlg.Contains("RSA"))
                 {
-                    var rsa = (RSA) certificate.PrivateKey;
+                    var rsa = (RSA)certificate.PrivateKey;
                     var parameters = rsa.ExportParameters(true);
                     jwk = new JsonWebKey
                     {
@@ -89,7 +89,7 @@
 
             return jwk;
         }
-        
+
         /// <summary>
         /// Creates a <see cref="JsonWebKey"/> from the passed secret.
         /// </summary>
@@ -219,6 +219,7 @@
             jwk.Use = use;
             jwk.Kid = keyId;
             jwk.Alg = SecurityAlgorithms.RsaSha256;
+            jwk.CryptoProviderFactory = CryptoProviderFactory.Default;
             foreach (var keyop in keyops)
             {
                 jwk.KeyOps.Add(keyop);

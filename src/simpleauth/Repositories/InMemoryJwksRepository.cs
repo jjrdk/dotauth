@@ -13,11 +13,6 @@
         private readonly JsonWebKeySet _privateKeySet;
         private readonly JsonWebKeySet _publicKeySet;
 
-        static InMemoryJwksRepository()
-        {
-            RSACryptoServiceProvider.UseMachineKeyStore = true;
-        }
-
         public InMemoryJwksRepository(JsonWebKeySet publicKeySet, JsonWebKeySet privateKeySet)
         {
             _publicKeySet = publicKeySet;
@@ -38,6 +33,7 @@
                 rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, false, KeyOperations.Encrypt, KeyOperations.Decrypt)
             };
             _privateKeySet = privateKeys.ToJwks();
+            _privateKeySet.SkipUnresolvedJsonWebKeys = false;
             _publicKeySet = publicKeys.ToJwks();
         }
 
@@ -48,9 +44,9 @@
 
         public Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default)
         {
-            var signingKey = _privateKeySet.GetSigningCredentials(alg).FirstOrDefault();
+            var signingKey = _privateKeySet.Keys.First(k => k.Use == JsonWebKeyUseNames.Sig && k.Alg == alg);
 
-            return Task.FromResult(signingKey);
+            return Task.FromResult(new SigningCredentials(signingKey, signingKey.Alg));
         }
 
         public Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)

@@ -63,8 +63,12 @@ namespace SimpleAuth.Tests.JwtToken
             await Assert.ThrowsAsync<NullReferenceException>(
                     () => _jwtGenerator.GenerateAccessToken(null, null, null, default, null))
                 .ConfigureAwait(false);
+        }
 
-            await Assert.ThrowsAsync<ArgumentNullException>(
+        [Fact]
+        public async Task WhenPassingEmptyClientThenThrows()
+        {
+            await Assert.ThrowsAsync<InvalidOperationException>(
                     () => _jwtGenerator.GenerateAccessToken(new Client(), null, null, default, null))
                 .ConfigureAwait(false);
         }
