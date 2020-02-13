@@ -93,7 +93,7 @@ namespace SimpleAuth.Client
 
             if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
-                request.Headers.Add("Authorization", "Basic " + _authorizationValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
             }
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);
@@ -176,7 +176,7 @@ namespace SimpleAuth.Client
 
             if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
-                request.Headers.Add("Authorization", "Basic " + _authorizationValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
             }
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);

@@ -25,10 +25,15 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Shared.Repositories;
     using Stores;
     using System;
-    using System.IdentityModel.Tokens.Jwt;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Microsoft.IdentityModel.Protocols;
+    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Moq;
     using SimpleAuth.Server.Tests.MiddleWares;
     using SimpleAuth.Shared;
@@ -37,14 +42,13 @@ namespace SimpleAuth.Server.Tests
 
     public class FakeStartup : IStartup
     {
-        private const string Bearer = "Bearer ";
-        public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
         private readonly SharedContext _context;
+        public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
 
         public FakeStartup(SharedContext context)
         {
-            IdentityModelEventSource.ShowPII = true;
             _context = context;
+            IdentityModelEventSource.ShowPII = true;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -58,51 +62,7 @@ namespace SimpleAuth.Server.Tests
                         opts.DefaultAuthenticateScheme = DefaultSchema;
                         opts.DefaultChallengeScheme = DefaultSchema;
                     })
-                .AddJwtBearer(
-                    JwtBearerDefaults.AuthenticationScheme,
-                    cfg =>
-                    {
-                        cfg.Authority = "http://localhost:5000";
-                        cfg.BackchannelHttpHandler = _context.ClientHandler;
-                        cfg.RequireHttpsMetadata = false;
-                        cfg.Events = new JwtBearerEvents
-                        {
-                            OnTokenValidated = ctx =>
-                               {
-                                   var jwt = (JwtSecurityToken)ctx.SecurityToken;
-                                   var c = jwt.Claims;
-                                   return Task.CompletedTask;
-                               },
-                            OnAuthenticationFailed = ctx =>
-                            {
-                                string authorization = ctx.Request.Headers["Authorization"];
-                                if (string.IsNullOrWhiteSpace(authorization))
-                                {
-                                    ctx.NoResult();
-                                    return Task.CompletedTask;
-                                }
-
-                                string token = null;
-                                if (authorization.StartsWith(Bearer, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    token = authorization.Substring(Bearer.Length).Trim();
-                                }
-
-                                //var jwt = (JwtSecurityToken)_handler.ReadToken(token);
-                                //var claimsIdentity = new ClaimsIdentity(
-                                //    jwt.Claims,
-                                //    JwtBearerDefaults.AuthenticationScheme);
-                                //var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                                //ctx.Principal = claimsPrincipal;
-                                ctx.Success();
-                                return Task.CompletedTask;
-                            }
-                        };
-                        cfg.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateAudience = false
-                        };
-                    })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, cfg => { })
                 .AddFakeCustomAuth(o => { });
 
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
@@ -110,7 +70,7 @@ namespace SimpleAuth.Server.Tests
                     options =>
                     {
                         options.Clients = sp => new InMemoryClientRepository(
-                            _context.Client,
+                            sp.GetRequiredService<HttpClient>(),
                             sp.GetService<IScopeStore>(),
                             new Mock<ILogger<InMemoryClientRepository>>().Object,
                             DefaultStores.Clients(_context));
@@ -122,14 +82,87 @@ namespace SimpleAuth.Server.Tests
                 .AddLogging()
                 .AddAccountFilter()
                 .AddSingleton(_context.ConfirmationCodeStore.Object)
-                .AddSingleton(sp => _context.Client);
-            // 3. Configure MVC
+                .AddSingleton(
+                    sp =>
+                    {
+                        var server = sp.GetRequiredService<IServer>() as TestServer;
+                        return server.CreateClient();
+                    });
+            services.ConfigureOptions<JwtBearerPostConfigureOptions>();
             return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseSimpleAuthMvc();
+        }
+    }
+
+    internal class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtBearerOptions>
+    {
+        private readonly TestServer _server;
+
+        public JwtBearerPostConfigureOptions(IServer server)
+        {
+            _server = server as TestServer;
+        }
+
+        public void PostConfigure(string name, JwtBearerOptions options)
+        {
+            options.Authority = _server.CreateClient().BaseAddress.AbsoluteUri;
+            options.BackchannelHttpHandler = _server.CreateHandler();
+            options.RequireHttpsMetadata = false;
+            options.Events = new JwtBearerEvents { OnAuthenticationFailed = ctx => throw ctx.Exception };
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = false,
+                ValidIssuer = "http://localhost:5000"
+            };
+            if (string.IsNullOrEmpty(options.TokenValidationParameters.ValidAudience)
+                && !string.IsNullOrEmpty(options.Audience))
+            {
+                options.TokenValidationParameters.ValidAudience = options.Audience;
+            }
+
+            if (options.ConfigurationManager == null)
+            {
+                if (options.Configuration != null)
+                {
+                    options.ConfigurationManager =
+                        new StaticConfigurationManager<OpenIdConnectConfiguration>(options.Configuration);
+                }
+                else if (!(string.IsNullOrEmpty(options.MetadataAddress) && string.IsNullOrEmpty(options.Authority)))
+                {
+                    if (string.IsNullOrEmpty(options.MetadataAddress) && !string.IsNullOrEmpty(options.Authority))
+                    {
+                        options.MetadataAddress = options.Authority;
+                        if (!options.MetadataAddress.EndsWith("/", StringComparison.Ordinal))
+                        {
+                            options.MetadataAddress += "/";
+                        }
+
+                        options.MetadataAddress += ".well-known/openid-configuration";
+                    }
+
+                    if (options.RequireHttpsMetadata
+                        && !options.MetadataAddress.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new InvalidOperationException(
+                            "The MetadataAddress or Authority must use HTTPS unless disabled for development by setting RequireHttpsMetadata=false.");
+                    }
+
+                    var httpClient = new HttpClient(options.BackchannelHttpHandler ?? new HttpClientHandler());
+                    httpClient.Timeout = options.BackchannelTimeout;
+                    httpClient.MaxResponseContentBufferSize = 1024 * 1024 * 10; // 10 MB
+
+                    options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                        options.MetadataAddress,
+                        new OpenIdConnectConfigurationRetriever(),
+                        new HttpDocumentRetriever(httpClient) { RequireHttps = options.RequireHttpsMetadata });
+                }
+            }
         }
     }
 }

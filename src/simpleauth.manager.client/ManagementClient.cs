@@ -111,7 +111,7 @@
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
             }
 
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
@@ -170,7 +170,7 @@
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
             }
 
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);

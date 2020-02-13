@@ -1,5 +1,5 @@
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0-alpine
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine
 WORKDIR /app
 COPY artifacts/publish/inmemory/ .
 ENTRYPOINT ["dotnet", "simpleauth.authserver.dll"]

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -31,10 +32,10 @@
 
             var serializedPostPermission = JsonConvert.SerializeObject(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage {Method = HttpMethod.Post, RequestUri = clientsUri, Content = body};
+            var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = clientsUri, Content = body };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
@@ -47,7 +48,8 @@
                 };
             var result = new GenericResponse<PagedResponse<Client>>
             {
-                ContainsError = true, HttpStatus = httpResult.StatusCode
+                ContainsError = true,
+                HttpStatus = httpResult.StatusCode
             };
             if (!string.IsNullOrWhiteSpace(content))
             {
