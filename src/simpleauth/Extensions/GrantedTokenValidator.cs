@@ -49,38 +49,13 @@ namespace SimpleAuth.Extensions
                 };
             }
 
-            var signingKey = await jwksStore.GetSigningKey(new JwtSecurityToken(grantedToken.AccessToken).SignatureAlgorithm, cancellationToken).ConfigureAwait(false);
-            var validator = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = new JwtSecurityToken(grantedToken.AccessToken).SigningKey;
+            var publicKeys = await jwksStore.GetPublicKeys(cancellationToken).ConfigureAwait(false);
 
-            var tokenValidationParameters = new TokenValidationParameters
+            return new GrantedTokenValidationResult
             {
-                RequireExpirationTime = false,
-                RequireSignedTokens = false,
-                SaveSigninToken = false,
-                ValidateActor = false,
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                ValidateLifetime = false,
-                ValidateTokenReplay = false,
-                IssuerSigningKey = signingKey.Key
+                IsValid = true
             };
-            try
-            {
-                validator.ValidateToken(grantedToken.AccessToken, tokenValidationParameters, out _);
-                return new GrantedTokenValidationResult
-                {
-                    IsValid = true
-                };
-            }
-            catch (Exception e)
-            {
-                return new GrantedTokenValidationResult
-                {
-                    IsValid = false,
-                    MessageErrorDescription = e.Message
-                };
-            }
         }
 
         public static async Task<GrantedToken> GetValidGrantedToken(
