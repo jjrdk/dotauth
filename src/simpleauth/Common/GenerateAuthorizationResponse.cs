@@ -90,6 +90,7 @@ namespace SimpleAuth.Common
                 }
 
                 grantedToken = await _tokenStore.GetValidGrantedToken(
+                        _jwksStore,
                         allowedTokenScopes,
                         client.ClientId,
                         cancellationToken,

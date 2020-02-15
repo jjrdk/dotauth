@@ -98,8 +98,7 @@ namespace SimpleAuth.Server.Tests.Policies
                 new ResourceSetModel
                 {
                     Id = "1",
-                    AuthorizationPolicyIds = new [] {"authorization_policy_id"},
-                    Policies = new [] {new Policy()}
+                    AuthorizationPolicyIds = new [] {"authorization_policy_id"}
                 }
             };
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))

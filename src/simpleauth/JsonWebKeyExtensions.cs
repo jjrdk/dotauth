@@ -225,6 +225,7 @@
             jwk.Use = use;
             jwk.Kid = keyId;
             jwk.Alg = SecurityAlgorithms.RsaSha256;
+            jwk.CryptoProviderFactory = CryptoProviderFactory.Default;
             foreach (var keyop in keyops)
             {
                 jwk.KeyOps.Add(keyop);

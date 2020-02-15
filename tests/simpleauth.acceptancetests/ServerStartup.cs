@@ -11,13 +11,16 @@
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Sms;
     using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
+
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
-    using Microsoft.IdentityModel.Tokens;
+
     using SimpleAuth.ResourceServer;
     using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.Repositories;
@@ -117,29 +120,11 @@
                 .AddJwtBearer(
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
-                    {
-                        cfg.Events = new JwtBearerEvents
-                        {
-                            OnAuthenticationFailed = f => Task.CompletedTask,
-                            OnForbidden = f => Task.CompletedTask,
-                            OnChallenge = f => Task.CompletedTask,
-                            OnMessageReceived = f => Task.CompletedTask
-                        };
-
-                        cfg.IncludeErrorDetails = true;
-                        cfg.BackchannelHttpHandler = _context.Handler;
-                        cfg.RequireHttpsMetadata = false;
-                        cfg.Authority = _context.Client.BaseAddress.AbsoluteUri;
-                        cfg.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateAudience = false,
-                            ValidIssuer = "https://localhost"
-                        };
-                    });
+                    { });
 
             services.AddUmaClient(new Uri("http://localhost/.well-known/uma2-configuration"));
             services.AddAuthorization(opt => { opt.AddPolicy("uma_ticket", builder => builder.RequireUmaTicket()); });
-
+            services.ConfigureOptions<JwtBearerPostConfigureOptions>();
             return services.BuildServiceProvider();
         }
 

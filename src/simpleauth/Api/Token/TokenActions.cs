@@ -286,7 +286,7 @@ namespace SimpleAuth.Api.Token
 
             // 4. Generate the JWT access token on the fly.
             var grantedToken = await _tokenStore
-                .GetValidGrantedToken(allowedTokenScopes, client.ClientId, cancellationToken)
+                .GetValidGrantedToken(_jwksStore, allowedTokenScopes, client.ClientId, cancellationToken)
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {

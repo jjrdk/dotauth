@@ -88,6 +88,7 @@ namespace SimpleAuth.Api.Token.Actions
             // 1. Invalidate the authorization code by removing it !
             await _authorizationCodeStore.Remove(result.AuthCode.Code, cancellationToken).ConfigureAwait(false);
             var grantedToken = await _tokenStore.GetValidGrantedToken(
+                    _jwksStore,
                     result.AuthCode.Scopes,
                     result.AuthCode.ClientId,
                     cancellationToken,

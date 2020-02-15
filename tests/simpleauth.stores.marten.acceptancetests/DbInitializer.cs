@@ -21,11 +21,10 @@
             IEnumerable<Scope> scopes = null)
         {
             var builder = new NpgsqlConnectionStringBuilder(connectionString);
-            using (var connection = new NpgsqlConnection(connectionString))
+            using var connection = new NpgsqlConnection(connectionString);
+            try
             {
-                try
-                {
-                    await Semaphore.WaitAsync().ConfigureAwait(false);
+                await Semaphore.WaitAsync().ConfigureAwait(false);
 
                     await connection.OpenAsync().ConfigureAwait(false);
                     var schema = $"test_{DateTimeOffset.UtcNow.Ticks.ToString()}";
@@ -34,13 +33,12 @@
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                     builder.SearchPath = schema;
 
-                    await Seed(builder.ConnectionString, schema, consents, users, clients, scopes).ConfigureAwait(false);
-                    return builder.ConnectionString;
-                }
-                finally
-                {
-                    Semaphore.Release();
-                }
+                await Seed(builder.ConnectionString, schema, consents, users, clients, scopes).ConfigureAwait(false);
+                return builder.ConnectionString;
+            }
+            finally
+            {
+                Semaphore.Release();
             }
         }
 
@@ -52,30 +50,24 @@
             IEnumerable<Client> clients,
             IEnumerable<Scope> scopes)
         {
-            using (var store = new DocumentStore(new SimpleAuthMartenOptions(connectionString, new NulloMartenLogger(), searchPath)))
-            {
-                using (var session = store.LightweightSession())
-                {
-                    if (consents != null) session.Store(consents.ToArray());
-                    if (users != null) session.Store(users.ToArray());
-                    if (clients != null) session.Store(clients.ToArray());
-                    if (scopes != null) session.Store(scopes.ToArray());
-                    await session.SaveChangesAsync().ConfigureAwait(false);
-                }
-            }
+            using var store = new DocumentStore(new SimpleAuthMartenOptions(connectionString, new NulloMartenLogger(), searchPath));
+            using var session = store.LightweightSession();
+            if (consents != null) session.Store(consents.ToArray());
+            if (users != null) session.Store(users.ToArray());
+            if (clients != null) session.Store(clients.ToArray());
+            if (scopes != null) session.Store(scopes.ToArray());
+            await session.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public static async Task Drop(string connectionString)
         {
             NpgsqlConnection.ClearAllPools();
-            using (var connection = new NpgsqlConnection(connectionString))
-            {
-                await connection.OpenAsync().ConfigureAwait(false);
-                var builder = new NpgsqlConnectionStringBuilder { ConnectionString = connectionString };
-                var cmd = connection.CreateCommand();
-                cmd.CommandText = $"DROP SCHEMA {builder.SearchPath} CASCADE;";
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-            }
+            using var connection = new NpgsqlConnection(connectionString);
+            await connection.OpenAsync().ConfigureAwait(false);
+            var builder = new NpgsqlConnectionStringBuilder { ConnectionString = connectionString };
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = $"DROP SCHEMA {builder.SearchPath} CASCADE;";
+            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
     }
 }

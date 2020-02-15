@@ -542,7 +542,7 @@ namespace SimpleAuth.Server.Tests.Apis
                         pkce.CodeVerifier))
                 .ConfigureAwait(false);
 
-            Assert.NotNull(token.Content.AccessToken);
+            Assert.NotNull(token?.Content?.AccessToken);
         }
 
         [Fact]

@@ -93,10 +93,10 @@ namespace SimpleAuth.AuthServer
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                     })
                 .AddHttpContextAccessor()
                 .AddAntiforgery(options =>
@@ -110,7 +110,8 @@ namespace SimpleAuth.AuthServer
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
                         cfg.Authority = "https://localhost:5001";
@@ -147,7 +148,8 @@ namespace SimpleAuth.AuthServer
                             opts.ClientSecret = _configuration["Google:ClientSecret"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
                             var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
-                            foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()))
+                            foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Trim()))
                             {
                                 opts.Scope.Add(scope);
                             }

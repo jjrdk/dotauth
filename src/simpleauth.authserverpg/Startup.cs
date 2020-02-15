@@ -120,13 +120,13 @@ namespace SimpleAuth.AuthServerPg
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        //cfg.Authority = _configuration.TokenService;
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            //ValidIssuers = _configuration.ValidIssuers
                         };
+#if DEBUG
                         cfg.RequireHttpsMetadata = false;
+#endif
                     });
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
@@ -150,7 +150,7 @@ namespace SimpleAuth.AuthServerPg
 
             services.AddSimpleAuth(
                 _options,
-                new[] {CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme});
+                new[] { CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme });
         }
 
         public void Configure(IApplicationBuilder app)

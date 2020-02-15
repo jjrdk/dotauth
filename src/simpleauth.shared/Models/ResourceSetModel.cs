@@ -79,13 +79,5 @@ namespace SimpleAuth.Shared.Models
         /// The authorization policy ids.
         /// </value>
         public string[] AuthorizationPolicyIds { get; set; } = Array.Empty<string>();
-
-        /// <summary>
-        /// Gets or sets the policies.
-        /// </summary>
-        /// <value>
-        /// The policies.
-        /// </value>
-        public Policy[] Policies { get; set; } = Array.Empty<Policy>();
     }
 }

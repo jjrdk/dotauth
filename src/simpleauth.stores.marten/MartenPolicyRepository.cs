@@ -33,76 +33,62 @@
             SearchAuthPolicies parameter,
             CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
+            using var session = _sessionFactory();
+            var results = await session.Query<Policy>()
+                .Where(x => x.Id.IsOneOf(parameter.Ids))
+                .ToPagedListAsync(parameter.StartIndex++, parameter.TotalResults, cancellationToken)
+                .ConfigureAwait(false);
+            return new PagedResult<Policy>
             {
-                parameter.StartIndex++;
-                var results = await session.Query<Policy>()
-                    .Where(x => x.Id.IsOneOf(parameter.Ids))
-                    .ToPagedListAsync(parameter.StartIndex, parameter.TotalResults, cancellationToken)
-                    .ConfigureAwait(false);
-                return new PagedResult<Policy>
-                {
-                    Content = results.ToArray(),
-                    StartIndex = parameter.StartIndex,
-                    TotalResults = results.TotalItemCount
-                };
-            }
+                Content = results.ToArray(),
+                StartIndex = parameter.StartIndex,
+                TotalResults = results.TotalItemCount
+            };
         }
 
         /// <inheritdoc />
         public async Task<Policy[]> GetAll(string owner, CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                var policies = await session.Query<Policy>()
-                    .Where(p => p.Owner == owner)
-                    .ToListAsync(token: cancellationToken)
-                    .ConfigureAwait(false);
-                return policies.ToArray();
-            }
+            using var session = _sessionFactory();
+            var policies = await session.Query<Policy>()
+                .ToListAsync(token: cancellationToken)
+                .ConfigureAwait(false);
+            return policies.ToArray();
         }
 
         /// <inheritdoc />
         public async Task<Policy> Get(string id, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                var policy = await session.LoadAsync<Policy>(id, cancellationToken).ConfigureAwait(false);
-                return policy;
-            }
+            using var session = _sessionFactory();
+            var policy = await session.LoadAsync<Policy>(id, cancellationToken).ConfigureAwait(false);
+            return policy;
         }
 
         /// <inheritdoc />
         public async Task<bool> Add(Policy policy, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Store(policy);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Store(policy);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<bool> Delete(string id, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Delete<Policy>(id);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Delete<Policy>(id);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<bool> Update(Policy policy, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Update(policy);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Update(policy);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
     }
 }

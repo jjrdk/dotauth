@@ -36,21 +36,18 @@
                 return new PagedResult<Scope>();
             }
 
-            using (var session = _sessionFactory())
-            {
-                parameter.StartIndex++;
-                var results = await session.Query<Scope>()
-                    .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
-                    .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = this._sessionFactory();
+            var results = await session.Query<Scope>()
+                              .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
+                              .ToPagedListAsync(parameter.StartIndex + 1, parameter.NbResults, cancellationToken)
+                              .ConfigureAwait(false);
 
-                return new PagedResult<Scope>
-                {
-                    Content = results.ToArray(),
-                    StartIndex = parameter.StartIndex,
-                    TotalResults = results.TotalItemCount
-                };
-            }
+            return new PagedResult<Scope>
+            {
+                Content = results.ToArray(),
+                StartIndex = parameter.StartIndex,
+                TotalResults = results.TotalItemCount
+            };
         }
 
         /// <inheritdoc />
@@ -77,28 +74,24 @@
                 return Array.Empty<Scope>();
             }
 
-            using (var session = _sessionFactory())
-            {
-                var scopes = await session.Query<Scope>()
-                    .Where(x => x.Name.IsOneOf(names))
-                    .ToListAsync(cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = this._sessionFactory();
+            var scopes = await session.Query<Scope>()
+                             .Where(x => x.Name.IsOneOf(names))
+                             .ToListAsync(cancellationToken)
+                             .ConfigureAwait(false);
 
-                return scopes.ToArray();
-            }
+            return scopes.ToArray();
         }
 
         /// <inheritdoc />
         public async Task<Scope[]> GetAll(CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                var scopes = await session.Query<Scope>()
-                    .ToListAsync(cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var scopes = await session.Query<Scope>()
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-                return scopes.ToArray();
-            }
+            return scopes.ToArray();
         }
 
         /// <inheritdoc />

@@ -115,7 +115,7 @@ namespace SimpleAuth.Policies
                 return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.RequestSubmitted };
             }
 
-            foreach (var authorizationPolicy in resource.Policies.Concat(policies))
+            foreach (var authorizationPolicy in policies)
             {
                 var result = await _authorizationPolicy.Execute(
                         ticketLineParameter,

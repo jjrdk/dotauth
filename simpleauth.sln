@@ -48,6 +48,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.stores.marten.ac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.authserverpg", "src\simpleauth.authserverpg\simpleauth.authserverpg.csproj", "{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.stores.redis", "src\simpleauth.stores.redis\simpleauth.stores.redis.csproj", "{720E8AA4-DDAE-4187-A5FB-16260C10BE79}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.stores.redis.acceptancetests", "tests\simpleauth.stores.redis.acceptancetests\simpleauth.stores.redis.acceptancetests.csproj", "{FD6C01E0-2D69-4E99-9BCE-D22D2FFE81C3}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.resourceserver", "src\simpleauth.resourceserver\simpleauth.resourceserver.csproj", "{D8825706-0FC0-499A-B409-C60F575DF248}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "simpleauth.admin", "src\simpleauth.admin\", "{195DFF68-8EB2-4120-AB6B-4E88C397932D}"
@@ -129,6 +133,14 @@ Global
 		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{720E8AA4-DDAE-4187-A5FB-16260C10BE79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{720E8AA4-DDAE-4187-A5FB-16260C10BE79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{720E8AA4-DDAE-4187-A5FB-16260C10BE79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{720E8AA4-DDAE-4187-A5FB-16260C10BE79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD6C01E0-2D69-4E99-9BCE-D22D2FFE81C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD6C01E0-2D69-4E99-9BCE-D22D2FFE81C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD6C01E0-2D69-4E99-9BCE-D22D2FFE81C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD6C01E0-2D69-4E99-9BCE-D22D2FFE81C3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8825706-0FC0-499A-B409-C60F575DF248}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8825706-0FC0-499A-B409-C60F575DF248}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8825706-0FC0-499A-B409-C60F575DF248}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -149,6 +161,7 @@ Global
 		{A068C8CC-6F6E-4239-A4A5-5835580D9FF2} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{816CBA5B-357C-4D00-9A9B-F06A33F93B10} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{16AAC14E-CC98-4F46-8E6E-4254FF6CE90E} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
+		{FD6C01E0-2D69-4E99-9BCE-D22D2FFE81C3} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{D8825706-0FC0-499A-B409-C60F575DF248} = {BFFECB1F-3326-4B55-9180-58674B3FF5D0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

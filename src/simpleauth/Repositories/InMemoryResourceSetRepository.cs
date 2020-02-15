@@ -67,7 +67,7 @@
             }
 
             var result = _resources.Where(r => ids.Contains(r.Id)).ToArray();
-            
+
             return Task.FromResult(result);
         }
 
@@ -151,7 +151,6 @@
             rec.AuthorizationPolicyIds = resourceSet.AuthorizationPolicyIds;
             rec.IconUri = resourceSet.IconUri;
             rec.Name = resourceSet.Name;
-            rec.Policies = resourceSet.Policies;
             rec.Scopes = resourceSet.Scopes;
             rec.Type = resourceSet.Type;
             rec.Uri = resourceSet.Uri;

@@ -184,29 +184,6 @@ Task("Docker-Build")
     DockerBuild(settings, "./");
 });
 
-Task("Warp")
-    .IsDependentOn("Pack")
-    .Does(()=>
-    {
-        DotNetCoreTool(buildDir + "/src/simpleauth.authserver/simpleauth.authserver.csproj", "warp", "-l aggressive -v");
-
-        var packfolder = "linux-x64";
-        if (IsRunningOnWindows())
-        {
-            Information("Publishing for Windows x64");
-            packfolder = "win-x64";
-        }
-        else
-        {
-            Information("Publishing for Linux x64");
-        }
-        var outputFolder = buildDir + "/artifacts/authserver/" + packfolder;
-        EnsureDirectoryExists(outputFolder);
-        CopyDirectory(Directory(buildDir + "/src/simpleauth.authserver/bin/Release/netcoreapp2.1/" + packfolder), outputFolder);
-        DeleteFiles(outputFolder + "/*.pdb");
-        DeleteFiles(outputFolder + "/*.xml");
-    });
-
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////

@@ -41,21 +41,17 @@
         /// <inheritdoc />
         public async Task<Client> GetById(string clientId, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                var client = await session.LoadAsync<Client>(clientId, cancellationToken).ConfigureAwait(false);
-                return client;
-            }
+            using var session = _sessionFactory();
+            var client = await session.LoadAsync<Client>(clientId, cancellationToken).ConfigureAwait(false);
+            return client;
         }
 
         /// <inheritdoc />
         public async Task<Client[]> GetAll(CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                var clients = await session.Query<Client>().ToListAsync(cancellationToken).ConfigureAwait(false);
-                return clients.ToArray();
-            }
+            using var session = _sessionFactory();
+            var clients = await session.Query<Client>().ToListAsync(cancellationToken).ConfigureAwait(false);
+            return clients.ToArray();
         }
 
         /// <inheritdoc />
@@ -63,69 +59,60 @@
             SearchClientsRequest parameter,
             CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                parameter.StartIndex++;
-                var take = parameter.NbResults == 0 ? int.MaxValue : parameter.NbResults;
-                var results = await session.Query<Client>()
-                    .Where(x => x.ClientId.IsOneOf(parameter.ClientIds))
-                    .ToPagedListAsync(parameter.StartIndex, take, cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var take = parameter.NbResults == 0 ? int.MaxValue : parameter.NbResults;
+            var results = await session.Query<Client>()
+                .Where(x => x.ClientId.IsOneOf(parameter.ClientIds))
+                .ToPagedListAsync(parameter.StartIndex + 1, take, cancellationToken)
+                .ConfigureAwait(false);
 
-                return new PagedResult<Client>
-                {
-                    Content = results.ToArray(),
-                    StartIndex = parameter.StartIndex,
-                    TotalResults = results.TotalItemCount
-                };
-            }
+            return new PagedResult<Client>
+            {
+                Content = results.ToArray(),
+                StartIndex = parameter.StartIndex,
+                TotalResults = results.TotalItemCount
+            };
         }
 
         /// <inheritdoc />
         public async Task<Client> Update(Client client, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
+            using var session = _sessionFactory();
+            if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
             {
-                if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
-                {
-                    throw new ArgumentException("Duplicate client");
-                }
-
-                var clientFactory = new ClientFactory(_httpClient, _scopeRepository, _urlReader);
-                var toInsert = await clientFactory.Build(client).ConfigureAwait(false);
-                session.Update(client);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return toInsert;
+                throw new ArgumentException("Duplicate client");
             }
+
+            var clientFactory = new ClientFactory(_httpClient, _scopeRepository, _urlReader);
+            var toInsert = await clientFactory.Build(client).ConfigureAwait(false);
+            session.Update(client);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return toInsert;
         }
 
         /// <inheritdoc />
         public async Task<Client> Insert(Client client, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
+            using var session = _sessionFactory();
+            if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
             {
-                if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
-                {
-                    throw new ArgumentException("Duplicate client");
-                }
-
-                var clientFactory = new ClientFactory(_httpClient, _scopeRepository, _urlReader);
-                var toInsert = await clientFactory.Build(client).ConfigureAwait(false);
-                session.Store(client);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return toInsert;
+                throw new ArgumentException("Duplicate client");
             }
+
+            var clientFactory = new ClientFactory(_httpClient, _scopeRepository, _urlReader);
+            var toInsert = await clientFactory.Build(client).ConfigureAwait(false);
+            session.Store(client);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return toInsert;
         }
 
         /// <inheritdoc />
         public async Task<bool> Delete(string clientId, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Delete<Client>(clientId);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Delete<Client>(clientId);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
     }
 }

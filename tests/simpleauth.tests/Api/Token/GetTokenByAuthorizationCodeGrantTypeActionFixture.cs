@@ -27,8 +27,10 @@ namespace SimpleAuth.Tests.Api.Token
     using SimpleAuth.Shared.Errors;
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Logging;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Events.OAuth;
     using Xunit;
@@ -41,6 +43,12 @@ namespace SimpleAuth.Tests.Api.Token
         private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IClientStore> _clientStore;
         private GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
+        private InMemoryJwksRepository _inMemoryJwksRepository;
+
+        public GetTokenByAuthorizationCodeGrantTypeActionFixture()
+        {
+            IdentityModelEventSource.ShowPII = true;
+        }
 
         [Fact]
         public async Task When_Passing_Empty_Request_Then_Error_Is_Returned()
@@ -433,7 +441,15 @@ namespace SimpleAuth.Tests.Api.Token
         public async Task When_Requesting_An_Existed_Granted_Token_Then_Check_Id_Token_Is_Signed_And_Encrypted()
         {
             InitializeFakeObjects(TimeSpan.FromSeconds(3000));
-            const string accessToken = "accessToken";
+            var handler = new JwtSecurityTokenHandler();
+            var accessToken = handler.CreateEncodedJwt(
+                "test",
+                "test",
+                new ClaimsIdentity(),
+                null,
+                null,
+                DateTime.Now,
+                await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false));
             const string identityToken = "identityToken";
             const string clientId = "clientId";
             var clientSecret = "clientSecret";
@@ -579,6 +595,7 @@ namespace SimpleAuth.Tests.Api.Token
                 authorizationCodeValidityPeriod: authorizationCodeValidity == default
                     ? TimeSpan.FromSeconds(3600)
                     : authorizationCodeValidity);
+            _inMemoryJwksRepository = new InMemoryJwksRepository();
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _authorizationCodeStoreFake.Object,
                 _simpleAuthOptions,
@@ -586,7 +603,7 @@ namespace SimpleAuth.Tests.Api.Token
                 _eventPublisher.Object,
                 _tokenStoreFake.Object,
                 new Mock<IScopeRepository>().Object,
-                new InMemoryJwksRepository());
+                _inMemoryJwksRepository);
         }
     }
 }

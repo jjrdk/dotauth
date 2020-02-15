@@ -16,6 +16,7 @@ namespace SimpleAuth.Shared.Repositories
 {
     using System.Threading;
     using System.Threading.Tasks;
+
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
 
@@ -30,9 +31,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="parameter">The parameter.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PagedResult<ResourceSetModel>> Search(
-            SearchResourceSet parameter,
-            CancellationToken cancellationToken);
+        Task<PagedResult<ResourceSetModel>> Search(SearchResourceSet parameter, CancellationToken cancellationToken);
 
         /// <summary>
         /// Inserts the specified resource set.
@@ -77,8 +76,8 @@ namespace SimpleAuth.Shared.Repositories
         /// <summary>
         /// Gets the specified ids.
         /// </summary>
-        /// <param name="ids">The ids.</param>
         /// <param name="cancellationToken"></param>
+        /// <param name="ids">The ids.</param>
         /// <returns></returns>
         Task<ResourceSetModel[]> Get(CancellationToken cancellationToken, params string[] ids);
     }

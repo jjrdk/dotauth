@@ -10,7 +10,10 @@
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using System.Threading.Tasks;
+
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+
     using SimpleAuth.Repositories;
 
     public class ServerStartup : IStartup

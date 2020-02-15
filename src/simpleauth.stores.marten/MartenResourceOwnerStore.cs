@@ -1,4 +1,7 @@
-﻿namespace SimpleAuth.Stores.Marten
+﻿using SimpleAuth.Shared;
+using SimpleAuth.Shared.Models;
+
+namespace SimpleAuth.Stores.Marten
 {
     using global::Marten;
     using SimpleAuth.Shared;
@@ -35,25 +38,21 @@
             string value,
             CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                var ro = await session.Query<ResourceOwner>()
-                    .FirstOrDefaultAsync(r => r.Claims.Any(x => x.Type == key && x.Value == value), token: cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var ro = await session.Query<ResourceOwner>()
+                .FirstOrDefaultAsync(r => r.Claims.Any(x => x.Type == key && x.Value == value), token: cancellationToken)
+                .ConfigureAwait(false);
 
-                return ro;
-            }
+            return ro;
         }
 
         /// <inheritdoc />
         public async Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                var ro = await session.LoadAsync<ResourceOwner>(id, cancellationToken).ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var ro = await session.LoadAsync<ResourceOwner>(id, cancellationToken).ConfigureAwait(false);
 
-                return ro;
-            }
+            return ro;
         }
 
         /// <inheritdoc />
@@ -64,56 +63,48 @@
                 throw new ArgumentNullException(nameof(externalAccount));
             }
 
-            using (var session = _sessionFactory())
-            {
-                var ro = await session.Query<ResourceOwner>()
-                    .Where(
-                        x => x.ExternalLogins != null
-                             && x.ExternalLogins.Any(
-                                 e => e.Subject == externalAccount.Subject && e.Issuer == externalAccount.Issuer))
-                    .SingleOrDefaultAsync(cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var ro = await session.Query<ResourceOwner>()
+                .Where(
+                    x => x.ExternalLogins != null
+                         && x.ExternalLogins.Any(
+                             e => e.Subject == externalAccount.Subject && e.Issuer == externalAccount.Issuer))
+                .SingleOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-                return ro;
-            }
+            return ro;
         }
 
         /// <inheritdoc />
         public async Task<ResourceOwner> Get(string id, string password, CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                var hashed = password.ToSha256Hash();
-                var ro = await session.Query<ResourceOwner>()
-                    .FirstOrDefaultAsync(x => x.Subject == id && x.Password == hashed, cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var hashed = password.ToSha256Hash();
+            var ro = await session.Query<ResourceOwner>()
+                .FirstOrDefaultAsync(x => x.Subject == id && x.Password == hashed, cancellationToken)
+                .ConfigureAwait(false);
 
-                return ro;
-            }
+            return ro;
         }
 
         /// <inheritdoc />
         public async Task<ResourceOwner[]> GetAll(CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
-            {
-                var resourceOwners = await session.Query<ResourceOwner>()
-                    .ToListAsync(cancellationToken)
-                    .ConfigureAwait(false);
-                return resourceOwners.ToArray();
-            }
+            using var session = _sessionFactory();
+            var resourceOwners = await session.Query<ResourceOwner>()
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+            return resourceOwners.ToArray();
         }
 
         /// <inheritdoc />
         public async Task<bool> Insert(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                resourceOwner.Password = resourceOwner.Password.ToSha256Hash();
-                session.Store(resourceOwner);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            resourceOwner.Password = resourceOwner.Password.ToSha256Hash();
+            session.Store(resourceOwner);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
@@ -121,54 +112,48 @@
             ResourceOwner resourceOwner,
             CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
+            using var session = _sessionFactory();
+            var user = await session.LoadAsync<ResourceOwner>(resourceOwner.Subject, cancellationToken)
+                .ConfigureAwait(false);
+            if (user == null)
             {
-                var user = await session.LoadAsync<ResourceOwner>(resourceOwner.Subject, cancellationToken)
-                    .ConfigureAwait(false);
-                if (user == null)
-                {
-                    return false;
-                }
-
-                user.IsLocalAccount = resourceOwner.IsLocalAccount;
-                user.ExternalLogins = resourceOwner.ExternalLogins;
-                user.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
-                user.UpdateDateTime = DateTimeOffset.UtcNow;
-                user.Claims = resourceOwner.Claims;
-                session.Update(resourceOwner);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
+                return false;
             }
+
+            user.IsLocalAccount = resourceOwner.IsLocalAccount;
+            user.ExternalLogins = resourceOwner.ExternalLogins;
+            user.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
+            user.UpdateDateTime = DateTimeOffset.UtcNow;
+            user.Claims = resourceOwner.Claims;
+            session.Update(resourceOwner);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<bool> SetPassword(string subject, string password, CancellationToken cancellationToken)
         {
-            using (var session = _sessionFactory())
+            using var session = _sessionFactory();
+            var user = await session.LoadAsync<ResourceOwner>(subject, cancellationToken)
+                .ConfigureAwait(false);
+            if (user == null)
             {
-                var user = await session.LoadAsync<ResourceOwner>(subject, cancellationToken)
-                    .ConfigureAwait(false);
-                if (user == null)
-                {
-                    return false;
-                }
-
-                user.Password = password.ToSha256Hash();
-                session.Update(user);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
+                return false;
             }
+
+            user.Password = password.ToSha256Hash();
+            session.Update(user);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
         public async Task<bool> Delete(string subject, CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                session.Delete<ResourceOwner>(subject);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Delete<ResourceOwner>(subject);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
@@ -176,20 +161,19 @@
             SearchResourceOwnersRequest parameter,
             CancellationToken cancellationToken = default)
         {
-            using (var session = _sessionFactory())
-            {
-                parameter.StartIndex++;
-                var subjects = parameter.Subjects;
-                var results = await session.Query<ResourceOwner>()
-                    .Where(r => r.Claims.Any(x => x.Type == OpenIdClaimTypes.Subject && x.Value.IsOneOf(subjects)))
-                    .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)
-                    .ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var subjects = parameter.Subjects;
+            var results = await session.Query<ResourceOwner>()
+                .Where(r => r.Claims.Any(x => x.Type == OpenIdClaimTypes.Subject && x.Value.IsOneOf(subjects)))
+                .ToPagedListAsync(parameter.StartIndex + 1, parameter.NbResults, cancellationToken)
+                .ConfigureAwait(false);
 
-                return new PagedResult<ResourceOwner>
-                {
-                    Content = results.ToArray(), TotalResults = results.TotalItemCount, StartIndex = parameter.StartIndex
-                };
-            }
+            return new PagedResult<ResourceOwner>
+            {
+                Content = results.ToArray(),
+                TotalResults = results.TotalItemCount,
+                StartIndex = parameter.StartIndex
+            };
         }
     }
 }

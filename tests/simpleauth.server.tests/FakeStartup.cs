@@ -15,22 +15,29 @@
 namespace SimpleAuth.Server.Tests
 {
     using Extensions;
+
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.IdentityModel.Logging;
-    using Microsoft.IdentityModel.Tokens;
+
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
+
     using Stores;
+
     using System;
-    using System.IdentityModel.Tokens.Jwt;
+    using System.Net.Http;
     using System.Threading.Tasks;
+
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Net.Http.Headers;
+
     using Moq;
+
     using SimpleAuth.Server.Tests.MiddleWares;
     using SimpleAuth.Shared;
     using SimpleAuth.Sms;
@@ -38,14 +45,14 @@ namespace SimpleAuth.Server.Tests
 
     public class FakeStartup : IStartup
     {
-        private const string Bearer = "Bearer ";
-        public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
         private readonly SharedContext _context;
+
+        public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
 
         public FakeStartup(SharedContext context)
         {
-            IdentityModelEventSource.ShowPII = true;
             _context = context;
+            IdentityModelEventSource.ShowPII = true;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -55,64 +62,37 @@ namespace SimpleAuth.Server.Tests
 
             services.AddAuthentication(
                     opts =>
-                    {
-                        opts.DefaultAuthenticateScheme = DefaultSchema;
-                        opts.DefaultChallengeScheme = DefaultSchema;
-                    })
-                .AddJwtBearer(
-                    JwtBearerDefaults.AuthenticationScheme,
-                    cfg =>
-                    {
-                        cfg.Authority = "http://localhost:5000";
-                        cfg.BackchannelHttpHandler = _context.ClientHandler;
-                        cfg.RequireHttpsMetadata = false;
-                        cfg.Events = new JwtBearerEvents
                         {
-                            OnTokenValidated = ctx =>
-                               {
-                                   var jwt = (JwtSecurityToken)ctx.SecurityToken;
-                                   var c = jwt.Claims;
-                                   return Task.CompletedTask;
-                               },
-                            OnAuthenticationFailed = ctx =>
-                            {
-                                string authorization = ctx.Request.Headers[HeaderNames.Authorization];
-                                if (string.IsNullOrWhiteSpace(authorization))
-                                {
-                                    ctx.NoResult();
-                                    return Task.CompletedTask;
-                                }
-
-                                ctx.Success();
-                                return Task.CompletedTask;
-                            }
-                        };
-                        cfg.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateAudience = false
-                        };
-                    })
+                            opts.DefaultAuthenticateScheme = DefaultSchema;
+                            opts.DefaultChallengeScheme = DefaultSchema;
+                        })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, cfg => { })
                 .AddFakeCustomAuth(o => { });
 
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
                 .AddSimpleAuth(
                     options =>
-                    {
-                        options.Clients = sp => new InMemoryClientRepository(
-                            _context.Client,
-                            sp.GetService<IScopeStore>(),
-                            new Mock<ILogger<InMemoryClientRepository>>().Object,
-                            DefaultStores.Clients(_context));
-                        options.Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents());
-                        options.Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users());
-                    },
+                        {
+                            options.Clients = sp => new InMemoryClientRepository(
+                                sp.GetRequiredService<HttpClient>(),
+                                sp.GetService<IScopeStore>(),
+                                new Mock<ILogger<InMemoryClientRepository>>().Object,
+                                DefaultStores.Clients(_context));
+                            options.Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents());
+                            options.Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users());
+                        },
                     new[] { JwtBearerDefaults.AuthenticationScheme })
                 .AddSmsAuthentication(_context.TwilioClient.Object)
                 .AddLogging()
                 .AddAccountFilter()
                 .AddSingleton(_context.ConfirmationCodeStore.Object)
-                .AddSingleton(sp => _context.Client);
-
+                .AddSingleton(
+                    sp =>
+                        {
+                            var server = sp.GetRequiredService<IServer>() as TestServer;
+                            return server.CreateClient();
+                        });
+            services.ConfigureOptions<JwtBearerPostConfigureOptions>();
             return services.BuildServiceProvider();
         }
 

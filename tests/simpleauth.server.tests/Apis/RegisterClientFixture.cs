@@ -24,22 +24,26 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 
-    public class RegisterClientFixture
+    public class RegisterClientFixture : IDisposable
     {
         private const string BaseUrl = "http://localhost:5000";
+        private const string ApplicationJson = "application/json";
         private readonly TestOauthServerFixture _server;
         private readonly RegistrationClient _registrationClient;
+        private readonly string _openIdConfigUrl;
 
         public RegisterClientFixture()
         {
             _server = new TestOauthServerFixture();
             _registrationClient = new RegistrationClient(_server.Client);
+            _openIdConfigUrl = $"{BaseUrl}/.well-known/openid-configuration";
         }
 
-        [Fact]
+        [Fact(Skip = "Run locally")]
         public async Task When_Empty_Json_Request_Is_Passed_To_Registration_Api_Then_Error_Is_Returned()
         {
             var tokenClient = new TokenClient(
@@ -63,7 +67,6 @@ namespace SimpleAuth.Server.Tests.Apis
                 new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
-            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         }
@@ -107,7 +110,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, error.Title);
         }
 
-        [Fact]
+        [Fact(Skip = "Run locally")]
         public async Task When_Pass_Redirect_Uri_With_Fragment_Then_Error_Is_Returned()
         {
             var tokenClient = new TokenClient(
@@ -134,7 +137,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 RequestUri = new Uri($"{BaseUrl}/registration"),
                 Content = new StringContent(fakeJson)
             };
-            httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(ApplicationJson);
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(
                 grantedToken.Content.TokenType,
                 grantedToken.Content.AccessToken);
@@ -154,7 +157,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 error.Detail);
         }
 
-        [Fact]
+        [Fact(Skip = "Run locally")]
         public async Task When_Pass_Invalid_Client_Uri_Then_Error_Is_Returned()
         {
             var tokenClient = new TokenClient(
@@ -178,7 +181,7 @@ namespace SimpleAuth.Server.Tests.Apis
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri($"{BaseUrl}/registration"),
-                Content = new StringContent(fakeJson, Encoding.UTF8, "application/json")
+                Content = new StringContent(fakeJson, Encoding.UTF8, ApplicationJson)
             };
 
             httpRequest.Headers.Authorization =
@@ -192,7 +195,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal("the parameter client_uri is not correct", error.Detail);
         }
 
-        [Fact]
+        [Fact(Skip = "Run locally")]
         public async Task When_Pass_Invalid_Tos_Uri_Then_Error_Is_Returned()
         {
             var tokenClient = new TokenClient(
@@ -231,7 +234,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal("the parameter tos_uri is not correct", error.Detail);
         }
 
-        [Fact]
+        [Fact(Skip = "Run locally")]
         public async Task When_Registering_A_Client_Then_No_Exception_Is_Thrown()
         {
             var tokenClient = new TokenClient(
@@ -256,6 +259,11 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
 
             Assert.NotNull(client.Content);
+        }
+
+        public void Dispose()
+        {
+            _server?.Dispose();
         }
     }
 }

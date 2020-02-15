@@ -178,6 +178,7 @@ namespace SimpleAuth.Api.Token.Actions
                 .GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
             var generatedToken = await _tokenStore.GetValidGrantedToken(
+                    _jwksStore,
                     allowedTokenScopes,
                     client.ClientId,
                     cancellationToken,
