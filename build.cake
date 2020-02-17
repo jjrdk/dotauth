@@ -137,6 +137,7 @@ Task("Pack")
         DotNetCorePack("./src/simpleauth.client/simpleauth.client.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.manager.client/simpleauth.manager.client.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.stores.marten/simpleauth.stores.marten.csproj", packSettings);
+        DotNetCorePack("./src/simpleauth.stores.redis/simpleauth.stores.redis.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.sms/simpleauth.sms.csproj", packSettings);
     });
 
@@ -179,6 +180,25 @@ Task("Docker-Build")
 		Tag = new[] {
 			"jjrdk/simpleauth:postgres",
 			"jjrdk/simpleauth:" + buildVersion + "-postgres"
+		}
+	};
+    DockerBuild(settings, "./");
+
+	publishSettings = new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = "./artifacts/publish/pgredis/"
+    };
+
+    DotNetCorePublish("./src/simpleauth.authserverpgredis/simpleauth.authserverpgredis.csproj", publishSettings);
+    settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfilePgRedis",
+        ForceRm = true,
+        Rm = true,
+		Tag = new[] {
+			"jjrdk/simpleauth:pgredis",
+			"jjrdk/simpleauth:" + buildVersion + "-pgredis"
 		}
 	};
     DockerBuild(settings, "./");

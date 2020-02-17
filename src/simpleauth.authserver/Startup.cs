@@ -15,22 +15,26 @@
 namespace SimpleAuth.AuthServer
 {
     using System;
+    using System.IO.Compression;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Security.Claims;
+
     using Controllers;
+
     using Extensions;
+
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Tokens;
+
     using SimpleAuth;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
-    using System.IO.Compression;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Security.Claims;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.IdentityModel.Tokens;
 
     public class Startup
     {
