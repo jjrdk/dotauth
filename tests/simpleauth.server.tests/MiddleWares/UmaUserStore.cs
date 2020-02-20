@@ -12,7 +12,7 @@
 
         public static UmaUserStore Instance()
         {
-            return _instance ?? (_instance = new UmaUserStore());
+            return _instance ??= new UmaUserStore();
         }
 
         public bool IsInactive { get; set; }

@@ -39,5 +39,11 @@ namespace SimpleAuth.Shared
         /// Implicit
         /// </summary>
         public const string Implicit = "implicit";
+
+        /// <summary>
+        /// All claims
+        /// </summary>
+        public static string[] All =>
+            new[] {ClientCredentials, Password, AuthorizationCode, Implicit, RefreshToken, UmaTicket, ValidateBearer};
     }
 }

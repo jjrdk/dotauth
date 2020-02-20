@@ -24,7 +24,7 @@
             _serializer.Converters.Add(new ClaimConverter());
         }
 
-        public static Serializer Default => _inner ?? (_inner = new Serializer());
+        public static Serializer Default => _inner ??= new Serializer();
 
         public string Serialize<T>(T item)
         {
