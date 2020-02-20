@@ -35,7 +35,23 @@
                 .Where(x => !x.HasPrivateKey)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
-            var jwks = keysets.ToSet();
+            var jwks = keysets
+            //    .Select(x=>new JsonWebKey
+            //{
+            //    Alg = x.Alg,
+            //    Kid = x.Kid,
+            //    Crv = x.Crv,
+            //    D = x.D,
+            //    DP = x.DP,
+            //    DQ = x.DQ,
+            //    E = x.E,
+            //    K = x.K,
+            //    Kty = x.Kty,
+            //    KeyOps = x.KeyOps,
+            //    N = x.N,
+
+            //})
+                .ToSet();
             return jwks;
         }
 
@@ -44,8 +60,7 @@
         {
             using var session = _sessionFactory();
             var webKeys = await session.Query<JsonWebKey>()
-                .Where(
-                    x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Sig)
+                .Where(x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Sig)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
@@ -108,6 +123,5 @@
 
             return true;
         }
-
     }
 }
