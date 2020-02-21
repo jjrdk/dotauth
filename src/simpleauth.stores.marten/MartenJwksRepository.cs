@@ -35,23 +35,7 @@
                 .Where(x => !x.HasPrivateKey)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
-            var jwks = keysets
-            //    .Select(x=>new JsonWebKey
-            //{
-            //    Alg = x.Alg,
-            //    Kid = x.Kid,
-            //    Crv = x.Crv,
-            //    D = x.D,
-            //    DP = x.DP,
-            //    DQ = x.DQ,
-            //    E = x.E,
-            //    K = x.K,
-            //    Kty = x.Kty,
-            //    KeyOps = x.KeyOps,
-            //    N = x.N,
-
-            //})
-                .ToSet();
+            var jwks = keysets.ToSet();
             return jwks;
         }
 
@@ -86,7 +70,7 @@
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            var webKey = webKeys.First(x => x.KeyOps.Contains(KeyOperations.Sign));
+            var webKey = webKeys.OrderBy(x => x.KeyId).First(x => x.KeyOps.Contains(KeyOperations.Sign));
 
             if (webKey.X5c != null)
             {

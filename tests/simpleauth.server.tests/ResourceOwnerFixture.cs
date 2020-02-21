@@ -179,7 +179,6 @@
                 .ConfigureAwait(false);
 
             Assert.Single(result.Content.Content);
-            Assert.False(result.ContainsError);
         }
 
         [Fact]
