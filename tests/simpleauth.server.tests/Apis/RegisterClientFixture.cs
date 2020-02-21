@@ -24,7 +24,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 

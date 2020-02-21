@@ -15,7 +15,6 @@
 namespace SimpleAuth.Api.PolicyController
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
@@ -25,7 +24,6 @@ namespace SimpleAuth.Api.PolicyController
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using ResourceSet = System.Resources.ResourceSet;
 
     internal class AddAuthorizationPolicyAction
     {

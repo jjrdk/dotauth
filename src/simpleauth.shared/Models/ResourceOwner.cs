@@ -74,7 +74,7 @@ namespace SimpleAuth.Shared.Models
             get
             {
                 var unix = Claims?.FirstOrDefault(x => x.Type == OpenIdClaimTypes.UpdatedAt)?.Value;
-                return unix.ConvertFromUnixTimestamp();
+                return unix?.ConvertFromUnixTimestamp() ?? DateTimeOffset.MinValue;
             }
             set
             {

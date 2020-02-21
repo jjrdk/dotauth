@@ -32,7 +32,7 @@ namespace SimpleAuth.AcceptanceTests
             ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
         }
 
-        public static SharedContext Instance => ctx ?? (ctx = new SharedContext());
+        public static SharedContext Instance => ctx ??= new SharedContext();
 
         public JsonWebKey EncryptionKey { get; }
         public JsonWebKey ModelEncryptionKey { get; }

@@ -25,7 +25,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using Xunit;
-    using Models = SimpleAuth.Shared.Models;
 
     public class AddResourceSetActionFixture
     {

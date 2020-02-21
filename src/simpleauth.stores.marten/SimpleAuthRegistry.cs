@@ -19,14 +19,14 @@
         {
             For<Scope>()
                 .Identity(x => x.Name)
-                .Duplicate(x => x.IsDisplayedInConsent, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Boolean)
-                .Duplicate(x => x.Type, "varchar(15)", configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.IsDisplayedInConsent, dbType: NpgsqlDbType.Boolean)
+                .Duplicate(x => x.Type, "varchar(15)")
                 .GinIndexJsonData();
             For<Filter>().Identity(x => x.Name).GinIndexJsonData();
             For<ResourceOwner>()
                 .Identity(x => x.Subject)
-                .Index(x => x.Claims, configure: idx => { idx.IsConcurrent = true; })
-                .Index(x => x.ExternalLogins, configure: idx => { idx.IsConcurrent = true; })
+                .Index(x => x.Claims)
+                .Index(x => x.ExternalLogins)
                 .GinIndexJsonData();
             For<Consent>()
                 .Identity(x => x.Id)
@@ -38,11 +38,11 @@
                 .GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)
-                .Index(x => x.AllowedScopes, configure: idx => { idx.IsConcurrent = true; })
-                .Index(x => x.GrantTypes, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)", configure: idx => { idx.IsConcurrent = true; })
-                .Index(x => x.ResponseTypes, configure: idx => { idx.IsConcurrent = true; })
-                .Index(x => x.Claims, configure: idx => { idx.IsConcurrent = true; })
+                .Index(x => x.AllowedScopes)
+                .Index(x => x.GrantTypes)
+                .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)")
+                .Index(x => x.ResponseTypes)
+                .Index(x => x.Claims)
                 .GinIndexJsonData();
             For<ResourceSetModel>()
                 .Identity(x => x.Id)
@@ -60,26 +60,26 @@
                 .GinIndexJsonData();
             For<AuthorizationCode>()
                 .Identity(x => x.Code)
-                .Duplicate(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.ClientId)
                 .GinIndexJsonData();
             For<ConfirmationCode>().Identity(x => x.Value).GinIndexJsonData();
             For<GrantedToken>()
-                .Duplicate(x => x.Scope, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.AccessToken, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.CreateDateTime, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.ExpiresIn, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Integer)
-                .Duplicate(x => x.IdToken, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.ParentTokenId, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Uuid)
-                .Duplicate(x => x.RefreshToken, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.TokenType, "char(10)", configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Scope)
+                .Duplicate(x => x.AccessToken)
+                .Duplicate(x => x.ClientId)
+                .Duplicate(x => x.CreateDateTime)
+                .Duplicate(x => x.ExpiresIn, dbType: NpgsqlDbType.Integer)
+                .Duplicate(x => x.IdToken)
+                .Duplicate(x => x.ParentTokenId, dbType: NpgsqlDbType.Uuid)
+                .Duplicate(x => x.RefreshToken)
+                .Duplicate(x => x.TokenType, "character(10)")
                 .GinIndexJsonData();
             For<JsonWebKey>()
                 .Identity(x => x.Kid)
-                .Duplicate(x => x.Alg, pgType: "char(20)", configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.Use, "char(3)", configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.HasPrivateKey, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Boolean)
-                .Index(x => x.KeyOps, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Alg, pgType: "character(20)")
+                .Duplicate(x => x.Use, "character(3)")
+                .Duplicate(x => x.HasPrivateKey, dbType: NpgsqlDbType.Boolean)
+                .Index(x => x.KeyOps)
                 .GinIndexJsonData();
         }
     }

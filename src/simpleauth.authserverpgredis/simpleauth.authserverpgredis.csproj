@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>simpleauth.authserverpg</AssemblyName>
+    <AssemblyName>simpleauth.authserverpgredis</AssemblyName>
     <OutputType>Exe</OutputType>
-    <StartupObject>SimpleAuth.AuthServerPg.Program</StartupObject>
-    <RootNamespace>SimpleAuth.AuthServerPg</RootNamespace>
+    <StartupObject>SimpleAuth.AuthServerPgRedis.Program</StartupObject>
+    <RootNamespace>SimpleAuth.AuthServerPgRedis</RootNamespace>
     <UserSecretsId>simpleauth-authserver</UserSecretsId>
   </PropertyGroup>
   <Import Project="..\..\shared.proj" />
@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\simpleauth.stores.redis\simpleauth.stores.redis.csproj" />
     <ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
   </ItemGroup>

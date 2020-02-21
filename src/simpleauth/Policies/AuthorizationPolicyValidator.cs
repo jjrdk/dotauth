@@ -24,7 +24,6 @@ namespace SimpleAuth.Policies
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
 
     internal class AuthorizationPolicyValidator

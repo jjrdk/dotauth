@@ -18,7 +18,6 @@ namespace SimpleAuth.Extensions
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

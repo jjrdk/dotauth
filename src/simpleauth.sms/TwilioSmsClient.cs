@@ -6,7 +6,6 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
-    using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Defines the Twilio SMS client.

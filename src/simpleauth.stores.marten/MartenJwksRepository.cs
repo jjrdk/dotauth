@@ -44,8 +44,7 @@
         {
             using var session = _sessionFactory();
             var webKeys = await session.Query<JsonWebKey>()
-                .Where(
-                    x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Sig)
+                .Where(x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Sig)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
@@ -95,7 +94,7 @@
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            var webKey = webKeys.First(x => x.KeyOps.Contains(KeyOperations.Sign));
+            var webKey = webKeys.OrderBy(x => x.KeyId).First(x => x.KeyOps.Contains(KeyOperations.Sign));
 
             if (webKey.X5c != null)
             {
@@ -132,6 +131,5 @@
 
             return true;
         }
-
     }
 }

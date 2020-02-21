@@ -9,7 +9,6 @@
     using Npgsql;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Stores.Marten;
-    using StackExchange.Redis;
 
     public static class DbInitializer
     {

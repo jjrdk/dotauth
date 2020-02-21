@@ -8,7 +8,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Repositories;
-    using Models = SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the in-memory resource set repository.

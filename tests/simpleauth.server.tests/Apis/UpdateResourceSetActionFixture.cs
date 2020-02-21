@@ -20,9 +20,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using Moq;
     using SimpleAuth.Api.ResourceSetController;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using Xunit;
     using ResourceSet = SimpleAuth.Shared.DTOs.ResourceSet;

@@ -1,5 +1,4 @@
-@using System.Linq
-@*@model SimpleAuth.ViewModels.ProfileViewModel*@
+@model SimpleAuth.ViewModels.ProfileViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.IsEditDisplayed = false;
@@ -81,7 +80,7 @@
             <div class="card-title">The following profiles are linked to your account</div>
         </div>
         <div class="card-action">
-            @if (Model.LinkedIdentityProviders == null || !Model.LinkedIdentityProviders.Any())
+            @if (Model.LinkedIdentityProviders?.Count == 0)
             {
                 <div class="grey-text text-lighten-1">
                     <i class="material-icons prefix">info_outline</i>No identity providers linked to your profile

@@ -1,7 +1,4 @@
-﻿using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-
-namespace SimpleAuth.Stores.Marten
+﻿namespace SimpleAuth.Stores.Marten
 {
     using global::Marten;
     using SimpleAuth.Shared;

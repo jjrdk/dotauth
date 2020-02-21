@@ -15,12 +15,17 @@
 namespace SimpleAuth.AuthServer
 {
     using System;
+
     using Extensions;
+
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Tokens;
+
     using SimpleAuth;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
@@ -30,10 +35,8 @@ namespace SimpleAuth.AuthServer
     using System.Security.Claims;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.ResourceServer;
     using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.DTOs;
@@ -41,7 +44,7 @@ namespace SimpleAuth.AuthServer
 
     public class Startup
     {
-        private static readonly string DefaultGoogleScopes = "openid,profile,email";
+        private const string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
 

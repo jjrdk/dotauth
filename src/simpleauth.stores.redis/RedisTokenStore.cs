@@ -5,7 +5,6 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

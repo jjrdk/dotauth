@@ -14,7 +14,7 @@
 
         public static UserStore Instance()
         {
-            return _instance ?? (_instance = new UserStore());
+            return _instance ??= new UserStore();
         }
 
         public bool IsInactive { get; set; }

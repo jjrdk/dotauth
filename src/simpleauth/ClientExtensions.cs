@@ -1,10 +1,8 @@
 ﻿namespace SimpleAuth
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Shared.Models;
     using SimpleAuth.Shared.Repositories;
