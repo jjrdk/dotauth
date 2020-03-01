@@ -15,7 +15,6 @@
 namespace SimpleAuth.AuthServerPg
 {
     using System;
-    using Controllers;
     using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.ResponseCompression;
@@ -27,7 +26,6 @@ namespace SimpleAuth.AuthServerPg
     using System.IO.Compression;
     using System.Linq;
     using System.Net.Http;
-    using System.Reflection;
     using System.Security.Claims;
     using Marten;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,7 +38,6 @@ namespace SimpleAuth.AuthServerPg
         private static readonly string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
-        private readonly Assembly _assembly = typeof(HomeController).Assembly;
 
         public Startup(IConfiguration configuration)
         {
@@ -49,25 +46,25 @@ namespace SimpleAuth.AuthServerPg
             _options = new SimpleAuthOptions
             {
                 ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
-                Users = sp => new MartenResourceOwnerStore(sp.GetService<IDocumentSession>),
+                Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
                 Clients =
                     sp => new MartenClientStore(
-                        sp.GetService<IDocumentSession>,
-                        sp.GetService<IScopeStore>(),
-                        sp.GetService<HttpClient>(),
+                        sp.GetRequiredService<IDocumentSession>,
+                        sp.GetRequiredService<IScopeStore>(),
+                        sp.GetRequiredService<HttpClient>(),
                         JsonConvert.DeserializeObject<Uri[]>),
-                Scopes = sp => new MartenScopeRepository(sp.GetService<IDocumentSession>),
-                AccountFilters = sp => new MartenFilterStore(sp.GetService<IDocumentSession>),
-                AuthorizationCodes = sp => new MartenAuthorizationCodeStore(sp.GetService<IDocumentSession>),
-                ConfirmationCodes = sp => new MartenConfirmationCodeStore(sp.GetService<IDocumentSession>),
-                Consents = sp => new MartenConsentRepository(sp.GetService<IDocumentSession>),
+                Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
+                AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
+                AuthorizationCodes = sp => new MartenAuthorizationCodeStore(sp.GetRequiredService<IDocumentSession>),
+                ConfirmationCodes = sp => new MartenConfirmationCodeStore(sp.GetRequiredService<IDocumentSession>),
+                Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
                 HttpClientFactory = () => client,
-                JsonWebKeys = sp => new MartenJwksRepository(sp.GetService<IDocumentSession>),
-                Policies = sp => new MartenPolicyRepository(sp.GetService<IDocumentSession>),
-                Tickets = sp => new MartenTicketStore(sp.GetService<IDocumentSession>),
-                Tokens = sp => new MartenTokenStore(sp.GetService<IDocumentSession>),
-                ResourceSets = sp => new MartenResourceSetRepository(sp.GetService<IDocumentSession>),
-                EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
+                JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
+                Policies = sp => new MartenPolicyRepository(sp.GetRequiredService<IDocumentSession>),
+                Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
+                Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
+                ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
+                EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,

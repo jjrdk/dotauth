@@ -5,6 +5,7 @@
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;

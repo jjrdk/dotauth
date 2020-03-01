@@ -12,6 +12,7 @@ namespace SimpleAuth.Sms.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Controllers;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the code controller.

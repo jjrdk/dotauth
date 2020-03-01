@@ -34,9 +34,6 @@ namespace SimpleAuth.AuthServer
     using System.Net.Http;
     using System.Security.Claims;
     using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.ResourceServer;
     using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.DTOs;
@@ -58,15 +55,15 @@ namespace SimpleAuth.AuthServer
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
                 Clients =
                     sp => new InMemoryClientRepository(
-                        sp.GetService<HttpClient>(),
-                        sp.GetService<IScopeStore>(),
-                        sp.GetService<ILogger<InMemoryClientRepository>>(),
+                        sp.GetRequiredService<HttpClient>(),
+                        sp.GetRequiredService<IScopeStore>(),
+                        sp.GetRequiredService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
                 ResourceSets =
                     sp => new InMemoryResourceSetRepository(
                         new[] {new ResourceSetModel {Id = "abc", Owner = "user", Scopes = new[] {"read"}}}),
-                EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
+                EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 HttpClientFactory = () => client,
                 ClaimsIncludedInUserCreation = new[]
                 {
@@ -174,17 +171,6 @@ namespace SimpleAuth.AuthServer
         public void Configure(IApplicationBuilder app)
         {
             app.UseResponseCompression().UseSimpleAuthMvc();
-        }
-    }
-
-    [Route("x")]
-    public class ResourceController : ControllerBase
-    {
-        [HttpGet]
-        [Authorize(Policy = "uma_auth")]
-        public Task<IActionResult> Get(string resourceId)
-        {
-            return Task.FromResult<IActionResult>(Ok(resourceId));
         }
     }
 }

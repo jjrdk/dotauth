@@ -26,6 +26,7 @@ namespace SimpleAuth.Client
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the token client.

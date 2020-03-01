@@ -9,6 +9,7 @@
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Requests;
     using Xunit;
 
     public class SmsCodeFixture : IDisposable

@@ -52,12 +52,12 @@ namespace SimpleAuth.AuthServerPgRedis
             _options = new SimpleAuthOptions
             {
                 ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
-                Users = sp => new MartenResourceOwnerStore(sp.GetService<IDocumentSession>),
+                Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
                 Clients =
                                         sp => new MartenClientStore(
-                                            sp.GetService<IDocumentSession>,
-                                            sp.GetService<IScopeStore>(),
-                                            sp.GetService<HttpClient>(),
+                                            sp.GetRequiredService<IDocumentSession>,
+                                            sp.GetRequiredService<IScopeStore>(),
+                                            sp.GetRequiredService<HttpClient>(),
                                             JsonConvert.DeserializeObject<Uri[]>),
                 Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
                 AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
@@ -69,8 +69,8 @@ namespace SimpleAuth.AuthServerPgRedis
                 Policies = sp => new MartenPolicyRepository(sp.GetRequiredService<IDocumentSession>),
                 Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>()),
                 Tokens = sp => new RedisTokenStore(sp.GetRequiredService<IDatabaseAsync>(), sp.GetRequiredService<IJwksStore>()),
-                ResourceSets = sp => new MartenResourceSetRepository(sp.GetService<IDocumentSession>),
-                EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
+                ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
+                EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 ClaimsIncludedInUserCreation = new[]
                                                                        {
                                                                            ClaimTypes.Name,

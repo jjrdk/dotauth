@@ -41,6 +41,11 @@ namespace SimpleAuth.Extensions
     /// </summary>
     public static class ServiceCollectionExtensions
     {
+        private const string ManageProfileClaim = "manage_profile";
+        private const string AdministratorRole = "administrator";
+        private const string RoleType = "role";
+        private const string ScopeType = "scope";
+
         /// <summary>
         /// Adds the authentication policies.
         /// </summary>
@@ -77,16 +82,9 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
+                            var claimScopes = p.User?.Claims?.FirstOrDefault(c => c.Type == ScopeType);
                             return claimScopes != null && claimScopes.Value.Split(' ').Any(s => s == "uma_protection");
                         });
-                });
-            options.AddPolicy(
-                "manager",
-                policy =>
-                {
-                    policy.AddAuthenticationSchemes(authenticationSchemes);
-                    policy.RequireAuthenticatedUser();
                 });
             options.AddPolicy(
                 "manager",
@@ -102,7 +100,7 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var result = p.User?.Claims?.Where(c => c.Type == "scope").Any(c => c.HasClaimValue("manager"));
+                            var result = p.User?.Claims?.Where(c => c.Type == ScopeType).Any(c => c.HasClaimValue("manager"));
 
                             return result == true;
                         });
@@ -122,7 +120,7 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimsScopes = p.User.Claims.Where(c => c.Type == "scope");
+                            var claimsScopes = p.User.Claims.Where(c => c.Type == ScopeType);
 
                             return claimsScopes.SelectMany(c => c.Value.Split(' ')).Any(v => v == "register_client");
                         });
@@ -134,13 +132,13 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var result = p.User?.Claims?.Where(c => c.Type == "scope").Any(c => c.Value == "register_client");
+                            var result = p.User?.Claims?.Where(c => c.Type == ScopeType).Any(c => c.Value == "register_client");
 
                             return result == true;
                         });
                 });
             options.AddPolicy(
-                "manage_profile",
+                ManageProfileClaim,
                 policy => // Access token with scope = manage_profile or with role = administrator
                 {
                     policy.AddAuthenticationSchemes(authenticationSchemes);
@@ -153,15 +151,15 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                            var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
+                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == RoleType);
+                            var claimScopes = p.User.Claims.Where(c => c.Type == ScopeType).ToArray();
                             if (claimRole == null && claimScopes.Length == 0)
                             {
                                 return false;
                             }
 
-                            return claimRole != null && claimRole.Value == "administrator"
-                                   || claimScopes.Any(s => s.Value == "manage_profile");
+                            return claimRole != null && claimRole.Value == AdministratorRole
+                                   || claimScopes.Any(s => s.Value == ManageProfileClaim);
                         });
                 });
             options.AddPolicy(
@@ -178,14 +176,14 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                            var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
+                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == RoleType);
+                            var claimScopes = p.User.Claims.Where(c => c.Type == ScopeType).ToArray();
                             if (claimRole == null && !claimScopes.Any())
                             {
                                 return false;
                             }
 
-                            return claimRole != null && claimRole.Value.Split(' ', ',').Any(v => v == "administrator")
+                            return claimRole != null && claimRole.Value.Split(' ', ',').Any(v => v == AdministratorRole)
                                    || claimScopes.SelectMany(s => s.Value.Split(' '))
                                        .Any(s => s == "manage_account_filtering");
                         });
