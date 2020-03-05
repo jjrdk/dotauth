@@ -9,10 +9,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Dotnet version
-      run: dotnet --version
-    - name: Run build script
-      run: |
-        export PATH="$PATH:~/.dotnet/tools"
-        dotnet tool install -g Cake.Tool
-        dotnet cake build.cake
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Run build and test script
+      run: dotnet test ./simpleauth.sln --configuration Release
