@@ -15,10 +15,10 @@
     {
         public static List<Client> GetClients()
         {
-            var path = Path.Combine(
-                Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
-                "mycert.pfx");
-            var certificate = new X509Certificate2(path, "simpleauth", X509KeyStorageFlags.Exportable);
+            //var path = Path.Combine(
+            //    Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
+            //    "mycert.pfx");
+            //var certificate = new X509Certificate2(path, "simpleauth", X509KeyStorageFlags.Exportable);
             return new List<Client>
             {
                 new Client
@@ -72,18 +72,15 @@
                 {
                     ClientId = "web",
                     ClientName = "web",
-                    AllowedScopes = new[] {"openid", "role", "manager", "uma_protection"},
+                    AllowedScopes = new[] {"openid", "role", "profile", "manager", "uma_protection"},
                     ApplicationType = ApplicationTypes.Web,
-                    GrantTypes =
+                    GrantTypes = GrantTypes.All,
+                    RedirectionUrls =
                         new[]
                         {
-                            GrantTypes.Password,
-                            GrantTypes.Implicit,
-                            GrantTypes.AuthorizationCode,
-                            GrantTypes.RefreshToken,
-                            GrantTypes.ClientCredentials
+                            new Uri("http://localhost:4200/callback"),
+                            new Uri("https://localhost:5001/signin-oidc"),
                         },
-                    RedirectionUrls = new[] {new Uri("http://localhost:4200/callback"),},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     ResponseTypes =
                         new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
@@ -99,9 +96,7 @@
 
         public static List<Scope> GetScopes()
         {
-            return new List<Scope>
-            {
-            };
+            return new List<Scope> { };
         }
 
         public static List<ResourceOwner> GetUsers()
