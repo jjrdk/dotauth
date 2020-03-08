@@ -6,6 +6,7 @@
     /// Defines the generic result.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [DataContract]
     public class GenericResult<T>
     {
         /// <summary>
