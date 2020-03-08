@@ -249,12 +249,11 @@ namespace SimpleAuth.Extensions
 
             var mvcBuilder = services.AddControllersWithViews()
                 .AddRazorRuntimeCompilation()
-                .AddNewtonsoftJson()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             mvcBuilder = applicationParts.Concat(new[] { typeof(ServiceCollectionExtensions).Assembly })
                 .Distinct()
                 .Aggregate(mvcBuilder, (b, a) => b.AddApplicationPart(a));
-            services.AddRazorPages();
+            services.AddRazorPages().AddNewtonsoftJson();
             Globals.ApplicationName = options.ApplicationName ?? "SimpleAuth";
             var runtimeConfig = GetRuntimeConfig(options);
             services.AddAuthentication();
@@ -307,7 +306,7 @@ namespace SimpleAuth.Extensions
         {
             var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
             return app.UseMiddleware<ExceptionHandlerMiddleware>(publisher)
-                //.UseResponseCompression()
+                .UseResponseCompression()
                 .UseStaticFiles(
                     new StaticFileOptions
                     {

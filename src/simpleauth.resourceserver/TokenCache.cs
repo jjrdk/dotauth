@@ -62,7 +62,7 @@
                 await _semaphore.WaitAsync().ConfigureAwait(false);
                 var allScopes = new HashSet<string>(scopes);
 
-                var storedToken = _tokens.FirstOrDefault(t => allScopes.SetEquals(t.GrantedToken.Scope));
+                var storedToken = _tokens.FirstOrDefault(t => allScopes.SetEquals(t.GrantedToken.Scope.Split(' ')));
                 if (storedToken != null)
                 {
                     if (DateTime.UtcNow < storedToken.Expiration)

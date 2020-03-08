@@ -36,7 +36,6 @@ namespace SimpleAuth.AuthServer
                         o.AddServerHeader = false;
                         o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
                     })
-                .UseUrls("http://*:8080")
                 .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
                 .UseStartup<Startup>()
                 .Build()

@@ -15,10 +15,6 @@
     {
         public static List<Client> GetClients()
         {
-            //var path = Path.Combine(
-            //    Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
-            //    "mycert.pfx");
-            //var certificate = new X509Certificate2(path, "simpleauth", X509KeyStorageFlags.Exportable);
             return new List<Client>
             {
                 new Client
@@ -72,16 +68,17 @@
                 {
                     ClientId = "web",
                     ClientName = "web",
-                    AllowedScopes = new[] {"openid", "role", "profile", "manager", "uma_protection"},
+                    AllowedScopes = new[] {"openid", "role", "profile", "email", "manager", "uma_protection"},
                     ApplicationType = ApplicationTypes.Web,
                     GrantTypes = GrantTypes.All,
                     RedirectionUrls =
                         new[]
                         {
                             new Uri("http://localhost:4200/callback"),
-                            new Uri("https://localhost:5001/signin-oidc"),
+                            new Uri("http://localhost:4200/index.html"),
+                            new Uri("https://localhost:50001/signin-oidc"),
                         },
-                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
                     ResponseTypes =
                         new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
@@ -109,7 +106,8 @@
                     Claims = new[]
                     {
                         new Claim(StandardClaimNames.Subject, "administrator"),
-                        new Claim("role", "administrator")
+                        new Claim("role", "administrator"),
+                        new Claim("role", "uma_admin"),
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,

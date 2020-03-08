@@ -99,12 +99,13 @@ namespace SimpleAuth.AuthServer
                                 new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                     })
                 .AddHttpContextAccessor()
-                .AddAntiforgery(options =>
-                {
-                    options.FormFieldName = "XrsfField";
-                    options.HeaderName = "XSRF-TOKEN";
-                    options.SuppressXFrameOptionsHeader = false;
-                })
+                .AddAntiforgery(
+                    options =>
+                    {
+                        options.FormFieldName = "XrsfField";
+                        options.HeaderName = "XSRF-TOKEN";
+                        options.SuppressXFrameOptionsHeader = false;
+                    })
                 .AddCors(
                     options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
                 .AddLogging(log => { log.AddConsole(); });
@@ -118,24 +119,10 @@ namespace SimpleAuth.AuthServer
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
+                            ValidIssuers = new[] {"http://localhost:5000", "https://localhost:5001"}
                         };
                         cfg.RequireHttpsMetadata = false;
-                    })
-                .AddUmaTicket(configureOptions: options =>
-                {
-                    options.Authority = "https://localhost:5001/";
-                    options.RequireHttpsMetadata = false;
-                    options.ClientId = "web";
-                    options.ClientSecret = "secret";
-                    options.UmaResourcePaths = new[] { new Regex("/x", RegexOptions.Compiled) };
-                    options.ResourceSetRequest = r => new[] { new PermissionRequest { ResourceSetId = "abc", Scopes = new[] { "read" } } };
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateAudience = false,
-                        ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
-                    };
-                });
+                    });
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
@@ -158,13 +145,15 @@ namespace SimpleAuth.AuthServer
 
             services.AddSimpleAuth(
                 _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme },
+                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme},
                 applicationParts: GetType().Assembly);
 
             services.AddAuthorization(
                 o =>
                 {
-                    o.AddPolicy("uma_auth", builder => builder.RequireUmaTicket(UmaAuthenticationDefaults.AuthenticationScheme));
+                    o.AddPolicy(
+                        "uma_auth",
+                        builder => builder.RequireUmaTicket(UmaAuthenticationDefaults.AuthenticationScheme));
                 });
         }
 

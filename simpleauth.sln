@@ -81,7 +81,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "simpleauth.admin", "src\sim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.integrationtests", "tests\simpleauth.integrationtests\simpleauth.integrationtests.csproj", "{4EC6178C-DA40-4750-B5D6-7197394E19D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleauth.webapp", "src\simpleauth.webapp\simpleauth.webapp.csproj", "{08D751C7-0F41-4606-8BEC-94EDB8FE66A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.webapp", "src\simpleauth.webapp\simpleauth.webapp.csproj", "{08D751C7-0F41-4606-8BEC-94EDB8FE66A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

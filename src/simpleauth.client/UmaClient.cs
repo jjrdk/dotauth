@@ -37,8 +37,13 @@ namespace SimpleAuth.Client
 
         public UmaClient(HttpClient client, Uri configurationUri)
         {
+            var builder = new UriBuilder(
+                configurationUri.Scheme,
+                configurationUri.Host,
+                configurationUri.Port,
+                "/.well-known/uma2-configuration");
             _client = client;
-            _configurationUri = configurationUri;
+            _configurationUri = builder.Uri;
         }
 
         public async Task<UmaConfiguration> GetUmaConfiguration()

@@ -21,7 +21,7 @@ namespace SimpleAuth.ResourceServer.Authentication
     {
         public void PostConfigure(string name, UmaAuthenticationOptions options)
         {
-            if (string.IsNullOrEmpty(options.Authority))
+            if (options.Authority == null)
             {
                 throw new InvalidOperationException("Authority must be provided in options.");
             }
@@ -43,14 +43,12 @@ namespace SimpleAuth.ResourceServer.Authentication
 
             if (options.Configuration == null && options.DiscoveryDocumentUri == null)
             {
-                if (options.Authority != null)
-                {
-                    options.DiscoveryDocumentUri = new Uri(options.Authority.TrimEnd('/') + "/.well-known/uma2-configuration");
-                }
-                else
-                {
-                    throw new InvalidOperationException("Options must provide either configuration document or discovery uri.");
-                }
+                var builder = new UriBuilder(
+                       options.Authority.Scheme,
+                       options.Authority.Host,
+                       options.Authority.Port,
+                       "/.well-known/uma2-configuration");
+                options.DiscoveryDocumentUri = builder.Uri;
             }
 
             if (options.Configuration == null

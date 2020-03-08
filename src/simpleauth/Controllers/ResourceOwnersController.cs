@@ -373,7 +373,7 @@ namespace SimpleAuth.Controllers
                     ExpiresIn = refreshedToken.ExpiresIn,
                     IdToken = refreshedToken.IdToken,
                     RefreshToken = refreshedToken.RefreshToken,
-                    Scope = refreshedToken.Scope.Split(' '),
+                    Scope = refreshedToken.Scope,
                     TokenType = refreshedToken.TokenType
                 })
                 : (IActionResult)BadRequest();

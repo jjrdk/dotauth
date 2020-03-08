@@ -53,7 +53,7 @@ namespace SimpleAuth.Extensions
         public static RouteValueDictionary GetRouteValueDictionary(this RedirectInstruction instruction)
         {
             var result = new RouteValueDictionary();
-            if (instruction.Parameters != null && instruction.Parameters.Any())
+            if (instruction.Parameters != null)
             {
                 foreach (var parameter in instruction.Parameters)
                 {

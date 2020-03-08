@@ -15,12 +15,15 @@
 namespace SimpleAuth.ResourceServer
 {
     using System;
+    using System.Net.Http;
     using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
+    using SimpleAuth.Client;
     using SimpleAuth.ResourceServer.Authentication;
 
-    public static class BasicAuthenticationExtensions
+    public static class UmaAuthenticationExtensions
     {
         public static AuthenticationBuilder AddUmaTicket(
             this AuthenticationBuilder builder,
@@ -28,8 +31,22 @@ namespace SimpleAuth.ResourceServer
             string displayName = "UMA Ticket",
             Action<UmaAuthenticationOptions> configureOptions = null)
         {
-            builder.Services
-                .AddSingleton<IPostConfigureOptions<UmaAuthenticationOptions>, PostConfigureUmaAuthenticationOptions>();
+            builder.Services.AddSingleton<HttpClient>();
+            builder.Services.AddSingleton<IPostConfigureOptions<UmaAuthenticationOptions>, PostConfigureUmaAuthenticationOptions>();
+            var optionsBuilder = builder.Services.AddOptions<UmaAuthenticationOptions>();
+            if (configureOptions != null)
+            {
+                optionsBuilder.Configure(configureOptions);
+            }
+
+            builder.Services.AddSingleton<IUmaPermissionClient, UmaClient>(
+                sp =>
+                {
+                    var options = sp.GetRequiredService<IOptions<UmaAuthenticationOptions>>();
+                    return new UmaClient(
+                        sp.GetRequiredService<HttpClient>(),
+                        options.Value.Authority);
+                });
 
             return builder.AddScheme<UmaAuthenticationOptions, UmaAuthenticationHandler>(
                 authenticationScheme,

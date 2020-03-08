@@ -137,15 +137,11 @@ namespace SimpleAuth.Extensions
             RouteValueDictionary parameters,
             string responseMode)
         {
-            switch (responseMode)
+            uri = responseMode switch
             {
-                case ResponseModes.Fragment:
-                    uri = uri.AddParametersInFragment(parameters);
-                    break;
-                default:
-                    uri = uri.AddParametersInQuery(parameters);
-                    break;
-            }
+                ResponseModes.Fragment => uri.AddParametersInFragment(parameters),
+                _ => uri.AddParametersInQuery(parameters)
+            };
 
             return uri.ToString();
         }

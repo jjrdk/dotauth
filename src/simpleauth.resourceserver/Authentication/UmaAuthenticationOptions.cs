@@ -25,7 +25,7 @@ namespace SimpleAuth.ResourceServer.Authentication
 
     public class UmaAuthenticationOptions : AuthenticationSchemeOptions
     {
-        public string Authority { get; set; }
+        public Uri Authority { get; set; }
 
         public string Realm { get; set; }
 

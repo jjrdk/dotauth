@@ -49,7 +49,13 @@ namespace SimpleAuth.ResourceServer.Authentication
         {
             if (Context.User?.Identity?.IsAuthenticated == true)
             {
-                return AuthenticateResult.Success(new AuthenticationTicket(Context.User, Context.User.Identity.AuthenticationType));
+                if ((Context.User.Identity as ClaimsIdentity).TryGetUmaTickets(out _))
+                {
+                    var ticket = new AuthenticationTicket(Context.User, Scheme.Name);
+                    return AuthenticateResult.Success(ticket);
+                }
+                return AuthenticateResult.Fail("Missing UMA ticket");
+                //return AuthenticateResult.Success(new AuthenticationTicket(Context.User, Context.User.Identity.AuthenticationType));
             }
 
             if (!Request.Headers.ContainsKey(HeaderNames.Authorization))

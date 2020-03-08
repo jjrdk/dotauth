@@ -105,7 +105,7 @@
                             }
                         };
                         cfg.UmaResourcePaths = new[] { new Regex("/data/.+", RegexOptions.Compiled), };
-                        cfg.Authority = "http://localhost";
+                        cfg.Authority = new Uri("http://localhost");
                         cfg.BackchannelHttpHandler = _context.Handler;
                         cfg.RequireHttpsMetadata = false;
                         cfg.DiscoveryDocumentUri = new Uri("http://localhost/.well-known/openid-configuration");
