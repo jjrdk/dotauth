@@ -20,6 +20,7 @@ namespace SimpleAuth.Shared.Models
     /// <summary>
     /// Defines the scope.
     /// </summary>
+    [DataContract]
     public class Scope
     {
         /// <summary>

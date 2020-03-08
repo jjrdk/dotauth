@@ -23,6 +23,7 @@ namespace SimpleAuth.Shared.Models
     /// <summary>
     /// Defines the client.
     /// </summary>
+    [DataContract]
     public class Client
     {
         /// <summary>
