@@ -17,8 +17,15 @@ namespace SimpleAuth.Controllers
     using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.ViewModels;
 
+    /// <summary>
+    /// Defines the form controller.
+    /// </summary>
     public class FormController : Controller
     {
+        /// <summary>
+        /// Populates the return form.
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             var queryStringValue = Request.QueryString.Value;

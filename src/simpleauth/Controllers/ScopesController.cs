@@ -53,7 +53,7 @@ namespace SimpleAuth.Controllers
         /// <exception cref="ArgumentNullException">request</exception>
         [HttpPost(".search")]
         [Authorize(Policy = "manager")]
-        public async Task<ActionResult<PagedResult<Scope>>> Search(
+        public async Task<ActionResult<GenericResult<Scope>>> Search(
             [FromBody] SearchScopesRequest request,
             CancellationToken cancellationToken)
         {

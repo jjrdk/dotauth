@@ -31,7 +31,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="parameter">The parameter.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<PagedResult<Client>> Search(SearchClientsRequest parameter, CancellationToken cancellationToken);
+        Task<GenericResult<Client>> Search(SearchClientsRequest parameter, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the specified client.

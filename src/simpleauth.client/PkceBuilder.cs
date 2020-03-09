@@ -18,27 +18,29 @@ namespace SimpleAuth.Client
     using System.Text;
     using SimpleAuth.Shared.Models;
 
-    internal class PkceBuilder
+    internal static class PkceBuilder
     {
-        public Pkce Build(string method)
+        private static readonly Random Random = new Random();
+
+        public static Pkce BuildPkce(this string method)
         {
-            var result = new Pkce {CodeVerifier = GetCodeVerifier()};
-            result.CodeChallenge = GetCodeChallenge(result.CodeVerifier, method);
-            return result;
+            var codeVerifier = GetCodeVerifier();
+            var codeChallenge = GetCodeChallenge(codeVerifier, method);
+            return new Pkce(codeVerifier, codeChallenge);
         }
 
         private static string GetCodeVerifier()
         {
             const string possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
-            var random = new Random();
-            var nb = random.Next(43, 128);
-            var result = new StringBuilder();
+            var nb = Random.Next(43, 128);
+            var buffer = new char[nb];
+            //var result = new StringBuilder();
             for (var i = 0; i < nb; i++)
             {
-                result.Append(possibleChars[random.Next(possibleChars.Length)]);
+                buffer[i] = possibleChars[Random.Next(possibleChars.Length)];
             }
 
-            return result.ToString();
+            return new string(buffer);
         }
 
         private static string GetCodeChallenge(string codeVerifier, string method)

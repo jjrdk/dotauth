@@ -29,11 +29,11 @@
         }
 
         /// <inheritdoc />
-        public async Task<PagedResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
+        public async Task<GenericResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
         {
             if (parameter == null)
             {
-                return new PagedResult<Scope>();
+                return new GenericResult<Scope>();
             }
 
             using var session = this._sessionFactory();
@@ -42,7 +42,7 @@
                               .ToPagedListAsync(parameter.StartIndex + 1, parameter.NbResults, cancellationToken)
                               .ConfigureAwait(false);
 
-            return new PagedResult<Scope>
+            return new GenericResult<Scope>
             {
                 Content = results.ToArray(),
                 StartIndex = parameter.StartIndex,
@@ -58,12 +58,10 @@
                 return null;
             }
 
-            using (var session = _sessionFactory())
-            {
-                var scope = await session.LoadAsync<Scope>(name, cancellationToken).ConfigureAwait(false);
+            using var session = _sessionFactory();
+            var scope = await session.LoadAsync<Scope>(name, cancellationToken).ConfigureAwait(false);
 
-                return scope;
-            }
+            return scope;
         }
 
         /// <inheritdoc />
@@ -102,12 +100,10 @@
                 return false;
             }
 
-            using (var session = _sessionFactory())
-            {
-                session.Store(scope);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Store(scope);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
@@ -118,12 +114,10 @@
                 return false;
             }
 
-            using (var session = _sessionFactory())
-            {
-                session.Delete(scope.Name);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Delete(scope.Name);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
 
         /// <inheritdoc />
@@ -134,12 +128,10 @@
                 return false;
             }
 
-            using (var session = _sessionFactory())
-            {
-                session.Update(scope);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
-            }
+            using var session = _sessionFactory();
+            session.Update(scope);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
     }
 }

@@ -151,7 +151,7 @@
         }
 
         /// <inheritdoc />
-        public Task<PagedResult<ResourceOwner>> Search(
+        public Task<GenericResult<ResourceOwner>> Search(
             SearchResourceOwnersRequest parameter,
             CancellationToken cancellationToken = default)
         {
@@ -178,7 +178,7 @@
             }
 
             return Task.FromResult(
-                new PagedResult<ResourceOwner>
+                new GenericResult<ResourceOwner>
                 {
                     Content = result.ToArray(),
                     StartIndex = parameter.StartIndex,

@@ -81,7 +81,7 @@
         }
 
         /// <inheritdoc />
-        public Task<PagedResult<Policy>> Search(
+        public Task<GenericResult<Policy>> Search(
             SearchAuthPolicies parameter,
             CancellationToken cancellationToken = default)
         {
@@ -103,7 +103,7 @@
                 result = result.Skip(parameter.StartIndex).Take(parameter.TotalResults);
             }
 
-            return Task.FromResult(new PagedResult<Policy>
+            return Task.FromResult(new GenericResult<Policy>
             {
                 Content = result.ToArray(),
                 StartIndex = parameter.StartIndex,

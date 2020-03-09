@@ -71,6 +71,7 @@
                     AllowedScopes = new[] {"openid", "role", "profile", "email", "manager", "uma_protection"},
                     ApplicationType = ApplicationTypes.Web,
                     GrantTypes = GrantTypes.All,
+                    RequirePkce = true,
                     RedirectionUrls =
                         new[]
                         {

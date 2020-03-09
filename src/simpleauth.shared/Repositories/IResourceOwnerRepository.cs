@@ -71,6 +71,6 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="parameter">The parameter.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<PagedResult<ResourceOwner>> Search(SearchResourceOwnersRequest parameter, CancellationToken cancellationToken);
+        Task<GenericResult<ResourceOwner>> Search(SearchResourceOwnersRequest parameter, CancellationToken cancellationToken);
     }
 }

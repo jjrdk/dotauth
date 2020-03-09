@@ -7,7 +7,7 @@
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [DataContract]
-    public class PagedResult<T>
+    public class GenericResult<T>
     {
         /// <summary>
         /// Gets or sets the total results.

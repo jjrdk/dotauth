@@ -96,7 +96,7 @@
         }
 
         /// <inheritdoc />
-        public Task<PagedResult<Client>> Search(
+        public Task<GenericResult<Client>> Search(
             SearchClientsRequest newClient,
             CancellationToken cancellationToken = default)
         {
@@ -132,7 +132,7 @@
             }
 
             return Task.FromResult(
-                new PagedResult<Client>
+                new GenericResult<Client>
                 {
                     Content = result.ToArray(),
                     StartIndex = newClient.StartIndex,

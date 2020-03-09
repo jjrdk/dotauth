@@ -154,7 +154,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<PagedResult<ResourceOwner>> Search(
+        public async Task<GenericResult<ResourceOwner>> Search(
             SearchResourceOwnersRequest parameter,
             CancellationToken cancellationToken = default)
         {
@@ -165,7 +165,7 @@
                 .ToPagedListAsync(parameter.StartIndex + 1, parameter.NbResults, cancellationToken)
                 .ConfigureAwait(false);
 
-            return new PagedResult<ResourceOwner>
+            return new GenericResult<ResourceOwner>
             {
                 Content = results.ToArray(),
                 TotalResults = results.TotalItemCount,

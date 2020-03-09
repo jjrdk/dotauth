@@ -661,7 +661,7 @@ namespace SimpleAuth.Client
         /// <param name="parameter">The parameter.</param>
         /// <param name="authorizationHeaderValue">The authorization header value.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<PagedResult<ResourceSet>>> SearchResources(
+        public async Task<GenericResponse<GenericResult<ResourceSet>>> SearchResources(
             SearchResourceSet parameter,
             string authorizationHeaderValue = null)
         {
@@ -680,16 +680,16 @@ namespace SimpleAuth.Client
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
             {
-                return new GenericResponse<PagedResult<ResourceSet>>()
+                return new GenericResponse<GenericResult<ResourceSet>>()
                 {
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
-            return new GenericResponse<PagedResult<ResourceSet>>
+            return new GenericResponse<GenericResult<ResourceSet>>
             {
-                Content = JsonConvert.DeserializeObject<PagedResult<ResourceSet>>(content)
+                Content = JsonConvert.DeserializeObject<GenericResult<ResourceSet>>(content)
             };
         }
     }
