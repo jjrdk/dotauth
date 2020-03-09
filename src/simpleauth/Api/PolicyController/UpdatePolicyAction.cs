@@ -28,15 +28,13 @@ namespace SimpleAuth.Api.PolicyController
     internal class UpdatePolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
-        private readonly IResourceSetRepository _resourceSetRepository;
 
-        public UpdatePolicyAction(IPolicyRepository policyRepository, IResourceSetRepository resourceSetRepository)
+        public UpdatePolicyAction(IPolicyRepository policyRepository)
         {
             _policyRepository = policyRepository;
-            _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(PutPolicy updatePolicyParameter, CancellationToken cancellationToken)
+        public async Task<bool> Execute(PolicyData updatePolicyParameter, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(updatePolicyParameter.PolicyId)
                 || updatePolicyParameter.Rules == null
@@ -66,7 +64,7 @@ namespace SimpleAuth.Api.PolicyController
             {
                 return false;
             }
-            
+
             // Update the authorization policy.
             policy.Rules = updatePolicyParameter.Rules.Select(
                     ruleParameter => new PolicyRule

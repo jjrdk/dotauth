@@ -28,6 +28,7 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the resource set controller.

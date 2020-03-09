@@ -64,7 +64,7 @@ namespace SimpleAuth.Client
         /// accessToken
         /// </exception>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<GetUserInfoResult> Get(string accessToken, bool inBody = false)
+        public async Task<UserInfoResult> Get(string accessToken, bool inBody = false)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {
@@ -97,7 +97,7 @@ namespace SimpleAuth.Client
             var json = await serializedContent.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!serializedContent.IsSuccessStatusCode)
             {
-                return new GetUserInfoResult
+                return new UserInfoResult
                 {
                     HasError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
@@ -108,7 +108,7 @@ namespace SimpleAuth.Client
             var contentType = serializedContent.Content.Headers.ContentType;
             if (contentType?.Parameters != null && contentType.MediaType == "application/jwt")
             {
-                return new GetUserInfoResult
+                return new UserInfoResult
                 {
                     HasError = false,
                     JwtToken = json
@@ -117,13 +117,13 @@ namespace SimpleAuth.Client
 
             if (!string.IsNullOrWhiteSpace(json))
             {
-                return new GetUserInfoResult
+                return new UserInfoResult
                 {
                     HasError = false,
                     Content = string.IsNullOrWhiteSpace(json) ? null : JsonConvert.DeserializeObject<JwtPayload>(json)
                 };
             }
-            return new GetUserInfoResult
+            return new UserInfoResult
             {
                 HasError = true,
                 Error = new ErrorDetails

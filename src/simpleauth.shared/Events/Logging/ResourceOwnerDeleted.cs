@@ -16,7 +16,7 @@
         /// <param name="subject">The account subject</param>
         /// <param name="claims">The claims of the deleted user.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public ResourceOwnerDeleted(string id, string subject, PostClaim[] claims, DateTimeOffset timestamp) : base(id, timestamp)
+        public ResourceOwnerDeleted(string id, string subject, ClaimData[] claims, DateTimeOffset timestamp) : base(id, timestamp)
         {
             Subject = subject;
             Claims = claims;
@@ -30,6 +30,6 @@
         /// <summary>
         /// Gets the claims for the removed resource owner.
         /// </summary>
-        public PostClaim[] Claims { get; }
+        public ClaimData[] Claims { get; }
     }
 }

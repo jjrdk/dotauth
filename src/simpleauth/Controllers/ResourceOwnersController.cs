@@ -184,7 +184,7 @@ namespace SimpleAuth.Controllers
                 await _eventPublisher.Publish(new ResourceOwnerDeleted(
                         Id.Create(),
                         resourceOwner.Subject,
-                        resourceOwner.Claims.Select(x => new PostClaim { Type = x.Type, Value = x.Value }).ToArray(),
+                        resourceOwner.Claims.Select(x => new ClaimData { Type = x.Type, Value = x.Value }).ToArray(),
                         DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 return Ok();
@@ -282,7 +282,7 @@ namespace SimpleAuth.Controllers
 
             var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
             var previousClaims = resourceOwner.Claims
-                .Select(claim => new PostClaim { Type = claim.Type, Value = claim.Value }).ToArray();
+                .Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }).ToArray();
             var newTypes = request.Claims.Select(x => x.Type).ToArray();
             resourceOwner.Claims = resourceOwner.Claims.Where(x => newTypes.All(n => n != x.Type))
                 .Concat(request.Claims.Select(x => new Claim(x.Type, x.Value)))
@@ -306,7 +306,7 @@ namespace SimpleAuth.Controllers
 
             var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
             var previousClaims = resourceOwner.Claims
-                .Select(claim => new PostClaim { Type = claim.Type, Value = claim.Value }).ToArray();
+                .Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }).ToArray();
             var toDelete = type.Where(t => User.HasClaim(x => x.Type == t)).ToArray();
             resourceOwner.Claims = resourceOwner.Claims
                 .Where(x => !toDelete.Contains(x.Type))
@@ -316,7 +316,7 @@ namespace SimpleAuth.Controllers
         }
 
         private async Task<IActionResult> UpdateMyResourceOwner(CancellationToken cancellationToken,
-            ResourceOwner resourceOwner, PostClaim[] previousClaims)
+            ResourceOwner resourceOwner, ClaimData[] previousClaims)
         {
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             var value = Request.Headers[HttpRequestHeader.Authorization.ToString()].FirstOrDefault();
@@ -359,7 +359,7 @@ namespace SimpleAuth.Controllers
             await _eventPublisher.Publish(new ClaimsUpdated(Id.Create(), resourceOwner.Subject,
                 previousClaims,
                 resourceOwner.Claims
-                    .Select(claim => new PostClaim
+                    .Select(claim => new ClaimData
                     {
                         Type = claim.Type,
                         Value = claim.Value

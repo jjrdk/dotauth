@@ -84,12 +84,11 @@
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
 
-            var ticket = await _umaClient.RequestPermission(
+            var ticket = await _umaClient.RequestPermission("header",
                     new PermissionRequest // Add permission & retrieve a ticket id.
                     {
                         ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}
-                    },
-                    "header")
+                    })
                 .ConfigureAwait(false);
 
             Assert.NotNull(ticket.Content);

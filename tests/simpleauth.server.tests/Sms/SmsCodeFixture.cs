@@ -2,7 +2,6 @@
 {
     using Moq;
     using SimpleAuth.Client;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using System;

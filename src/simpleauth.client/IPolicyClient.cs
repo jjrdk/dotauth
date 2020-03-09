@@ -18,6 +18,7 @@ namespace SimpleAuth.Client
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
     public interface IPolicyClient
@@ -33,7 +34,7 @@ namespace SimpleAuth.Client
         /// or
         /// authorizationHeaderValue
         /// </exception>
-        Task<GenericResponse<AddPolicyResponse>> AddPolicy(PostPolicy request, string accessToken);
+        Task<GenericResponse<AddPolicyResponse>> AddPolicy(PolicyData request, string accessToken);
 
         /// <summary>
         /// Gets the policy.
@@ -80,7 +81,7 @@ namespace SimpleAuth.Client
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<object>> UpdatePolicy(PutPolicy request, string token);
+        Task<GenericResponse<object>> UpdatePolicy(PolicyData request, string token);
 
         /// <summary>
         /// Searches the policies.

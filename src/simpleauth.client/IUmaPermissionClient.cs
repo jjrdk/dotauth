@@ -25,15 +25,15 @@ namespace SimpleAuth.Client
         /// <summary>
         /// Adds the permission.
         /// </summary>
-        /// <param name="request">The request.</param>
         /// <param name="token">The token.</param>
+        /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
         /// request
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<PermissionResponse>> RequestPermission(PermissionRequest request, string token);
+        Task<GenericResponse<PermissionResponse>> RequestPermission(string token, PermissionRequest request);
 
         /// <summary>
         /// Adds the permissions.

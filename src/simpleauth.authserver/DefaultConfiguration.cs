@@ -6,9 +6,7 @@
     using SimpleAuth;
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Security.Claims;
-    using System.Security.Cryptography.X509Certificates;
     using System.Text.RegularExpressions;
 
     public static class DefaultConfiguration
@@ -79,8 +77,7 @@
                             new Uri("https://localhost:50001/signin-oidc"),
                         },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
-                    ResponseTypes =
-                        new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
+                    ResponseTypes =ResponseTypeNames.All,
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
                     UserClaimsToIncludeInAuthToken = new[]
                     {

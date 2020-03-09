@@ -23,6 +23,7 @@ namespace SimpleAuth.Client
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
     /// <summary>
@@ -60,15 +61,17 @@ namespace SimpleAuth.Client
         /// <summary>
         /// Adds the permission.
         /// </summary>
-        /// <param name="request">The request.</param>
         /// <param name="token">The token.</param>
+        /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
         /// request
         /// or
         /// token
         /// </exception>
-        public async Task<GenericResponse<PermissionResponse>> RequestPermission(PermissionRequest request, string token)
+        public async Task<GenericResponse<PermissionResponse>> RequestPermission(
+            string token,
+            PermissionRequest request)
         {
             if (request == null)
             {
@@ -175,7 +178,7 @@ namespace SimpleAuth.Client
         /// authorizationHeaderValue
         /// </exception>
         public async Task<GenericResponse<AddPolicyResponse>> AddPolicy(
-            PostPolicy request,
+            PolicyData request,
             string accessToken)
         {
             if (request == null)
@@ -352,7 +355,7 @@ namespace SimpleAuth.Client
         /// or
         /// token
         /// </exception>
-        public async Task<GenericResponse<object>> UpdatePolicy(PutPolicy request, string token)
+        public async Task<GenericResponse<object>> UpdatePolicy(PolicyData request, string token)
         {
             if (request == null)
             {

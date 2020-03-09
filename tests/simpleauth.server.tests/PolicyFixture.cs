@@ -38,7 +38,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Add_Policy_And_Pass_No_Rules_Then_Error_Is_Returned()
         {
-            var response = await _umaClient.AddPolicy(new PostPolicy(), "header")
+            var response = await _umaClient.AddPolicy(new PolicyData(), "header")
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
@@ -50,9 +50,9 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Add_Policy_And_Scope_Does_Not_Exists_Then_Error_Is_Returned()
         {
             var response = await _umaClient.AddPolicy(
-                    new PostPolicy
+                    new PolicyData
                     {
-                        Rules = new[] { new PostPolicyRule { Scopes = new[] { "scope" } } }
+                        Rules = new[] { new PolicyRuleData { Scopes = new[] { "scope" } } }
                     },
                     "header")
                 .ConfigureAwait(false);
@@ -75,7 +75,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Update_Policy_And_No_Id_Is_Passed_Then_Error_Is_Returned()
         {
-            var response = await _umaClient.UpdatePolicy(new PutPolicy { }, "header").ConfigureAwait(false);
+            var response = await _umaClient.UpdatePolicy(new PolicyData(), "header").ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
             Assert.Equal(ErrorCodes.InvalidRequest, response.Error.Title);
@@ -85,7 +85,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Update_Policy_And_No_Rules_Is_Passed_Then_Error_Is_Returned()
         {
-            var response = await _umaClient.UpdatePolicy(new PutPolicy { PolicyId = "policy" }, "header")
+            var response = await _umaClient.UpdatePolicy(new PolicyData { PolicyId = "policy" }, "header")
                 .ConfigureAwait(false);
 
             Assert.True(response.ContainsError);
@@ -97,7 +97,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Unknown_Policy_Then_Error_Is_Returned()
         {
             var response = await _umaClient.UpdatePolicy(
-                    new PutPolicy { PolicyId = "policy", Rules = new[] { new PutPolicyRule { } } },
+                    new PolicyData { PolicyId = "policy", Rules = new[] { new PolicyRuleData { } } },
                     "header")
                 .ConfigureAwait(false);
 
@@ -109,19 +109,19 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Update_Policy_And_Scope_Does_Not_Exist_Then_Error_Is_Returned()
         {
-            var addResource = await _umaClient.AddResource(
+            await _umaClient.AddResource(
                     new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
                     "header")
                 .ConfigureAwait(false);
             var addResponse = await _umaClient.AddPolicy(
-                    new PostPolicy
+                    new PolicyData
                     {
                         Rules = new[]
                         {
-                            new PostPolicyRule
+                            new PolicyRuleData
                             {
                                 IsResourceOwnerConsentNeeded = false,
-                                Claims = new[] {new PostClaim {Type = "role", Value = "administrator"}},
+                                Claims = new[] {new ClaimData {Type = "role", Value = "administrator"}},
                                 Scopes = new[] {"read"}
                             }
                         },
@@ -130,10 +130,10 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             var response = await _umaClient.UpdatePolicy(
-                    new PutPolicy
+                    new PolicyData
                     {
                         PolicyId = addResponse.Content.PolicyId,
-                        Rules = new[] { new PutPolicyRule { Scopes = new[] { "invalid_scope" } } }
+                        Rules = new[] { new PolicyRuleData { Scopes = new[] { "invalid_scope" } } }
                     },
                     "header")
                 .ConfigureAwait(false);
@@ -156,20 +156,20 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Adding_Policy_Then_Information_Can_Be_Returned()
         {
-            var addResponse = await _umaClient.AddResource(
+            await _umaClient.AddResource(
                     new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
                     "header")
                 .ConfigureAwait(false);
 
             var response = await _umaClient.AddPolicy(
-                    new PostPolicy
+                    new PolicyData
                     {
                         Rules = new[]
                         {
-                            new PostPolicyRule
+                            new PolicyRuleData
                             {
                                 IsResourceOwnerConsentNeeded = false,
-                                Claims = new[] {new PostClaim {Type = "role", Value = "administrator"}},
+                                Claims = new[] {new ClaimData {Type = "role", Value = "administrator"}},
                                 Scopes = new[] {"read"}
                             }
                         },
@@ -194,14 +194,14 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
             var addPolicy = await _umaClient.AddPolicy(
-                    new PostPolicy
+                    new PolicyData
                     {
                         Rules = new[]
                         {
-                            new PostPolicyRule
+                            new PolicyRuleData
                             {
                                 IsResourceOwnerConsentNeeded = false,
-                                Claims = new[] {new PostClaim {Type = "role", Value = "administrator"}},
+                                Claims = new[] {new ClaimData {Type = "role", Value = "administrator"}},
                                 Scopes = new[] {"read"}
                             }
                         },
@@ -218,14 +218,14 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Updating_Policy_Then_Changes_Are_Persisted()
         {
             var addPolicy = await _umaClient.AddPolicy(
-                    new PostPolicy
+                    new PolicyData
                     {
                         Rules = new[]
                         {
-                            new PostPolicyRule
+                            new PolicyRuleData
                             {
                                 IsResourceOwnerConsentNeeded = false,
-                                Claims = new[] {new PostClaim {Type = "role", Value = "administrator"}},
+                                Claims = new[] {new ClaimData {Type = "role", Value = "administrator"}},
                                 Scopes = new[] {"read"}
                             }
                         },
@@ -235,17 +235,17 @@ namespace SimpleAuth.Server.Tests
             var firstInfo = await _umaClient.GetPolicy(addPolicy.Content.PolicyId, "header").ConfigureAwait(false);
 
             var isUpdated = await _umaClient.UpdatePolicy(
-                    new PutPolicy
+                    new PolicyData
                     {
                         PolicyId = firstInfo.Content.Id,
                         Rules = new[]
                         {
-                            new PutPolicyRule
+                            new PolicyRuleData
                             {
                                 Claims = new[]
                                 {
-                                    new PostClaim {Type = "role", Value = "administrator"},
-                                    new PostClaim {Type = "role", Value = "other"}
+                                    new ClaimData {Type = "role", Value = "administrator"},
+                                    new ClaimData {Type = "role", Value = "other"}
                                 },
                                 Scopes = new[] {"read", "write"}
                             }

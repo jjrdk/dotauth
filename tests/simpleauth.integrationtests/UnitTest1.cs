@@ -1,16 +1,11 @@
 namespace SimpleAuth.IntegrationTests
 {
     using System;
-    using System.Data;
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
-    using System.Security.Cryptography;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Marten;
-    using Microsoft.IdentityModel.Tokens;
-    using Npgsql;
     using SimpleAuth.Client;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;

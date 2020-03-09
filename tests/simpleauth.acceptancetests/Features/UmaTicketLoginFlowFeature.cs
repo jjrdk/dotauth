@@ -69,14 +69,14 @@
             "and setting a policy".x(
                 async () =>
                 {
-                    var policy = new PostPolicy
+                    var policy = new PolicyData
                     {
                         Rules = new[]
                         {
-                            new PostPolicyRule
+                            new PolicyRuleData
                             {
                                 Scopes = new[] {"api1"},
-                                Claims = new[] {new PostClaim {Type = "sub", Value = "user"}},
+                                Claims = new[] {new ClaimData {Type = "sub", Value = "user"}},
                                 ClientIdsAllowed = new[] {"post_client"},
                                 IsResourceOwnerConsentNeeded = false
                             }
@@ -324,14 +324,14 @@
             "and setting a policy".x(
                 async () =>
                 {
-                    var policy = new PostPolicy
+                    var policy = new PolicyData
                     {
                         Rules = new[]
                         {
-                            new PostPolicyRule
+                            new PolicyRuleData
                             {
                                 Scopes = new[] {"anotherApi"},
-                                Claims = new[] {new PostClaim {Type = "sub", Value = "user"}},
+                                Claims = new[] {new ClaimData {Type = "sub", Value = "user"}},
                                 ClientIdsAllowed = new[] {"post_client"},
                                 IsResourceOwnerConsentNeeded = false
                             }
@@ -366,7 +366,7 @@
                 {
                     var permission =
                         new PermissionRequest { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
-                    var permissionResponse = await umaClient.RequestPermission(permission, result.AccessToken).ConfigureAwait(false);
+                    var permissionResponse = await umaClient.RequestPermission(result.AccessToken, permission).ConfigureAwait(false);
                     ticketId = permissionResponse.Content.TicketId;
 
                     Assert.Null(permissionResponse.Error);

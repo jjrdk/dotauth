@@ -45,9 +45,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             UmaUserStore.Instance().ClientId = null;
-            var ticket = await _umaClient.RequestPermission(
-                    new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}},
-                    "header")
+            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}})
                 .ConfigureAwait(false);
             UmaUserStore.Instance().ClientId = "client";
 
@@ -59,7 +57,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_ResourceSetId_Is_Null_Then_Error_Is_Returned()
         {
-            var ticket = await _umaClient.RequestPermission(new PermissionRequest {ResourceSetId = string.Empty}, "header")
+            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = string.Empty})
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
@@ -70,7 +68,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Scopes_Is_Null_Then_Error_Is_Returned()
         {
-            var ticket = await _umaClient.RequestPermission(new PermissionRequest {ResourceSetId = "resource"}, "header")
+            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = "resource"})
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
@@ -81,9 +79,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Resource_Does_Not_Exist_Then_Error_Is_Returned()
         {
-            var ticket = await _umaClient.RequestPermission(
-                    new PermissionRequest {ResourceSetId = "resource", Scopes = new[] {"scope"}},
-                    "header")
+            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = "resource", Scopes = new[] {"scope"}})
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
@@ -99,9 +95,7 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            var ticket = await _umaClient.RequestPermission(
-                    new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"scopescopescope"}},
-                    "header")
+            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"scopescopescope"}})
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
@@ -117,9 +111,7 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            var ticket = await _umaClient.RequestPermission(
-                    new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}},
-                    "header")
+            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}})
                 .ConfigureAwait(false);
 
             Assert.NotEmpty(ticket.Content.TicketId);

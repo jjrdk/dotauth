@@ -72,9 +72,7 @@
             "and adding permission".x(
                 async () =>
                 {
-                    var response = await client.RequestPermission(
-                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}},
-                            grantedToken.AccessToken)
+                    var response = await client.RequestPermission(grantedToken.AccessToken, new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);

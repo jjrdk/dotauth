@@ -10,6 +10,7 @@
     using System.Threading.Tasks;
 
     using global::Marten.Pagination;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the Marten based policy repository.

@@ -9,28 +9,39 @@
     using SimpleAuth.Shared.Repositories;
     using StackExchange.Redis;
 
+    /// <summary>
+    /// Defines the Redis ticket store.
+    /// </summary>
     public class RedisTicketStore : ITicketStore
     {
         private readonly IDatabaseAsync _database;
         private readonly TimeSpan _expiry;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RedisTicketStore"/> class.
+        /// </summary>
+        /// <param name="database">The underlying Redis store.</param>
+        /// <param name="expiry">The default cache expiration.</param>
         public RedisTicketStore(IDatabaseAsync database, TimeSpan expiry = default)
         {
             _database = database;
             _expiry = expiry == default ? TimeSpan.FromMinutes(30) : expiry;
         }
 
+        /// <inheritdoc />
         public Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(ticket);
             return _database.StringSetAsync(ticket.Id, json, _expiry);
         }
 
+        /// <inheritdoc />
         public Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
         {
             return _database.KeyDeleteAsync(ticketId);
         }
 
+        /// <inheritdoc />
         public async Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
         {
             var consent = await _database.StringGetAsync(ticketId).ConfigureAwait(false);

@@ -18,6 +18,7 @@ namespace SimpleAuth.Shared.Repositories
     using System.Threading.Tasks;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the policy repository interface.

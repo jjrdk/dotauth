@@ -10,6 +10,7 @@
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the marten based resource set repository.

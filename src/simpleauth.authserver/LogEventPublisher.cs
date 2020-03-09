@@ -9,7 +9,7 @@
     /// <summary>
     /// Defines the trace event publisher.
     /// </summary>
-    public class LogEventPublisher : IEventPublisher
+    internal class LogEventPublisher : IEventPublisher
     {
         private readonly ILogger<LogEventPublisher> _logger;
 
@@ -28,7 +28,7 @@
             }
 
             var json = JsonConvert.SerializeObject(evt);
-            if (typeof(SimpleAuthError).IsAssignableFrom(typeof(T)))
+            if (evt is SimpleAuthError)
             {
                 _logger.LogError(json);
             }

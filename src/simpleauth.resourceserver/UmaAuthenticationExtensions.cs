@@ -17,7 +17,6 @@ namespace SimpleAuth.ResourceServer
     using System;
     using System.Net.Http;
     using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using SimpleAuth.Client;

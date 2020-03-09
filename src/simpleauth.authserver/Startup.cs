@@ -33,15 +33,12 @@ namespace SimpleAuth.AuthServer
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
-    using System.Text.RegularExpressions;
     using SimpleAuth.ResourceServer;
     using SimpleAuth.ResourceServer.Authentication;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
 
     public class Startup
     {
-        private const string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
 
@@ -86,7 +83,7 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddUmaClient(new Uri("https://localhost:5001/.well-known/uma2-configuration"));
+            //services.AddUmaClient(new Uri("https://localhost:5001/.well-known/uma2-configuration"));
             services.AddResponseCompression(
                     x =>
                     {
@@ -134,7 +131,7 @@ namespace SimpleAuth.AuthServer
                             opts.ClientId = _configuration["Google:ClientId"];
                             opts.ClientSecret = _configuration["Google:ClientSecret"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
-                            var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
+                            var scopes = _configuration["Google:Scopes"] ?? "openid,profile,email";
                             foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim()))
                             {

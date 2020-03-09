@@ -149,8 +149,8 @@
                         Subject = "administrator",
                         Claims = new[]
                         {
-                            new PostClaim {Type = "role", Value = "role"},
-                            new PostClaim {Type = "not_valid", Value = "not_valid"}
+                            new ClaimData {Type = "role", Value = "role"},
+                            new ClaimData {Type = "not_valid", Value = "not_valid"}
                         }
                     })
                 .ConfigureAwait(false);

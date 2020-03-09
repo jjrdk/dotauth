@@ -92,7 +92,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] { new PostClaim { Type = "added_claim_test", Value = "something" } }
+                        Claims = new[] { new ClaimData { Type = "added_claim_test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -148,7 +148,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] { new PostClaim { Type = "added_claim_test", Value = "something" } }
+                        Claims = new[] { new ClaimData { Type = "added_claim_test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -224,7 +224,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] { new PostClaim { Type = "added_claim_test", Value = "something" } }
+                        Claims = new[] { new ClaimData { Type = "added_claim_test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -340,7 +340,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] { new PostClaim { Type = "added_claim_test", Value = "something" } }
+                        Claims = new[] { new ClaimData { Type = "added_claim_test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -370,7 +370,7 @@
                 var updateRequest = new UpdateResourceOwnerClaimsRequest
                 {
                     Subject = "administrator",
-                    Claims = new[] { new PostClaim { Type = "added_claim_test2", Value = "something" } }
+                    Claims = new[] { new ClaimData { Type = "added_claim_test2", Value = "something" } }
                 };
 
                 var json = JsonConvert.SerializeObject(updateRequest);
@@ -401,7 +401,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "user",
-                        Claims = new[] { new PostClaim { Type = "test", Value = "something" } }
+                        Claims = new[] { new ClaimData { Type = "test", Value = "something" } }
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -455,10 +455,10 @@
                         Subject = "user",
                         Claims = new[]
                         {
-                            new PostClaim {Type = OpenIdClaimTypes.Subject, Value = "user"},
-                            new PostClaim {Type = OpenIdClaimTypes.Name, Value = "John Doe"},
-                            new PostClaim {Type = "acceptance_test", Value = "test"},
-                            new PostClaim {Type = "test", Value = "something"}
+                            new ClaimData {Type = OpenIdClaimTypes.Subject, Value = "user"},
+                            new ClaimData {Type = OpenIdClaimTypes.Name, Value = "John Doe"},
+                            new ClaimData {Type = "acceptance_test", Value = "test"},
+                            new ClaimData {Type = "test", Value = "something"}
                         }
                     };
 

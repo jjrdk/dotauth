@@ -117,7 +117,7 @@ namespace SimpleAuth.WebSite.User
                     new ResourceOwnerAdded(
                         Id.Create(),
                         resourceOwner.Subject,
-                        resourceOwner.Claims.Select(claim => new PostClaim
+                        resourceOwner.Claims.Select(claim => new ClaimData
                             {
                                 Type = claim.Type,
                                 Value = claim.Value

@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the in-memory policy repository.

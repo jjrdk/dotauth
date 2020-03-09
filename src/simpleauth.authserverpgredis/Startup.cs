@@ -39,7 +39,7 @@ namespace SimpleAuth.AuthServerPgRedis
 
     using StackExchange.Redis;
 
-    public class Startup
+    internal class Startup
     {
         private static readonly string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
@@ -54,39 +54,48 @@ namespace SimpleAuth.AuthServerPgRedis
                 ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
                 Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
                 Clients =
-                                        sp => new MartenClientStore(
-                                            sp.GetRequiredService<IDocumentSession>,
-                                            sp.GetRequiredService<IScopeStore>(),
-                                            sp.GetRequiredService<HttpClient>(),
-                                            JsonConvert.DeserializeObject<Uri[]>),
+                    sp => new MartenClientStore(
+                        sp.GetRequiredService<IDocumentSession>,
+                        sp.GetRequiredService<IScopeStore>(),
+                        sp.GetRequiredService<HttpClient>(),
+                        JsonConvert.DeserializeObject<Uri[]>),
                 Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
                 AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
-                AuthorizationCodes = sp => new MartenAuthorizationCodeStore(sp.GetRequiredService<IDocumentSession>),
-                ConfirmationCodes = sp => new RedisConfirmationCodeStore(sp.GetRequiredService<IDatabaseAsync>(), TimeSpan.FromMinutes(30)),
+                AuthorizationCodes =
+                    sp => new RedisAuthorizationCodeStore(
+                        sp.GetRequiredService<IDatabaseAsync>(),
+                        TimeSpan.FromMinutes(30)),
+                ConfirmationCodes =
+                    sp => new RedisConfirmationCodeStore(
+                        sp.GetRequiredService<IDatabaseAsync>(),
+                        TimeSpan.FromMinutes(30)),
                 Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
                 HttpClientFactory = () => client,
                 JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
                 Policies = sp => new MartenPolicyRepository(sp.GetRequiredService<IDocumentSession>),
                 Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>()),
-                Tokens = sp => new RedisTokenStore(sp.GetRequiredService<IDatabaseAsync>(), sp.GetRequiredService<IJwksStore>()),
+                Tokens =
+                    sp => new RedisTokenStore(
+                        sp.GetRequiredService<IDatabaseAsync>(),
+                        sp.GetRequiredService<IJwksStore>()),
                 ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
                 EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 ClaimsIncludedInUserCreation = new[]
-                                                                       {
-                                                                           ClaimTypes.Name,
-                                                                           ClaimTypes.Uri,
-                                                                           ClaimTypes.Country,
-                                                                           ClaimTypes.DateOfBirth,
-                                                                           ClaimTypes.Email,
-                                                                           ClaimTypes.Gender,
-                                                                           ClaimTypes.GivenName,
-                                                                           ClaimTypes.Locality,
-                                                                           ClaimTypes.PostalCode,
-                                                                           ClaimTypes.Role,
-                                                                           ClaimTypes.StateOrProvince,
-                                                                           ClaimTypes.StreetAddress,
-                                                                           ClaimTypes.Surname
-                                                                       }
+                {
+                    ClaimTypes.Name,
+                    ClaimTypes.Uri,
+                    ClaimTypes.Country,
+                    ClaimTypes.DateOfBirth,
+                    ClaimTypes.Email,
+                    ClaimTypes.Gender,
+                    ClaimTypes.GivenName,
+                    ClaimTypes.Locality,
+                    ClaimTypes.PostalCode,
+                    ClaimTypes.Role,
+                    ClaimTypes.StateOrProvince,
+                    ClaimTypes.StreetAddress,
+                    ClaimTypes.Surname
+                }
             };
         }
 
@@ -113,10 +122,10 @@ namespace SimpleAuth.AuthServerPgRedis
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                     })
                 .AddHttpContextAccessor()
                 .AddCors(
@@ -128,10 +137,7 @@ namespace SimpleAuth.AuthServerPgRedis
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateAudience = false,
-                        };
+                        cfg.TokenValidationParameters = new TokenValidationParameters {ValidateAudience = false,};
 #if DEBUG
                         cfg.RequireHttpsMetadata = false;
 #endif
@@ -158,7 +164,7 @@ namespace SimpleAuth.AuthServerPgRedis
 
             services.AddSimpleAuth(
                 _options,
-                new[] { CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme });
+                new[] {CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme});
         }
 
         public void Configure(IApplicationBuilder app)

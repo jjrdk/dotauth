@@ -19,6 +19,7 @@ namespace SimpleAuth.Shared.Repositories
 
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the resource set repository interface.

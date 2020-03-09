@@ -47,7 +47,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_Passing_Empty_ResourceSetId_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
-            var addPolicyParameter = new PostPolicy();
+            var addPolicyParameter = new PolicyData();
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addAuthorizationPolicyAction.Execute("owner", addPolicyParameter, CancellationToken.None))
@@ -65,7 +65,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_Passing_No_Rules_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
-            var addPolicyParameter = new PostPolicy {};
+            var addPolicyParameter = new PolicyData();
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addAuthorizationPolicyAction.Execute("owner", addPolicyParameter, CancellationToken.None))
@@ -82,13 +82,14 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_ResourceSetId_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             const string resourceSetId = "resource_set_id";
-            var addPolicyParameter = new PostPolicy
+            var addPolicyParameter = new PolicyData
             {
                 Rules = new[]
                 {
-                    new PostPolicyRule
+                    new PolicyRuleData
                     {
-                        Scopes = new[] {"invalid_scope"}, ClientIdsAllowed = new[] {"client_id"}
+                        Scopes = new[] {"invalid_scope"},
+                        ClientIdsAllowed = new[] {"client_id"}
                     }
                 }
             };
@@ -105,17 +106,18 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Scope_Is_Not_Valid_Then_Exception_Is_Thrown()
         {
-            var addPolicyParameter = new PostPolicy
+            var addPolicyParameter = new PolicyData
             {
                 Rules = new[]
                 {
-                    new PostPolicyRule
+                    new PolicyRuleData
                     {
-                        Scopes = new[] {"invalid_scope"}, ClientIdsAllowed = new[] {"client_id"}
+                        Scopes = new[] {"invalid_scope"},
+                        ClientIdsAllowed = new[] {"client_id"}
                     }
                 }
             };
-            var resourceSet = new ResourceSetModel {Scopes = new[] {"scope"}};
+            var resourceSet = new ResourceSetModel { Scopes = new[] { "scope" } };
 
             InitializeFakeObjects(resourceSet);
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -129,19 +131,19 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Adding_AuthorizationPolicy_Then_Id_Is_Returned()
         {
-            var addPolicyParameter = new PostPolicy
+            var addPolicyParameter = new PolicyData
             {
                 Rules = new[]
                 {
-                    new PostPolicyRule
+                    new PolicyRuleData
                     {
                         Scopes = new[] {"scope"},
                         ClientIdsAllowed = new[] {"client_id"},
-                        Claims = new[] {new PostClaim {Type = "type", Value = "value"}}
+                        Claims = new[] {new ClaimData {Type = "type", Value = "value"}}
                     }
                 }
             };
-            var resourceSet = new ResourceSetModel {Scopes = new[] {"scope"}};
+            var resourceSet = new ResourceSetModel { Scopes = new[] { "scope" } };
 
             InitializeFakeObjects(resourceSet);
 
@@ -161,11 +163,10 @@ namespace SimpleAuth.Server.Tests.Apis
             _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceSet);
             _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-                .ReturnsAsync(new[] {resourceSet});
+                .ReturnsAsync(new[] { resourceSet });
 
             _addAuthorizationPolicyAction = new AddAuthorizationPolicyAction(
-                _policyRepositoryStub.Object,
-                _resourceSetRepositoryStub.Object);
+                _policyRepositoryStub.Object);
         }
     }
 }

@@ -28,17 +28,13 @@ namespace SimpleAuth.Api.PolicyController
     internal class AddAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
-        private readonly IResourceSetRepository _resourceSetRepository;
 
-        public AddAuthorizationPolicyAction(
-            IPolicyRepository policyRepository,
-            IResourceSetRepository resourceSetRepository)
+        public AddAuthorizationPolicyAction(IPolicyRepository policyRepository)
         {
             _policyRepository = policyRepository;
-            _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<string> Execute(string owner, PostPolicy addPolicyParameter, CancellationToken cancellationToken)
+        public async Task<string> Execute(string owner, PolicyData addPolicyParameter, CancellationToken cancellationToken)
         {
             if (addPolicyParameter.Rules == null || !addPolicyParameter.Rules.Any())
             {

@@ -27,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the policies controller
@@ -49,10 +50,10 @@ namespace SimpleAuth.Controllers
         public PoliciesController(IPolicyRepository policyRepository, IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
-            _addpolicy = new AddAuthorizationPolicyAction(policyRepository, resourceSetRepository);
+            _addpolicy = new AddAuthorizationPolicyAction(policyRepository);
             _deletePolicy = new DeleteAuthorizationPolicyAction(policyRepository);
             _deleteResourceSet = new DeleteResourcePolicyAction(policyRepository, resourceSetRepository);
-            _updatePolicy = new UpdatePolicyAction(policyRepository, resourceSetRepository);
+            _updatePolicy = new UpdatePolicyAction(policyRepository);
         }
 
         /// <summary>
@@ -129,7 +130,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPut]
         [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> PutPolicy([FromBody] PutPolicy putPolicy, CancellationToken cancellationToken)
+        public async Task<IActionResult> PutPolicy([FromBody] PolicyData putPolicy, CancellationToken cancellationToken)
         {
             if (putPolicy == null)
             {
@@ -208,7 +209,7 @@ namespace SimpleAuth.Controllers
         [HttpPost]
         [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> PostPolicy(
-            [FromBody] PostPolicy postPolicy,
+            [FromBody] PolicyData postPolicy,
             CancellationToken cancellationToken)
         {
             if (postPolicy == null)

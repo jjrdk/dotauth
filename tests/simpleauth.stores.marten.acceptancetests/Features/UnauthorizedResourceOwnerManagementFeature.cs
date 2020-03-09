@@ -63,7 +63,7 @@
                     response = await _managerClient.UpdateResourceOwnerClaims(
                             new UpdateResourceOwnerClaimsRequest
                             {
-                                Claims = new[] { new PostClaim { Type = "something", Value = "else" } },
+                                Claims = new[] { new ClaimData { Type = "something", Value = "else" } },
                                 Subject = "administrator"
                             },
                             _grantedToken.AccessToken)
