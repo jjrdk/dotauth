@@ -75,7 +75,6 @@
                         new[]
                         {
                             new Uri("http://localhost:4200/callback"),
-                            new Uri("http://localhost:4200/index.html"),
                             new Uri("https://localhost:50001/signin-oidc"),
                         },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,

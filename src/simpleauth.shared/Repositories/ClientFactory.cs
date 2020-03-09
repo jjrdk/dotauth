@@ -82,11 +82,9 @@
 
             ValidateNotMandatoryUri(newClient.InitiateLoginUri, "initiate_login_uri", true);
 
-            if (newClient.RequestUris == null || !newClient.RequestUris.Any())
+            if (newClient.RequestUris == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestUriCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "request_uris"));
+                newClient.RequestUris = Array.Empty<Uri>();
             }
 
             if (newClient.RequestUris.Any(requestUri => !requestUri.IsAbsoluteUri))
@@ -115,7 +113,6 @@
             client.ClientUri = newClient.ClientUri;
             client.Contacts = newClient.Contacts;
             client.DefaultAcrValues = newClient.DefaultAcrValues;
-            //client.DefaultMaxAge = newClient.DefaultMaxAge;
 
             // If omitted then the default value is authorization code grant type
             if (newClient.GrantTypes == null || !newClient.GrantTypes.Any())
@@ -150,18 +147,7 @@
 
             client.InitiateLoginUri = newClient.InitiateLoginUri;
 
-            if (newClient.JsonWebKeys.Keys.Any() != true)
-            {
-                throw new SimpleAuthException(ErrorCodes.InvalidClientMetaData, ErrorDescriptions.JwkIsInvalid);
-                //if (newClient.JwksUri != null)
-                //{
-                //    throw new SimpleAuthException(
-                //        ErrorCodes.InvalidClientMetaData,
-                //        ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed);
-                //}
-            }
-
-            client.JsonWebKeys = newClient.JsonWebKeys;
+            client.JsonWebKeys = newClient.JsonWebKeys ?? new JsonWebKeySet();
             //client.JwksUri = newClient.JwksUri;
             //client.LogoUri = newClient.LogoUri;
             client.PolicyUri = newClient.PolicyUri;
@@ -238,20 +224,12 @@
             client.RequirePkce = newClient.RequirePkce;
 
             // If omitted then the default value is authorization code response type
-            if (newClient.ResponseTypes?.Any() != true)
-            {
-                client.ResponseTypes = new[] { ResponseTypeNames.Code };
-            }
-            else
-            {
-                client.ResponseTypes = newClient.ResponseTypes;
-            }
-
+            client.ResponseTypes = newClient.ResponseTypes?.Any() != true ? new[] { ResponseTypeNames.Code } : newClient.ResponseTypes;
             client.Secrets = newClient.Secrets;
             client.SectorIdentifierUri = newClient.SectorIdentifierUri;
             //client.SubjectType = newClient.SubjectType;
 
-            if (client.Secrets.Length == 0
+            if (client.Secrets?.Length == 0
                 && client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.PrivateKeyJwt)
             {
                 client.Secrets = new[]
@@ -259,7 +237,7 @@
                     new ClientSecret
                     {
                         Type = ClientSecretTypes.SharedSecret,
-                        Value = BitConverter.ToString(Guid.NewGuid().ToByteArray()).Replace("-", string.Empty)
+                        Value = Id.Create()
                     }
                 };
             }

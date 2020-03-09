@@ -119,7 +119,7 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets an array containing a list of OAUTH2.0 response_type values
         /// </summary>
         [DataMember(Name = "response_types")]
-        public string[] ResponseTypes { get; set; } = ResponseTypeNames.All;
+        public string[] ResponseTypes { get; set; } = { ResponseTypeNames.Code };
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 grant types

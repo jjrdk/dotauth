@@ -78,7 +78,7 @@ namespace SimpleAuth.Extensions
             {
                 var parameters = endpointResult.GetRedirectionParameters();
                 //var uri = new Uri();
-                var redirectUrl = controller.CreateRedirectHttp(
+                var redirectUrl = CreateRedirectHttp(
                     authorizationRequest.redirect_uri,
                     parameters,
                     endpointResult.RedirectInstruction.ResponseMode);
@@ -132,7 +132,6 @@ namespace SimpleAuth.Extensions
         /// <param name="responseMode"></param>
         /// <returns></returns>
         private static string CreateRedirectHttp(
-            this ControllerBase controller,
             Uri uri,
             RouteValueDictionary parameters,
             string responseMode)
