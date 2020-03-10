@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="@Url.Content("~/img/favicon/favicon.ico")">
 
     <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="@Url.Content("~/css/maticons.css")" rel="stylesheet">
     <link rel="stylesheet" href="@Url.Content("~/css/materialize.min.css")" media="screen,projection" />
     <link rel="stylesheet" href="@Url.Content("~/css/materialize.custom.css")" media="screen,projection" />
 </head>
@@ -25,9 +25,9 @@
                             <i class="material-icons grey-text">account_circle</i>
                         </a>
                     </li>
-                    <ul id='dropdown1' class='dropdown-content'>
-                        <li><a href="@Url.Content("~/Authenticate/Logout")">Log Out</a></li>
-                    </ul>
+                </ul>
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li><a href="@Url.Content("~/Authenticate/Logout")">Log Out</a></li>
                 </ul>
             }
         </div>
