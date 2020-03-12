@@ -2,7 +2,6 @@
 {
     using System;
     using System.Net.Http;
-
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Hosting.Server;
     using Microsoft.AspNetCore.TestHost;
@@ -17,13 +16,13 @@
 
         public JwtBearerPostConfigureOptions(IServer server)
         {
-            this._server = server as TestServer;
+            _server = server as TestServer;
         }
 
         public void PostConfigure(string name, JwtBearerOptions options)
         {
-            options.Authority = this._server.CreateClient().BaseAddress.AbsoluteUri;
-            options.BackchannelHttpHandler = this._server.CreateHandler();
+            options.Authority = _server.CreateClient().BaseAddress.AbsoluteUri;
+            options.BackchannelHttpHandler = _server.CreateHandler();
             options.RequireHttpsMetadata = false;
             options.Events = new JwtBearerEvents { OnAuthenticationFailed = ctx => throw ctx.Exception };
             options.TokenValidationParameters = new TokenValidationParameters
@@ -66,9 +65,11 @@
                             "The MetadataAddress or Authority must use HTTPS unless disabled for development by setting RequireHttpsMetadata=false.");
                     }
 
-                    var httpClient = new HttpClient(options.BackchannelHttpHandler ?? new HttpClientHandler());
-                    httpClient.Timeout = options.BackchannelTimeout;
-                    httpClient.MaxResponseContentBufferSize = 1024 * 1024 * 10; // 10 MB
+                    var httpClient = new HttpClient(options.BackchannelHttpHandler ?? new HttpClientHandler())
+                    {
+                        Timeout = options.BackchannelTimeout,
+                        MaxResponseContentBufferSize = 1024 * 1024 * 10 // 10 MB
+                    };
 
                     options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                         options.MetadataAddress,

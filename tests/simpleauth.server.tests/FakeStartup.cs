@@ -30,7 +30,6 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.AspNetCore.Hosting.Server;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.Logging;
-
     using Moq;
 
     using SimpleAuth.Server.Tests.MiddleWares;

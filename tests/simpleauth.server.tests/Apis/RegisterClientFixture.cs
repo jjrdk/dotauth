@@ -33,13 +33,11 @@ namespace SimpleAuth.Server.Tests.Apis
         private const string ApplicationJson = "application/json";
         private readonly TestOauthServerFixture _server;
         private readonly RegistrationClient _registrationClient;
-        private readonly string _openIdConfigUrl;
 
         public RegisterClientFixture()
         {
             _server = new TestOauthServerFixture();
             _registrationClient = new RegistrationClient(_server.Client);
-            _openIdConfigUrl = $"{BaseUrl}/.well-known/openid-configuration";
         }
 
         [Fact(Skip = "Run locally")]
