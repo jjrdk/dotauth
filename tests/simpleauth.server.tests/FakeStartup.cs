@@ -17,7 +17,6 @@ namespace SimpleAuth.Server.Tests
     using Extensions;
 
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.IdentityModel.Logging;
 
@@ -25,8 +24,6 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Shared.Repositories;
 
     using Stores;
-
-    using System;
     using System.Net.Http;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -41,7 +38,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Sms;
     using SimpleAuth.Sms.Services;
 
-    public class FakeStartup : IStartup
+    public class FakeStartup
     {
         private readonly SharedContext _context;
 
@@ -53,7 +50,7 @@ namespace SimpleAuth.Server.Tests
             IdentityModelEventSource.ShowPII = true;
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
@@ -91,7 +88,6 @@ namespace SimpleAuth.Server.Tests
                             return server.CreateClient();
                         });
             services.ConfigureOptions<JwtBearerPostConfigureOptions>();
-            return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)

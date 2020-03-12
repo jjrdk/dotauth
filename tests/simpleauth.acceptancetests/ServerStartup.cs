@@ -21,7 +21,7 @@
     using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.Repositories;
 
-    public class ServerStartup : IStartup
+    public class ServerStartup
     {
         //private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
         private readonly SimpleAuthOptions _options;
@@ -67,7 +67,7 @@
             _context = context;
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             var mockSmsClient = new Mock<ISmsClient>();
             mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((true, null));
@@ -121,7 +121,6 @@
             services.AddUmaClient(new Uri("http://localhost/.well-known/uma2-configuration"));
             services.AddAuthorization(opt => { opt.AddPolicy("uma_ticket", builder => builder.RequireUmaTicket()); });
             services.ConfigureOptions<JwtBearerPostConfigureOptions>();
-            return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)

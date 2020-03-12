@@ -18,7 +18,6 @@ namespace SimpleAuth.Server.Tests
     using System.Net.Http;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
-    using Microsoft.Extensions.DependencyInjection;
 
     public class TestOauthServerFixture : IDisposable
     {
@@ -33,11 +32,9 @@ namespace SimpleAuth.Server.Tests
             Server = new TestServer(
                 new WebHostBuilder()
                 .UseUrls("http://localhost:5000")
-                .ConfigureServices(services =>
-                {
-                    services.AddSingleton<IStartup>(startup);
-                })
-                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).Assembly.FullName));
+                .ConfigureServices(startup.ConfigureServices)
+                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).Assembly.FullName)
+                .Configure(startup.Configure));
             Client = Server.CreateClient();
             SharedCtx.Client = Client;
             SharedCtx.ClientHandler = Server.CreateHandler();

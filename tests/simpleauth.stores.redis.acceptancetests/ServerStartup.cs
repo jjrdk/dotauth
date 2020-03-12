@@ -17,7 +17,7 @@
     using SimpleAuth.Stores.Marten;
     using StackExchange.Redis;
 
-    internal class ServerStartup : IStartup
+    internal class ServerStartup
     {
         private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
         private readonly SimpleAuthOptions _martenOptions;
@@ -62,7 +62,7 @@
             _schemaName = builder.SearchPath ?? "public";
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(ConnectionMultiplexer.Connect("localhost"));
             services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
@@ -101,8 +101,6 @@
                         cfg.RequireHttpsMetadata = false;
                         cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                     });
-
-            return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)

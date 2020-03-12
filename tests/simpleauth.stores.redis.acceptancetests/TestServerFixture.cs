@@ -16,6 +16,7 @@
         public TestServerFixture(string connectionString, params string[] urls)
         {
             SharedCtx = SharedContext.Instance;
+            var startup = new ServerStartup(SharedCtx, connectionString);
             Server = new TestServer(
                 new WebHostBuilder().UseUrls(urls)
                     .UseConfiguration(
@@ -24,9 +25,10 @@
                         services =>
                         {
                             services.AddSingleton(SharedCtx);
-                            services.AddSingleton<IStartup>(new ServerStartup(SharedCtx, connectionString));
+                            startup.ConfigureServices(services);
                         })
-                    .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName));
+                    .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
+                    .Configure(startup.Configure));
             Client = Server.CreateClient();
             SharedCtx.Client = Client;
         }
