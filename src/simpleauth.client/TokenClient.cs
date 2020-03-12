@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
     using Results;
     using Shared.Responses;
     using SimpleAuth.Shared;
@@ -100,14 +99,14 @@ namespace SimpleAuth.Client
                 return new BaseSidContentResult<GrantedTokenResponse>
                 {
                     HasError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     Status = result.StatusCode
                 };
             }
 
             return new BaseSidContentResult<GrantedTokenResponse>
             {
-                Content = JsonConvert.DeserializeObject<GrantedTokenResponse>(content)
+                Content = Serializer.Default.Deserialize<GrantedTokenResponse>(content)
             };
         }
 
@@ -129,7 +128,7 @@ namespace SimpleAuth.Client
             var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
             var requestUri = new Uri(discoveryInformation.Issuer + "/code");
 
-            var json = JsonConvert.SerializeObject(request);
+            var json = Serializer.Default.Serialize(request);
             var req = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -148,7 +147,7 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<object>
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = result.StatusCode
                 };
             }
@@ -190,7 +189,7 @@ namespace SimpleAuth.Client
                 return new RevokeTokenResult
                 {
                     HasError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
                     Status = result.StatusCode
                 };
             }
@@ -200,7 +199,7 @@ namespace SimpleAuth.Client
 
         private async Task<DiscoveryInformation> GetDiscoveryInformation()
         {
-            return _discovery ?? (_discovery = await _discoveryOperation.Execute(_discoveryDocumentationUrl).ConfigureAwait(false));
+            return _discovery ??= await _discoveryOperation.Execute(_discoveryDocumentationUrl).ConfigureAwait(false);
         }
     }
 }

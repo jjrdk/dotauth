@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
     using Results;
     using System;
     using System.Collections.Generic;
@@ -100,7 +99,7 @@ namespace SimpleAuth.Client
                 return new UserInfoResult
                 {
                     HasError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
                     Status = serializedContent.StatusCode
                 };
             }
@@ -120,7 +119,7 @@ namespace SimpleAuth.Client
                 return new UserInfoResult
                 {
                     HasError = false,
-                    Content = string.IsNullOrWhiteSpace(json) ? null : JsonConvert.DeserializeObject<JwtPayload>(json)
+                    Content = string.IsNullOrWhiteSpace(json) ? null : Serializer.Default.Deserialize<JwtPayload>(json)
                 };
             }
             return new UserInfoResult

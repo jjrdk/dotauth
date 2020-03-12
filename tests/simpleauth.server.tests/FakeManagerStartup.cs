@@ -22,6 +22,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth;
     using SimpleAuth.Repositories;
     using System;
+    using System.Net.Http;
     using System.Reflection;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -43,9 +44,11 @@ namespace SimpleAuth.Server.Tests
 
         private void RegisterServices(IServiceCollection serviceCollection)
         {
+            var client = new HttpClient();
             serviceCollection.AddSimpleAuth(new SimpleAuthOptions
             {
-                Users = sp => new InMemoryResourceOwnerRepository(DefaultStorage.GetUsers())
+                Users = sp => new InMemoryResourceOwnerRepository(DefaultStorage.GetUsers()),
+                HttpClientFactory = () => client
             },
                 new[] { JwtBearerDefaults.AuthenticationScheme });
             serviceCollection.AddAuthentication(opts =>

@@ -83,6 +83,14 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
+            if (string.IsNullOrWhiteSpace(permissionRequest.ResourceSetId))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    "the parameter resource_set_id needs to be specified",
+                    HttpStatusCode.BadRequest);
+            }
+
             var clientId = this.GetClientId();
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -134,10 +142,10 @@ namespace SimpleAuth.Controllers
             return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        private static IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
             var error = new ErrorDetails { Title = code, Detail = message };
-            return new JsonResult(error) { StatusCode = (int)statusCode };
+            return new BadRequestObjectResult(error);
         }
     }
 }

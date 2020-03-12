@@ -48,9 +48,7 @@ namespace SimpleAuth.Client
 
             var discoveryDocument = await _getDiscoveryOperation.Execute(uri).ConfigureAwait(false);
 
-            var json = JsonConvert.SerializeObject(
-                client,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var json = Serializer.Default.Serialize(client);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -70,7 +68,7 @@ namespace SimpleAuth.Client
                 return new BaseSidContentResult<Client>
                 {
                     HasError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     Status = result.StatusCode
                 };
             }
@@ -78,7 +76,7 @@ namespace SimpleAuth.Client
             return new BaseSidContentResult<Client>
             {
                 HasError = false,
-                Content = JsonConvert.DeserializeObject<Client>(content)
+                Content = Serializer.Default.Deserialize<Client>(content)
             };
         }
     }

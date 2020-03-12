@@ -88,7 +88,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidClient, result.Error.Title);
-            Assert.Equal(string.Format(ErrorDescriptions.MissingParameter, "username"), result.Error.Detail);
+            Assert.Equal(string.Format(ErrorDescriptions.TheClientDoesntExist), result.Error.Detail);
         }
 
         [Fact]

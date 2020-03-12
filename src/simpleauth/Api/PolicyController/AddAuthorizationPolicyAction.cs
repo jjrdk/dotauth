@@ -36,7 +36,7 @@ namespace SimpleAuth.Api.PolicyController
 
         public async Task<string> Execute(string owner, PolicyData addPolicyParameter, CancellationToken cancellationToken)
         {
-            if (addPolicyParameter.Rules == null || !addPolicyParameter.Rules.Any())
+            if (addPolicyParameter.Rules == null || addPolicyParameter.Rules.Length == 0)
             {
                 throw new SimpleAuthException(ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,

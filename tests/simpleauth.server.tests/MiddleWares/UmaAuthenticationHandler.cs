@@ -34,6 +34,7 @@
             }
 
             claims.Add(new Claim("scope", "uma_protection"));
+            claims.Add(new Claim("sub", "tester"));
             var claimsIdentity = new ClaimsIdentity(claims, FakeUmaStartup.DefaultSchema);
             var authenticationTicket = new AuthenticationTicket(
                 new ClaimsPrincipal(claimsIdentity),

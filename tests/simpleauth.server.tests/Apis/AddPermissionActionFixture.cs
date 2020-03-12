@@ -56,7 +56,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_RequiredParameter_ResourceSetId_Is_Not_Specified_Then_Exception_Is_Thrown()
         {
             const string clientId = "client_id";
-            InitializeFakeObjects(Array.Empty<ResourceSetModel>());
+            InitializeFakeObjects(new ResourceSetModel { Owner = "tester", Id = Id.Create(), Name = "resource" });
             var addPermissionParameter = new PermissionRequest();
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -74,7 +74,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_RequiredParameter_Scopes_Is_Not_Specified_Then_Exception_Is_Thrown()
         {
             const string clientId = "client_id";
-            InitializeFakeObjects(Array.Empty<ResourceSetModel>());
+            InitializeFakeObjects(new ResourceSetModel { Owner = "tester", Id = Id.Create(), Name = "resource" });
             var addPermissionParameter = new PermissionRequest { ResourceSetId = "resource_set_id" };
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -91,7 +91,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
-            InitializeFakeObjects(Array.Empty<ResourceSetModel>());
+            InitializeFakeObjects(new ResourceSetModel { Owner = "tester", Id = Id.Create(), Name = "resource" });
             var addPermissionParameter = new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -111,7 +111,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 ResourceSetId = resourceSetId,
                 Scopes = new[] { "invalid_scope" }
             };
-            var resources = new[] { new ResourceSetModel { Id = resourceSetId, Scopes = new[] { "scope" } } };
+            var resources = new[] { new ResourceSetModel { Owner = "tester", Id = resourceSetId, Scopes = new[] { "scope" } } };
             InitializeFakeObjects(resources);
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -127,7 +127,7 @@ namespace SimpleAuth.Server.Tests.Apis
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
             var addPermissionParameter = new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
-            var resources = new[] { new ResourceSetModel { Id = resourceSetId, Scopes = new[] { "scope" } } };
+            var resources = new[] { new ResourceSetModel { Owner = "tester", Id = resourceSetId, Scopes = new[] { "scope" } } };
             InitializeFakeObjects(resources);
             _ticketStoreStub.Setup(r => r.Add(It.IsAny<Ticket>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 

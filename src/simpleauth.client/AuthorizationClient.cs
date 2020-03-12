@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
     using Results;
     using Shared.Requests;
     using Shared.Responses;
@@ -75,7 +74,7 @@ namespace SimpleAuth.Client
             return new GetAuthorizationResult
             {
                 HasError = true,
-                Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                 Status = response.StatusCode
             };
 

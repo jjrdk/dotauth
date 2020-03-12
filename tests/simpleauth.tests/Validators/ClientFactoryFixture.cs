@@ -37,22 +37,6 @@
         }
 
         [Fact]
-        public async Task When_There_Is_No_Request_Uri_Then_Exception_Is_Thrown()
-        {
-            var parameter = new Client
-            {
-                RedirectionUrls = new[] {new Uri("https://localhost"),},
-                AllowedScopes = new[] {"test"},
-                RequestUris = null
-            };
-
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestUriCode, ex.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.MissingParameter, "request_uris"), ex.Message);
-        }
-
-        [Fact]
         public async Task When_One_Request_Uri_Contains_A_Fragment_Then_Exception_Is_Thrown()
         {
             var localhost = "http://localhost/#localhost";

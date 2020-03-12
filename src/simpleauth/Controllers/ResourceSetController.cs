@@ -100,7 +100,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest();
             }
             var resourceSets = await _resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
-            return new OkObjectResult(resourceSets.Select(x=>x.ToResponse()).ToArray());
+            return new OkObjectResult(resourceSets.Select(x => x.ToResponse()).ToArray());
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace SimpleAuth.Controllers
             var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
             if (result == null || result.Owner != User.GetSubject())
             {
-                return BadRequest();
+                return Ok();
             }
 
             var content = result.ToResponse();

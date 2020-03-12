@@ -253,6 +253,7 @@ namespace SimpleAuth.AcceptanceTests
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "post_client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     UserClaimsToIncludeInAuthToken = new []{new Regex("^sub$", RegexOptions.Compiled) },
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"api1", "uma_protection"},
@@ -267,7 +268,6 @@ namespace SimpleAuth.AcceptanceTests
                     ClientName = "jwt_client",
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "jwt_client"}},
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretJwt,
-
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"api1"},
@@ -334,7 +334,7 @@ namespace SimpleAuth.AcceptanceTests
                         }
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"api1", "openid"},

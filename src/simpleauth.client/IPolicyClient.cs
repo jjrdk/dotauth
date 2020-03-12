@@ -55,7 +55,7 @@ namespace SimpleAuth.Client
         /// <param name="token">The token.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">token</exception>
-        Task<GenericResponse<string[]>> GetAllPolicies(string token);
+        Task<GenericResponse<PolicyResponse[]>> GetAllPolicies(string token);
 
         /// <summary>
         /// Deletes the policy.

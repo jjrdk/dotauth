@@ -262,7 +262,7 @@ namespace SimpleAuth.Api.Token
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidResponse,
+                        Title = ErrorCodes.InvalidClient,
                         Detail = string.Format(
                             ErrorDescriptions.TheClientDoesntSupportTheResponseType,
                             client.ClientId,
@@ -278,7 +278,19 @@ namespace SimpleAuth.Api.Token
                 var scopeValidation = clientCredentialsGrantTypeParameter.Scope.Check(client);
                 if (!scopeValidation.IsValid)
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
+                    // throw new SimpleAuthException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
+                    return new GenericResponse<GrantedToken>
+                    {
+                        HttpStatus = HttpStatusCode.BadRequest,
+                        Error = new ErrorDetails
+                        {
+                            Status = HttpStatusCode.BadRequest,
+                            Title = ErrorCodes.InvalidScope,
+                            Detail = string.Format(
+                                ErrorDescriptions.ScopesAreNotAllowedOrInvalid,
+                                clientCredentialsGrantTypeParameter.Scope)
+                        }
+                    };
                 }
 
                 allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);

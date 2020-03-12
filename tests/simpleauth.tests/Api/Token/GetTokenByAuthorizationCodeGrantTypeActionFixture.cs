@@ -206,7 +206,7 @@ namespace SimpleAuth.Tests.Api.Token
                         CancellationToken.None)
                 .ConfigureAwait(false);
             Assert.True(result.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
             Assert.Equal(ErrorDescriptions.TheAuthorizationCodeIsNotCorrect, result.Error.Detail);
         }
 

@@ -138,7 +138,7 @@ namespace SimpleAuth.Policies
         {
             if (authorizationPolicy.Claims == null || !authorizationPolicy.Claims.Any())
             {
-                return null;
+                return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.Authorized };
             }
 
             if (claimTokenParameter == null || claimTokenParameter.Format != UmaConstants.IdTokenType)

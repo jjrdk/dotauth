@@ -19,7 +19,6 @@ namespace SimpleAuth.Client
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
-    using Newtonsoft.Json;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
@@ -52,7 +51,7 @@ namespace SimpleAuth.Client
             if (_umaConfiguration == null)
             {
                 var result = await _client.GetStringAsync(_configurationUri).ConfigureAwait(false);
-                _umaConfiguration = JsonConvert.DeserializeObject<UmaConfiguration>(result);
+                _umaConfiguration = Serializer.Default.Deserialize<UmaConfiguration>(result);
             }
 
             return _umaConfiguration;
@@ -83,7 +82,7 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
-            var serializedPostPermission = JsonConvert.SerializeObject(request);
+            var serializedPostPermission = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
             var httpRequest = new HttpRequestMessage
@@ -100,13 +99,13 @@ namespace SimpleAuth.Client
                 return new GenericResponse<PermissionResponse>
                 {
                     HttpStatus = result.StatusCode,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content)
                 };
             }
 
             return new GenericResponse<PermissionResponse>
             {
-                Content = JsonConvert.DeserializeObject<PermissionResponse>(content)
+                Content = Serializer.Default.Deserialize<PermissionResponse>(content)
             };
         }
 
@@ -140,7 +139,7 @@ namespace SimpleAuth.Client
 
             url += url.EndsWith("/") ? "bulk" : "/bulk";
 
-            var serializedPostPermission = JsonConvert.SerializeObject(requests);
+            var serializedPostPermission = Serializer.Default.Serialize(requests);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
@@ -156,13 +155,13 @@ namespace SimpleAuth.Client
                 return new GenericResponse<PermissionResponse>
                 {
                     HttpStatus = result.StatusCode,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content)
                 };
             }
 
             return new GenericResponse<PermissionResponse>
             {
-                Content = JsonConvert.DeserializeObject<PermissionResponse>(content)
+                Content = Serializer.Default.Deserialize<PermissionResponse>(content)
             };
         }
 
@@ -216,7 +215,8 @@ namespace SimpleAuth.Client
 
             return new GenericResponse<AddPolicyResponse>
             {
-                Content = Serializer.Default.Deserialize<AddPolicyResponse>(content)
+                Content = Serializer.Default.Deserialize<AddPolicyResponse>(content),
+                HttpStatus = httpResult.StatusCode
             };
         }
 
@@ -273,7 +273,7 @@ namespace SimpleAuth.Client
         /// <param name="token">The token.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">token</exception>
-        public async Task<GenericResponse<string[]>> GetAllPolicies(string token)
+        public async Task<GenericResponse<PolicyResponse[]>> GetAllPolicies(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -291,14 +291,18 @@ namespace SimpleAuth.Client
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
             {
-                return new GenericResponse<string[]>
+                return new GenericResponse<PolicyResponse[]>
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
-            return new GenericResponse<string[]> { Content = JsonConvert.DeserializeObject<string[]>(content) };
+            return new GenericResponse<PolicyResponse[]>
+            {
+                Content = Serializer.Default.Deserialize<PolicyResponse[]>(content),
+                HttpStatus = httpResult.StatusCode
+            };
         }
 
         /// <summary>
@@ -336,7 +340,7 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<object>
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -368,7 +372,7 @@ namespace SimpleAuth.Client
             }
 
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var serializedPostResourceSet = JsonConvert.SerializeObject(request);
+            var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
@@ -383,7 +387,7 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<object>
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -427,7 +431,7 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<object>
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
@@ -447,7 +451,7 @@ namespace SimpleAuth.Client
         {
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
             var url = configuration.PoliciesEndpoint + "/.search";
-            var serializedPostPermission = JsonConvert.SerializeObject(parameter);
+            var serializedPostPermission = Serializer.Default.Serialize(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
@@ -461,14 +465,14 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<SearchAuthPoliciesResponse>
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<SearchAuthPoliciesResponse>
             {
-                Content = JsonConvert.DeserializeObject<SearchAuthPoliciesResponse>(content)
+                Content = Serializer.Default.Deserialize<SearchAuthPoliciesResponse>(content)
             };
         }
 
@@ -498,7 +502,7 @@ namespace SimpleAuth.Client
             }
 
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var serializedPostResourceSet = JsonConvert.SerializeObject(request);
+            var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
@@ -513,14 +517,14 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<UpdateResourceSetResponse>
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<UpdateResourceSetResponse>
             {
-                Content = JsonConvert.DeserializeObject<UpdateResourceSetResponse>(content)
+                Content = Serializer.Default.Deserialize<UpdateResourceSetResponse>(content)
             };
         }
 
@@ -547,7 +551,7 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
-            var serializedPostResourceSet = JsonConvert.SerializeObject(request);
+            var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
             var umaConfiguration = await GetUmaConfiguration().ConfigureAwait(false);
             var httpRequest = new HttpRequestMessage
@@ -564,14 +568,14 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<AddResourceSetResponse>
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<AddResourceSetResponse>
             {
-                Content = JsonConvert.DeserializeObject<AddResourceSetResponse>(content)
+                Content = Serializer.Default.Deserialize<AddResourceSetResponse>(content)
             };
         }
 
@@ -581,7 +585,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization header value.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">authorizationHeaderValue</exception>
-        public async Task<GenericResponse<string[]>> GetAllResources(string authorizationHeaderValue)
+        public async Task<GenericResponse<ResourceSet[]>> GetAllResources(string authorizationHeaderValue)
         {
             if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
@@ -599,14 +603,14 @@ namespace SimpleAuth.Client
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
             {
-                return new GenericResponse<string[]>
+                return new GenericResponse<ResourceSet[]>
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
-            return new GenericResponse<string[]> { Content = JsonConvert.DeserializeObject<string[]>(json) };
+            return new GenericResponse<ResourceSet[]> { Content = Serializer.Default.Deserialize<ResourceSet[]>(json) };
         }
 
         /// <summary>
@@ -647,14 +651,15 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<ResourceSet>()
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<ResourceSet>()
             {
-                Content = JsonConvert.DeserializeObject<ResourceSet>(json)
+                HttpStatus = httpResult.StatusCode,
+                Content = Serializer.Default.Deserialize<ResourceSet>(json)
             };
         }
 
@@ -671,7 +676,7 @@ namespace SimpleAuth.Client
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
             var url = configuration.ResourceRegistrationEndpoint + "/.search";
 
-            var serializedPostPermission = JsonConvert.SerializeObject(parameter);
+            var serializedPostPermission = Serializer.Default.Serialize(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
@@ -685,14 +690,14 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<GenericResult<ResourceSet>>()
                 {
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<GenericResult<ResourceSet>>
             {
-                Content = JsonConvert.DeserializeObject<GenericResult<ResourceSet>>(content)
+                Content = Serializer.Default.Deserialize<GenericResult<ResourceSet>>(content)
             };
         }
     }

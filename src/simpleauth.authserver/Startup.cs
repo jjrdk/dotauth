@@ -83,18 +83,7 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddUmaClient(new Uri("https://localhost:5001/.well-known/uma2-configuration"));
-            services.AddResponseCompression(
-                    x =>
-                    {
-                        x.EnableForHttps = true;
-                        x.Providers.Add(
-                            new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
-                        x.Providers.Add(
-                            new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
-                    })
+            services
                 .AddHttpContextAccessor()
                 .AddAntiforgery(
                     options =>

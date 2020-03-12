@@ -44,24 +44,6 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Passing_Empty_ResourceSetId_Then_Exception_Is_Thrown()
-        {
-            InitializeFakeObjects();
-            var addPolicyParameter = new PolicyData();
-
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _addAuthorizationPolicyAction.Execute("owner", addPolicyParameter, CancellationToken.None))
-                .ConfigureAwait(false);
-
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(
-                string.Format(
-                    ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                    UmaConstants.AddPolicyParameterNames.ResourceSetIds),
-                exception.Message);
-        }
-
-        [Fact]
         public async Task When_Passing_No_Rules_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
@@ -76,56 +58,6 @@ namespace SimpleAuth.Server.Tests.Apis
                 == string.Format(
                     ErrorDescriptions.TheParameterNeedsToBeSpecified,
                     UmaConstants.AddPolicyParameterNames.Rules));
-        }
-
-        [Fact]
-        public async Task When_ResourceSetId_Does_Not_Exist_Then_Exception_Is_Thrown()
-        {
-            const string resourceSetId = "resource_set_id";
-            var addPolicyParameter = new PolicyData
-            {
-                Rules = new[]
-                {
-                    new PolicyRuleData
-                    {
-                        Scopes = new[] {"invalid_scope"},
-                        ClientIdsAllowed = new[] {"client_id"}
-                    }
-                }
-            };
-
-            InitializeFakeObjects();
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _addAuthorizationPolicyAction.Execute("owner", addPolicyParameter, CancellationToken.None))
-                .ConfigureAwait(false);
-
-            Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId), exception.Message);
-        }
-
-        [Fact]
-        public async Task When_Scope_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            var addPolicyParameter = new PolicyData
-            {
-                Rules = new[]
-                {
-                    new PolicyRuleData
-                    {
-                        Scopes = new[] {"invalid_scope"},
-                        ClientIdsAllowed = new[] {"client_id"}
-                    }
-                }
-            };
-            var resourceSet = new ResourceSetModel { Scopes = new[] { "scope" } };
-
-            InitializeFakeObjects(resourceSet);
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _addAuthorizationPolicyAction.Execute("owner", addPolicyParameter, CancellationToken.None))
-                .ConfigureAwait(false);
-
-            Assert.True(exception.Code == ErrorCodes.InvalidScope);
-            Assert.True(exception.Message == ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
         }
 
         [Fact]

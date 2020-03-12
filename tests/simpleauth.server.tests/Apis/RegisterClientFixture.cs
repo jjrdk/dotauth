@@ -81,12 +81,12 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             var obj = new
             {
-                AllowedScopes = new[] {"openid"},
-                RequestUris = new[] {new Uri("https://localhost")},
-                RedirectionUrls = new[] {"localhost"},
-                ClientUri = new Uri("http://google.com"),
-                TosUri = new Uri("http://google.com"),
-                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
+                allowed_scopes = new[] {"openid"},
+                request_uris = new[] {new Uri("https://localhost")},
+                redirect_uris = new[] {"localhost"},
+                client_uri = new Uri("http://google.com"),
+                tos_uri = new Uri("http://google.com"),
+                jwks = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,

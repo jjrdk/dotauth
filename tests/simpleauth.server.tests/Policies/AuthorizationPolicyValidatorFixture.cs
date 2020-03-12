@@ -15,9 +15,15 @@
 namespace SimpleAuth.Server.Tests.Policies
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Security.Cryptography;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.JsonWebTokens;
+    using Microsoft.IdentityModel.Tokens;
     using Moq;
+    using SimpleAuth.Parameters;
     using SimpleAuth.Policies;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
@@ -31,14 +37,18 @@ namespace SimpleAuth.Server.Tests.Policies
     {
         private readonly Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private readonly AuthorizationPolicyValidator _authorizationPolicyValidator;
+        private readonly Mock<IPolicyRepository> _policyRepositoryStub;
+        private readonly Mock<IClientStore> _clientStoreStub;
 
         public AuthorizationPolicyValidatorFixture()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
+            _policyRepositoryStub = new Mock<IPolicyRepository>();
+            _clientStoreStub = new Mock<IClientStore>();
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(
-                new Mock<IClientStore>().Object,
+                _clientStoreStub.Object,
                 new InMemoryJwksRepository(),
-                new Mock<IPolicyRepository>().Object,
+                _policyRepositoryStub.Object,
                 _resourceSetRepositoryStub.Object,
                 new Mock<IEventPublisher>().Object);
         }
@@ -46,16 +56,15 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
-            await Assert
-                .ThrowsAsync<NullReferenceException>(() => _authorizationPolicyValidator.IsAuthorized(null, null, null, CancellationToken.None))
+            await Assert.ThrowsAsync<NullReferenceException>(
+                    () => _authorizationPolicyValidator.IsAuthorized(null, null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
         [Fact]
         public async Task WhenPassingEmptyTicketParameterThenExceptionsAreThrown()
         {
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<ArgumentNullException>(
                     () => _authorizationPolicyValidator.IsAuthorized(new Ticket(), null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
@@ -67,8 +76,7 @@ namespace SimpleAuth.Server.Tests.Policies
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ResourceSetModel)null));
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null, CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
@@ -76,35 +84,66 @@ namespace SimpleAuth.Server.Tests.Policies
         }
 
         [Fact]
-        public async Task When_Policy_Does_Not_Exist_Then_Authorized_Is_Returned()
+        public async Task When_Policy_Does_Not_Exist_Then_RequestSubmitted_Is_Returned()
         {
             var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
             var resourceSet = new[] { new ResourceSetModel { Id = "1" } };
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(resourceSet);
 
-            var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null, CancellationToken.None)
+            var result = await _authorizationPolicyValidator
+                .IsAuthorized(ticket, "client_id", null, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(AuthorizationPolicyResultEnum.Authorized, result.Type);
+            Assert.Equal(AuthorizationPolicyResultEnum.RequestSubmitted, result.Type);
         }
 
         [Fact]
         public async Task When_AuthorizationPolicy_Is_Correct_Then_Authorized_Is_Returned()
         {
+            var handler = new JwtSecurityTokenHandler();
+            var rsa = RSA.Create();
+            var jwks = rsa.CreateSignatureJwk("1", true).ToSet();
+            var token = handler.CreateEncodedJwt(
+                "test",
+                "test",
+                new ClaimsIdentity(new[] { new Claim("test", "test") }),
+                null,
+                null,
+                null,
+                new SigningCredentials(jwks.Keys[0], jwks.Keys[0].Alg));
+            _clientStoreStub.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(
+                    (s, c) => Task.FromResult(new Client { ClientId = s, JsonWebKeys = jwks }));
+            _policyRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(
+                    (s, t) => Task.FromResult(
+                        new Policy
+                        {
+                            Id = s,
+                            Owner = "tester",
+                            Rules = new[]
+                            {
+                                new PolicyRule
+                                {
+                                    ClientIdsAllowed = new[] {"client_id"},
+                                    Claims = new[] {new Claim("test", "test"),}
+                                }
+                            }
+                        }));
             var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
             var resourceSet = new[]
             {
-                new ResourceSetModel
-                {
-                    Id = "1",
-                    AuthorizationPolicyIds = new [] {"authorization_policy_id"}
-                }
+                new ResourceSetModel {Id = "1", AuthorizationPolicyIds = new[] {"authorization_policy_id"}}
             };
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(resourceSet);
 
-            var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null, CancellationToken.None)
+            var result = await _authorizationPolicyValidator.IsAuthorized(
+                    ticket,
+                    "client_id",
+                    new ClaimTokenParameter { Token = token, Format = UmaConstants.IdTokenType },
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultEnum.Authorized, result.Type);

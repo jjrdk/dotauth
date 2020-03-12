@@ -82,9 +82,7 @@ namespace SimpleAuth.Api.Token.Actions
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidClient,
-                        Detail = string.Format(
-                            ErrorDescriptions.MissingParameter,
-                            StandardTokenRequestParameterNames.UserName)
+                        Detail = authResult.ErrorMessage
                     }
                 };
             }

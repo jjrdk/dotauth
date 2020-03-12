@@ -46,11 +46,11 @@ namespace SimpleAuth.Server.Tests
             // 1. Add the dependencies.
             // 2. Add authorization policies.
             services.AddAuthentication(
-                    opts =>
-                    {
-                        opts.DefaultAuthenticateScheme = DefaultSchema;
-                        opts.DefaultChallengeScheme = DefaultSchema;
-                    })
+                opts =>
+                {
+                    opts.DefaultAuthenticateScheme = DefaultSchema;
+                    opts.DefaultChallengeScheme = DefaultSchema;
+                })
                 .AddUmaCustomAuth(o => { });
             services.AddAuthorization(
                 opts =>

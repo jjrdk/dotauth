@@ -33,7 +33,7 @@ namespace SimpleAuth
 
         public static class AddPolicyParameterNames
         {
-            public const string ResourceSetIds = "resource_set_ids";
+            public const string PolicyId = "policy_id";
             public const string Rules = "rules";
         }
 

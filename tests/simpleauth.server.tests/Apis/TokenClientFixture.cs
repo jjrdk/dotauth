@@ -214,7 +214,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_grant", error.Title);
+            Assert.Equal("invalid_credentials", error.Title);
             Assert.Equal("resource owner credentials are not valid", error.Detail);
         }
 
@@ -288,7 +288,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Title);
+            Assert.Equal("invalid_grant", error.Title);
             Assert.Equal("the client client doesn't support the grant type client_credentials", error.Detail);
         }
 
@@ -529,7 +529,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Title);
+            Assert.Equal(ErrorCodes.InvalidGrant, error.Title);
             Assert.Equal("the client client doesn't support the grant type authorization_code", error.Detail);
         }
 
@@ -555,7 +555,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_client", error.Title);
+            Assert.Equal("invalid_response", error.Title);
             Assert.Equal(
                 "the client 'incomplete_authcode_client' doesn't support the response type: 'code'",
                 error.Detail);

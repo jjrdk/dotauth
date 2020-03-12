@@ -77,9 +77,8 @@ namespace SimpleAuth.Server.Tests
         {
             var resource = await _umaClient.GetResource("unknown", "header").ConfigureAwait(false);
 
-            Assert.True(resource.ContainsError);
-            Assert.Equal("not_found", resource.Error.Title);
-            Assert.Equal("resource cannot be found", resource.Error.Detail);
+            Assert.Equal(HttpStatusCode.OK, resource.HttpStatus);
+            Assert.Null(resource.Content);
         }
 
         [Fact]
@@ -147,8 +146,8 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal("not_found", resource.Error.Title);
-            Assert.Equal("resource cannot be found", resource.Error.Detail);
+            Assert.Equal("not_updated", resource.Error.Title);
+            Assert.Equal("resource cannot be updated", resource.Error.Detail);
         }
 
         [Fact]
@@ -163,7 +162,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Getting_ResourceInformation_Then_Dto_Is_Returned()
         {
             var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false);
-            var resource = await _umaClient.GetResource(resources.Content.First(), "header").ConfigureAwait(false);
+            var resource = await _umaClient.GetResource(resources.Content.First().Id, "header").ConfigureAwait(false);
 
             Assert.NotNull(resource);
         }
@@ -172,11 +171,11 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Deleting_ResourceInformation_Then_It_Does_Not_Exist()
         {
             var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false);
-            var resource = await _umaClient.DeleteResource(resources.Content.First(), "header").ConfigureAwait(false);
-            var information = await _umaClient.GetResource(resources.Content.First(), "header").ConfigureAwait(false);
+            var resource = await _umaClient.DeleteResource(resources.Content.First().Id, "header").ConfigureAwait(false);
+            var information = await _umaClient.GetResource(resources.Content.First().Id, "header").ConfigureAwait(false);
 
-            Assert.False(resource.ContainsError);
-            Assert.True(information.ContainsError);
+            Assert.Equal(HttpStatusCode.OK, information.HttpStatus);
+            Assert.Null(information.Content);
         }
 
         [Fact]

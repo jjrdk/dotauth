@@ -16,6 +16,7 @@ namespace SimpleAuth.Server.Tests
 {
     using System;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
     using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
@@ -47,7 +48,7 @@ namespace SimpleAuth.Server.Tests
         }
 
         [Fact]
-        public async Task When_Add_Policy_And_Scope_Does_Not_Exists_Then_Error_Is_Returned()
+        public async Task When_Add_Policy_And_Scope_Does_Not_Exists_Then_No_Error_Is_Returned()
         {
             var response = await _umaClient.AddPolicy(
                     new PolicyData
@@ -57,9 +58,7 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            Assert.True(response.ContainsError);
-            Assert.Equal("invalid_scope", response.Error.Title);
-            Assert.Equal("one or more scopes don't belong to a resource set", response.Error.Detail);
+            Assert.Equal(HttpStatusCode.Created,response.HttpStatus);
         }
 
         [Fact]
@@ -107,7 +106,7 @@ namespace SimpleAuth.Server.Tests
         }
 
         [Fact]
-        public async Task When_Update_Policy_And_Scope_Does_Not_Exist_Then_Error_Is_Returned()
+        public async Task When_Update_Policy_And_Scope_Does_Not_Exist_Then_No_Error_Is_Returned()
         {
             await _umaClient.AddResource(
                     new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
@@ -138,9 +137,7 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            Assert.True(response.ContainsError);
-            Assert.Equal("invalid_scope", response.Error.Title);
-            Assert.Equal("one or more scopes don't belong to a resource set", response.Error.Detail);
+            Assert.False(response.ContainsError);
         }
 
         [Fact]
@@ -211,7 +208,7 @@ namespace SimpleAuth.Server.Tests
 
             var response = await _umaClient.GetAllPolicies("header").ConfigureAwait(false);
 
-            Assert.Contains(response.Content, r => r == addPolicy.Content.PolicyId);
+            Assert.Contains(response.Content, r => r.Id == addPolicy.Content.PolicyId);
         }
 
         [Fact]

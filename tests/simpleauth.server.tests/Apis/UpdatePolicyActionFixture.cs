@@ -82,29 +82,6 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Scope_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            var updatePolicyParameter = new PolicyData
-            {
-                PolicyId = "policy_id",
-                Rules = new[] { new PolicyRuleData { Scopes = new[] { "invalid_scope" } } }
-            };
-            var policy = new Policy();
-            InitializeFakeObjects(policy);
-
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ResourceSetModel { Scopes = new[] { "scope" } });
-
-            var result = await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _updatePolicyAction.Execute(updatePolicyParameter, CancellationToken.None))
-                .ConfigureAwait(false);
-
-            Assert.Equal("invalid_scope", result.Code);
-            Assert.Equal("one or more scopes don't belong to a resource set", result.Message);
-        }
-
-        [Fact]
         public async Task When_Authorization_Policy_Is_Updated_Then_True_Is_Returned()
         {
             var updatePolicyParameter = new PolicyData

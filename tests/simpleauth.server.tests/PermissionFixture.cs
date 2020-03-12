@@ -21,6 +21,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using Xunit;
+    using ErrorDescriptions = SimpleAuth.Shared.Errors.ErrorDescriptions;
 
     public class PermissionFixture
     {
@@ -45,7 +46,9 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             UmaUserStore.Instance().ClientId = null;
-            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}})
+            var ticket = await _umaClient.RequestPermission(
+                    "header",
+                    new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}})
                 .ConfigureAwait(false);
             UmaUserStore.Instance().ClientId = "client";
 
@@ -57,7 +60,8 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_ResourceSetId_Is_Null_Then_Error_Is_Returned()
         {
-            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = string.Empty})
+            var ticket = await _umaClient
+                .RequestPermission("header", new PermissionRequest {ResourceSetId = string.Empty})
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
@@ -68,23 +72,26 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Scopes_Is_Null_Then_Error_Is_Returned()
         {
-            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = "resource"})
+            var ticket = await _umaClient
+                .RequestPermission("header", new PermissionRequest {ResourceSetId = "resource"})
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
             Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
-            Assert.Equal("the parameter scopes needs to be specified", ticket.Error.Detail);
+            Assert.Equal(ErrorDescriptions.InvalidResourceSetRequest, ticket.Error.Detail);
         }
 
         [Fact]
         public async Task When_Resource_Does_Not_Exist_Then_Error_Is_Returned()
         {
-            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = "resource", Scopes = new[] {"scope"}})
+            var ticket = await _umaClient.RequestPermission(
+                    "header",
+                    new PermissionRequest {ResourceSetId = "resource", Scopes = new[] {"scope"}})
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
-            Assert.Equal("invalid_resource_set_id", ticket.Error.Title);
-            Assert.Equal("resource set resource doesn't exist", ticket.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
+            Assert.Equal(SimpleAuth.Shared.Errors.ErrorDescriptions.InvalidResourceSetRequest, ticket.Error.Detail);
         }
 
         [Fact]
@@ -95,7 +102,9 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"scopescopescope"}})
+            var ticket = await _umaClient.RequestPermission(
+                    "header",
+                    new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"scopescopescope"}})
                 .ConfigureAwait(false);
 
             Assert.True(ticket.ContainsError);
@@ -111,7 +120,9 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            var ticket = await _umaClient.RequestPermission("header", new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}})
+            var ticket = await _umaClient.RequestPermission(
+                    "header",
+                    new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}})
                 .ConfigureAwait(false);
 
             Assert.NotEmpty(ticket.Content.TicketId);

@@ -128,7 +128,13 @@ namespace SimpleAuth.Controllers
 
             if (!await _clientRepository.Delete(id, cancellationToken).ConfigureAwait(false))
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult(
+                    new ErrorDetails
+                    {
+                        Detail = "Could not delete client",
+                        Status = HttpStatusCode.BadRequest,
+                        Title = "Delete failed"
+                    });
             }
 
             return new NoContentResult();

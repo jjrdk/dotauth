@@ -30,7 +30,6 @@ namespace SimpleAuth.ResourceServer
             string displayName = "UMA Ticket",
             Action<UmaAuthenticationOptions> configureOptions = null)
         {
-            builder.Services.AddSingleton<HttpClient>();
             builder.Services.AddSingleton<IPostConfigureOptions<UmaAuthenticationOptions>, PostConfigureUmaAuthenticationOptions>();
             var optionsBuilder = builder.Services.AddOptions<UmaAuthenticationOptions>();
             if (configureOptions != null)

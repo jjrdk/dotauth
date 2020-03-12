@@ -33,7 +33,6 @@ namespace SimpleAuth.Manager.Client
     {
         private readonly AddScopeOperation _addScopeOperation;
         private readonly GetAllClientsOperation _getAllClientsOperation;
-        private readonly DeleteClientOperation _deleteClientOperation;
         private readonly GetClientOperation _getClientOperation;
         private readonly SearchClientOperation _searchClientOperation;
         private readonly AddResourceOwnerOperation _addResourceOwnerOperation;
@@ -58,7 +57,6 @@ namespace SimpleAuth.Manager.Client
             _updateResourceOwnerPasswordOperation = new UpdateResourceOwnerPasswordOperation(client);
             _searchResourceOwnersOperation = new SearchResourceOwnersOperation(client);
             _getAllClientsOperation = new GetAllClientsOperation(client);
-            _deleteClientOperation = new DeleteClientOperation(client);
             _getClientOperation = new GetClientOperation(client);
             _searchClientOperation = new SearchClientOperation(client);
             _addScopeOperation = new AddScopeOperation(client);
@@ -148,10 +146,26 @@ namespace SimpleAuth.Manager.Client
         /// <returns></returns>
         public async Task<GenericResponse<Client>> DeleteClient(string clientId, string authorizationHeaderValue = null)
         {
-            return await _deleteClientOperation.Execute(
-                    new Uri(_discoveryInformation.Clients + "/" + clientId),
-                    authorizationHeaderValue)
-                .ConfigureAwait(false);
+            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId) };
+            if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    authorizationHeaderValue);
+            }
+
+            var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            if (!httpResult.IsSuccessStatusCode)
+            {
+                return new GenericResponse<Client>
+                {
+                    HttpStatus = httpResult.StatusCode,
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
+                };
+            }
+
+            return new GenericResponse<Client>();
         }
 
         /// <summary>

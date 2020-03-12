@@ -73,11 +73,12 @@
                     RedirectionUrls =
                         new[]
                         {
-                            new Uri("http://localhost:4200/callback"),
+                            new Uri("http://localhost:4200/login"),
                             new Uri("https://localhost:50001/signin-oidc"),
                         },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
-                    ResponseTypes =ResponseTypeNames.All,
+                    PostLogoutRedirectUris = new[] {new Uri("http://localhost:4200/login")},
+                    ResponseTypes = ResponseTypeNames.All,
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
                     UserClaimsToIncludeInAuthToken = new[]
                     {

@@ -201,7 +201,7 @@
                 {
                     umaClient = new UmaClient(
                         _fixture.Client,
-                        new Uri("https://localhost/.well-known/uma2-configuration"));
+                        new Uri("https://localhost/"));
                 });
 
             "when creating resource set without a policy".x(

@@ -26,13 +26,16 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using System.IO.Compression;
     using System.Linq;
     using System.Net.Http;
     using System.Reflection;
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Net.Http.Headers;
     using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Events;
 
@@ -247,7 +250,27 @@ namespace SimpleAuth.Extensions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var mvcBuilder = services.AddControllersWithViews()
+            var mvcBuilder = services
+                .AddResponseCompression(o =>
+                {
+                    o.EnableForHttps = true;
+                    o.Providers.Add(
+                        new GzipCompressionProvider(
+                            new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                    o.Providers.Add(
+                        new BrotliCompressionProvider(
+                            new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                })
+                .AddAntiforgery(
+                    options =>
+                    {
+                        options.FormFieldName = "XrsfField";
+                        options.HeaderName = "XSRF-TOKEN";
+                        options.SuppressXFrameOptionsHeader = false;
+                    })
+                .AddCors(
+                    o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
+                .AddControllersWithViews()
                 .AddRazorRuntimeCompilation()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             mvcBuilder = applicationParts.Concat(new[] { typeof(ServiceCollectionExtensions).Assembly })
@@ -310,6 +333,11 @@ namespace SimpleAuth.Extensions
                 .UseStaticFiles(
                     new StaticFileOptions
                     {
+                        OnPrepareResponse = ctx =>
+                           {
+                               ctx.Context.Response.Headers[HeaderNames.CacheControl] =
+                                   "public,max-age=" + TimeSpan.FromDays(7).TotalSeconds;
+                           },
                         FileProvider = new EmbeddedFileProvider(
                             typeof(ServiceCollectionExtensions).Assembly,
                             "SimpleAuth.wwwroot")

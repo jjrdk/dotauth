@@ -222,7 +222,7 @@ namespace SimpleAuth.Api.Token.Actions
                         Error = new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.InvalidRequest,
+                            Title = ErrorCodes.InvalidGrant,
                             Detail = ErrorDescriptions.TheAuthorizationCodeIsNotCorrect
                         }
                     });

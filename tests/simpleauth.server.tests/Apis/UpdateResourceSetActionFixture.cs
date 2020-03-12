@@ -48,7 +48,7 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_ResourceSet_Cannot_Be_Updated_Then_Exception_Is_Thrown()
+        public async Task When_ResourceSet_Cannot_Be_Updated_Then_Returns_False()
         {
             const string id = "id";
             var udpateResourceSetParameter = new ResourceSet
@@ -63,14 +63,8 @@ namespace SimpleAuth.Server.Tests.Apis
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _updateResourceSetAction.Execute("owner", udpateResourceSetParameter, CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(
-                string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, udpateResourceSetParameter.Id),
-                exception.Message);
+            var result = await _updateResourceSetAction.Execute("owner", udpateResourceSetParameter, CancellationToken.None).ConfigureAwait(false);
+            Assert.False(result);
         }
 
         [Fact]
