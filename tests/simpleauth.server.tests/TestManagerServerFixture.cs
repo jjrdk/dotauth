@@ -4,7 +4,6 @@
     using System.Net.Http;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
-    using Microsoft.Extensions.DependencyInjection;
 
     public class TestManagerServerFixture : IDisposable
     {
@@ -16,11 +15,9 @@
             var startup = new FakeManagerStartup();
             Server = new TestServer(new WebHostBuilder()
                 .UseUrls("http://localhost:5000")
-                .ConfigureServices(services =>
-                {
-                    services.AddSingleton<IStartup>(startup);
-                })
-                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeManagerStartup).Assembly.FullName));
+                .ConfigureServices(startup.ConfigureServices)
+                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeManagerStartup).Assembly.FullName)
+                .Configure(startup.Configure));
             Client = Server.CreateClient();
         }
 

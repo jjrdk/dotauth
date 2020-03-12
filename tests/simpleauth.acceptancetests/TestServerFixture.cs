@@ -19,13 +19,14 @@
             SharedCtx = SharedContext.Instance;
             var startup = new ServerStartup(SharedCtx);
             Server = new TestServer(
-                new WebHostBuilder()
-                    .UseUrls(urls)
-                    .ConfigureServices(services =>
-                    {
-                        services.AddSingleton<IStartup>(startup);
-                    })
-                    .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName));
+                new WebHostBuilder().UseUrls(urls)
+                    .ConfigureServices(
+                        services =>
+                        {
+                            startup.ConfigureServices(services);
+                        })
+                    .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
+                    .Configure(startup.Configure));
             Client = Server.CreateClient();
             SharedCtx.Client = Client;
             SharedCtx.Handler = Server.CreateHandler();

@@ -27,7 +27,7 @@
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.Repositories;
 
-    public class ServerStartup : IStartup
+    public class ServerStartup
     {
         private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
         private readonly SimpleAuthOptions _options;
@@ -73,7 +73,7 @@
             _context = context;
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             var mockSmsClient = new Mock<ISmsClient>();
             mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
@@ -100,7 +100,6 @@
             services.AddAuthorization(
                 opt => { opt.AddAuthPolicies(DefaultSchema, JwtBearerDefaults.AuthenticationScheme); });
             services.ConfigureOptions<JwtBearerPostConfigureOptions>();
-            return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)

@@ -22,19 +22,17 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.Extensions.DependencyInjection;
     using SimpleAuth;
     using SimpleAuth.Repositories;
-    using System;
     using System.Reflection;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-    public class FakeManagerStartup : IStartup
+    public class FakeManagerStartup
     {
         private const string DefaultSchema = "Cookies";
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             RegisterServices(services);
             services.AddControllers().AddApplicationPart(typeof(ClientsController).GetTypeInfo().Assembly);
-            return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)
