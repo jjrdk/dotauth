@@ -21,7 +21,6 @@ namespace SimpleAuth.Server.Tests
     using System.Security.Claims;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
@@ -37,11 +36,11 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Server.Tests.Stores;
     using SimpleAuth.Shared.Repositories;
 
-    public class FakeUmaStartup : IStartup
+    public class FakeUmaStartup
     {
         public const string DefaultSchema = "OAuth2Introspection";
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             if (services == null)
             {
@@ -96,7 +95,6 @@ namespace SimpleAuth.Server.Tests
             services.AddLogging();
             // 5. Register other classes.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)
