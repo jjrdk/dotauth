@@ -71,7 +71,7 @@ Task("Build")
 	Information("Build version: " + buildVersion);
     var informationalVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
 	Information("CommitsSinceVersionSourcePadded: " + versionInfo.CommitsSinceVersionSourcePadded);
-    if(versionInfo.BranchName == "master")
+    if(versionInfo.BranchName == "master" && versionInfo.CommitsSinceVersionSource == 0)
     {
         buildVersion = versionInfo.MajorMinorPatch;
     }
