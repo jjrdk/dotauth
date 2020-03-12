@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Server.Tests
 {
+    using System;
     using Extensions;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -150,9 +151,11 @@ namespace SimpleAuth.Server.Tests
                             "The MetadataAddress or Authority must use HTTPS unless disabled for development by setting RequireHttpsMetadata=false.");
                     }
 
-                    var httpClient = new HttpClient(options.BackchannelHttpHandler ?? new HttpClientHandler());
-                    httpClient.Timeout = options.BackchannelTimeout;
-                    httpClient.MaxResponseContentBufferSize = 1024 * 1024 * 10; // 10 MB
+                    var httpClient = new HttpClient(options.BackchannelHttpHandler ?? new HttpClientHandler())
+                    {
+                        Timeout = options.BackchannelTimeout,
+                        MaxResponseContentBufferSize = 1024 * 1024 * 10 // 10 MB
+                    };
 
                     options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                         options.MetadataAddress,
