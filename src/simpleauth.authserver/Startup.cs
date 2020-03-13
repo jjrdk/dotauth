@@ -50,6 +50,7 @@ namespace SimpleAuth.AuthServer
             {
                 ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
+                Tickets = sp => new InMemoryTicketStore(),
                 Clients =
                     sp => new InMemoryClientRepository(
                         sp.GetRequiredService<HttpClient>(),
@@ -57,9 +58,19 @@ namespace SimpleAuth.AuthServer
                         sp.GetRequiredService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
+                Policies = sp => new InMemoryPolicyRepository(DefaultConfiguration.GetPolicies()),
                 ResourceSets =
                     sp => new InMemoryResourceSetRepository(
-                        new[] {new ResourceSetModel {Id = "abc", Owner = "user", Scopes = new[] {"read"}}}),
+                        new[] { new ResourceSetModel
+                        {
+                            Id = "abc",
+                            Name = "Test Resource",
+                            Type = "Content",
+                            Owner = "administrator",
+                            Scopes = new[] { "read" },
+                            AuthorizationPolicyIds = new[] { "1" },
+                            Uri = "https://localhost:50001/resource"
+                        } }),
                 EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 HttpClientFactory = () => client,
                 ClaimsIncludedInUserCreation = new[]
@@ -93,7 +104,7 @@ namespace SimpleAuth.AuthServer
                         options.SuppressXFrameOptionsHeader = false;
                     })
                 .AddCors(
-                    options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
+                    options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders()))
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
@@ -105,7 +116,7 @@ namespace SimpleAuth.AuthServer
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = new[] {"http://localhost:5000", "https://localhost:5001"}
+                            ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
                         };
                         cfg.RequireHttpsMetadata = false;
                     });
@@ -131,7 +142,7 @@ namespace SimpleAuth.AuthServer
 
             services.AddSimpleAuth(
                 _options,
-                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme},
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme },
                 applicationParts: GetType().Assembly);
 
             services.AddAuthorization(

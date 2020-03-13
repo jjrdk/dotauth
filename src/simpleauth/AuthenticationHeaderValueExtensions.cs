@@ -29,7 +29,7 @@ namespace SimpleAuth
             X509Certificate2 certificate = null)
         {
             var result = grantTypeParameter == null
-                ? new AuthenticateInstruction {Certificate = certificate}
+                ? new AuthenticateInstruction { Certificate = certificate }
                 : new AuthenticateInstruction
                 {
                     ClientAssertion = grantTypeParameter.ClientAssertion,
@@ -42,7 +42,7 @@ namespace SimpleAuth
             {
                 return result;
             }
-            if (!string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
+            if (!string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter) && string.Equals(authenticationHeaderValue.Scheme, "Basic", StringComparison.OrdinalIgnoreCase))
             {
                 var parameters = GetParameters(authenticationHeaderValue.Parameter);
                 if (parameters != null && parameters.Length == 2)

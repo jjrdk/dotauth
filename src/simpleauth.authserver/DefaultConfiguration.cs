@@ -80,6 +80,7 @@
                     PostLogoutRedirectUris = new[] {new Uri("http://localhost:4200/login")},
                     ResponseTypes = ResponseTypeNames.All,
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     UserClaimsToIncludeInAuthToken = new[]
                     {
                         new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
@@ -110,6 +111,27 @@
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,
                     CreateDateTime = DateTimeOffset.UtcNow,
+                }
+            };
+        }
+
+        public static List<Policy> GetPolicies()
+        {
+            return new List<Policy>
+            {
+                new Policy
+                {
+                    Id = "1",
+                    Owner = "administrator",
+                    Rules = new[]
+                    {
+                        new PolicyRule
+                        {
+                            ClientIdsAllowed = new[] {"web"},
+                            Scopes = new []{"read"},
+                            IsResourceOwnerConsentNeeded = false
+                        }
+                    }
                 }
             };
         }

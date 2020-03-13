@@ -36,7 +36,7 @@ namespace SimpleAuth.Controllers
     public class PermissionsController : ControllerBase
     {
         private readonly ITicketStore _ticketStore;
-        private readonly AddPermissionAction _addPermission;
+        private readonly AddPermissionAction _requestPermission;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PermissionsController"/> class.
@@ -50,7 +50,7 @@ namespace SimpleAuth.Controllers
             RuntimeSettings options)
         {
             _ticketStore = ticketStore;
-            _addPermission = new AddPermissionAction(resourceSetRepository, ticketStore, options);
+            _requestPermission = new AddPermissionAction(resourceSetRepository, ticketStore, options);
         }
 
         [HttpGet]
@@ -100,7 +100,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var ticketId = await _addPermission.Execute(clientId, cancellationToken, permissionRequest)
+            var ticketId = await _requestPermission.Execute(clientId, cancellationToken, permissionRequest)
                 .ConfigureAwait(false);
             var result = new PermissionResponse { TicketId = ticketId };
             return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
@@ -136,7 +136,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var ticketId = await _addPermission.Execute(clientId, cancellationToken, parameters)
+            var ticketId = await _requestPermission.Execute(clientId, cancellationToken, parameters)
                 .ConfigureAwait(false);
             var result = new PermissionResponse { TicketId = ticketId };
             return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };

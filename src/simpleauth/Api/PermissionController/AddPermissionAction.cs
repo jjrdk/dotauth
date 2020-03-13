@@ -18,6 +18,8 @@ namespace SimpleAuth.Api.PermissionController
     using Shared.Models;
     using System;
     using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.DTOs;
@@ -56,9 +58,27 @@ namespace SimpleAuth.Api.PermissionController
             }
 
             var resourceOwner = await CheckAddPermissionParameter(addPermissionParameters, cancellationToken).ConfigureAwait(false);
+            var builder = new StringBuilder();
+            builder.Append(clientId);
+            builder.Append(resourceOwner);
+            foreach (var addPermissionParameter in addPermissionParameters)
+            {
+                builder.Append(addPermissionParameter.ResourceSetId);
+                foreach (var scope in addPermissionParameter.Scopes)
+                {
+                    builder.Append(scope);
+                }
+            }
+            var ticketId = builder.ToString().ToSha256Hash();
+            var existing = await _ticketStore.Get(ticketId, cancellationToken).ConfigureAwait(false);
+            if (existing != null && existing.Expires < DateTimeOffset.UtcNow)
+            {
+                return ticketId;
+            }
+
             var ticket = new Ticket
             {
-                Id = Id.Create(),
+                Id = ticketId,
                 ClientId = clientId,
                 ResourceOwner = resourceOwner,
                 Created = DateTimeOffset.UtcNow,
