@@ -8,13 +8,15 @@ namespace SimpleAuth.Server.Tests.Introspection
     using Moq;
     using System;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Net.Http.Headers;
+    using SimpleAuth.Server.Tests.MiddleWares;
     using UserInfoIntrospection;
     using Xunit;
 
     public class UserInfoIntrospectionHandlerFixture
     {
-        private const string BaseUrl = "http://localhost:5000";
-        private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
+        private const string WellKnownOpenidConfiguration = "http://localhost:5000/.well-known/openid-configuration";
         private readonly TestOauthServerFixture _server;
 
         public UserInfoIntrospectionHandlerFixture()
@@ -25,23 +27,36 @@ namespace SimpleAuth.Server.Tests.Introspection
         [Fact]
         public async Task When_Introspect_Identity_Token_Then_Claims_Are_Returned()
         {
-            var client = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
+            var discoveryDocumentationUrl = new Uri(WellKnownOpenidConfiguration);
+            var client = new TokenClient(
+                   TokenCredentials.FromClientCredentials("client", "client"),
+                   _server.Client,
+                   discoveryDocumentationUrl);
+            var result = await client.GetToken(TokenRequest.FromPassword("superuser", "password", new[] {"role"}))
                 .ConfigureAwait(false);
-            var result = await client.GetToken(TokenRequest.FromPassword("superuser", "password", new[] { "role" }))
+            var mock = new Mock<IOptionsMonitor<AuthenticationSchemeOptions>>();
+            mock.Setup(x => x.Get(It.IsAny<string>())).Returns(new FakeUserInfoIntrospectionOptions());
+            var mockLoggerFactory = new Mock<ILoggerFactory>();
+            mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(new Mock<ILogger>().Object);
+            var introspectionHandler = new UserInfoIntrospectionHandler(
+                await UserInfoClient.Create(_server.Client, discoveryDocumentationUrl).ConfigureAwait(false),
+                mock.Object,
+                mockLoggerFactory.Object,
+                new UrlTestEncoder(),
+                new Mock<ISystemClock>().Object);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Host = new HostString("somewhere");
+            httpContext.Request.Scheme = Uri.UriSchemeHttps;
+            httpContext.Request.Path = "/";
+            httpContext.Request.Headers[HeaderNames.Authorization] = "Bearer " + result.Content.AccessToken;
+            await introspectionHandler.InitializeAsync(
+                    new AuthenticationScheme(
+                        UserIntrospectionDefaults.AuthenticationScheme,
+                        UserIntrospectionDefaults.AuthenticationScheme,
+                        typeof(UserInfoIntrospectionHandler)),
+                    httpContext)
                 .ConfigureAwait(false);
-
-            var authResult = await new UserInfoIntrospectionHandler(
-                    new Mock<IOptionsMonitor<UserInfoIntrospectionOptions>>().Object,
-                    new Mock<ILoggerFactory>().Object,
-                    new UrlTestEncoder(),
-                    _server.Client,
-                    new Mock<ISystemClock>().Object).HandleAuthenticate(
-                    BaseUrl + WellKnownOpenidConfiguration,
-                    result.Content.AccessToken)
-                .ConfigureAwait(false);
+            var authResult = await introspectionHandler.AuthenticateAsync().ConfigureAwait(false);
 
             Assert.True(authResult.Succeeded);
         }

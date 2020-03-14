@@ -83,7 +83,7 @@
                 .ConfigureAwait(false);
 
             Assert.NotNull(exception);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, clientId, "authorization_code"),
                 exception.Message);

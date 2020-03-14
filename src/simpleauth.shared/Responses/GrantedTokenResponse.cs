@@ -60,6 +60,6 @@
         /// The scope.
         /// </value>
         [DataMember(Name = "scope")]
-        public string[] Scope { get; set; }
+        public string Scope { get; set; }
     }
 }

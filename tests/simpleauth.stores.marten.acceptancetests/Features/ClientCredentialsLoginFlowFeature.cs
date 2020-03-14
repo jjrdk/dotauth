@@ -19,18 +19,17 @@
             GrantedTokenResponse result = null;
 
             "and a properly configured token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting token".x(
                 async () =>
                 {
                     var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     result = response.Content;
                 });
@@ -56,18 +55,17 @@
             GrantedTokenResponse result = null;
 
             "and a properly token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromBasicAuthentication("clientCredentials", "clientCredentials"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromBasicAuthentication("clientCredentials", "clientCredentials"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
                 async () =>
                 {
                     var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     result = response.Content;
                 });
@@ -77,7 +75,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
                         .ConfigureAwait(false);
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
                 });
         }
 
@@ -88,18 +86,17 @@
             GrantedTokenResponse result = null;
 
             "and a properly token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
                 async () =>
                 {
                     var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     result = response.Content;
                 });
@@ -119,11 +116,10 @@
             BaseSidContentResult<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromClientCredentials("xxx", "xxx"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromClientCredentials("xxx", "xxx"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
                 async () => { result = await client.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false); });

@@ -28,7 +28,7 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// <param name="id">The identifier.</param>
         /// <param name="token">The revoked token</param>
         /// <param name="timestamp">The timestamp.</param>
-        public TokenRevoked(string id, string token, DateTime timestamp) : base(id, timestamp)
+        public TokenRevoked(string id, string token, DateTimeOffset timestamp) : base(id, timestamp)
         {
             Token = token;
         }

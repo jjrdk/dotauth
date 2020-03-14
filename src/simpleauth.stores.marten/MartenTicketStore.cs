@@ -1,6 +1,8 @@
 ﻿namespace SimpleAuth.Stores.Marten
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using global::Marten;
@@ -49,6 +51,26 @@
             var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
 
             return ticket;
+        }
+
+        /// <inheritdoc />
+        public async Task<IReadOnlyList<Ticket>> GetAll(string owner, CancellationToken cancellationToken)
+        {
+            using var session = _sessionFactory();
+            var now = DateTimeOffset.UtcNow;
+            var tickets = await session.Query<Ticket>()
+                .Where(x => x.ResourceOwner == owner && x.Created <= now && x.Expires > now)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return tickets;
+        }
+
+        public async Task Clean(CancellationToken cancellationToken)
+        {
+            using var session = _sessionFactory();
+            session.DeleteWhere<Ticket>(t => t.Expires >= DateTimeOffset.UtcNow);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

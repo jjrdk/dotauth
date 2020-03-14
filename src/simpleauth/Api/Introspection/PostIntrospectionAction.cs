@@ -33,9 +33,9 @@ namespace SimpleAuth.Api.Introspection
         private readonly AuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
 
-        public PostIntrospectionAction(IClientStore clientStore, ITokenStore tokenStore)
+        public PostIntrospectionAction(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore)
         {
-            _authenticateClient = new AuthenticateClient(clientStore);
+            _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
             _tokenStore = tokenStore;
         }
 
@@ -49,7 +49,7 @@ namespace SimpleAuth.Api.Introspection
             if (string.IsNullOrWhiteSpace(introspectionParameter.Token))
             {
                 throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
             }
 
@@ -129,7 +129,7 @@ namespace SimpleAuth.Api.Introspection
 
             // 8. Based on the expiration date disable OR enable the introspection result
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
-            var tokenIsExpired = DateTime.UtcNow > expirationDateTime;
+            var tokenIsExpired = DateTimeOffset.UtcNow > expirationDateTime;
             result.Active = !tokenIsExpired;
 
             return result;

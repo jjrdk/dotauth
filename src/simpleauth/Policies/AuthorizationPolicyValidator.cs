@@ -28,16 +28,20 @@ namespace SimpleAuth.Policies
 
     internal class AuthorizationPolicyValidator
     {
-        private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;
+        private readonly IAuthorizationPolicy _authorizationPolicy;
+        private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IEventPublisher _eventPublisher;
 
         public AuthorizationPolicyValidator(
             IClientStore clientStore,
+            IJwksStore jwksStore,
+            IPolicyRepository policyRepository,
             IResourceSetRepository resourceSetRepository,
             IEventPublisher eventPublisher)
         {
-            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(clientStore);
+            _authorizationPolicy = new DefaultAuthorizationPolicy(clientStore, jwksStore);
+            _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
             _eventPublisher = eventPublisher;
         }
@@ -70,13 +74,27 @@ namespace SimpleAuth.Policies
                 var resource = resources.First(r => r.Id == ticketLine.ResourceSetId);
                 validationResult =
                     await Validate(ticketLineParameter, resource, claimTokenParameter, cancellationToken).ConfigureAwait(false);
-                if (validationResult.Type != AuthorizationPolicyResultEnum.Authorized)
-                {
-                    await _eventPublisher
-                        .Publish(new AuthorizationPolicyNotAuthorized(Id.Create(), validTicket.Id, DateTime.UtcNow))
-                        .ConfigureAwait(false);
 
-                    return validationResult;
+                switch (validationResult.Type)
+                {
+                    case AuthorizationPolicyResultEnum.RequestSubmitted:
+                        await _eventPublisher
+                            .Publish(new AuthorizationRequestSubmitted(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
+                            .ConfigureAwait(false);
+
+                        return validationResult;
+                    case AuthorizationPolicyResultEnum.Authorized:
+                        break;
+                    case AuthorizationPolicyResultEnum.NotAuthorized:
+                    case AuthorizationPolicyResultEnum.NeedInfo:
+                    default:
+                        {
+                            await _eventPublisher
+                                .Publish(new AuthorizationPolicyNotAuthorized(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
+                                .ConfigureAwait(false);
+
+                            return validationResult;
+                        }
                 }
             }
 
@@ -85,18 +103,20 @@ namespace SimpleAuth.Policies
 
         private async Task<AuthorizationPolicyResult> Validate(
             TicketLineParameter ticketLineParameter,
-            ResourceSet resource,
+            ResourceSetModel resource,
             ClaimTokenParameter claimTokenParameter,
             CancellationToken cancellationToken)
         {
-            if (resource.Policies == null || !resource.Policies.Any())
+            var policies = await Task.WhenAll(resource.AuthorizationPolicyIds.Select(x => _policyRepository.Get(x, cancellationToken))).ConfigureAwait(false);
+
+            if (policies.Length == 0)
             {
-                return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.Authorized };
+                return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.RequestSubmitted };
             }
 
-            foreach (var authorizationPolicy in resource.Policies)
+            foreach (var authorizationPolicy in policies)
             {
-                var result = await _basicAuthorizationPolicy.Execute(
+                var result = await _authorizationPolicy.Execute(
                         ticketLineParameter,
                         authorizationPolicy,
                         claimTokenParameter,

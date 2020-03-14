@@ -39,7 +39,7 @@ namespace SimpleAuth.Extensions
             if (string.IsNullOrWhiteSpace(parameter.Scope))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
@@ -49,7 +49,7 @@ namespace SimpleAuth.Extensions
             if (string.IsNullOrWhiteSpace(parameter.ClientId))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
@@ -59,7 +59,7 @@ namespace SimpleAuth.Extensions
             if (parameter.RedirectUrl == null)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName),
@@ -69,7 +69,7 @@ namespace SimpleAuth.Extensions
             if (string.IsNullOrWhiteSpace(parameter.ResponseType))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(
                         ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
@@ -85,7 +85,7 @@ namespace SimpleAuth.Extensions
             if (!redirectUrlIsCorrect)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.TheRedirectionUriIsNotWellFormed,
                     parameter.State);
             }
@@ -94,7 +94,7 @@ namespace SimpleAuth.Extensions
             if (client == null)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.ClientIsNotValid, parameter.ClientId),
                     parameter.State);
             }
@@ -102,7 +102,7 @@ namespace SimpleAuth.Extensions
             if (!client.GetRedirectionUrls(parameter.RedirectUrl).Any())
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.RedirectUrlIsNotValid, parameter.RedirectUrl),
                     parameter.State);
             }
@@ -129,7 +129,7 @@ namespace SimpleAuth.Extensions
             if (atLeastOneResonseTypeIsNotSupported)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.AtLeastOneResponseTypeIsNotSupported,
                     state);
             }
@@ -153,7 +153,7 @@ namespace SimpleAuth.Extensions
             if (atLeastOnePromptIsNotSupported)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.AtLeastOnePromptIsNotSupported,
                     state);
             }
@@ -165,7 +165,7 @@ namespace SimpleAuth.Extensions
                     || prompts.Contains(PromptParameters.SelectAccount)))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.PromptParameterShouldHaveOnlyNoneValue,
                     state);
             }

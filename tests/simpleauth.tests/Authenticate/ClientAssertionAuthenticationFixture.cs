@@ -11,6 +11,7 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
 
@@ -61,7 +62,9 @@
         public ClientAssertionAuthenticationFixture()
         {
             _clientRepositoryStub = new Mock<IClientStore>();
-            _clientAssertionAuthentication = new ClientAssertionAuthentication(_clientRepositoryStub.Object);
+            _clientAssertionAuthentication = new ClientAssertionAuthentication(
+                _clientRepositoryStub.Object,
+                new InMemoryJwksRepository());
         }
 
         [Fact]
@@ -112,9 +115,9 @@
         private JsonWebKeySet CreateJwt(JwtPayload jwsPayload, out string jwt)
         {
             var jwks = "verylongsecretkey".CreateSignatureJwk().ToSet();
-
+            
             var token = new JwtSecurityToken(
-                new JwtHeader(new SigningCredentials(jwks.Keys[0], SecurityAlgorithms.HmacSha256Signature)),
+                new JwtHeader(new SigningCredentials(jwks.Keys[0], SecurityAlgorithms.HmacSha256)),
                 jwsPayload);
             jwt = _handler.WriteToken(token);
             return jwks;
@@ -129,7 +132,7 @@
                 {StandardClaimNames.Issuer, "issuer"},
                 {StandardClaimNames.Subject, "issuer"},
                 {StandardClaimNames.Audiences, "audience"},
-                {StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddDays(2).ConvertToUnixTimestamp()}
+                {StandardClaimNames.ExpirationTime, DateTimeOffset.UtcNow.AddDays(2).ConvertToUnixTimestamp()}
             };
             var jwks = CreateJwt(jwsPayload, out var jwt);
             var instruction = new AuthenticateInstruction

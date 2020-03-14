@@ -38,10 +38,10 @@ namespace SimpleAuth
             TimeSpan ticketLifetime = default,
             string[] claimsIncludedInUserCreation = null)
         {
-            RptLifeTime = rptLifetime == default ? TimeSpan.FromSeconds(3600) : rptLifetime;
-            TicketLifeTime = ticketLifetime == default ? TimeSpan.FromSeconds(3600) : ticketLifetime;
+            RptLifeTime = rptLifetime == default ? TimeSpan.FromMinutes(30) : rptLifetime;
+            TicketLifeTime = ticketLifetime == default ? TimeSpan.FromMinutes(30) : ticketLifetime;
             AuthorizationCodeValidityPeriod = authorizationCodeValidity == default
-                ? TimeSpan.FromSeconds(3600)
+                ? TimeSpan.FromMinutes(30)
                 : authorizationCodeValidity;
             ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
         }
@@ -158,7 +158,6 @@ namespace SimpleAuth
         /// </value>
         public Func<IServiceProvider, IConfirmationCodeStore> ConfirmationCodes { get; set; }
 
-
         /// <summary>
         /// Gets or sets the event publisher.
         /// </summary>
@@ -167,7 +166,6 @@ namespace SimpleAuth
         /// </value>
         public Func<IServiceProvider, IEventPublisher> EventPublisher { get; set; }
 
-
         /// <summary>
         /// Gets or sets the subject builder.
         /// </summary>
@@ -175,7 +173,6 @@ namespace SimpleAuth
         /// The subject builder.
         /// </value>
         public Func<IServiceProvider, ISubjectBuilder> SubjectBuilder { get; set; }
-
 
         /// <summary>
         /// Gets or sets the authorization code validity period.
@@ -186,11 +183,12 @@ namespace SimpleAuth
         public TimeSpan AuthorizationCodeValidityPeriod { get; set; }
 
         /// <summary>
-        /// Gets or sets the RPT lifetime (seconds).
+        /// Gets or sets the RPT lifetime.
         /// </summary>
         public TimeSpan RptLifeTime { get; set; }
+
         /// <summary>
-        /// Gets or sets the ticket lifetime (seconds).
+        /// Gets or sets the ticket lifetime.
         /// </summary>
         public TimeSpan TicketLifeTime { get; set; }
 

@@ -37,7 +37,8 @@ namespace SimpleAuth.Tests.Api.Introspection
                     new InMemoryScopeRepository(new Scope[0]),
                     new Mock<ILogger<InMemoryClientRepository>>().Object,
                     new Client[0]),
-                new InMemoryTokenStore());
+                new InMemoryTokenStore(),
+                new InMemoryJwksRepository());
         }
 
         [Fact]

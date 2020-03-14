@@ -18,7 +18,6 @@ namespace SimpleAuth.Extensions
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -38,7 +37,7 @@ namespace SimpleAuth.Extensions
             }
 
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
-            var tokenIsExpired = DateTime.UtcNow > expirationDateTime;
+            var tokenIsExpired = DateTimeOffset.UtcNow > expirationDateTime;
             if (tokenIsExpired)
             {
                 return new GrantedTokenValidationResult

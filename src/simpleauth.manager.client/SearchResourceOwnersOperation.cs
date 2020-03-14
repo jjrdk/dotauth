@@ -1,4 +1,18 @@
-﻿namespace SimpleAuth.Manager.Client
+﻿// Copyright © 2016 Habart Thierry, © 2018 Jacob Reimers
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+namespace SimpleAuth.Manager.Client
 {
     using System;
     using System.Net.Http;
@@ -20,7 +34,10 @@
             _httpClient = httpClientFactory;
         }
 
-        public async Task<GenericResponse<PagedResponse<ResourceOwner>>> Execute(Uri resourceOwnerUri, SearchResourceOwnersRequest parameter, string authorizationHeaderValue = null)
+        public async Task<GenericResponse<PagedResponse<ResourceOwner>>> Execute(
+            Uri resourceOwnerUri,
+            SearchResourceOwnersRequest parameter,
+            string authorizationHeaderValue = null)
         {
             if (resourceOwnerUri == null)
             {
@@ -37,7 +54,9 @@
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    authorizationHeaderValue);
             }
 
             var httpResult = await _httpClient.SendAsync(request).ConfigureAwait(false);
@@ -53,13 +72,11 @@
 
             var result = new GenericResponse<PagedResponse<ResourceOwner>>
             {
-                ContainsError = true,
+                Error = string.IsNullOrWhiteSpace(content)
+                    ? new ErrorDetails { Status = httpResult.StatusCode }
+                    : Serializer.Default.Deserialize<ErrorDetails>(content),
                 HttpStatus = httpResult.StatusCode
             };
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                result.Error = Serializer.Default.Deserialize<ErrorDetails>(content);
-            }
 
             return result;
 

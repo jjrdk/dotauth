@@ -28,10 +28,12 @@ namespace SimpleAuth.Policies
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
         private readonly IClientStore _clientStore;
+        private readonly IJwksStore _jwksStore;
 
-        public BasicAuthorizationPolicy(IClientStore clientStore)
+        public BasicAuthorizationPolicy(IClientStore clientStore, IJwksStore jwksStore)
         {
             _clientStore = clientStore;
+            _jwksStore = jwksStore;
         }
 
         public async Task<AuthorizationPolicyResult> Execute(
@@ -155,7 +157,7 @@ namespace SimpleAuth.Policies
                 return null;
             }
 
-            if (claimTokenParameter == null || claimTokenParameter.Format != UmaConstants._idTokenType)
+            if (claimTokenParameter == null || claimTokenParameter.Format != UmaConstants.IdTokenType)
             {
                 return GetNeedInfoResult(authorizationPolicy.Claims, authorizationPolicy.OpenIdProvider);
             }
@@ -165,7 +167,7 @@ namespace SimpleAuth.Policies
             var handler = new JwtSecurityTokenHandler();
             handler.ValidateToken(
                 claimTokenParameter.Token,
-                client.CreateValidationParameters(),
+                await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false),
                 out var securityToken);
             var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 
@@ -173,7 +175,7 @@ namespace SimpleAuth.Policies
             {
                 return new AuthorizationPolicyResult
                 {
-                    Type = AuthorizationPolicyResultEnum.NotAuthorized
+                    Type = AuthorizationPolicyResultEnum.NotAuthorized 
                 };
             }
 

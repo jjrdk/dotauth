@@ -6,19 +6,13 @@
     using SimpleAuth;
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Security.Claims;
-    using System.Security.Cryptography.X509Certificates;
     using System.Text.RegularExpressions;
 
     public static class DefaultConfiguration
     {
         public static List<Client> GetClients()
         {
-            var path = Path.Combine(
-                Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
-                "mycert.pfx");
-            var certificate = new X509Certificate2(path, "simpleauth", X509KeyStorageFlags.Exportable);
             return new List<Client>
             {
                 new Client
@@ -72,20 +66,21 @@
                 {
                     ClientId = "web",
                     ClientName = "web",
-                    AllowedScopes = new[] {"openid", "role", "manager"},
+                    AllowedScopes = new[] {"openid", "role", "profile", "email", "manager", "uma_protection"},
                     ApplicationType = ApplicationTypes.Web,
-                    GrantTypes =
+                    GrantTypes = GrantTypes.All,
+                    RequirePkce = true,
+                    RedirectionUrls =
                         new[]
                         {
-                            GrantTypes.Password,
-                            GrantTypes.Implicit,
-                            GrantTypes.AuthorizationCode,
-                            GrantTypes.RefreshToken
+                            new Uri("http://localhost:4200/login"),
+                            new Uri("https://localhost:50001/signin-oidc"),
                         },
-                    RedirectionUrls = new[] {new Uri("http://localhost:4200/callback"),},
-                    ResponseTypes =
-                        new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
+                    PostLogoutRedirectUris = new[] {new Uri("http://localhost:4200/login")},
+                    ResponseTypes = ResponseTypeNames.All,
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     UserClaimsToIncludeInAuthToken = new[]
                     {
                         new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
@@ -97,9 +92,7 @@
 
         public static List<Scope> GetScopes()
         {
-            return new List<Scope>
-            {
-            };
+            return new List<Scope> { };
         }
 
         public static List<ResourceOwner> GetUsers()
@@ -112,11 +105,33 @@
                     Claims = new[]
                     {
                         new Claim(StandardClaimNames.Subject, "administrator"),
-                        new Claim("role", "administrator")
+                        new Claim("role", "administrator"),
+                        new Claim("role", "uma_admin"),
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,
-                    CreateDateTime = DateTime.UtcNow,
+                    CreateDateTime = DateTimeOffset.UtcNow,
+                }
+            };
+        }
+
+        public static List<Policy> GetPolicies()
+        {
+            return new List<Policy>
+            {
+                new Policy
+                {
+                    Id = "1",
+                    Owner = "administrator",
+                    Rules = new[]
+                    {
+                        new PolicyRule
+                        {
+                            ClientIdsAllowed = new[] {"web"},
+                            Scopes = new []{"read"},
+                            IsResourceOwnerConsentNeeded = false
+                        }
+                    }
                 }
             };
         }

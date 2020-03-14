@@ -26,10 +26,10 @@ namespace SimpleAuth.Shared
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="timestamp">The timestamp.</param>
-        protected Event(string id, DateTime timestamp)
+        protected Event(string id, DateTimeOffset timestamp)
         {
             Id = id;
-            Timestamp = timestamp.ToUniversalTime();
+            Timestamp = timestamp;
         }
 
         /// <summary>
@@ -43,6 +43,6 @@ namespace SimpleAuth.Shared
         /// <value>
         /// The timestamp.
         /// </value>
-        public DateTime Timestamp { get; }
+        public DateTimeOffset Timestamp { get; }
     }
 }

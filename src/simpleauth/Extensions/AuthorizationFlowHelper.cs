@@ -27,7 +27,7 @@ namespace SimpleAuth.Extensions
             if (responseTypes == null)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
             }
@@ -37,7 +37,7 @@ namespace SimpleAuth.Extensions
             if (record == null)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
             }

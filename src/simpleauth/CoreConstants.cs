@@ -159,7 +159,7 @@ namespace SimpleAuth
 
         public static class StandardTokenTypes
         {
-            public static string _bearer = "Bearer";
+            public static string Bearer = "Bearer";
         }
 
         public static class StandardClaimParameterValueNames
@@ -173,9 +173,9 @@ namespace SimpleAuth
 
         public static class StandardClaimParameterNames
         {
-            public static string _userInfoName = "userinfo";
+            public static string UserInfoName = "userinfo";
 
-            public static string _idTokenName = "id_token";
+            public static string IdTokenName = "id_token";
         }
 
         public static class StandardTokenTypeHintNames

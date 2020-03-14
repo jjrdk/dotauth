@@ -30,20 +30,19 @@
                 });
 
             "and a token client".x(
-                async () =>
+                () =>
                 {
-                    _tokenClient = await TokenClient.Create(
-                            TokenCredentials.FromClientCredentials("admin_client", "admin_client"),
-                            _fixture.Client,
-                            WellKnownUmaConfiguration)
-                        .ConfigureAwait(false);
+                    _tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("admin_client", "admin_client"),
+                        _fixture.Client,
+                        WellKnownUmaConfiguration);
                 });
 
             "and an admin token".x(
                 async () =>
                 {
                     var result = await _tokenClient.GetToken(TokenRequest.FromScopes("admin")).ConfigureAwait(false);
-                    
+
                     Assert.NotNull(result.Content);
 
                     _grantedToken = result.Content;

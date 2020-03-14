@@ -25,19 +25,20 @@ namespace SimpleAuth.Shared.Errors
         //public const string InvalidId = "invalid_id";
         public const string InvalidTicket = "invalid_ticket";
         public const string ExpiredTicket = "expired_ticket";
+        public const string ExpiredAuthorizationCode = "expired_code";
+        public const string RequestSubmitted = "request_submitted";
+        public const string RequestDenied = "request_denied";
         //public const string InvalidRpt = "invalid_rpt";
         //openid
         public const string UnhandledExceptionCode = "unhandled_error";
 
-        //public const string InternalErrorCode = "internal_error";
         public const string InvalidParameterCode = "invalid_parameter";
-        //public const string TheSectorIdentifierUrisCannotBeRetrieved = "the sector identifier uris cannot be retrieved";
-        public const string InvalidRequestCode = "invalid_request";
+        public const string InvalidRequest = "invalid_request";
         public const string InvalidClient = "invalid_client";
         public const string InvalidGrant = "invalid_grant";
+        public const string InvalidCredentials = "invalid_credentials";
+        public const string InvalidResponse = "invalid_response";
         public const string InvalidToken = "invalid_token";
-        //public const string UnAuthorizedClient = "unauthorized_client";
-        //public const string UnSupportedGrantType = "unsupported_grant_type";
         public const string InvalidScope = "invalid_scope";
         public const string InvalidRequestUriCode = "invalid_request_uri";
         public const string LoginRequiredCode = "login_required";
@@ -45,6 +46,5 @@ namespace SimpleAuth.Shared.Errors
         public const string InvalidRedirectUri = "invalid_redirect_uri";
         public const string InvalidClientMetaData = "invalid_client_metadata";
         public const string InternalError = "internal_error";
-        //public const string UnsupportedTokenType = "unsupported_token_type";
     }
 }

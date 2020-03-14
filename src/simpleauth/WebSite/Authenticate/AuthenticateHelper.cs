@@ -106,7 +106,7 @@
             if (responseTypes == null)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
             }
@@ -116,7 +116,7 @@
             if (record == null)
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
                     state);
             }

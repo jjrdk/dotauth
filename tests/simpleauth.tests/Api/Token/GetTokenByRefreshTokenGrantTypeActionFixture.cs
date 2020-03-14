@@ -45,7 +45,6 @@ namespace SimpleAuth.Tests.Api.Token
             _tokenStoreStub = new Mock<ITokenStore>();
             _clientStore = new Mock<IClientStore>();
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
-                new RuntimeSettings(),
                 new Mock<IEventPublisher>().Object,
                 _tokenStoreStub.Object,
                 new Mock<IScopeRepository>().Object,
@@ -55,40 +54,41 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Error_Is_Returned()
         {
-            await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByRefreshTokenGrantTypeAction.Execute(
-                        null,
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None))
+            var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
+                    null,
+                    null,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
+
+            Assert.True(result.ContainsError);
         }
 
         [Fact]
-        public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
+        public async Task When_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
             var parameter = new RefreshTokenGrantTypeParameter();
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Client)null);
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByRefreshTokenGrantTypeAction.Execute(
+            var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
                         parameter,
                         null,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheClientDoesntExist, ex.Message);
+
+            Assert.Equal(ErrorCodes.InvalidClient, result.Error.Title);
+            Assert.Equal(ErrorDescriptions.TheClientDoesntExist, result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Client_Does_Not_Support_GrantType_RefreshToken_Then_Exception_Is_Thrown()
+        public async Task When_Client_Does_Not_Support_GrantType_RefreshToken_Then_Error_Is_Returned()
         {
             var parameter = new RefreshTokenGrantTypeParameter();
             var client = new Client
@@ -100,18 +100,18 @@ namespace SimpleAuth.Tests.Api.Token
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
             var authenticationHeader = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByRefreshTokenGrantTypeAction.Execute(
+            var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
                         parameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, ex.Code);
+
+            Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
             Assert.Equal(
                 string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, "id", GrantTypes.RefreshToken),
-                ex.Message);
+                result.Error.Detail);
         }
 
         [Fact]
@@ -143,7 +143,7 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_RefreshToken_Is_Not_Issued_By_The_Same_Client_Then_Exception_Is_Thrown()
+        public async Task When_RefreshToken_Is_Not_Issued_By_The_Same_Client_Then_Error_Is_Returned()
         {
             var parameter = new RefreshTokenGrantTypeParameter();
             var client = new Client
@@ -158,16 +158,16 @@ namespace SimpleAuth.Tests.Api.Token
                 .Returns(() => Task.FromResult(new GrantedToken { ClientId = "differentId" }));
 
             var authenticationValue = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByRefreshTokenGrantTypeAction.Execute(
+            var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
                         parameter,
                         authenticationValue,
                         null,
                         "issuer",
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidGrant, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, ex.Message);
+
+            Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
+            Assert.Equal(ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, result.Error.Detail);
         }
 
         [Fact]

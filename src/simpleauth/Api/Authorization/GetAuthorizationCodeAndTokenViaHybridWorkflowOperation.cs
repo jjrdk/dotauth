@@ -42,7 +42,7 @@ namespace SimpleAuth.Api.Authorization
             IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
-            _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository);
+            _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository, jwksStore);
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 authorizationCodeStore,
                 tokenStore,
@@ -63,7 +63,7 @@ namespace SimpleAuth.Api.Authorization
             if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                     authorizationParameter.State);
@@ -77,7 +77,7 @@ namespace SimpleAuth.Api.Authorization
             if (!client.CheckGrantTypes(GrantTypes.Implicit, GrantTypes.AuthorizationCode))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
                         $"{GrantTypes.Implicit} and {GrantTypes.AuthorizationCode}"),
@@ -89,7 +89,7 @@ namespace SimpleAuth.Api.Authorization
                 if (claimsPrincipal == null)
                 {
                     throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidRequestCode,
+                        ErrorCodes.InvalidRequest,
                         ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated,
                         authorizationParameter.State);
                 }

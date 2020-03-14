@@ -31,7 +31,7 @@ namespace SimpleAuth.Shared.Events.Openid
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="subject">The accepting subject.</param>
         /// <param name="clientId">The accepted client.</param>
-        public ConsentAccepted(string id, string subject, string clientId, string scope, DateTime timestamp)
+        public ConsentAccepted(string id, string subject, string clientId, string scope, DateTimeOffset timestamp)
             : this(id, subject, clientId, scope.Split(' ', ','), timestamp)
         {
         }
@@ -44,7 +44,7 @@ namespace SimpleAuth.Shared.Events.Openid
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="subject">The accepting subject.</param>
         /// <param name="clientId">The accepted client.</param>
-        public ConsentAccepted(string id, string subject, string clientId, string[] scope, DateTime timestamp)
+        public ConsentAccepted(string id, string subject, string clientId, string[] scope, DateTimeOffset timestamp)
             : base(id, timestamp)
         {
             Subject = subject;

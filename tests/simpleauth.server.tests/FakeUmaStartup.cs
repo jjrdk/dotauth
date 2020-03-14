@@ -17,19 +17,14 @@ namespace SimpleAuth.Server.Tests
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using System.Reflection;
     using System.Security.Claims;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Moq;
     using SimpleAuth;
-    using SimpleAuth.Controllers;
     using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.Server.Tests.MiddleWares;
@@ -50,11 +45,11 @@ namespace SimpleAuth.Server.Tests
             // 1. Add the dependencies.
             // 2. Add authorization policies.
             services.AddAuthentication(
-                    opts =>
-                    {
-                        opts.DefaultAuthenticateScheme = DefaultSchema;
-                        opts.DefaultChallengeScheme = DefaultSchema;
-                    })
+                opts =>
+                {
+                    opts.DefaultAuthenticateScheme = DefaultSchema;
+                    opts.DefaultChallengeScheme = DefaultSchema;
+                })
                 .AddUmaCustomAuth(o => { });
             services.AddAuthorization(
                 opts =>
@@ -108,7 +103,11 @@ namespace SimpleAuth.Server.Tests
                 async (context, next) =>
                 {
                     var claimsIdentity = new ClaimsIdentity(
-                        new List<Claim> { new Claim("client_id", "resource_server") },
+                        new List<Claim>
+                        {
+                            new Claim("client_id", "resource_server"),
+                            new Claim("sub", "resource_server")
+                        },
                         "fakests");
                     context.User = new ClaimsPrincipal(claimsIdentity);
                     await next.Invoke().ConfigureAwait(false);

@@ -27,6 +27,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
 
@@ -40,7 +41,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
         {
             _clientStore = new Mock<IClientStore>();
             _tokenStoreStub = new Mock<ITokenStore>();
-            _postIntrospectionAction = new PostIntrospectionAction(_clientStore.Object, _tokenStoreStub.Object);
+            _postIntrospectionAction = new PostIntrospectionAction(_clientStore.Object, _tokenStoreStub.Object, new InMemoryJwksRepository());
         }
 
         [Fact]
@@ -55,7 +56,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
         [Fact]
         public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
         {
-            var parameter = new IntrospectionParameter {Token = "token"};
+            var parameter = new IntrospectionParameter { Token = "token" };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Client());
 
@@ -81,15 +82,15 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                     new Client
                     {
                         ClientId = "test",
-                        Secrets = new[] { new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}}
+                        Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "test" } }
                     });
 
             var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", "test:test".Base64Encode());
 
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
             _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _postIntrospectionAction.Execute(
@@ -112,15 +113,16 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             var authenticationHeaderValue = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var audiences = new[] {audience};
+            var audiences = new[] { audience };
             var parameter = new IntrospectionParameter
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken,
+                Token = "token"
             };
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = new[] { new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
             };
             var idtp = new JwtPayload
             {
@@ -131,13 +133,13 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             {
                 ClientId = clientId,
                 IdTokenPayLoad = idtp,
-                CreateDateTime = DateTime.UtcNow.AddDays(-2),
+                CreateDateTime = DateTimeOffset.UtcNow.AddDays(-2),
                 ExpiresIn = 2
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
             _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
@@ -160,15 +162,16 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             var authenticationHeaderValue = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var audiences = new[] {audience};
+            var audiences = new[] { audience };
             var parameter = new IntrospectionParameter
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken,
+                Token = "token"
             };
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = new[] { new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
             };
             var grantedToken = new GrantedToken
             {
@@ -178,13 +181,13 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                     {OpenIdClaimTypes.Subject, subject},
                     {StandardClaimNames.Audiences, audiences}
                 },
-                CreateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTimeOffset.UtcNow,
                 ExpiresIn = 20000
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
             _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(grantedToken));
 

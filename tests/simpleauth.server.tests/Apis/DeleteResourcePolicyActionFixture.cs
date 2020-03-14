@@ -90,22 +90,6 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_PolicyDoesntContainResource_Then_Exception_Is_Thrown()
-        {
-            const string policyId = "policy_id";
-            const string resourceId = "invalid_resource_id";
-            var policy = new Policy { ResourceSetIds = new[] { "resource_id" } };
-            InitializeFakeObjects(policy, new ResourceSet());
-
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _deleteResourcePolicyAction.Execute(policyId, resourceId, CancellationToken.None))
-                .ConfigureAwait(false);
-
-            Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Code);
-            Assert.Equal(ErrorDescriptions.ThePolicyDoesntContainResource, exception.Message);
-        }
-
-        [Fact]
         public async Task When_AuthorizationPolicyDoesntExist_Then_False_Is_Returned()
         {
             const string policyId = "policy_id";
@@ -117,25 +101,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.False(result);
         }
 
-        [Fact]
-        public async Task When_ResourceIsRemovedFromPolicy_Then_True_Is_Returned()
-        {
-            const string policyId = "policy_id";
-            const string resourceId = "resource_id";
-
-            var policy = new Policy { ResourceSetIds = new[] { resourceId } };
-            InitializeFakeObjects(policy, new ResourceSet());
-
-            _policyRepositoryStub.Setup(p => p.Update(It.IsAny<Policy>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-
-            var result = await _deleteResourcePolicyAction.Execute(policyId, resourceId, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            Assert.True(result);
-        }
-
-        private void InitializeFakeObjects(Policy policy = null, ResourceSet resourceSet = null)
+        private void InitializeFakeObjects(Policy policy = null, ResourceSetModel resourceSet = null)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _policyRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))

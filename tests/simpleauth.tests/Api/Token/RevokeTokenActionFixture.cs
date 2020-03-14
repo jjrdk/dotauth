@@ -21,6 +21,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
@@ -36,7 +37,10 @@ namespace SimpleAuth.Tests.Api.Token
         {
             _clientStore = new Mock<IClientStore>();
             _grantedTokenRepositoryStub = new Mock<ITokenStore>();
-            _revokeTokenAction = new RevokeTokenAction(_clientStore.Object, _grantedTokenRepositoryStub.Object);
+            _revokeTokenAction = new RevokeTokenAction(
+                _clientStore.Object,
+                _grantedTokenRepositoryStub.Object,
+                new InMemoryJwksRepository());
         }
 
         [Fact]
@@ -64,10 +68,10 @@ namespace SimpleAuth.Tests.Api.Token
         [Fact]
         public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
-            var parameter = new RevokeTokenParameter {Token = "access_token"};
+            var parameter = new RevokeTokenParameter { Token = "access_token" };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Client) null);
+                .ReturnsAsync((Client)null);
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _revokeTokenAction.Execute(parameter, null, null, null, CancellationToken.None))
@@ -80,18 +84,18 @@ namespace SimpleAuth.Tests.Api.Token
         {
             var clientid = "clientid";
             var clientsecret = "secret";
-            var parameter = new RevokeTokenParameter {Token = "access_token"};
+            var parameter = new RevokeTokenParameter { Token = "access_token" };
 
             var client = new Client
             {
                 ClientId = clientid,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientsecret}}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret } }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
             _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
@@ -113,19 +117,19 @@ namespace SimpleAuth.Tests.Api.Token
         {
             var clientid = "clientid";
             var clientsecret = "secret";
-            var parent = new GrantedToken {ClientId = clientid, RefreshToken = "refresh_token"};
+            var parent = new GrantedToken { ClientId = clientid, RefreshToken = "refresh_token" };
 
-            var parameter = new RevokeTokenParameter {Token = "refresh_token"};
+            var parameter = new RevokeTokenParameter { Token = "refresh_token" };
 
             var client = new Client
             {
                 ClientId = clientid,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientsecret}}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret } }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
             _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(parent);
             _grantedTokenRepositoryStub
@@ -147,20 +151,20 @@ namespace SimpleAuth.Tests.Api.Token
         {
             var clientId = "clientid";
             var clientSecret = "clientsecret";
-            var grantedToken = new GrantedToken {ClientId = clientId, AccessToken = "access_token"};
-            var parameter = new RevokeTokenParameter {Token = "access_token"};
+            var grantedToken = new GrantedToken { ClientId = clientId, AccessToken = "access_token" };
+            var parameter = new RevokeTokenParameter { Token = "access_token" };
 
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(grantedToken);
             _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken) null));
+                .Returns(() => Task.FromResult((GrantedToken)null));
             _grantedTokenRepositoryStub
                 .Setup(g => g.RemoveAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);

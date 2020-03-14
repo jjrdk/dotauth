@@ -26,6 +26,7 @@ namespace SimpleAuth.Api.Token
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
@@ -69,78 +70,99 @@ namespace SimpleAuth.Api.Token
                 scopeRepository,
                 jwksStore);
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
-                simpleAuthOptions,
                 eventPublisher,
                 tokenStore,
                 scopeRepository,
                 jwksStore,
                 resourceOwnerRepository,
                 clientStore);
-            _authenticateClient = new AuthenticateClient(clientStore);
-            _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore);
+            _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
+            _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore, jwksStore);
             _jwksStore = jwksStore;
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
         }
 
-        public Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(
+        public async Task<GenericResponse<GrantedToken>> GetTokenByResourceOwnerCredentialsGrantType(
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (resourceOwnerGrantTypeParameter == null)
-            {
-                throw new ArgumentNullException(nameof(resourceOwnerGrantTypeParameter));
-            }
-
             if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.UserName))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.UserName));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            ErrorDescriptions.MissingParameter,
+                            StandardTokenRequestParameterNames.UserName)
+                    }
+                };
             }
 
             if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Password))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.PasswordName));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                               ErrorDescriptions.MissingParameter,
+                               StandardTokenRequestParameterNames.PasswordName)
+                    }
+                };
             }
 
             if (string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.ScopeName));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            ErrorDescriptions.MissingParameter,
+                            StandardTokenRequestParameterNames.ScopeName)
+                    }
+                };
             }
 
-            return _getTokenByResourceOwnerCredentialsGrantType.Execute(
+            return await _getTokenByResourceOwnerCredentialsGrantType.Execute(
                 resourceOwnerGrantTypeParameter,
                 authenticationHeaderValue,
                 certificate,
                 issuerName,
-                cancellationToken);
+                cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(
+        public async Task<GenericResponse<GrantedToken>> GetTokenByAuthorizationCodeGrantType(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
-            Validate(authorizationCodeGrantTypeParameter);
-            return _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            return Validate(authorizationCodeGrantTypeParameter)
+                ?? await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                     authorizationCodeGrantTypeParameter,
                     authenticationHeaderValue,
                     certificate,
                     issuerName,
-                    cancellationToken);
+                    cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<GrantedToken> GetTokenByRefreshTokenGrantType(
+        public async Task<GenericResponse<GrantedToken>> GetTokenByRefreshTokenGrantType(
             RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
@@ -150,20 +172,29 @@ namespace SimpleAuth.Api.Token
             // Read this RFC for more information
             if (string.IsNullOrWhiteSpace(refreshTokenGrantTypeParameter.RefreshToken))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.RefreshToken));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            ErrorDescriptions.MissingParameter,
+                            StandardTokenRequestParameterNames.RefreshToken)
+                    }
+                };
             }
 
-            return _getTokenByRefreshTokenGrantTypeAction.Execute(
-                    refreshTokenGrantTypeParameter,
-                    authenticationHeaderValue,
-                    certificate,
-                    issuerName,
-                    cancellationToken);
+            return await _getTokenByRefreshTokenGrantTypeAction.Execute(
+                refreshTokenGrantTypeParameter,
+                authenticationHeaderValue,
+                certificate,
+                issuerName,
+                cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<GrantedToken> GetTokenByClientCredentialsGrantType(
+        public async Task<GenericResponse<GrantedToken>> GetTokenByClientCredentialsGrantType(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
@@ -172,9 +203,16 @@ namespace SimpleAuth.Api.Token
         {
             if (string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.ScopeName));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.ScopeName)
+                    }
+                };
             }
 
             // 1. Authenticate the client
@@ -186,28 +224,51 @@ namespace SimpleAuth.Api.Token
             var client = authResult.Client;
             if (client == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidClient,
+                        Detail = authResult.ErrorMessage
+                    }
+                };
             }
 
             // 2. Check client
             if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.ClientCredentials))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClient,
-                    string.Format(
-                        ErrorDescriptions.TheClientDoesntSupportTheGrantType,
-                        client.ClientId,
-                        GrantTypes.ClientCredentials));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(
+                            ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                            client.ClientId,
+                            GrantTypes.ClientCredentials)
+                    }
+                };
             }
 
             if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseTypeNames.Token))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClient,
-                    string.Format(
-                        ErrorDescriptions.TheClientDoesntSupportTheResponseType,
-                        client.ClientId,
-                        ResponseTypeNames.Token));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidClient,
+                        Detail = string.Format(
+                            ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                            client.ClientId,
+                            ResponseTypeNames.Token)
+                    }
+                };
             }
 
             // 3. Check scopes
@@ -217,7 +278,19 @@ namespace SimpleAuth.Api.Token
                 var scopeValidation = clientCredentialsGrantTypeParameter.Scope.Check(client);
                 if (!scopeValidation.IsValid)
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
+                    // throw new SimpleAuthException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
+                    return new GenericResponse<GrantedToken>
+                    {
+                        HttpStatus = HttpStatusCode.BadRequest,
+                        Error = new ErrorDetails
+                        {
+                            Status = HttpStatusCode.BadRequest,
+                            Title = ErrorCodes.InvalidScope,
+                            Detail = string.Format(
+                                ErrorDescriptions.ScopesAreNotAllowedOrInvalid,
+                                clientCredentialsGrantTypeParameter.Scope)
+                        }
+                    };
                 }
 
                 allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
@@ -229,7 +302,14 @@ namespace SimpleAuth.Api.Token
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await client.GenerateToken(_jwksStore, allowedTokenScopes, issuerName, cancellationToken: cancellationToken)
+                grantedToken = await client.GenerateToken(
+                        _jwksStore,
+                        allowedTokenScopes,
+                        issuerName,
+                        cancellationToken: cancellationToken,
+                        additionalClaims: client.Claims.Where(
+                                c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
+                            .ToArray())
                     .ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
@@ -239,11 +319,15 @@ namespace SimpleAuth.Api.Token
                             grantedToken?.ClientId,
                             grantedToken?.Scope,
                             GrantTypes.ClientCredentials,
-                            DateTime.UtcNow))
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
 
-            return grantedToken;
+            return new GenericResponse<GrantedToken>
+            {
+                HttpStatus = HttpStatusCode.OK,
+                Content = grantedToken
+            };
         }
 
         public async Task<bool> RevokeToken(
@@ -257,7 +341,7 @@ namespace SimpleAuth.Api.Token
             if (string.IsNullOrWhiteSpace(revokeTokenParameter.Token))
             {
                 throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
             }
 
@@ -270,20 +354,27 @@ namespace SimpleAuth.Api.Token
                 .ConfigureAwait(false);
 
             await _eventPublisher
-                .Publish(new TokenRevoked(Id.Create(), revokeTokenParameter.Token, DateTime.UtcNow))
+                .Publish(new TokenRevoked(Id.Create(), revokeTokenParameter.Token, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return result;
         }
 
-        private static void Validate(AuthorizationCodeGrantTypeParameter parameter)
+        private static GenericResponse<GrantedToken> Validate(AuthorizationCodeGrantTypeParameter parameter)
         {
             if (string.IsNullOrWhiteSpace(parameter.Code))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(
-                        ErrorDescriptions.MissingParameter,
-                        StandardTokenRequestParameterNames.AuthorizationCodeName));
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            ErrorDescriptions.MissingParameter,
+                            StandardTokenRequestParameterNames.AuthorizationCodeName)
+                    }
+                };
             }
 
             // With this instruction
@@ -291,10 +382,19 @@ namespace SimpleAuth.Api.Token
             var redirectUrlIsCorrect = parameter.RedirectUri?.IsAbsoluteUri;
             if (redirectUrlIsCorrect != true)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequestCode,
-                    ErrorDescriptions.TheRedirectionUriIsNotWellFormed);
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = ErrorDescriptions.TheRedirectionUriIsNotWellFormed
+                    }
+                };
             }
+
+            return null;
         }
     }
 }

@@ -15,12 +15,6 @@
 namespace SimpleAuth.AuthServer
 {
     using System;
-    using System.IO.Compression;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Security.Claims;
-
-    using Controllers;
 
     using Extensions;
 
@@ -35,10 +29,16 @@ namespace SimpleAuth.AuthServer
     using SimpleAuth;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
+    using System.IO.Compression;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Security.Claims;
+    using SimpleAuth.ResourceServer;
+    using SimpleAuth.ResourceServer.Authentication;
+    using SimpleAuth.Shared.Models;
 
     public class Startup
     {
-        private static readonly string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
 
@@ -50,14 +50,28 @@ namespace SimpleAuth.AuthServer
             {
                 ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
+                Tickets = sp => new InMemoryTicketStore(),
                 Clients =
                     sp => new InMemoryClientRepository(
-                        sp.GetService<HttpClient>(),
-                        sp.GetService<IScopeStore>(),
-                        sp.GetService<ILogger<InMemoryClientRepository>>(),
+                        sp.GetRequiredService<HttpClient>(),
+                        sp.GetRequiredService<IScopeStore>(),
+                        sp.GetRequiredService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
-                Scopes = sp => new InMemoryScopeRepository(),
-                EventPublisher = sp => new LogEventPublisher(sp.GetService<ILogger<LogEventPublisher>>()),
+                Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
+                Policies = sp => new InMemoryPolicyRepository(DefaultConfiguration.GetPolicies()),
+                ResourceSets =
+                    sp => new InMemoryResourceSetRepository(
+                        new[] { new ResourceSetModel
+                        {
+                            Id = "abc",
+                            Name = "Test Resource",
+                            Type = "Content",
+                            Owner = "administrator",
+                            Scopes = new[] { "read" },
+                            AuthorizationPolicyIds = new[] { "1" },
+                            Uri = "https://localhost:50001/resource"
+                        } }),
+                EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 HttpClientFactory = () => client,
                 ClaimsIncludedInUserCreation = new[]
                 {
@@ -80,20 +94,17 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddResponseCompression(
-                    x =>
-                    {
-                        x.EnableForHttps = true;
-                        x.Providers.Add(
-                            new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
-                        x.Providers.Add(
-                            new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
-                    })
+            services
                 .AddHttpContextAccessor()
+                .AddAntiforgery(
+                    options =>
+                    {
+                        options.FormFieldName = "XrsfField";
+                        options.HeaderName = "XSRF-TOKEN";
+                        options.SuppressXFrameOptionsHeader = false;
+                    })
                 .AddCors(
-                    options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
+                    options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders()))
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
@@ -101,10 +112,13 @@ namespace SimpleAuth.AuthServer
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.TokenValidationParameters = new TokenValidationParameters {ValidateAudience = false,};
-#if DEBUG
+                        cfg.Authority = "https://localhost:5001";
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false,
+                            ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
+                        };
                         cfg.RequireHttpsMetadata = false;
-#endif
                     });
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
@@ -117,7 +131,7 @@ namespace SimpleAuth.AuthServer
                             opts.ClientId = _configuration["Google:ClientId"];
                             opts.ClientSecret = _configuration["Google:ClientSecret"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
-                            var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
+                            var scopes = _configuration["Google:Scopes"] ?? "openid,profile,email";
                             foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim()))
                             {
@@ -126,7 +140,18 @@ namespace SimpleAuth.AuthServer
                         });
             }
 
-            services.AddSimpleAuth(_options, new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme});
+            services.AddSimpleAuth(
+                _options,
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme },
+                applicationParts: GetType().Assembly);
+
+            services.AddAuthorization(
+                o =>
+                {
+                    o.AddPolicy(
+                        "uma_auth",
+                        builder => builder.RequireUmaTicket(UmaAuthenticationDefaults.AuthenticationScheme));
+                });
         }
 
         public void Configure(IApplicationBuilder app)

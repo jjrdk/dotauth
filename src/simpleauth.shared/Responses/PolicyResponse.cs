@@ -32,15 +32,6 @@ namespace SimpleAuth.Shared.Responses
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource set ids.
-        /// </summary>
-        /// <value>
-        /// The resource set ids.
-        /// </value>
-        [DataMember(Name = "resource_set_ids")]
-        public string[] ResourceSetIds { get; set; }
-
-        /// <summary>
         /// Gets or sets the rules.
         /// </summary>
         /// <value>

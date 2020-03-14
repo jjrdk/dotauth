@@ -53,7 +53,10 @@ namespace SimpleAuth.Controllers
         {
             if (client == null)
             {
-                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    "no parameter in body request",
+                    HttpStatusCode.BadRequest);
             }
 
             var result = await _registerActions.Insert(client, cancellationToken).ConfigureAwait(false);
@@ -69,16 +72,8 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails
-            {
-                Title = code,
-                Detail = message,
-                Status = statusCode
-            };
-            return new JsonResult(error)
-            {
-                StatusCode = (int)statusCode
-            };
+            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
+            return new JsonResult(error) {StatusCode = (int) statusCode};
         }
     }
 }

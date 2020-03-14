@@ -38,7 +38,7 @@
                         authorizationParameter,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.MissingParameter,
@@ -58,7 +58,7 @@
                         authorizationParameter,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.MissingParameter,
@@ -83,7 +83,7 @@
                         authorizationParameter,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.True(
                 exception.Message
                 == string.Format(
@@ -109,7 +109,7 @@
                         authorizationParameter,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.True(
                 exception.Message
                 == string.Format(
@@ -136,7 +136,7 @@
                         authorizationParameter,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.AtLeastOneResponseTypeIsNotSupported);
             Assert.True(exception.State == state);
         }
@@ -160,7 +160,7 @@
                         authorizationParameter,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.AtLeastOnePromptIsNotSupported);
             Assert.True(exception.State == state);
         }
@@ -185,7 +185,7 @@
                         authorizationParameter,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.True(exception.Message == ErrorDescriptions.PromptParameterShouldHaveOnlyNoneValue);
             Assert.True(exception.State == state);
         }
@@ -213,7 +213,7 @@
                         authorizationParameter,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(string.Format(ErrorDescriptions.ClientIsNotValid, clientId), exception.Message);
             Assert.Equal(state, exception.State);
         }
@@ -244,7 +244,7 @@
                         authorizationParameter,
                         CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUri), exception.Message);
             Assert.Equal(state, exception.State);
         }

@@ -20,6 +20,7 @@ namespace SimpleAuth.Api.PolicyController
     using System.Threading.Tasks;
     using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -69,7 +70,7 @@ namespace SimpleAuth.Api.PolicyController
 
             foreach (var resourceSetId in addResourceSetParameter.ResourceSets)
             {
-                ResourceSet resourceSet;
+                ResourceSetModel resourceSet;
                 try
                 {
                     resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
@@ -89,8 +90,6 @@ namespace SimpleAuth.Api.PolicyController
                         string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
                 }
             }
-
-            policy.ResourceSetIds = policy.ResourceSetIds.Concat(addResourceSetParameter.ResourceSets).ToArray();
 
             try
             {

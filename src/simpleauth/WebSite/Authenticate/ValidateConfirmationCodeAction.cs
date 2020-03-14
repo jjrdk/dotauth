@@ -42,7 +42,7 @@ namespace SimpleAuth.WebSite.Authenticate
             }
 
             var expirationDateTime = confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn);
-            return DateTime.UtcNow < expirationDateTime;
+            return DateTimeOffset.UtcNow < expirationDateTime;
         }
     }
 }

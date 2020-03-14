@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
     using Results;
     using Shared.Responses;
     using System;
@@ -92,16 +91,16 @@ namespace SimpleAuth.Client
             {
                 return new BaseSidContentResult<IntrospectionResponse>
                 {
-                    ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
+                    HasError = true,
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
                     Status = result.StatusCode
                 };
             }
 
             return new BaseSidContentResult<IntrospectionResponse>
             {
-                ContainsError = false,
-                Content = JsonConvert.DeserializeObject<IntrospectionResponse>(json)
+                HasError = false,
+                Content = Serializer.Default.Deserialize<IntrospectionResponse>(json)
             };
         }
     }

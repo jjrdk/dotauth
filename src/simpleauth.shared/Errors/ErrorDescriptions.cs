@@ -16,6 +16,7 @@ namespace SimpleAuth.Shared.Errors
 {
     internal static class ErrorDescriptions
     {
+        public const string InvalidResourceSetRequest = "the resource access request is invalid";
         public const string TheParameterNeedsToBeSpecified = "the parameter {0} needs to be specified";
         public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
         public const string TheResourceSetCannotBeInserted = "an error occured while trying to insert the resource set";
@@ -118,9 +119,9 @@ namespace SimpleAuth.Shared.Errors
         public const string TheClientRequiresPkce = "the client {0} requires PKCE";
         public const string TheCodeVerifierIsNotCorrect = "the code verifier is not correct";
         public const string TheResourceOwnerDoesntExist = "The resource owner {0} doesn't exist";
-        public const string TheProfileAlreadyLinked = "the profile is already linked to your account";
-        public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
-        public const string TheExternalAccountAccountCannotBeUnlinked = "the external account cannot be unlinked";
+        //public const string TheProfileAlreadyLinked = "the profile is already linked to your account";
+        //public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
+        //public const string TheExternalAccountAccountCannotBeUnlinked = "the external account cannot be unlinked";
         public const string TheAmrDoesntExist = "the amr {0} doesn't exist";
         public const string NoActiveAmr = "no active AMR";
         public const string TheRefreshTokenCanBeUsedOnlyByTheSameIssuer = "the refresh token can be used only by the same issuer";

@@ -31,12 +31,16 @@
         /// <inheritdoc />
         public async Task<GenericResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFactory();
-            parameter.StartIndex++;
+            if (parameter == null)
+            {
+                return new GenericResult<Scope>();
+            }
+
+            using var session = this._sessionFactory();
             var results = await session.Query<Scope>()
-                .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
-                .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)
-                .ConfigureAwait(false);
+                              .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
+                              .ToPagedListAsync(parameter.StartIndex + 1, parameter.NbResults, cancellationToken)
+                              .ConfigureAwait(false);
 
             return new GenericResult<Scope>
             {
@@ -49,6 +53,11 @@
         /// <inheritdoc />
         public async Task<Scope> Get(string name, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return null;
+            }
+
             using var session = _sessionFactory();
             var scope = await session.LoadAsync<Scope>(name, cancellationToken).ConfigureAwait(false);
 
@@ -58,11 +67,16 @@
         /// <inheritdoc />
         public async Task<Scope[]> SearchByNames(CancellationToken cancellationToken = default, params string[] names)
         {
-            using var session = _sessionFactory();
+            if (names == null)
+            {
+                return Array.Empty<Scope>();
+            }
+
+            using var session = this._sessionFactory();
             var scopes = await session.Query<Scope>()
-                .Where(x => x.Name.IsOneOf(names))
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                             .Where(x => x.Name.IsOneOf(names))
+                             .ToListAsync(cancellationToken)
+                             .ConfigureAwait(false);
 
             return scopes.ToArray();
         }
@@ -81,6 +95,11 @@
         /// <inheritdoc />
         public async Task<bool> Insert(Scope scope, CancellationToken cancellationToken = default)
         {
+            if (scope == null)
+            {
+                return false;
+            }
+
             using var session = _sessionFactory();
             session.Store(scope);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -90,6 +109,11 @@
         /// <inheritdoc />
         public async Task<bool> Delete(Scope scope, CancellationToken cancellationToken = default)
         {
+            if (scope == null)
+            {
+                return false;
+            }
+
             using var session = _sessionFactory();
             session.Delete(scope.Name);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -99,6 +123,11 @@
         /// <inheritdoc />
         public async Task<bool> Update(Scope scope, CancellationToken cancellationToken = default)
         {
+            if (scope == null)
+            {
+                return false;
+            }
+
             using var session = _sessionFactory();
             session.Update(scope);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

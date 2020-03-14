@@ -29,11 +29,12 @@
                 .Index(x => x.ExternalLogins)
                 .GinIndexJsonData();
             For<Consent>()
+                .Identity(x => x.Id)
                 .Duplicate(x => x.ResourceOwner.Subject)
                 .GinIndexJsonData();
             For<Policy>()
-                .Duplicate(x => x.Id)
-                .Duplicate(x => x.ResourceSetIds)
+                .Identity(x => x.Id)
+                .Duplicate(x => x.Owner, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)
@@ -43,11 +44,20 @@
                 .Index(x => x.ResponseTypes)
                 .Index(x => x.Claims)
                 .GinIndexJsonData();
-            For<ResourceSet>()
-                .Duplicate(x => x.Name)
-                .Duplicate(x => x.Type)
+            For<ResourceSetModel>()
+                .Identity(x => x.Id)
+                .Duplicate(x => x.Name, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Owner, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Type, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
-            For<Ticket>().GinIndexJsonData();
+            For<Ticket>()
+                .Identity(x => x.Id)
+                .Duplicate(x => x.ResourceOwner, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Created, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Expires, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.IsAuthorizedByRo, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Boolean)
+                .Duplicate(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })
+                .GinIndexJsonData();
             For<AuthorizationCode>()
                 .Identity(x => x.Code)
                 .Duplicate(x => x.ClientId)

@@ -20,11 +20,13 @@ namespace SimpleAuth.AuthServer
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Server.Kestrel.Core;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Logging;
 
     public class Program
     {
         public static async Task Main()
         {
+            IdentityModelEventSource.ShowPII = true;
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
             await new WebHostBuilder()

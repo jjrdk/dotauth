@@ -27,7 +27,7 @@
             var result = await _openidClients.AddClient(new Client()).ConfigureAwait(false);
 
             Assert.True(result.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
         }
 
         [Fact]
@@ -96,7 +96,7 @@
             var newClient = await _openidClients.GetClient("unknown_client").ConfigureAwait(false);
 
             Assert.True(newClient.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, newClient.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, newClient.Error.Title);
             Assert.Equal(ErrorDescriptions.TheClientDoesntExist, newClient.Error.Detail);
         }
 

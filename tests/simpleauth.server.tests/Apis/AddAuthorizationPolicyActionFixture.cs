@@ -37,39 +37,22 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<NullReferenceException>(() => _addAuthorizationPolicyAction.Execute(null, CancellationToken.None))
+            await Assert
+                .ThrowsAsync<NullReferenceException>(
+                    () => _addAuthorizationPolicyAction.Execute(null, null, CancellationToken.None))
                 .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task When_Passing_Empty_ResourceSetId_Then_Exception_Is_Thrown()
-        {
-            InitializeFakeObjects();
-            var addPolicyParameter = new PostPolicy();
-
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter, CancellationToken.None))
-                .ConfigureAwait(false);
-
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
-            Assert.Equal(
-                string.Format(
-                    ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                    UmaConstants.AddPolicyParameterNames.ResourceSetIds),
-                exception.Message);
         }
 
         [Fact]
         public async Task When_Passing_No_Rules_Then_Exception_Is_Thrown()
         {
             InitializeFakeObjects();
-            const string resourceSetId = "resource_set_id";
-            var addPolicyParameter = new PostPolicy { ResourceSetIds = new[] { resourceSetId } };
+            var addPolicyParameter = new PolicyData();
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter, CancellationToken.None))
+            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
+                    () => _addAuthorizationPolicyAction.Execute("owner", addPolicyParameter, CancellationToken.None))
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.True(
                 exception.Message
                 == string.Format(
@@ -78,97 +61,44 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_ResourceSetId_Does_Not_Exist_Then_Exception_Is_Thrown()
-        {
-            const string resourceSetId = "resource_set_id";
-            var addPolicyParameter = new PostPolicy
-            {
-                ResourceSetIds = new[] { resourceSetId },
-                Rules = new[]
-                {
-                    new PostPolicyRule
-                    {
-                        Scopes = new [] {"invalid_scope"},
-                        ClientIdsAllowed = new [] {"client_id"}
-                    }
-                }
-            };
-
-            InitializeFakeObjects();
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter, CancellationToken.None))
-                .ConfigureAwait(false);
-
-            Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId), exception.Message);
-        }
-
-        [Fact]
-        public async Task When_Scope_Is_Not_Valid_Then_Exception_Is_Thrown()
-        {
-            const string resourceSetId = "resource_set_id";
-            var addPolicyParameter = new PostPolicy
-            {
-                ResourceSetIds = new[] { resourceSetId },
-                Rules = new[]
-                {
-                    new PostPolicyRule
-                    {
-                        Scopes = new [] {"invalid_scope"},
-                        ClientIdsAllowed = new [] {"client_id"}
-                    }
-                }
-            };
-            var resourceSet = new ResourceSet { Scopes = new[] { "scope" } };
-
-            InitializeFakeObjects(resourceSet);
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter, CancellationToken.None))
-                .ConfigureAwait(false);
-
-            Assert.True(exception.Code == ErrorCodes.InvalidScope);
-            Assert.True(exception.Message == ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
-        }
-
-        [Fact]
         public async Task When_Adding_AuthorizationPolicy_Then_Id_Is_Returned()
         {
-            const string resourceSetId = "resource_set_id";
-            var addPolicyParameter = new PostPolicy
+            var addPolicyParameter = new PolicyData
             {
-                ResourceSetIds = new[] { resourceSetId },
                 Rules = new[]
                 {
-                    new PostPolicyRule
+                    new PolicyRuleData
                     {
                         Scopes = new[] {"scope"},
                         ClientIdsAllowed = new[] {"client_id"},
-                        Claims = new[] {new PostClaim {Type = "type", Value = "value"}}
+                        Claims = new[] {new ClaimData {Type = "type", Value = "value"}}
                     }
                 }
             };
-            var resourceSet = new ResourceSet { Scopes = new[] { "scope" } };
+            var resourceSet = new ResourceSetModel { Scopes = new[] { "scope" } };
 
             InitializeFakeObjects(resourceSet);
 
-            var result = await _addAuthorizationPolicyAction.Execute(addPolicyParameter, CancellationToken.None).ConfigureAwait(false);
+            var result = await _addAuthorizationPolicyAction
+                .Execute("owner", addPolicyParameter, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.NotNull(result);
         }
 
-        private void InitializeFakeObjects(ResourceSet resourceSet = null)
+        private void InitializeFakeObjects(ResourceSetModel resourceSet = null)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _policyRepositoryStub.Setup(x => x.Add(It.IsAny<Policy>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(resourceSet);
+            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(resourceSet);
             _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(new[] { resourceSet });
 
             _addAuthorizationPolicyAction = new AddAuthorizationPolicyAction(
-                _policyRepositoryStub.Object,
-                _resourceSetRepositoryStub.Object);
+                _policyRepositoryStub.Object);
         }
     }
 }

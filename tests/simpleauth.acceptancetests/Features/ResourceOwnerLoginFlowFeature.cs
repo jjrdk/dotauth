@@ -34,17 +34,16 @@
             GrantedTokenResponse result = null;
 
             "and a properly configured token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromBasicAuthentication("client", "client"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromBasicAuthentication("client", "client"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting token".x(
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });
@@ -61,7 +60,7 @@
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
                 });
 
             "and has valid id token".x(
@@ -77,7 +76,7 @@
                         ValidAudience = "client",
                         ValidIssuer = "https://localhost"
                     };
-                    tokenHandler.ValidateToken(result.IdToken, validationParameters, out var token);
+                    tokenHandler.ValidateToken(result.IdToken, validationParameters, out _);
                 });
         }
 
@@ -88,17 +87,16 @@
             GrantedTokenResponse result = null;
 
             "and a properly configured token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromBasicAuthentication("client", "client"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromBasicAuthentication("client", "client"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting token".x(
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });
@@ -115,7 +113,7 @@
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
                 });
 
             "and can get user info".x(
@@ -123,10 +121,10 @@
                 {
                     var userinfoRequest = new HttpRequestMessage
                     {
-                        Method = HttpMethod.Get,
-                        RequestUri = new Uri(BaseUrl + "/userinfo")
+                        Method = HttpMethod.Get, RequestUri = new Uri(BaseUrl + "/userinfo")
                     };
-                    userinfoRequest.Headers.Authorization = new AuthenticationHeaderValue(result.TokenType, result.AccessToken);
+                    userinfoRequest.Headers.Authorization =
+                        new AuthenticationHeaderValue(result.TokenType, result.AccessToken);
                     var userinfo = await _fixture.Client.SendAsync(userinfoRequest).ConfigureAwait(false);
 
                     Assert.True(userinfo.IsSuccessStatusCode);
@@ -141,17 +139,16 @@
             HttpResponseMessage updateResponse = null;
 
             "and a properly configured token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromBasicAuthentication("client", "client"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromBasicAuthentication("client", "client"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting token".x(
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}))
                         .ConfigureAwait(false);
                     tokenResponse = response.Content;
                 });
@@ -168,7 +165,7 @@
                     };
                     tokenHandler.ValidateToken(tokenResponse.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
                 });
 
             "and updating own claims".x(
@@ -176,8 +173,7 @@
                 {
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
-                        Subject = "user",
-                        Claims = new[] { new PostClaim { Type = "test", Value = "something" } }
+                        Subject = "user", Claims = new[] {new ClaimData {Type = "test", Value = "something"}}
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -188,10 +184,9 @@
                         Method = HttpMethod.Post,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization =
-                        new AuthenticationHeaderValue(
-                            JwtBearerDefaults.AuthenticationScheme,
-                            tokenResponse.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        JwtBearerDefaults.AuthenticationScheme,
+                        tokenResponse.AccessToken);
                     updateResponse = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
                 });
 
@@ -206,17 +201,16 @@
             GrantedTokenResponse refreshed = null;
 
             "and a properly token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromBasicAuthentication("client", "client"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromBasicAuthentication("client", "client"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });
@@ -226,7 +220,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
                         .ConfigureAwait(false);
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     refreshed = response.Content;
                 });
@@ -248,17 +242,16 @@
             GrantedTokenResponse result = null;
 
             "and a properly token client".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromBasicAuthentication("client", "client"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromBasicAuthentication("client", "client"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });
@@ -266,8 +259,7 @@
             "then can revoke token".x(
                 async () =>
                 {
-                    var response = await client.RevokeToken(RevokeTokenRequest.Create(result))
-                        .ConfigureAwait(false);
+                    var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
                     Assert.Equal(HttpStatusCode.OK, response.Status);
                 });
         }
@@ -279,21 +271,19 @@
             BaseSidContentResult<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromBasicAuthentication("xxx", "xxx"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromBasicAuthentication("xxx", "xxx"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
                 async () =>
                 {
-                    result = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                    result = await client.GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}))
                         .ConfigureAwait(false);
                 });
 
-            "then does not have token".x(() => { Assert.True(result.ContainsError); });
+            "then does not have token".x(() => { Assert.True(result.HasError); });
         }
 
         [Scenario(DisplayName = "Invalid user credentials")]
@@ -303,20 +293,19 @@
             BaseSidContentResult<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
-                async () => client = await TokenClient.Create(
-                        TokenCredentials.FromBasicAuthentication("client", "client"),
-                        _fixture.Client,
-                        new Uri(WellKnownOpenidConfiguration))
-                    .ConfigureAwait(false));
+                () => client = new TokenClient(
+                    TokenCredentials.FromBasicAuthentication("client", "client"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
                 async () =>
                 {
-                    result = await client.GetToken(TokenRequest.FromPassword("someone", "xxx", new[] { "openid" }, "pwd"))
+                    result = await client.GetToken(TokenRequest.FromPassword("someone", "xxx", new[] {"openid"}))
                         .ConfigureAwait(false);
                 });
 
-            "then does not have token".x(() => { Assert.True(result.ContainsError); });
+            "then does not have token".x(() => { Assert.True(result.HasError); });
         }
     }
 }

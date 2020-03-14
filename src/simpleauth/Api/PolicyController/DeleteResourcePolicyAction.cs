@@ -15,7 +15,6 @@
 namespace SimpleAuth.Api.PolicyController
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
@@ -56,7 +55,7 @@ namespace SimpleAuth.Api.PolicyController
                 return false;
             }
 
-            ResourceSet resourceSet;
+            ResourceSetModel resourceSet;
             try
             {
                 resourceSet = await _resourceSetRepository.Get(resourceId, cancellationToken).ConfigureAwait(false);
@@ -75,14 +74,6 @@ namespace SimpleAuth.Api.PolicyController
                     string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceId));
             }
 
-            if (policy.ResourceSetIds == null ||
-                !policy.ResourceSetIds.Contains(resourceId))
-            {
-                throw new SimpleAuthException(ErrorCodes.InvalidResourceSetId,
-                    ErrorDescriptions.ThePolicyDoesntContainResource);
-            }
-
-            policy.ResourceSetIds = policy.ResourceSetIds.Except(new[] { resourceId }).ToArray();
             var result = await _policyRepository.Update(policy, cancellationToken).ConfigureAwait(false);
             return result;
         }

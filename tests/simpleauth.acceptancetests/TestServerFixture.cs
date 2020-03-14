@@ -28,7 +28,7 @@
                     .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
                     .Configure(startup.Configure));
             Client = Server.CreateClient();
-            SharedCtx.Client = Client;
+            SharedCtx.Client = Server.CreateClient();
             SharedCtx.Handler = Server.CreateHandler();
         }
 

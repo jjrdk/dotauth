@@ -21,6 +21,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Client;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Requests;
     using Xunit;
 
     public class ResourceFixture
@@ -33,28 +34,28 @@ namespace SimpleAuth.Server.Tests
         public ResourceFixture()
         {
             _server = new TestUmaServerFixture();
-            _umaClient = UmaClient.Create(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration)).Result;
+            _umaClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration));
         }
 
         [Fact]
         public async Task When_Add_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.AddResource(new PostResourceSet {Name = string.Empty}, "header")
+            var resource = await _umaClient.AddResource(new ResourceSet {Name = string.Empty}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter name needs to be specified", resource.Error.Detail);
         }
 
         [Fact]
         public async Task When_Add_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.AddResource(new PostResourceSet {Name = "name"}, "header")
+            var resource = await _umaClient.AddResource(new ResourceSet {Name = "name"}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.Detail);
         }
 
@@ -62,12 +63,12 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Add_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "name", Scopes = new[] {"scope"}, IconUri = "invalid"},
+                    new ResourceSet {Name = "name", Scopes = new[] {"scope"}, IconUri = "invalid"},
                     "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the url invalid is not well formed", resource.Error.Detail);
         }
 
@@ -76,9 +77,8 @@ namespace SimpleAuth.Server.Tests
         {
             var resource = await _umaClient.GetResource("unknown", "header").ConfigureAwait(false);
 
-            Assert.True(resource.ContainsError);
-            Assert.Equal("not_found", resource.Error.Title);
-            Assert.Equal("resource cannot be found", resource.Error.Detail);
+            Assert.Equal(HttpStatusCode.OK, resource.HttpStatus);
+            Assert.Null(resource.Content);
         }
 
         [Fact]
@@ -93,10 +93,10 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Update_Resource_And_No_Id_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.UpdateResource(new PutResourceSet(), "header").ConfigureAwait(false);
+            var resource = await _umaClient.UpdateResource(new ResourceSet(), "header").ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter id needs to be specified", resource.Error.Detail);
         }
 
@@ -104,23 +104,23 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.UpdateResource(
-                    new PutResourceSet {Id = "invalid", Name = string.Empty},
+                    new ResourceSet {Id = "invalid", Name = string.Empty},
                     "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter name needs to be specified", resource.Error.Detail);
         }
 
         [Fact]
         public async Task When_Update_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.UpdateResource(new PutResourceSet {Id = "invalid", Name = "name"}, "header")
+            var resource = await _umaClient.UpdateResource(new ResourceSet {Id = "invalid", Name = "name"}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.Detail);
         }
 
@@ -128,12 +128,12 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.UpdateResource(
-                    new PutResourceSet {Id = "invalid", Name = "name", Scopes = new[] {"scope"}, IconUri = "invalid"},
+                    new ResourceSet {Id = "invalid", Name = "name", Scopes = new[] {"scope"}, IconUri = "invalid"},
                     "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, resource.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the url invalid is not well formed", resource.Error.Detail);
         }
 
@@ -141,13 +141,13 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Unknown_Resource_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.UpdateResource(
-                    new PutResourceSet {Id = "invalid", Name = "name", Scopes = new[] {"scope"}},
+                    new ResourceSet {Id = "invalid", Name = "name", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal("not_found", resource.Error.Title);
-            Assert.Equal("resource cannot be found", resource.Error.Detail);
+            Assert.Equal("not_updated", resource.Error.Title);
+            Assert.Equal("resource cannot be updated", resource.Error.Detail);
         }
 
         [Fact]
@@ -162,7 +162,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Getting_ResourceInformation_Then_Dto_Is_Returned()
         {
             var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false);
-            var resource = await _umaClient.GetResource(resources.Content.First(), "header").ConfigureAwait(false);
+            var resource = await _umaClient.GetResource(resources.Content.First().Id, "header").ConfigureAwait(false);
 
             Assert.NotNull(resource);
         }
@@ -171,18 +171,18 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Deleting_ResourceInformation_Then_It_Does_Not_Exist()
         {
             var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false);
-            var resource = await _umaClient.DeleteResource(resources.Content.First(), "header").ConfigureAwait(false);
-            var information = await _umaClient.GetResource(resources.Content.First(), "header").ConfigureAwait(false);
+            var resource = await _umaClient.DeleteResource(resources.Content.First().Id, "header").ConfigureAwait(false);
+            var information = await _umaClient.GetResource(resources.Content.First().Id, "header").ConfigureAwait(false);
 
-            Assert.False(resource.ContainsError);
-            Assert.True(information.ContainsError);
+            Assert.Equal(HttpStatusCode.OK, information.HttpStatus);
+            Assert.Null(information.Content);
         }
 
         [Fact]
         public async Task When_Adding_Resource_Then_Information_Can_Be_Retrieved()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "name", Scopes = new[] {"scope"}},
+                    new ResourceSet {Name = "name", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -205,12 +205,12 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Updating_Resource_Then_Changes_Are_Persisted()
         {
             var resource = await _umaClient.AddResource(
-                    new PostResourceSet {Name = "name", Scopes = new[] {"scope"}},
+                    new ResourceSet {Name = "name", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
             var updateResult = await _umaClient.UpdateResource(
-                    new PutResourceSet
+                    new ResourceSet
                         {
                             Id = resource.Content.Id, Name = "name2", Type = "type", Scopes = new[] {"scope2"}
                         },

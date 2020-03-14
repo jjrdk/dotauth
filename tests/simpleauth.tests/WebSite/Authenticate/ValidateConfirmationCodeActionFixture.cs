@@ -68,7 +68,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             var confirmationCode = new ConfirmationCode
             {
                 ExpiresIn = 10,
-                IssueAt = DateTime.UtcNow.AddDays(-2)
+                IssueAt = DateTimeOffset.UtcNow.AddDays(-2)
             };
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(confirmationCode);
@@ -85,7 +85,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             var confirmationCode = new ConfirmationCode
             {
                 ExpiresIn = 200,
-                IssueAt = DateTime.UtcNow
+                IssueAt = DateTimeOffset.UtcNow
             };
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(confirmationCode);

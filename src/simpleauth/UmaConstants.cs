@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,7 @@ namespace SimpleAuth
 {
     internal static class UmaConstants
     {
-        public static string _idTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#IDToken";
+        public static string IdTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#IDToken";
 
         public static class RptClaims
         {
@@ -33,21 +33,8 @@ namespace SimpleAuth
 
         public static class AddPolicyParameterNames
         {
-            public const string ResourceSetIds = "resource_set_ids";
+            public const string PolicyId = "policy_id";
             public const string Rules = "rules";
-        }
-
-        public static class AddResourceSetParameterNames
-        {
-            public const string PolicyId = "_id";
-            public const string ResourceSet = "resources";
-        }
-
-        public static class AddPolicyRuleParameterNames
-        {
-            public const string Script = "script";
-            public const string Scopes = "scopes";
-            public const string ClientIdsAllowed = "allowed_clients";
         }
 
         public static class ErrorDetailNames

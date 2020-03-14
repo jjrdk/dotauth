@@ -20,18 +20,22 @@
     public class SessionController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly IJwksStore _jwksStore;
         private readonly IClientStore _clientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SessionController"/> class.
         /// </summary>
         /// <param name="authenticationService">The authentication service.</param>
+        /// <param name="jwksStore">The key store.</param>
         /// <param name="clientRepository">The client repository.</param>
         public SessionController(
             IAuthenticationService authenticationService,
+            IJwksStore jwksStore,
             IClientStore clientRepository)
         {
             _authenticationService = authenticationService;
+            _jwksStore = jwksStore;
             _clientRepository = clientRepository;
         }
 
@@ -48,40 +52,12 @@
         }
 
         /// <summary>
-        /// Revokes the session.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet(CoreConstants.EndPoints.EndSession)]
-        public async Task RevokeSession()
-        {
-            var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, CookieNames.CookieName)
-                .ConfigureAwait(false);
-            if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
-            {
-                await this.DisplayInternalHtml("SimpleAuth.Views.UserNotConnected.html").ConfigureAwait(false);
-                return;
-            }
-
-            var url = CoreConstants.EndPoints.EndSessionCallback;
-            if (Request.QueryString.HasValue)
-            {
-                url = $"{url}{Request.QueryString.Value}";
-            }
-
-            await this.DisplayInternalHtml(
-                    "SimpleAuth.Views.RevokeSession.html",
-                    (html) => html.Replace("{endSessionCallbackUrl}", url))
-                .ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Handles the revoke session callback.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        [HttpGet(CoreConstants.EndPoints.EndSessionCallback)]
+        [HttpGet(CoreConstants.EndPoints.EndSession)]
         public async Task RevokeSessionCallback([FromQuery]RevokeSessionRequest request, CancellationToken cancellationToken)
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
@@ -94,23 +70,30 @@
             Response.Cookies.Delete(CoreConstants.SessionId);
             await _authenticationService.SignOutAsync(HttpContext, CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
             if (request != null
-                && request.PostLogoutRedirectUri != null
-                && !string.IsNullOrWhiteSpace(request.IdTokenHint))
+                && request.post_logout_redirect_uri != null
+                && !string.IsNullOrWhiteSpace(request.id_token_hint))
             {
                 var handler = new JwtSecurityTokenHandler();
-                var tokenValidationParameters = new TokenValidationParameters();
-                handler.ValidateToken(request.IdTokenHint, tokenValidationParameters, out var token);
+                var jsonWebKeySet = await _jwksStore.GetPublicKeys(cancellationToken).ConfigureAwait(false);
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateActor = false,
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    IssuerSigningKeys = jsonWebKeySet.Keys
+                };
+                handler.ValidateToken(request.id_token_hint, tokenValidationParameters, out var token);
                 var jws = (token as JwtSecurityToken)?.Payload;
                 var claim = jws?.GetClaimValue(StandardClaimNames.Azp);
                 if (claim != null)
                 {
                     var client = await _clientRepository.GetById(claim, cancellationToken).ConfigureAwait(false);
-                    if (client?.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Any(x => x == request.PostLogoutRedirectUri))
+                    if (client?.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Any(x => x == request.post_logout_redirect_uri))
                     {
-                        var redirectUrl = request.PostLogoutRedirectUri;
-                        if (!string.IsNullOrWhiteSpace(request.State))
+                        var redirectUrl = request.post_logout_redirect_uri;
+                        if (!string.IsNullOrWhiteSpace(request.state))
                         {
-                            redirectUrl = new Uri($"{redirectUrl.AbsoluteUri}?state={request.State}");
+                            redirectUrl = new Uri($"{redirectUrl.AbsoluteUri}?state={request.state}");
                         }
 
                         Response.Redirect(redirectUrl.AbsoluteUri);

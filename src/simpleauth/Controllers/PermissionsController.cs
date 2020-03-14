@@ -35,7 +35,8 @@ namespace SimpleAuth.Controllers
     [Route(UmaConstants.RouteValues.Permission)]
     public class PermissionsController : ControllerBase
     {
-        private readonly AddPermissionAction _permissionControllerActions;
+        private readonly ITicketStore _ticketStore;
+        private readonly AddPermissionAction _requestPermission;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PermissionsController"/> class.
@@ -48,26 +49,45 @@ namespace SimpleAuth.Controllers
             ITicketStore ticketStore,
             RuntimeSettings options)
         {
-            _permissionControllerActions = new AddPermissionAction(resourceSetRepository, ticketStore, options);
+            _ticketStore = ticketStore;
+            _requestPermission = new AddPermissionAction(resourceSetRepository, ticketStore, options);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> GetPermissionRequests(CancellationToken cancellationToken)
+        {
+            var owner = User.GetSubject();
+            var tickets = await _ticketStore.GetAll(owner, cancellationToken).ConfigureAwait(false);
+
+            return new OkObjectResult(tickets.Select(x => !x.IsAuthorizedByRo).ToArray());
         }
 
         /// <summary>
         /// Adds the permission.
         /// </summary>
-        /// <param name="postPermission">The post permission.</param>
+        /// <param name="permissionRequest">The post permission.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> PostPermission(
-            [FromBody] PostPermission postPermission,
+            [FromBody] PermissionRequest permissionRequest,
             CancellationToken cancellationToken)
         {
-            if (postPermission == null)
+            if (permissionRequest == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
+                    HttpStatusCode.BadRequest);
+            }
+
+            if (string.IsNullOrWhiteSpace(permissionRequest.ResourceSetId))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    "the parameter resource_set_id needs to be specified",
                     HttpStatusCode.BadRequest);
             }
 
@@ -75,15 +95,15 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the client_id cannot be extracted",
                     HttpStatusCode.BadRequest);
             }
 
-            var ticketId = await _permissionControllerActions.Execute(clientId, cancellationToken, postPermission)
+            var ticketId = await _requestPermission.Execute(clientId, cancellationToken, permissionRequest)
                 .ConfigureAwait(false);
-            var result = new AddPermissionResponse {TicketId = ticketId};
-            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
+            var result = new PermissionResponse { TicketId = ticketId };
+            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         /// <summary>
@@ -93,15 +113,15 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("bulk")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> PostPermissions(
-            [FromBody] PostPermission[] postPermissions,
+            [FromBody] PermissionRequest[] postPermissions,
             CancellationToken cancellationToken)
         {
             if (postPermissions == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -111,21 +131,21 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the client_id cannot be extracted",
                     HttpStatusCode.BadRequest);
             }
 
-            var ticketId = await _permissionControllerActions.Execute(clientId, cancellationToken, parameters)
+            var ticketId = await _requestPermission.Execute(clientId, cancellationToken, parameters)
                 .ConfigureAwait(false);
-            var result = new AddPermissionResponse {TicketId = ticketId};
-            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
+            var result = new PermissionResponse { TicketId = ticketId };
+            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        private static IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails {Title = code, Detail = message};
-            return new JsonResult(error) {StatusCode = (int) statusCode};
+            var error = new ErrorDetails { Title = code, Detail = message };
+            return new BadRequestObjectResult(error);
         }
     }
 }

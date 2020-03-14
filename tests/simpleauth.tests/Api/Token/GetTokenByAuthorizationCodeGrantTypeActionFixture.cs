@@ -51,22 +51,23 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Passing_Empty_Request_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Empty_Request_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
 
-            await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         null,
                         null,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
+
+            Assert.True(result.ContainsError);
         }
 
         [Fact]
-        public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
+        public async Task When_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
@@ -79,22 +80,19 @@ namespace SimpleAuth.Tests.Api.Token
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Client)null);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
-                        authorizationCodeGrantTypeParameter,
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None))
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+                    authorizationCodeGrantTypeParameter,
+                    null,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidClient, result.Error.Title);
         }
 
         [Fact]
-        public async Task When_Client_Does_Not_Support_Grant_Type_Code_Then_Exception_Is_Thrown()
+        public async Task When_Client_Does_Not_Support_Grant_Type_Code_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             var clientId = "clientId";
@@ -115,29 +113,25 @@ namespace SimpleAuth.Tests.Api.Token
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(() => Task.FromResult(new AuthenticationResult(,
-            //        null)));
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                     clientId,
                     GrantTypes.AuthorizationCode),
-                exception.Message);
+                result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Client_Does_Not_Support_ResponseType_Code_Then_Exception_Is_Thrown()
+        public async Task When_Client_Does_Not_Support_ResponseType_Code_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             var clientId = "clientId";
@@ -157,31 +151,28 @@ namespace SimpleAuth.Tests.Api.Token
                 GrantTypes = new[] { GrantTypes.AuthorizationCode }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(() => Task.FromResult(new AuthenticationResult(,
-            //        null)));
+
             var authenticationValue = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationValue,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidResponse, result.Error.Title);
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.TheClientDoesntSupportTheResponseType,
                     clientId,
                     ResponseTypeNames.Code),
-                exception.Message);
+                result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Authorization_Code_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_Authorization_Code_Is_Not_Valid_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             var clientSecret = "clientSecret";
@@ -202,27 +193,25 @@ namespace SimpleAuth.Tests.Api.Token
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
-            //_clientStore.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
-            //    .Returns(() => Task.FromResult(client));
             _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((AuthorizationCode)null));
             var authorizationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authorizationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheAuthorizationCodeIsNotCorrect, exception.Message);
+            Assert.True(result.ContainsError);
+            Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
+            Assert.Equal(ErrorDescriptions.TheAuthorizationCodeIsNotCorrect, result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Pkce_Validation_Failed_Then_Exception_Is_Thrown()
+        public async Task When_Pkce_Validation_Failed_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             var clientId = "clientId";
@@ -252,20 +241,19 @@ namespace SimpleAuth.Tests.Api.Token
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheCodeVerifierIsNotCorrect, exception.Message);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
+            Assert.Equal(ErrorDescriptions.TheCodeVerifierIsNotCorrect, result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Granted_Client_Is_Not_The_Same_Then_Exception_Is_Thrown()
+        public async Task When_Granted_Client_Is_Not_The_Same_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             var clientSecret = "clientSecret";
@@ -294,24 +282,23 @@ namespace SimpleAuth.Tests.Api.Token
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
             Assert.Equal(
                 string.Format(
                     ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
-                    authorizationCodeGrantTypeParameter.ClientId),
-                exception.Message);
+                    "clientId"),
+                result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Redirect_Uri_Is_Not_The_Same_Then_Exception_Is_Thrown()
+        public async Task When_Redirect_Uri_Is_Not_The_Same_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             var clientId = "clientId";
@@ -344,16 +331,15 @@ namespace SimpleAuth.Tests.Api.Token
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheRedirectionUrlIsNotTheSame, exception.Message);
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
+            Assert.Equal(ErrorDescriptions.TheRedirectionUrlIsNotTheSame, result.Error.Detail);
         }
 
         [Fact]
@@ -381,7 +367,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
-                CreateDateTime = DateTime.UtcNow.AddSeconds(-30)
+                CreateDateTime = DateTimeOffset.UtcNow.AddSeconds(-30)
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
@@ -391,20 +377,19 @@ namespace SimpleAuth.Tests.Api.Token
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheAuthorizationCodeIsObsolete, exception.Message);
+            Assert.Equal(ErrorCodes.ExpiredAuthorizationCode, result.Error.Title);
+            Assert.Equal(ErrorDescriptions.TheAuthorizationCodeIsObsolete, result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_RedirectUri_Is_Different_From_The_One_Hold_By_The_Client_Then_Exception_Is_Thrown()
+        public async Task When_RedirectUri_Is_Different_From_The_One_Hold_By_The_Client_Then_Error_Is_Returned()
         {
             InitializeFakeObjects(TimeSpan.FromSeconds(3000));
             var clientId = "clientId";
@@ -428,7 +413,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
-                CreateDateTime = DateTime.UtcNow
+                CreateDateTime = DateTimeOffset.UtcNow
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
@@ -439,18 +424,17 @@ namespace SimpleAuth.Tests.Api.Token
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientId}:{clientSecret}".Base64Encode());
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
                         authorizationCodeGrantTypeParameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
             Assert.Equal(
                 string.Format(ErrorDescriptions.RedirectUrlIsNotValid, "https://redirecturi/"),
-                exception.Message);
+                result.Error.Detail);
         }
 
         [Fact]
@@ -494,7 +478,7 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
-                CreateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTimeOffset.UtcNow,
                 Scopes = "scope"
             };
             var grantedToken = new GrantedToken
@@ -503,7 +487,7 @@ namespace SimpleAuth.Tests.Api.Token
                 AccessToken = accessToken,
                 IdToken = identityToken,
                 IdTokenPayLoad = new JwtPayload(),
-                CreateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTimeOffset.UtcNow,
                 ExpiresIn = 100000
             };
 
@@ -568,7 +552,7 @@ namespace SimpleAuth.Tests.Api.Token
                 Scopes = "scope",
                 ClientId = clientId,
                 RedirectUri = new Uri("https://redirectUri"),
-                CreateDateTime = DateTime.UtcNow
+                CreateDateTime = DateTimeOffset.UtcNow
             };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);

@@ -10,6 +10,7 @@
     using System.Threading.Tasks;
 
     using global::Marten.Pagination;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the Marten based policy repository.
@@ -35,7 +36,7 @@
         {
             using var session = _sessionFactory();
             var results = await session.Query<Policy>()
-                .Where(x => x.Id.IsOneOf(parameter.Ids) || x.ResourceSetIds.Any(r => r.IsOneOf(parameter.ResourceIds)))
+                .Where(x => x.Id.IsOneOf(parameter.Ids))
                 .ToPagedListAsync(parameter.StartIndex++, parameter.TotalResults, cancellationToken)
                 .ConfigureAwait(false);
             return new GenericResult<Policy>
@@ -47,7 +48,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<Policy[]> GetAll(CancellationToken cancellationToken = default)
+        public async Task<Policy[]> GetAll(string owner, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var policies = await session.Query<Policy>()

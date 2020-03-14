@@ -30,19 +30,16 @@ namespace SimpleAuth.Shared.Models
         public string Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the policy owner.
+        /// </summary>
+        public string Owner { get; set; }
+
+        /// <summary>
         /// Gets or sets the rules.
         /// </summary>
         /// <value>
         /// The rules.
         /// </value>
         public PolicyRule[] Rules { get; set; } = Array.Empty<PolicyRule>();
-
-        /// <summary>
-        /// Gets or sets the resource set ids.
-        /// </summary>
-        /// <value>
-        /// The resource set ids.
-        /// </value>
-        public string[] ResourceSetIds { get; set; } = Array.Empty<string>();
     }
 }

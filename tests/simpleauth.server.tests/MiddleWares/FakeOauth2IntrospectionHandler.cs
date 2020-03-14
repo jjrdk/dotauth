@@ -8,9 +8,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
+    using Microsoft.Net.Http.Headers;
 
     public class FakeOauth2IntrospectionHandler : AuthenticationHandler<FakeOAuth2IntrospectionOptions>
     {
@@ -25,19 +27,13 @@
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            string authorization = Request.Headers["Authorization"];
+            string authorization = Request.Headers[HeaderNames.Authorization];
             if (string.IsNullOrWhiteSpace(authorization))
             {
                 return AuthenticateResult.NoResult();
             }
 
-            string token = null;
-            if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            {
-                token = authorization.Substring("Bearer ".Length).Trim();
-            }
-
-            if (string.IsNullOrEmpty(token))
+            if (!AuthenticationHeaderValue.TryParse(authorization, out var token))
             {
                 return AuthenticateResult.NoResult();
             }
@@ -50,9 +46,9 @@
                         new Uri(Options.WellKnownConfigurationUrl))
                     .ConfigureAwait(false);
                 var introspectionResult = await introspectionClient.Introspect(
-                        IntrospectionRequest.Create(token, TokenTypes.AccessToken))
+                        IntrospectionRequest.Create(token.Parameter, TokenTypes.AccessToken))
                     .ConfigureAwait(false);
-                if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
+                if (introspectionResult.HasError || !introspectionResult.Content.Active)
                 {
                     return AuthenticateResult.NoResult();
                 }

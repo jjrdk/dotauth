@@ -28,65 +28,24 @@ namespace SimpleAuth.Api.PolicyController
     internal class AddAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
-        private readonly IResourceSetRepository _resourceSetRepository;
 
-        public AddAuthorizationPolicyAction(
-            IPolicyRepository policyRepository,
-            IResourceSetRepository resourceSetRepository)
+        public AddAuthorizationPolicyAction(IPolicyRepository policyRepository)
         {
             _policyRepository = policyRepository;
-            _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<string> Execute(PostPolicy addPolicyParameter, CancellationToken cancellationToken)
+        public async Task<string> Execute(string owner, PolicyData addPolicyParameter, CancellationToken cancellationToken)
         {
-            if (addPolicyParameter.ResourceSetIds == null || !addPolicyParameter.ResourceSetIds.Any())
+            if (addPolicyParameter.Rules == null || addPolicyParameter.Rules.Length == 0)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
-                        UmaConstants.AddPolicyParameterNames.ResourceSetIds));
-            }
-
-            if (addPolicyParameter.Rules == null || !addPolicyParameter.Rules.Any())
-            {
-                throw new SimpleAuthException(ErrorCodes.InvalidRequestCode,
+                throw new SimpleAuthException(ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified,
                         UmaConstants.AddPolicyParameterNames.Rules));
-            }
-
-            foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
-            {
-                ResourceSet resourceSet;
-                try
-                {
-                    resourceSet = await _resourceSetRepository.Get(resourceSetId, cancellationToken).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InternalError,
-                        string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
-                        ex);
-                }
-
-                if (resourceSet == null)
-                {
-                    throw new SimpleAuthException(ErrorCodes.InvalidResourceSetId,
-                        string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
-                }
-
-                if (addPolicyParameter.Rules.Any(r =>
-                    r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
-                {
-                    throw new SimpleAuthException(ErrorCodes.InvalidScope,
-                        ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
-                }
             }
 
             var rules = addPolicyParameter.Rules.Select(
                     ruleParameter => new PolicyRule
                     {
-                        Id = Id.Create(),
                         IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
                         ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
                         Scopes = ruleParameter.Scopes,
@@ -102,13 +61,14 @@ namespace SimpleAuth.Api.PolicyController
             var policy = new Policy
             {
                 Id = Id.Create(),
+                Owner = owner,
                 Rules = rules,
-                ResourceSetIds = addPolicyParameter.ResourceSetIds
             };
 
             try
             {
                 var result = await _policyRepository.Add(policy, cancellationToken).ConfigureAwait(false);
+
                 return result ? policy.Id : null;
             }
             catch (Exception ex)

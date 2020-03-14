@@ -26,6 +26,7 @@ namespace SimpleAuth.Extensions
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
+    using SimpleAuth.Shared.DTOs;
 
     internal static class MappingExtensions
     {
@@ -41,16 +42,17 @@ namespace SimpleAuth.Extensions
             };
         }
 
-        public static ResourceSetResponse ToResponse(this ResourceSet resourceSet)
+        public static ResourceSet ToResponse(this ResourceSetModel resourceSet)
         {
-            return new ResourceSetResponse
+            return new ResourceSet
             {
                 Id = resourceSet.Id,
                 IconUri = resourceSet.IconUri,
                 Name = resourceSet.Name,
-                Scopes = resourceSet.Scopes,
+                Scopes = resourceSet.Scopes ?? Array.Empty<string>(),
                 Type = resourceSet.Type,
-                Uri = resourceSet.Uri
+                Uri = resourceSet.Uri,
+                AuthorizationPolicies = resourceSet.AuthorizationPolicyIds ?? Array.Empty<string>()
             };
         }
 
@@ -61,7 +63,6 @@ namespace SimpleAuth.Extensions
             return new PolicyResponse
             {
                 Id = policy.Id,
-                ResourceSetIds = policy.ResourceSetIds,
                 Rules = rules
             };
         }
@@ -72,7 +73,6 @@ namespace SimpleAuth.Extensions
                 : policyRule.Claims.ToArray();
             return new PolicyRuleResponse
             {
-                Id = policyRule.Id,
                 Claims = claims,
                 ClientIdsAllowed = policyRule.ClientIdsAllowed,
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
@@ -91,7 +91,7 @@ namespace SimpleAuth.Extensions
                 ExpiresIn = grantedToken.ExpiresIn,
                 RefreshToken = grantedToken.RefreshToken,
                 TokenType = grantedToken.TokenType,
-                Scope = grantedToken.Scope.Split(' ').ToArray()
+                Scope = grantedToken.Scope//.Split(' ').ToArray()
             };
         }
 
@@ -190,16 +190,6 @@ namespace SimpleAuth.Extensions
             };
         }
 
-        public static PagedResponse<ResourceOwner> ToDto(this GenericResult<ResourceOwner> parameter)
-        {
-            return new PagedResponse<ResourceOwner>
-            {
-                StartIndex = parameter.StartIndex,
-                TotalResults = parameter.TotalResults,
-                Content = parameter.Content ?? Array.Empty<ResourceOwner>()
-            };
-        }
-
         public static AuthorizationParameter ToParameter(this AuthorizationRequest request)
         {
             var result = new AuthorizationParameter
@@ -233,8 +223,8 @@ namespace SimpleAuth.Extensions
                 result.Claims = claimsParameter;
 
                 var obj = JObject.Parse(request.claims);
-                var idToken = obj.GetValue(CoreConstants.StandardClaimParameterNames._idTokenName);
-                var userInfo = obj.GetValue(CoreConstants.StandardClaimParameterNames._userInfoName);
+                var idToken = obj.GetValue(CoreConstants.StandardClaimParameterNames.IdTokenName);
+                var userInfo = obj.GetValue(CoreConstants.StandardClaimParameterNames.UserInfoName);
                 if (idToken != null)
                 {
                     claimsParameter.IdToken = new List<ClaimParameter>();

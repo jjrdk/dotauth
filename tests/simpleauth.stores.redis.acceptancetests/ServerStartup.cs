@@ -8,6 +8,7 @@
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Npgsql;
     using SimpleAuth.Extensions;
@@ -28,19 +29,29 @@
         {
             _martenOptions = new SimpleAuthOptions
             {
+                AuthorizationCodes =
+                    sp => new RedisAuthorizationCodeStore(
+                        sp.GetRequiredService<IDatabaseAsync>(),
+                        _martenOptions.AuthorizationCodeValidityPeriod),
                 Clients = sp => new MartenClientStore(
                     sp.GetService<Func<IDocumentSession>>(),
                     sp.GetService<IScopeStore>(),
                     context.Client,
                     JsonConvert.DeserializeObject<Uri[]>),
+                ConfirmationCodes =
+                    sp => new RedisConfirmationCodeStore(
+                        sp.GetRequiredService<IDatabaseAsync>(),
+                        _martenOptions.RptLifeTime),
+                Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
                 JsonWebKeys = sp =>
                 {
-                    var keyset = new[] {context.SignatureKey, context.EncryptionKey}.ToJwks();
+                    var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
                 Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
-                Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
                 Users = sp => new MartenResourceOwnerStore(sp.GetService<Func<IDocumentSession>>()),
+                Tickets =
+                    sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _martenOptions.TicketLifeTime),
                 Tokens = sp => new RedisTokenStore(
                     sp.GetRequiredService<IDatabaseAsync>(),
                     sp.GetRequiredService<IJwksStore>())
@@ -56,7 +67,11 @@
             services.AddSingleton(ConnectionMultiplexer.Connect("localhost"));
             services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
             services.AddSingleton<IDocumentStore>(
-                provider => new DocumentStore(new SimpleAuthMartenOptions(_connectionString, new NulloMartenLogger(), _schemaName)));
+                provider => new DocumentStore(
+                    new SimpleAuthMartenOptions(
+                        _connectionString,
+                        new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
+                        _schemaName)));
             services.AddTransient<Func<IDocumentSession>>(
                 sp =>
                 {
@@ -78,7 +93,8 @@
                         cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     })
                 .AddCookie(DefaultSchema)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
                         cfg.Events = new JwtBearerEvents { OnAuthenticationFailed = c => Task.CompletedTask };

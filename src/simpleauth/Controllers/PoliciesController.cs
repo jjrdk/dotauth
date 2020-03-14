@@ -17,7 +17,6 @@ namespace SimpleAuth.Controllers
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Parameters;
     using Shared.DTOs;
     using Shared.Responses;
     using SimpleAuth.Api.PolicyController;
@@ -28,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the policies controller
@@ -40,7 +40,6 @@ namespace SimpleAuth.Controllers
         private readonly AddAuthorizationPolicyAction _addpolicy;
         private readonly DeleteAuthorizationPolicyAction _deletePolicy;
         private readonly DeleteResourcePolicyAction _deleteResourceSet;
-        private readonly AddResourceSetToPolicyAction _addResourceSet;
         private readonly UpdatePolicyAction _updatePolicy;
 
         /// <summary>
@@ -51,11 +50,10 @@ namespace SimpleAuth.Controllers
         public PoliciesController(IPolicyRepository policyRepository, IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
-            _addpolicy = new AddAuthorizationPolicyAction(policyRepository, resourceSetRepository);
+            _addpolicy = new AddAuthorizationPolicyAction(policyRepository);
             _deletePolicy = new DeleteAuthorizationPolicyAction(policyRepository);
-            _addResourceSet = new AddResourceSetToPolicyAction(policyRepository, resourceSetRepository);
             _deleteResourceSet = new DeleteResourcePolicyAction(policyRepository, resourceSetRepository);
-            _updatePolicy = new UpdatePolicyAction(policyRepository, resourceSetRepository);
+            _updatePolicy = new UpdatePolicyAction(policyRepository);
         }
 
         /// <summary>
@@ -65,7 +63,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost(".search")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> SearchPolicies(
             [FromBody] SearchAuthPolicies searchAuthPolicies,
             CancellationToken cancellationToken)
@@ -73,7 +71,7 @@ namespace SimpleAuth.Controllers
             if (searchAuthPolicies == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -89,13 +87,13 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetPolicy(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -116,12 +114,12 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetPolicies(CancellationToken cancellationToken)
         {
-            var policies = await _policyRepository.GetAll(cancellationToken).ConfigureAwait(false);
-            var policyNames = policies.Select(x => x.Id);
-            return new OkObjectResult(policyNames);
+            var owner = User.GetSubject();
+            var policies = await _policyRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
+            return new OkObjectResult(policies.Select(p => p.ToResponse()).ToArray());
         }
 
         /// <summary>
@@ -131,13 +129,13 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut]
-        [Authorize("UmaProtection")]
-        public async Task<IActionResult> PutPolicy([FromBody] PutPolicy putPolicy, CancellationToken cancellationToken)
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> PutPolicy([FromBody] PolicyData putPolicy, CancellationToken cancellationToken)
         {
             if (putPolicy == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
@@ -145,7 +143,7 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(putPolicy.PolicyId))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the parameter id needs to be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -153,63 +151,13 @@ namespace SimpleAuth.Controllers
             if (putPolicy.Rules == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the parameter rules needs to be specified",
                     HttpStatusCode.BadRequest);
             }
 
             var isPolicyExists = await _updatePolicy.Execute(putPolicy, cancellationToken).ConfigureAwait(false);
             return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int)HttpStatusCode.NoContent);
-        }
-
-        /// <summary>
-        /// Adds the resource set.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="postAddResourceSet">The post add resource set.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        [HttpPost("{id}/resources")]
-        [Authorize("UmaProtection")]
-        public async Task<IActionResult> PostAddResourceSet(
-            string id,
-            [FromBody] PostAddResourceSet postAddResourceSet,
-            CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "the identifier must be specified",
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (postAddResourceSet == null)
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (postAddResourceSet.ResourceSets == null)
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequestCode,
-                    "The parameter resources needs to be specified",
-                    HttpStatusCode.BadRequest);
-            }
-
-            var isPolicyExists = await _addResourceSet.Execute(
-                    new AddResourceSetParameter { PolicyId = id, ResourceSets = postAddResourceSet.ResourceSets },
-                    cancellationToken)
-                .ConfigureAwait(false);
-            if (!isPolicyExists)
-            {
-                return GetNotFoundPolicy();
-            }
-
-            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -220,13 +168,16 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpDelete("{id}/resources/{resourceId}")]
-        [Authorize("UmaProtection")]
-        public async Task<IActionResult> DeleteResourceSet(string id, string resourceId, CancellationToken cancellationToken)
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> DeleteResourceSet(
+            string id,
+            string resourceId,
+            CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }
@@ -234,12 +185,13 @@ namespace SimpleAuth.Controllers
             if (string.IsNullOrWhiteSpace(resourceId))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the resource_id must be specified",
                     HttpStatusCode.BadRequest);
             }
 
-            var isPolicyExists = await _deleteResourceSet.Execute(id, resourceId, cancellationToken).ConfigureAwait(false);
+            var isPolicyExists =
+                await _deleteResourceSet.Execute(id, resourceId, cancellationToken).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
@@ -255,20 +207,21 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> PostPolicy(
-            [FromBody] PostPolicy postPolicy,
+            [FromBody] PolicyData postPolicy,
             CancellationToken cancellationToken)
         {
             if (postPolicy == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
 
-            var policyId = await _addpolicy.Execute(postPolicy, cancellationToken).ConfigureAwait(false);
+            var owner = User.GetSubject();
+            var policyId = await _addpolicy.Execute(owner, postPolicy, cancellationToken).ConfigureAwait(false);
             var content = new AddPolicyResponse { PolicyId = policyId };
 
             return new ObjectResult(content) { StatusCode = (int)HttpStatusCode.Created };
@@ -281,13 +234,13 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize("UmaProtection")]
+        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> DeletePolicy(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "the identifier must be specified",
                     HttpStatusCode.BadRequest);
             }

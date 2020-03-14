@@ -51,15 +51,6 @@ namespace SimpleAuth.Shared.Models
         public bool IsDisplayedInConsent { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is open identifier scope.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is open identifier scope; otherwise, <c>false</c>.
-        /// </value>
-        [DataMember(Name = "is_openid_scope")]
-        public bool IsOpenIdScope { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether this instance is exposed.
         /// </summary>
         /// <value>
@@ -90,12 +81,12 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the create datetime.
         /// </summary>
         [DataMember(Name = "create_datetime")]
-        public DateTime CreateDateTime { get; set; }
+        public DateTimeOffset CreateDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the update datetime.
         /// </summary>
         [DataMember(Name = "update_datetime")]
-        public DateTime UpdateDateTime { get; set; }
+        public DateTimeOffset UpdateDateTime { get; set; }
     }
 }

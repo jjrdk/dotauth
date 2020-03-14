@@ -29,7 +29,7 @@ namespace SimpleAuth.Shared.Events.Openid
         /// <param name="resourceOwnerId"></param>
         /// <param name="amr"></param>
         /// <param name="timestamp">The timestamp.</param>
-        public ResourceOwnerAuthenticated(string id, string resourceOwnerId, string amr, DateTime timestamp)
+        public ResourceOwnerAuthenticated(string id, string resourceOwnerId, string amr, DateTimeOffset timestamp)
             : base(id, timestamp)
         {
             ResourceOwnerId = resourceOwnerId;

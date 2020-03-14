@@ -10,7 +10,7 @@
     /// <summary>
     /// Defines the AWS SMS client.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Sms.ISmsClient" />
+    /// <seealso cref="ISmsClient" />
     public class AwsSmsClient : ISmsClient
     {
         private readonly string _sender;
@@ -57,14 +57,16 @@
                 PhoneNumber = toPhoneNumber,
                 MessageAttributes =
                 {
-                    ["AWS.SNS.SMS.SenderID"] = new MessageAttributeValue {StringValue = _sender, DataType = "String"},
-                    ["AWS.SNS.SMS.SMSType"] = new MessageAttributeValue {StringValue = "Transactional", DataType = "String"}
+                    ["AWS.SNS.SMS.SenderID"] =
+                        new MessageAttributeValue {StringValue = _sender, DataType = "String"},
+                    ["AWS.SNS.SMS.SMSType"] =
+                        new MessageAttributeValue {StringValue = "Transactional", DataType = "String"}
                 }
             };
 
             var pubResponse = await _client.PublishAsync(pubRequest).ConfigureAwait(false);
 
-            return ((int)pubResponse.HttpStatusCode < 400, pubResponse.MessageId);
+            return ((int) pubResponse.HttpStatusCode < 400, pubResponse.MessageId);
         }
     }
 }

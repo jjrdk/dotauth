@@ -277,7 +277,7 @@ namespace SimpleAuth.Server.Tests.Stores
                     AllowedScopes = new[] {"api1"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.Token},
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")},
                     JsonWebKeys = new[] {sharedCtx.ModelSignatureKey, sharedCtx.ModelEncryptionKey}.ToJwks()

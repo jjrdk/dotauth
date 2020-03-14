@@ -145,7 +145,7 @@
             }
 
             resourceOwner.Password = resourceOwner.Password.ToSha256Hash();
-            resourceOwner.CreateDateTime = DateTime.UtcNow;
+            resourceOwner.CreateDateTime = DateTimeOffset.UtcNow;
             _users.Add(resourceOwner);
             return Task.FromResult(true);
         }
@@ -202,7 +202,7 @@
 
             user.IsLocalAccount = resourceOwner.IsLocalAccount;
             user.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
-            user.UpdateDateTime = DateTime.UtcNow;
+            user.UpdateDateTime = DateTimeOffset.UtcNow;
             user.Claims = resourceOwner.Claims;
             return Task.FromResult(true);
         }

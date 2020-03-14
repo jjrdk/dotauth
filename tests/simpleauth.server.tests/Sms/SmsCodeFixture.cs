@@ -2,13 +2,13 @@
 {
     using Moq;
     using SimpleAuth.Client;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using System;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Requests;
     using Xunit;
 
     public class SmsCodeFixture : IDisposable
@@ -24,20 +24,20 @@
         [Fact]
         public async Task WhenNoPhoneNumberConfiguredThenReturnsError()
         {
-            var client = await CreateTokenClient().ConfigureAwait(false);
+            var client = CreateTokenClient();
             var noPhoneNumberResult = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = string.Empty})
                 .ConfigureAwait(false);
 
             // ASSERT : NO PHONE NUMBER
             Assert.True(noPhoneNumberResult.ContainsError);
             Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.HttpStatus);
-            Assert.Equal(ErrorCodes.InvalidRequestCode, noPhoneNumberResult.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, noPhoneNumberResult.Error.Title);
             Assert.Equal("parameter phone_number is missing", noPhoneNumberResult.Error.Detail);
         }
 
-        private Task<TokenClient> CreateTokenClient()
+        private TokenClient CreateTokenClient()
         {
-            return TokenClient.Create(
+            return new TokenClient(
                 TokenCredentials.FromClientCredentials("client", "client"),
                 _server.Client,
                 new Uri(BaseUrl + "/.well-known/openid-configuration"));
@@ -56,7 +56,7 @@
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync((false, ""));
-            var client = await CreateTokenClient().ConfigureAwait(false);
+            var client = CreateTokenClient();
             var twilioNotConfigured = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
                 .ConfigureAwait(false);
 
@@ -78,7 +78,7 @@
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
                 .ReturnsAsync((true, null));
-            var client = await CreateTokenClient().ConfigureAwait(false);
+            var client = CreateTokenClient();
             var cannotInsertConfirmationCode = await client
                 .RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
                 .ConfigureAwait(false);
@@ -101,7 +101,7 @@
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .Callback(() => throw new Exception())
                 .Returns(() => Task.FromResult(false));
-            var client = await CreateTokenClient().ConfigureAwait(false);
+            var client = CreateTokenClient();
             var unhandledException = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
                 .ConfigureAwait(false);
 
@@ -125,7 +125,7 @@
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
                 .ReturnsAsync((true, null));
-            var client = await CreateTokenClient().ConfigureAwait(false);
+            var client = CreateTokenClient();
             var happyPath = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
                 .ConfigureAwait(false);
 

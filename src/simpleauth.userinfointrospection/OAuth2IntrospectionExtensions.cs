@@ -1,4 +1,18 @@
-﻿namespace SimpleAuth.UserInfoIntrospection
+﻿// Copyright © 2016 Habart Thierry, © 2018 Jacob Reimers
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+namespace SimpleAuth.UserInfoIntrospection
 {
     using System;
     using Microsoft.AspNetCore.Authentication;
@@ -13,9 +27,8 @@
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static AuthenticationBuilder AddUserInfoIntrospection(this AuthenticationBuilder builder)
-           // => builder.AddUserInfoIntrospection(UserInfoIntrospectionOptions.AuthenticationScheme, _ => { });
-            => builder.AddUserInfoIntrospection(_ => { });
+        public static AuthenticationBuilder AddUserInfoIntrospection(this AuthenticationBuilder builder) =>
+            builder.AddUserInfoIntrospection(_ => { });
 
         /// <summary>
         /// Adds the user information introspection.
@@ -23,11 +36,11 @@
         /// <param name="builder">The builder.</param>
         /// <param name="configureOptions">The configure options.</param>
         /// <returns></returns>
-        public static AuthenticationBuilder AddUserInfoIntrospection(this AuthenticationBuilder builder, Action<UserInfoIntrospectionOptions> configureOptions)
-        //=> builder.AddUserInfoIntrospection(UserInfoIntrospectionOptions.AuthenticationScheme, configureOptions);
-            => builder.AddScheme<UserInfoIntrospectionOptions, UserInfoIntrospectionHandler>(UserInfoIntrospectionOptions.AuthenticationScheme, configureOptions);
-
-        //public static AuthenticationBuilder AddUserInfoIntrospection(this AuthenticationBuilder builder, string authenticationScheme, Action<UserInfoIntrospectionOptions> configureOptions)
-        //    => builder.AddScheme<UserInfoIntrospectionOptions, UserInfoIntrospectionHandler>(authenticationScheme, configureOptions);
+        public static AuthenticationBuilder AddUserInfoIntrospection(
+            this AuthenticationBuilder builder,
+            Action<AuthenticationSchemeOptions> configureOptions) =>
+            builder.AddScheme<AuthenticationSchemeOptions, UserInfoIntrospectionHandler>(
+                UserIntrospectionDefaults.AuthenticationScheme,
+                configureOptions);
     }
 }

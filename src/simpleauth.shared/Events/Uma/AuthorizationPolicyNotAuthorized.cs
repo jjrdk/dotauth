@@ -14,7 +14,7 @@
         /// <param name="id">The identifier.</param>
         /// <param name="ticketId">The ticket identifier.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public AuthorizationPolicyNotAuthorized(string id, string ticketId, DateTime timestamp)
+        public AuthorizationPolicyNotAuthorized(string id, string ticketId, DateTimeOffset timestamp)
             : base(id, timestamp)
         {
             TicketId = ticketId;

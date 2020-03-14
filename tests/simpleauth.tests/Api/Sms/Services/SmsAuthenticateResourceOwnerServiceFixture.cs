@@ -78,7 +78,7 @@
                     () => Task.FromResult(
                         new ConfirmationCode
                         {
-                            Subject = login, IssueAt = DateTime.UtcNow.AddDays(-1), ExpiresIn = 100
+                            Subject = login, IssueAt = DateTimeOffset.UtcNow.AddDays(-1), ExpiresIn = 100
                         }));
 
             var result = await _authenticateResourceOwnerService
@@ -95,7 +95,7 @@
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(
                     () => Task.FromResult(
-                        new ConfirmationCode {Subject = login, IssueAt = DateTime.UtcNow, ExpiresIn = 100}));
+                        new ConfirmationCode {Subject = login, IssueAt = DateTimeOffset.UtcNow, ExpiresIn = 100}));
             _resourceOwnerRepositoryStub
                 .Setup(
                     r => r.GetResourceOwnerByClaim(

@@ -52,7 +52,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">request</exception>
         [HttpPost(".search")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<ActionResult<GenericResult<Scope>>> Search(
             [FromBody] SearchScopesRequest request,
             CancellationToken cancellationToken)
@@ -72,7 +72,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             var result = await _scopeRepository.GetAll(cancellationToken).ConfigureAwait(false);
@@ -86,7 +86,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<ActionResult<Scope>> Get(string id, CancellationToken cancellationToken)
         {
             return await _scopeRepository.Get(id, cancellationToken).ConfigureAwait(false);
@@ -100,7 +100,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">id</exception>
         [HttpDelete("{id}")]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -114,7 +114,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest(
                     new ErrorDetails
                     {
-                        Title = ErrorCodes.InvalidRequestCode,
+                        Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(ErrorDescriptions.TheScopeDoesntExist, id),
                         Status = HttpStatusCode.BadRequest
                     });
@@ -123,11 +123,11 @@ namespace SimpleAuth.Controllers
             var deleted = await _scopeRepository.Delete(scope, CancellationToken.None).ConfigureAwait(false);
 
             return deleted
-                ? (IActionResult)NoContent()
+                ? (IActionResult) NoContent()
                 : BadRequest(
                     new ErrorDetails
                     {
-                        Title = ErrorCodes.InvalidRequestCode,
+                        Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(ErrorDescriptions.TheScopeDoesntExist, id),
                         Status = HttpStatusCode.BadRequest
                     });
@@ -140,7 +140,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">request</exception>
         [HttpPost]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Add([FromBody] Scope request)
         {
             if (request == null)
@@ -161,7 +161,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">request</exception>
         [HttpPut]
-        [Authorize("manager")]
+        [Authorize(Policy = "manager")]
         public async Task<IActionResult> Update([FromBody] Scope request, CancellationToken cancellationToken)
         {
             if (request == null)

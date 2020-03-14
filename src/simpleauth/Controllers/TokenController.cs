@@ -16,6 +16,7 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Defines the token controller.
@@ -40,6 +41,7 @@
         /// <param name="ticketStore">The ticket store.</param>
         /// <param name="jwksStore"></param>
         /// <param name="resourceSetRepository">The resource set repository.</param>
+        /// <param name="policyRepository">The policy repository.</param>
         /// <param name="eventPublisher">The event publisher.</param>
         public TokenController(
             RuntimeSettings settings,
@@ -52,6 +54,7 @@
             ITicketStore ticketStore,
             IJwksStore jwksStore,
             IResourceSetRepository resourceSetRepository,
+            IPolicyRepository policyRepository,
             IEventPublisher eventPublisher)
         {
             _tokenActions = new TokenActions(
@@ -71,6 +74,7 @@
                 scopeRepository,
                 tokenStore,
                 resourceSetRepository,
+                policyRepository,
                 jwksStore,
                 eventPublisher);
         }
@@ -95,33 +99,32 @@
                     new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidRequestCode,
-                        Detail = string.Format(
-                            ErrorDescriptions.MissingParameter,
-                            RequestTokenNames.GrantType)
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(ErrorDescriptions.MissingParameter, RequestTokenNames.GrantType)
                     });
             }
 
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+            if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
             {
-                var authorizationHeaderValue = authorizationHeader[0];
-                var splitAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
-                if (splitAuthorizationHeaderValue.Length == 2)
-                {
-                    authenticationHeaderValue = new AuthenticationHeaderValue(
-                        splitAuthorizationHeaderValue[0],
-                        splitAuthorizationHeaderValue[1]);
-                }
+                AuthenticationHeaderValue.TryParse(authorizationHeader[0], out authenticationHeaderValue);
             }
 
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var result = await GetGrantedToken(tokenRequest, cancellationToken, authenticationHeaderValue, certificate, issuerName).ConfigureAwait(false);
+            var result = await GetGrantedToken(
+                    tokenRequest,
+                    cancellationToken,
+                    authenticationHeaderValue,
+                    certificate,
+                    issuerName)
+                .ConfigureAwait(false);
 
-            return new OkObjectResult(result.ToDto());
+            return result.HttpStatus == HttpStatusCode.OK
+                ? (IActionResult) new OkObjectResult(result.Content.ToDto())
+                : new BadRequestObjectResult(result.Error);
         }
 
-        private async Task<GrantedToken> GetGrantedToken(
+        private async Task<GenericResponse<GrantedToken>> GetGrantedToken(
             TokenRequest tokenRequest,
             CancellationToken cancellationToken,
             AuthenticationHeaderValue authenticationHeaderValue,
@@ -181,7 +184,7 @@
             }
         }
 
-        private Task<GrantedToken> GetClientCredentialsGrantedToken(
+        private Task<GenericResponse<GrantedToken>> GetClientCredentialsGrantedToken(
             TokenRequest tokenRequest,
             AuthenticationHeaderValue authenticationHeaderValue,
             X509Certificate2 certificate,
@@ -210,7 +213,7 @@
         {
             // 1. Fetch the authorization header
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+            if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');

@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
     using Results;
     using Shared.Responses;
     using SimpleAuth.Shared;
@@ -24,40 +23,24 @@ namespace SimpleAuth.Client
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the token client.
     /// </summary>
     public class TokenClient
     {
-        private readonly DiscoveryInformation _discoveryInformation;
+        private readonly GetDiscoveryOperation _discoveryOperation;
         private readonly string _authorizationValue;
         private readonly X509Certificate2 _certificate;
         private readonly HttpClient _client;
+        private readonly Uri _discoveryDocumentationUrl;
         private readonly TokenCredentials _form;
+        private DiscoveryInformation _discovery;
 
-        private TokenClient(TokenCredentials credentials, HttpClient client, DiscoveryInformation discoveryInformation)
-        {
-            _form = credentials;
-            _client = client;
-            _discoveryInformation = discoveryInformation;
-            _authorizationValue = credentials.AuthorizationValue;
-            _certificate = credentials.Certificate;
-        }
-
-        /// <summary>
-        /// Creates the specified client.
-        /// </summary>
-        /// <param name="credentials">The credentials.</param>
-        /// <param name="client">The client.</param>
-        /// <param name="discoveryDocumentationUrl">The discovery documentation URL.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static async Task<TokenClient> Create(
-            TokenCredentials credentials,
-            HttpClient client,
-            Uri discoveryDocumentationUrl)
+        public TokenClient(TokenCredentials credentials, HttpClient client, Uri discoveryDocumentationUrl)
         {
             if (!discoveryDocumentationUrl.IsAbsoluteUri)
             {
@@ -65,9 +48,21 @@ namespace SimpleAuth.Client
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            var operation = new GetDiscoveryOperation(client);
-            var discoveryInformation = await operation.Execute(discoveryDocumentationUrl).ConfigureAwait(false);
-            return new TokenClient(credentials, client, discoveryInformation);
+            _form = credentials;
+            _client = client;
+            _discoveryDocumentationUrl = discoveryDocumentationUrl;
+            _authorizationValue = credentials.AuthorizationValue;
+            _certificate = credentials.Certificate;
+            _discoveryOperation = new GetDiscoveryOperation(client);
+        }
+
+        public TokenClient(TokenCredentials credentials, HttpClient client, DiscoveryInformation discoveryDocumentation)
+        {
+            _form = credentials;
+            _client = client;
+            _authorizationValue = credentials.AuthorizationValue;
+            _certificate = credentials.Certificate;
+            _discovery = discoveryDocumentation;
         }
 
         /// <summary>
@@ -78,11 +73,12 @@ namespace SimpleAuth.Client
         public async Task<BaseSidContentResult<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(tokenRequest));
+            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = new Uri(_discoveryInformation.TokenEndPoint)
+                RequestUri = new Uri(discoveryInformation.TokenEndPoint)
             };
             if (_certificate != null)
             {
@@ -102,18 +98,24 @@ namespace SimpleAuth.Client
             {
                 return new BaseSidContentResult<GrantedTokenResponse>
                 {
-                    ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    HasError = true,
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     Status = result.StatusCode
                 };
             }
 
             return new BaseSidContentResult<GrantedTokenResponse>
             {
-                Content = JsonConvert.DeserializeObject<GrantedTokenResponse>(content)
+                Content = Serializer.Default.Deserialize<GrantedTokenResponse>(content)
             };
         }
 
+        public async Task<JsonWebKeySet> GetJwks()
+        {
+            var discoveryDoc = await GetDiscoveryInformation().ConfigureAwait(false);
+            var keyJson = await _client.GetStringAsync(discoveryDoc.JwksUri).ConfigureAwait(false);
+            return JsonWebKeySet.Create(keyJson);
+        }
 
         /// <summary>
         /// Sends the specified request URL.
@@ -123,9 +125,10 @@ namespace SimpleAuth.Client
         public async Task<GenericResponse<object>> RequestSms(
             ConfirmationCodeRequest request)
         {
-            var requestUri = new Uri(_discoveryInformation.Issuer + "/code");
+            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
+            var requestUri = new Uri(discoveryInformation.Issuer + "/code");
 
-            var json = JsonConvert.SerializeObject(request);
+            var json = Serializer.Default.Serialize(request);
             var req = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -144,8 +147,7 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<object>
                 {
-                    ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     HttpStatus = result.StatusCode
                 };
             }
@@ -161,11 +163,12 @@ namespace SimpleAuth.Client
         public async Task<RevokeTokenResult> RevokeToken(RevokeTokenRequest revokeTokenRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(revokeTokenRequest));
+            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = new Uri(_discoveryInformation.RevocationEndPoint)
+                RequestUri = new Uri(discoveryInformation.RevocationEndPoint)
             };
             if (_certificate != null)
             {
@@ -185,13 +188,18 @@ namespace SimpleAuth.Client
             {
                 return new RevokeTokenResult
                 {
-                    ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(json),
+                    HasError = true,
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
                     Status = result.StatusCode
                 };
             }
 
             return new RevokeTokenResult { Status = result.StatusCode };
+        }
+
+        private async Task<DiscoveryInformation> GetDiscoveryInformation()
+        {
+            return _discovery ??= await _discoveryOperation.Execute(_discoveryDocumentationUrl).ConfigureAwait(false);
         }
     }
 }

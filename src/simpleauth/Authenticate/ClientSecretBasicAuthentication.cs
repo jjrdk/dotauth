@@ -22,16 +22,17 @@ namespace SimpleAuth.Authenticate
     {
         public static Client AuthenticateClient(this AuthenticateInstruction instruction, Client client)
         {
-            var clientSecret = client.Secrets?.FirstOrDefault(s => s.Type == ClientSecretTypes.SharedSecret);
-            if (clientSecret == null)
+            var clientSecrets = client.Secrets?.Where(s => s.Type == ClientSecretTypes.SharedSecret).ToArray();
+            if (clientSecrets == null || clientSecrets.Length == 0)
             {
                 return null;
             }
 
-            var sameSecret = string.Equals(
-                clientSecret.Value,
-                instruction.ClientSecretFromAuthorizationHeader,
-                StringComparison.CurrentCulture);
+            var sameSecret = clientSecrets.Any(
+                clientSecret => string.Equals(
+                    clientSecret.Value,
+                    instruction.ClientSecretFromAuthorizationHeader,
+                    StringComparison.CurrentCulture));
             return sameSecret ? client : null;
         }
     }

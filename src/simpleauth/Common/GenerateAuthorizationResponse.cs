@@ -105,7 +105,8 @@ namespace SimpleAuth.Common
                             issuerName,
                             userInformationPayload,
                             idTokenPayload,
-                            cancellationToken: cancellationToken)
+                            cancellationToken: cancellationToken,
+                            claimsPrincipal.Claims.Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type))).ToArray())
                         .ConfigureAwait(false);
                     newAccessTokenGranted = true;
                 }
@@ -129,7 +130,7 @@ namespace SimpleAuth.Common
                     {
                         Code = Id.Create(),
                         RedirectUri = authorizationParameter.RedirectUrl,
-                        CreateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTimeOffset.UtcNow,
                         ClientId = authorizationParameter.ClientId,
                         Scopes = authorizationParameter.Scope,
                         IdTokenPayload = idTokenPayload,
@@ -160,7 +161,7 @@ namespace SimpleAuth.Common
                             authorizationParameter.ClientId,
                             allowedTokenScopes,
                             authorizationParameter.ResponseType,
-                            DateTime.UtcNow))
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
 
@@ -178,7 +179,7 @@ namespace SimpleAuth.Common
                             Id.Create(),
                             claimsPrincipal.GetSubject(),
                             authorizationParameter.ClientId,
-                            DateTime.UtcNow))
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
 

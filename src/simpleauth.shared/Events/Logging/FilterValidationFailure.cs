@@ -15,7 +15,7 @@
         /// <param name="id">The identifier.</param>
         /// <param name="message">The message.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public FilterValidationFailure(string id, string message, DateTime timestamp)
+        public FilterValidationFailure(string id, string message, DateTimeOffset timestamp)
         : base(id, timestamp)
         {
             Message = message;

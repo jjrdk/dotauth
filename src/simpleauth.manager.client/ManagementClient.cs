@@ -1,4 +1,18 @@
-﻿namespace SimpleAuth.Manager.Client
+﻿// Copyright © 2016 Habart Thierry, © 2018 Jacob Reimers
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+namespace SimpleAuth.Manager.Client
 {
     using Newtonsoft.Json;
     using SimpleAuth.Shared;
@@ -19,7 +33,6 @@
     {
         private readonly AddScopeOperation _addScopeOperation;
         private readonly GetAllClientsOperation _getAllClientsOperation;
-        private readonly DeleteClientOperation _deleteClientOperation;
         private readonly GetClientOperation _getClientOperation;
         private readonly SearchClientOperation _searchClientOperation;
         private readonly AddResourceOwnerOperation _addResourceOwnerOperation;
@@ -44,7 +57,6 @@
             _updateResourceOwnerPasswordOperation = new UpdateResourceOwnerPasswordOperation(client);
             _searchResourceOwnersOperation = new SearchResourceOwnersOperation(client);
             _getAllClientsOperation = new GetAllClientsOperation(client);
-            _deleteClientOperation = new DeleteClientOperation(client);
             _getClientOperation = new GetClientOperation(client);
             _searchClientOperation = new SearchClientOperation(client);
             _addScopeOperation = new AddScopeOperation(client);
@@ -76,9 +88,7 @@
         /// <param name="clientId">The client id.</param>
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<Client>> GetClient(
-            string clientId,
-            string authorizationHeaderValue = null)
+        public async Task<GenericResponse<Client>> GetClient(string clientId, string authorizationHeaderValue = null)
         {
             return await _getClientOperation.Execute(
                     new Uri(_discoveryInformation.Clients + "/" + clientId),
@@ -92,9 +102,7 @@
         /// <param name="client">The <see cref="Client"/> to add.</param>
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<Client>> AddClient(
-            Client client,
-            string authorizationHeaderValue = null)
+        public async Task<GenericResponse<Client>> AddClient(Client client, string authorizationHeaderValue = null)
         {
             if (client == null)
             {
@@ -111,7 +119,9 @@
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    authorizationHeaderValue);
             }
 
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
@@ -120,7 +130,6 @@
             {
                 return new GenericResponse<Client>
                 {
-                    ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
@@ -135,14 +144,28 @@
         /// <param name="clientId">The client id.</param>
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<Client>> DeleteClient(
-            string clientId,
-            string authorizationHeaderValue = null)
+        public async Task<GenericResponse<Client>> DeleteClient(string clientId, string authorizationHeaderValue = null)
         {
-            return await _deleteClientOperation.Execute(
-                    new Uri(_discoveryInformation.Clients + "/" + clientId),
-                    authorizationHeaderValue)
-                .ConfigureAwait(false);
+            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId) };
+            if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    authorizationHeaderValue);
+            }
+
+            var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            if (!httpResult.IsSuccessStatusCode)
+            {
+                return new GenericResponse<Client>
+                {
+                    HttpStatus = httpResult.StatusCode,
+                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
+                };
+            }
+
+            return new GenericResponse<Client>();
         }
 
         /// <summary>
@@ -151,9 +174,7 @@
         /// <param name="client">The updated <see cref="Client"/>.</param>
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<Client>> UpdateClient(
-            Client client,
-            string authorizationHeaderValue = null)
+        public async Task<GenericResponse<Client>> UpdateClient(Client client, string authorizationHeaderValue = null)
         {
             if (client == null)
             {
@@ -170,7 +191,9 @@
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    authorizationHeaderValue);
             }
 
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
@@ -179,7 +202,6 @@
             {
                 return new GenericResponse<Client>
                 {
-                    ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
@@ -235,7 +257,9 @@
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authorizationHeaderValue);
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    authorizationHeaderValue);
             }
 
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
@@ -245,7 +269,6 @@
             {
                 return new GenericResponse<Scope>
                 {
-                    ContainsError = true,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
                     HttpStatus = httpResult.StatusCode
                 };
@@ -260,9 +283,7 @@
         /// <param name="scope">The <see cref="Scope"/> to add.</param>
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <returns></returns>
-        public Task<GenericResponse<Scope>> AddScope(
-            Scope scope,
-            string authorizationHeaderValue = null)
+        public Task<GenericResponse<Scope>> AddScope(Scope scope, string authorizationHeaderValue = null)
         {
             return _addScopeOperation.Execute(new Uri(_discoveryInformation.Scopes), scope, authorizationHeaderValue);
         }
@@ -278,9 +299,9 @@
             string authorizationHeaderValue = null)
         {
             return _addResourceOwnerOperation.Execute(
-                    new Uri(_discoveryInformation.ResourceOwners),
-                    request,
-                    authorizationHeaderValue);
+                new Uri(_discoveryInformation.ResourceOwners),
+                request,
+                authorizationHeaderValue);
         }
 
         /// <summary>
@@ -354,10 +375,11 @@
         /// </summary>
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <returns></returns>
-        public Task<GenericResponse<ResourceOwner[]>> GetAllResourceOwners(
-            string authorizationHeaderValue = null)
+        public Task<GenericResponse<ResourceOwner[]>> GetAllResourceOwners(string authorizationHeaderValue = null)
         {
-            return _getAllResourceOwnersOperation.Execute(new Uri(_discoveryInformation.ResourceOwners), authorizationHeaderValue);
+            return _getAllResourceOwnersOperation.Execute(
+                new Uri(_discoveryInformation.ResourceOwners),
+                authorizationHeaderValue);
         }
 
         /// <summary>

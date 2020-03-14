@@ -23,6 +23,7 @@ namespace SimpleAuth.Controllers
     using Exceptions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
+    using Microsoft.Net.Http.Headers;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -62,11 +63,8 @@ namespace SimpleAuth.Controllers
 
             var grantedToken = await _tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
             return grantedToken == null
-                ? BadRequest(new ErrorDetails
-                {
-                    Detail = ErrorDescriptions.TheTokenIsNotValid,
-                    Title = ErrorCodes.InvalidToken
-                })
+                ? BadRequest(
+                    new ErrorDetails {Detail = ErrorDescriptions.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken})
                 : new ObjectResult(grantedToken.IdTokenPayLoad);
         }
 
@@ -93,8 +91,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         private string GetAccessTokenFromAuthorizationHeader()
         {
-            const string authorizationName = "Authorization";
-            if (!Request.Headers.TryGetValue(authorizationName, out var values))
+            if (!Request.Headers.TryGetValue(HeaderNames.Authorization, out var values))
             {
                 return string.Empty;
             }
@@ -102,12 +99,9 @@ namespace SimpleAuth.Controllers
             var authenticationHeader = values.First();
             var authorization = AuthenticationHeaderValue.Parse(authenticationHeader);
             var scheme = authorization.Scheme;
-            if (string.Compare(scheme, "Bearer", StringComparison.CurrentCultureIgnoreCase) != 0)
-            {
-                return string.Empty;
-            }
-
-            return authorization.Parameter;
+            return string.Compare(scheme, "Bearer", StringComparison.CurrentCultureIgnoreCase) != 0
+                ? string.Empty
+                : authorization.Parameter;
         }
 
         /// <summary>
@@ -120,8 +114,7 @@ namespace SimpleAuth.Controllers
             const string contentTypeValue = "application/x-www-form-urlencoded";
             var accessTokenName = StandardAuthorizationResponseNames.AccessTokenName;
             var emptyResult = string.Empty;
-            if (Request.Headers == null
-                || !Request.Headers.TryGetValue(contentTypeName, out var values))
+            if (Request.Headers == null || !Request.Headers.TryGetValue(contentTypeName, out var values))
             {
                 return emptyResult;
             }

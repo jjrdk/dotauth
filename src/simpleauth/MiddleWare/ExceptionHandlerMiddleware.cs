@@ -55,7 +55,7 @@ namespace SimpleAuth.MiddleWare
                         serverException.Code,
                         serverException.Message,
                         state,
-                        DateTime.UtcNow)).ConfigureAwait(false);
+                        DateTimeOffset.UtcNow)).ConfigureAwait(false);
 
                     context.Request.Path = "/error";
                     context.Request.QueryString = new QueryString()
@@ -70,7 +70,7 @@ namespace SimpleAuth.MiddleWare
                         exception.GetType().Name,
                         exception.Message,
                         string.Empty,
-                        DateTime.UtcNow)).ConfigureAwait(false);
+                        DateTimeOffset.UtcNow)).ConfigureAwait(false);
 
                     context.Request.Path = "/error";
                     context.Request.QueryString = new QueryString()

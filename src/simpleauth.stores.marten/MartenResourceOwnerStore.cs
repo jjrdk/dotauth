@@ -120,7 +120,7 @@
             user.IsLocalAccount = resourceOwner.IsLocalAccount;
             user.ExternalLogins = resourceOwner.ExternalLogins;
             user.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
-            user.UpdateDateTime = DateTime.UtcNow;
+            user.UpdateDateTime = DateTimeOffset.UtcNow;
             user.Claims = resourceOwner.Claims;
             session.Update(resourceOwner);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -159,16 +159,17 @@
             CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
-            parameter.StartIndex++;
             var subjects = parameter.Subjects;
             var results = await session.Query<ResourceOwner>()
                 .Where(r => r.Claims.Any(x => x.Type == OpenIdClaimTypes.Subject && x.Value.IsOneOf(subjects)))
-                .ToPagedListAsync(parameter.StartIndex, parameter.NbResults, cancellationToken)
+                .ToPagedListAsync(parameter.StartIndex + 1, parameter.NbResults, cancellationToken)
                 .ConfigureAwait(false);
 
             return new GenericResult<ResourceOwner>
             {
-                Content = results.ToArray(), TotalResults = results.TotalItemCount, StartIndex = parameter.StartIndex
+                Content = results.ToArray(),
+                TotalResults = results.TotalItemCount,
+                StartIndex = parameter.StartIndex
             };
         }
     }

@@ -35,7 +35,7 @@
         /// The create date time.
         /// </value>
         [DataMember(Name = "create_datetime")]
-        public DateTime CreateDateTime { get; set; }
+        public DateTimeOffset CreateDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the update time.
@@ -44,6 +44,6 @@
         /// The update time.
         /// </value>
         [DataMember(Name = "update_datetime")]
-        public DateTime UpdateTime { get; set; }
+        public DateTimeOffset UpdateTime { get; set; }
     }
 }

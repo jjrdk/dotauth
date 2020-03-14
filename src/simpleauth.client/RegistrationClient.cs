@@ -48,9 +48,7 @@ namespace SimpleAuth.Client
 
             var discoveryDocument = await _getDiscoveryOperation.Execute(uri).ConfigureAwait(false);
 
-            var json = JsonConvert.SerializeObject(
-                client,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var json = Serializer.Default.Serialize(client);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -60,7 +58,7 @@ namespace SimpleAuth.Client
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, accessToken);
             }
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);
@@ -69,16 +67,16 @@ namespace SimpleAuth.Client
             {
                 return new BaseSidContentResult<Client>
                 {
-                    ContainsError = true,
-                    Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                    HasError = true,
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                     Status = result.StatusCode
                 };
             }
 
             return new BaseSidContentResult<Client>
             {
-                ContainsError = false,
-                Content = JsonConvert.DeserializeObject<Client>(content)
+                HasError = false,
+                Content = Serializer.Default.Deserialize<Client>(content)
             };
         }
     }

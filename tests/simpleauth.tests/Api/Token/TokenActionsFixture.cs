@@ -59,16 +59,16 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Passing_No_Request_To_ResourceOwner_Grant_Type_Then_Exception_Is_Thrown()
+        public async Task When_Passing_No_Request_To_ResourceOwner_Grant_Type_Then_Error_Is_Returned()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(
-                        null,
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
+            await Assert.ThrowsAsync<NullReferenceException>(
+                   () => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(
+                       null,
+                       null,
+                       null,
+                       null,
+                       CancellationToken.None))
+               .ConfigureAwait(false);
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace SimpleAuth.Tests.Api.Token
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(clientId, result.ClientId);
+            Assert.Equal(clientId, result.Content.ClientId);
         }
 
         [Fact]

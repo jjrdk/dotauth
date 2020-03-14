@@ -48,10 +48,10 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects();
 
             var result = await _addResourceSetAction.Execute(
-                        new AddResourceSetParameter { PolicyId = "policy_id" },
-                        CancellationToken.None)
+                    new AddResourceSetParameter {PolicyId = "policy_id"},
+                    CancellationToken.None)
                 .ConfigureAwait(false);
-            
+
             Assert.False(result);
         }
 
@@ -60,11 +60,11 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             const string policyId = "policy_id";
             const string resourceSetId = "resource_set_id";
-            InitializeFakeObjects(new Policy { Id = policyId });
+            InitializeFakeObjects(new Policy {Id = policyId});
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _addResourceSetAction.Execute(
-                        new AddResourceSetParameter { PolicyId = policyId, ResourceSets = new[] { resourceSetId } },
+                        new AddResourceSetParameter {PolicyId = policyId, ResourceSets = new[] {resourceSetId}},
                         CancellationToken.None))
                 .ConfigureAwait(false);
 
@@ -79,7 +79,7 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects();
 
             var result = await _addResourceSetAction.Execute(
-                    new AddResourceSetParameter { PolicyId = policyId, ResourceSets = new[] { "resource_set_id" } },
+                    new AddResourceSetParameter {PolicyId = policyId, ResourceSets = new[] {"resource_set_id"}},
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
@@ -91,17 +91,17 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             const string policyId = "policy_id";
             const string resourceSetId = "resource_set_id";
-            InitializeFakeObjects(new Policy { Id = policyId }, new ResourceSet { Id = resourceSetId });
+            InitializeFakeObjects(new Policy {Id = policyId}, new ResourceSetModel {Id = resourceSetId});
 
             var result = await _addResourceSetAction.Execute(
-                    new AddResourceSetParameter { PolicyId = policyId, ResourceSets = new[] { resourceSetId } },
+                    new AddResourceSetParameter {PolicyId = policyId, ResourceSets = new[] {resourceSetId}},
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.True(result);
         }
 
-        private void InitializeFakeObjects(Policy policy = null, ResourceSet resourceSet = null)
+        private void InitializeFakeObjects(Policy policy = null, ResourceSetModel resourceSet = null)
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _policyRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -109,7 +109,8 @@ namespace SimpleAuth.Server.Tests.Apis
             _policyRepositoryStub.Setup(x => x.Update(It.IsAny<Policy>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(resourceSet);
+            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(resourceSet);
             _addResourceSetAction = new AddResourceSetToPolicyAction(
                 _policyRepositoryStub.Object,
                 _resourceSetRepositoryStub.Object);

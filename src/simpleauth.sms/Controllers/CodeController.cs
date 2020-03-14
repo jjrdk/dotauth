@@ -12,6 +12,7 @@ namespace SimpleAuth.Sms.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Controllers;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the code controller.
@@ -66,7 +67,7 @@ namespace SimpleAuth.Sms.Controllers
             if (string.IsNullOrWhiteSpace(confirmationCodeRequest?.PhoneNumber))
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "parameter phone_number is missing",
                     HttpStatusCode.BadRequest);
             }

@@ -463,7 +463,7 @@ namespace SimpleAuth.Controllers
             // 1. Persist the request code into a cookie & fix the space problems
             var cookieValue = Id.Create();
             var cookieName = string.Format(ExternalAuthenticateCookieName, cookieValue);
-            Response.Cookies.Append(cookieName, code, new CookieOptions { Expires = DateTime.UtcNow.AddMinutes(5) });
+            Response.Cookies.Append(cookieName, code, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMinutes(5) });
 
             // 2. Redirect the User agent
             var redirectUrl = _urlHelper.Action(
@@ -513,7 +513,7 @@ namespace SimpleAuth.Controllers
             Response.Cookies.Append(
                 cookieName,
                 string.Empty,
-                new CookieOptions { Expires = DateTime.UtcNow.AddDays(-1) });
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddDays(-1) });
 
             // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
@@ -632,7 +632,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         internal async Task LogAuthenticateUser(string resourceOwner, string amr)
         {
-            await _eventPublisher.Publish(new ResourceOwnerAuthenticated(Id.Create(), resourceOwner, amr, DateTime.UtcNow))
+            await _eventPublisher.Publish(new ResourceOwnerAuthenticated(Id.Create(), resourceOwner, amr, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
         }
 
@@ -645,7 +645,7 @@ namespace SimpleAuth.Controllers
         protected async Task SetLocalCookie(Claim[] claims, string sessionId)
         {
             var tokenValidity = TimeSpan.FromHours(1d); //_configurationService.TokenValidityPeriod;
-            var now = DateTime.UtcNow;
+            var now = DateTimeOffset.UtcNow;
             var expires = now.Add(tokenValidity);
             Response.Cookies.Append(
                 CoreConstants.SessionId,
@@ -680,7 +680,7 @@ namespace SimpleAuth.Controllers
                     HttpContext,
                     CookieNames.TwoFactorCookieName,
                     principal,
-                    new AuthenticationProperties { ExpiresUtc = DateTime.UtcNow.AddMinutes(5), IsPersistent = false })
+                    new AuthenticationProperties { ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5), IsPersistent = false })
                 .ConfigureAwait(false);
         }
 
@@ -728,7 +728,7 @@ namespace SimpleAuth.Controllers
             }
 
             record.Password = string.Empty;
-            await _eventPublisher.Publish(new ExternalUserCreated(Id.Create(), record, DateTime.UtcNow))
+            await _eventPublisher.Publish(new ExternalUserCreated(Id.Create(), record, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return (subject, null, null);
         }

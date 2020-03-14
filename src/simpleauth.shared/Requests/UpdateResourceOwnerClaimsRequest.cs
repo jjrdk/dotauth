@@ -25,6 +25,6 @@
         /// The claims.
         /// </value>
         [DataMember(Name = "claims")]
-        public PostClaim[] Claims { get; set; }
+        public ClaimData[] Claims { get; set; }
     }
 }

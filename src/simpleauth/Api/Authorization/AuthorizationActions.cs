@@ -100,7 +100,7 @@ namespace SimpleAuth.Api.Authorization
                 && (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null))
             {
                 throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId),
                     parameter.State);
             }
@@ -131,7 +131,7 @@ namespace SimpleAuth.Api.Authorization
             }
 
             await _eventPublisher.Publish(
-                    new AuthorizationGranted(Id.Create(), claimsPrincipal?.Identity.Name, client?.ClientId, DateTime.UtcNow))
+                    new AuthorizationGranted(Id.Create(), claimsPrincipal?.Identity.Name, client?.ClientId, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             endpointResult.ProcessId = processId;
             endpointResult.Amr = _resourceOwnerServices.GetAmrs().ToArray().GetAmr(parameter.AmrValues.ToArray());

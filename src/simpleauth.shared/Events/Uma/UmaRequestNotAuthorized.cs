@@ -15,7 +15,7 @@
         /// <param name="ticket">The ticket.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public UmaRequestNotAuthorized(string id, string ticket, string clientId, DateTime timestamp)
+        public UmaRequestNotAuthorized(string id, string ticket, string clientId, DateTimeOffset timestamp)
             : base(id, timestamp)
         {
             Ticket = ticket;

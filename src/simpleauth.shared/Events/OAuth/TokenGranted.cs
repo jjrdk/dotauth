@@ -31,7 +31,7 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// <param name="scopes">The granted scopes</param>
         /// <param name="grantType">The used grant type.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public TokenGranted(string id, string subject, string clientId, string scopes, string grantType, DateTime timestamp)
+        public TokenGranted(string id, string subject, string clientId, string scopes, string grantType, DateTimeOffset timestamp)
         : base(id, timestamp)
         {
             Subject = subject;

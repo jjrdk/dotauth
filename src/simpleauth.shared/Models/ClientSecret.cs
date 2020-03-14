@@ -1,8 +1,11 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// Defines the client secret.
     /// </summary>
+    [DataContract]
     public class ClientSecret
     {
         /// <summary>
@@ -11,6 +14,7 @@
         /// <value>
         /// The type.
         /// </value>
+        [DataMember(Name = "type")]
         public ClientSecretTypes Type { get; set; }
 
         /// <summary>
@@ -19,6 +23,7 @@
         /// <value>
         /// The value.
         /// </value>
+        [DataMember(Name = "value")]
         public string Value { get; set; }
     }
 }

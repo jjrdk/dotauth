@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
     using Results;
     using Shared.Requests;
     using Shared.Responses;
@@ -70,12 +69,12 @@ namespace SimpleAuth.Client
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if ((int)response.StatusCode < 400)
             {
-                return new GetAuthorizationResult { ContainsError = false, Location = response.Headers.Location };
+                return new GetAuthorizationResult { HasError = false, Location = response.Headers.Location };
             }
             return new GetAuthorizationResult
             {
-                ContainsError = true,
-                Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
+                HasError = true,
+                Error = Serializer.Default.Deserialize<ErrorDetails>(content),
                 Status = response.StatusCode
             };
 

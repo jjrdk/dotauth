@@ -16,7 +16,7 @@
         /// <param name="from">Claims list before update.</param>
         /// <param name="to">Claims list after update.</param>
         /// <param name="timestamp">The time stamp of the event.</param>
-        public ClaimsUpdated(string id, string subject, PostClaim[] from, PostClaim[] to, DateTime timestamp)
+        public ClaimsUpdated(string id, string subject, ClaimData[] from, ClaimData[] to, DateTimeOffset timestamp)
             : base(id, timestamp)
         {
             Subject = subject;
@@ -32,11 +32,11 @@
         /// <summary>
         /// Gets the claims before update.
         /// </summary>
-        public PostClaim[] From { get; }
+        public ClaimData[] From { get; }
 
         /// <summary>
         /// Gets the claims after update.
         /// </summary>
-        public PostClaim[] To { get; }
+        public ClaimData[] To { get; }
     }
 }

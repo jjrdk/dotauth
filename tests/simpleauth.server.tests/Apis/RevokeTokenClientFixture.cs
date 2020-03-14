@@ -53,7 +53,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter token is missing", error.Detail);
         }
 
@@ -75,22 +75,21 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal(ErrorCodes.InvalidRequestCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
             Assert.Equal("the parameter token is missing", error.Detail);
         }
 
         [Fact]
         public async Task When_Revoke_Token_And_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var tokenClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(ex.ContainsError);
+            Assert.True(ex.HasError);
             Assert.Equal("invalid_client", ex.Error.Title);
             Assert.Equal("the client doesn't exist", ex.Error.Detail);
         }
@@ -98,15 +97,14 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Token_Does_Not_Exist_Then_Error_Is_Returned()
         {
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var tokenClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("client", "client"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(ex.ContainsError);
+            Assert.True(ex.HasError);
             Assert.Equal("invalid_token", ex.Error.Title);
             Assert.Equal("the token doesn't exist", ex.Error.Detail);
         }
@@ -114,24 +112,22 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Revoke_Token_And_Client_Is_Different_Then_Error_Is_Returned()
         {
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var tokenClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
                 .ConfigureAwait(false);
-            var revokeClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var revokeClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("client", "client"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await revokeClient
                 .RevokeToken(RevokeTokenRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(ex.ContainsError);
+            Assert.True(ex.HasError);
             Assert.Equal("invalid_token", ex.Error.Title);
             Assert.Equal("the token has not been issued for the given client id 'client'", ex.Error.Detail);
         }
@@ -139,11 +135,10 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Revoking_AccessToken_Then_True_Is_Returned()
         {
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var tokenClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("client", "client"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
                 .ConfigureAwait(false);
@@ -159,18 +154,17 @@ namespace SimpleAuth.Server.Tests.Apis
                     IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.False(revoke.ContainsError);
-            Assert.True(ex.ContainsError);
+            Assert.False(revoke.HasError);
+            Assert.True(ex.HasError);
         }
 
         [Fact]
         public async Task When_Revoking_RefreshToken_Then_True_Is_Returned()
         {
-            var tokenClient = await TokenClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var tokenClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("client", "client"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
                 .ConfigureAwait(false);
@@ -186,8 +180,8 @@ namespace SimpleAuth.Server.Tests.Apis
                     IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken))
                 .ConfigureAwait(false);
 
-            Assert.False(revoke.ContainsError);
-            Assert.True(ex.ContainsError);
+            Assert.False(revoke.HasError);
+            Assert.True(ex.HasError);
         }
     }
 }

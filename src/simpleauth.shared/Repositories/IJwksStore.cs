@@ -25,6 +25,14 @@
         Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Gets the signing key.
+        /// </summary>
+        /// <param name="alg"></param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Gets the default signing key
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>

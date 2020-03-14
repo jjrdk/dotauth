@@ -49,6 +49,13 @@
             return Task.FromResult(new SigningCredentials(signingKey, signingKey.Alg));
         }
 
+        public Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
+        {
+            var signingKey = _privateKeySet.GetEncryptionKeys().FirstOrDefault();
+
+            return Task.FromResult(signingKey);
+        }
+
         public Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)
         {
             var signingKey = _privateKeySet.Keys.First(k => k.Use == JsonWebKeyUseNames.Sig);

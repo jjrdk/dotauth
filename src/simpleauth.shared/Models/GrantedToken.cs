@@ -84,7 +84,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The create date time.
         /// </value>
-        public DateTime CreateDateTime { get; set; }
+        public DateTimeOffset CreateDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the client identifier.

@@ -30,13 +30,12 @@
                 });
 
             "and a token client".x(
-                async () =>
+                () =>
                 {
-                    _tokenClient = await TokenClient.Create(
-                            TokenCredentials.FromClientCredentials("manager_client", "manager_client"),
-                            _fixture.Client,
-                            WellKnownUmaConfiguration)
-                        .ConfigureAwait(false);
+                    _tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("manager_client", "manager_client"),
+                        _fixture.Client,
+                        WellKnownUmaConfiguration);
                 });
 
             "and a manager token".x(

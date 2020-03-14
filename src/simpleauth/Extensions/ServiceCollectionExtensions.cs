@@ -26,14 +26,16 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using System.IO.Compression;
     using System.Linq;
     using System.Net.Http;
+    using System.Reflection;
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
+    using Microsoft.Net.Http.Headers;
     using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Events;
 
@@ -42,6 +44,11 @@ namespace SimpleAuth.Extensions
     /// </summary>
     public static class ServiceCollectionExtensions
     {
+        private const string ManageProfileClaim = "manage_profile";
+        private const string AdministratorRole = "administrator";
+        private const string RoleType = "role";
+        private const string ScopeType = "scope";
+
         /// <summary>
         /// Adds the authentication policies.
         /// </summary>
@@ -57,7 +64,13 @@ namespace SimpleAuth.Extensions
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
+            options.AddPolicy(
+                "authenticated",
+                policy =>
+                {
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    policy.RequireAuthenticatedUser();
+                });
             options.AddPolicy(
                 "UmaProtection",
                 policy =>
@@ -72,16 +85,9 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
+                            var claimScopes = p.User?.Claims?.FirstOrDefault(c => c.Type == ScopeType);
                             return claimScopes != null && claimScopes.Value.Split(' ').Any(s => s == "uma_protection");
                         });
-                });
-            options.AddPolicy(
-                "authenticated",
-                policy =>
-                {
-                    policy.AddAuthenticationSchemes(authenticationSchemes);
-                    policy.RequireAuthenticatedUser();
                 });
             options.AddPolicy(
                 "manager",
@@ -97,9 +103,9 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimsScope = p.User.Claims.Where(c => c.Type == "scope");
+                            var result = p.User?.Claims?.Where(c => c.Type == ScopeType).Any(c => c.HasClaimValue("manager"));
 
-                            return claimsScope.SelectMany(c => c.Value.Split(' ')).Any(v => v == "manager");
+                            return result == true;
                         });
                 });
 
@@ -117,13 +123,25 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimsScopes = p.User.Claims.Where(c => c.Type == "scope");
+                            var claimsScopes = p.User.Claims.Where(c => c.Type == ScopeType);
 
                             return claimsScopes.SelectMany(c => c.Value.Split(' ')).Any(v => v == "register_client");
                         });
+                    policy.RequireAssertion(
+                        p =>
+                        {
+                            if (p.User?.Identity?.IsAuthenticated != true)
+                            {
+                                return false;
+                            }
+
+                            var result = p.User?.Claims?.Where(c => c.Type == ScopeType).Any(c => c.Value == "register_client");
+
+                            return result == true;
+                        });
                 });
             options.AddPolicy(
-                "manage_profile",
+                ManageProfileClaim,
                 policy => // Access token with scope = manage_profile or with role = administrator
                 {
                     policy.AddAuthenticationSchemes(authenticationSchemes);
@@ -136,15 +154,15 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                            var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
-                            if (claimRole == null && !claimScopes.Any())
+                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == RoleType);
+                            var claimScopes = p.User.Claims.Where(c => c.Type == ScopeType).ToArray();
+                            if (claimRole == null && claimScopes.Length == 0)
                             {
                                 return false;
                             }
 
-                            return claimRole != null && claimRole.Value == "administrator"
-                                   || claimScopes.Any(s => s.Value == "manage_profile");
+                            return claimRole != null && claimRole.Value == AdministratorRole
+                                   || claimScopes.Any(s => s.Value == ManageProfileClaim);
                         });
                 });
             options.AddPolicy(
@@ -161,14 +179,14 @@ namespace SimpleAuth.Extensions
                                 return false;
                             }
 
-                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                            var claimScopes = p.User.Claims.Where(c => c.Type == "scope").ToArray();
+                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == RoleType);
+                            var claimScopes = p.User.Claims.Where(c => c.Type == ScopeType).ToArray();
                             if (claimRole == null && !claimScopes.Any())
                             {
                                 return false;
                             }
 
-                            return claimRole != null && claimRole.Value.Split(' ', ',').Any(v => v == "administrator")
+                            return claimRole != null && claimRole.Value.Split(' ', ',').Any(v => v == AdministratorRole)
                                    || claimScopes.SelectMany(s => s.Value.Split(' '))
                                        .Any(s => s == "manage_account_filtering");
                         });
@@ -217,13 +235,15 @@ namespace SimpleAuth.Extensions
         /// <param name="options">The options.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
         /// <param name="authPolicies"></param>
+        /// <param name="applicationParts">Assemblies with additional application parts.</param>
         /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">options</exception>
         public static IMvcBuilder AddSimpleAuth(
             this IServiceCollection services,
             SimpleAuthOptions options,
             string[] authPolicies,
-            IRequestThrottle requestThrottle = null)
+            IRequestThrottle requestThrottle = null,
+            params Assembly[] applicationParts)
         {
             if (options == null)
             {
@@ -231,12 +251,32 @@ namespace SimpleAuth.Extensions
             }
 
             var mvcBuilder = services
-                     .AddControllersWithViews()
-                     .AddApplicationPart(typeof(ServiceCollectionExtensions).Assembly)
-                     .AddRazorRuntimeCompilation()
-                     .AddNewtonsoftJson()
-                     .SetCompatibilityVersion(CompatibilityVersion.Latest);
-            services.AddRazorPages();
+                .AddResponseCompression(o =>
+                {
+                    o.EnableForHttps = true;
+                    o.Providers.Add(
+                        new GzipCompressionProvider(
+                            new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                    o.Providers.Add(
+                        new BrotliCompressionProvider(
+                            new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                })
+                .AddAntiforgery(
+                    options =>
+                    {
+                        options.FormFieldName = "XrsfField";
+                        options.HeaderName = "XSRF-TOKEN";
+                        options.SuppressXFrameOptionsHeader = false;
+                    })
+                .AddCors(
+                    o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
+                .AddControllersWithViews()
+                .AddRazorRuntimeCompilation()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            mvcBuilder = applicationParts.Concat(new[] { typeof(ServiceCollectionExtensions).Assembly })
+                .Distinct()
+                .Aggregate(mvcBuilder, (b, a) => b.AddApplicationPart(a));
+            services.AddRazorPages().AddNewtonsoftJson();
             Globals.ApplicationName = options.ApplicationName ?? "SimpleAuth";
             var runtimeConfig = GetRuntimeConfig(options);
             services.AddAuthentication();
@@ -245,10 +285,10 @@ namespace SimpleAuth.Extensions
 
             var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
                 .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
-                .AddTransient<IConfigureOptions<MvcNewtonsoftJsonOptions>, ConfigureMvcNewtonsoftJsonOptions>()
+                .ConfigureOptions<ConfigureMvcNewtonsoftJsonOptions>()
                 .AddSingleton(runtimeConfig)
                 .AddSingleton(requestThrottle ?? NoopThrottle.Default)
-                .AddSingleton(options.HttpClientFactory?.Invoke() ?? new HttpClient())
+                .AddSingleton(sp => options.HttpClientFactory.Invoke())
                 .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
                 .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
                 .AddSingleton(sp => options.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
@@ -275,7 +315,7 @@ namespace SimpleAuth.Extensions
                 .AddSingleton(sp => options.AccountFilters?.Invoke(sp) ?? new InMemoryFilterStore())
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
-                .AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
+                .AddTransient<IAuthorizationPolicy, DefaultAuthorizationPolicy>();
             s.AddDataProtection();
             return mvcBuilder;
         }
@@ -289,10 +329,15 @@ namespace SimpleAuth.Extensions
         {
             var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
             return app.UseMiddleware<ExceptionHandlerMiddleware>(publisher)
-                //.UseResponseCompression()
+                .UseResponseCompression()
                 .UseStaticFiles(
                     new StaticFileOptions
                     {
+                        OnPrepareResponse = ctx =>
+                           {
+                               ctx.Context.Response.Headers[HeaderNames.CacheControl] =
+                                   "public,max-age=" + TimeSpan.FromDays(7).TotalSeconds;
+                           },
                         FileProvider = new EmbeddedFileProvider(
                             typeof(ServiceCollectionExtensions).Assembly,
                             "SimpleAuth.wwwroot")
@@ -322,19 +367,6 @@ namespace SimpleAuth.Extensions
                 claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,
                 rptLifeTime: options.RptLifeTime,
                 ticketLifeTime: options.TicketLifeTime);
-        }
-    }
-
-    internal class ConfigureMvcNewtonsoftJsonOptions : IConfigureOptions<MvcNewtonsoftJsonOptions>
-    {
-        public void Configure(MvcNewtonsoftJsonOptions options)
-        {
-            var settings = options.SerializerSettings;
-            settings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
-            settings.DefaultValueHandling = DefaultValueHandling.Ignore;
-            settings.MissingMemberHandling = MissingMemberHandling.Ignore;
-            settings.NullValueHandling = NullValueHandling.Include;
-            settings.MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead;
         }
     }
 }

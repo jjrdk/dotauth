@@ -16,7 +16,7 @@
         /// The identifier token hint.
         /// </value>
         [DataMember(Name = "id_token_hint")]
-        public string IdTokenHint { get; set; }
+        public string id_token_hint { get; set; }
 
         /// <summary>
         /// Gets or sets the post logout redirect URI.
@@ -25,7 +25,7 @@
         /// The post logout redirect URI.
         /// </value>
         [DataMember(Name = "post_logout_redirect_uri")]
-        public Uri PostLogoutRedirectUri { get; set; }
+        public Uri post_logout_redirect_uri { get; set; }
 
         /// <summary>
         /// Gets or sets the state.
@@ -34,6 +34,6 @@
         /// The state.
         /// </value>
         [DataMember(Name = "state")]
-        public string State { get; set; }
+        public string state { get; set; }
     }
 }

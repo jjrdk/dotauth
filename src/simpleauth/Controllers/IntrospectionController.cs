@@ -26,6 +26,7 @@ namespace SimpleAuth.Controllers
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Defines the introspection controller.
@@ -41,9 +42,9 @@ namespace SimpleAuth.Controllers
         /// </summary>
         /// <param name="clientStore">The client store.</param>
         /// <param name="tokenStore">The token store.</param>
-        public IntrospectionController(IClientStore clientStore, ITokenStore tokenStore)
+        public IntrospectionController(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore)
         {
-            _introspectionActions = new PostIntrospectionAction(clientStore, tokenStore);
+            _introspectionActions = new PostIntrospectionAction(clientStore, tokenStore, jwksStore);
         }
 
         /// <summary>
@@ -60,13 +61,13 @@ namespace SimpleAuth.Controllers
             if (introspectionRequest.token == null)
             {
                 return BuildError(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequest,
                     "no parameter in body request",
                     HttpStatusCode.BadRequest);
             }
 
             AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+            if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
             {
                 authenticationHeaderValue = AuthenticationHeaderValue.Parse(authorizationHeader);
             }
