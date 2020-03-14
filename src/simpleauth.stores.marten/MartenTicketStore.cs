@@ -66,6 +66,7 @@
             return tickets;
         }
 
+        /// <inheritdoc />
         public async Task Clean(CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();

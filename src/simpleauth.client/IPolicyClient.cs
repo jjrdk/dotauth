@@ -21,6 +21,9 @@ namespace SimpleAuth.Client
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
+    /// <summary>
+    /// Defines the policy client interface.
+    /// </summary>
     public interface IPolicyClient
     {
         /// <summary>

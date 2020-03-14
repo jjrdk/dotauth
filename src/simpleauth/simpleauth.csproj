@@ -23,6 +23,7 @@
     <None Remove="wwwroot\**\*.js" />
     <None Remove="wwwroot\**\*.png" />
     <None Remove="wwwroot\**\*.ico" />
+    <None Remove="wwwroot\**\*.woff2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,10 +37,6 @@
 
   <ItemGroup>
     <RazorGenerate Include="Views\**\*.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>

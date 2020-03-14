@@ -48,7 +48,7 @@
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-                var webKey = webKeys.First(x => x.HasPrivateKey && x.KeyOps.Contains(KeyOperations.Sign));
+            var webKey = webKeys.First(x => x.HasPrivateKey && x.KeyOps.Contains(KeyOperations.Sign));
 
             if (webKey.X5c != null)
             {
@@ -61,6 +61,7 @@
             return new SigningCredentials(webKey, alg);
         }
 
+        /// <inheritdoc />
         public async Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();

@@ -34,6 +34,7 @@ namespace SimpleAuth.Authenticate
         /// Initializes a new instance of the <see cref="AuthenticateClient"/> class.
         /// </summary>
         /// <param name="clientRepository">The client repository.</param>
+        /// <param name="jwksStore">The key store.</param>
         public AuthenticateClient(IClientStore clientRepository, IJwksStore jwksStore)
         {
             _clientAssertionAuthentication = new ClientAssertionAuthentication(clientRepository, jwksStore);

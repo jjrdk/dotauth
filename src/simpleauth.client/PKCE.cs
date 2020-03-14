@@ -19,6 +19,11 @@ namespace SimpleAuth.Client
     /// </summary>
     public class Pkce
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Pkce"/> class.
+        /// </summary>
+        /// <param name="codeVerifier"></param>
+        /// <param name="codeChallenge"></param>
         public Pkce(string codeVerifier, string codeChallenge)
         {
             CodeVerifier = codeVerifier;

@@ -60,6 +60,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<IReadOnlyList<Ticket>> GetAll(string owner, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(owner))
@@ -99,6 +100,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task Clean(CancellationToken cancellationToken)
         {
             try

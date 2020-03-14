@@ -53,6 +53,11 @@ namespace SimpleAuth.Controllers
             _requestPermission = new AddPermissionAction(resourceSetRepository, ticketStore, options);
         }
 
+        /// <summary>
+        /// Gets the permission requests.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns>All permission requests for the user.</returns>
         [HttpGet]
         [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetPermissionRequests(CancellationToken cancellationToken)

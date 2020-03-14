@@ -17,14 +17,29 @@ namespace SimpleAuth.ResourceServer
     using System.Security.Claims;
     using Microsoft.AspNetCore.Authorization;
     using SimpleAuth.ResourceServer.Authentication;
+    using SimpleAuth.Shared.Models;
 
+    /// <summary>
+    /// Defines the authorization policy builder extensions.
+    /// </summary>
     public static class AuthorizationPolicyBuilderExtensions
     {
+        /// <summary>
+        /// Adds a policy rule that the token must have a valid <see cref="TicketLine"/> claim.
+        /// </summary>
+        /// <param name="builder">The <see cref="AuthorizationPolicyBuilder"/> to configure.</param>
+        /// <returns>The configured <see cref="AuthorizationPolicyBuilder"/>.</returns>
         public static AuthorizationPolicyBuilder RequireUmaTicket(this AuthorizationPolicyBuilder builder)
         {
             return builder.RequireUmaTicket(UmaAuthenticationDefaults.AuthenticationScheme);
         }
 
+        /// <summary>
+        /// Adds a policy rule that the token must have a valid <see cref="TicketLine"/> claim.
+        /// </summary>
+        /// <param name="builder">The <see cref="AuthorizationPolicyBuilder"/> to configure.</param>
+        /// <param name="authenticationScheme">The name of the authentication scheme.</param>
+        /// <returns>The configured <see cref="AuthorizationPolicyBuilder"/>.</returns>
         public static AuthorizationPolicyBuilder RequireUmaTicket(this AuthorizationPolicyBuilder builder, string authenticationScheme)
         {
             return builder.AddAuthenticationSchemes(authenticationScheme)

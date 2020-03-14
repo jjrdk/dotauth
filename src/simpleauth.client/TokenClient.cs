@@ -40,6 +40,12 @@ namespace SimpleAuth.Client
         private readonly TokenCredentials _form;
         private DiscoveryInformation _discovery;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenClient"/> class.
+        /// </summary>
+        /// <param name="credentials">The <see cref="TokenCredentials"/>.</param>
+        /// <param name="client">The <see cref="HttpClient"/> for requests.</param>
+        /// <param name="discoveryDocumentationUrl">The <see cref="Uri"/> of the discovery document.</param>
         public TokenClient(TokenCredentials credentials, HttpClient client, Uri discoveryDocumentationUrl)
         {
             if (!discoveryDocumentationUrl.IsAbsoluteUri)
@@ -56,6 +62,12 @@ namespace SimpleAuth.Client
             _discoveryOperation = new GetDiscoveryOperation(client);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenClient"/> class.
+        /// </summary>
+        /// <param name="credentials">The <see cref="TokenCredentials"/>.</param>
+        /// <param name="client">The <see cref="HttpClient"/> for requests.</param>
+        /// <param name="discoveryDocumentation">The metadata information.</param>
         public TokenClient(TokenCredentials credentials, HttpClient client, DiscoveryInformation discoveryDocumentation)
         {
             _form = credentials;
@@ -110,6 +122,10 @@ namespace SimpleAuth.Client
             };
         }
 
+        /// <summary>
+        /// Gets the public web keys.
+        /// </summary>
+        /// <returns>The public <see cref="JsonWebKeySet"/> as a <see cref="Task{TResult}"/>.</returns>
         public async Task<JsonWebKeySet> GetJwks()
         {
             var discoveryDoc = await GetDiscoveryInformation().ConfigureAwait(false);

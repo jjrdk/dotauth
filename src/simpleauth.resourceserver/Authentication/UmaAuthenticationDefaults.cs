@@ -14,8 +14,14 @@
 
 namespace SimpleAuth.ResourceServer.Authentication
 {
+    /// <summary>
+    /// Defines the UMA authentication defaults.
+    /// </summary>
     public static class UmaAuthenticationDefaults
     {
+        /// <summary>
+        /// The authentication scheme name.
+        /// </summary>
         public const string AuthenticationScheme = "UMA";
     }
 }

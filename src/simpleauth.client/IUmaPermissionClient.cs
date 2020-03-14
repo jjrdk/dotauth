@@ -15,11 +15,15 @@
 namespace SimpleAuth.Client
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Responses;
 
+    /// <summary>
+    /// Defines the UMA permission client interface.
+    /// </summary>
     public interface IUmaPermissionClient
     {
         /// <summary>
@@ -27,18 +31,20 @@ namespace SimpleAuth.Client
         /// </summary>
         /// <param name="token">The token.</param>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
         /// request
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<PermissionResponse>> RequestPermission(string token, PermissionRequest request);
+        Task<GenericResponse<PermissionResponse>> RequestPermission(string token, PermissionRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Adds the permissions.
         /// </summary>
         /// <param name="token">The token.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <param name="requests">The requests.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
@@ -46,6 +52,6 @@ namespace SimpleAuth.Client
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<PermissionResponse>> RequestPermissions(string token, params PermissionRequest[] requests);
+        Task<GenericResponse<PermissionResponse>> RequestPermissions(string token, CancellationToken cancellationToken = default, params PermissionRequest[] requests);
     }
 }

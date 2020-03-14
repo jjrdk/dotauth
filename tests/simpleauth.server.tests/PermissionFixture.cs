@@ -15,6 +15,7 @@
 namespace SimpleAuth.Server.Tests
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Client;
     using SimpleAuth.Server.Tests.MiddleWares;
@@ -141,7 +142,8 @@ namespace SimpleAuth.Server.Tests
                 new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}}
             };
 
-            var ticket = await _umaClient.RequestPermissions("header", permissions).ConfigureAwait(false);
+            var ticket = await _umaClient.RequestPermissions("header", CancellationToken.None, permissions)
+                .ConfigureAwait(false);
 
             Assert.NotNull(ticket);
         }
