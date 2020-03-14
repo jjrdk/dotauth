@@ -130,25 +130,16 @@ namespace SimpleAuth.ResourceServer.Authentication
             }
 
             var tokenResponse = await Options.TokenCache.GetToken("uma_protection").ConfigureAwait(false);
-            var ticket = await _permissionClient.RequestPermissions(
-                    tokenResponse.AccessToken,
-                    CancellationToken.None,
-                    permissionRequests)
-                .ConfigureAwait(false);
+            var ticket = permissionRequests.Length > 1
+                ? await _permissionClient.RequestPermissions(
+                        tokenResponse.AccessToken,
+                        CancellationToken.None,
+                        permissionRequests)
+                    .ConfigureAwait(false)
+                : await _permissionClient.RequestPermission(tokenResponse.AccessToken, permissionRequests[0])
+                    .ConfigureAwait(false);
 
-            if (ticket.ContainsError)
-            {
-                Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                Response.Headers[HeaderNames.Warning] = "199 - \"UMA Authorization Server Unreachable\"";
-            }
-            else
-            {
-                Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                var s = Options.Realm ?? Options.RealmResolver?.Invoke(Request);
-                var realm = string.IsNullOrWhiteSpace(s) ? string.Empty : "realm=\"{Options.Realm}\", ";
-                Response.Headers[HeaderNames.WWWAuthenticate] =
-                    $"UMA {realm}as_uri=\"{Options.Authority}\", ticket=\"{ticket.Content.TicketId}\"";
-            }
+            Response.ConfigureResponse(ticket, Options.Authority, Options.Realm);
         }
     }
 }

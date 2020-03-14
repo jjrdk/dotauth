@@ -131,7 +131,6 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var parameters = postPermissions.ToArray();
             var clientId = this.GetClientId();
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -141,6 +140,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
+            var parameters = postPermissions.ToArray();
             var ticketId = await _requestPermission.Execute(clientId, cancellationToken, parameters)
                 .ConfigureAwait(false);
             var result = new PermissionResponse { TicketId = ticketId };
