@@ -39,20 +39,17 @@ namespace SimpleAuth.Controllers
         private readonly IPolicyRepository _policyRepository;
         private readonly AddAuthorizationPolicyAction _addpolicy;
         private readonly DeleteAuthorizationPolicyAction _deletePolicy;
-        private readonly DeleteResourcePolicyAction _deleteResourceSet;
         private readonly UpdatePolicyAction _updatePolicy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PoliciesController"/> class.
         /// </summary>
         /// <param name="policyRepository">The policy repository.</param>
-        /// <param name="resourceSetRepository">The resource set repository.</param>
-        public PoliciesController(IPolicyRepository policyRepository, IResourceSetRepository resourceSetRepository)
+        public PoliciesController(IPolicyRepository policyRepository)
         {
             _policyRepository = policyRepository;
             _addpolicy = new AddAuthorizationPolicyAction(policyRepository);
             _deletePolicy = new DeleteAuthorizationPolicyAction(policyRepository);
-            _deleteResourceSet = new DeleteResourcePolicyAction(policyRepository, resourceSetRepository);
             _updatePolicy = new UpdatePolicyAction(policyRepository);
         }
 
@@ -158,46 +155,6 @@ namespace SimpleAuth.Controllers
 
             var isPolicyExists = await _updatePolicy.Execute(putPolicy, cancellationToken).ConfigureAwait(false);
             return !isPolicyExists ? GetNotFoundPolicy() : new StatusCodeResult((int)HttpStatusCode.NoContent);
-        }
-
-        /// <summary>
-        /// Deletes the resource set.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="resourceId">The resource identifier.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        [HttpDelete("{id}/resources/{resourceId}")]
-        [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> DeleteResourceSet(
-            string id,
-            string resourceId,
-            CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    "the identifier must be specified",
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (string.IsNullOrWhiteSpace(resourceId))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    "the resource_id must be specified",
-                    HttpStatusCode.BadRequest);
-            }
-
-            var isPolicyExists =
-                await _deleteResourceSet.Execute(id, resourceId, cancellationToken).ConfigureAwait(false);
-            if (!isPolicyExists)
-            {
-                return GetNotFoundPolicy();
-            }
-
-            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         /// <summary>

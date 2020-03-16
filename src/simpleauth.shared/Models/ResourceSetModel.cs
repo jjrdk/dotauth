@@ -43,12 +43,6 @@ namespace SimpleAuth.Shared.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the URI of the protected resource.
-        /// </summary>
-        /// <value>The protected resource URI.</value>
-        public string Uri { get; set; }
-
-        /// <summary>
         /// Gets or sets the type.
         /// </summary>
         /// <value>
@@ -62,7 +56,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The icon URI.
         /// </value>
-        public string IconUri { get; set; }
+        public Uri IconUri { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes.

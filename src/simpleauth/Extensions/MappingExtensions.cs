@@ -51,7 +51,6 @@ namespace SimpleAuth.Extensions
                 Name = resourceSet.Name,
                 Scopes = resourceSet.Scopes ?? Array.Empty<string>(),
                 Type = resourceSet.Type,
-                Uri = resourceSet.Uri,
                 AuthorizationPolicies = resourceSet.AuthorizationPolicyIds ?? Array.Empty<string>()
             };
         }

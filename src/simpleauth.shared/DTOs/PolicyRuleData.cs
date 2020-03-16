@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.DTOs
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -15,7 +16,7 @@
         /// The client ids allowed.
         /// </value>
         [DataMember(Name = "clients")]
-        public string[] ClientIdsAllowed { get; set; }
+        public string[] ClientIdsAllowed { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the scopes.
@@ -24,7 +25,7 @@
         /// The scopes.
         /// </value>
         [DataMember(Name = "scopes")]
-        public string[] Scopes { get; set; }
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the claims.
@@ -33,7 +34,7 @@
         /// The claims.
         /// </value>
         [DataMember(Name = "claims")]
-        public ClaimData[] Claims { get; set; }
+        public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is resource owner consent needed.

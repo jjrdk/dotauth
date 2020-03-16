@@ -39,10 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="Views\Form\Index.cshtml" />
   </ItemGroup>
 

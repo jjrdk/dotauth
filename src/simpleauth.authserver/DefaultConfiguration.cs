@@ -129,7 +129,7 @@
                         {
                             ClientIdsAllowed = new[] {"web"},
                             Scopes = new []{"read"},
-                            IsResourceOwnerConsentNeeded = false
+                            IsResourceOwnerConsentNeeded = true
                         }
                     }
                 }

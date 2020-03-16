@@ -125,5 +125,7 @@ namespace SimpleAuth.Shared.Errors
         public const string TheAmrDoesntExist = "the amr {0} doesn't exist";
         public const string NoActiveAmr = "no active AMR";
         public const string TheRefreshTokenCanBeUsedOnlyByTheSameIssuer = "the refresh token can be used only by the same issuer";
+        public const string PermissionRequested = "Permission request has been submitted.";
+        public const string InternalError = "Internal error";
     }
 }

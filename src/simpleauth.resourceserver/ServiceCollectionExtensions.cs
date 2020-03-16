@@ -21,12 +21,11 @@ namespace SimpleAuth.ResourceServer
 
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddUmaClient(this IServiceCollection serviceCollection, Uri configurationUri)
+        public static IServiceCollection AddUmaClient(this IServiceCollection serviceCollection, Uri umaAuthority)
         {
-            serviceCollection.AddSingleton(sp => new UmaClient(sp.GetService<HttpClient>(), configurationUri));
-            serviceCollection.AddTransient<IProvideUmaConfiguration, UmaClient>(sp => sp.GetService<UmaClient>());
-            serviceCollection.AddTransient<IUmaPermissionClient, UmaClient>(sp => sp.GetService<UmaClient>());
-            serviceCollection.AddTransient<IPolicyClient, UmaClient>(sp => sp.GetService<UmaClient>());
+            serviceCollection.AddSingleton(sp => new UmaClient(sp.GetService<HttpClient>(), umaAuthority));
+            serviceCollection.AddTransient<IUmaPermissionClient, UmaClient>(sp => sp.GetRequiredService<UmaClient>());
+            serviceCollection.AddTransient<IPolicyClient, UmaClient>(sp => sp.GetRequiredService<UmaClient>());
 
             return serviceCollection;
         }

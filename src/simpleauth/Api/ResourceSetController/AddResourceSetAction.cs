@@ -40,7 +40,6 @@ namespace SimpleAuth.Api.ResourceSetController
                 Id = Id.Create(),
                 Owner = owner,
                 Name = addResourceSetParameter.Name,
-                Uri = addResourceSetParameter.Uri,
                 Type = addResourceSetParameter.Type,
                 Scopes = addResourceSetParameter.Scopes ?? Array.Empty<string>(),
                 IconUri = addResourceSetParameter.IconUri,
@@ -58,7 +57,7 @@ namespace SimpleAuth.Api.ResourceSetController
             return resourceSet.Id;
         }
 
-        private void CheckResourceSetParameter(ResourceSetModel resourceSet)
+        private static void CheckResourceSetParameter(ResourceSetModel resourceSet)
         {
             if (string.IsNullOrWhiteSpace(resourceSet.Name))
             {
@@ -72,22 +71,6 @@ namespace SimpleAuth.Api.ResourceSetController
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
-            }
-
-            if (!string.IsNullOrWhiteSpace(resourceSet.IconUri)
-                && !Uri.IsWellFormedUriString(resourceSet.IconUri, UriKind.Absolute))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.IconUri));
-            }
-
-            if (!string.IsNullOrWhiteSpace(resourceSet.Uri)
-                && !Uri.IsWellFormedUriString(resourceSet.Uri, UriKind.Absolute))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.Uri));
             }
         }
     }

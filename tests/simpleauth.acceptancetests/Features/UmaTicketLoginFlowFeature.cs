@@ -93,7 +93,6 @@
                 {
                     var resourceSet = new ResourceSet
                     {
-                        Uri = "http://localhost",
                         Name = "Local",
                         Scopes = new[] { "api1" },
                         Type = "url",
@@ -209,7 +208,6 @@
                 {
                     var resourceSet = new ResourceSet
                     {
-                        Uri = "http://localhost",
                         Name = "Local",
                         Scopes = new[] { "api1" },
                         Type = "url",
@@ -348,7 +346,6 @@
                 {
                     var resourceSet = new ResourceSet
                     {
-                        Uri = "http://localhost",
                         Name = "Local",
                         Scopes = new[] { "api1" },
                         Type = "url",

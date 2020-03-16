@@ -153,7 +153,6 @@
             rec.Name = resourceSet.Name;
             rec.Scopes = resourceSet.Scopes;
             rec.Type = resourceSet.Type;
-            rec.Uri = resourceSet.Uri;
             return Task.FromResult(true);
         }
     }

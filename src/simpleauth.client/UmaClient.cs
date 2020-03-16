@@ -28,33 +28,27 @@ namespace SimpleAuth.Client
     /// <summary>
     /// Defines the UMA client.
     /// </summary>
-    public class UmaClient : IUmaPermissionClient, IPolicyClient, IProvideUmaConfiguration
+    public class UmaClient : IUmaPermissionClient, IPolicyClient
     {
         private const string JsonMimeType = "application/json";
         private readonly HttpClient _client;
         private readonly Uri _configurationUri;
         private UmaConfiguration _umaConfiguration;
 
-        public UmaClient(HttpClient client, Uri configurationUri)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UmaClient"/> class.
+        /// </summary>
+        /// <param name="client">The <see cref="HttpClient"/> to use for requests.</param>
+        /// <param name="authorityUri">The <see cref="Uri"/> of the UMA authority.</param>
+        public UmaClient(HttpClient client, Uri authorityUri)
         {
             var builder = new UriBuilder(
-                configurationUri.Scheme,
-                configurationUri.Host,
-                configurationUri.Port,
+                authorityUri.Scheme,
+                authorityUri.Host,
+                authorityUri.Port,
                 "/.well-known/uma2-configuration");
             _client = client;
             _configurationUri = builder.Uri;
-        }
-
-        public async Task<UmaConfiguration> GetUmaConfiguration()
-        {
-            if (_umaConfiguration == null)
-            {
-                var result = await _client.GetStringAsync(_configurationUri).ConfigureAwait(false);
-                _umaConfiguration = Serializer.Default.Deserialize<UmaConfiguration>(result);
-            }
-
-            return _umaConfiguration;
         }
 
         /// <summary>
@@ -396,50 +390,6 @@ namespace SimpleAuth.Client
         }
 
         /// <summary>
-        /// Deletes the resource.
-        /// </summary>
-        /// <param name="resourceSetId">The resource set identifier.</param>
-        /// <param name="authorizationHeaderValue">The authorization header value.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// resourceSetId
-        /// or
-        /// authorizationHeaderValue
-        /// </exception>
-        public async Task<GenericResponse<object>> DeleteResource(string resourceSetId, string authorizationHeaderValue)
-        {
-            if (string.IsNullOrWhiteSpace(resourceSetId))
-            {
-                throw new ArgumentNullException(nameof(resourceSetId));
-            }
-
-            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
-            {
-                throw new ArgumentNullException(nameof(authorizationHeaderValue));
-            }
-
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var resourceSetUrl = configuration.ResourceRegistrationEndpoint;
-            resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
-
-            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, authorizationHeaderValue);
-            var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<object>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<object>();
-        }
-
-        /// <summary>
         /// Searches the policies.
         /// </summary>
         /// <param name="parameter">The parameter.</param>
@@ -580,6 +530,50 @@ namespace SimpleAuth.Client
         }
 
         /// <summary>
+        /// Deletes the resource.
+        /// </summary>
+        /// <param name="resourceSetId">The resource set identifier.</param>
+        /// <param name="authorizationHeaderValue">The authorization header value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// resourceSetId
+        /// or
+        /// authorizationHeaderValue
+        /// </exception>
+        public async Task<GenericResponse<object>> DeleteResource(string resourceSetId, string authorizationHeaderValue)
+        {
+            if (string.IsNullOrWhiteSpace(resourceSetId))
+            {
+                throw new ArgumentNullException(nameof(resourceSetId));
+            }
+
+            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
+            {
+                throw new ArgumentNullException(nameof(authorizationHeaderValue));
+            }
+
+            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
+            var resourceSetUrl = configuration.ResourceRegistrationEndpoint;
+            resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
+
+            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
+            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, authorizationHeaderValue);
+            var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            if (!httpResult.IsSuccessStatusCode)
+            {
+                return new GenericResponse<object>
+                {
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new GenericResponse<object>();
+        }
+
+        /// <summary>
         /// Gets all resources.
         /// </summary>
         /// <param name="authorizationHeaderValue">The authorization header value.</param>
@@ -699,6 +693,17 @@ namespace SimpleAuth.Client
             {
                 Content = Serializer.Default.Deserialize<GenericResult<ResourceSet>>(content)
             };
+        }
+
+        private async Task<UmaConfiguration> GetUmaConfiguration()
+        {
+            if (_umaConfiguration == null)
+            {
+                var result = await _client.GetStringAsync(_configurationUri).ConfigureAwait(false);
+                _umaConfiguration = Serializer.Default.Deserialize<UmaConfiguration>(result);
+            }
+
+            return _umaConfiguration;
         }
     }
 }

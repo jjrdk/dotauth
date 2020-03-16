@@ -151,21 +151,41 @@
                 .IsAuthorized(ticket, client.ClientId, claimTokenParameter, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (authorizationResult.Type == AuthorizationPolicyResultEnum.Authorized
-                || authorizationResult.Type == AuthorizationPolicyResultEnum.RequestSubmitted)
+            if (authorizationResult.Type == AuthorizationPolicyResultEnum.Authorized)
             {
                 var grantedToken =
                     await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
-                await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
-                await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
+                if (await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false))
+                {
+                    await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
+                    return new GenericResponse<GrantedToken> {Content = grantedToken, HttpStatus = HttpStatusCode.OK};
+                }
+
                 return new GenericResponse<GrantedToken>
                 {
-                    Content = grantedToken,
-                    HttpStatus = HttpStatusCode.OK
+                    HttpStatus = HttpStatusCode.InternalServerError,
+                    Error = new ErrorDetails
+                    {Status = HttpStatusCode.InternalServerError,
+                        Title = ErrorCodes.InternalError,
+                        Detail = ErrorDescriptions.InternalError
+                    }
                 };
             }
 
-            // 5. Generate a granted token.
+            if (authorizationResult.Type == AuthorizationPolicyResultEnum.RequestSubmitted)
+            {
+                return new GenericResponse<GrantedToken>
+                {
+                    HttpStatus = HttpStatusCode.Forbidden,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.Forbidden,
+                        Title = ErrorCodes.RequestSubmitted,
+                        Detail = ErrorDescriptions.PermissionRequested
+                    }
+                };
+            }
+
             await _eventPublisher.Publish(
                     new UmaRequestNotAuthorized(Id.Create(), parameter.Ticket, parameter.ClientId, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);

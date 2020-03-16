@@ -47,7 +47,6 @@ namespace SimpleAuth.Api.ResourceSetController
                 Id = updateResourceSetParameter.Id,
                 Owner = owner,
                 Name = updateResourceSetParameter.Name,
-                Uri = updateResourceSetParameter.Uri,
                 Type = updateResourceSetParameter.Type,
                 Scopes = updateResourceSetParameter.Scopes ?? Array.Empty<string>(),
                 IconUri = updateResourceSetParameter.IconUri,
@@ -77,22 +76,6 @@ namespace SimpleAuth.Api.ResourceSetController
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
-            }
-
-            if (!string.IsNullOrWhiteSpace(resourceSet.IconUri)
-                && !Uri.IsWellFormedUriString(resourceSet.IconUri, UriKind.Absolute))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.IconUri));
-            }
-
-            if (!string.IsNullOrWhiteSpace(resourceSet.Uri)
-                && !Uri.IsWellFormedUriString(resourceSet.Uri, UriKind.Absolute))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.Uri));
             }
         }
     }

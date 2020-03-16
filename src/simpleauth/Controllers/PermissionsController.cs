@@ -36,7 +36,7 @@ namespace SimpleAuth.Controllers
     public class PermissionsController : ControllerBase
     {
         private readonly ITicketStore _ticketStore;
-        private readonly AddPermissionAction _requestPermission;
+        private readonly RequestPermissionHandler _requestPermission;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PermissionsController"/> class.
@@ -50,7 +50,7 @@ namespace SimpleAuth.Controllers
             RuntimeSettings options)
         {
             _ticketStore = ticketStore;
-            _requestPermission = new AddPermissionAction(resourceSetRepository, ticketStore, options);
+            _requestPermission = new RequestPermissionHandler(resourceSetRepository, ticketStore, options);
         }
 
         [HttpGet]
@@ -71,7 +71,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> PostPermission(
+        public async Task<IActionResult> RequestPermission(
             [FromBody] PermissionRequest permissionRequest,
             CancellationToken cancellationToken)
         {

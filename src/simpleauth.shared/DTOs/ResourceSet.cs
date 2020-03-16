@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared.DTOs
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -41,15 +42,6 @@ namespace SimpleAuth.Shared.DTOs
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the URI.
-        /// </summary>
-        /// <value>
-        /// The URI.
-        /// </value>
-        [DataMember(Name = "uri")]
-        public string Uri { get; set; }
-
-        /// <summary>
         /// Gets or sets the type.
         /// </summary>
         /// <value>
@@ -74,7 +66,7 @@ namespace SimpleAuth.Shared.DTOs
         /// The icon URI.
         /// </value>
         [DataMember(Name = "icon_uri")]
-        public string IconUri { get; set; }
+        public Uri IconUri { get; set; }
 
         /// <summary>
         /// Gets or sets the authorization policies for the resource.

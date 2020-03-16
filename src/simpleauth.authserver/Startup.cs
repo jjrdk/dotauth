@@ -68,8 +68,7 @@ namespace SimpleAuth.AuthServer
                             Type = "Content",
                             Owner = "administrator",
                             Scopes = new[] { "read" },
-                            AuthorizationPolicyIds = new[] { "1" },
-                            Uri = "https://localhost:50001/resource"
+                            AuthorizationPolicyIds = new[] { "1" }
                         } }),
                 EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 HttpClientFactory = () => client,

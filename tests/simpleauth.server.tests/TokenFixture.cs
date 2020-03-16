@@ -79,15 +79,36 @@
             // Get PAT.
             var result = await tc.GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
                 .ConfigureAwait(false);
+            var policy = await _umaClient.AddPolicy(
+                    new PolicyData
+                    {
+                        Rules = new[]
+                        {
+                            new PolicyRuleData
+                            {
+                                ClientIdsAllowed = new[] {"resource_server"},
+                                Scopes = new[] {"read", "write", "execute"}
+                            }
+                        }
+                    },
+                    result.Content.AccessToken)
+                .ConfigureAwait(false);
             var resource = await _umaClient.AddResource(
-                    new ResourceSet {Name = "name", Scopes = new[] {"read", "write", "execute"}},
+                    new ResourceSet
+                    {
+                        Name = "name",
+                        Scopes = new[] {"read", "write", "execute"},
+                        AuthorizationPolicies = new[] {policy.Content.PolicyId}
+                    },
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
 
-            var ticket = await _umaClient.RequestPermission("header",
+            var ticket = await _umaClient.RequestPermission(
+                    "header",
                     new PermissionRequest // Add permission & retrieve a ticket id.
                     {
-                        ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}
+                        ResourceSetId = resource.Content.Id,
+                        Scopes = new[] { "read" }
                     })
                 .ConfigureAwait(false);
 

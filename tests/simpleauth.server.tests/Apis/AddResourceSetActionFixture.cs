@@ -50,7 +50,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var addResourceParameter = new Dto.ResourceSet
             {
-                Name = "name", Scopes = new[] {"scope"}, IconUri = "http://localhost", Uri = "http://localhost"
+                Name = "name", Scopes = new[] {"scope"}, IconUri = new Uri("http://localhost")
             };
             _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
@@ -68,7 +68,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var addResourceParameter = new Dto.ResourceSet
             {
-                Name = "name", Scopes = new[] {"scope"}, IconUri = "http://localhost", Uri = "http://localhost"
+                Name = "name", Scopes = new[] {"scope"}, IconUri = new Uri("http://localhost")
             };
             _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
