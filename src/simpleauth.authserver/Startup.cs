@@ -66,7 +66,6 @@ namespace SimpleAuth.AuthServer
                             Id = "abc",
                             Name = "Test Resource",
                             Type = "Content",
-                            Owner = "administrator",
                             Scopes = new[] { "read" },
                             AuthorizationPolicyIds = new[] { "1" }
                         } }),

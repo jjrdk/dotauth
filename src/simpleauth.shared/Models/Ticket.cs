@@ -38,11 +38,6 @@ namespace SimpleAuth.Shared.Models
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource owner for the ticket resources.
-        /// </summary>
-        public string ResourceOwner { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether this instance is authorized by ro.
         /// </summary>
         /// <value>

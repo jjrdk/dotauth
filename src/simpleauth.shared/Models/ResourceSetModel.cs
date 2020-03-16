@@ -30,11 +30,6 @@ namespace SimpleAuth.Shared.Models
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the owner of the resource set.
-        /// </summary>
-        public string Owner { get; set; }
-
-        /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>

@@ -47,12 +47,10 @@
             For<ResourceSetModel>()
                 .Identity(x => x.Id)
                 .Duplicate(x => x.Name, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.Owner, configure: idx => { idx.IsConcurrent = true; })
                 .Duplicate(x => x.Type, configure: idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<Ticket>()
                 .Identity(x => x.Id)
-                .Duplicate(x => x.ResourceOwner, configure: idx => { idx.IsConcurrent = true; })
                 .Duplicate(x => x.Created, configure: idx => { idx.IsConcurrent = true; })
                 .Duplicate(x => x.Expires, configure: idx => { idx.IsConcurrent = true; })
                 .Duplicate(x => x.IsAuthorizedByRo, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Boolean)

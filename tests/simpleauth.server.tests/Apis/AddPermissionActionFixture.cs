@@ -35,28 +35,10 @@ namespace SimpleAuth.Server.Tests.Apis
         private RequestPermissionHandler _requestPermissionHandler;
 
         [Fact]
-        public async Task When_Passing_No_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            InitializeFakeObjects(Array.Empty<ResourceSetModel>());
-
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _requestPermissionHandler.Execute(null, CancellationToken.None, null))
-                .ConfigureAwait(false);
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _requestPermissionHandler.Execute("client_id", CancellationToken.None, null))
-                .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _requestPermissionHandler.Execute(null, CancellationToken.None, (PermissionRequest)null))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
         public async Task When_RequiredParameter_ResourceSetId_Is_Not_Specified_Then_Exception_Is_Thrown()
         {
             const string clientId = "client_id";
-            InitializeFakeObjects(new ResourceSetModel { Owner = "tester", Id = Id.Create(), Name = "resource" });
+            InitializeFakeObjects(new ResourceSetModel { Id = Id.Create(), Name = "resource" });
             var addPermissionParameter = new PermissionRequest();
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -74,7 +56,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_RequiredParameter_Scopes_Is_Not_Specified_Then_Exception_Is_Thrown()
         {
             const string clientId = "client_id";
-            InitializeFakeObjects(new ResourceSetModel { Owner = "tester", Id = Id.Create(), Name = "resource" });
+            InitializeFakeObjects(new ResourceSetModel { Id = Id.Create(), Name = "resource" });
             var addPermissionParameter = new PermissionRequest { ResourceSetId = "resource_set_id" };
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -91,7 +73,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
-            InitializeFakeObjects(new ResourceSetModel { Owner = "tester", Id = Id.Create(), Name = "resource" });
+            InitializeFakeObjects(new ResourceSetModel { Id = Id.Create(), Name = "resource" });
             var addPermissionParameter = new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -111,7 +93,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 ResourceSetId = resourceSetId,
                 Scopes = new[] { "invalid_scope" }
             };
-            var resources = new[] { new ResourceSetModel { Owner = "tester", Id = resourceSetId, Scopes = new[] { "scope" } } };
+            var resources = new[] { new ResourceSetModel { Id = resourceSetId, Scopes = new[] { "scope" } } };
             InitializeFakeObjects(resources);
 
             var exception = await Assert.ThrowsAsync<SimpleAuthException>(
@@ -127,7 +109,7 @@ namespace SimpleAuth.Server.Tests.Apis
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
             var addPermissionParameter = new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
-            var resources = new[] { new ResourceSetModel { Owner = "tester", Id = resourceSetId, Scopes = new[] { "scope" } } };
+            var resources = new[] { new ResourceSetModel { Id = resourceSetId, Scopes = new[] { "scope" } } };
             InitializeFakeObjects(resources);
             _ticketStoreStub.Setup(r => r.Add(It.IsAny<Ticket>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
@@ -140,7 +122,8 @@ namespace SimpleAuth.Server.Tests.Apis
         private void InitializeFakeObjects(params ResourceSetModel[] resourceSets)
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(resourceSets.FirstOrDefault);
+            _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>((s, c) => Task.FromResult(resourceSets.FirstOrDefault(x => x.Id == s)));
             _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>())).ReturnsAsync(resourceSets);
             _ticketStoreStub = new Mock<ITicketStore>();
             _configurationServiceStub = new RuntimeSettings(ticketLifeTime: TimeSpan.FromSeconds(2));

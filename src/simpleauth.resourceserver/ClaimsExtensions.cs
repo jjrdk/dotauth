@@ -19,7 +19,7 @@ namespace SimpleAuth.ResourceServer
     using Newtonsoft.Json;
     using SimpleAuth.Shared.Models;
 
-    public static class ClaimsExtensions
+    internal static class ClaimsExtensions
     {
         public static bool TryGetUmaTickets(this ClaimsIdentity identity, out TicketLine[] tickets)
         {

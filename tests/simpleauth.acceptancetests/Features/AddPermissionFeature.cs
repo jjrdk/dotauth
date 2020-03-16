@@ -2,6 +2,7 @@
 {
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Threading;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
@@ -72,7 +73,9 @@
             "and adding permission".x(
                 async () =>
                 {
-                    var response = await client.RequestPermission(grantedToken.AccessToken, new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                    var response = await client.RequestPermission(
+                            grantedToken.AccessToken,
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
                         .ConfigureAwait(false);
 
                     Assert.False(response.ContainsError);
@@ -126,6 +129,7 @@
                 {
                     var response = await client.RequestPermissions(
                             grantedToken.AccessToken,
+                            CancellationToken.None,
                             new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"write"}},
                             new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
                         .ConfigureAwait(false);

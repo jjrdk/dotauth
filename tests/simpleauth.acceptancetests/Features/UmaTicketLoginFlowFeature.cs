@@ -249,24 +249,13 @@
                         .ConfigureAwait(false);
                     umaToken = response.Content;
 
-                    Assert.Null(response.Error);
-                    Assert.NotNull(umaToken.AccessToken);
+                    Assert.True(response.HasError);
                 });
 
-            "then can get resource with token".x(
+            "then has no token".x(
                 async () =>
                 {
-                    var request = new HttpRequestMessage
-                    {
-                        Method = HttpMethod.Get,
-                        RequestUri = new Uri("http://localhost/data/" + resourceSetResponse.Id)
-                    };
-                    request.Headers.Authorization = new AuthenticationHeaderValue(umaToken.TokenType, umaToken.AccessToken);
-                    var response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
-                    var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                    Assert.Equal("Hello", content);
+                    Assert.Null(umaToken);
                 });
         }
 

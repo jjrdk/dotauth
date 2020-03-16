@@ -21,6 +21,7 @@ namespace SimpleAuth.ResourceServer.Authentication
     using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Text.Encodings.Web;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Logging;
@@ -28,11 +29,22 @@ namespace SimpleAuth.ResourceServer.Authentication
     using Microsoft.Net.Http.Headers;
     using SimpleAuth.Client;
 
+    /// <summary>
+    /// Defines the UMA authentication handler.
+    /// </summary>
     public class UmaAuthenticationHandler : AuthenticationHandler<UmaAuthenticationOptions>
     {
         private readonly IUmaPermissionClient _permissionClient;
         private readonly JwtSecurityTokenHandler _securityTokenHandler;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UmaAuthenticationHandler"/> class.
+        /// </summary>
+        /// <param name="options">The authentication options.</param>
+        /// <param name="logger">The logger factory.</param>
+        /// <param name="encoder">The url encoder.</param>
+        /// <param name="clock">the system clock.</param>
+        /// <param name="permissionClient">The UMA permission client.</param>
         public UmaAuthenticationHandler(
             IOptionsMonitor<UmaAuthenticationOptions> options,
             ILoggerFactory logger,
@@ -45,6 +57,7 @@ namespace SimpleAuth.ResourceServer.Authentication
             _securityTokenHandler = new JwtSecurityTokenHandler();
         }
 
+        /// <inheritdoc />
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (Context.User?.Identity?.IsAuthenticated == true)
@@ -103,6 +116,7 @@ namespace SimpleAuth.ResourceServer.Authentication
             }
         }
 
+        /// <inheritdoc />
         protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             var permissionRequests = Options.ResourceSetRequest?.Invoke(Request);
@@ -116,24 +130,16 @@ namespace SimpleAuth.ResourceServer.Authentication
             }
 
             var tokenResponse = await Options.TokenCache.GetToken("uma_protection").ConfigureAwait(false);
-            var ticket = await _permissionClient.RequestPermissions(
-                    tokenResponse.AccessToken,
-                    permissionRequests)
-                .ConfigureAwait(false);
+            var ticket = permissionRequests.Length > 1
+                ? await _permissionClient.RequestPermissions(
+                        tokenResponse.AccessToken,
+                        CancellationToken.None,
+                        permissionRequests)
+                    .ConfigureAwait(false)
+                : await _permissionClient.RequestPermission(tokenResponse.AccessToken, permissionRequests[0])
+                    .ConfigureAwait(false);
 
-            if (ticket.ContainsError)
-            {
-                Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                Response.Headers[HeaderNames.Warning] = "199 - \"UMA Authorization Server Unreachable\"";
-            }
-            else
-            {
-                Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                var s = Options.Realm ?? Options.RealmResolver?.Invoke(Request);
-                var realm = string.IsNullOrWhiteSpace(s) ? string.Empty : "realm=\"{Options.Realm}\", ";
-                Response.Headers[HeaderNames.WWWAuthenticate] =
-                    $"UMA {realm}as_uri=\"{Options.Authority}\", ticket=\"{ticket.Content.TicketId}\"";
-            }
+            Response.ConfigureResponse(ticket, Options.Authority, Options.Realm);
         }
     }
 }

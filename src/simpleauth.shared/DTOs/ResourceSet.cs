@@ -24,11 +24,8 @@ namespace SimpleAuth.Shared.DTOs
     public class ResourceSet
     {
         /// <summary>
-        /// Gets or sets the identifier.
+        /// Gets or sets the id of the resource set.
         /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
         [DataMember(Name = "_id")]
         public string Id { get; set; }
 

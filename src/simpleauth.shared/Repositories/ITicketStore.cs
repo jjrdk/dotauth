@@ -34,6 +34,12 @@
         /// <returns></returns>
         Task<Ticket> Get(string ticketId, CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Gets all tickets for the owner.
+        /// </summary>
+        /// <param name="owner">The owner of the tickets.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns>All tickets as a <see cref="Task{TResult}"/>.</returns>
         Task<IReadOnlyList<Ticket>> GetAll(string owner, CancellationToken cancellationToken = default);
     }
 }

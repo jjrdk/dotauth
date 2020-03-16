@@ -18,6 +18,7 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.DTOs;
@@ -51,20 +52,11 @@ namespace SimpleAuth.Client
             _configurationUri = builder.Uri;
         }
 
-        /// <summary>
-        /// Adds the permission.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// token
-        /// </exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<PermissionResponse>> RequestPermission(
             string token,
-            PermissionRequest request)
+            PermissionRequest request,
+            CancellationToken cancellationToken = default)
         {
             if (request == null)
             {
@@ -86,7 +78,7 @@ namespace SimpleAuth.Client
                 RequestUri = new Uri(configuration.PermissionEndpoint)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var result = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+            var result = await _client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
@@ -99,23 +91,15 @@ namespace SimpleAuth.Client
 
             return new GenericResponse<PermissionResponse>
             {
+                HttpStatus = result.StatusCode,
                 Content = Serializer.Default.Deserialize<PermissionResponse>(content)
             };
         }
 
-        /// <summary>
-        /// Adds the permissions.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="requests">The requests.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// requests
-        /// or
-        /// token
-        /// </exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<PermissionResponse>> RequestPermissions(
             string token,
+            CancellationToken cancellationToken = default,
             params PermissionRequest[] requests)
         {
             if (requests == null)
@@ -155,21 +139,12 @@ namespace SimpleAuth.Client
 
             return new GenericResponse<PermissionResponse>
             {
+                HttpStatus = result.StatusCode,
                 Content = Serializer.Default.Deserialize<PermissionResponse>(content)
             };
         }
 
-        /// <summary>
-        /// Adds the policy.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="accessToken">The authorization header value.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// authorizationHeaderValue
-        /// </exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<AddPolicyResponse>> AddPolicy(
             PolicyData request,
             string accessToken)
@@ -214,17 +189,7 @@ namespace SimpleAuth.Client
             };
         }
 
-        /// <summary>
-        /// Gets the policy.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// id
-        /// or
-        /// token
-        /// </exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<PolicyResponse>> GetPolicy(string id, string token)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -257,16 +222,12 @@ namespace SimpleAuth.Client
 
             return new GenericResponse<PolicyResponse>
             {
+                HttpStatus = httpResult.StatusCode,
                 Content = Serializer.Default.Deserialize<PolicyResponse>(content)
             };
         }
 
-        /// <summary>
-        /// Gets all policies.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">token</exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<PolicyResponse[]>> GetAllPolicies(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -299,17 +260,7 @@ namespace SimpleAuth.Client
             };
         }
 
-        /// <summary>
-        /// Deletes the policy.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// id
-        /// or
-        /// token
-        /// </exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<object>> DeletePolicy(string id, string token)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -339,7 +290,10 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GenericResponse<object>();
+            return new GenericResponse<object>
+            {
+                HttpStatus = httpResult.StatusCode,
+            };
         }
 
         /// <summary>
@@ -386,7 +340,10 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GenericResponse<object>();
+            return new GenericResponse<object>
+            {
+                HttpStatus = httpResult.StatusCode,
+            };
         }
 
         /// <summary>
@@ -422,6 +379,7 @@ namespace SimpleAuth.Client
 
             return new GenericResponse<SearchAuthPoliciesResponse>
             {
+                HttpStatus = httpResult.StatusCode,
                 Content = Serializer.Default.Deserialize<SearchAuthPoliciesResponse>(content)
             };
         }
@@ -474,6 +432,7 @@ namespace SimpleAuth.Client
 
             return new GenericResponse<UpdateResourceSetResponse>
             {
+                HttpStatus = httpResult.StatusCode,
                 Content = Serializer.Default.Deserialize<UpdateResourceSetResponse>(content)
             };
         }
@@ -525,6 +484,7 @@ namespace SimpleAuth.Client
 
             return new GenericResponse<AddResourceSetResponse>
             {
+                HttpStatus = httpResult.StatusCode,
                 Content = Serializer.Default.Deserialize<AddResourceSetResponse>(content)
             };
         }
@@ -570,7 +530,10 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GenericResponse<object>();
+            return new GenericResponse<object>
+            {
+                HttpStatus = httpResult.StatusCode,
+            };
         }
 
         /// <summary>
@@ -604,7 +567,11 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GenericResponse<ResourceSet[]> { Content = Serializer.Default.Deserialize<ResourceSet[]>(json) };
+            return new GenericResponse<ResourceSet[]>
+            {
+                HttpStatus = httpResult.StatusCode,
+                Content = Serializer.Default.Deserialize<ResourceSet[]>(json)
+            };
         }
 
         /// <summary>
@@ -691,17 +658,20 @@ namespace SimpleAuth.Client
 
             return new GenericResponse<GenericResult<ResourceSet>>
             {
+                HttpStatus = httpResult.StatusCode,
                 Content = Serializer.Default.Deserialize<GenericResult<ResourceSet>>(content)
             };
         }
 
         private async Task<UmaConfiguration> GetUmaConfiguration()
         {
-            if (_umaConfiguration == null)
+            if (_umaConfiguration != null)
             {
-                var result = await _client.GetStringAsync(_configurationUri).ConfigureAwait(false);
-                _umaConfiguration = Serializer.Default.Deserialize<UmaConfiguration>(result);
+                return _umaConfiguration;
             }
+
+            var result = await _client.GetStringAsync(_configurationUri).ConfigureAwait(false);
+            _umaConfiguration = Serializer.Default.Deserialize<UmaConfiguration>(result);
 
             return _umaConfiguration;
         }

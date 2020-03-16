@@ -123,14 +123,6 @@ namespace SimpleAuth.Extensions
             return new RedirectResult(uri.AbsoluteUri);
         }
 
-        /// <summary>
-        /// CreateJwk a redirection HTTP response message based on the response mode.
-        /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="uri"></param>
-        /// <param name="parameters"></param>
-        /// <param name="responseMode"></param>
-        /// <returns></returns>
         private static string CreateRedirectHttp(
             Uri uri,
             RouteValueDictionary parameters,

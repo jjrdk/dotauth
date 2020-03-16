@@ -10,14 +10,7 @@
     using SimpleAuth.Client;
     using SimpleAuth.Shared.Responses;
 
-    public interface ITokenCache
-    {
-        Task<GrantedTokenResponse> GetToken(params string[] scopes);
-
-        Task<JsonWebKeySet> GetJwks(CancellationToken cancellationToken = default);
-    }
-
-    public sealed class TokenCache : ITokenCache
+    internal sealed class TokenCache : ITokenCache
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
         private readonly List<StoredToken> _tokens;
@@ -85,11 +78,6 @@
             {
                 _semaphore.Release();
             }
-        }
-
-        public void Dispose()
-        {
-            _tokens.Clear();
         }
 
         private class StoredToken

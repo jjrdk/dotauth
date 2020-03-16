@@ -43,7 +43,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             await Assert
                 .ThrowsAsync<NullReferenceException>(
-                    () => _updateResourceSetAction.Execute("owner", null, CancellationToken.None))
+                    () => _updateResourceSetAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -63,7 +63,7 @@ namespace SimpleAuth.Server.Tests.Apis
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
-            var result = await _updateResourceSetAction.Execute("owner", udpateResourceSetParameter, CancellationToken.None).ConfigureAwait(false);
+            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None).ConfigureAwait(false);
             Assert.False(result);
         }
 
@@ -83,7 +83,7 @@ namespace SimpleAuth.Server.Tests.Apis
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            var result = await _updateResourceSetAction.Execute("owner", udpateResourceSetParameter, CancellationToken.None)
+            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.True(result);

@@ -122,7 +122,7 @@ namespace SimpleAuth.Controllers
             }
 
             var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
-            if (result == null || result.Owner != User.GetSubject())
+            if (result == null)
             {
                 return Ok();
             }
@@ -134,16 +134,16 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Adds the resource set.
         /// </summary>
-        /// <param name="postResourceSet">The post resource set.</param>
+        /// <param name="resourceSet">The post resource set.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
         public async Task<IActionResult> AddResourceSet(
-            [FromBody] ResourceSet postResourceSet,
+            [FromBody] ResourceSet resourceSet,
             CancellationToken cancellationToken)
         {
-            if (postResourceSet == null)
+            if (resourceSet == null)
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
@@ -151,20 +151,16 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var owner = User.GetSubject();
-            if (string.IsNullOrWhiteSpace(owner))
+            if (resourceSet.IconUri != null && !resourceSet.IconUri.IsAbsoluteUri)
             {
-                return BadRequest(
-                    new ErrorDetails
-                    {
-                        Detail = "subject not defined",
-                        Status = HttpStatusCode.BadRequest,
-                        Title = "subject not defined"
-                    });
+                return BuildError(
+                    ErrorCodes.InvalidUri,
+                    ErrorDescriptions.TheUrlIsNotWellFormed,
+                    HttpStatusCode.BadRequest);
             }
 
-            var result = await _addResourceSet.Execute(owner, postResourceSet, cancellationToken).ConfigureAwait(false);
-            var response = new AddResourceSetResponse { Id = result };
+            var id = await _addResourceSet.Execute(resourceSet, cancellationToken).ConfigureAwait(false);
+            var response = new AddResourceSetResponse { Id = id };
             return new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Created };
         }
 
@@ -188,9 +184,16 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var owner = User.GetSubject();
+            if (resourceSet.IconUri != null && !resourceSet.IconUri.IsAbsoluteUri)
+            {
+                return BuildError(
+                    ErrorCodes.InvalidUri,
+                    ErrorDescriptions.TheUrlIsNotWellFormed,
+                    HttpStatusCode.BadRequest);
+            }
+
             var resourceSetUpdated =
-                await _updateResourceSet.Execute(owner, resourceSet, cancellationToken).ConfigureAwait(false);
+                await _updateResourceSet.Execute(resourceSet, cancellationToken).ConfigureAwait(false);
             if (!resourceSetUpdated)
             {
                 return GetNotUpdatedResourceSet();

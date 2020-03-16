@@ -41,7 +41,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             await Assert
-                .ThrowsAsync<NullReferenceException>(() => _addResourceSetAction.Execute(null, null, CancellationToken.None))
+                .ThrowsAsync<NullReferenceException>(() => _addResourceSetAction.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
 
@@ -57,7 +57,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var exception = await Assert
                 .ThrowsAsync<SimpleAuthException>(
-                    () => _addResourceSetAction.Execute("owner", addResourceParameter, CancellationToken.None))
+                    () => _addResourceSetAction.Execute(addResourceParameter, CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
             Assert.Equal(ErrorDescriptions.TheResourceSetCannotBeInserted, exception.Message);
@@ -73,7 +73,7 @@ namespace SimpleAuth.Server.Tests.Apis
             _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSetModel>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            var result = await _addResourceSetAction.Execute("owner", addResourceParameter, CancellationToken.None)
+            var result = await _addResourceSetAction.Execute(addResourceParameter, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.NotNull(result);

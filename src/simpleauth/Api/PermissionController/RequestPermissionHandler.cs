@@ -18,7 +18,6 @@ namespace SimpleAuth.Api.PermissionController
     using Shared.Models;
     using System;
     using System.Linq;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.DTOs;
@@ -46,27 +45,14 @@ namespace SimpleAuth.Api.PermissionController
             CancellationToken cancellationToken,
             params PermissionRequest[] addPermissionParameters)
         {
-            var resourceOwner = await CheckAddPermissionParameter(addPermissionParameters, cancellationToken).ConfigureAwait(false);
-            var builder = new StringBuilder();
-            builder.Append(clientId);
-            builder.Append(resourceOwner);
-            foreach (var addPermissionParameter in addPermissionParameters)
-            {
-                builder.Append(addPermissionParameter.ResourceSetId);
-                foreach (var scope in addPermissionParameter.Scopes)
-                {
-                    builder.Append(scope);
-                }
-            }
+            await CheckAddPermissionParameter(addPermissionParameters, cancellationToken).ConfigureAwait(false);
 
             var ticket = new Ticket
             {
                 Id = Id.Create(),
                 ClientId = clientId,
-                ResourceOwner = resourceOwner,
                 Created = DateTimeOffset.UtcNow,
                 Expires = DateTimeOffset.UtcNow.Add(_configurationService.TicketLifeTime),
-                // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
                 Lines = addPermissionParameters.Select(
                         addPermissionParameter => new TicketLine
                         {
@@ -84,23 +70,10 @@ namespace SimpleAuth.Api.PermissionController
             return ticket.Id;
         }
 
-        private async Task<string> CheckAddPermissionParameter(
+        private async Task CheckAddPermissionParameter(
             PermissionRequest[] addPermissionParameters,
             CancellationToken cancellationToken)
         {
-            var resourceSets = await _resourceSetRepository.Get(
-                        cancellationToken,
-                        addPermissionParameters.Select(p => p.ResourceSetId).ToArray())
-                    .ConfigureAwait(false);
-
-            if (resourceSets.Select(r => r.Owner).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().Count() != 1)
-            {
-                // All resource sets must belong to same owner
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    ErrorDescriptions.InvalidResourceSetRequest);
-            }
-
             // 2. Check parameters & scope exist.
             foreach (var addPermissionParameter in addPermissionParameters)
             {
@@ -122,7 +95,10 @@ namespace SimpleAuth.Api.PermissionController
                             UmaConstants.AddPermissionNames.Scopes));
                 }
 
-                var resourceSet = resourceSets.FirstOrDefault(r => addPermissionParameter.ResourceSetId == r.Id);
+                var resourceSet = await _resourceSetRepository.Get(
+                    addPermissionParameter.ResourceSetId,
+                    cancellationToken).ConfigureAwait(false);
+
                 if (resourceSet == null)
                 {
                     throw new SimpleAuthException(
@@ -138,8 +114,6 @@ namespace SimpleAuth.Api.PermissionController
                     throw new SimpleAuthException(ErrorCodes.InvalidScope, ErrorDescriptions.TheScopeAreNotValid);
                 }
             }
-
-            return resourceSets.ElementAt(0).Owner;
         }
     }
 }

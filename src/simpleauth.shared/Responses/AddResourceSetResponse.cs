@@ -37,7 +37,7 @@ namespace SimpleAuth.Shared.Responses
         /// <value>
         /// The user access policy URI.
         /// </value>
-        [DataMember(Name = AddResourceSetResponseNames.UserAccessPolicyUri)]
+        [DataMember(Name = "user_access_policy_uri")]
         public string UserAccessPolicyUri { get; set; }
     }
 }

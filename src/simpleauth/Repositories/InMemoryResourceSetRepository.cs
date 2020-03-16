@@ -76,7 +76,7 @@
         /// <inheritdoc />
         public Task<ResourceSetModel[]> GetAll(string owner, CancellationToken cancellationToken)
         {
-            var result = _resources.Where(x => x.Owner == owner).ToArray();
+            var result = _resources.ToArray();
             return Task.FromResult(result);
         }
 
@@ -142,7 +142,7 @@
                 throw new ArgumentNullException(nameof(resourceSet));
             }
 
-            var rec = _resources.FirstOrDefault(p => p.Id == resourceSet.Id && p.Owner == resourceSet.Owner);
+            var rec = _resources.FirstOrDefault(p => p.Id == resourceSet.Id);
             if (rec == null)
             {
                 return Task.FromResult(false);

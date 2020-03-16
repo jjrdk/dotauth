@@ -22,8 +22,19 @@ namespace SimpleAuth.ResourceServer
     using SimpleAuth.Client;
     using SimpleAuth.ResourceServer.Authentication;
 
+    /// <summary>
+    /// Defines the UMA authentication extensions.
+    /// </summary>
     public static class UmaAuthenticationExtensions
     {
+        /// <summary>
+        /// Adds the UMA related dependencies.
+        /// </summary>
+        /// <param name="builder">The <see cref="AuthenticationBuilder"/> to extend.</param>
+        /// <param name="authenticationScheme">The name of the authentication scheme.</param>
+        /// <param name="displayName">The authentication display name.</param>
+        /// <param name="configureOptions">The configuration options.</param>
+        /// <returns>The configured <see cref="AuthenticationBuilder"/>.</returns>
         public static AuthenticationBuilder AddUmaTicket(
             this AuthenticationBuilder builder,
             string authenticationScheme = UmaAuthenticationDefaults.AuthenticationScheme,

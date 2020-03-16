@@ -33,7 +33,7 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(string owner, ResourceSet updateResourceSetParameter, CancellationToken cancellationToken)
+        public async Task<bool> Execute(ResourceSet updateResourceSetParameter, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(updateResourceSetParameter.Id))
             {
@@ -45,7 +45,6 @@ namespace SimpleAuth.Api.ResourceSetController
             var resourceSet = new ResourceSetModel
             {
                 Id = updateResourceSetParameter.Id,
-                Owner = owner,
                 Name = updateResourceSetParameter.Name,
                 Type = updateResourceSetParameter.Type,
                 Scopes = updateResourceSetParameter.Scopes ?? Array.Empty<string>(),

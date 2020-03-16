@@ -62,7 +62,7 @@ namespace SimpleAuth.Tests.Authenticate
             const string clientSecret = "clientSecret";
             var parameter = $"{clientId}:{clientSecret}";
             var encodedParameter = parameter.Base64Encode();
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
+            var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", encodedParameter);
 
             var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 

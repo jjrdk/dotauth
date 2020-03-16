@@ -65,14 +65,14 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Add_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
         {
-            var request = new { Name = "name", Scopes = new[] { "scope" }, IconUri = "invalid" };
+            var request = new { name = "name", scopes = new[] { "scope" }, icon_uri = "invalid" };
             var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, "application/json");
             var httpRequest = new HttpRequestMessage
             {
                 Content = body,
                 Method = HttpMethod.Post,
-                RequestUri = new Uri("/rs/resource_set")
+                RequestUri = new Uri(BaseUrl + "/rs/resource_set")
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -135,14 +135,14 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Update_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
         {
-            var request = new { Id = "invalid", Name = "name", Scopes = new[] { "scope" }, IconUri = "invalid" };
+            var request = new { _id = "invalid", name = "name", scopes = new[] { "scope" }, icon_uri = "invalid" };
             var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, "application/json");
             var httpRequest = new HttpRequestMessage
             {
                 Content = body,
                 Method = HttpMethod.Put,
-                RequestUri = new Uri("/rs/resource_set")
+                RequestUri = new Uri(BaseUrl + "/rs/resource_set")
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);

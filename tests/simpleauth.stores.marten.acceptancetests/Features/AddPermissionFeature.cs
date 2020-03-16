@@ -6,6 +6,7 @@
     using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Responses;
     using System;
+    using System.Threading;
     using Xbehave;
     using Xunit;
 
@@ -118,6 +119,7 @@
                 {
                     var response = await client.RequestPermissions(
                             grantedToken.AccessToken,
+                            CancellationToken.None,
                             new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
                             new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
                         .ConfigureAwait(false);

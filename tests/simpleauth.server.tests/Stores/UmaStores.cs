@@ -25,9 +25,9 @@ namespace SimpleAuth.Server.Tests.Stores
             {
                 new ResourceSetModel
                 {
-                    Owner = "tester", Id = "bad180b5-4a96-422d-a088-c71a9f7c7afc", Name = "Resources"
+                    Id = "bad180b5-4a96-422d-a088-c71a9f7c7afc", Name = "Resources"
                 },
-                new ResourceSetModel {Owner = "tester", Id = "67c50eac-23ef-41f0-899c-dffc03add961", Name = "Apis"}
+                new ResourceSetModel { Id = "67c50eac-23ef-41f0-899c-dffc03add961", Name = "Apis"}
             };
         }
     }

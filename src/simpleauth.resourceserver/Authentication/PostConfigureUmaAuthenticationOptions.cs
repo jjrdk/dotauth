@@ -15,7 +15,15 @@
 namespace SimpleAuth.ResourceServer.Authentication
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Options;
+    using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Client;
+    using SimpleAuth.Shared.Responses;
 
     internal class PostConfigureUmaAuthenticationOptions : IPostConfigureOptions<UmaAuthenticationOptions>
     {
@@ -26,14 +34,14 @@ namespace SimpleAuth.ResourceServer.Authentication
                 throw new InvalidOperationException("Authority must be provided in options.");
             }
 
-            if (options.TokenCache == null && string.IsNullOrEmpty(options.ClientId))
+            if (string.IsNullOrEmpty(options.ClientId))
             {
-                throw new InvalidOperationException("Client Id must be provided when not providing token cache.");
+                throw new InvalidOperationException("Client Id must be provided.");
             }
 
-            if (options.TokenCache == null && string.IsNullOrEmpty(options.ClientSecret))
+            if (string.IsNullOrEmpty(options.ClientSecret))
             {
-                throw new InvalidOperationException("Client secret must be provided when not providing token cache.");
+                throw new InvalidOperationException("Client secret must be provided.");
             }
 
             if (options.TokenValidationParameters == null)

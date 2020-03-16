@@ -59,17 +59,18 @@
             using var session = _sessionFactory();
             var now = DateTimeOffset.UtcNow;
             var tickets = await session.Query<Ticket>()
-                .Where(x => x.ResourceOwner == owner && x.Created <= now && x.Expires > now)
+                .Where(x => x.Created <= now && x.Expires > now)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             return tickets;
         }
 
+        /// <inheritdoc />
         public async Task Clean(CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
-            session.DeleteWhere<Ticket>(t => t.Expires >= DateTimeOffset.UtcNow);
+            session.DeleteWhere<Ticket>(t => t.Expires <= DateTimeOffset.UtcNow);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }

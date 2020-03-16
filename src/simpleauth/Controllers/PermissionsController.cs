@@ -53,6 +53,11 @@ namespace SimpleAuth.Controllers
             _requestPermission = new RequestPermissionHandler(resourceSetRepository, ticketStore, options);
         }
 
+        /// <summary>
+        /// Gets the permission requests.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns>All permission requests for the user.</returns>
         [HttpGet]
         [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetPermissionRequests(CancellationToken cancellationToken)
@@ -126,7 +131,6 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var parameters = postPermissions.ToArray();
             var clientId = this.GetClientId();
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -136,6 +140,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
+            var parameters = postPermissions.ToArray();
             var ticketId = await _requestPermission.Execute(clientId, cancellationToken, parameters)
                 .ConfigureAwait(false);
             var result = new PermissionResponse { TicketId = ticketId };

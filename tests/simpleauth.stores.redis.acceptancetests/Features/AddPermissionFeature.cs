@@ -1,7 +1,7 @@
 ﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests.Features
 {
     using System;
-
+    using System.Threading;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
 
@@ -71,7 +71,8 @@
                         var response = await client.RequestPermission(grantedToken.AccessToken,
                                 new PermissionRequest
                                 {
-                                    ResourceSetId = resourceId, Scopes = new[] { "read" }
+                                    ResourceSetId = resourceId,
+                                    Scopes = new[] { "read" }
                                 })
                                            .ConfigureAwait(false);
 
@@ -114,9 +115,10 @@
                     {
                         var resource = await client.AddResource(
                                                new ResourceSet
-                                                   {
-                                                       Name = "picture", Scopes = new[] { "read", "write" }
-                                                   },
+                                               {
+                                                   Name = "picture",
+                                                   Scopes = new[] { "read", "write" }
+                                               },
                                                grantedToken.AccessToken)
                                            .ConfigureAwait(false);
                         resourceId = resource.Content.Id;
@@ -129,14 +131,17 @@
                     {
                         var response = await client.RequestPermissions(
                                                grantedToken.AccessToken,
+                                               CancellationToken.None,
                                                new PermissionRequest
-                                                   {
-                                                       ResourceSetId = resourceId, Scopes = new[] { "write" }
-                                                   },
+                                               {
+                                                   ResourceSetId = resourceId,
+                                                   Scopes = new[] { "write" }
+                                               },
                                                new PermissionRequest
-                                                   {
-                                                       ResourceSetId = resourceId, Scopes = new[] { "read" }
-                                                   })
+                                               {
+                                                   ResourceSetId = resourceId,
+                                                   Scopes = new[] { "read" }
+                                               })
                                            .ConfigureAwait(false);
 
                         Assert.False(response.ContainsError);

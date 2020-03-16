@@ -44,6 +44,7 @@ namespace SimpleAuth.Shared.Errors
         public const string LoginRequiredCode = "login_required";
         public const string InteractionRequiredCode = "interaction_required";
         public const string InvalidRedirectUri = "invalid_redirect_uri";
+        public const string InvalidUri = "invalid_uri";
         public const string InvalidClientMetaData = "invalid_client_metadata";
         public const string InternalError = "internal_error";
     }
