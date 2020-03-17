@@ -253,7 +253,7 @@
                 });
 
             "then has no token".x(
-                async () =>
+                () =>
                 {
                     Assert.Null(umaToken);
                 });
