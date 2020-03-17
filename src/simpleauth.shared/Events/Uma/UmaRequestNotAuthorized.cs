@@ -5,7 +5,7 @@
     /// <summary>
     /// Defines the UMA request not authorized event.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Event" />
+    /// <seealso cref="Event" />
     public class UmaRequestNotAuthorized : Event
     {
         /// <summary>
