@@ -103,14 +103,6 @@ namespace SimpleAuth
         public Func<IServiceProvider, IScopeRepository> Scopes { get; set; }
 
         /// <summary>
-        /// Gets or sets the policies.
-        /// </summary>
-        /// <value>
-        /// The policies.
-        /// </value>
-        public Func<IServiceProvider, IPolicyRepository> Policies { get; set; }
-
-        /// <summary>
         /// Gets or sets the resource sets.
         /// </summary>
         /// <value>

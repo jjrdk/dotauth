@@ -22,8 +22,8 @@ namespace SimpleAuth.Server.Tests
     using System.Text;
     using System.Threading.Tasks;
     using SimpleAuth.Client;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xunit;
 
@@ -99,13 +99,12 @@ namespace SimpleAuth.Server.Tests
         }
 
         [Fact]
-        public async Task When_Update_Resource_And_No_Id_Is_Specified_Then_Error_Is_Returned()
+        public async Task WhenUpdateResourceAndNoIdIsSpecifiedThenIsNotUpdated()
         {
             var resource = await _umaClient.UpdateResource(new ResourceSet(), "header").ConfigureAwait(false);
 
             Assert.True(resource.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
-            Assert.Equal("the parameter id needs to be specified", resource.Error.Detail);
+            Assert.Equal(HttpStatusCode.NotFound, resource.HttpStatus);
         }
 
         [Fact]

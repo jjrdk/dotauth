@@ -58,17 +58,33 @@ namespace SimpleAuth.AuthServer
                         sp.GetRequiredService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
                 Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
-                Policies = sp => new InMemoryPolicyRepository(DefaultConfiguration.GetPolicies()),
                 ResourceSets =
                     sp => new InMemoryResourceSetRepository(
-                        new[] { new ResourceSetModel
+                        new[]
                         {
-                            Id = "abc",
-                            Name = "Test Resource",
-                            Type = "Content",
-                            Scopes = new[] { "read" },
-                            AuthorizationPolicyIds = new[] { "1" }
-                        } }),
+                            new ResourceSet
+                            {
+                                Id = "abc",
+                                Name = "Test Resource",
+                                Type = "Content",
+                                Scopes = new[] {"read"},
+                                AuthorizationPolicies = new[]
+                                {
+                                    new Policy
+                                    {
+                                        Rules = new[]
+                                        {
+                                            new PolicyRule
+                                            {
+                                                ClientIdsAllowed = new[] {"web"},
+                                                Scopes = new[] {"read"},
+                                                IsResourceOwnerConsentNeeded = true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }),
                 EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 HttpClientFactory = () => client,
                 ClaimsIncludedInUserCreation = new[]

@@ -41,7 +41,6 @@
         /// <param name="ticketStore">The ticket store.</param>
         /// <param name="jwksStore"></param>
         /// <param name="resourceSetRepository">The resource set repository.</param>
-        /// <param name="policyRepository">The policy repository.</param>
         /// <param name="eventPublisher">The event publisher.</param>
         public TokenController(
             RuntimeSettings settings,
@@ -54,7 +53,6 @@
             ITicketStore ticketStore,
             IJwksStore jwksStore,
             IResourceSetRepository resourceSetRepository,
-            IPolicyRepository policyRepository,
             IEventPublisher eventPublisher)
         {
             _tokenActions = new TokenActions(
@@ -74,7 +72,6 @@
                 scopeRepository,
                 tokenStore,
                 resourceSetRepository,
-                policyRepository,
                 jwksStore,
                 eventPublisher);
         }

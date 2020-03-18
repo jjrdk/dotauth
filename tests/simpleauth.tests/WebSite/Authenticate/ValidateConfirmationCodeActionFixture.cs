@@ -18,7 +18,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.WebSite.Authenticate;
     using Xunit;

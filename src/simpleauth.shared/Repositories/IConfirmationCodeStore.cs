@@ -2,7 +2,7 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the confirmation code store.

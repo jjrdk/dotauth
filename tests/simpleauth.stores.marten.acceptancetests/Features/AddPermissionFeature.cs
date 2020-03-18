@@ -3,10 +3,11 @@
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Responses;
     using System;
     using System.Threading;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
 

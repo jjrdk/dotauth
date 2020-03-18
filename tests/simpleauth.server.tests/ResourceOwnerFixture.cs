@@ -7,7 +7,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class ResourceOwnerFixture

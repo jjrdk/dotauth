@@ -24,24 +24,20 @@ namespace SimpleAuth.Policies
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
 
     internal class AuthorizationPolicyValidator
     {
         private readonly IAuthorizationPolicy _authorizationPolicy;
-        private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IEventPublisher _eventPublisher;
 
         public AuthorizationPolicyValidator(
             IClientStore clientStore,
             IJwksStore jwksStore,
-            IPolicyRepository policyRepository,
             IResourceSetRepository resourceSetRepository,
             IEventPublisher eventPublisher)
         {
             _authorizationPolicy = new DefaultAuthorizationPolicy(clientStore, jwksStore);
-            _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
             _eventPublisher = eventPublisher;
         }
@@ -61,7 +57,7 @@ namespace SimpleAuth.Policies
             var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
             if (resources == null || !resources.Any() || resources.Length != resourceIds.Length)
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError, ErrorDescriptions.SomeResourcesDontExist);
+                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
             }
 
             AuthorizationPolicyResult validationResult = null;
@@ -75,18 +71,18 @@ namespace SimpleAuth.Policies
                 validationResult =
                     await Validate(ticketLineParameter, resource, claimTokenParameter, cancellationToken).ConfigureAwait(false);
 
-                switch (validationResult.Type)
+                switch (validationResult.Result)
                 {
-                    case AuthorizationPolicyResultEnum.RequestSubmitted:
+                    case AuthorizationPolicyResultKind.RequestSubmitted:
                         await _eventPublisher
                             .Publish(new AuthorizationRequestSubmitted(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
 
                         return validationResult;
-                    case AuthorizationPolicyResultEnum.Authorized:
+                    case AuthorizationPolicyResultKind.Authorized:
                         break;
-                    case AuthorizationPolicyResultEnum.NotAuthorized:
-                    case AuthorizationPolicyResultEnum.NeedInfo:
+                    case AuthorizationPolicyResultKind.NotAuthorized:
+                    case AuthorizationPolicyResultKind.NeedInfo:
                     default:
                         {
                             await _eventPublisher
@@ -103,18 +99,16 @@ namespace SimpleAuth.Policies
 
         private async Task<AuthorizationPolicyResult> Validate(
             TicketLineParameter ticketLineParameter,
-            ResourceSetModel resource,
+            ResourceSet resource,
             ClaimTokenParameter claimTokenParameter,
             CancellationToken cancellationToken)
         {
-            var policies = await Task.WhenAll(resource.AuthorizationPolicyIds.Select(x => _policyRepository.Get(x, cancellationToken))).ConfigureAwait(false);
-
-            if (policies.Length == 0)
+            if (resource.AuthorizationPolicies.Length == 0)
             {
-                return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.RequestSubmitted };
+                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted);
             }
 
-            foreach (var authorizationPolicy in policies)
+            foreach (var authorizationPolicy in resource.AuthorizationPolicies)
             {
                 var result = await _authorizationPolicy.Execute(
                         ticketLineParameter,
@@ -122,13 +116,13 @@ namespace SimpleAuth.Policies
                         claimTokenParameter,
                         cancellationToken)
                     .ConfigureAwait(false);
-                if (result.Type == AuthorizationPolicyResultEnum.Authorized)
+                if (result.Result == AuthorizationPolicyResultKind.Authorized)
                 {
                     return result;
                 }
             }
 
-            return new AuthorizationPolicyResult { Type = AuthorizationPolicyResultEnum.NotAuthorized };
+            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
         }
     }
 }

@@ -295,7 +295,7 @@ namespace SimpleAuth.Common
 
         /// <summary>
         /// Generate the JWS payload for user information endpoint.
-        /// If at least one claim is defined then returns the filtered result
+        /// If at least one claim is defined then returns the filtered resultKind
         /// Otherwise returns the default payload based on the scopes.
         /// </summary>
         /// <param name="claimsPrincipal"></param>

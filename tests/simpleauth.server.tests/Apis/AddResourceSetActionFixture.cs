@@ -20,7 +20,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using Moq;
     using SimpleAuth.Api.ResourceSetController;
     using SimpleAuth.Shared;
-    using Dto = SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -48,11 +47,11 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Resource_Set_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
         {
-            var addResourceParameter = new Dto.ResourceSet
+            var addResourceParameter = new ResourceSet
             {
                 Name = "name", Scopes = new[] {"scope"}, IconUri = new Uri("http://localhost")
             };
-            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSetModel>(), It.IsAny<CancellationToken>()))
+            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
             var exception = await Assert
@@ -66,11 +65,11 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_ResourceSet_Is_Inserted_Then_Id_Is_Returned()
         {
-            var addResourceParameter = new Dto.ResourceSet
+            var addResourceParameter = new ResourceSet
             {
                 Name = "name", Scopes = new[] {"scope"}, IconUri = new Uri("http://localhost")
             };
-            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSetModel>(), It.IsAny<CancellationToken>()))
+            _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
             var result = await _addResourceSetAction.Execute(addResourceParameter, CancellationToken.None)

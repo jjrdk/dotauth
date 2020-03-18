@@ -8,7 +8,6 @@
     using SimpleAuth;
     using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Sms;
     using System;
     using System.Text.RegularExpressions;
@@ -19,7 +18,9 @@
 
     using SimpleAuth.ResourceServer;
     using SimpleAuth.ResourceServer.Authentication;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
 
     public class ServerStartup
     {

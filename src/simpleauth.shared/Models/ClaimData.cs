@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.DTOs
+﻿namespace SimpleAuth.Shared.Models
 {
     using System.Runtime.Serialization;
 

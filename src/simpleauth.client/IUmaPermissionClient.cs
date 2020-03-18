@@ -18,7 +18,7 @@ namespace SimpleAuth.Client
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
     /// <summary>

@@ -218,11 +218,11 @@
 //                    It.IsAny<JwtSecurityToken>()))
 //                .ReturnsAsync(grantedToken));
 
-//            //            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
+//            //            var resultKind = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
 //            //            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
-//            Assert.NotNull(result);
-//            Assert.True(result.ClientId == clientId);
+//            Assert.NotNull(resultKind);
+//            Assert.True(resultKind.ClientId == clientId);
 //        }
 
 //        [Fact]
@@ -281,11 +281,11 @@
 //                It.IsAny<JwtSecurityToken>(),
 //                It.IsAny<JwtSecurityToken>())).ReturnsAsync(grantedToken));
 
-//            //            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
+//            //            var resultKind = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
 //            //            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
-//            Assert.NotNull(result);
-//            Assert.True(result.ClientId == clientId);
+//            Assert.NotNull(resultKind);
+//            Assert.True(resultKind.ClientId == clientId);
 //        }
 
 //        private void InitializeFakeObjects()

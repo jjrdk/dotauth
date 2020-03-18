@@ -48,7 +48,7 @@ namespace SimpleAuth.WebSite.Authenticate
         }
 
         /// <summary>
-        /// Returns an action result to the controller's action.
+        /// Returns an action resultKind to the controller's action.
         /// 1). Redirect to the consent screen if the user is authenticated AND the request doesn't contain a login prompt.
         /// 2). Do nothing
         /// </summary>
@@ -57,7 +57,7 @@ namespace SimpleAuth.WebSite.Authenticate
         /// <param name="code">Encrypted parameter</param>
         /// <param name="issuerName"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns>Action result to the controller's action</returns>
+        /// <returns>Action resultKind to the controller's action</returns>
         public async Task<EndpointResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal resourceOwnerPrincipal,

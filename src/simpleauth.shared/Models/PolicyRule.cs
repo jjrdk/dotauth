@@ -1,10 +1,12 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
-    using System.Security.Claims;
+    using System;
+    using System.Runtime.Serialization;
 
     /// <summary>
-    /// Defines the policy rule content.
+    /// Defines the update policy rule.
     /// </summary>
+    [DataContract]
     public class PolicyRule
     {
         /// <summary>
@@ -13,7 +15,8 @@
         /// <value>
         /// The client ids allowed.
         /// </value>
-        public string[] ClientIdsAllowed { get; set; }
+        [DataMember(Name = "clients")]
+        public string[] ClientIdsAllowed { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the scopes.
@@ -21,7 +24,8 @@
         /// <value>
         /// The scopes.
         /// </value>
-        public string[] Scopes { get; set; }
+        [DataMember(Name = "scopes")]
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the claims.
@@ -29,7 +33,8 @@
         /// <value>
         /// The claims.
         /// </value>
-        public Claim[] Claims { get; set; }
+        [DataMember(Name = "claims")]
+        public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is resource owner consent needed.
@@ -37,6 +42,7 @@
         /// <value>
         ///   <c>true</c> if this instance is resource owner consent needed; otherwise, <c>false</c>.
         /// </value>
+        [DataMember(Name = "consent_needed")]
         public bool IsResourceOwnerConsentNeeded { get; set; }
 
         /// <summary>
@@ -45,6 +51,7 @@
         /// <value>
         /// The script.
         /// </value>
+        [DataMember(Name = "script")]
         public string Script { get; set; }
 
         /// <summary>
@@ -53,6 +60,7 @@
         /// <value>
         /// The open identifier provider.
         /// </value>
+        [DataMember(Name = "provider")]
         public string OpenIdProvider { get; set; }
     }
 }

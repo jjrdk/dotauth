@@ -15,12 +15,12 @@
 namespace SimpleAuth.Results
 {
     /// <summary>
-    /// Represents an endpoint result value.
+    /// Represents an endpoint resultKind value.
     /// </summary>
     internal class EndpointResult
     {
         /// <summary>
-        /// Gets or sets the type of action result.
+        /// Gets or sets the type of action resultKind.
         /// </summary>
         public ActionResultType Type { get; set; }
 
@@ -49,9 +49,9 @@ namespace SimpleAuth.Results
         public string Amr { get; set; }
 
         /// <summary>
-        /// Creates an empty action result with redirection
+        /// Creates an empty action resultKind with redirection
         /// </summary>
-        /// <returns>Empty action result with redirection</returns>
+        /// <returns>Empty action resultKind with redirection</returns>
         public static EndpointResult CreateAnEmptyActionResultWithRedirection()
         {
             return new EndpointResult
@@ -62,9 +62,9 @@ namespace SimpleAuth.Results
         }
 
         /// <summary>
-        /// Creates an empty action result with output
+        /// Creates an empty action resultKind with output
         /// </summary>
-        /// <returns>Empty action result with output</returns>
+        /// <returns>Empty action resultKind with output</returns>
         public static EndpointResult CreateAnEmptyActionResultWithOutput()
         {
             return new EndpointResult
@@ -75,9 +75,9 @@ namespace SimpleAuth.Results
         }
 
         /// <summary>
-        /// Creates an empty action result with no effect
+        /// Creates an empty action resultKind with no effect
         /// </summary>
-        /// <returns>Empty action result with no effect</returns>
+        /// <returns>Empty action resultKind with no effect</returns>
         public static EndpointResult CreateAnEmptyActionResultWithNoEffect()
         {
             return new EndpointResult
@@ -87,7 +87,7 @@ namespace SimpleAuth.Results
         }
 
         /// <summary>
-        /// Creates an empty action result with redirection to callbackurl.
+        /// Creates an empty action resultKind with redirection to callbackurl.
         /// </summary>
         /// <returns>Empty action with redirection to callbackurl</returns>
         public static EndpointResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl()

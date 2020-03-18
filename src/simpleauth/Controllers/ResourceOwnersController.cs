@@ -30,7 +30,6 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using Shared.DTOs;
     using Shared.Events.Logging;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Parameters;

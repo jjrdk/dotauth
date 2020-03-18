@@ -62,10 +62,10 @@
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
-                        var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
+                        var resultKind = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
-                        Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(SimpleAuthEndPoints.AuthenticateIndex));
+                        Assert.NotNull(resultKind);
+            Assert.True(resultKind.RedirectInstruction.Action.Equals(SimpleAuthEndPoints.AuthenticateIndex));
         }
 
         [Fact]
@@ -83,10 +83,10 @@
                 ResponseType = "code",
             };
 
-                        var result = _processAuthorizationRequest.Process(authorizationParameter, null);
+                        var resultKind = _processAuthorizationRequest.Process(authorizationParameter, null);
 
-                        Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.AuthenticateIndex));
+                        Assert.NotNull(resultKind);
+            Assert.True(resultKind.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.AuthenticateIndex));
         }
 
         [Fact]
@@ -107,10 +107,10 @@
             var claimIdentity = new ClaimsIdentity("fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
-                        var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
+                        var resultKind = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
-                        Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.ConsentIndex));
+                        Assert.NotNull(resultKind);
+            Assert.True(resultKind.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.ConsentIndex));
         }
 
         [Fact]
@@ -129,10 +129,10 @@
                 Prompt = "consent"
             };
 
-                        var result = _processAuthorizationRequest.Process(authorizationParameter, null);
+                        var resultKind = _processAuthorizationRequest.Process(authorizationParameter, null);
 
-                        Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.AuthenticateIndex));
+                        Assert.NotNull(resultKind);
+            Assert.True(resultKind.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.AuthenticateIndex));
         }
 
         [Fact]
@@ -174,11 +174,11 @@
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
-                        var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
+                        var resultKind = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
-                        Assert.NotNull(result);
-            Assert.True(result.Type.Equals(ActionResultType.RedirectToCallBackUrl));
-            Assert.True(result.RedirectInstruction.Parameters.Count().Equals(0));
+                        Assert.NotNull(resultKind);
+            Assert.True(resultKind.Type.Equals(ActionResultType.RedirectToCallBackUrl));
+            Assert.True(resultKind.RedirectInstruction.Parameters.Count().Equals(0));
         }
 
         #endregion
@@ -214,10 +214,10 @@
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
-                        var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
+                        var resultKind = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
-                        Assert.NotNull(result);
-            Assert.True(result.RedirectInstruction.Action.Equals(SimpleAuthEndPoints.AuthenticateIndex));
+                        Assert.NotNull(resultKind);
+            Assert.True(resultKind.RedirectInstruction.Action.Equals(SimpleAuthEndPoints.AuthenticateIndex));
             _simpleIdentityServerEventSource.Verify(s => s.StartProcessingAuthorizationRequest(jsonAuthorizationParameter));
             _simpleIdentityServerEventSource.Verify(s => s.EndProcessingAuthorizationRequest(jsonAuthorizationParameter, "RedirectToAction", "AuthenticateIndex"));
         }

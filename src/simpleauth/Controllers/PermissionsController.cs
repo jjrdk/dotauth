@@ -19,7 +19,6 @@ namespace SimpleAuth.Controllers
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.DTOs;
     using Shared.Responses;
     using System.Linq;
     using System.Net;
@@ -30,6 +29,7 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Events.Uma;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the permission controller.

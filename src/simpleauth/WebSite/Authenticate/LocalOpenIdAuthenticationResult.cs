@@ -4,15 +4,15 @@
     using SimpleAuth.Results;
 
     /// <summary>
-    /// Defines the local OpenId authentication result.
+    /// Defines the local OpenId authentication resultKind.
     /// </summary>
     internal class LocalOpenIdAuthenticationResult
     {
         /// <summary>
-        /// Gets or sets the endpoint result.
+        /// Gets or sets the endpoint resultKind.
         /// </summary>
         /// <value>
-        /// The endpoint result.
+        /// The endpoint resultKind.
         /// </value>
         public EndpointResult EndpointResult { get; set; }
 

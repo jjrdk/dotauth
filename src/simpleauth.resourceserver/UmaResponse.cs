@@ -7,7 +7,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
     using SimpleAuth.Client;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the UMA response.

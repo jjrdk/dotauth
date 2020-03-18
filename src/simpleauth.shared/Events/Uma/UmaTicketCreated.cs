@@ -1,7 +1,7 @@
 ﻿namespace SimpleAuth.Shared.Events.Uma
 {
     using System;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the UMA ticket created event.

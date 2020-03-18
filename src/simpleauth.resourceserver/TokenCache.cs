@@ -10,14 +10,28 @@
     using SimpleAuth.Client;
     using SimpleAuth.Shared.Responses;
 
-    internal sealed class TokenCache : ITokenCache
+    /// <summary>
+    /// Defines the token cache class.
+    /// </summary>
+    public sealed class TokenCache : ITokenCache
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
         private readonly List<StoredToken> _tokens;
         private readonly TokenClient _client;
         private JsonWebKeySet _jsonWebKeySet;
 
-        public TokenCache(string clientId, string clientSecret, Uri discoveryDocumentUri, HttpMessageHandler backChannelHandler = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenCache"/> class.
+        /// </summary>
+        /// <param name="clientId">The id of the client application.</param>
+        /// <param name="clientSecret">The secret of the client application.</param>
+        /// <param name="discoveryDocumentUri">The <see cref="Uri"/> of the discovery document.</param>
+        /// <param name="backChannelHandler">The request handler.</param>
+        public TokenCache(
+            string clientId,
+            string clientSecret,
+            Uri discoveryDocumentUri,
+            HttpMessageHandler backChannelHandler = null)
         {
             _tokens = new List<StoredToken>();
             _client = new TokenClient(
@@ -26,7 +40,18 @@
                 discoveryDocumentUri);
         }
 
-        public TokenCache(string clientId, string clientSecret, DiscoveryInformation discoveryDocument, HttpMessageHandler backChannelHandler = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenCache"/> class.
+        /// </summary>
+        /// <param name="clientId">The id of the client application.</param>
+        /// <param name="clientSecret">The secret of the client application.</param>
+        /// <param name="discoveryDocument">The <see cref="DiscoveryInformation"/> document.</param>
+        /// <param name="backChannelHandler">The request handler.</param>
+        public TokenCache(
+            string clientId,
+            string clientSecret,
+            DiscoveryInformation discoveryDocument,
+            HttpMessageHandler backChannelHandler = null)
         {
             _tokens = new List<StoredToken>();
             _client = new TokenClient(
@@ -35,6 +60,7 @@
                 discoveryDocument);
         }
 
+        /// <inheritdoc />
         public async Task<JsonWebKeySet> GetJwks(CancellationToken cancellationToken = default)
         {
             try
@@ -48,6 +74,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<GrantedTokenResponse> GetToken(params string[] scopes)
         {
             try
@@ -69,7 +96,10 @@
                 var tokenResponse = await _client.GetToken(TokenRequest.FromScopes(scopes)).ConfigureAwait(false);
                 if (!tokenResponse.HasError)
                 {
-                    _tokens.Add(new StoredToken(tokenResponse.Content, DateTimeOffset.UtcNow.AddSeconds(tokenResponse.Content.ExpiresIn)));
+                    _tokens.Add(
+                        new StoredToken(
+                            tokenResponse.Content,
+                            DateTimeOffset.UtcNow.AddSeconds(tokenResponse.Content.ExpiresIn)));
                 }
 
                 return tokenResponse.Content;
@@ -89,6 +119,7 @@
             }
 
             public DateTimeOffset Expiration { get; }
+
             public GrantedTokenResponse GrantedToken { get; }
         }
     }

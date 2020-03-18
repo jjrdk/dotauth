@@ -26,61 +26,9 @@ namespace SimpleAuth.Extensions
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
-    using SimpleAuth.Shared.DTOs;
 
     internal static class MappingExtensions
     {
-        public static SearchAuthPoliciesResponse ToResponse(this GenericResult<Policy> searchAuthPoliciesResult)
-        {
-            return new SearchAuthPoliciesResponse
-            {
-                StartIndex = searchAuthPoliciesResult.StartIndex,
-                TotalResults = searchAuthPoliciesResult.TotalResults,
-                Content = searchAuthPoliciesResult.Content == null
-                    ? Array.Empty<PolicyResponse>()
-                    : searchAuthPoliciesResult.Content.Select(s => s.ToResponse()).ToArray()
-            };
-        }
-
-        public static ResourceSet ToResponse(this ResourceSetModel resourceSet)
-        {
-            return new ResourceSet
-            {
-                Id = resourceSet.Id,
-                IconUri = resourceSet.IconUri,
-                Name = resourceSet.Name,
-                Scopes = resourceSet.Scopes ?? Array.Empty<string>(),
-                Type = resourceSet.Type,
-                AuthorizationPolicies = resourceSet.AuthorizationPolicyIds ?? Array.Empty<string>()
-            };
-        }
-
-        public static PolicyResponse ToResponse(this Policy policy)
-        {
-            var rules = policy.Rules == null ? Array.Empty<PolicyRuleResponse>()
-                : policy.Rules.Select(p => p.ToResponse()).ToArray();
-            return new PolicyResponse
-            {
-                Id = policy.Id,
-                Rules = rules
-            };
-        }
-
-        private static PolicyRuleResponse ToResponse(this PolicyRule policyRule)
-        {
-            var claims = policyRule.Claims == null ? Array.Empty<Claim>()
-                : policyRule.Claims.ToArray();
-            return new PolicyRuleResponse
-            {
-                Claims = claims,
-                ClientIdsAllowed = policyRule.ClientIdsAllowed,
-                IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
-                Scopes = policyRule.Scopes,
-                Script = policyRule.Script,
-                OpenIdProvider = policyRule.OpenIdProvider
-            };
-        }
-
         public static GrantedTokenResponse ToDto(this GrantedToken grantedToken)
         {
             return new GrantedTokenResponse

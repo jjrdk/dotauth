@@ -14,25 +14,22 @@
 
 namespace SimpleAuth.Shared.Models
 {
-    using System;
+    using System.Runtime.Serialization;
 
     /// <summary>
-    /// Defines the policy content.
+    /// Defines the policy update.
     /// </summary>
+    [DataContract]
     public class Policy
     {
         /// <summary>
-        /// Gets or sets the identifier.
+        /// Gets or sets the policy identifier.
         /// </summary>
         /// <value>
-        /// The identifier.
+        /// The policy identifier.
         /// </value>
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the policy owner.
-        /// </summary>
-        public string Owner { get; set; }
+        [DataMember(Name = "id")]
+        public string PolicyId { get; set; }
 
         /// <summary>
         /// Gets or sets the rules.
@@ -40,6 +37,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The rules.
         /// </value>
-        public PolicyRule[] Rules { get; set; } = Array.Empty<PolicyRule>();
+        [DataMember(Name = "rules")]
+        public PolicyRule[] Rules { get; set; }
     }
 }

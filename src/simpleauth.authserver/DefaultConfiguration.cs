@@ -114,26 +114,5 @@
                 }
             };
         }
-
-        public static List<Policy> GetPolicies()
-        {
-            return new List<Policy>
-            {
-                new Policy
-                {
-                    Id = "1",
-                    Owner = "administrator",
-                    Rules = new[]
-                    {
-                        new PolicyRule
-                        {
-                            ClientIdsAllowed = new[] {"web"},
-                            Scopes = new []{"read"},
-                            IsResourceOwnerConsentNeeded = true
-                        }
-                    }
-                }
-            };
-        }
     }
 }

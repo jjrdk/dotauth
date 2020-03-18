@@ -18,7 +18,6 @@ namespace SimpleAuth.Controllers
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Shared.DTOs;
     using Shared.Responses;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -80,7 +79,7 @@ namespace SimpleAuth.Controllers
             return new OkObjectResult(
                 new GenericResult<ResourceSet>
                 {
-                    Content = result.Content.Select(x => x.ToResponse()).ToArray(),
+                    Content = result.Content,
                     StartIndex = result.StartIndex,
                     TotalResults = result.TotalResults
                 });
@@ -100,7 +99,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest();
             }
             var resourceSets = await _resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
-            return new OkObjectResult(resourceSets.Select(x => x.ToResponse()).ToArray());
+            return new OkObjectResult(resourceSets);
         }
 
         /// <summary>
@@ -127,8 +126,7 @@ namespace SimpleAuth.Controllers
                 return Ok();
             }
 
-            var content = result.ToResponse();
-            return new OkObjectResult(content);
+            return new OkObjectResult(result);
         }
 
         /// <summary>

@@ -34,7 +34,6 @@ namespace SimpleAuth.ResourceServer
         {
             serviceCollection.AddSingleton(sp => new UmaClient(sp.GetRequiredService<HttpClient>(), umaAuthority));
             serviceCollection.AddTransient<IUmaPermissionClient, UmaClient>(sp => sp.GetRequiredService<UmaClient>());
-            serviceCollection.AddTransient<IPolicyClient, UmaClient>(sp => sp.GetRequiredService<UmaClient>());
 
             return serviceCollection;
         }

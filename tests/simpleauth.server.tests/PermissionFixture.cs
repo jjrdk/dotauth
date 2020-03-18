@@ -19,8 +19,9 @@ namespace SimpleAuth.Server.Tests
     using System.Threading.Tasks;
     using SimpleAuth.Client;
     using SimpleAuth.Server.Tests.MiddleWares;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
     using Xunit;
     using ErrorDescriptions = SimpleAuth.Shared.Errors.ErrorDescriptions;
 

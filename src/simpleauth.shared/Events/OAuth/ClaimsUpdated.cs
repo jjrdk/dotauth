@@ -1,7 +1,7 @@
 ﻿namespace SimpleAuth.Shared.Events.OAuth
 {
     using System;
-    using DTOs;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the claims updated event.

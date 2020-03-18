@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests
 {
     using global::Marten;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
 
     public class SimpleAuthRegistry : MartenRegistry
@@ -12,9 +11,8 @@
             For<Filter>().Identity(x => x.Name).GinIndexJsonData();
             For<ResourceOwner>().Identity(x => x.Subject).GinIndexJsonData();
             For<Consent>().Identity(x => x.Id).GinIndexJsonData();
-            For<Policy>().Identity(x => x.Id).GinIndexJsonData();
             For<Client>().Identity(x => x.ClientId).GinIndexJsonData();
-            For<ResourceSetModel>().Identity(x => x.Id).GinIndexJsonData();
+            For<ResourceSet>().Identity(x => x.Id).GinIndexJsonData();
             For<Ticket>().Identity(x => x.Id).GinIndexJsonData();
             For<AuthorizationCode>().Identity(x => x.Code).GinIndexJsonData();
             For<ConfirmationCode>().Identity(x => x.Value).GinIndexJsonData();

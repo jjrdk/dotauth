@@ -32,7 +32,7 @@
         {
             const string resourceSetId = "resourceSetId";
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ResourceSetModel)null));
+                .Returns(() => Task.FromResult((ResourceSet)null));
 
             var result = await _deleteResourceSetAction.Execute(resourceSetId, CancellationToken.None)
                 .ConfigureAwait(false);
@@ -45,7 +45,7 @@
         {
             const string resourceSetId = "resourceSetId";
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ResourceSetModel());
+                .ReturnsAsync(new ResourceSet());
             _resourceSetRepositoryStub.Setup(r => r.Remove(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 
@@ -60,7 +60,7 @@
         {
             const string resourceSetId = "resourceSetId";
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ResourceSetModel());
+                .ReturnsAsync(new ResourceSet());
             _resourceSetRepositoryStub.Setup(r => r.Remove(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 

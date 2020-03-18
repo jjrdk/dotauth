@@ -21,7 +21,6 @@ namespace SimpleAuth.Client
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
@@ -29,7 +28,7 @@ namespace SimpleAuth.Client
     /// <summary>
     /// Defines the UMA client.
     /// </summary>
-    public class UmaClient : IUmaPermissionClient, IPolicyClient
+    public class UmaClient : IUmaPermissionClient, IResourceClient
     {
         private const string JsonMimeType = "application/json";
         private readonly HttpClient _client;
@@ -145,256 +144,6 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<AddPolicyResponse>> AddPolicy(
-            PolicyData request,
-            string accessToken)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                throw new ArgumentNullException(nameof(accessToken));
-            }
-
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var serializedPostResourceSet = Serializer.Default.Serialize(request);
-            var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
-            var httpRequest = new HttpRequestMessage
-            {
-                Content = body,
-                Method = HttpMethod.Post,
-                RequestUri = new Uri(configuration.PoliciesEndpoint)
-            };
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(
-                JwtBearerConstants.BearerScheme,
-                accessToken);
-            var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<AddPolicyResponse>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<AddPolicyResponse>
-            {
-                Content = Serializer.Default.Deserialize<AddPolicyResponse>(content),
-                HttpStatus = httpResult.StatusCode
-            };
-        }
-
-        /// <inheritdoc />
-        public async Task<GenericResponse<PolicyResponse>> GetPolicy(string id, string token)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentNullException(nameof(token));
-            }
-
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var url = configuration.PoliciesEndpoint;
-
-            url += url.EndsWith("/") ? id : "/" + id;
-
-            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(url) };
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<PolicyResponse>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<PolicyResponse>
-            {
-                HttpStatus = httpResult.StatusCode,
-                Content = Serializer.Default.Deserialize<PolicyResponse>(content)
-            };
-        }
-
-        /// <inheritdoc />
-        public async Task<GenericResponse<PolicyResponse[]>> GetAllPolicies(string token)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentNullException(nameof(token));
-            }
-
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri(configuration.PoliciesEndpoint)
-            };
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<PolicyResponse[]>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<PolicyResponse[]>
-            {
-                Content = Serializer.Default.Deserialize<PolicyResponse[]>(content),
-                HttpStatus = httpResult.StatusCode
-            };
-        }
-
-        /// <inheritdoc />
-        public async Task<GenericResponse<object>> DeletePolicy(string id, string token)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentNullException(nameof(token));
-            }
-
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var url = configuration.PoliciesEndpoint;
-            url += url.EndsWith("/") ? id : "/" + id;
-
-            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(url) };
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<object>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<object>
-            {
-                HttpStatus = httpResult.StatusCode,
-            };
-        }
-
-        /// <summary>
-        /// Updates the policy.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// token
-        /// </exception>
-        public async Task<GenericResponse<object>> UpdatePolicy(PolicyData request, string token)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentNullException(nameof(token));
-            }
-
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var serializedPostResourceSet = Serializer.Default.Serialize(request);
-            var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
-            var httpRequest = new HttpRequestMessage
-            {
-                Content = body,
-                Method = HttpMethod.Put,
-                RequestUri = new Uri(configuration.PoliciesEndpoint)
-            };
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<object>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<object>
-            {
-                HttpStatus = httpResult.StatusCode,
-            };
-        }
-
-        /// <summary>
-        /// Searches the policies.
-        /// </summary>
-        /// <param name="parameter">The parameter.</param>
-        /// <param name="authorizationHeaderValue">The authorization header value.</param>
-        /// <returns></returns>
-        public async Task<GenericResponse<SearchAuthPoliciesResponse>> SearchPolicies(
-            SearchAuthPolicies parameter,
-            string authorizationHeaderValue = null)
-        {
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var url = configuration.PoliciesEndpoint + "/.search";
-            var serializedPostPermission = Serializer.Default.Serialize(parameter);
-            var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
-            var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
-            if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, authorizationHeaderValue);
-            }
-
-            var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<SearchAuthPoliciesResponse>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<SearchAuthPoliciesResponse>
-            {
-                HttpStatus = httpResult.StatusCode,
-                Content = Serializer.Default.Deserialize<SearchAuthPoliciesResponse>(content)
-            };
-        }
-
-        /// <summary>
-        /// Updates the resource.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// token
-        /// </exception>
         public async Task<GenericResponse<UpdateResourceSetResponse>> UpdateResource(
             ResourceSet request,
             string token)
@@ -437,17 +186,7 @@ namespace SimpleAuth.Client
             };
         }
 
-        /// <summary>
-        /// Adds the resource.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// token
-        /// </exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<AddResourceSetResponse>> AddResource(ResourceSet request, string token)
         {
             if (request == null)
@@ -489,17 +228,7 @@ namespace SimpleAuth.Client
             };
         }
 
-        /// <summary>
-        /// Deletes the resource.
-        /// </summary>
-        /// <param name="resourceSetId">The resource set identifier.</param>
-        /// <param name="authorizationHeaderValue">The authorization header value.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// resourceSetId
-        /// or
-        /// authorizationHeaderValue
-        /// </exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<object>> DeleteResource(string resourceSetId, string authorizationHeaderValue)
         {
             if (string.IsNullOrWhiteSpace(resourceSetId))
@@ -536,12 +265,7 @@ namespace SimpleAuth.Client
             };
         }
 
-        /// <summary>
-        /// Gets all resources.
-        /// </summary>
-        /// <param name="authorizationHeaderValue">The authorization header value.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">authorizationHeaderValue</exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<ResourceSet[]>> GetAllResources(string authorizationHeaderValue)
         {
             if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
@@ -574,17 +298,7 @@ namespace SimpleAuth.Client
             };
         }
 
-        /// <summary>
-        /// Gets the resource.
-        /// </summary>
-        /// <param name="resourceSetId">The resource set identifier.</param>
-        /// <param name="authorizationHeaderValue">The authorization header value.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// resourceSetId
-        /// or
-        /// authorizationHeaderValue
-        /// </exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<ResourceSet>> GetResource(
             string resourceSetId,
             string authorizationHeaderValue)
@@ -624,12 +338,7 @@ namespace SimpleAuth.Client
             };
         }
 
-        /// <summary>
-        /// Searches the resources.
-        /// </summary>
-        /// <param name="parameter">The parameter.</param>
-        /// <param name="authorizationHeaderValue">The authorization header value.</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public async Task<GenericResponse<GenericResult<ResourceSet>>> SearchResources(
             SearchResourceSet parameter,
             string authorizationHeaderValue = null)

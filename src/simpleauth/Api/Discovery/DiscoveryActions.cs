@@ -108,26 +108,26 @@ namespace SimpleAuth.Api.Discovery
 
         //private static string[] GetSupportedGrantTypes()
         //{
-        //    var result = new List<string>();
+        //    var resultKind = new List<string>();
         //    foreach (var supportedGrantType in )
         //    {
         //        //var record = Enum.GetName(typeof(GrantType), supportedGrantType);
-        //        result.Add(supportedGrantType);
+        //        resultKind.Add(supportedGrantType);
         //    }
 
-        //    return result.ToArray();
+        //    return resultKind.ToArray();
         //}
 
         //private static string[] GetSupportedTokenEndPointAuthMethods()
         //{
-        //    var result = new List<string>();
+        //    var resultKind = new List<string>();
         //    foreach (var supportedAuthMethod in CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods)
         //    {
         //        var record = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), supportedAuthMethod);
-        //        result.Add(record);
+        //        resultKind.Add(record);
         //    }
 
-        //    return result.ToArray();
+        //    return resultKind.ToArray();
         //}
     }
 }

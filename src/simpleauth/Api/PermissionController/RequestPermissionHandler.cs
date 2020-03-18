@@ -20,9 +20,9 @@ namespace SimpleAuth.Api.PermissionController
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Requests;
 
     internal class RequestPermissionHandler
     {

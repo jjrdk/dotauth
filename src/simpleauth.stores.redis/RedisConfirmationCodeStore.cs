@@ -4,7 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using StackExchange.Redis;
 

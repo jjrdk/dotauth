@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
     internal sealed class InMemoryConfirmationCodeStore : IConfirmationCodeStore

@@ -3,7 +3,6 @@
     using global::Marten;
     using Microsoft.IdentityModel.Tokens;
     using NpgsqlTypes;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
 
     /// <summary>
@@ -32,10 +31,6 @@
                 .Identity(x => x.Id)
                 .Duplicate(x => x.ResourceOwner.Subject)
                 .GinIndexJsonData();
-            For<Policy>()
-                .Identity(x => x.Id)
-                .Duplicate(x => x.Owner, configure: idx => { idx.IsConcurrent = true; })
-                .GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)
                 .Index(x => x.AllowedScopes)
@@ -44,7 +39,7 @@
                 .Index(x => x.ResponseTypes)
                 .Index(x => x.Claims)
                 .GinIndexJsonData();
-            For<ResourceSetModel>()
+            For<ResourceSet>()
                 .Identity(x => x.Id)
                 .Duplicate(x => x.Name, configure: idx => { idx.IsConcurrent = true; })
                 .Duplicate(x => x.Type, configure: idx => { idx.IsConcurrent = true; })

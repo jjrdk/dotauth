@@ -20,7 +20,6 @@ namespace SimpleAuth.WebSite.User
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using Shared.DTOs;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Models;

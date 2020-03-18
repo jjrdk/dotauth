@@ -584,12 +584,12 @@
 //            {
 //                // Do a receiving drain
 //                var data = new byte[1024];
-//                WebSocketReceiveResult result;
+//                WebSocketReceiveResult resultKind;
 //                do
 //                {
-//                    result = await ReceiveAsync(new ArraySegment<byte>(data), cancellationToken);
+//                    resultKind = await ReceiveAsync(new ArraySegment<byte>(data), cancellationToken);
 //                }
-//                while (result.MessageType != WebSocketMessageType.Close);
+//                while (resultKind.MessageType != WebSocketMessageType.Close);
 //            }
 //        }
 
@@ -651,7 +651,7 @@
 //            {
 //                _closeStatus = receiveMessage.CloseStatus;
 //                _closeStatusDescription = receiveMessage.CloseStatusDescription ?? string.Empty;
-//                var result = new WebSocketReceiveResult(0, WebSocketMessageType.Close, true, _closeStatus, _closeStatusDescription);
+//                var resultKind = new WebSocketReceiveResult(0, WebSocketMessageType.Close, true, _closeStatus, _closeStatusDescription);
 //                if (_state == WebSocketState.Open)
 //                {
 //                    _state = WebSocketState.CloseReceived;
@@ -661,7 +661,7 @@
 //                    _state = WebSocketState.Closed;
 //                    Close();
 //                }
-//                return result;
+//                return resultKind;
 //            }
 //            else
 //            {
@@ -1122,7 +1122,7 @@
 
 //        private async Task CompleteRequestAsync()
 //        {
-//            if (!_requestPipe.Reader.TryRead(out var result) || !result.IsCompleted)
+//            if (!_requestPipe.Reader.TryRead(out var resultKind) || !resultKind.IsCompleted)
 //            {
 //                // If request is still in progress then abort it.
 //                CancelRequestBody();
@@ -1427,21 +1427,21 @@
 //            }
 
 //            using var registration = cancellationToken.Register(Cancel);
-//            var result = await _pipe.Reader.ReadAsync(cancellationToken);
+//            var resultKind = await _pipe.Reader.ReadAsync(cancellationToken);
 
-//            if (result.IsCanceled)
+//            if (resultKind.IsCanceled)
 //            {
 //                throw new OperationCanceledException();
 //            }
 
-//            if (result.Buffer.IsEmpty && result.IsCompleted)
+//            if (resultKind.Buffer.IsEmpty && resultKind.IsCompleted)
 //            {
 //                _readComplete();
 //                _readerComplete = true;
 //                return 0;
 //            }
 
-//            var readableBuffer = result.Buffer;
+//            var readableBuffer = resultKind.Buffer;
 //            var actual = Math.Min(readableBuffer.Length, count);
 //            readableBuffer = readableBuffer.Slice(0, actual);
 //            readableBuffer.CopyTo(new Span<byte>(buffer, offset, count));

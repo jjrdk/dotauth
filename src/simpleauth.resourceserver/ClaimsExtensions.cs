@@ -19,8 +19,18 @@ namespace SimpleAuth.ResourceServer
     using Newtonsoft.Json;
     using SimpleAuth.Shared.Models;
 
-    internal static class ClaimsExtensions
+    /// <summary>
+    /// Defines the claims extensions.
+    /// </summary>
+    public static class ClaimsExtensions
     {
+        /// <summary>
+        /// Tries to get the ticket lines from the current user claims.
+        /// </summary>
+        /// <param name="identity">The user as a <see cref="ClaimsIdentity"/> instance.</param>
+        /// <param name="tickets">The found array of <see cref="TicketLine"/>. If none are found, then returns an empty array.
+        /// If no user is found then returns <c>null</c>.</param>
+        /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
         public static bool TryGetUmaTickets(this ClaimsIdentity identity, out TicketLine[] tickets)
         {
             tickets = null;

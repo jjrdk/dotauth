@@ -22,7 +22,7 @@ namespace SimpleAuth.Api.ResourceSetController
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
-    using ResourceSet = SimpleAuth.Shared.DTOs.ResourceSet;
+    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     internal class UpdateResourceSetAction
     {
@@ -33,30 +33,18 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<bool> Execute(ResourceSet updateResourceSetParameter, CancellationToken cancellationToken)
+        public async Task<bool> Execute(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(updateResourceSetParameter.Id))
+            if (string.IsNullOrWhiteSpace(resourceSet.Id))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
+                return false;
             }
-
-            var resourceSet = new ResourceSetModel
-            {
-                Id = updateResourceSetParameter.Id,
-                Name = updateResourceSetParameter.Name,
-                Type = updateResourceSetParameter.Type,
-                Scopes = updateResourceSetParameter.Scopes ?? Array.Empty<string>(),
-                IconUri = updateResourceSetParameter.IconUri,
-                AuthorizationPolicyIds = updateResourceSetParameter.AuthorizationPolicies ?? Array.Empty<string>()
-            };
 
             CheckResourceSetParameter(resourceSet);
             return await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false);
         }
 
-        private void CheckResourceSetParameter(Shared.Models.ResourceSetModel resourceSet)
+        private void CheckResourceSetParameter(Shared.Models.ResourceSet resourceSet)
         {
             if (resourceSet == null)
             {

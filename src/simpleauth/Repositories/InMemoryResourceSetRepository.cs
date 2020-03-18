@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Repositories
 {
     using Shared.Models;
-    using SimpleAuth.Shared.DTOs;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -16,15 +15,15 @@
     /// <seealso cref="IResourceSetRepository" />
     public sealed class InMemoryResourceSetRepository : IResourceSetRepository
     {
-        private readonly ICollection<ResourceSetModel> _resources;
+        private readonly ICollection<ResourceSet> _resources;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryResourceSetRepository"/> class.
         /// </summary>
         /// <param name="resources">The resources.</param>
-        public InMemoryResourceSetRepository(IReadOnlyCollection<ResourceSetModel> resources = null)
+        public InMemoryResourceSetRepository(IReadOnlyCollection<ResourceSet> resources = null)
         {
-            _resources = resources?.ToList() ?? new List<ResourceSetModel>();
+            _resources = resources?.ToList() ?? new List<ResourceSet>();
         }
 
         /// <inheritdoc />
@@ -46,7 +45,7 @@
         }
 
         /// <inheritdoc />
-        public Task<ResourceSetModel> Get(string id, CancellationToken cancellationToken)
+        public Task<ResourceSet> Get(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -59,7 +58,7 @@
         }
 
         /// <inheritdoc />
-        public Task<ResourceSetModel[]> Get(CancellationToken cancellationToken, params string[] ids)
+        public Task<ResourceSet[]> Get(CancellationToken cancellationToken, params string[] ids)
         {
             if (ids == null)
             {
@@ -74,14 +73,14 @@
         /// <param name="owner"></param>
         /// <param name="cancellationToken"></param>
         /// <inheritdoc />
-        public Task<ResourceSetModel[]> GetAll(string owner, CancellationToken cancellationToken)
+        public Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken)
         {
             var result = _resources.ToArray();
             return Task.FromResult(result);
         }
 
         /// <inheritdoc />
-        public Task<bool> Add(ResourceSetModel resourceSet, CancellationToken cancellationToken)
+        public Task<bool> Add(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {
@@ -93,7 +92,7 @@
         }
 
         /// <inheritdoc />
-        public Task<GenericResult<ResourceSetModel>> Search(
+        public Task<GenericResult<ResourceSet>> Search(
             SearchResourceSet parameter,
             CancellationToken cancellationToken)
         {
@@ -102,7 +101,7 @@
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            IEnumerable<ResourceSetModel> result = _resources;
+            IEnumerable<ResourceSet> result = _resources;
             if (parameter.Ids != null && parameter.Ids.Any())
             {
                 result = result.Where(r => parameter.Ids.Contains(r.Id));
@@ -126,7 +125,7 @@
             }
 
             return Task.FromResult(
-                new GenericResult<ResourceSetModel>
+                new GenericResult<ResourceSet>
                 {
                     Content = result.ToArray(),
                     StartIndex = parameter.StartIndex,
@@ -135,7 +134,7 @@
         }
 
         /// <inheritdoc />
-        public Task<bool> Update(ResourceSetModel resourceSet, CancellationToken cancellationToken)
+        public Task<bool> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {
@@ -148,7 +147,7 @@
                 return Task.FromResult(false);
             }
 
-            rec.AuthorizationPolicyIds = resourceSet.AuthorizationPolicyIds;
+            rec.AuthorizationPolicies = resourceSet.AuthorizationPolicies;
             rec.IconUri = resourceSet.IconUri;
             rec.Name = resourceSet.Name;
             rec.Scopes = resourceSet.Scopes;

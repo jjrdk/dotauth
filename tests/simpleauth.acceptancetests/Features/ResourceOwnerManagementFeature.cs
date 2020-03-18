@@ -13,7 +13,6 @@
     using Shared.Repositories;
     using SimpleAuth.Client;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
     using Xbehave;

@@ -2,12 +2,12 @@
 {
     using Moq;
     using SimpleAuth.Client;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using System;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xunit;
 

@@ -68,7 +68,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
         /// <param name="claimsPrincipal"></param>
         /// <param name="issuerName"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns>Action result.</returns>
+        /// <returns>Action resultKind.</returns>
         public async Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,

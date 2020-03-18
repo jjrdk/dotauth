@@ -1,12 +1,12 @@
 ﻿namespace SimpleAuth.Sms.Actions
 {
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
 
     internal sealed class GenerateAndSendSmsCodeOperation
     {

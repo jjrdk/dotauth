@@ -20,7 +20,6 @@ namespace SimpleAuth.Api.ResourceSetController
     using System.Threading.Tasks;
     using Shared;
     using Shared.Models;
-    using Dto = SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
 
@@ -33,18 +32,9 @@ namespace SimpleAuth.Api.ResourceSetController
             _resourceSetRepository = resourceSetRepository;
         }
 
-        public async Task<string> Execute(Dto.ResourceSet addResourceSetParameter, CancellationToken cancellationToken)
+        public async Task<string> Execute(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
-            var resourceSet = new ResourceSetModel
-            {
-                Id = Id.Create(),
-                Name = addResourceSetParameter.Name,
-                Type = addResourceSetParameter.Type,
-                Scopes = addResourceSetParameter.Scopes ?? Array.Empty<string>(),
-                IconUri = addResourceSetParameter.IconUri,
-                AuthorizationPolicyIds = addResourceSetParameter.AuthorizationPolicies ?? Array.Empty<string>()
-            };
-
+            resourceSet.Id = Id.Create();
             CheckResourceSetParameter(resourceSet);
             if (!await _resourceSetRepository.Add(resourceSet, cancellationToken).ConfigureAwait(false))
             {
@@ -56,7 +46,7 @@ namespace SimpleAuth.Api.ResourceSetController
             return resourceSet.Id;
         }
 
-        private static void CheckResourceSetParameter(ResourceSetModel resourceSet)
+        private static void CheckResourceSetParameter(ResourceSet resourceSet)
         {
             if (string.IsNullOrWhiteSpace(resourceSet.Name))
             {

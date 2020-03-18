@@ -7,7 +7,8 @@
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
     using Xunit;
 
     public class TokenFixture : IDisposable
@@ -79,26 +80,26 @@
             // Get PAT.
             var result = await tc.GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
                 .ConfigureAwait(false);
-            var policy = await _umaClient.AddPolicy(
-                    new PolicyData
-                    {
-                        Rules = new[]
-                        {
-                            new PolicyRuleData
-                            {
-                                ClientIdsAllowed = new[] {"resource_server"},
-                                Scopes = new[] {"read", "write", "execute"}
-                            }
-                        }
-                    },
-                    result.Content.AccessToken)
-                .ConfigureAwait(false);
+
             var resource = await _umaClient.AddResource(
                     new ResourceSet
                     {
                         Name = "name",
                         Scopes = new[] {"read", "write", "execute"},
-                        AuthorizationPolicies = new[] {policy.Content.PolicyId}
+                        AuthorizationPolicies = new[]
+                        {
+                            new Policy
+                            {
+                                Rules = new[]
+                                {
+                                    new PolicyRule
+                                    {
+                                        ClientIdsAllowed = new[] {"resource_server"},
+                                        Scopes = new[] {"read", "write", "execute"}
+                                    }
+                                }
+                            }
+                        }
                     },
                     result.Content.AccessToken)
                 .ConfigureAwait(false);

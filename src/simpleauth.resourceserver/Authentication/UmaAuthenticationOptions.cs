@@ -20,7 +20,7 @@ namespace SimpleAuth.ResourceServer.Authentication
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
     /// <summary>

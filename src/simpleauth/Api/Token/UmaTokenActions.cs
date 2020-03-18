@@ -36,7 +36,6 @@
             IScopeRepository scopeRepository,
             ITokenStore tokenStore,
             IResourceSetRepository resourceSetRepository,
-            IPolicyRepository policyRepository,
             IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
@@ -45,7 +44,6 @@
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(
                 clientStore,
                 jwksStore,
-                policyRepository,
                 resourceSetRepository,
                 eventPublisher);
             _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
@@ -151,7 +149,7 @@
                 .IsAuthorized(ticket, client.ClientId, claimTokenParameter, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (authorizationResult.Type == AuthorizationPolicyResultEnum.Authorized)
+            if (authorizationResult.Result == AuthorizationPolicyResultKind.Authorized)
             {
                 var grantedToken =
                     await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
@@ -172,7 +170,7 @@
                 };
             }
 
-            if (authorizationResult.Type == AuthorizationPolicyResultEnum.RequestSubmitted)
+            if (authorizationResult.Result == AuthorizationPolicyResultKind.RequestSubmitted)
             {
                 return new GenericResponse<GrantedToken>
                 {

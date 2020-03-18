@@ -20,8 +20,8 @@ namespace SimpleAuth.WebSite.Authenticate
     using System.Threading.Tasks;
     using SimpleAuth.Exceptions;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
     internal class GenerateAndSendCodeAction

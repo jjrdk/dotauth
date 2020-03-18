@@ -2,7 +2,6 @@
 {
     using System.Net;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xbehave;

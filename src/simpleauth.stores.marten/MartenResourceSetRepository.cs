@@ -6,8 +6,6 @@
     using System.Threading.Tasks;
     using global::Marten;
     using global::Marten.Pagination;
-
-    using SimpleAuth.Shared.DTOs;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
@@ -30,19 +28,19 @@
         }
 
         /// <inheritdoc />
-        public async Task<GenericResult<ResourceSetModel>> Search(
+        public async Task<GenericResult<ResourceSet>> Search(
             SearchResourceSet parameter,
             CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             parameter.Ids ??= Array.Empty<string>();
             parameter.Names ??= Array.Empty<string>();
-            var results = await session.Query<ResourceSetModel>()
+            var results = await session.Query<ResourceSet>()
                 .Where(x => x.Name.IsOneOf(parameter.Ids) && x.Type.IsOneOf(parameter.Names))
                 .ToPagedListAsync(parameter.StartIndex + 1, parameter.TotalResults, cancellationToken)
                 .ConfigureAwait(false);
 
-            return new GenericResult<ResourceSetModel>
+            return new GenericResult<ResourceSet>
             {
                 Content = results.ToArray(),
                 StartIndex = parameter.StartIndex,
@@ -51,7 +49,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> Add(ResourceSetModel resourceSet, CancellationToken cancellationToken)
+        public async Task<bool> Add(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             session.Store(resourceSet);
@@ -60,16 +58,16 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceSetModel> Get(string id, CancellationToken cancellationToken)
+        public async Task<ResourceSet> Get(string id, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
-            var resourceSet = await session.LoadAsync<ResourceSetModel>(id, cancellationToken).ConfigureAwait(false);
+            var resourceSet = await session.LoadAsync<ResourceSet>(id, cancellationToken).ConfigureAwait(false);
 
             return resourceSet;
         }
 
         /// <inheritdoc />
-        public async Task<bool> Update(ResourceSetModel resourceSet, CancellationToken cancellationToken)
+        public async Task<bool> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             session.Update(resourceSet);
@@ -78,10 +76,10 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceSetModel[]> GetAll(string owner, CancellationToken cancellationToken)
+        public async Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
-            var resourceSets = await session.Query<ResourceSetModel>()
+            var resourceSets = await session.Query<ResourceSet>()
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
@@ -98,11 +96,11 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceSetModel[]> Get(CancellationToken cancellationToken = default, params string[] ids)
+        public async Task<ResourceSet[]> Get(CancellationToken cancellationToken = default, params string[] ids)
         {
             using var session = _sessionFactory();
             var resourceSets =
-                await session.LoadManyAsync<ResourceSetModel>(cancellationToken, ids).ConfigureAwait(false);
+                await session.LoadManyAsync<ResourceSet>(cancellationToken, ids).ConfigureAwait(false);
 
             return resourceSets.ToArray();
         }

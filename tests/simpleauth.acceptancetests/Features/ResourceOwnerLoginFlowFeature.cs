@@ -13,7 +13,7 @@
     using System.Text;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Newtonsoft.Json;
-    using SimpleAuth.Shared.DTOs;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;

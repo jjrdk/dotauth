@@ -1,4 +1,4 @@
-// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
+ï»¿// Copyright Â© 2015 Habart Thierry, Â© 2018 Jacob Reimers
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,18 +15,18 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
+    using System.Runtime.Serialization;
 
     /// <summary>
-    /// Defines the resource set content.
+    /// Defines the update resource set request.
     /// </summary>
-    public class ResourceSetModel
+    [DataContract]
+    public class ResourceSet
     {
         /// <summary>
-        /// Gets or sets the identifier.
+        /// Gets or sets the id of the resource set.
         /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
+        [DataMember(Name = "_id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -35,6 +35,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The name.
         /// </value>
+        [DataMember(Name = "name")]
         public string Name { get; set; }
 
         /// <summary>
@@ -43,15 +44,8 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The type.
         /// </value>
+        [DataMember(Name = "type")]
         public string Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets the icon URI.
-        /// </summary>
-        /// <value>
-        /// The icon URI.
-        /// </value>
-        public Uri IconUri { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes.
@@ -59,14 +53,22 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The scopes.
         /// </value>
-        public string[] Scopes { get; set; } = Array.Empty<string>();
+        [DataMember(Name = "scopes")]
+        public string[] Scopes { get; set; }
 
         /// <summary>
-        /// Gets or sets the authorization policy ids.
+        /// Gets or sets the icon URI.
         /// </summary>
         /// <value>
-        /// The authorization policy ids.
+        /// The icon URI.
         /// </value>
-        public string[] AuthorizationPolicyIds { get; set; } = Array.Empty<string>();
+        [DataMember(Name = "icon_uri")]
+        public Uri IconUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the authorization policies for the resource.
+        /// </summary>
+        [DataMember(Name = "authorization_policies")]
+        public Policy[] AuthorizationPolicies { get; set; } = Array.Empty<Policy>();
     }
 }

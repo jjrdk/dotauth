@@ -2,6 +2,7 @@
 {
     using System.Runtime.Serialization;
     using System.Security.Claims;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the update policy response.
@@ -34,7 +35,7 @@
         /// The claims.
         /// </value>
         [DataMember(Name = "claims")]
-        public Claim[] Claims { get; set; }
+        public ClaimData[] Claims { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is resource owner consent needed.

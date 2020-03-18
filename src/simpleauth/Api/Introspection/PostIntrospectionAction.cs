@@ -127,7 +127,7 @@ namespace SimpleAuth.Api.Introspection
                 result.UserName = userName;
             }
 
-            // 8. Based on the expiration date disable OR enable the introspection result
+            // 8. Based on the expiration date disable OR enable the introspection resultKind
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
             var tokenIsExpired = DateTimeOffset.UtcNow > expirationDateTime;
             result.Active = !tokenIsExpired;

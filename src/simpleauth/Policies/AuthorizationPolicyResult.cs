@@ -22,12 +22,23 @@ namespace SimpleAuth.Policies
     internal class AuthorizationPolicyResult
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationPolicyResult"/> class.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="errorDetails"></param>
+        public AuthorizationPolicyResult(AuthorizationPolicyResultKind result, object errorDetails = null)
+        {
+            Result = result;
+            ErrorDetails = errorDetails;
+        }
+
+        /// <summary>
         /// Gets or sets the type.
         /// </summary>
         /// <value>
         /// The type.
         /// </value>
-        public AuthorizationPolicyResultEnum Type { get; set; }
+        public AuthorizationPolicyResultKind Result { get; }
 
         /// <summary>
         /// Gets or sets the error details.
@@ -35,6 +46,6 @@ namespace SimpleAuth.Policies
         /// <value>
         /// The error details.
         /// </value>
-        public object ErrorDetails { get; set; }
+        public object ErrorDetails { get; }
     }
 }

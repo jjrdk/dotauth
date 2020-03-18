@@ -60,7 +60,6 @@ namespace SimpleAuth.AuthServerPg
                 Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
                 HttpClientFactory = () => client,
                 JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
-                Policies = sp => new MartenPolicyRepository(sp.GetRequiredService<IDocumentSession>),
                 Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
                 Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
                 ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
