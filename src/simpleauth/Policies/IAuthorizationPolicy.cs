@@ -9,8 +9,8 @@
     {
         Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticket,
-            Policy policy,
             ClaimTokenParameter claimTokenParameters,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken,
+            params PolicyRule[] policy);
     }
 }

@@ -67,9 +67,9 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task WhenResourceSetDoesNotExistThenReturnsNotAuthorized()
         {
-            var ticket = new Ticket {Lines = new[] {new TicketLine {ResourceSetId = "resource_set_id"}}};
+            var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "resource_set_id" } } };
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ResourceSet) null));
+                .Returns(() => Task.FromResult((ResourceSet)null));
 
             var result = await _authorizationPolicyValidator.IsAuthorized(
                     ticket,
@@ -122,19 +122,10 @@ namespace SimpleAuth.Server.Tests.Policies
                     Id = "1",
                     AuthorizationPolicies = new[]
                     {
-                        new Policy
+                        new PolicyRule
                         {
-                            Rules = new[]
-                            {
-                                new PolicyRule
-                                {
-                                    ClientIdsAllowed = new[] {"client_id"},
-                                    Claims = new[]
-                                    {
-                                        new ClaimData {Type = "test", Value = "test"}
-                                    }
-                                }
-                            }
+                            ClientIdsAllowed = new[] {"client_id"},
+                            Claims = new[] {new ClaimData {Type = "test", Value = "test"}}
                         }
                     }
                 }

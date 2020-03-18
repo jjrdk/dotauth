@@ -38,7 +38,7 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"uma_protection"}))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "uma_protection" }))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });
@@ -55,7 +55,7 @@
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
                 });
 
             "given a uma client".x(
@@ -72,25 +72,16 @@
                     var resourceSet = new ResourceSet
                     {
                         Name = "Local",
-                        Scopes = new[] {"api1"},
+                        Scopes = new[] { "api1" },
                         Type = "url",
                         AuthorizationPolicies = new[]
                         {
-                            new Policy
+                            new PolicyRule
                             {
-                                Rules = new[]
-                                {
-                                    new PolicyRule
-                                    {
-                                        Scopes = new[] {"api1"},
-                                        Claims = new[]
-                                        {
-                                            new ClaimData {Type = "sub", Value = "user"}
-                                        },
-                                        ClientIdsAllowed = new[] {"post_client"},
-                                        IsResourceOwnerConsentNeeded = false
-                                    }
-                                }
+                                Scopes = new[] {"api1"},
+                                Claims = new[] {new ClaimData {Type = "sub", Value = "user"}},
+                                ClientIdsAllowed = new[] {"post_client"},
+                                IsResourceOwnerConsentNeeded = false
                             }
                         }
                     };
@@ -174,7 +165,7 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"uma_protection"}))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "uma_protection" }))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });
@@ -191,7 +182,7 @@
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
                 });
 
             "given a uma client".x(
@@ -202,7 +193,10 @@
                 {
                     var resourceSet = new ResourceSet
                     {
-                        Name = "Local", Scopes = new[] {"api1"}, Type = "url", AuthorizationPolicies = null
+                        Name = "Local",
+                        Scopes = new[] { "api1" },
+                        Type = "url",
+                        AuthorizationPolicies = null
                     };
 
                     var resourceResponse =
@@ -255,7 +249,6 @@
             UmaClient umaClient = null;
             TokenClient client = null;
             GrantedTokenResponse result = null;
-            string policyId = null;
             string ticketId = null;
 
             "and a properly configured token client".x(
@@ -268,7 +261,7 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"uma_protection"}))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "uma_protection" }))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });
@@ -285,7 +278,7 @@
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
                 });
 
             "given a uma client".x(
@@ -302,14 +295,10 @@
                     var resourceSet = new ResourceSet
                     {
                         Name = "Local",
-                        Scopes = new[] {"api1"},
+                        Scopes = new[] { "api1" },
                         Type = "url",
                         AuthorizationPolicies = new[]
                         {
-                            new Policy
-                            {
-                                Rules = new[]
-                                {
                                     new PolicyRule
                                     {
                                         Scopes = new[] {"anotherApi"},
@@ -320,8 +309,6 @@
                                         ClientIdsAllowed = new[] {"post_client"},
                                         IsResourceOwnerConsentNeeded = false
                                     }
-                                }
-                            }
                         }
                     };
 
@@ -336,7 +323,7 @@
                 async () =>
                 {
                     var permission =
-                        new PermissionRequest {ResourceSetId = resourceSetResponse.Id, Scopes = new[] {"api1"}};
+                        new PermissionRequest { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
                     var permissionResponse = await umaClient.RequestPermission(result.AccessToken, permission)
                         .ConfigureAwait(false);
                     ticketId = permissionResponse.Content.TicketId;

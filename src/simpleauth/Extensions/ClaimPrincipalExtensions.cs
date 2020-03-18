@@ -71,7 +71,7 @@ namespace SimpleAuth.Extensions
             return GetClaimValue(principal, OpenIdClaimTypes.Name)
                    ?? GetClaimValue(principal, StandardClaimNames.Subject)
                    ?? GetClaimValue(principal, ClaimTypes.Name)
-                ?? GetClaimValue(principal, ClaimTypes.NameIdentifier);
+                   ?? GetClaimValue(principal, ClaimTypes.NameIdentifier);
         }
 
         public static string GetEmail(this ClaimsPrincipal principal)
@@ -161,12 +161,7 @@ namespace SimpleAuth.Extensions
 
         private static string GetClaimValue(ClaimsPrincipal principal, string claimName)
         {
-            if (principal?.Identity == null)
-            {
-                return null;
-            }
-
-            var claim = principal.FindFirst(claimName);
+            var claim = principal?.FindFirst(claimName);
 
             return claim?.Value;
         }

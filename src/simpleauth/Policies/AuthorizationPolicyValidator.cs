@@ -112,9 +112,9 @@ namespace SimpleAuth.Policies
             {
                 var result = await _authorizationPolicy.Execute(
                         ticketLineParameter,
-                        authorizationPolicy,
                         claimTokenParameter,
-                        cancellationToken)
+                        cancellationToken,
+                        authorizationPolicy)
                     .ConfigureAwait(false);
                 if (result.Result == AuthorizationPolicyResultKind.Authorized)
                 {

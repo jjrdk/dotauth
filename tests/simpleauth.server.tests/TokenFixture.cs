@@ -88,16 +88,10 @@
                         Scopes = new[] {"read", "write", "execute"},
                         AuthorizationPolicies = new[]
                         {
-                            new Policy
+                            new PolicyRule
                             {
-                                Rules = new[]
-                                {
-                                    new PolicyRule
-                                    {
-                                        ClientIdsAllowed = new[] {"resource_server"},
-                                        Scopes = new[] {"read", "write", "execute"}
-                                    }
-                                }
+                                ClientIdsAllowed = new[] {"resource_server"},
+                                Scopes = new[] {"read", "write", "execute"}
                             }
                         }
                     },

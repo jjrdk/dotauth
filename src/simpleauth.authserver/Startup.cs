@@ -20,7 +20,6 @@ namespace SimpleAuth.AuthServer
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -29,7 +28,6 @@ namespace SimpleAuth.AuthServer
     using SimpleAuth;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
-    using System.IO.Compression;
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
@@ -70,17 +68,11 @@ namespace SimpleAuth.AuthServer
                                 Scopes = new[] {"read"},
                                 AuthorizationPolicies = new[]
                                 {
-                                    new Policy
+                                    new PolicyRule
                                     {
-                                        Rules = new[]
-                                        {
-                                            new PolicyRule
-                                            {
-                                                ClientIdsAllowed = new[] {"web"},
-                                                Scopes = new[] {"read"},
-                                                IsResourceOwnerConsentNeeded = true
-                                            }
-                                        }
+                                        ClientIdsAllowed = new[] {"web"},
+                                        Scopes = new[] {"read"},
+                                        IsResourceOwnerConsentNeeded = true
                                     }
                                 }
                             }
@@ -108,8 +100,7 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddHttpContextAccessor()
+            services.AddHttpContextAccessor()
                 .AddAntiforgery(
                     options =>
                     {
@@ -118,7 +109,9 @@ namespace SimpleAuth.AuthServer
                         options.SuppressXFrameOptionsHeader = false;
                     })
                 .AddCors(
-                    options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders()))
+                    options => options.AddPolicy(
+                        "AllowAll",
+                        p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders()))
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(CookieNames.CookieName)
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
@@ -130,7 +123,7 @@ namespace SimpleAuth.AuthServer
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
+                            ValidIssuers = new[] {"http://localhost:5000", "https://localhost:5001"}
                         };
                         cfg.RequireHttpsMetadata = false;
                     });
@@ -156,7 +149,7 @@ namespace SimpleAuth.AuthServer
 
             services.AddSimpleAuth(
                 _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme },
+                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme},
                 applicationParts: GetType().Assembly);
 
             services.AddAuthorization(

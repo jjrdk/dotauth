@@ -38,17 +38,17 @@ namespace SimpleAuth.Policies
 
         public async Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticketLineParameter,
-            Policy authorizationPolicy,
             ClaimTokenParameter claimTokenParameter,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            params PolicyRule[] authorizationPolicy)
         {
-            if (authorizationPolicy.Rules == null)
+            if (authorizationPolicy == null)
             {
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
             }
 
             AuthorizationPolicyResult result = null;
-            foreach (var rule in authorizationPolicy.Rules)
+            foreach (var rule in authorizationPolicy)
             {
                 result = await ExecuteAuthorizationPolicyRule(
                         ticketLineParameter,
@@ -78,7 +78,8 @@ namespace SimpleAuth.Policies
             }
 
             // 2. Check clients are correct
-            var clientAuthorizationResult = authorizationPolicy.ClientIdsAllowed?.Contains(ticketLineParameter.ClientId);
+            var clientAuthorizationResult =
+                authorizationPolicy.ClientIdsAllowed?.Contains(ticketLineParameter.ClientId);
             if (clientAuthorizationResult != true)
             {
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
@@ -148,10 +149,7 @@ namespace SimpleAuth.Policies
 
             var handler = new JwtSecurityTokenHandler();
             var validationParameters = await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false);
-            handler.ValidateToken(
-                claimTokenParameter.Token,
-                validationParameters,
-                out var securityToken);
+            handler.ValidateToken(claimTokenParameter.Token, validationParameters, out var securityToken);
             var tokenClaims = (securityToken as JwtSecurityToken)?.Claims.ToArray();
 
             if (tokenClaims == null)
@@ -167,7 +165,7 @@ namespace SimpleAuth.Policies
                     return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
                 }
 
-                if (payload.ValueType == JsonClaimValueTypes.JsonArray)// is IEnumerable<string> strings)
+                if (payload.ValueType == JsonClaimValueTypes.JsonArray) // is IEnumerable<string> strings)
                 {
                     var strings = JsonConvert.DeserializeObject<object[]>(payload.Value);
                     if (!strings.Any(s => string.Equals(s, claim.Value)))

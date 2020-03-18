@@ -14,10 +14,12 @@
 
 namespace SimpleAuth.Controllers
 {
-    using System.Collections.Generic;
+    using System;
+    using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
 
     /// <summary>
@@ -27,7 +29,9 @@ namespace SimpleAuth.Controllers
     [Route(UmaConstants.RouteValues.Configuration)]
     public class UmaConfigurationController : ControllerBase
     {
-        private readonly List<string> _umaProfilesSupported = new List<string>
+        private readonly IScopeStore _scopeStore;
+
+        private static readonly string[] UmaProfilesSupported = new[]
         {
             "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
         };
@@ -41,30 +45,36 @@ namespace SimpleAuth.Controllers
         private const string JwksApi = "/jwks";
         private const string RegistrationApi = "/registration";
         private const string IntrospectionApi = "/introspect";
-        private const string PolicyApi = "/policies";
+        //private const string PolicyApi = "/policies";
         private const string RevocationApi = "/token/revoke";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UmaConfigurationController"/> class.
+        /// </summary>
+        /// <param name="scopeStore"></param>
+        public UmaConfigurationController(IScopeStore scopeStore)
+        {
+            _scopeStore = scopeStore;
+        }
 
         /// <summary>
         /// Handles the GET configuration request.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The configured <see cref="UmaConfiguration"/>.</returns>
         [HttpGet]
-        public async Task<ActionResult<UmaConfiguration>> GetConfiguration()
+        public async Task<ActionResult<UmaConfiguration>> GetConfiguration(CancellationToken cancellationToken)
         {
-            var result = (await GetConfiguration(Request).ConfigureAwait(false));//.ToResponse();
-            return new OkObjectResult(result);
-        }
+            var absoluteUriWithVirtualPath = Request.GetAbsoluteUriWithVirtualPath();
+            var scopes = await _scopeStore.GetAll(cancellationToken).ConfigureAwait(false);
 
-        private Task<UmaConfiguration> GetConfiguration(HttpRequest request)
-        {
-            var absoluteUriWithVirtualPath = request.GetAbsoluteUriWithVirtualPath();
             var result = new UmaConfiguration
             {
-                ClaimTokenProfilesSupported = new List<string>(),
-                UmaProfilesSupported = _umaProfilesSupported,
+                ClaimTokenProfilesSupported = Array.Empty<string>(),
+                UmaProfilesSupported = UmaProfilesSupported,
                 ResourceRegistrationEndpoint = absoluteUriWithVirtualPath + ResourceSetApi,
                 PermissionEndpoint = absoluteUriWithVirtualPath + PermissionApi,
-                PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
+                ScopesSupported = scopes.Select(s => s.Name).ToArray(),
+                //PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
                 // OAUTH2.0
                 Issuer = absoluteUriWithVirtualPath,
                 AuthorizationEndpoint = absoluteUriWithVirtualPath + AuthorizationApi,
@@ -72,10 +82,12 @@ namespace SimpleAuth.Controllers
                 JwksUri = absoluteUriWithVirtualPath + JwksApi,
                 RegistrationEndpoint = absoluteUriWithVirtualPath + RegistrationApi,
                 IntrospectionEndpoint = absoluteUriWithVirtualPath + IntrospectionApi,
-                RevocationEndpoint = absoluteUriWithVirtualPath + RevocationApi
+                RevocationEndpoint = absoluteUriWithVirtualPath + RevocationApi,
+                UiLocalesSupported = new[] { "en" }
             };
 
-            return Task.FromResult(result);
+            return new OkObjectResult(result);
+
         }
     }
 }

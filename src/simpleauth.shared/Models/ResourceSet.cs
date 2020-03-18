@@ -69,6 +69,6 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the authorization policies for the resource.
         /// </summary>
         [DataMember(Name = "authorization_policies")]
-        public Policy[] AuthorizationPolicies { get; set; } = Array.Empty<Policy>();
+        public PolicyRule[] AuthorizationPolicies { get; set; } = Array.Empty<PolicyRule>();
     }
 }

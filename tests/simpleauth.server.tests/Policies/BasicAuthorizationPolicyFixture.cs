@@ -44,30 +44,30 @@ namespace SimpleAuth.Server.Tests.Policies
         {
             await Assert
                 .ThrowsAsync<NullReferenceException>(
-                    () => _authorizationPolicy.Execute(null, null, null, CancellationToken.None))
+                    () => _authorizationPolicy.Execute(null, null, CancellationToken.None, new PolicyRule()))
                 .ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task WhenPassingNullPolicyParameterThenExceptionsAreThrown()
+        public async Task WhenPassingNullPolicyParameterThenIsNotAuthorized()
         {
-            await Assert.ThrowsAsync<NullReferenceException>(
-                    () => _authorizationPolicy.Execute(
-                        new TicketLineParameter("client_id"),
-                        null,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
+            var result = await _authorizationPolicy.Execute(
+                         new TicketLineParameter("client_id"),
+                         null,
+                         CancellationToken.None,
+                         null).ConfigureAwait(false);
+
+            Assert.Equal(AuthorizationPolicyResultKind.NotAuthorized, result.Result);
         }
 
         [Fact]
         public async Task When_Does_Not_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
         {
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy {Rules = new[] {new PolicyRule {Scopes = new[] {"read"}}}};
+            var authorizationPolicy = new[] { new PolicyRule { Scopes = new[] { "read" } } };
 
-            var result = await _authorizationPolicy.Execute(ticket, authorizationPolicy, null, CancellationToken.None)
+            var result = await _authorizationPolicy.Execute(ticket, null, CancellationToken.None, authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.NotAuthorized, result.Result);
@@ -76,20 +76,15 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_Client_Is_Not_Allowed_Then_NotAuthorized_Is_Returned()
         {
-            var ticket = new TicketLineParameter("invalid_client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("invalid_client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new PolicyRule
             {
-                Rules = new[]
-                {
-                    new PolicyRule
-                    {
-                        ClientIdsAllowed = new[] {"client_id"}, Scopes = new[] {"read", "create", "update"}
-                    }
-                }
+                ClientIdsAllowed = new[] { "client_id" },
+                Scopes = new[] { "read", "create", "update" }
             };
 
-            var result = await _authorizationPolicy.Execute(ticket, authorizationPolicy, null, CancellationToken.None)
+            var result = await _authorizationPolicy.Execute(ticket, null, CancellationToken.None, authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.NotAuthorized, result.Result);
@@ -99,48 +94,45 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_There_Is_No_Access_Token_Passed_Then_NeedInfo_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new[]
             {
-                Rules = new[]
+                new PolicyRule
                 {
-                    new PolicyRule
+                    ClientIdsAllowed = new[] {"client_id"},
+                    Scopes = new[] {"read", "create", "update"},
+                    Claims = new[]
                     {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        Scopes = new[] {"read", "create", "update"},
-                        Claims = new[]
-                        {
-                            new ClaimData {Type = "name", Value = ""},
-                            new ClaimData {Type = "email", Value = ""}
-                        },
-                        OpenIdProvider = configurationUrl
-                    }
+                        new ClaimData {Type = "name", Value = ""},
+                        new ClaimData {Type = "email", Value = ""}
+                    },
+                    OpenIdProvider = configurationUrl
                 }
             };
-            var claimTokenParameter = new ClaimTokenParameter {Format = "bad_format", Token = "token"};
+            var claimTokenParameter = new ClaimTokenParameter { Format = "bad_format", Token = "token" };
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    authorizationPolicy,
                     claimTokenParameter,
-                    CancellationToken.None)
+                    CancellationToken.None,
+                    authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
 
-            var errorDetails = (Dictionary<string, object>) result.ErrorDetails;
+            var errorDetails = (Dictionary<string, object>)result.ErrorDetails;
 
             Assert.True(errorDetails.ContainsKey(UmaConstants.ErrorDetailNames.RequestingPartyClaims));
 
             var requestingPartyClaims =
-                (Dictionary<string, object>) errorDetails[UmaConstants.ErrorDetailNames.RequestingPartyClaims];
+                (Dictionary<string, object>)errorDetails[UmaConstants.ErrorDetailNames.RequestingPartyClaims];
 
             Assert.True(requestingPartyClaims.ContainsKey(UmaConstants.ErrorDetailNames.RequiredClaims));
             Assert.True(requestingPartyClaims.ContainsKey(UmaConstants.ErrorDetailNames.RedirectUser));
 
             var requiredClaims =
-                (List<Dictionary<string, string>>) requestingPartyClaims[UmaConstants.ErrorDetailNames.RequiredClaims];
+                (List<Dictionary<string, string>>)requestingPartyClaims[UmaConstants.ErrorDetailNames.RequiredClaims];
 
             Assert.Contains(
                 requiredClaims,
@@ -160,35 +152,33 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_JwsPayload_Cannot_Be_Extracted_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new[]
             {
-                Rules = new[]
+                new PolicyRule
                 {
-                    new PolicyRule
+                    ClientIdsAllowed = new[] {"client_id"},
+                    Scopes = new[] {"read", "create", "update"},
+                    Claims = new[]
                     {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        Scopes = new[] {"read", "create", "update"},
-                        Claims = new[]
-                        {
-                            new ClaimData {Type = "name", Value = ""},
-                            new ClaimData {Type = "email", Value = ""}
-                        },
-                        OpenIdProvider = configurationUrl
-                    }
+                        new ClaimData {Type = "name", Value = ""},
+                        new ClaimData {Type = "email", Value = ""}
+                    },
+                    OpenIdProvider = configurationUrl
                 }
             };
             var claimTokenParameters = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    authorizationPolicy,
                     claimTokenParameters,
-                    CancellationToken.None)
+                    CancellationToken.None,
+                    authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
@@ -198,35 +188,33 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_Role_Is_Not_Correct_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new[]
             {
-                Rules = new[]
+                new PolicyRule
                 {
-                    new PolicyRule
+                    ClientIdsAllowed = new[] {"client_id"},
+                    Scopes = new[] {"read", "create", "update"},
+                    Claims = new[]
                     {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        Scopes = new[] {"read", "create", "update"},
-                        Claims = new[]
-                        {
-                            new ClaimData {Type = "role", Value = "role1"},
-                            new ClaimData {Type = "role", Value = "role2"}
-                        },
-                        OpenIdProvider = configurationUrl
-                    }
+                        new ClaimData {Type = "role", Value = "role1"},
+                        new ClaimData {Type = "role", Value = "role2"}
+                    },
+                    OpenIdProvider = configurationUrl
                 }
             };
             var claimTokenParameter = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    authorizationPolicy,
                     claimTokenParameter,
-                    CancellationToken.None)
+                    CancellationToken.None,
+                    authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
@@ -236,35 +224,33 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_There_Is_No_Role_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new[]
             {
-                Rules = new[]
+                new PolicyRule
                 {
-                    new PolicyRule
+                    ClientIdsAllowed = new[] {"client_id"},
+                    Scopes = new[] {"read", "create", "update"},
+                    Claims = new[]
                     {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        Scopes = new[] {"read", "create", "update"},
-                        Claims = new[]
-                        {
-                            new ClaimData {Type = "role", Value = "role1"},
-                            new ClaimData {Type = "role", Value = "role2"}
-                        },
-                        OpenIdProvider = configurationUrl
-                    }
+                        new ClaimData {Type = "role", Value = "role1"},
+                        new ClaimData {Type = "role", Value = "role2"}
+                    },
+                    OpenIdProvider = configurationUrl
                 }
             };
             var claimTokenParameters = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    authorizationPolicy,
                     claimTokenParameters,
-                    CancellationToken.None)
+                    CancellationToken.None,
+                    authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
@@ -274,35 +260,33 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_Passing_Not_Valid_Roles_In_JArray_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new[]
             {
-                Rules = new[]
+                new PolicyRule
                 {
-                    new PolicyRule
+                    ClientIdsAllowed = new[] {"client_id"},
+                    Scopes = new[] {"read", "create", "update"},
+                    Claims = new[]
                     {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        Scopes = new[] {"read", "create", "update"},
-                        Claims = new[]
-                        {
-                            new ClaimData {Type = "role", Value = "role1"},
-                            new ClaimData {Type = "role", Value = "role2"}
-                        },
-                        OpenIdProvider = configurationUrl
-                    }
+                        new ClaimData {Type = "role", Value = "role1"},
+                        new ClaimData {Type = "role", Value = "role2"}
+                    },
+                    OpenIdProvider = configurationUrl
                 }
             };
             var claimTokenParameters = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    authorizationPolicy,
                     claimTokenParameters,
-                    CancellationToken.None)
+                    CancellationToken.None,
+                    authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
@@ -312,35 +296,33 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_Passing_Not_Valid_Roles_InStringArray_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new[]
             {
-                Rules = new[]
+                new PolicyRule
                 {
-                    new PolicyRule
+                    ClientIdsAllowed = new[] {"client_id"},
+                    Scopes = new[] {"read", "create", "update"},
+                    Claims = new[]
                     {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        Scopes = new[] {"read", "create", "update"},
-                        Claims = new[]
-                        {
-                            new ClaimData {Type = "role", Value = "role1"},
-                            new ClaimData {Type = "role", Value = "role2"}
-                        },
-                        OpenIdProvider = configurationUrl
-                    }
+                        new ClaimData {Type = "role", Value = "role1"},
+                        new ClaimData {Type = "role", Value = "role2"}
+                    },
+                    OpenIdProvider = configurationUrl
                 }
             };
             var claimTokenParameter = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    authorizationPolicy,
                     claimTokenParameter,
-                    CancellationToken.None)
+                    CancellationToken.None,
+                    authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
@@ -350,35 +332,33 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_Claims_Are_Not_Correct_Then_NotAuthorized_Is_Returned()
         {
             const string configurationUrl = "http://localhost/configuration";
-            var ticket = new TicketLineParameter("client_id") {Scopes = new[] {"read", "create", "update"}};
+            var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new[]
             {
-                Rules = new[]
+                new PolicyRule
                 {
-                    new PolicyRule
+                    ClientIdsAllowed = new[] {"client_id"},
+                    Scopes = new[] {"read", "create", "update"},
+                    Claims = new[]
                     {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        Scopes = new[] {"read", "create", "update"},
-                        Claims = new[]
-                        {
-                            new ClaimData {Type = "name", Value = "name"},
-                            new ClaimData {Type = "email", Value = "email"}
-                        },
-                        OpenIdProvider = configurationUrl
-                    }
+                        new ClaimData {Type = "name", Value = "name"},
+                        new ClaimData {Type = "email", Value = "email"}
+                    },
+                    OpenIdProvider = configurationUrl
                 }
             };
             var claimTokenParameter = new ClaimTokenParameter
             {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken", Token = "token"
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    authorizationPolicy,
                     claimTokenParameter,
-                    CancellationToken.None)
+                    CancellationToken.None,
+                    authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
@@ -389,23 +369,21 @@ namespace SimpleAuth.Server.Tests.Policies
         {
             var ticket = new TicketLineParameter("client_id")
             {
-                IsAuthorizedByRo = false, Scopes = new[] {"read", "create", "update"}
+                IsAuthorizedByRo = false,
+                Scopes = new[] { "read", "create", "update" }
             };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new[]
             {
-                Rules = new[]
+                new PolicyRule
                 {
-                    new PolicyRule
-                    {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        IsResourceOwnerConsentNeeded = true,
-                        Scopes = new[] {"read", "create", "update"}
-                    }
+                    ClientIdsAllowed = new[] {"client_id"},
+                    IsResourceOwnerConsentNeeded = true,
+                    Scopes = new[] {"read", "create", "update"}
                 }
             };
 
-            var result = await _authorizationPolicy.Execute(ticket, authorizationPolicy, null, CancellationToken.None)
+            var result = await _authorizationPolicy.Execute(ticket, null, CancellationToken.None, authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.RequestSubmitted, result.Result);
@@ -414,22 +392,19 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_AuthorizationPassed_Then_Authorization_Is_Returned()
         {
-            var ticket = new TicketLineParameter("client_id") {IsAuthorizedByRo = true, Scopes = new[] {"create"}};
+            var ticket = new TicketLineParameter("client_id") { IsAuthorizedByRo = true, Scopes = new[] { "create" } };
 
-            var authorizationPolicy = new Policy
+            var authorizationPolicy = new[]
             {
-                Rules = new[]
+                new PolicyRule
                 {
-                    new PolicyRule
-                    {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        IsResourceOwnerConsentNeeded = true,
-                        Scopes = new[] {"create"}
-                    }
+                    ClientIdsAllowed = new[] {"client_id"},
+                    IsResourceOwnerConsentNeeded = true,
+                    Scopes = new[] {"create"}
                 }
             };
 
-            var result = await _authorizationPolicy.Execute(ticket, authorizationPolicy, null, CancellationToken.None)
+            var result = await _authorizationPolicy.Execute(ticket, null, CancellationToken.None, authorizationPolicy)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.Authorized, result.Result);
