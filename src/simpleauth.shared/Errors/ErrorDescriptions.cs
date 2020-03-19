@@ -16,27 +16,15 @@ namespace SimpleAuth.Shared.Errors
 {
     internal static class ErrorDescriptions
     {
-        public const string InvalidResourceSetRequest = "the resource access request is invalid";
         public const string TheParameterNeedsToBeSpecified = "the parameter {0} needs to be specified";
         public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
         public const string TheResourceSetCannotBeInserted = "an error occured while trying to insert the resource set";
         public const string TheResourceSetDoesntExist = "resource set {0} doesn't exist";
-        public const string SomeResourcesDontExist = "some resources don't exist";
-        public const string ThePolicyDoesntContainResource = "the authorization policy doesn't contain the resource";
-        public const string TheResourceSetCannotBeUpdated = "resource set {0} cannot be udpated";
-        public const string TheResourceSetCannotBeRetrieved = "resource set {0} cannot be retrieved";
-        public const string TheResourceSetsCannotBeRetrieved = "resource sets cannot be retrieved";
         public const string TheScopeAreNotValid = "one or more scopes are not valid";
         public const string TheTicketIsExpired = "the ticket is expired";
         public const string TheTicketDoesntExist = "the ticket {0} doesn't exist";
         public const string TheTicketCannotBeInserted = "the ticket cannot be inserted";
-        public const string ThePolicyCannotBeInserted = "the authorization policy cannot be inserted";
-        public const string ThePolicyCannotBeUpdated = "the authorization policy cannot be updated";
-        public const string OneOrMoreScopesDontBelongToAResourceSet = "one or more scopes don't belong to a resource set";
-        public const string TheAuthorizationPolicyCannotBeRetrieved = "the authorization policy {0} cannot be retrieved";
-        public const string TheAuthorizationPolicyCannotBeUpdated = "the authorization policy {0} cannot be updated";
         public const string TheAuthorizationPolicyIsNotSatisfied = "the authorization policy is not satisfied";
-        public const string JwkIsInvalid = "the json web key set is invalid";
         public const string TheScopeDoesntExist = "the scope '{0}' doesn't exist";
         public const string ThePasswordCannotBeUpdated = "the password cannot be updated";
         public const string TheClaimsCannotBeUpdated = "the claims cannot be updated";
@@ -119,9 +107,6 @@ namespace SimpleAuth.Shared.Errors
         public const string TheClientRequiresPkce = "the client {0} requires PKCE";
         public const string TheCodeVerifierIsNotCorrect = "the code verifier is not correct";
         public const string TheResourceOwnerDoesntExist = "The resource owner {0} doesn't exist";
-        //public const string TheProfileAlreadyLinked = "the profile is already linked to your account";
-        //public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
-        //public const string TheExternalAccountAccountCannotBeUnlinked = "the external account cannot be unlinked";
         public const string TheAmrDoesntExist = "the amr {0} doesn't exist";
         public const string NoActiveAmr = "no active AMR";
         public const string TheRefreshTokenCanBeUsedOnlyByTheSameIssuer = "the refresh token can be used only by the same issuer";

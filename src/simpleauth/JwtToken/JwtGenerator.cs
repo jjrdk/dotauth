@@ -35,7 +35,7 @@ namespace SimpleAuth.JwtToken
 
     internal class JwtGenerator
     {
-        private readonly IScopeRepository _scopeRepository;
+        private readonly IScopeStore _scopeRepository;
         private readonly IJwksStore _jwksStore;
         private readonly IClientStore _clientRepository;
 
@@ -56,7 +56,7 @@ namespace SimpleAuth.JwtToken
                 {SecurityAlgorithms.RsaSha512, HashWithSha512}
             };
 
-        public JwtGenerator(IClientStore clientRepository, IScopeRepository scopeRepository, IJwksStore jwksStore)
+        public JwtGenerator(IClientStore clientRepository, IScopeStore scopeRepository, IJwksStore jwksStore)
         {
             _clientRepository = clientRepository;
             _scopeRepository = scopeRepository;

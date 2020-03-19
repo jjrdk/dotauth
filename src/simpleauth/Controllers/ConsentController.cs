@@ -107,7 +107,7 @@ namespace SimpleAuth.Controllers
             var actionResult = await _displayConsent.Execute(request.ToParameter(), authenticatedUser, issuerName, cancellationToken)
                 .ConfigureAwait(false);
 
-            var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult, request);
+            var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request);
             if (result != null)
             {
                 return result;
@@ -146,7 +146,7 @@ namespace SimpleAuth.Controllers
             var actionResult = await _confirmConsent.Execute(parameter, authenticatedUser, issuerName, cancellationToken)
                 .ConfigureAwait(false);
             LogConsentAccepted(authenticatedUser.GetSubject(), request.client_id, request.scope);
-            return this.CreateRedirectionFromActionResult(actionResult, request);
+            return actionResult.CreateRedirectionFromActionResult(request);
         }
 
         /// <summary>

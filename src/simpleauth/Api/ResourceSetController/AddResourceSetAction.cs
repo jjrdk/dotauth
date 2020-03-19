@@ -34,20 +34,6 @@ namespace SimpleAuth.Api.ResourceSetController
 
         public async Task<string> Execute(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
-            resourceSet.Id = Id.Create();
-            CheckResourceSetParameter(resourceSet);
-            if (!await _resourceSetRepository.Add(resourceSet, cancellationToken).ConfigureAwait(false))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    ErrorDescriptions.TheResourceSetCannotBeInserted);
-            }
-
-            return resourceSet.Id;
-        }
-
-        private static void CheckResourceSetParameter(ResourceSet resourceSet)
-        {
             if (string.IsNullOrWhiteSpace(resourceSet.Name))
             {
                 throw new SimpleAuthException(
@@ -61,6 +47,14 @@ namespace SimpleAuth.Api.ResourceSetController
                     ErrorCodes.InvalidRequest,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
             }
+
+            resourceSet.Id = Id.Create();
+            if (!await _resourceSetRepository.Add(resourceSet, cancellationToken).ConfigureAwait(false))
+            {
+                return null;
+            }
+
+            return resourceSet.Id;
         }
     }
 }

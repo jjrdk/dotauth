@@ -115,7 +115,7 @@
                 confirmationCodeStore,
                 resourceOwnerRepository,
                 subjectBuilder,
-                accountFilters,
+                accountFilters.ToArray(),
                 eventPublisher);
             _validateConfirmationCode = new ValidateConfirmationCodeAction(confirmationCodeStore);
             _authenticateHelper = new AuthenticateHelper(
@@ -321,7 +321,7 @@
 
             if (!string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)) // Execute OPENID workflow
             {
-                var request = _dataProtector.Unprotect<AuthorizationRequest>(confirmCodeViewModel.Code);
+                var request = DataProtector.Unprotect<AuthorizationRequest>(confirmCodeViewModel.Code);
                 await SetLocalCookie(authenticatedUserClaims, request.session_id).ConfigureAwait(false);
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
                 var actionResult = await _authenticateHelper.ProcessRedirection(
@@ -332,7 +332,7 @@
                         issuerName,
                         cancellationToken)
                     .ConfigureAwait(false);
-                var result = this.CreateRedirectionFromActionResult(actionResult, request);
+                var result = actionResult.CreateRedirectionFromActionResult(request);
                 if (result != null)
                 {
                     await LogAuthenticateUser(resourceOwner.Subject, actionResult.Amr).ConfigureAwait(false);

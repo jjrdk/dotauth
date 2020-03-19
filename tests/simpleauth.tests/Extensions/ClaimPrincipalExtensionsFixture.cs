@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Tests.Extensions
 {
     using Shared;
-    using SimpleAuth.Extensions;
     using System.Collections.Generic;
     using System.Security.Claims;
     using Xunit;

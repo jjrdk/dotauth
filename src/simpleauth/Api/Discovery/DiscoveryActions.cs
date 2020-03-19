@@ -48,17 +48,15 @@ namespace SimpleAuth.Api.Discovery
 
             var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported.SupportedAuthorizationFlows);
 
-            var grantTypesSupported = CoreConstants.Supported.SupportedGrantTypes;
-
             result.ClaimsParameterSupported = true;
             result.RequestParameterSupported = true;
             result.RequestUriParameterSupported = true;
             result.RequireRequestUriRegistration = true;
-            result.ClaimsSupported = Array.Empty<string>(); //(await _claimRepository.GetAll().ConfigureAwait(false)).ToArray();
+            result.ClaimsSupported = Array.Empty<string>();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
             result.ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes.ToArray();
-            result.GrantTypesSupported = grantTypesSupported;
+            result.GrantTypesSupported = GrantTypes.All;
             result.SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray();
             result.TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods;
             result.IdTokenSigningAlgValuesSupported = new[] { SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256 };
@@ -92,42 +90,10 @@ namespace SimpleAuth.Api.Discovery
 
         private static string[] GetSupportedResponseTypes(ICollection<AuthorizationFlow> authorizationFlows)
         {
-            var result = new List<string>();
-            foreach (var mapping in CoreConstants.MappingResponseTypesToAuthorizationFlows)
-            {
-                if (authorizationFlows.Contains(mapping.Value))
-                {
-                    var record = string.Join(" ", mapping.Key.Where(ResponseTypeNames.All.Contains));
-                    //.Select(k => Enum.GetName(typeof(string), k)));
-                    result.Add(record);
-                }
-            }
-
-            return result.ToArray();
+            return CoreConstants.MappingResponseTypesToAuthorizationFlows
+                .Where(mapping => authorizationFlows.Contains(mapping.Value))
+                .Select(mapping => string.Join(" ", mapping.Key.Where(ResponseTypeNames.All.Contains)))
+                .ToArray();
         }
-
-        //private static string[] GetSupportedGrantTypes()
-        //{
-        //    var resultKind = new List<string>();
-        //    foreach (var supportedGrantType in )
-        //    {
-        //        //var record = Enum.GetName(typeof(GrantType), supportedGrantType);
-        //        resultKind.Add(supportedGrantType);
-        //    }
-
-        //    return resultKind.ToArray();
-        //}
-
-        //private static string[] GetSupportedTokenEndPointAuthMethods()
-        //{
-        //    var resultKind = new List<string>();
-        //    foreach (var supportedAuthMethod in CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods)
-        //    {
-        //        var record = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), supportedAuthMethod);
-        //        resultKind.Add(record);
-        //    }
-
-        //    return resultKind.ToArray();
-        //}
     }
 }

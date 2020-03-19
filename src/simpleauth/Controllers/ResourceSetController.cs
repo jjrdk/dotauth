@@ -158,6 +158,10 @@ namespace SimpleAuth.Controllers
             }
 
             var id = await _addResourceSet.Execute(resourceSet, cancellationToken).ConfigureAwait(false);
+            if (id == null)
+            {
+                return Problem();
+            }
             var response = new AddResourceSetResponse { Id = id };
             return new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Created };
         }

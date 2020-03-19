@@ -199,7 +199,7 @@ namespace SimpleAuth.Tests.Common
             var defaultSigningKey = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
             var accessToken = handler.CreateEncodedJwt(
                 "test",
-                "test",
+                clientId,
                 claimsIdentity,
                 null,
                 issuedAt.AddSeconds(expiresIn),
@@ -207,6 +207,7 @@ namespace SimpleAuth.Tests.Common
                 defaultSigningKey);
             var grantedToken = new GrantedToken
             {
+                ClientId = clientId,
                 AccessToken = accessToken,
                 CreateDateTime = issuedAt,
                 ExpiresIn = expiresIn
@@ -226,7 +227,7 @@ namespace SimpleAuth.Tests.Common
                     actionResult,
                     authorizationParameter,
                     claimsPrincipal,
-                    new Client { ClientId = "client" },
+                    new Client { ClientId = clientId },
                     "test",
                     CancellationToken.None)
                 .ConfigureAwait(false);

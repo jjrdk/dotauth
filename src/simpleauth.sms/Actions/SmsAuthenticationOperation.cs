@@ -3,7 +3,6 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -22,7 +21,7 @@
             IConfirmationCodeStore confirmationCodeStore,
             IResourceOwnerRepository resourceOwnerRepository,
             ISubjectBuilder subjectBuilder,
-            IEnumerable<IAccountFilter> accountFilters,
+            IAccountFilter[] accountFilters,
             IEventPublisher eventPublisher)
         {
             _generateAndSendSmsCodeOperation = new GenerateAndSendSmsCodeOperation(

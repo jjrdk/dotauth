@@ -16,8 +16,10 @@ namespace SimpleAuth.Extensions
 {
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -48,13 +50,31 @@ namespace SimpleAuth.Extensions
                 };
             }
 
-            var jwtSecurityToken = new JwtSecurityToken(grantedToken.AccessToken).SigningKey;
             var publicKeys = await jwksStore.GetPublicKeys(cancellationToken).ConfigureAwait(false);
-
-            return new GrantedTokenValidationResult
+            var handler = new JwtSecurityTokenHandler();
+            var validationParameters = new TokenValidationParameters
             {
-                IsValid = true
+                ValidateActor = false,
+                ValidAudience = grantedToken.ClientId,
+                ValidateIssuer = false,
+                IssuerSigningKeys = publicKeys.Keys
             };
+
+            try
+            {
+                var result = handler.ValidateToken(grantedToken.AccessToken, validationParameters, out _);
+
+                return new GrantedTokenValidationResult { IsValid = true };
+            }
+            catch (Exception exception)
+            {
+                return new GrantedTokenValidationResult
+                {
+                    IsValid = false,
+                    MessageErrorCode = exception.Message,
+                    MessageErrorDescription = exception.Message
+                };
+            }
         }
 
         public static async Task<GrantedToken> GetValidGrantedToken(

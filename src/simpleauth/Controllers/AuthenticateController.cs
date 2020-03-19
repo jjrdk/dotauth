@@ -270,7 +270,7 @@
             try
             {
                 // 1. Decrypt the request
-                var request = _dataProtector.Unprotect<AuthorizationRequest>(viewModel.Code);
+                var request = DataProtector.Unprotect<AuthorizationRequest>(viewModel.Code);
 
                 // 3. Check the state of the view model
                 if (!ModelState.IsValid)
@@ -283,7 +283,7 @@
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
 
                 var actionResult = await _localOpenIdAuthentication.Execute(
-                        new LocalAuthenticationParameter {UserName = viewModel.Login, Password = viewModel.Password},
+                        new LocalAuthenticationParameter { UserName = viewModel.Login, Password = viewModel.Password },
                         request.ToParameter(),
                         viewModel.Code,
                         issuerName,
@@ -298,14 +298,14 @@
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
                         await _generateAndSendCode.Send(subject, cancellationToken).ConfigureAwait(false);
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (ClaimRequiredException cre)
                     {
                         await _eventPublisher.Publish(
                                 new SimpleAuthError(Id.Create(), cre.Code, cre.Message, string.Empty, DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
-                        return RedirectToAction("SendCode", new {code = viewModel.Code});
+                        return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (Exception ex)
                     {
@@ -324,7 +324,7 @@
                     await SetLocalCookie(actionResult.Claims, request.session_id).ConfigureAwait(false);
 
                     // 7. Redirect the user agent
-                    var result = this.CreateRedirectionFromActionResult(actionResult.EndpointResult, request);
+                    var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request);
                     if (result != null)
                     {
                         await LogAuthenticateUser(subject, actionResult?.EndpointResult?.Amr).ConfigureAwait(false);

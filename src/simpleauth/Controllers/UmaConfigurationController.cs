@@ -66,14 +66,16 @@ namespace SimpleAuth.Controllers
         {
             var absoluteUriWithVirtualPath = Request.GetAbsoluteUriWithVirtualPath();
             var scopes = await _scopeStore.GetAll(cancellationToken).ConfigureAwait(false);
-
+            var scopeSupportedNames = scopes != null && scopes.Any()
+                ? scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray()
+                : Array.Empty<string>();
             var result = new UmaConfiguration
             {
                 ClaimTokenProfilesSupported = Array.Empty<string>(),
                 UmaProfilesSupported = UmaProfilesSupported,
                 ResourceRegistrationEndpoint = absoluteUriWithVirtualPath + ResourceSetApi,
                 PermissionEndpoint = absoluteUriWithVirtualPath + PermissionApi,
-                ScopesSupported = scopes.Select(s => s.Name).ToArray(),
+                ScopesSupported = scopeSupportedNames,
                 //PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
                 // OAUTH2.0
                 Issuer = absoluteUriWithVirtualPath,

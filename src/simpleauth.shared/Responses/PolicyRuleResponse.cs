@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Responses
 {
     using System.Runtime.Serialization;
-    using System.Security.Claims;
     using SimpleAuth.Shared.Models;
 
     /// <summary>

@@ -5,6 +5,7 @@
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Shared;
 
     /// <summary>
     /// Defines the abstract base controller.

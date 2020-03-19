@@ -117,18 +117,17 @@ namespace SimpleAuth.Controllers
             switch (actionResult.Type)
             {
                 case ActionResultType.RedirectToCallBackUrl:
-                    {
-                        return this.CreateRedirectHttpTokenResponse(
-                            authorizationRequest.redirect_uri,
-                            actionResult.GetRedirectionParameters(),
-                            actionResult.RedirectInstruction.ResponseMode);
-                    }
+                {
+                    return authorizationRequest.redirect_uri.CreateRedirectHttpTokenResponse(
+                        actionResult.GetRedirectionParameters(),
+                        actionResult.RedirectInstruction.ResponseMode);
+                }
                 case ActionResultType.RedirectToAction:
                     {
                         if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex
                             || actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex)
                         {
-                            // Force the resource owner to be reauthenticated
+                            // Force the resource owner to be re-authenticated
                             if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex)
                             {
                                 authorizationRequest.prompt = PromptParameters.Login;

@@ -70,8 +70,7 @@ namespace SimpleAuth.Extensions
         }
 
         public static ActionResult CreateRedirectionFromActionResult(
-            this ControllerBase controller,
-            EndpointResult endpointResult,
+            this EndpointResult endpointResult,
             AuthorizationRequest authorizationRequest)
         {
             if (endpointResult.Type == ActionResultType.RedirectToCallBackUrl)
@@ -99,8 +98,7 @@ namespace SimpleAuth.Extensions
         }
 
         public static RedirectResult CreateRedirectHttpTokenResponse(
-            this ControllerBase controller,
-            Uri uri,
+            this Uri uri,
             RouteValueDictionary parameters,
             string responseMode)
         {

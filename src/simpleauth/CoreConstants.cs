@@ -304,15 +304,6 @@ namespace SimpleAuth
                 AuthorizationFlow.HybridFlow
             };
 
-            public static readonly string[] SupportedGrantTypes =
-            {
-                GrantTypes.AuthorizationCode,
-                GrantTypes.ClientCredentials,
-                GrantTypes.Password,
-                GrantTypes.RefreshToken,
-                GrantTypes.Implicit
-            };
-
             public static readonly string[] SupportedResponseModes = { "query" };
 
             public static readonly string[] SupportedSubjectTypes =

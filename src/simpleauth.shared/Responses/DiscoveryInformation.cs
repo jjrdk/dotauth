@@ -15,6 +15,7 @@
 namespace SimpleAuth.Shared.Responses
 {
     using System.Runtime.Serialization;
+    using Microsoft.IdentityModel.Tokens;
 
     /// <summary>
     /// Defines the discovery information.
@@ -163,55 +164,56 @@ namespace SimpleAuth.Shared.Responses
         /// </summary>
         [DataMember(Name = DiscoveryInformationNames.RegistrationEndPoint)]
         public string RegistrationEndPoint { get; set; }
+
         /// <summary>
         /// Gets or sets the acr values supported.
         /// </summary>
-        public string[] AcrValuesSupported { get; set; }
+        public string[] AcrValuesSupported { get; set; } = { "pwd" };
 
         /// <summary>
         /// Gets or sets the list of the JWE encryption algorithms (alg values)
         /// </summary>
-        public string[] IdTokenEncryptionAlgValuesSupported { get; set; }
+        public string[] IdTokenEncryptionAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
 
         /// <summary>
         /// Gets or sets the list of the JWE encryption algorithms (enc values)
         /// </summary>
-        public string[] IdTokenEncryptionEncValuesSupported { get; set; }
+        public string[] IdTokenEncryptionEncValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
 
         /// <summary>
         /// Gets or sets the list of the JWS signing algorithms (alg values) supported by the UserInfo endpoint.
         /// </summary>
-        public string[] UserInfoSigningAlgValuesSupported { get; set; }
+        public string[] UserInfoSigningAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
 
         /// <summary>
         /// Gets or sets the list of the JWE encryption algorithms (alg values) supported by the UserInfo endpoint.
         /// </summary>
-        public string[] UserInfoEncryptionAlgValuesSupported { get; set; }
+        public string[] UserInfoEncryptionAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
 
         /// <summary>
         /// Gets or sets the list of the JWE encryption algorithms (enc values) supported by the UserInfo endpoint.
         /// </summary>
-        public string[] UserInfoEncryptionEncValuesSupported { get; set; }
+        public string[] UserInfoEncryptionEncValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
 
         /// <summary>
         /// Gets or sets the list of the JWS signing algorithms (alg values) supported by the OP for Request objects.
         /// </summary>
-        public string[] RequestObjectSigningAlgValuesSupported { get; set; }
+        public string[] RequestObjectSigningAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
 
         /// <summary>
         /// Gets or sets the list of the JWE encryption algorithms (alg values) supported by the OP for Request objects.
         /// </summary>
-        public string[] RequestObjectEncryptionAlgValuesSupported { get; set; }
+        public string[] RequestObjectEncryptionAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
 
         /// <summary>
         /// Gets or sets the list of the JWE encryption algorithms (enc values) supported by the OP for Request objects.
         /// </summary>
-        public string[] RequestObjectEncryptionEncValuesSupported { get; set; }
+        public string[] RequestObjectEncryptionEncValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
 
         /// <summary>
-        /// Gets or sets the list of the JWS algorithms (alg values) suppported by the Token Endpoint for the signature on the JWT.
+        /// Gets or sets the list of the JWS algorithms (alg values) supported by the Token Endpoint for the signature on the JWT.
         /// </summary>
-        public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; }
+        public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
 
         /// <summary>
         /// Gets or sets a list of display parameter values.
@@ -231,7 +233,7 @@ namespace SimpleAuth.Shared.Responses
         /// <summary>
         /// Gets or sets the languages &amp; scripts supported for the UI.
         /// </summary>
-        public string[] UiLocalesSupported { get; set; }
+        public string[] UiLocalesSupported { get; set; } = { "en" };
 
         /// <summary>
         /// Gets or sets the OP policy.

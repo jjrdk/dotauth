@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Shared;
 
     [Route("[controller]")]
     public class TestController : ControllerBase

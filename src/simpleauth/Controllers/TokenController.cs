@@ -21,7 +21,7 @@
     /// <summary>
     /// Defines the token controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.Token)]
     public class TokenController : ControllerBase
     {

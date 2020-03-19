@@ -45,21 +45,20 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Resource_Set_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
+        public async Task WhenResourceSetCannotBeInsertedThenReturnsNullId()
         {
             var addResourceParameter = new ResourceSet
             {
-                Name = "name", Scopes = new[] {"scope"}, IconUri = new Uri("http://localhost")
+                Name = "name",
+                Scopes = new[] { "scope" },
+                IconUri = new Uri("http://localhost")
             };
             _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _addResourceSetAction.Execute(addResourceParameter, CancellationToken.None))
+            var result = await _addResourceSetAction.Execute(addResourceParameter, CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheResourceSetCannotBeInserted, exception.Message);
+            Assert.Null(result);
         }
 
         [Fact]
@@ -67,7 +66,9 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var addResourceParameter = new ResourceSet
             {
-                Name = "name", Scopes = new[] {"scope"}, IconUri = new Uri("http://localhost")
+                Name = "name",
+                Scopes = new[] { "scope" },
+                IconUri = new Uri("http://localhost")
             };
             _resourceSetRepositoryStub.Setup(r => r.Add(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);

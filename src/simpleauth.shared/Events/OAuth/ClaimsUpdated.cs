@@ -20,7 +20,7 @@
             : base(id, timestamp)
         {
             Subject = subject;
-            From = @from;
+            From = from;
             To = to;
         }
 

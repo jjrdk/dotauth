@@ -53,7 +53,7 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// The data protector
         /// </summary>
-        protected readonly IDataProtector _dataProtector;
+        protected readonly IDataProtector DataProtector;
         private readonly IUrlHelper _urlHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
@@ -130,7 +130,7 @@ namespace SimpleAuth.Controllers
                 clientStore,
                 jwksStore,
                 eventPublisher);
-            _dataProtector = dataProtectionProvider.CreateProtector("Request");
+            DataProtector = dataProtectionProvider.CreateProtector("Request");
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
             _authenticationSchemeProvider = authenticationSchemeProvider;
@@ -382,7 +382,7 @@ namespace SimpleAuth.Controllers
             var authenticatedUserClaims = authenticatedUser.Claims.ToArray();
             if (!string.IsNullOrWhiteSpace(codeViewModel.AuthRequestCode))
             {
-                var request = _dataProtector.Unprotect<AuthorizationRequest>(codeViewModel.AuthRequestCode);
+                var request = DataProtector.Unprotect<AuthorizationRequest>(codeViewModel.AuthRequestCode);
                 await SetLocalCookie(authenticatedUserClaims, request.session_id).ConfigureAwait(false);
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
                 var actionResult = await _authenticateHelper.ProcessRedirection(
@@ -394,7 +394,7 @@ namespace SimpleAuth.Controllers
                         cancellationToken)
                     .ConfigureAwait(false);
                 await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr).ConfigureAwait(false);
-                var result = this.CreateRedirectionFromActionResult(actionResult, request);
+                var result = actionResult.CreateRedirectionFromActionResult(request);
                 return result;
             }
 
@@ -423,7 +423,7 @@ namespace SimpleAuth.Controllers
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
-            var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
+            var request = DataProtector.Unprotect<AuthorizationRequest>(code);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _authenticateResourceOwnerOpenId.Execute(
                     request.ToParameter(),
@@ -432,7 +432,7 @@ namespace SimpleAuth.Controllers
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            var result = this.CreateRedirectionFromActionResult(actionResult, request);
+            var result = actionResult.CreateRedirectionFromActionResult(request);
             if (result != null)
             {
                 await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr).ConfigureAwait(false);
@@ -576,7 +576,7 @@ namespace SimpleAuth.Controllers
             }
 
             // 6. Try to authenticate the resource owner & returns the claims.
-            var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
+            var authorizationRequest = DataProtector.Unprotect<AuthorizationRequest>(request);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _authenticateHelper.ProcessRedirection(
                     authorizationRequest.ToParameter(),
@@ -597,7 +597,7 @@ namespace SimpleAuth.Controllers
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
                 await LogAuthenticateUser(subject, actionResult.Amr).ConfigureAwait(false);
-                return this.CreateRedirectionFromActionResult(actionResult, authorizationRequest);
+                return actionResult.CreateRedirectionFromActionResult(authorizationRequest);
             }
 
             return RedirectToAction("OpenId", "Authenticate", new { code });
