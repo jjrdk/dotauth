@@ -130,6 +130,66 @@ namespace SimpleAuth.Controllers
         }
 
         /// <summary>
+        /// Gets the access policy definition for the given resource.
+        /// </summary>
+        /// <param name="id">The resource id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
+        /// <returns></returns>
+        [HttpGet("{id}/policy")]
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> GetResourceSetPolicy(string id, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    "the identifier must be specified",
+                    HttpStatusCode.BadRequest);
+            }
+
+            var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
+            if (result == null)
+            {
+                return BadRequest();
+            }
+
+            return new OkObjectResult(result.AuthorizationPolicies);
+        }
+
+        /// <summary>
+        /// Sets the access policy definition for the given resource.
+        /// </summary>
+        /// <param name="id">The resource id.</param>
+        /// <param name="rules">The access policy rules to set.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
+        [HttpPut("{id}/policy")]
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> SetResourceSetPolicy(string id, PolicyRule[] rules, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    "the identifier must be specified",
+                    HttpStatusCode.BadRequest);
+            }
+
+            var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
+            if (result == null)
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    "invalid resource",
+                    HttpStatusCode.BadRequest);
+            }
+
+            result.AuthorizationPolicies = rules;
+            var updated = await _resourceSetRepository.Update(result, cancellationToken).ConfigureAwait(false);
+
+            return updated ? Ok() : (IActionResult)Problem();
+        }
+
+        /// <summary>
         /// Adds the resource set.
         /// </summary>
         /// <param name="resourceSet">The post resource set.</param>
@@ -162,7 +222,13 @@ namespace SimpleAuth.Controllers
             {
                 return Problem();
             }
-            var response = new AddResourceSetResponse { Id = id };
+
+            var response = new AddResourceSetResponse
+            {
+                Id = id,
+                UserAccessPolicyUri =
+                    $"{Request.GetAbsoluteUriWithVirtualPath()}/{UmaConstants.RouteValues.ResourceSet}/{id}/policy"
+            };
             return new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Created };
         }
 

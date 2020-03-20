@@ -221,8 +221,8 @@ namespace SimpleAuth.AcceptanceTests
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
                     AllowedScopes = new[] {"api1", "uma_protection"},
-                    GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.ClientCredentials},
-                    ResponseTypes = new[] {ResponseTypeNames.Token},
+                    GrantTypes = GrantTypes.All,
+                    ResponseTypes = ResponseTypeNames.All,
                     JsonWebKeys =
                         TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                             .ToSet(),
@@ -533,6 +533,15 @@ namespace SimpleAuth.AcceptanceTests
                     Name = "test",
                     Type = ScopeTypes.ProtectedApi,
                     UpdateDateTime = DateTimeOffset.UtcNow
+                },
+                new Scope
+                {
+                    Claims = new[] {OpenIdClaimTypes.Subject},
+                    Description = "Manage user managed resources and policies.",
+                    IsDisplayedInConsent = true,
+                    IsExposed = true,
+                    Name = "uma_protection",
+                    Type = ScopeTypes.ProtectedApi
                 }
             };
         }
