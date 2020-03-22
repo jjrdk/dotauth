@@ -49,7 +49,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> Add(ResourceSet resourceSet, CancellationToken cancellationToken)
+        public async Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             session.Store(resourceSet);
@@ -58,7 +58,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceSet> Get(string id, CancellationToken cancellationToken)
+        public async Task<ResourceSet> Get(string owner, string id, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var resourceSet = await session.LoadAsync<ResourceSet>(id, cancellationToken).ConfigureAwait(false);

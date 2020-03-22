@@ -25,7 +25,6 @@ namespace SimpleAuth.Extensions
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
-    using System.Security.Claims;
 
     internal static class MappingExtensions
     {
@@ -38,7 +37,7 @@ namespace SimpleAuth.Extensions
                 ExpiresIn = grantedToken.ExpiresIn,
                 RefreshToken = grantedToken.RefreshToken,
                 TokenType = grantedToken.TokenType,
-                Scope = grantedToken.Scope//.Split(' ').ToArray()
+                Scope = string.Join(' ', grantedToken.Scope)
             };
         }
 

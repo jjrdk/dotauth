@@ -33,6 +33,12 @@ namespace SimpleAuth.Shared.Models
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the icon uri.
+        /// </summary>
+        [DataMember(Name = "icon_uri")]
+        public Uri IconUri { get; set; }
+
+        /// <summary>
         /// Gets or sets the description.
         /// </summary>
         /// <value>
@@ -76,17 +82,5 @@ namespace SimpleAuth.Shared.Models
         /// </value>
         [DataMember(Name = "claims")]
         public string[] Claims { get; set; } = Array.Empty<string>();
-
-        /// <summary>
-        /// Gets or sets the create datetime.
-        /// </summary>
-        [DataMember(Name = "create_datetime")]
-        public DateTimeOffset CreateDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the update datetime.
-        /// </summary>
-        [DataMember(Name = "update_datetime")]
-        public DateTimeOffset UpdateDateTime { get; set; }
     }
 }

@@ -515,13 +515,11 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
                 new Scope
                 {
                     Claims = Array.Empty<string>(),
-                    CreateDateTime = DateTime.UtcNow,
                     Description = "test scope",
                     IsDisplayedInConsent = true,
                     IsExposed = true,
                     Name = "test",
                     Type = ScopeTypes.ProtectedApi,
-                    UpdateDateTime = DateTime.UtcNow
                 },
             };
         }

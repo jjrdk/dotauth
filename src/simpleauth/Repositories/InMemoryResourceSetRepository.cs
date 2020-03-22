@@ -15,15 +15,15 @@
     /// <seealso cref="IResourceSetRepository" />
     public sealed class InMemoryResourceSetRepository : IResourceSetRepository
     {
-        private readonly ICollection<ResourceSet> _resources;
+        private readonly ICollection<OwnedResourceSet> _resources;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryResourceSetRepository"/> class.
         /// </summary>
         /// <param name="resources">The resources.</param>
-        public InMemoryResourceSetRepository(IReadOnlyCollection<ResourceSet> resources = null)
+        public InMemoryResourceSetRepository(IEnumerable<(string owner, ResourceSet resource)> resources = null)
         {
-            _resources = resources?.ToList() ?? new List<ResourceSet>();
+            _resources = resources?.Select(x => new OwnedResourceSet(x.owner, x.resource)).ToList() ?? new List<OwnedResourceSet>();
         }
 
         /// <inheritdoc />
@@ -34,7 +34,7 @@
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var policy = _resources.FirstOrDefault(p => p.Id == id);
+            var policy = _resources.FirstOrDefault(p => p.Resource.Id == id);
             if (policy == null)
             {
                 return Task.FromResult(false);
@@ -45,16 +45,16 @@
         }
 
         /// <inheritdoc />
-        public Task<ResourceSet> Get(string id, CancellationToken cancellationToken)
+        public Task<ResourceSet> Get(string owner, string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var rec = _resources.FirstOrDefault(p => p.Id == id);
+            var rec = _resources.FirstOrDefault(p => p.Resource.Id == id);
 
-            return Task.FromResult(rec);
+            return Task.FromResult(rec?.Resource);
         }
 
         /// <inheritdoc />
@@ -65,7 +65,7 @@
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var result = _resources.Where(r => ids.Contains(r.Id)).ToArray();
+            var result = _resources.Where(r => ids.Contains(r.Resource.Id)).Select(x => x.Resource).ToArray();
 
             return Task.FromResult(result);
         }
@@ -75,19 +75,19 @@
         /// <inheritdoc />
         public Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken)
         {
-            var result = _resources.ToArray();
+            var result = _resources.Where(x => x.Owner == owner).Select(x => x.Resource).ToArray();
             return Task.FromResult(result);
         }
 
         /// <inheritdoc />
-        public Task<bool> Add(ResourceSet resourceSet, CancellationToken cancellationToken)
+        public Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {
                 throw new ArgumentNullException(nameof(resourceSet));
             }
 
-            _resources.Add(resourceSet);
+            _resources.Add(new OwnedResourceSet(owner, resourceSet));
             return Task.FromResult(true);
         }
 
@@ -101,7 +101,7 @@
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            IEnumerable<ResourceSet> result = _resources;
+            var result = _resources.Select(x => x.Resource);
             if (parameter.Ids != null && parameter.Ids.Any())
             {
                 result = result.Where(r => parameter.Ids.Contains(r.Id));
@@ -117,17 +117,13 @@
                 result = result.Where(r => parameter.Types.Any(t => r.Type.Contains(t)));
             }
 
-            result = result.OrderBy(c => c.Id);
-            var nbResult = result.Count();
-            if (parameter.TotalResults > 0)
-            {
-                result = result.Skip(parameter.StartIndex).Take(parameter.TotalResults);
-            }
+            var sortedResult = result.OrderBy(c => c.Id).ToArray();
+            var nbResult = sortedResult.Length;
 
             return Task.FromResult(
                 new GenericResult<ResourceSet>
                 {
-                    Content = result.ToArray(),
+                    Content = sortedResult.Skip(parameter.StartIndex).Take(parameter.TotalResults).ToArray(),
                     StartIndex = parameter.StartIndex,
                     TotalResults = nbResult
                 });
@@ -141,18 +137,30 @@
                 throw new ArgumentNullException(nameof(resourceSet));
             }
 
-            var rec = _resources.FirstOrDefault(p => p.Id == resourceSet.Id);
+            var rec = _resources.FirstOrDefault(p => p.Resource.Id == resourceSet.Id);
             if (rec == null)
             {
                 return Task.FromResult(false);
             }
 
-            rec.AuthorizationPolicies = resourceSet.AuthorizationPolicies;
-            rec.IconUri = resourceSet.IconUri;
-            rec.Name = resourceSet.Name;
-            rec.Scopes = resourceSet.Scopes;
-            rec.Type = resourceSet.Type;
+            rec.Resource.AuthorizationPolicies = resourceSet.AuthorizationPolicies;
+            rec.Resource.IconUri = resourceSet.IconUri;
+            rec.Resource.Name = resourceSet.Name;
+            rec.Resource.Scopes = resourceSet.Scopes;
+            rec.Resource.Type = resourceSet.Type;
             return Task.FromResult(true);
+        }
+
+        private class OwnedResourceSet
+        {
+            public OwnedResourceSet(string owner, ResourceSet resource)
+            {
+                Owner = owner;
+                Resource = resource;
+            }
+
+            public string Owner { get; }
+            public ResourceSet Resource { get; }
         }
     }
 }

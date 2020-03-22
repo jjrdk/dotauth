@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using Results;
     using Shared.Responses;
     using System;
     using System.Linq;
@@ -71,7 +70,7 @@ namespace SimpleAuth.Client
         /// </summary>
         /// <param name="introspectionRequest">The introspection request.</param>
         /// <returns></returns>
-        public async Task<BaseSidContentResult<IntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
+        public async Task<GenericResponse<IntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(introspectionRequest));
             var request = new HttpRequestMessage
@@ -87,21 +86,17 @@ namespace SimpleAuth.Client
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);
             var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!result.IsSuccessStatusCode)
-            {
-                return new BaseSidContentResult<IntrospectionResponse>
+            return (!result.IsSuccessStatusCode)
+                ? new GenericResponse<IntrospectionResponse>
                 {
-                    HasError = true,
                     Error = Serializer.Default.Deserialize<ErrorDetails>(json),
-                    Status = result.StatusCode
+                    HttpStatus = result.StatusCode
+                }
+                : new GenericResponse<IntrospectionResponse>
+                {
+                    HttpStatus = result.StatusCode,
+                    Content = Serializer.Default.Deserialize<IntrospectionResponse>(json)
                 };
-            }
-
-            return new BaseSidContentResult<IntrospectionResponse>
-            {
-                HasError = false,
-                Content = Serializer.Default.Deserialize<IntrospectionResponse>(json)
-            };
         }
     }
 }

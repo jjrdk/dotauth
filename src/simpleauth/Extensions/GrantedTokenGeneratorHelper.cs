@@ -76,7 +76,7 @@ namespace SimpleAuth.Extensions
             var enumerable =
                 new[]
                     {
-                        new Claim(StandardClaimNames.Scopes, scope),
+                        new Claim(StandardClaimNames.Scopes, string.Join(' ', scope)),
                         new Claim(StandardClaimNames.Azp, client.ClientId),
                     }.Concat(client.Claims ?? Array.Empty<Claim>())
                     .Concat(additionalClaims ?? Array.Empty<Claim>())

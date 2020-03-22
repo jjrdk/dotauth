@@ -70,7 +70,7 @@ namespace SimpleAuth.Api.Discovery
             result.Issuer = issuer;
             result.AuthorizationEndPoint = issuer + "/" + CoreConstants.EndPoints.Authorization;
             result.TokenEndPoint = issuer + "/" + CoreConstants.EndPoints.Token;
-            result.UserInfoEndPoint = issuer + "/" + CoreConstants.EndPoints.UserInfo;
+            result.UserInfoEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.UserInfo);
             result.JwksUri = issuer + "/" + CoreConstants.EndPoints.Jwks;
             result.RegistrationEndPoint = issuer + "/" + CoreConstants.EndPoints.Registration;
             result.RevocationEndPoint = issuer + "/" + CoreConstants.EndPoints.Revocation;

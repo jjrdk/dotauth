@@ -16,6 +16,7 @@ namespace SimpleAuth.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Net.Http.Headers;
     using System.Threading;
@@ -65,7 +66,7 @@ namespace SimpleAuth.Controllers
             return grantedToken == null
                 ? BadRequest(
                     new ErrorDetails {Detail = ErrorDescriptions.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken})
-                : new ObjectResult(grantedToken.IdTokenPayLoad);
+                : new ObjectResult(grantedToken.UserInfoPayLoad ?? grantedToken.IdTokenPayLoad ?? new JwtPayload());
         }
 
         private async Task<string> TryToGetTheAccessToken()
@@ -110,30 +111,24 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         private async Task<string> GetAccessTokenFromBodyParameter()
         {
-            const string contentTypeName = "Content-Type";
             const string contentTypeValue = "application/x-www-form-urlencoded";
-            var accessTokenName = StandardAuthorizationResponseNames.AccessTokenName;
-            var emptyResult = string.Empty;
-            if (Request.Headers == null || !Request.Headers.TryGetValue(contentTypeName, out var values))
+
+            if (Request.Headers == null || !Request.Headers.TryGetValue(HeaderNames.ContentType, out var values))
             {
-                return emptyResult;
+                return null;
             }
 
-            var contentTypeHeader = values.First();
-            if (string.Compare(contentTypeHeader, contentTypeValue) != 0)
+            if (!string.Equals(values.First(), contentTypeValue, StringComparison.Ordinal))
             {
-                return emptyResult;
+                return null;
             }
 
             var content = await Request.ReadAsStringAsync().ConfigureAwait(false);
             var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(content);
-            if (!queryString.Keys.Contains(accessTokenName))
-            {
-                return emptyResult;
-            }
 
-            queryString.TryGetValue(accessTokenName, out var result);
-            return result.First();
+            return !queryString.TryGetValue(StandardAuthorizationResponseNames.AccessTokenName, out var result)
+                ? null
+                : result.First();
         }
 
         /// <summary>

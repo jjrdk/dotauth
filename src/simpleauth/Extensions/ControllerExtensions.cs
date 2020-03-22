@@ -28,17 +28,6 @@ namespace SimpleAuth.Extensions
 
     internal static class ControllerExtensions
     {
-        public static string GetClientId(this ControllerBase controller)
-        {
-            if (controller.User?.Identity == null || !controller.User.Identity.IsAuthenticated)
-            {
-                return string.Empty;
-            }
-
-            var claim = controller.User.Claims.FirstOrDefault(c => c.Type == StandardClaimNames.Azp);// || c.Type == StandardTokenRequestParameterNames.ClientIdName);
-            return claim == null ? string.Empty : claim.Value;
-        }
-
         public static string GetOriginUrl(this Controller controller)
         {
             if (!controller.Request.Headers.ContainsKey("Referer"))

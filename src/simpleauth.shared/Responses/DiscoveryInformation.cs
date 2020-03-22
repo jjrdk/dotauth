@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared.Responses
 {
+    using System;
     using System.Runtime.Serialization;
     using Microsoft.IdentityModel.Tokens;
 
@@ -153,7 +154,7 @@ namespace SimpleAuth.Shared.Responses
         /// Gets or sets the user-info endpoint.
         /// </summary>
         [DataMember(Name = DiscoveryInformationNames.UserInfoEndPoint)]
-        public string UserInfoEndPoint { get; set; }
+        public Uri UserInfoEndPoint { get; set; }
         /// <summary>
         /// Gets or sets the version of the discovery document
         /// </summary>

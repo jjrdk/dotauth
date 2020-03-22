@@ -98,7 +98,7 @@ namespace SimpleAuth.Api.Introspection
             //// default : Specifiy the other parameters : NBF & JTI
             var result = new IntrospectionResponse
             {
-                Scope = grantedToken.Scope?.Split(' '),
+                Scope = grantedToken.Scope.Split(' ', StringSplitOptions.RemoveEmptyEntries),
                 ClientId = grantedToken.ClientId,
                 Expiration = grantedToken.ExpiresIn,
                 TokenType = grantedToken.TokenType

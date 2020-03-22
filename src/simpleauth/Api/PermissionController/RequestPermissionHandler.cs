@@ -41,16 +41,15 @@ namespace SimpleAuth.Api.PermissionController
         }
 
         public async Task<string> Execute(
-            string clientId,
+            string owner,
             CancellationToken cancellationToken,
             params PermissionRequest[] addPermissionParameters)
         {
-            await CheckAddPermissionParameter(addPermissionParameters, cancellationToken).ConfigureAwait(false);
+            await CheckAddPermissionParameter(owner, addPermissionParameters, cancellationToken).ConfigureAwait(false);
 
             var ticket = new Ticket
             {
                 Id = Id.Create(),
-                ClientId = clientId,
                 Created = DateTimeOffset.UtcNow,
                 Expires = DateTimeOffset.UtcNow.Add(_configurationService.TicketLifeTime),
                 Lines = addPermissionParameters.Select(
@@ -71,6 +70,7 @@ namespace SimpleAuth.Api.PermissionController
         }
 
         private async Task CheckAddPermissionParameter(
+            string owner,
             PermissionRequest[] addPermissionParameters,
             CancellationToken cancellationToken)
         {
@@ -96,6 +96,7 @@ namespace SimpleAuth.Api.PermissionController
                 }
 
                 var resourceSet = await _resourceSetRepository.Get(
+                    owner,
                     addPermissionParameter.ResourceSetId,
                     cancellationToken).ConfigureAwait(false);
 

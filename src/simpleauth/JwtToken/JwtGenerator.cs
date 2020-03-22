@@ -290,11 +290,11 @@ namespace SimpleAuth.JwtToken
             var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
 
             // 1. Fill-In the subject - set the subject as an essential claim
-            if (claimParameters.All(c => c.Name != Shared.OpenIdClaimTypes.Subject))
+            if (claimParameters.All(c => c.Name != OpenIdClaimTypes.Subject))
             {
                 var essentialSubjectClaimParameter = new ClaimParameter
                 {
-                    Name = Shared.OpenIdClaimTypes.Subject,
+                    Name = OpenIdClaimTypes.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}

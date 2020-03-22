@@ -35,7 +35,7 @@ namespace SimpleAuth.AuthServer
     using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.Models;
 
-    public class Startup
+    internal class Startup
     {
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
@@ -60,22 +60,23 @@ namespace SimpleAuth.AuthServer
                     sp => new InMemoryResourceSetRepository(
                         new[]
                         {
-                            new ResourceSet
-                            {
-                                Id = "abc",
-                                Name = "Test Resource",
-                                Type = "Content",
-                                Scopes = new[] {"read"},
-                                AuthorizationPolicies = new[]
+                            ("administrator",
+                                new ResourceSet
                                 {
-                                    new PolicyRule
+                                    Id = "abc",
+                                    Name = "Test Resource",
+                                    Type = "Content",
+                                    Scopes = new[] {"read"},
+                                    AuthorizationPolicies = new[]
                                     {
-                                        ClientIdsAllowed = new[] {"web"},
-                                        Scopes = new[] {"read"},
-                                        IsResourceOwnerConsentNeeded = true
+                                        new PolicyRule
+                                        {
+                                            ClientIdsAllowed = new[] {"web"},
+                                            Scopes = new[] {"read"},
+                                            IsResourceOwnerConsentNeeded = true
+                                        }
                                     }
-                                }
-                            }
+                                })
                         }),
                 EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 HttpClientFactory = () => client,

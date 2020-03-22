@@ -28,10 +28,10 @@ namespace SimpleAuth.UserInfoIntrospection
 
     internal class UserInfoIntrospectionHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private readonly UserInfoClient _userInfoClient;
+        private readonly TokenClient _userInfoClient;
 
         public UserInfoIntrospectionHandler(
-            UserInfoClient userInfoClient,
+            TokenClient userInfoClient,
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
@@ -58,8 +58,8 @@ namespace SimpleAuth.UserInfoIntrospection
 
             try
             {
-                var introspectionResult = await _userInfoClient.Get(header.Parameter).ConfigureAwait(false);
-                if (introspectionResult == null || introspectionResult.HasError)
+                var introspectionResult = await _userInfoClient.GetUserInfo(header.Parameter).ConfigureAwait(false);
+                if (introspectionResult == null || introspectionResult.ContainsError)
                 {
                     return AuthenticateResult.NoResult();
                 }

@@ -41,15 +41,14 @@
                 .GinIndexJsonData();
             For<ResourceSet>()
                 .Identity(x => x.Id)
-                .Duplicate(x => x.Name, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.Type, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Name)
+                .Duplicate(x => x.Type)
                 .GinIndexJsonData();
             For<Ticket>()
                 .Identity(x => x.Id)
-                .Duplicate(x => x.Created, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.Expires, configure: idx => { idx.IsConcurrent = true; })
-                .Duplicate(x => x.IsAuthorizedByRo, configure: idx => { idx.IsConcurrent = true; }, dbType: NpgsqlDbType.Boolean)
-                .Duplicate(x => x.ClientId, configure: idx => { idx.IsConcurrent = true; })
+                .Duplicate(x => x.Created)
+                .Duplicate(x => x.Expires)
+                .Duplicate(x => x.IsAuthorizedByRo, dbType: NpgsqlDbType.Boolean)
                 .GinIndexJsonData();
             For<AuthorizationCode>()
                 .Identity(x => x.Code)

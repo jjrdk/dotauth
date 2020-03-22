@@ -100,22 +100,15 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var clientId = this.GetClientId();
-            if (string.IsNullOrWhiteSpace(clientId))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    "the client_id cannot be extracted",
-                    HttpStatusCode.BadRequest);
-            }
+            var subject = User.GetSubject();
 
-            var ticketId = await _requestPermission.Execute(clientId, cancellationToken, permissionRequest)
+            var ticketId = await _requestPermission.Execute(subject, cancellationToken, permissionRequest)
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
-                    new UmaTicketCreated(Id.Create(), clientId, ticketId, DateTimeOffset.UtcNow, permissionRequest))
+                    new UmaTicketCreated(Id.Create(), User.GetClientId(), ticketId, DateTimeOffset.UtcNow, permissionRequest))
                 .ConfigureAwait(false);
-            var result = new PermissionResponse {TicketId = ticketId};
-            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
+            var result = new PermissionResponse { TicketId = ticketId };
+            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         /// <summary>
@@ -135,28 +128,20 @@ namespace SimpleAuth.Controllers
                 return BuildError(ErrorCodes.InvalidRequest, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            var clientId = this.GetClientId();
-            if (string.IsNullOrWhiteSpace(clientId))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    "the client_id cannot be extracted",
-                    HttpStatusCode.BadRequest);
-            }
-
-            var ticketId = await _requestPermission.Execute(clientId, cancellationToken, permissionRequests)
+            var subject = User.GetSubject();
+            var ticketId = await _requestPermission.Execute(subject, cancellationToken, permissionRequests)
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
-                    new UmaTicketCreated(Id.Create(), clientId, ticketId, DateTimeOffset.UtcNow, permissionRequests))
+                    new UmaTicketCreated(Id.Create(), User.GetClientId(), ticketId, DateTimeOffset.UtcNow, permissionRequests))
                 .ConfigureAwait(false);
-            var result = new PermissionResponse {TicketId = ticketId};
-            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
+            var result = new PermissionResponse { TicketId = ticketId };
+            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         private static IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
-            return new BadRequestObjectResult(error) {StatusCode = (int) statusCode};
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return new BadRequestObjectResult(error) { StatusCode = (int)statusCode };
         }
     }
 }

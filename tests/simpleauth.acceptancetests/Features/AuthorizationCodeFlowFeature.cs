@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.AcceptanceTests.Features
 {
     using SimpleAuth.Client;
-    using SimpleAuth.Client.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using System;
@@ -27,16 +26,16 @@
                 {
                     var response = await client.GetAuthorization(
                             new AuthorizationRequest(
-                                new[] {"api1"},
-                                new[] {ResponseTypeNames.Code},
+                                new[] { "api1" },
+                                new[] { ResponseTypeNames.Code },
                                 "authcode_client",
                                 new Uri("http://localhost:5000/callback"),
                                 "abc"))
                         .ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.False(response.ContainsError);
 
-                    result = response.Location;
+                    result = response.Content;
                 });
 
             "then has authorization uri".x(() => { Assert.NotNull(result); });
@@ -46,7 +45,7 @@
         public void InvalidScope()
         {
             AuthorizationClient client = null;
-            GetAuthorizationResult result = null;
+            GenericResponse<Uri> result = null;
 
             "and an improperly configured authorization client".x(
                 async () => client = await AuthorizationClient.Create(
@@ -59,8 +58,8 @@
                 {
                     result = await client.GetAuthorization(
                             new AuthorizationRequest(
-                                new[] {"cheese"},
-                                new[] {ResponseTypeNames.Code},
+                                new[] { "cheese" },
+                                new[] { ResponseTypeNames.Code },
                                 "authcode_client",
                                 new Uri("http://localhost:5000/callback"),
                                 "abc"))
@@ -74,7 +73,7 @@
         public void InvalidRedirectUri()
         {
             AuthorizationClient client = null;
-            GetAuthorizationResult result = null;
+            GenericResponse<Uri> result = null;
 
             "and an improperly configured authorization client".x(
                 async () => client = await AuthorizationClient.Create(
@@ -87,8 +86,8 @@
                 {
                     result = await client.GetAuthorization(
                             new AuthorizationRequest(
-                                new[] {"api1"},
-                                new[] {ResponseTypeNames.Code},
+                                new[] { "api1" },
+                                new[] { ResponseTypeNames.Code },
                                 "authcode_client",
                                 new Uri("http://localhost:1000/callback"),
                                 "abc"))

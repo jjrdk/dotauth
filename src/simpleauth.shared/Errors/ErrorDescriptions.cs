@@ -37,7 +37,7 @@ namespace SimpleAuth.Shared.Errors
         public const string ParameterIsNotCorrect = "the parameter {0} is not correct";
         public const string ScopesAreNotAllowedOrInvalid = "the scopes {0} are not allowed or invalid";
         public const string DuplicateScopeValues = "duplicate scopes {0} have been passed in parameter";
-        public const string TheScopesNeedToBeSpecified = "the scope(s) {0} need(s) to be specified";
+        public const string TheScopesNeedToBeSpecified = "the scope(s) need(s) to be specified";
         public const string TheUserNeedsToBeAuthenticated = "the user needs to be authenticated";
         public const string TheAuthorizationRequestCannotBeProcessedBecauseThereIsNotValidPrompt =
             "the authorization request cannot be processed because there is not valid prompt";

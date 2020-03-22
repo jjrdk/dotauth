@@ -30,14 +30,6 @@ namespace SimpleAuth.Shared.Models
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the client identifier.
-        /// </summary>
-        /// <value>
-        /// The client identifier.
-        /// </value>
-        public string ClientId { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether this instance is authorized by ro.
         /// </summary>
         /// <value>

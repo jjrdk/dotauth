@@ -41,6 +41,26 @@
         }
 
         /// <inheritdoc />
+        public async Task<bool> ApproveAccess(string ticketId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+                if (!_tickets.ContainsKey(ticketId))
+                {
+                    return false;
+                }
+
+                _tickets[ticketId].IsAuthorizedByRo = true;
+                return true;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        /// <inheritdoc />
         public async Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(ticketId))

@@ -14,15 +14,14 @@
 
 namespace SimpleAuth.Controllers
 {
+    using System.Linq;
     using Api.ResourceSetController;
-    using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Responses;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using System.Linq;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -38,9 +37,7 @@ namespace SimpleAuth.Controllers
     {
         private const string NoParameterInBodyRequest = "no parameter in body request";
         private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly AddResourceSetAction _addResourceSet;
         private readonly UpdateResourceSetAction _updateResourceSet;
-        private readonly DeleteResourceSetAction _removeResourceSet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceSetController"/> class.
@@ -49,9 +46,7 @@ namespace SimpleAuth.Controllers
         public ResourceSetController(IResourceSetRepository resourceSetRepository)
         {
             _resourceSetRepository = resourceSetRepository;
-            _addResourceSet = new AddResourceSetAction(resourceSetRepository);
             _updateResourceSet = new UpdateResourceSetAction(resourceSetRepository);
-            _removeResourceSet = new DeleteResourceSetAction(resourceSetRepository);
         }
 
         /// <summary>
@@ -112,6 +107,15 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetResourceSet(string id, CancellationToken cancellationToken)
         {
+            var subject = User.GetSubject();
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    ErrorDescriptions.TheSubjectCannotBeRetrieved,
+                    HttpStatusCode.BadRequest);
+            }
+
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
@@ -120,7 +124,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
                 return Ok();
@@ -139,6 +143,15 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetResourceSetPolicy(string id, CancellationToken cancellationToken)
         {
+            var subject = User.GetSubject();
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    ErrorDescriptions.TheSubjectCannotBeRetrieved,
+                    HttpStatusCode.BadRequest);
+            }
+
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
@@ -147,7 +160,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
                 return BadRequest();
@@ -166,6 +179,15 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> SetResourceSetPolicy(string id, PolicyRule[] rules, CancellationToken cancellationToken)
         {
+            var subject = User.GetSubject();
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    ErrorDescriptions.TheSubjectCannotBeRetrieved,
+                    HttpStatusCode.BadRequest);
+            }
+
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BuildError(
@@ -174,7 +196,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var result = await _resourceSetRepository.Get(id, cancellationToken).ConfigureAwait(false);
+            var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
                 return BuildError(
@@ -201,6 +223,15 @@ namespace SimpleAuth.Controllers
             [FromBody] ResourceSet resourceSet,
             CancellationToken cancellationToken)
         {
+            var subject = User.GetSubject();
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    ErrorDescriptions.TheSubjectCannotBeRetrieved,
+                    HttpStatusCode.BadRequest);
+            }
+
             if (resourceSet == null)
             {
                 return BuildError(
@@ -217,18 +248,35 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var id = await _addResourceSet.Execute(resourceSet, cancellationToken).ConfigureAwait(false);
-            if (id == null)
+            if (string.IsNullOrWhiteSpace(resourceSet.Name))
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"),
+                    HttpStatusCode.BadRequest);
+            }
+
+            if (resourceSet.Scopes == null || !resourceSet.Scopes.Any())
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"),
+                    HttpStatusCode.BadRequest);
+            }
+
+            resourceSet.Id = Id.Create();
+            if (!await _resourceSetRepository.Add(subject, resourceSet, cancellationToken).ConfigureAwait(false))
             {
                 return Problem();
             }
 
             var response = new AddResourceSetResponse
             {
-                Id = id,
+                Id = resourceSet.Id,
                 UserAccessPolicyUri =
-                    $"{Request.GetAbsoluteUriWithVirtualPath()}/{UmaConstants.RouteValues.ResourceSet}/{id}/policy"
+                    $"{Request.GetAbsoluteUriWithVirtualPath()}{UmaConstants.RouteValues.ResourceSet}/{resourceSet.Id}/policy"
             };
+
             return new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Created };
         }
 
@@ -290,7 +338,7 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var resourceSetExists = await _removeResourceSet.Execute(id, cancellationToken).ConfigureAwait(false);
+            var resourceSetExists = await _resourceSetRepository.Remove(id, cancellationToken).ConfigureAwait(false);
             return !resourceSetExists
                 ? (IActionResult)BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest })
                 : NoContent();

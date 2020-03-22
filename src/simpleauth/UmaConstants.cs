@@ -31,12 +31,6 @@ namespace SimpleAuth
             public const string Scopes = "scopes";
         }
 
-        public static class AddPolicyParameterNames
-        {
-            public const string PolicyId = "policy_id";
-            public const string Rules = "rules";
-        }
-
         public static class ErrorDetailNames
         {
             public const string RequestingPartyClaims = "requesting_party_claims";
@@ -50,7 +44,7 @@ namespace SimpleAuth
         public static class RouteValues
         {
             public const string Configuration = ".well-known/uma2-configuration";
-            public const string ResourceSet = "rs/resource_set";
+            public const string ResourceSet = "/resource_set";
             public const string Permission = "/perm";
             public const string Policies = "/policies";
             public const string Introspection = "/introspect";
@@ -58,27 +52,6 @@ namespace SimpleAuth
             public const string Jwks = "/jwks";
             public const string Registration = "/registration";
             public const string DiscoveryAction = ".well-known/openid-configuration";
-        }
-
-        public static class ClaimNames
-        {
-            public const string Type = "type";
-            public const string Value = "value";
-        }
-
-        public static class ErrorDetailsNames
-        {
-            public const string Error = "error";
-            public const string ErrorDescription = "error_description";
-            public const string ErrorDetails = "error_details";
-        }
-
-        public static class CachingStoreNames
-        {
-            public const string GetResourceStoreName = "GetResource_";
-            public const string GetResourcesStoreName = "GetResources";
-            public const string GetPolicyStoreName = "GetPolicy_";
-            public const string GetPoliciesStoreName = "GetPolicies";
         }
     }
 }

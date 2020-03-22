@@ -2,11 +2,11 @@
 {
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
-    using SimpleAuth.Client.Results;
     using SimpleAuth.Shared.Responses;
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Net;
+    using SimpleAuth.Shared;
     using Xbehave;
     using Xunit;
 
@@ -29,7 +29,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.False(response.ContainsError);
 
                     result = response.Content;
                 });
@@ -45,6 +45,15 @@
                         ValidIssuer = "https://localhost"
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
+                });
+
+            "and can get user info".x(
+                async () =>
+                {
+                    var userinfo = await client.GetUserInfo(result.AccessToken).ConfigureAwait(false);
+
+                    Assert.False(userinfo.ContainsError);
+                    Assert.NotNull(userinfo.Content);
                 });
         }
 
@@ -65,7 +74,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.False(response.ContainsError);
 
                     result = response.Content;
                 });
@@ -75,7 +84,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
                         .ConfigureAwait(false);
-                    Assert.False(response.HasError);
+                    Assert.False(response.ContainsError);
                 });
         }
 
@@ -96,7 +105,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.False(response.ContainsError);
 
                     result = response.Content;
                 });
@@ -105,7 +114,7 @@
                 async () =>
                 {
                     var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
-                    Assert.Equal(HttpStatusCode.OK, response.Status);
+                    Assert.Equal(HttpStatusCode.OK, response.HttpStatus);
                 });
         }
 
@@ -113,7 +122,7 @@
         public void InvalidClientCredentials()
         {
             TokenClient client = null;
-            BaseSidContentResult<GrantedTokenResponse> result = null;
+            GenericResponse<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(

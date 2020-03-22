@@ -25,7 +25,7 @@ namespace SimpleAuth.Extensions
             var scopes = scope.ParseScopes();
             if (!scopes.Any())
             {
-                return new ScopeValidationResult(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, scope));
+                return new ScopeValidationResult(ErrorDescriptions.TheScopesNeedToBeSpecified);
             }
 
             var duplicates = scopes.GroupBy(p => p)

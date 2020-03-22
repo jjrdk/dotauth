@@ -48,7 +48,7 @@
                 var introspectionResult = await introspectionClient.Introspect(
                         IntrospectionRequest.Create(token.Parameter, TokenTypes.AccessToken))
                     .ConfigureAwait(false);
-                if (introspectionResult.HasError || !introspectionResult.Content.Active)
+                if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {
                     return AuthenticateResult.NoResult();
                 }

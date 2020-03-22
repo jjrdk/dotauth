@@ -39,7 +39,7 @@ namespace SimpleAuth.Server.Tests.Introspection
             var mockLoggerFactory = new Mock<ILoggerFactory>();
             mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(new Mock<ILogger>().Object);
             var introspectionHandler = new UserInfoIntrospectionHandler(
-                await UserInfoClient.Create(_server.Client, discoveryDocumentationUrl).ConfigureAwait(false),
+                client,
                 mock.Object,
                 mockLoggerFactory.Object,
                 new UrlTestEncoder(),

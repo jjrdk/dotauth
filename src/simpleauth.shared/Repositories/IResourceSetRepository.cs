@@ -35,18 +35,20 @@ namespace SimpleAuth.Shared.Repositories
         /// <summary>
         /// Inserts the specified resource set.
         /// </summary>
+        /// <param name="owner">The resource owner.</param>
         /// <param name="resourceSet">The resource set.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> Add(ResourceSet resourceSet, CancellationToken cancellationToken);
+        Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the specified identifier.
         /// </summary>
+        /// <param name="owner">The resource owner.</param>
         /// <param name="id">The identifier.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ResourceSet> Get(string id, CancellationToken cancellationToken);
+        Task<ResourceSet> Get(string owner, string id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the specified resource set.

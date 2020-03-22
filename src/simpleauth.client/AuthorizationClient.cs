@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using Results;
     using Shared.Requests;
     using Shared.Responses;
     using System;
@@ -57,7 +56,7 @@ namespace SimpleAuth.Client
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">request</exception>
-        public async Task<GetAuthorizationResult> GetAuthorization(AuthorizationRequest request)
+        public async Task<GenericResponse<Uri>> GetAuthorization(AuthorizationRequest request)
         {
             if (request == null)
             {
@@ -66,18 +65,15 @@ namespace SimpleAuth.Client
 
             var uriBuilder = new UriBuilder(_discoveryInformation.AuthorizationEndPoint) { Query = request.ToRequest() };
             var response = await _client.GetAsync(uriBuilder.Uri).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if ((int)response.StatusCode < 400)
-            {
-                return new GetAuthorizationResult { HasError = false, Location = response.Headers.Location };
-            }
-            return new GetAuthorizationResult
-            {
-                HasError = true,
-                Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                Status = response.StatusCode
-            };
 
+            return (int)response.StatusCode < 400
+                ? new GenericResponse<Uri> { HttpStatus = response.StatusCode, Content = response.Headers.Location }
+                : new GenericResponse<Uri>
+                {
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(
+                        await response.Content.ReadAsStringAsync().ConfigureAwait(false)),
+                    HttpStatus = response.StatusCode
+                };
         }
     }
 }

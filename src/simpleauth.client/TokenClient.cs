@@ -14,10 +14,11 @@
 
 namespace SimpleAuth.Client
 {
-    using Results;
     using Shared.Responses;
     using SimpleAuth.Shared;
     using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -82,7 +83,7 @@ namespace SimpleAuth.Client
         /// </summary>
         /// <param name="tokenRequest">The token request.</param>
         /// <returns></returns>
-        public async Task<BaseSidContentResult<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest)
+        public async Task<GenericResponse<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(tokenRequest));
             var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
@@ -108,16 +109,16 @@ namespace SimpleAuth.Client
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
-                return new BaseSidContentResult<GrantedTokenResponse>
+                return new GenericResponse<GrantedTokenResponse>
                 {
-                    HasError = true,
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    Status = result.StatusCode
+                    HttpStatus = result.StatusCode
                 };
             }
 
-            return new BaseSidContentResult<GrantedTokenResponse>
+            return new GenericResponse<GrantedTokenResponse>
             {
+                HttpStatus = result.StatusCode,
                 Content = Serializer.Default.Deserialize<GrantedTokenResponse>(content)
             };
         }
@@ -138,8 +139,7 @@ namespace SimpleAuth.Client
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<object>> RequestSms(
-            ConfirmationCodeRequest request)
+        public async Task<GenericResponse<object>> RequestSms(ConfirmationCodeRequest request)
         {
             var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
             var requestUri = new Uri(discoveryInformation.Issuer + "/code");
@@ -176,7 +176,7 @@ namespace SimpleAuth.Client
         /// </summary>
         /// <param name="revokeTokenRequest">The revoke token request.</param>
         /// <returns></returns>
-        public async Task<RevokeTokenResult> RevokeToken(RevokeTokenRequest revokeTokenRequest)
+        public async Task<GenericResponse<object>> RevokeToken(RevokeTokenRequest revokeTokenRequest)
         {
             var body = new FormUrlEncodedContent(_form.Concat(revokeTokenRequest));
             var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
@@ -202,20 +202,90 @@ namespace SimpleAuth.Client
             var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
-                return new RevokeTokenResult
+                return new GenericResponse<object>
                 {
-                    HasError = true,
                     Error = Serializer.Default.Deserialize<ErrorDetails>(json),
-                    Status = result.StatusCode
+                    HttpStatus = result.StatusCode
                 };
             }
 
-            return new RevokeTokenResult { Status = result.StatusCode };
+            return new GenericResponse<object> { HttpStatus = result.StatusCode };
         }
 
         private async Task<DiscoveryInformation> GetDiscoveryInformation()
         {
             return _discovery ??= await _discoveryOperation.Execute(_discoveryDocumentationUrl).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets the specified user info based on the configuration URL and access token.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="inBody">if set to <c>true</c> [in body].</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// configurationUrl
+        /// or
+        /// accessToken
+        /// </exception>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task<GenericResponse<JwtPayload>> GetUserInfo(string accessToken, bool inBody = false)
+        {
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            var discoveryDocument = await GetDiscoveryInformation().ConfigureAwait(false);
+            var request = new HttpRequestMessage
+            {
+                RequestUri = discoveryDocument.UserInfoEndPoint
+            };
+            request.Headers.Add("Accept", "application/json");
+
+            if (inBody)
+            {
+                request.Method = HttpMethod.Post;
+                request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {
+                        "access_token", accessToken
+                    }
+                });
+            }
+            else
+            {
+                request.Method = HttpMethod.Get;
+                request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, accessToken);
+            }
+
+            var serializedContent = await _client.SendAsync(request).ConfigureAwait(false);
+            var json = await serializedContent.Content.ReadAsStringAsync().ConfigureAwait(false);
+            if (!serializedContent.IsSuccessStatusCode)
+            {
+                return new GenericResponse<JwtPayload>()
+                {
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
+                    HttpStatus = serializedContent.StatusCode
+                };
+            }
+
+            return string.IsNullOrWhiteSpace(json)
+                ? new GenericResponse<JwtPayload>
+                {
+                    HttpStatus = serializedContent.StatusCode,
+                    Error = new ErrorDetails
+                    {
+                        Title = "invalid_token",
+                        Detail = "Not a valid resource owner token",
+                        Status = serializedContent.StatusCode
+                    }
+                }
+                : new GenericResponse<JwtPayload>
+                {
+                    HttpStatus = serializedContent.StatusCode,
+                    Content = Serializer.Default.Deserialize<JwtPayload>(json)
+                };
         }
     }
 }

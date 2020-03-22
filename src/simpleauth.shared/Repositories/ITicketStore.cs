@@ -19,6 +19,14 @@
         Task<bool> Add(Ticket ticket, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Approves the access request.
+        /// </summary>
+        /// <param name="ticketId">The ticket to approve.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns></returns>
+        Task<bool> ApproveAccess(string ticketId, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Removes the specified ticket identifier.
         /// </summary>
         /// <param name="ticketId">The ticket identifier.</param>

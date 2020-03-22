@@ -32,11 +32,11 @@
 
             "And a UMA client".x(() => { umaClient = new UmaClient(_fixture.Client, new Uri(BaseUrl)); });
 
-            "When getting token".x(
+            "When getting a PAT token".x(
                 async () =>
                 {
                     var response = await client.GetToken(
-                            TokenRequest.FromPassword("administrator", "password", new[] { "api1", "uma_protection" }))
+                            TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
                         .ConfigureAwait(false);
                     token = response.Content;
 

@@ -9,7 +9,7 @@
     using System.Text.RegularExpressions;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
-    using SimpleAuth.Client.Results;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
@@ -235,7 +235,7 @@
                         .ConfigureAwait(false);
                     umaToken = response.Content;
 
-                    Assert.True(response.HasError);
+                    Assert.True(response.ContainsError);
                 });
 
             "then has no token".x(() => { Assert.Null(umaToken); });
@@ -244,7 +244,7 @@
         [Scenario(DisplayName = "Unsuccessful ticket authentication")]
         public void UnsuccessfulTicketAuthentication()
         {
-            BaseSidContentResult<GrantedTokenResponse> ticketResponse = null;
+            GenericResponse<GrantedTokenResponse> ticketResponse = null;
             AddResourceSetResponse resourceSetResponse = null;
             UmaClient umaClient = null;
             TokenClient client = null;

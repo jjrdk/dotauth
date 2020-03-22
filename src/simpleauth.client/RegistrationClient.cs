@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Client
 {
-    using Newtonsoft.Json;
-    using Results;
     using Shared.Models;
     using System;
     using System.Net.Http;
@@ -34,7 +32,7 @@ namespace SimpleAuth.Client
             _getDiscoveryOperation = new GetDiscoveryOperation(client);
         }
 
-        public async Task<BaseSidContentResult<Client>> Resolve(Client client, string configurationUrl, string accessToken)
+        public async Task<GenericResponse<Client>> Resolve(Client client, string configurationUrl, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {
@@ -58,26 +56,22 @@ namespace SimpleAuth.Client
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, accessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue(
+                    JwtBearerConstants.BearerScheme,
+                    accessToken);
             }
 
             var result = await _client.SendAsync(request).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!result.IsSuccessStatusCode)
-            {
-                return new BaseSidContentResult<Client>
+            return (!result.IsSuccessStatusCode)
+                ? new GenericResponse<Client>
                 {
-                    HasError = true,
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    Status = result.StatusCode
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content), HttpStatus = result.StatusCode
+                }
+                : new GenericResponse<Client>
+                {
+                    HttpStatus = result.StatusCode, Content = Serializer.Default.Deserialize<Client>(content)
                 };
-            }
-
-            return new BaseSidContentResult<Client>
-            {
-                HasError = false,
-                Content = Serializer.Default.Deserialize<Client>(content)
-            };
         }
     }
 }

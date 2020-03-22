@@ -18,7 +18,6 @@ namespace SimpleAuth.Api.ResourceSetController
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Shared.Models;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;

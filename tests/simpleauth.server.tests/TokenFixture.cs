@@ -35,7 +35,7 @@
             // Try to get the access token via "ticket_id" grant-type.
             var token = await tokenClient.GetToken(TokenRequest.FromTicketId("ticket_id", "")).ConfigureAwait(false);
 
-            Assert.True(token.HasError);
+            Assert.True(token.ContainsError);
             Assert.Equal("invalid_ticket", token.Error.Title);
             Assert.Equal("the ticket ticket_id doesn't exist", token.Error.Detail);
         }

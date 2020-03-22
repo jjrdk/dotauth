@@ -84,14 +84,12 @@ namespace SimpleAuth.Common
             if (responses.Contains(ResponseTypeNames.Token))
             {
                 // 1. Generate an access token.
-                if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
-                {
-                    allowedTokenScopes = string.Join(" ", authorizationParameter.Scope.ParseScopes());
-                }
+
+                allowedTokenScopes = string.Join(' ', authorizationParameter.Scope.ParseScopes());
 
                 grantedToken = await _tokenStore.GetValidGrantedToken(
                         _jwksStore,
-                        allowedTokenScopes,
+                        string.Join(' ', allowedTokenScopes),
                         client.ClientId,
                         cancellationToken,
                         idTokenJwsPayload: userInformationPayload,

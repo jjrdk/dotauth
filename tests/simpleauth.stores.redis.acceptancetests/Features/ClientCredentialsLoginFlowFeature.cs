@@ -7,7 +7,7 @@
     using Microsoft.IdentityModel.Tokens;
 
     using SimpleAuth.Client;
-    using SimpleAuth.Client.Results;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
 
     using Xbehave;
@@ -33,7 +33,7 @@
                     {
                         var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                        Assert.False(response.HasError);
+                        Assert.False(response.ContainsError);
 
                         result = response.Content;
                     });
@@ -69,7 +69,7 @@
                     {
                         var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                        Assert.False(response.HasError);
+                        Assert.False(response.ContainsError);
 
                         result = response.Content;
                     });
@@ -79,7 +79,7 @@
                     {
                         var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
                                            .ConfigureAwait(false);
-                        Assert.False(response.HasError);
+                        Assert.False(response.ContainsError);
                     });
         }
 
@@ -100,7 +100,7 @@
                     {
                         var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                        Assert.False(response.HasError);
+                        Assert.False(response.ContainsError);
 
                         result = response.Content;
                     });
@@ -110,7 +110,7 @@
                     {
                         var response = await client.RevokeToken(RevokeTokenRequest.Create(result))
                                            .ConfigureAwait(false);
-                        Assert.Equal(HttpStatusCode.OK, response.Status);
+                        Assert.Equal(HttpStatusCode.OK, response.HttpStatus);
                     });
         }
 
@@ -118,7 +118,7 @@
         public void InvalidClientCredentials()
         {
             TokenClient client = null;
-            BaseSidContentResult<GrantedTokenResponse> result = null;
+            GenericResponse<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(

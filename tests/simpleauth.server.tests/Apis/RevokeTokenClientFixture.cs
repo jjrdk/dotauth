@@ -89,7 +89,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(ex.HasError);
+            Assert.True(ex.ContainsError);
             Assert.Equal("invalid_client", ex.Error.Title);
             Assert.Equal("the client doesn't exist", ex.Error.Detail);
         }
@@ -104,7 +104,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(ex.HasError);
+            Assert.True(ex.ContainsError);
             Assert.Equal("invalid_token", ex.Error.Title);
             Assert.Equal("the token doesn't exist", ex.Error.Detail);
         }
@@ -127,7 +127,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .RevokeToken(RevokeTokenRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(ex.HasError);
+            Assert.True(ex.ContainsError);
             Assert.Equal("invalid_token", ex.Error.Title);
             Assert.Equal("the token has not been issued for the given client id 'client'", ex.Error.Detail);
         }
@@ -154,8 +154,8 @@ namespace SimpleAuth.Server.Tests.Apis
                     IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.False(revoke.HasError);
-            Assert.True(ex.HasError);
+            Assert.False(revoke.ContainsError);
+            Assert.True(ex.ContainsError);
         }
 
         [Fact]
@@ -180,8 +180,8 @@ namespace SimpleAuth.Server.Tests.Apis
                     IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken))
                 .ConfigureAwait(false);
 
-            Assert.False(revoke.HasError);
-            Assert.True(ex.HasError);
+            Assert.False(revoke.ContainsError);
+            Assert.True(ex.ContainsError);
         }
     }
 }

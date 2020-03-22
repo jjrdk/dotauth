@@ -172,16 +172,22 @@ namespace SimpleAuth.Api.Token.Actions
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var authorizationParameter = new AuthorizationParameter {Scope = resourceOwnerGrantTypeParameter.Scope};
-            var payload = await _jwtGenerator
+            var userInfo = await _jwtGenerator
                 .GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
+            var idPayload = await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                claimsPrincipal,
+                authorizationParameter,
+                new List<ClaimParameter>(),
+                issuerName,
+                cancellationToken).ConfigureAwait(false);
             var generatedToken = await _tokenStore.GetValidGrantedToken(
                     _jwksStore,
                     allowedTokenScopes,
                     client.ClientId,
                     cancellationToken,
-                    idTokenJwsPayload: payload,
-                    userInfoJwsPayload: payload)
+                    idTokenJwsPayload: userInfo,
+                    userInfoJwsPayload: userInfo)
                 .ConfigureAwait(false);
             if (generatedToken == null)
             {
@@ -189,8 +195,8 @@ namespace SimpleAuth.Api.Token.Actions
                         _jwksStore,
                         allowedTokenScopes,
                         issuerName,
-                        payload,
-                        payload,
+                        userInfo,
+                        userInfo,
                         cancellationToken,
                         claimsIdentity.Claims.Where(
                                 c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)

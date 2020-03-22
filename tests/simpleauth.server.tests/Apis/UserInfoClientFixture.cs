@@ -10,21 +10,22 @@
         private const string BaseUrl = "http://localhost:5000";
         private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
         private readonly TestOauthServerFixture _server;
-        private readonly UserInfoClient _userInfoClient;
+        private readonly TokenClient _userInfoClient;
 
         public UserInfoClientFixture()
         {
             _server = new TestOauthServerFixture();
-            _userInfoClient = UserInfoClient.Create(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .Result;
+            _userInfoClient = new TokenClient(
+                TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                _server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
         }
 
         [Fact]
         public async Task When_Pass_Invalid_Token_To_UserInfo_Then_Error_Is_Returned()
         {
-            var getUserInfoResult = await _userInfoClient.Get("invalid_access_token").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.GetUserInfo("invalid_access_token").ConfigureAwait(false);
 
-            Assert.True(getUserInfoResult.HasError);
+            Assert.True(getUserInfoResult.ContainsError);
             Assert.Equal("invalid_token", getUserInfoResult.Error.Title);
             Assert.Equal("the token is not valid", getUserInfoResult.Error.Detail);
         }
@@ -37,9 +38,9 @@
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Get(result.Content.AccessToken).ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
 
-            Assert.True(getUserInfoResult.HasError);
+            Assert.True(getUserInfoResult.ContainsError);
             Assert.Equal("invalid_token", getUserInfoResult.Error.Title);
             Assert.Equal("Not a valid resource owner token", getUserInfoResult.Error.Detail);
         }
@@ -52,9 +53,9 @@
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Get(result.Content.AccessToken).ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
 
             Assert.NotNull(getUserInfoResult);
         }
@@ -67,9 +68,9 @@
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Get(result.Content.AccessToken).ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
 
             Assert.NotNull(getUserInfoResult.Content);
         }
@@ -82,9 +83,9 @@
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.Get(result.Content.AccessToken).ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
 
             Assert.NotNull(getUserInfoResult.Content);
         }

@@ -36,13 +36,8 @@ namespace SimpleAuth.Controllers
             "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
         };
 
-        private const string ResourceSetApi = "/rs/resource_set";
-        private const string PermissionApi = "/perm";
-
         // OAUTH2.0
         private const string AuthorizationApi = "/authorization";
-        private const string TokenApi = "/token";
-        private const string JwksApi = "/jwks";
         private const string RegistrationApi = "/registration";
         private const string IntrospectionApi = "/introspect";
         //private const string PolicyApi = "/policies";
@@ -73,17 +68,17 @@ namespace SimpleAuth.Controllers
             {
                 ClaimTokenProfilesSupported = Array.Empty<string>(),
                 UmaProfilesSupported = UmaProfilesSupported,
-                ResourceRegistrationEndpoint = absoluteUriWithVirtualPath + ResourceSetApi,
-                PermissionEndpoint = absoluteUriWithVirtualPath + PermissionApi,
+                ResourceRegistrationEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.ResourceSet,
+                PermissionEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Permission,
                 ScopesSupported = scopeSupportedNames,
                 //PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
                 // OAUTH2.0
                 Issuer = absoluteUriWithVirtualPath,
                 AuthorizationEndpoint = absoluteUriWithVirtualPath + AuthorizationApi,
-                TokenEndpoint = absoluteUriWithVirtualPath + TokenApi,
-                JwksUri = absoluteUriWithVirtualPath + JwksApi,
-                RegistrationEndpoint = absoluteUriWithVirtualPath + RegistrationApi,
-                IntrospectionEndpoint = absoluteUriWithVirtualPath + IntrospectionApi,
+                TokenEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Token,
+                JwksUri = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Jwks,
+                RegistrationEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Registration,
+                IntrospectionEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Introspection,
                 RevocationEndpoint = absoluteUriWithVirtualPath + RevocationApi,
                 UiLocalesSupported = new[] { "en" }
             };

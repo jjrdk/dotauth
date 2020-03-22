@@ -54,7 +54,7 @@ namespace SimpleAuth.Tests.Helpers
         public async Task When_Client_DoesNot_Exist_Then_Exception_Is_Thrown()
         {
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Client) null);
+                .ReturnsAsync((Client)null);
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(
                     () => _clientRepositoryStub.Object.GenerateToken(
@@ -88,7 +88,7 @@ namespace SimpleAuth.Tests.Helpers
             var result = await _clientRepositoryStub.Object.GenerateToken(
                     new InMemoryJwksRepository(),
                     "client_id",
-                    "scope",
+                     "scope",
                     "issuer",
                     CancellationToken.None,
                     userInformationPayload: null)

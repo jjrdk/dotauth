@@ -67,9 +67,10 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task WhenResourceSetDoesNotExistThenReturnsNotAuthorized()
         {
-            var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "resource_set_id" } } };
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ResourceSet)null));
+            var ticket = new Ticket {Lines = new[] {new TicketLine {ResourceSetId = "resource_set_id"}}};
+            _resourceSetRepositoryStub
+                .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult((ResourceSet) null));
 
             var result = await _authorizationPolicyValidator.IsAuthorized(
                     ticket,
@@ -84,8 +85,8 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_Policy_Does_Not_Exist_Then_RequestSubmitted_Is_Returned()
         {
-            var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
-            var resourceSet = new[] { new ResourceSet { Id = "1" } };
+            var ticket = new Ticket {Lines = new[] {new TicketLine {ResourceSetId = "1"}}};
+            var resourceSet = new[] {new ResourceSet {Id = "1"}};
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(resourceSet);
 
@@ -105,16 +106,16 @@ namespace SimpleAuth.Server.Tests.Policies
             var token = handler.CreateEncodedJwt(
                 "test",
                 "test",
-                new ClaimsIdentity(new[] { new Claim("test", "test") }),
+                new ClaimsIdentity(new[] {new Claim("test", "test")}),
                 null,
                 null,
                 null,
                 new SigningCredentials(jwks.Keys[0], jwks.Keys[0].Alg));
             _clientStoreStub.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns<string, CancellationToken>(
-                    (s, c) => Task.FromResult(new Client { ClientId = s, JsonWebKeys = jwks }));
+                    (s, c) => Task.FromResult(new Client {ClientId = s, JsonWebKeys = jwks}));
 
-            var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
+            var ticket = new Ticket {Lines = new[] {new TicketLine {ResourceSetId = "1"}}};
             var resourceSet = new[]
             {
                 new ResourceSet
@@ -136,7 +137,7 @@ namespace SimpleAuth.Server.Tests.Policies
             var result = await _authorizationPolicyValidator.IsAuthorized(
                     ticket,
                     "client_id",
-                    new ClaimTokenParameter { Token = token, Format = UmaConstants.IdTokenType },
+                    new ClaimTokenParameter {Token = token, Format = UmaConstants.IdTokenType},
                     CancellationToken.None)
                 .ConfigureAwait(false);
 

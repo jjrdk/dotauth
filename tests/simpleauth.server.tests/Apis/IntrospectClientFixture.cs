@@ -91,7 +91,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .Introspect(IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(introspection.HasError);
+            Assert.True(introspection.ContainsError);
             Assert.Equal("invalid_client", introspection.Error.Title);
             Assert.Equal("the client doesn't exist", introspection.Error.Detail);
         }
@@ -108,7 +108,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken))
                 .ConfigureAwait(false);
 
-            Assert.True(introspection.HasError);
+            Assert.True(introspection.ContainsError);
             Assert.Equal("invalid_token", introspection.Error.Title);
             Assert.Equal("the token is not valid", introspection.Error.Detail);
         }

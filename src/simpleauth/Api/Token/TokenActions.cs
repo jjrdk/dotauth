@@ -25,6 +25,7 @@ namespace SimpleAuth.Api.Token
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
@@ -306,10 +307,11 @@ namespace SimpleAuth.Api.Token
                         _jwksStore,
                         allowedTokenScopes,
                         issuerName,
-                        cancellationToken: cancellationToken,
+                        new JwtPayload(client.Claims),
                         additionalClaims: client.Claims.Where(
                                 c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
-                            .ToArray())
+                            .ToArray(),
+                        cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(

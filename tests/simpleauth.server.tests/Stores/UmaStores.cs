@@ -19,15 +19,12 @@ namespace SimpleAuth.Server.Tests.Stores
 
     public static class UmaStores
     {
-        public static List<ResourceSet> GetResources()
+        public static List<(string,ResourceSet)> GetResources()
         {
-            return new List<ResourceSet>
+            return new List<(string, ResourceSet)>
             {
-                new ResourceSet
-                {
-                    Id = "bad180b5-4a96-422d-a088-c71a9f7c7afc", Name = "Resources"
-                },
-                new ResourceSet { Id = "67c50eac-23ef-41f0-899c-dffc03add961", Name = "Apis"}
+                ("tester", new ResourceSet {Id = "bad180b5-4a96-422d-a088-c71a9f7c7afc", Name = "Resources"}),
+                ("tester", new ResourceSet {Id = "67c50eac-23ef-41f0-899c-dffc03add961", Name = "Apis"})
             };
         }
     }

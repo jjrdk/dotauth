@@ -36,6 +36,26 @@
         }
 
         /// <inheritdoc />
+        public async Task<bool> ApproveAccess(string ticketId, CancellationToken cancellationToken = default)
+        {
+            var value = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
+            if (!value.HasValue)
+            {
+                return false;
+            }
+
+            var ticket = JsonConvert.DeserializeObject<Ticket>(value);
+            if (ticket.IsAuthorizedByRo)
+            {
+                return false;
+            }
+
+            ticket.IsAuthorizedByRo = true;
+            return await _database.StringSetAsync(ticket.Id, JsonConvert.SerializeObject(ticket), _expiry).ConfigureAwait(false);
+
+        }
+
+        /// <inheritdoc />
         public Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
         {
             return _database.KeyDeleteAsync(ticketId);
@@ -44,9 +64,9 @@
         /// <inheritdoc />
         public async Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
         {
-            var consent = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
-            return consent.HasValue
-                ? JsonConvert.DeserializeObject<Ticket>(consent)
+            var ticket = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
+            return ticket.HasValue
+                ? JsonConvert.DeserializeObject<Ticket>(ticket)
                 : null;
         }
 

@@ -12,7 +12,7 @@
     /// <summary>
     /// Defines the marten based ticket store.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.ITicketStore" />
+    /// <seealso cref="ITicketStore" />
     public class MartenTicketStore : ITicketStore
     {
         private readonly Func<IDocumentSession> _sessionFactory;
@@ -33,6 +33,22 @@
             session.Store(ticket);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> ApproveAccess(string ticketId, CancellationToken cancellationToken = default)
+        {
+            using var session = _sessionFactory();
+            var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
+            if (!ticket.IsAuthorizedByRo)
+            {
+                ticket.IsAuthorizedByRo = true;
+                session.Store(ticket);
+                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                return true;
+            }
+
+            return false;
         }
 
         /// <inheritdoc />

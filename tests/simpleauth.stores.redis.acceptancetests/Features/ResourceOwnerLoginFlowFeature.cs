@@ -7,7 +7,6 @@
     using Microsoft.IdentityModel.Tokens;
 
     using SimpleAuth.Client;
-    using SimpleAuth.Client.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
 
@@ -106,7 +105,7 @@
                     {
                         var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
                                            .ConfigureAwait(false);
-                        Assert.False(response.HasError);
+                        Assert.False(response.ContainsError);
                     });
         }
 
@@ -137,7 +136,7 @@
                     {
                         var response = await client.RevokeToken(RevokeTokenRequest.Create(result))
                                            .ConfigureAwait(false);
-                        Assert.Equal(HttpStatusCode.OK, response.Status);
+                        Assert.Equal(HttpStatusCode.OK, response.HttpStatus);
                     });
         }
 
@@ -145,7 +144,7 @@
         public void InvalidClientCredentials()
         {
             TokenClient client = null;
-            BaseSidContentResult<GrantedTokenResponse> result = null;
+            GenericResponse<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -161,14 +160,14 @@
                                      .ConfigureAwait(false);
                     });
 
-            "then does not have token".x(() => { Assert.True(result.HasError); });
+            "then does not have token".x(() => { Assert.True(result.ContainsError); });
         }
 
         [Scenario(DisplayName = "Invalid user credentials")]
         public void InvalidUserCredentials()
         {
             TokenClient client = null;
-            BaseSidContentResult<GrantedTokenResponse> result = null;
+            GenericResponse<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -184,7 +183,7 @@
                                      .ConfigureAwait(false);
                     });
 
-            "then does not have token".x(() => { Assert.True(result.HasError); });
+            "then does not have token".x(() => { Assert.True(result.ContainsError); });
         }
     }
 }

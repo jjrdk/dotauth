@@ -202,7 +202,6 @@
                 return Task.FromResult(false);
             }
 
-            scope.CreateDateTime = DateTimeOffset.UtcNow;
             _scopes.Add(scope);
             return Task.FromResult(true);
         }
@@ -230,8 +229,8 @@
             }
 
             result = parameter.Descending
-                ? result.OrderByDescending(c => c.UpdateDateTime)
-                : result.OrderBy(c => c.UpdateDateTime);
+                ? result.OrderByDescending(c => c.Name)
+                : result.OrderBy(c => c.Name);
 
             if (parameter.NbResults > 0)
             {
@@ -279,7 +278,6 @@
             sc.IsDisplayedInConsent = scope.IsDisplayedInConsent;
             sc.IsExposed = scope.IsExposed;
             sc.Type = scope.Type;
-            sc.UpdateDateTime = DateTimeOffset.UtcNow;
             return Task.FromResult(true);
         }
     }

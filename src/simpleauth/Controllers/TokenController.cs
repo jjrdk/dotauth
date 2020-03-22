@@ -117,7 +117,7 @@
                 .ConfigureAwait(false);
 
             return result.HttpStatus == HttpStatusCode.OK
-                ? (IActionResult) new OkObjectResult(result.Content.ToDto())
+                ? (IActionResult)new OkObjectResult(result.Content.ToDto())
                 : new BadRequestObjectResult(result.Error);
         }
 
@@ -131,12 +131,13 @@
             switch (tokenRequest.grant_type)
             {
                 case GrantTypes.Password:
-                    return await GetClientCredentialsGrantedToken(
-                            tokenRequest,
-                            authenticationHeaderValue,
-                            certificate,
-                            issuerName,
-                            cancellationToken)
+                    var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
+                    return await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(
+                        resourceOwnerParameter,
+                        authenticationHeaderValue,
+                        certificate,
+                        issuerName,
+                        cancellationToken)
                         .ConfigureAwait(false);
                 case GrantTypes.AuthorizationCode:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
@@ -179,22 +180,6 @@
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        private Task<GenericResponse<GrantedToken>> GetClientCredentialsGrantedToken(
-            TokenRequest tokenRequest,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
-            string issuerName,
-            CancellationToken cancellationToken)
-        {
-            var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-            return _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(
-                resourceOwnerParameter,
-                authenticationHeaderValue,
-                certificate,
-                issuerName,
-                cancellationToken);
         }
 
         /// <summary>

@@ -58,7 +58,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Scopes = new[] { "scope" }
             };
             var resourceSet = new Shared.Models.ResourceSet { Id = id };
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceSet);
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
@@ -78,7 +78,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Scopes = new[] { "scope" }
             };
             var resourceSet = new Shared.Models.ResourceSet { Id = id };
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceSet);
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);

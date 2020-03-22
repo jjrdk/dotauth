@@ -45,6 +45,22 @@ namespace SimpleAuth.Shared
         }
 
         /// <summary>
+        /// Gets the client application id claim value.
+        /// </summary>
+        /// <param name="principal">The user principal.</param>
+        /// <returns>the user's client.</returns>
+        public static string GetClientId(this ClaimsPrincipal principal)
+        {
+            if (principal?.Identity == null || !principal.Identity.IsAuthenticated)
+            {
+                return string.Empty;
+            }
+
+            var claim = principal.Claims.FirstOrDefault(c => c.Type == StandardClaimNames.Azp);
+            return claim == null ? string.Empty : claim.Value;
+        }
+
+        /// <summary>
         /// Gets the subject claim value.
         /// </summary>
         /// <param name="claims"></param>

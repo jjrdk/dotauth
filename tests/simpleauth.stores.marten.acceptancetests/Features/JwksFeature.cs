@@ -47,7 +47,7 @@
                         new Uri(WellKnownOpenidConfiguration));
                     var response = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.False(response.ContainsError);
 
                     tokenResponse = response.Content;
                 });

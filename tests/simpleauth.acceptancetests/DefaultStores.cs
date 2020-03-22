@@ -526,13 +526,11 @@ namespace SimpleAuth.AcceptanceTests
                 new Scope
                 {
                     Claims = Array.Empty<string>(),
-                    CreateDateTime = DateTimeOffset.UtcNow,
                     Description = "test scope",
                     IsDisplayedInConsent = true,
                     IsExposed = true,
                     Name = "test",
                     Type = ScopeTypes.ProtectedApi,
-                    UpdateDateTime = DateTimeOffset.UtcNow
                 },
                 new Scope
                 {
