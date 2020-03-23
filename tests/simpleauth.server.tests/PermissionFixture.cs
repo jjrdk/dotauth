@@ -40,26 +40,6 @@ namespace SimpleAuth.Server.Tests
         }
 
         [Fact]
-        public async Task When_Client_Is_Not_Authenticated_Then_Error_Is_Returned()
-        {
-            var resource = await _umaClient.AddResource(
-                    new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
-                    "header")
-                .ConfigureAwait(false);
-
-            UmaUserStore.Instance().ClientId = null;
-            var ticket = await _umaClient.RequestPermission(
-                    "header",
-                    new PermissionRequest { ResourceSetId = resource.Content.Id, Scopes = new[] { "read" } })
-                .ConfigureAwait(false);
-            UmaUserStore.Instance().ClientId = "client";
-
-            Assert.True(ticket.ContainsError);
-            Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
-            Assert.Equal("the client_id cannot be extracted", ticket.Error.Detail);
-        }
-
-        [Fact]
         public async Task When_ResourceSetId_Is_Null_Then_Error_Is_Returned()
         {
             var ticket = await _umaClient

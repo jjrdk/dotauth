@@ -31,7 +31,7 @@
         }
 
         [Fact]
-        public async Task When_Pass_Client_Access_Token_To_UserInfo_Then_Error_Is_Returned()
+        public async Task WhenPassingClientAccessTokenToUserInfoThenClientClaimsAreReturned()
         {
             var tokenClient = new TokenClient(
                 TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
@@ -40,9 +40,7 @@
             var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
 
-            Assert.True(getUserInfoResult.ContainsError);
-            Assert.Equal("invalid_token", getUserInfoResult.Error.Title);
-            Assert.Equal("Not a valid resource owner token", getUserInfoResult.Error.Detail);
+            Assert.False(getUserInfoResult.ContainsError);
         }
 
         [Fact]

@@ -51,6 +51,42 @@ namespace SimpleAuth.Client
             _configurationUri = builder.Uri;
         }
 
+        /// <summary>
+        /// Executes the specified introspection request.
+        /// </summary>
+        /// <param name="introspectionRequest">The introspection request.</param>
+        /// <returns></returns>
+        public async Task<GenericResponse<IntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
+        {
+            var discoveryInformation = await GetUmaConfiguration().ConfigureAwait(false);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = new FormUrlEncodedContent(introspectionRequest),
+                RequestUri = new Uri(discoveryInformation.IntrospectionEndpoint)
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", introspectionRequest.PatToken);
+
+            var result = await _client.SendAsync(request).ConfigureAwait(false);
+            var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                var error = Serializer.Default.Deserialize<ErrorDetails>(json);
+                return new GenericResponse<IntrospectionResponse>
+                {
+                    Error = error,
+                    HttpStatus = result.StatusCode
+                };
+            }
+
+            return new GenericResponse<IntrospectionResponse>
+            {
+                HttpStatus = result.StatusCode,
+                Content = Serializer.Default.Deserialize<IntrospectionResponse>(json)
+            };
+        }
+
         /// <inheritdoc />
         public async Task<GenericResponse<PermissionResponse>> RequestPermission(
             string token,
@@ -72,7 +108,9 @@ namespace SimpleAuth.Client
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri(configuration.PermissionEndpoint)
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri(configuration.PermissionEndpoint)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var result = await _client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
@@ -81,7 +119,8 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<PermissionResponse>
                 {
-                    HttpStatus = result.StatusCode, Error = Serializer.Default.Deserialize<ErrorDetails>(content)
+                    HttpStatus = result.StatusCode,
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content)
                 };
             }
 
@@ -117,7 +156,9 @@ namespace SimpleAuth.Client
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url)
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri(url)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var result = await _client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -126,7 +167,8 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<PermissionResponse>
                 {
-                    HttpStatus = result.StatusCode, Error = Serializer.Default.Deserialize<ErrorDetails>(content)
+                    HttpStatus = result.StatusCode,
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content)
                 };
             }
 
@@ -208,7 +250,7 @@ namespace SimpleAuth.Client
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
 
-            var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
             {
@@ -246,7 +288,7 @@ namespace SimpleAuth.Client
             var resourceSetUrl = configuration.ResourceRegistrationEndpoint;
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl)};
+            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var httpResult = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -260,7 +302,7 @@ namespace SimpleAuth.Client
                 };
             }
 
-            return new GenericResponse<object> {HttpStatus = httpResult.StatusCode,};
+            return new GenericResponse<object> { HttpStatus = httpResult.StatusCode, };
         }
 
         /// <inheritdoc />
@@ -276,7 +318,8 @@ namespace SimpleAuth.Client
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Get, RequestUri = new Uri(configuration.ResourceRegistrationEndpoint)
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(configuration.ResourceRegistrationEndpoint)
             };
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var httpResult = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -285,13 +328,15 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<ResourceSet[]>
                 {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(json), HttpStatus = httpResult.StatusCode
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
+                    HttpStatus = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<ResourceSet[]>
             {
-                HttpStatus = httpResult.StatusCode, Content = Serializer.Default.Deserialize<ResourceSet[]>(json)
+                HttpStatus = httpResult.StatusCode,
+                Content = Serializer.Default.Deserialize<ResourceSet[]>(json)
             };
         }
 
@@ -316,7 +361,7 @@ namespace SimpleAuth.Client
 
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl)};
+            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl) };
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -324,13 +369,15 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<ResourceSet>()
                 {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(json), HttpStatus = httpResult.StatusCode
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
+                    HttpStatus = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<ResourceSet>()
             {
-                HttpStatus = httpResult.StatusCode, Content = Serializer.Default.Deserialize<ResourceSet>(json)
+                HttpStatus = httpResult.StatusCode,
+                Content = Serializer.Default.Deserialize<ResourceSet>(json)
             };
         }
 
@@ -350,7 +397,7 @@ namespace SimpleAuth.Client
 
             var serializedPostPermission = Serializer.Default.Serialize(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
-            var request = new HttpRequestMessage {Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body};
+            var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
 
             var httpResult = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);

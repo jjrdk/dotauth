@@ -40,13 +40,9 @@
 
             try
             {
-                var introspectionClient = await IntrospectClient.Create(
-                        TokenCredentials.FromClientCredentials(Options.ClientId, Options.ClientSecret),
-                        Options.Client,
-                        new Uri(Options.WellKnownConfigurationUrl))
-                    .ConfigureAwait(false);
+                var introspectionClient = new UmaClient(Options.Client, new Uri(Options.WellKnownConfigurationUrl));
                 var introspectionResult = await introspectionClient.Introspect(
-                        IntrospectionRequest.Create(token.Parameter, TokenTypes.AccessToken))
+                        IntrospectionRequest.Create(token.Parameter, TokenTypes.AccessToken, "pat"))
                     .ConfigureAwait(false);
                 if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {

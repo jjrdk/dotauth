@@ -44,7 +44,8 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/token/revoke")
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -67,7 +68,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token/revoke")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -117,7 +120,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var revokeClient = new TokenClient(
                 TokenCredentials.FromClientCredentials("client", "client"),
@@ -140,18 +143,14 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var revoke = await tokenClient
                 .RevokeToken(RevokeTokenRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
                 .ConfigureAwait(false);
-            var introspectionClient = await IntrospectClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var introspectionClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await introspectionClient.Introspect(
-                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
+                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken, "pat"))
                 .ConfigureAwait(false);
 
             Assert.False(revoke.ContainsError);
@@ -166,18 +165,14 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             var revoke = await tokenClient
                 .RevokeToken(RevokeTokenRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken))
                 .ConfigureAwait(false);
-            var introspectClient = await IntrospectClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var introspectClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await introspectClient.Introspect(
-                    IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken))
+                    IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken, "pat"))
                 .ConfigureAwait(false);
 
             Assert.False(revoke.ContainsError);

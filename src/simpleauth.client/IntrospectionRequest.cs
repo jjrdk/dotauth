@@ -21,33 +21,36 @@ namespace SimpleAuth.Client
     /// <summary>
     /// Defines the introspection request.
     /// </summary>
-    /// <seealso cref="System.Collections.Generic.IEnumerable{KeyValuePair}" />
+    /// <seealso cref="IEnumerable{KeyValuePair}" />
     public class IntrospectionRequest : IEnumerable<KeyValuePair<string, string>>
     {
+        public string PatToken { get; }
         private readonly Dictionary<string, string> _form;
 
-        private IntrospectionRequest(Dictionary<string, string> form)
+        private IntrospectionRequest(Dictionary<string, string> form, string patToken)
         {
+            PatToken = patToken;
             _form = form;
         }
 
         /// <summary>
         /// Creates the specified request.
         /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="tokenType">Type of the token.</param>
+        /// <param name="rptToken">The rpt token to introspect.</param>
+        /// <param name="tokenType">Type of the rptToken.</param>
+        /// <param name="patToken">The PAT authorization token for the request.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">token</exception>
-        public static IntrospectionRequest Create(string token, string tokenType)
+        /// <exception cref="ArgumentNullException">rptToken</exception>
+        public static IntrospectionRequest Create(string rptToken, string tokenType, string patToken)
         {
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(rptToken))
             {
-                throw new ArgumentNullException(nameof(token));
+                throw new ArgumentNullException(nameof(rptToken));
             }
 
-            var dict = new Dictionary<string, string> {{"token", token}, {"token_type_hint", tokenType}};
+            var dict = new Dictionary<string, string> { { "token", rptToken }, { "token_type_hint", tokenType } };
 
-            return new IntrospectionRequest(dict);
+            return new IntrospectionRequest(dict, patToken);
         }
 
         /// <inheritdoc />

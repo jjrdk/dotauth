@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Policies
 {
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Parameters;
@@ -9,7 +10,8 @@
     {
         Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticket,
-            ClaimTokenParameter claimTokenParameters,
+            string claimTokenFormat,
+            Claim[] claims,
             CancellationToken cancellationToken,
             params PolicyRule[] policy);
     }

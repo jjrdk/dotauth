@@ -22,6 +22,7 @@ namespace SimpleAuth.Api.Introspection
     using Shared.Models;
     using System;
     using System.Linq;
+    using System.Net;
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
@@ -30,37 +31,18 @@ namespace SimpleAuth.Api.Introspection
 
     internal class PostIntrospectionAction
     {
-        private readonly AuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
 
-        public PostIntrospectionAction(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore)
+        public PostIntrospectionAction(ITokenStore tokenStore)
         {
-            _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
             _tokenStore = tokenStore;
         }
 
-        public async Task<IntrospectionResponse> Execute(
+        public async Task<GenericResponse<IntrospectionResponse>> Execute(
             IntrospectionParameter introspectionParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            string issuerName,
             CancellationToken cancellationToken)
         {
-            // Read this RFC for more information
-            if (string.IsNullOrWhiteSpace(introspectionParameter.Token))
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
-            }
-
-            // 2. Authenticate the client
-            var instruction = CreateAuthenticateInstruction(introspectionParameter, authenticationHeaderValue);
-            var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
-                .ConfigureAwait(false);
-            if (authResult.Client == null)
-            {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
-            }
+            // Read this RFC for more information - https://www.rfc-editor.org/rfc/rfc7662.txt
 
             // 3. Retrieve the token type hint
             var tokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken;
@@ -91,11 +73,19 @@ namespace SimpleAuth.Api.Introspection
             // 5. Throw an exception if there's no granted token
             if (grantedToken == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenIsNotValid);
+                return new GenericResponse<IntrospectionResponse>
+                {
+                    HttpStatus = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = ErrorDescriptions.TheTokenIsNotValid
+                    }
+                };
             }
 
             // 6. Fill-in parameters
-            //// default : Specifiy the other parameters : NBF & JTI
+            //// default : Specify the other parameters : NBF & JTI
             var result = new IntrospectionResponse
             {
                 Scope = grantedToken.Scope.Split(' ', StringSplitOptions.RemoveEmptyEntries),
@@ -104,35 +94,48 @@ namespace SimpleAuth.Api.Introspection
                 TokenType = grantedToken.TokenType
             };
 
+            if (grantedToken.UserInfoPayLoad != null)
+            {
+                var subject =
+                    grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Subject);
+                if (!string.IsNullOrWhiteSpace(subject))
+                {
+                    result.Subject = subject;
+                }
+            }
+
             // 7. Fill-in the other parameters
             if (grantedToken.IdTokenPayLoad != null)
             {
-                var audiences = string.Empty;
                 var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayValue(StandardClaimNames.Audiences);
-                var issuedAt = grantedToken.IdTokenPayLoad.Iat;
-                var issuer = grantedToken.IdTokenPayLoad.Iss;
                 var subject =
                     grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Subject);
                 var userName =
                     grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Name);
-                if (audiencesArr.Any())
+
+                result.Audience = string.Join(" ", audiencesArr);
+                result.IssuedAt = grantedToken.IdTokenPayLoad.Iat ?? 0;
+                result.Issuer = grantedToken.IdTokenPayLoad.Iss;
+                if (!string.IsNullOrWhiteSpace(subject))
                 {
-                    audiences = string.Join(" ", audiencesArr);
+                    result.Subject = subject;
                 }
 
-                result.Audience = audiences;
-                result.IssuedAt = issuedAt ?? 0;
-                result.Issuer = issuer;
-                result.Subject = subject;
-                result.UserName = userName;
+                if (!string.IsNullOrWhiteSpace(userName))
+                {
+                    result.UserName = userName;
+                }
             }
 
             // 8. Based on the expiration date disable OR enable the introspection resultKind
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
-            var tokenIsExpired = DateTimeOffset.UtcNow > expirationDateTime;
-            result.Active = !tokenIsExpired;
+            result.Active = DateTimeOffset.UtcNow < expirationDateTime;
 
-            return result;
+            return new GenericResponse<IntrospectionResponse>
+            {
+                Content = result,
+                HttpStatus = HttpStatusCode.OK
+            };
         }
 
         private AuthenticateInstruction CreateAuthenticateInstruction(

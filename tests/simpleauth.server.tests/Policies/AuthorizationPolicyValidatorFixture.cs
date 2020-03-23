@@ -20,6 +20,7 @@ namespace SimpleAuth.Server.Tests.Policies
     using System.Security.Cryptography;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Moq;
     using SimpleAuth.Parameters;
@@ -36,14 +37,17 @@ namespace SimpleAuth.Server.Tests.Policies
         private readonly Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private readonly AuthorizationPolicyValidator _authorizationPolicyValidator;
         private readonly Mock<IClientStore> _clientStoreStub;
+        private readonly InMemoryJwksRepository _inMemoryJwksRepository;
 
         public AuthorizationPolicyValidatorFixture()
         {
+            IdentityModelEventSource.ShowPII = true;
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _clientStoreStub = new Mock<IClientStore>();
+            _inMemoryJwksRepository = new InMemoryJwksRepository();
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(
                 _clientStoreStub.Object,
-                new InMemoryJwksRepository(),
+                _inMemoryJwksRepository,
                 _resourceSetRepositoryStub.Object,
                 new Mock<IEventPublisher>().Object);
         }
@@ -67,14 +71,14 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task WhenResourceSetDoesNotExistThenReturnsNotAuthorized()
         {
-            var ticket = new Ticket {Lines = new[] {new TicketLine {ResourceSetId = "resource_set_id"}}};
+            var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "resource_set_id" } } };
             _resourceSetRepositoryStub
                 .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ResourceSet) null));
+                .Returns(() => Task.FromResult((ResourceSet)null));
 
             var result = await _authorizationPolicyValidator.IsAuthorized(
                     ticket,
-                    "client_id",
+                    new Client { ClientId = "client_id" },
                     null,
                     CancellationToken.None)
                 .ConfigureAwait(false);
@@ -85,13 +89,27 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task When_Policy_Does_Not_Exist_Then_RequestSubmitted_Is_Returned()
         {
+            var handler = new JwtSecurityTokenHandler();
+            var key = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
+
+            var token = handler.CreateEncodedJwt(
+                "test",
+                "test",
+                new ClaimsIdentity(new[] {new Claim("test", "test")}),
+                null,
+                DateTime.UtcNow.AddYears(1),
+                DateTime.UtcNow,
+                key);
             var ticket = new Ticket {Lines = new[] {new TicketLine {ResourceSetId = "1"}}};
             var resourceSet = new[] {new ResourceSet {Id = "1"}};
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(resourceSet);
 
-            var result = await _authorizationPolicyValidator
-                .IsAuthorized(ticket, "client_id", null, CancellationToken.None)
+            var result = await _authorizationPolicyValidator.IsAuthorized(
+                    ticket,
+                    new Client {ClientId = "client_id"},
+                    new ClaimTokenParameter {Format = "access_token", Token = token},
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.Equal(AuthorizationPolicyResultKind.RequestSubmitted, result.Result);
@@ -101,21 +119,21 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task When_AuthorizationPolicy_Is_Correct_Then_Authorized_Is_Returned()
         {
             var handler = new JwtSecurityTokenHandler();
-            var rsa = RSA.Create();
-            var jwks = rsa.CreateSignatureJwk("1", true).ToSet();
+            var key = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
+
             var token = handler.CreateEncodedJwt(
                 "test",
                 "test",
-                new ClaimsIdentity(new[] {new Claim("test", "test")}),
+                new ClaimsIdentity(new[] { new Claim("test", "test") }),
                 null,
-                null,
-                null,
-                new SigningCredentials(jwks.Keys[0], jwks.Keys[0].Alg));
+                DateTime.UtcNow.AddYears(1),
+                DateTime.UtcNow,
+                key);
             _clientStoreStub.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns<string, CancellationToken>(
-                    (s, c) => Task.FromResult(new Client {ClientId = s, JsonWebKeys = jwks}));
+                    (s, c) => Task.FromResult(new Client { ClientId = s }));
 
-            var ticket = new Ticket {Lines = new[] {new TicketLine {ResourceSetId = "1"}}};
+            var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
             var resourceSet = new[]
             {
                 new ResourceSet
@@ -136,8 +154,8 @@ namespace SimpleAuth.Server.Tests.Policies
 
             var result = await _authorizationPolicyValidator.IsAuthorized(
                     ticket,
-                    "client_id",
-                    new ClaimTokenParameter {Token = token, Format = UmaConstants.IdTokenType},
+                    new Client { ClientId = "client_id" },
+                    new ClaimTokenParameter { Token = token, Format = UmaConstants.IdTokenType },
                     CancellationToken.None)
                 .ConfigureAwait(false);
 

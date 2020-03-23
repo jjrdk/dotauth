@@ -21,13 +21,16 @@ namespace SimpleAuth.Policies
     using Shared.Responses;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
 
     internal class AuthorizationPolicyValidator
     {
         private readonly IAuthorizationPolicy _authorizationPolicy;
+        private readonly IJwksStore _jwksStore;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IEventPublisher _eventPublisher;
 
@@ -37,14 +40,15 @@ namespace SimpleAuth.Policies
             IResourceSetRepository resourceSetRepository,
             IEventPublisher eventPublisher)
         {
-            _authorizationPolicy = new DefaultAuthorizationPolicy(clientStore, jwksStore);
+            _authorizationPolicy = new DefaultAuthorizationPolicy(clientStore);
+            _jwksStore = jwksStore;
             _resourceSetRepository = resourceSetRepository;
             _eventPublisher = eventPublisher;
         }
 
         public async Task<AuthorizationPolicyResult> IsAuthorized(
             Ticket validTicket,
-            string clientId,
+            Client client,
             ClaimTokenParameter claimTokenParameter,
             CancellationToken cancellationToken)
         {
@@ -61,21 +65,32 @@ namespace SimpleAuth.Policies
             }
 
             AuthorizationPolicyResult validationResult = null;
+
+            var handler = new JwtSecurityTokenHandler();
+            var validationParameters = await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false);
+            handler.ValidateToken(claimTokenParameter.Token, validationParameters, out var securityToken);
+            var tokenClaims = (securityToken as JwtSecurityToken)?.Claims.ToArray();
+
             foreach (var ticketLine in validTicket.Lines)
             {
                 var ticketLineParameter = new TicketLineParameter(
-                    clientId,
+                    client.ClientId,
                     ticketLine.Scopes,
                     validTicket.IsAuthorizedByRo);
                 var resource = resources.First(r => r.Id == ticketLine.ResourceSetId);
-                validationResult =
-                    await Validate(ticketLineParameter, resource, claimTokenParameter, cancellationToken).ConfigureAwait(false);
+                validationResult = await Validate(
+                        ticketLineParameter,
+                        resource,
+                        claimTokenParameter.Format,
+                        tokenClaims,
+                        cancellationToken)
+                    .ConfigureAwait(false);
 
                 switch (validationResult.Result)
                 {
                     case AuthorizationPolicyResultKind.RequestSubmitted:
-                        await _eventPublisher
-                            .Publish(new AuthorizationRequestSubmitted(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
+                        await _eventPublisher.Publish(
+                                new AuthorizationRequestSubmitted(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
 
                         return validationResult;
@@ -84,13 +99,16 @@ namespace SimpleAuth.Policies
                     case AuthorizationPolicyResultKind.NotAuthorized:
                     case AuthorizationPolicyResultKind.NeedInfo:
                     default:
-                        {
-                            await _eventPublisher
-                                .Publish(new AuthorizationPolicyNotAuthorized(Id.Create(), validTicket.Id, DateTimeOffset.UtcNow))
-                                .ConfigureAwait(false);
+                    {
+                        await _eventPublisher.Publish(
+                                new AuthorizationPolicyNotAuthorized(
+                                    Id.Create(),
+                                    validTicket.Id,
+                                    DateTimeOffset.UtcNow))
+                            .ConfigureAwait(false);
 
-                            return validationResult;
-                        }
+                        return validationResult;
+                    }
                 }
             }
 
@@ -100,7 +118,8 @@ namespace SimpleAuth.Policies
         private async Task<AuthorizationPolicyResult> Validate(
             TicketLineParameter ticketLineParameter,
             ResourceSet resource,
-            ClaimTokenParameter claimTokenParameter,
+            string claimTokenFormat,
+            Claim[] claims,
             CancellationToken cancellationToken)
         {
             if (resource.AuthorizationPolicies.Length == 0)
@@ -112,7 +131,8 @@ namespace SimpleAuth.Policies
             {
                 var result = await _authorizationPolicy.Execute(
                         ticketLineParameter,
-                        claimTokenParameter,
+                        claimTokenFormat,
+                        claims,
                         cancellationToken,
                         authorizationPolicy)
                     .ConfigureAwait(false);

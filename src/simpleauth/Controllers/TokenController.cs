@@ -168,6 +168,7 @@
                         .ConfigureAwait(false);
                 case GrantTypes.UmaTicket:
                     var tokenIdParameter = tokenRequest.ToTokenIdGrantTypeParameter();
+                   
                     return await _umaTokenActions.GetTokenByTicketId(
                             tokenIdParameter,
                             authenticationHeaderValue,

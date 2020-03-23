@@ -15,14 +15,10 @@
 namespace SimpleAuth.Tests.Api.Introspection
 {
     using Repositories;
-    using Shared.Models;
     using SimpleAuth.Api.Introspection;
     using System;
-    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using Moq;
     using Xunit;
 
     public class IntrospectionActionsFixture
@@ -32,13 +28,7 @@ namespace SimpleAuth.Tests.Api.Introspection
         public IntrospectionActionsFixture()
         {
             _introspectionActions = new PostIntrospectionAction(
-                new InMemoryClientRepository(
-                    new HttpClient(),
-                    new InMemoryScopeRepository(new Scope[0]),
-                    new Mock<ILogger<InMemoryClientRepository>>().Object,
-                    new Client[0]),
-                new InMemoryTokenStore(),
-                new InMemoryJwksRepository());
+                new InMemoryTokenStore());
         }
 
         [Fact]
@@ -46,7 +36,7 @@ namespace SimpleAuth.Tests.Api.Introspection
         {
             await Assert
                 .ThrowsAsync<NullReferenceException>(
-                    () => _introspectionActions.Execute(null, null, null, CancellationToken.None))
+                    () => _introspectionActions.Execute(null, CancellationToken.None))
                 .ConfigureAwait(false);
         }
     }

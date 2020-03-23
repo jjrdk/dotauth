@@ -171,7 +171,11 @@ namespace SimpleAuth.Api.Token.Actions
             var claims = resourceOwner.Claims;
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var authorizationParameter = new AuthorizationParameter {Scope = resourceOwnerGrantTypeParameter.Scope};
+            var authorizationParameter = new AuthorizationParameter
+            {
+                Scope = resourceOwnerGrantTypeParameter.Scope,
+                ClientId = client.ClientId
+            };
             var userInfo = await _jwtGenerator
                 .GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
@@ -224,7 +228,7 @@ namespace SimpleAuth.Api.Token.Actions
                     .ConfigureAwait(false);
             }
 
-            return new GenericResponse<GrantedToken> {HttpStatus = HttpStatusCode.OK, Content = generatedToken};
+            return new GenericResponse<GrantedToken> { HttpStatus = HttpStatusCode.OK, Content = generatedToken };
         }
     }
 }

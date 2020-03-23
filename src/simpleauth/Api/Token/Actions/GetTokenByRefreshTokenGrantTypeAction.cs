@@ -127,7 +127,7 @@ namespace SimpleAuth.Api.Token.Actions
             if (sub != null)
             {
                 var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
-                additionalClaims = resourceOwner.Claims
+                additionalClaims = resourceOwner?.Claims
                     .Where(c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
                     .ToArray();
             }

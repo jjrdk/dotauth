@@ -14,13 +14,13 @@
 
 namespace SimpleAuth.Policies
 {
-    using Parameters;
     using Shared.Models;
     using Shared.Repositories;
     using Shared.Responses;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -28,17 +28,16 @@ namespace SimpleAuth.Policies
     internal class DefaultAuthorizationPolicy : IAuthorizationPolicy
     {
         private readonly IClientStore _clientStore;
-        private readonly IJwksStore _jwksStore;
 
-        public DefaultAuthorizationPolicy(IClientStore clientStore, IJwksStore jwksStore)
+        public DefaultAuthorizationPolicy(IClientStore clientStore)
         {
             _clientStore = clientStore;
-            _jwksStore = jwksStore;
         }
 
         public async Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticketLineParameter,
-            ClaimTokenParameter claimTokenParameter,
+            string claimTokenFormat,
+            Claim[] claims,
             CancellationToken cancellationToken,
             params PolicyRule[] authorizationPolicy)
         {
@@ -53,7 +52,8 @@ namespace SimpleAuth.Policies
                 result = await ExecuteAuthorizationPolicyRule(
                         ticketLineParameter,
                         rule,
-                        claimTokenParameter,
+                        claimTokenFormat,
+                        claims,
                         cancellationToken)
                     .ConfigureAwait(false);
                 if (result.Result == AuthorizationPolicyResultKind.Authorized)
@@ -68,7 +68,8 @@ namespace SimpleAuth.Policies
         private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(
             TicketLineParameter ticketLineParameter,
             PolicyRule authorizationPolicy,
-            ClaimTokenParameter claimTokenParameter,
+            string claimTokenFormat,
+            Claim[] claims,
             CancellationToken cancellationToken)
         {
             // 1. Check can access to the scope
@@ -95,7 +96,8 @@ namespace SimpleAuth.Policies
             var claimAuthorizationResult = await CheckClaims(
                     ticketLineParameter.ClientId,
                     authorizationPolicy,
-                    claimTokenParameter,
+                    claimTokenFormat,
+                    claims,
                     cancellationToken)
                 .ConfigureAwait(false);
             if (claimAuthorizationResult != null
@@ -132,7 +134,8 @@ namespace SimpleAuth.Policies
         private async Task<AuthorizationPolicyResult> CheckClaims(
             string clientId,
             PolicyRule authorizationPolicy,
-            ClaimTokenParameter claimTokenParameter,
+            string claimTokenFormat,
+            Claim[] claims,
             CancellationToken cancellationToken)
         {
             if (authorizationPolicy.Claims == null || !authorizationPolicy.Claims.Any())
@@ -140,26 +143,21 @@ namespace SimpleAuth.Policies
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized);
             }
 
-            if (claimTokenParameter == null || claimTokenParameter.Format != UmaConstants.IdTokenType)
+            if (claimTokenFormat != UmaConstants.IdTokenType)
             {
                 return GetNeedInfoResult(authorizationPolicy.Claims, authorizationPolicy.OpenIdProvider);
             }
 
             var client = await _clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
 
-            var handler = new JwtSecurityTokenHandler();
-            var validationParameters = await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false);
-            handler.ValidateToken(claimTokenParameter.Token, validationParameters, out var securityToken);
-            var tokenClaims = (securityToken as JwtSecurityToken)?.Claims.ToArray();
-
-            if (tokenClaims == null)
+            if (claims == null)
             {
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
             }
 
             foreach (var claim in authorizationPolicy.Claims)
             {
-                var payload = tokenClaims.FirstOrDefault(j => j.Type == claim.Type);
+                var payload = claims.FirstOrDefault(j => j.Type == claim.Type);
                 if (payload.Equals(default(KeyValuePair<string, object>)))
                 {
                     return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);

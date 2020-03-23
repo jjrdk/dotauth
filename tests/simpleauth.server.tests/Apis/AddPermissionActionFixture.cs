@@ -122,8 +122,8 @@ namespace SimpleAuth.Server.Tests.Apis
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _resourceSetRepositoryStub
                 .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns<string, CancellationToken>(
-                    (s, c) => Task.FromResult(resourceSets.FirstOrDefault(x => x.Id == s)));
+                .Returns<string, string, CancellationToken>(
+                    (o,s, c) => Task.FromResult(resourceSets.FirstOrDefault(x => x.Id == s)));
             _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(resourceSets);
             _ticketStoreStub = new Mock<ITicketStore>();

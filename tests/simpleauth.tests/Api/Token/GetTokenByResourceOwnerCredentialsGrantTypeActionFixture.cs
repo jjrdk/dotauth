@@ -190,9 +190,9 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
-                GrantTypes = new[] {GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                GrantTypes = new[] { GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
             };
 
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
@@ -203,7 +203,7 @@ namespace SimpleAuth.Tests.Api.Token
                         It.IsAny<string>(),
                         It.IsAny<string>(),
                         It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ResourceOwner) null);
+                .ReturnsAsync((ResourceOwner)null);
             InitializeFakeObjects(authenticateService.Object);
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             var authenticationHeader = new AuthenticationHeaderValue(
@@ -300,7 +300,7 @@ namespace SimpleAuth.Tests.Api.Token
                 GrantTypes = new[] { GrantTypes.Password },
                 ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
             };
-            var resourceOwner = new ResourceOwner();
+            var resourceOwner = new ResourceOwner { Subject = "tester" };
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
             authenticateService
                 .Setup(

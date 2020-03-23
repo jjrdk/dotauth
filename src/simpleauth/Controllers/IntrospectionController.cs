@@ -26,12 +26,13 @@ namespace SimpleAuth.Controllers
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Defines the introspection controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="Controller" />
     [Route(CoreConstants.EndPoints.Introspection)]
     public class IntrospectionController : ControllerBase
     {
@@ -45,7 +46,7 @@ namespace SimpleAuth.Controllers
         /// <param name="jwksStore">The key store.</param>
         public IntrospectionController(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore)
         {
-            _introspectionActions = new PostIntrospectionAction(clientStore, tokenStore, jwksStore);
+            _introspectionActions = new PostIntrospectionAction(tokenStore);
         }
 
         /// <summary>
@@ -55,6 +56,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post(
             [FromForm] IntrospectionRequest introspectionRequest,
             CancellationToken cancellationToken)
@@ -67,20 +69,13 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            AuthenticationHeaderValue authenticationHeaderValue = null;
-            if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
-            {
-                authenticationHeaderValue = AuthenticationHeaderValue.Parse(authorizationHeader);
-            }
-
-            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var result = await _introspectionActions.Execute(
                     introspectionRequest.ToParameter(),
-                    authenticationHeaderValue,
-                    issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            return new OkObjectResult(result);
+            return result.HttpStatus == HttpStatusCode.OK
+                ? Ok(result.Content)
+                : (IActionResult)BadRequest(result.Error);
         }
 
         /// <summary>

@@ -98,8 +98,11 @@ namespace SimpleAuth.Extensions
         {
             return new GetTokenViaTicketIdParameter
             {
-                ClaimToken = request.claim_token,
-                ClaimTokenFormat = request.claim_token_format,
+                ClaimToken = new ClaimTokenParameter
+                {
+                    Token = request.claim_token,
+                    Format = request.claim_token_format
+                },
                 ClientId = request.client_id,
                 ClientAssertion = request.client_assertion,
                 ClientAssertionType = request.client_assertion_type,

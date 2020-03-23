@@ -117,7 +117,7 @@
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidTicket,
+                        Title = ErrorCodes.InvalidGrant,
                         Detail = string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket)
                     }
                 };
@@ -138,32 +138,27 @@
                 };
             }
 
-            var claimTokenParameter = new ClaimTokenParameter
-            {
-                Token = parameter.ClaimToken,
-                Format = parameter.ClaimTokenFormat
-            };
-
             // 4. Check the authorization.
             var authorizationResult = await _authorizationPolicyValidator
-                .IsAuthorized(ticket, client.ClientId, claimTokenParameter, cancellationToken)
+                .IsAuthorized(ticket, client, parameter.ClaimToken, cancellationToken)
                 .ConfigureAwait(false);
 
             if (authorizationResult.Result == AuthorizationPolicyResultKind.Authorized)
             {
                 var grantedToken =
-                    await GenerateToken(client, ticket.Lines, "openid", issuerName).ConfigureAwait(false);
+                    await GenerateToken(client, ticket.Lines, "openid", issuerName, parameter.ClaimToken.Token).ConfigureAwait(false);
                 if (await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false))
                 {
                     await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
-                    return new GenericResponse<GrantedToken> {Content = grantedToken, HttpStatus = HttpStatusCode.OK};
+                    return new GenericResponse<GrantedToken> { Content = grantedToken, HttpStatus = HttpStatusCode.OK };
                 }
 
                 return new GenericResponse<GrantedToken>
                 {
                     HttpStatus = HttpStatusCode.InternalServerError,
                     Error = new ErrorDetails
-                    {Status = HttpStatusCode.InternalServerError,
+                    {
+                        Status = HttpStatusCode.InternalServerError,
                         Title = ErrorCodes.InternalError,
                         Detail = ErrorDescriptions.InternalError
                     }
@@ -203,7 +198,8 @@
             Client client,
             TicketLine[] ticketLines,
             string scope,
-            string issuerName)
+            string issuerName,
+            string idToken)
         {
             var expiresIn = _configurationService.RptLifeTime; // 1. Retrieve the expiration time of the granted token.
             var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName)
@@ -222,7 +218,8 @@
                 TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTimeOffset.UtcNow,
                 Scope = scope,
-                ClientId = client.ClientId
+                ClientId = client.ClientId,
+                IdToken = idToken
             };
         }
     }

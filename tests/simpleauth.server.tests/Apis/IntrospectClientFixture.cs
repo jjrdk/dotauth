@@ -80,36 +80,15 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Introspect_And_Client_Not_Authenticated_Then_Error_Is_Returned()
-        {
-            var introspectClient = await IntrospectClient.Create(
-                    TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
-            var introspection = await introspectClient
-                .Introspect(IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken))
-                .ConfigureAwait(false);
-
-            Assert.True(introspection.ContainsError);
-            Assert.Equal("invalid_client", introspection.Error.Title);
-            Assert.Equal("the client doesn't exist", introspection.Error.Detail);
-        }
-
-        [Fact]
         public async Task When_Introspect_And_Token_Does_Not_Exist_Then_Error_Is_Returned()
         {
-            var introspectClient = await IntrospectClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var introspectClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var introspection = await introspectClient.Introspect(
-                    IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken))
+                    IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken, "pat"))
                 .ConfigureAwait(false);
 
             Assert.True(introspection.ContainsError);
-            Assert.Equal("invalid_token", introspection.Error.Title);
+            Assert.Equal("invalid_grant", introspection.Error.Title);
             Assert.Equal("the token is not valid", introspection.Error.Detail);
         }
 
@@ -123,13 +102,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var result = await tokenClient.GetToken(
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
-            var introspectionClient = await IntrospectClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var introspectionClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var introspection = await introspectionClient.Introspect(
-                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
+                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken, "pat"))
                 .ConfigureAwait(false);
 
             Assert.Single(introspection.Content.Scope);
@@ -146,13 +121,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var result = await tokenClient.GetToken(
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
-            var introspectionClient = await IntrospectClient.Create(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .ConfigureAwait(false);
+            var introspectionClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var introspection = await introspectionClient.Introspect(
-                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.RefreshToken))
+                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.RefreshToken, "pat"))
                 .ConfigureAwait(false);
 
             Assert.Single(introspection.Content.Scope);

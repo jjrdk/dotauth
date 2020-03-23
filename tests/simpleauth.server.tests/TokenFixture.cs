@@ -3,6 +3,7 @@
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
@@ -36,7 +37,7 @@
             var token = await tokenClient.GetToken(TokenRequest.FromTicketId("ticket_id", "")).ConfigureAwait(false);
 
             Assert.True(token.ContainsError);
-            Assert.Equal("invalid_ticket", token.Error.Title);
+            Assert.Equal("invalid_grant", token.Error.Title);
             Assert.Equal("the ticket ticket_id doesn't exist", token.Error.Detail);
         }
 
@@ -56,21 +57,17 @@
         [Fact]
         public async Task When_Using_TicketId_Grant_Type_Then_AccessToken_Is_Returned()
         {
-            var jwsPayload = new JwtPayload
-            {
-                {"iss", "http://server.example.com"},
-                {"sub", "248289761001"},
-                {"aud", "s6BhdRkqt3"},
-                {"nonce", "n-0S6_WzA2Mj"},
-                {"exp", "1311281970"},
-                {"iat", "1311280970"}
-            };
             var handler = new JwtSecurityTokenHandler();
             var set = new JsonWebKeySet();
             set.Keys.Add(_server.SharedUmaCtx.SignatureKey);
-            var header = new JwtHeader(
+
+            var securityToken = new JwtSecurityToken(
+                "http://server.example.com",
+                "s6BhdRkqt3",
+                new[] {new Claim("sub", "248289761001")},
+                null,
+                DateTime.UtcNow.AddYears(1),
                 new SigningCredentials(set.GetSignKeys().First(), SecurityAlgorithms.HmacSha256));
-            var securityToken = new JwtSecurityToken(header, jwsPayload);
             var jwt = handler.WriteToken(securityToken);
 
             var tc = new TokenClient(
