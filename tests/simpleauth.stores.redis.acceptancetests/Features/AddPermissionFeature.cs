@@ -77,7 +77,7 @@
                                 })
                                            .ConfigureAwait(false);
 
-                        Assert.False(response.ContainsError);
+                        Assert.False(response.HasError);
 
                         ticketId = response.Content.TicketId;
                     });
@@ -145,7 +145,7 @@
                                                })
                                            .ConfigureAwait(false);
 
-                        Assert.False(response.ContainsError);
+                        Assert.False(response.HasError);
 
                         ticketId = response.Content.TicketId;
 

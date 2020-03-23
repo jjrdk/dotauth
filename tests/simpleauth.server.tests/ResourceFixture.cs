@@ -46,7 +46,7 @@ namespace SimpleAuth.Server.Tests
             var resource = await _umaClient.AddResource(new ResourceSet { Name = string.Empty }, "header")
                 .ConfigureAwait(false);
 
-            Assert.True(resource.ContainsError);
+            Assert.True(resource.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter name needs to be specified", resource.Error.Detail);
         }
@@ -57,7 +57,7 @@ namespace SimpleAuth.Server.Tests
             var resource = await _umaClient.AddResource(new ResourceSet { Name = "name" }, "header")
                 .ConfigureAwait(false);
 
-            Assert.True(resource.ContainsError);
+            Assert.True(resource.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.Detail);
         }
@@ -85,7 +85,7 @@ namespace SimpleAuth.Server.Tests
         {
             var resource = await _umaClient.GetResource("unknown", "header").ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.OK, resource.HttpStatus);
+            Assert.Equal(HttpStatusCode.OK, resource.StatusCode);
             Assert.Null(resource.Content);
         }
 
@@ -94,7 +94,7 @@ namespace SimpleAuth.Server.Tests
         {
             var resource = await _umaClient.DeleteResource("unknown", "header").ConfigureAwait(false);
 
-            Assert.True(resource.ContainsError);
+            Assert.True(resource.HasError);
             Assert.Equal(HttpStatusCode.BadRequest, resource.Error.Status);
         }
 
@@ -103,8 +103,8 @@ namespace SimpleAuth.Server.Tests
         {
             var resource = await _umaClient.UpdateResource(new ResourceSet(), "header").ConfigureAwait(false);
 
-            Assert.True(resource.ContainsError);
-            Assert.Equal(HttpStatusCode.NotFound, resource.HttpStatus);
+            Assert.True(resource.HasError);
+            Assert.Equal(HttpStatusCode.NotFound, resource.StatusCode);
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            Assert.True(resource.ContainsError);
+            Assert.True(resource.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter name needs to be specified", resource.Error.Detail);
         }
@@ -126,7 +126,7 @@ namespace SimpleAuth.Server.Tests
             var resource = await _umaClient.UpdateResource(new ResourceSet { Id = "invalid", Name = "name" }, "header")
                 .ConfigureAwait(false);
 
-            Assert.True(resource.ContainsError);
+            Assert.True(resource.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
             Assert.Equal("the parameter scopes needs to be specified", resource.Error.Detail);
         }
@@ -157,7 +157,7 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            Assert.True(resource.ContainsError);
+            Assert.True(resource.HasError);
             Assert.Equal("not_updated", resource.Error.Title);
             Assert.Equal("resource cannot be updated", resource.Error.Detail);
         }
@@ -186,7 +186,7 @@ namespace SimpleAuth.Server.Tests
             await _umaClient.DeleteResource(resources.Content.First().Id, "header").ConfigureAwait(false);
             var information = await _umaClient.GetResource(resources.Content.First().Id, "header").ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.OK, information.HttpStatus);
+            Assert.Equal(HttpStatusCode.OK, information.StatusCode);
             Assert.Null(information.Content);
         }
 
@@ -209,7 +209,7 @@ namespace SimpleAuth.Server.Tests
                     "header")
                 .ConfigureAwait(false);
 
-            Assert.False(resource.ContainsError);
+            Assert.False(resource.HasError);
             Assert.True(resource.Content.Content.Any());
         }
 

@@ -63,7 +63,7 @@ namespace SimpleAuth.Tests.Api.Token
                         CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
         }
 
         [Fact]
@@ -205,7 +205,7 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
             Assert.Equal(ErrorDescriptions.TheAuthorizationCodeIsNotCorrect, result.Error.Detail);
         }

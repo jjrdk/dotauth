@@ -219,7 +219,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
                         .ConfigureAwait(false);
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     refreshed = response.Content;
                 });
@@ -259,7 +259,7 @@
                 async () =>
                 {
                     var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
-                    Assert.Equal(HttpStatusCode.OK, response.HttpStatus);
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 });
         }
 
@@ -282,7 +282,7 @@
                         .ConfigureAwait(false);
                 });
 
-            "then does not have token".x(() => { Assert.True(result.ContainsError); });
+            "then does not have token".x(() => { Assert.True(result.HasError); });
         }
 
         [Scenario(DisplayName = "Invalid user credentials")]
@@ -304,7 +304,7 @@
                         .ConfigureAwait(false);
                 });
 
-            "then does not have token".x(() => { Assert.True(result.ContainsError); });
+            "then does not have token".x(() => { Assert.True(result.HasError); });
         }
     }
 }

@@ -29,7 +29,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     result = response.Content;
                 });
@@ -52,7 +52,7 @@
                 {
                     var userinfo = await client.GetUserInfo(result.AccessToken).ConfigureAwait(false);
 
-                    Assert.False(userinfo.ContainsError);
+                    Assert.False(userinfo.HasError);
                     Assert.NotNull(userinfo.Content);
                 });
         }
@@ -74,7 +74,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     result = response.Content;
                 });
@@ -84,7 +84,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
                         .ConfigureAwait(false);
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
                 });
         }
 
@@ -105,7 +105,7 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     result = response.Content;
                 });
@@ -114,7 +114,7 @@
                 async () =>
                 {
                     var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
-                    Assert.Equal(HttpStatusCode.OK, response.HttpStatus);
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 });
         }
 

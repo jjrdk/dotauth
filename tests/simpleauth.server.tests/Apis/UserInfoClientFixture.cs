@@ -25,7 +25,7 @@
         {
             var getUserInfoResult = await _userInfoClient.GetUserInfo("invalid_access_token").ConfigureAwait(false);
 
-            Assert.True(getUserInfoResult.ContainsError);
+            Assert.True(getUserInfoResult.HasError);
             Assert.Equal("invalid_token", getUserInfoResult.Error.Title);
             Assert.Equal("the token is not valid", getUserInfoResult.Error.Detail);
         }
@@ -40,7 +40,7 @@
             var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false);
             var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
 
-            Assert.False(getUserInfoResult.ContainsError);
+            Assert.False(getUserInfoResult.HasError);
         }
 
         [Fact]

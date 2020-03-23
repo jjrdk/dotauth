@@ -30,7 +30,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="parameter">The parameter.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<GenericResult<ResourceSet>> Search(SearchResourceSet parameter, CancellationToken cancellationToken);
+        Task<PagedResult<ResourceSet>> Search(SearchResourceSet parameter, CancellationToken cancellationToken);
 
         /// <summary>
         /// Inserts the specified resource set.

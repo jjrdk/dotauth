@@ -342,7 +342,7 @@ namespace SimpleAuth.Controllers
                     Request.GetAbsoluteUriWithVirtualPath(),
                     cancellationToken)
                 .ConfigureAwait(false);
-            if (refreshedResponse.ContainsError)
+            if (refreshedResponse.HasError)
             {
                 return new BadRequestObjectResult(refreshedResponse.Error);
             }

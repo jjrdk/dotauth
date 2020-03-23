@@ -94,7 +94,7 @@
                 }
 
                 var tokenResponse = await _client.GetToken(TokenRequest.FromScopes(scopes)).ConfigureAwait(false);
-                if (!tokenResponse.ContainsError)
+                if (!tokenResponse.HasError)
                 {
                     _tokens.Add(
                         new StoredToken(

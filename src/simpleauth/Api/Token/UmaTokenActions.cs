@@ -63,7 +63,7 @@
             {
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.BadRequest,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
@@ -81,7 +81,7 @@
             {
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.BadRequest,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
@@ -95,7 +95,7 @@
             {
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.BadRequest,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
@@ -113,7 +113,7 @@
             {
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.BadRequest,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
@@ -128,7 +128,7 @@
             {
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.BadRequest,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
@@ -150,12 +150,12 @@
                 if (await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false))
                 {
                     await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
-                    return new GenericResponse<GrantedToken> { Content = grantedToken, HttpStatus = HttpStatusCode.OK };
+                    return new GenericResponse<GrantedToken> { Content = grantedToken, StatusCode = HttpStatusCode.OK };
                 }
 
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.InternalServerError,
+                    StatusCode = HttpStatusCode.InternalServerError,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.InternalServerError,
@@ -169,7 +169,7 @@
             {
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.Forbidden,
+                    StatusCode = HttpStatusCode.Forbidden,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.Forbidden,
@@ -184,7 +184,7 @@
                 .ConfigureAwait(false);
             return new GenericResponse<GrantedToken>
             {
-                HttpStatus = HttpStatusCode.BadRequest,
+                StatusCode = HttpStatusCode.BadRequest,
                 Error = new ErrorDetails
                 {
                     Status = HttpStatusCode.BadRequest,

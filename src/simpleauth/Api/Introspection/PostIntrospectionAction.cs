@@ -75,7 +75,7 @@ namespace SimpleAuth.Api.Introspection
             {
                 return new GenericResponse<IntrospectionResponse>
                 {
-                    HttpStatus = HttpStatusCode.BadRequest,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Error = new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidGrant,
@@ -134,7 +134,7 @@ namespace SimpleAuth.Api.Introspection
             return new GenericResponse<IntrospectionResponse>
             {
                 Content = result,
-                HttpStatus = HttpStatusCode.OK
+                StatusCode = HttpStatusCode.OK
             };
         }
 

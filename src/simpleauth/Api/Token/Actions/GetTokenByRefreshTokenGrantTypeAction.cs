@@ -77,7 +77,7 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.BadRequest,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
@@ -92,7 +92,7 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.BadRequest,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
@@ -112,7 +112,7 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 return new GenericResponse<GrantedToken>
                 {
-                    HttpStatus = HttpStatusCode.BadRequest,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Error = new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
@@ -166,7 +166,7 @@ namespace SimpleAuth.Api.Token.Actions
                         GrantTypes.RefreshToken,
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
-            return new GenericResponse<GrantedToken> {HttpStatus = HttpStatusCode.OK, Content = generatedToken};
+            return new GenericResponse<GrantedToken> {StatusCode = HttpStatusCode.OK, Content = generatedToken};
         }
 
         private async Task<GrantedToken> ValidateParameter(

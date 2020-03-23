@@ -15,7 +15,7 @@
             Uri umaAuthority,
             string realm)
         {
-            if (permissionResponse.ContainsError)
+            if (permissionResponse.HasError)
             {
                 response.StatusCode = (int)HttpStatusCode.Forbidden;
                 response.Headers[HeaderNames.Warning] = "199 - \"UMA Authorization Server Unreachable\"";

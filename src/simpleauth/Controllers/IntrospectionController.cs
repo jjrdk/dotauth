@@ -73,7 +73,7 @@ namespace SimpleAuth.Controllers
                     introspectionRequest.ToParameter(),
                     cancellationToken)
                 .ConfigureAwait(false);
-            return result.HttpStatus == HttpStatusCode.OK
+            return result.StatusCode == HttpStatusCode.OK
                 ? Ok(result.Content)
                 : (IActionResult)BadRequest(result.Error);
         }

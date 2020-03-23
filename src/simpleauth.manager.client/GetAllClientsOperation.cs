@@ -52,7 +52,7 @@ namespace SimpleAuth.Manager.Client
                 return new GenericResponse<Client[]>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 

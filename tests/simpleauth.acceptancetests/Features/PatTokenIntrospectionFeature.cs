@@ -42,7 +42,7 @@
                 {
                     var userInfo = await client.GetUserInfo(token).ConfigureAwait(false);
 
-                    Assert.False(userInfo.ContainsError);
+                    Assert.False(userInfo.HasError);
                     Assert.NotNull(userInfo.Content.Sub);
                 });
         }

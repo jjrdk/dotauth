@@ -114,13 +114,13 @@ namespace SimpleAuth.Client
                 return new GenericResponse<GrantedTokenResponse>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = result.StatusCode
+                    StatusCode = result.StatusCode
                 };
             }
 
             return new GenericResponse<GrantedTokenResponse>
             {
-                HttpStatus = result.StatusCode,
+                StatusCode = result.StatusCode,
                 Content = Serializer.Default.Deserialize<GrantedTokenResponse>(content)
             };
         }
@@ -166,7 +166,7 @@ namespace SimpleAuth.Client
                 return new GenericResponse<object>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = result.StatusCode
+                    StatusCode = result.StatusCode
                 };
             }
 
@@ -207,11 +207,11 @@ namespace SimpleAuth.Client
                 return new GenericResponse<object>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(json),
-                    HttpStatus = result.StatusCode
+                    StatusCode = result.StatusCode
                 };
             }
 
-            return new GenericResponse<object> { HttpStatus = result.StatusCode };
+            return new GenericResponse<object> { StatusCode = result.StatusCode };
         }
 
         private async Task<DiscoveryInformation> GetDiscoveryInformation()
@@ -268,14 +268,14 @@ namespace SimpleAuth.Client
                 return new GenericResponse<JwtPayload>()
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(json),
-                    HttpStatus = serializedContent.StatusCode
+                    StatusCode = serializedContent.StatusCode
                 };
             }
 
             return string.IsNullOrWhiteSpace(json)
                 ? new GenericResponse<JwtPayload>
                 {
-                    HttpStatus = serializedContent.StatusCode,
+                    StatusCode = serializedContent.StatusCode,
                     Error = new ErrorDetails
                     {
                         Title = "invalid_token",
@@ -285,7 +285,7 @@ namespace SimpleAuth.Client
                 }
                 : new GenericResponse<JwtPayload>
                 {
-                    HttpStatus = serializedContent.StatusCode,
+                    StatusCode = serializedContent.StatusCode,
                     Content = Serializer.Default.Deserialize<JwtPayload>(json)
                 };
         }

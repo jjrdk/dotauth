@@ -55,7 +55,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<GenericResult<Client>> Search(
+        public async Task<PagedResult<Client>> Search(
             SearchClientsRequest parameter,
             CancellationToken cancellationToken = default)
         {
@@ -66,7 +66,7 @@
                 .ToPagedListAsync(parameter.StartIndex + 1, take, cancellationToken)
                 .ConfigureAwait(false);
 
-            return new GenericResult<Client>
+            return new PagedResult<Client>
             {
                 Content = results.ToArray(),
                 StartIndex = parameter.StartIndex,

@@ -87,7 +87,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken, "pat"))
                 .ConfigureAwait(false);
 
-            Assert.True(introspection.ContainsError);
+            Assert.True(introspection.HasError);
             Assert.Equal("invalid_grant", introspection.Error.Title);
             Assert.Equal("the token is not valid", introspection.Error.Detail);
         }

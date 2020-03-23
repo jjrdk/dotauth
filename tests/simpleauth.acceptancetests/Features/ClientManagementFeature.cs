@@ -18,7 +18,7 @@
                 {
                     var response = await _managerClient.GetAllClients(_administratorToken.AccessToken).ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     clients = response.Content;
                 });

@@ -131,7 +131,7 @@ namespace SimpleAuth.Manager.Client
                 return new GenericResponse<Client>
                 {
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 
@@ -160,7 +160,7 @@ namespace SimpleAuth.Manager.Client
             {
                 return new GenericResponse<Client>
                 {
-                    HttpStatus = httpResult.StatusCode,
+                    StatusCode = httpResult.StatusCode,
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content)
                 };
             }
@@ -203,7 +203,7 @@ namespace SimpleAuth.Manager.Client
                 return new GenericResponse<Client>
                 {
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 
@@ -270,7 +270,7 @@ namespace SimpleAuth.Manager.Client
                 return new GenericResponse<Scope>
                 {
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 

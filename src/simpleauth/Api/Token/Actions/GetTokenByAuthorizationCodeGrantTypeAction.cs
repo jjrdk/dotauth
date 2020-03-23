@@ -131,7 +131,7 @@ namespace SimpleAuth.Api.Token.Actions
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
             }
 
-            return new GenericResponse<GrantedToken> { HttpStatus = HttpStatusCode.OK, Content = grantedToken };
+            return new GenericResponse<GrantedToken> { StatusCode = HttpStatusCode.OK, Content = grantedToken };
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace SimpleAuth.Api.Token.Actions
                 return (null,
                     new GenericResponse<GrantedToken>
                     {
-                        HttpStatus = HttpStatusCode.BadRequest,
+                        StatusCode = HttpStatusCode.BadRequest,
                         Error = new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
@@ -178,7 +178,7 @@ namespace SimpleAuth.Api.Token.Actions
                 return (null,
                     new GenericResponse<GrantedToken>
                     {
-                        HttpStatus = HttpStatusCode.BadRequest,
+                        StatusCode = HttpStatusCode.BadRequest,
                         Error = new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
@@ -196,7 +196,7 @@ namespace SimpleAuth.Api.Token.Actions
                 return (null,
                     new GenericResponse<GrantedToken>
                     {
-                        HttpStatus = HttpStatusCode.BadRequest,
+                        StatusCode = HttpStatusCode.BadRequest,
                         Error = new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
@@ -218,7 +218,7 @@ namespace SimpleAuth.Api.Token.Actions
                 return (null,
                     new GenericResponse<GrantedToken>
                     {
-                        HttpStatus = HttpStatusCode.BadRequest,
+                        StatusCode = HttpStatusCode.BadRequest,
                         Error = new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
@@ -234,7 +234,7 @@ namespace SimpleAuth.Api.Token.Actions
                 return (null,
                        new GenericResponse<GrantedToken>
                        {
-                           HttpStatus = HttpStatusCode.BadRequest,
+                           StatusCode = HttpStatusCode.BadRequest,
                            Error = new ErrorDetails
                            {
                                Status = HttpStatusCode.BadRequest,
@@ -251,7 +251,7 @@ namespace SimpleAuth.Api.Token.Actions
                 return (null,
                     new GenericResponse<GrantedToken>
                     {
-                        HttpStatus = HttpStatusCode.BadRequest,
+                        StatusCode = HttpStatusCode.BadRequest,
                         Error = new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
@@ -268,7 +268,7 @@ namespace SimpleAuth.Api.Token.Actions
                 return (null,
                     new GenericResponse<GrantedToken>
                     {
-                        HttpStatus = HttpStatusCode.BadRequest,
+                        StatusCode = HttpStatusCode.BadRequest,
                         Error = new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
@@ -287,7 +287,7 @@ namespace SimpleAuth.Api.Token.Actions
                 return (null,
                     new GenericResponse<GrantedToken>
                     {
-                        HttpStatus = HttpStatusCode.BadRequest,
+                        StatusCode = HttpStatusCode.BadRequest,
                         Error = new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
@@ -304,7 +304,7 @@ namespace SimpleAuth.Api.Token.Actions
                 return (null,
                     new GenericResponse<GrantedToken>
                     {
-                        HttpStatus = HttpStatusCode.BadRequest,
+                        StatusCode = HttpStatusCode.BadRequest,
                         Error = new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,

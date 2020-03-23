@@ -63,7 +63,7 @@
                     };
                     var response = await umaClient.AddResource(resource, token.AccessToken).ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     resourceSetResponse = response.Content;
                 });

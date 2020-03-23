@@ -92,7 +92,7 @@
         }
 
         /// <inheritdoc />
-        public Task<GenericResult<ResourceSet>> Search(
+        public Task<PagedResult<ResourceSet>> Search(
             SearchResourceSet parameter,
             CancellationToken cancellationToken)
         {
@@ -121,7 +121,7 @@
             var nbResult = sortedResult.Length;
 
             return Task.FromResult(
-                new GenericResult<ResourceSet>
+                new PagedResult<ResourceSet>
                 {
                     Content = sortedResult.Skip(parameter.StartIndex).Take(parameter.TotalResults).ToArray(),
                     StartIndex = parameter.StartIndex,

@@ -75,7 +75,7 @@ namespace SimpleAuth.Manager.Client
                 Error = string.IsNullOrWhiteSpace(content)
                     ? new ErrorDetails { Status = httpResult.StatusCode }
                     : Serializer.Default.Deserialize<ErrorDetails>(content),
-                HttpStatus = httpResult.StatusCode
+                StatusCode = httpResult.StatusCode
             };
 
             return result;

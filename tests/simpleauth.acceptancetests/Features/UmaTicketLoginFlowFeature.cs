@@ -90,7 +90,7 @@
                         await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
                     resourceSetResponse = resourceResponse.Content;
 
-                    Assert.False(resourceResponse.ContainsError);
+                    Assert.False(resourceResponse.HasError);
                 });
 
             "then can get redirection".x(
@@ -203,7 +203,7 @@
                         await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
                     resourceSetResponse = resourceResponse.Content;
 
-                    Assert.False(resourceResponse.ContainsError);
+                    Assert.False(resourceResponse.HasError);
                 });
 
             "then can get redirection".x(
@@ -235,7 +235,7 @@
                         .ConfigureAwait(false);
                     umaToken = response.Content;
 
-                    Assert.True(response.ContainsError);
+                    Assert.True(response.HasError);
                 });
 
             "then has no token".x(() => { Assert.Null(umaToken); });
@@ -316,7 +316,7 @@
                         await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
                     resourceSetResponse = resourceResponse.Content;
 
-                    Assert.False(resourceResponse.ContainsError);
+                    Assert.False(resourceResponse.HasError);
                 });
 
             "and requesting permission ticket".x(

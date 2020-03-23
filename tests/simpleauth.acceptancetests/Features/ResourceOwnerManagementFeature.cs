@@ -34,7 +34,7 @@
                             _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
                 });
 
             "Then resource owner is local account".x(
@@ -58,7 +58,7 @@
                             _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
                 });
 
             "Then can update resource owner password".x(
@@ -69,7 +69,7 @@
                             _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
                 });
 
             "Then user can login with new password".x(
@@ -184,7 +184,7 @@
                 {
                     var result = await _tokenClient.RevokeToken(RevokeTokenRequest.Create(updatedToken))
                         .ConfigureAwait(false);
-                    Assert.False(result.ContainsError);
+                    Assert.False(result.HasError);
                 });
 
             "and logging in again".x(

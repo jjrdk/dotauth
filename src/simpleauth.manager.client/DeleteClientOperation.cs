@@ -31,7 +31,7 @@
             {
                 return new GenericResponse<Client>
                 {
-                    HttpStatus = httpResult.StatusCode,
+                    StatusCode = httpResult.StatusCode,
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content)
                 };
             }

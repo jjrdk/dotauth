@@ -33,7 +33,7 @@
             var resourceOwnerId = "invalid_login";
             var result = await _resourceOwnerClient.GetResourceOwner(resourceOwnerId).ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
             Assert.Equal(
                 string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, resourceOwnerId),
@@ -46,7 +46,7 @@
             var result = await _resourceOwnerClient.AddResourceOwner(new AddResourceOwnerRequest())
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
             Assert.Equal($"Value cannot be null. (Parameter 'value')", result.Error.Detail);
         }
@@ -57,7 +57,7 @@
             var result = await _resourceOwnerClient.AddResourceOwner(new AddResourceOwnerRequest {Subject = "subject"})
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
         }
 
@@ -68,7 +68,7 @@
                     new AddResourceOwnerRequest {Subject = "administrator", Password = "password"})
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
             Assert.Equal("a resource owner with same credentials already exists", result.Error.Detail);
         }
@@ -79,7 +79,7 @@
             var result = await _resourceOwnerClient.UpdateResourceOwnerClaims(new UpdateResourceOwnerClaimsRequest())
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
             Assert.Equal("The parameter login is missing (Parameter 'id')", result.Error.Detail);
         }
@@ -91,7 +91,7 @@
                     new UpdateResourceOwnerClaimsRequest {Subject = "invalid_login"})
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
             Assert.Equal("The resource owner invalid_login doesn't exist", result.Error.Detail);
         }
@@ -156,7 +156,7 @@
                 .ConfigureAwait(false);
             var resourceOwner = await _resourceOwnerClient.GetResourceOwner("administrator").ConfigureAwait(false);
 
-            Assert.False(resourceOwner.ContainsError);
+            Assert.False(resourceOwner.HasError);
             Assert.Equal("role", resourceOwner.Content.Claims.First(c => c.Type == "role").Value);
         }
 
@@ -187,7 +187,7 @@
             var resourceOwners = await _resourceOwnerClient.GetAllResourceOwners() // "administrator"
                 .ConfigureAwait(false);
 
-            Assert.False(resourceOwners.ContainsError);
+            Assert.False(resourceOwners.HasError);
             Assert.NotEmpty(resourceOwners.Content);
         }
 
@@ -198,7 +198,7 @@
                     new AddResourceOwnerRequest {Subject = "login", Password = "password"})
                 .ConfigureAwait(false);
 
-            Assert.False(result.ContainsError);
+            Assert.False(result.HasError);
         }
 
         [Fact]
@@ -209,7 +209,7 @@
                 .ConfigureAwait(false);
             var remove = await _resourceOwnerClient.DeleteResourceOwner("login1").ConfigureAwait(false);
 
-            Assert.False(remove.ContainsError);
+            Assert.False(remove.HasError);
         }
     }
 }

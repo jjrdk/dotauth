@@ -44,7 +44,7 @@
                 var introspectionResult = await introspectionClient.Introspect(
                         IntrospectionRequest.Create(token.Parameter, TokenTypes.AccessToken, "pat"))
                     .ConfigureAwait(false);
-                if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
+                if (introspectionResult.HasError || !introspectionResult.Content.Active)
                 {
                     return AuthenticateResult.NoResult();
                 }

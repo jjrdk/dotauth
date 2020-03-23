@@ -23,7 +23,7 @@
         /// <value>
         /// The HTTP status.
         /// </value>
-        public HttpStatusCode HttpStatus { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [contains error].
@@ -31,7 +31,7 @@
         /// <value>
         ///   <c>true</c> if [contains error]; otherwise, <c>false</c>.
         /// </value>
-        public bool ContainsError => Error != null;
+        public bool HasError => Error != null;
 
         /// <summary>
         /// Gets or sets the error.

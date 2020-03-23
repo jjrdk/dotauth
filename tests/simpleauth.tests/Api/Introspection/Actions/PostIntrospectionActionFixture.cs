@@ -67,7 +67,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
 
             var response = await _postIntrospectionAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
 
-            Assert.True(response.ContainsError);
+            Assert.True(response.HasError);
             Assert.Equal(ErrorCodes.InvalidGrant, response.Error.Title);
             Assert.Equal(ErrorDescriptions.TheTokenIsNotValid, response.Error.Detail);
         }

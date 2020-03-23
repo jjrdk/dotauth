@@ -59,7 +59,7 @@ namespace SimpleAuth.UserInfoIntrospection
             try
             {
                 var introspectionResult = await _userInfoClient.GetUserInfo(header.Parameter).ConfigureAwait(false);
-                if (introspectionResult == null || introspectionResult.ContainsError)
+                if (introspectionResult == null || introspectionResult.HasError)
                 {
                     return AuthenticateResult.NoResult();
                 }

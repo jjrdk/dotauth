@@ -431,7 +431,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .GetToken(TokenRequest.FromRefreshToken(result.Content.RefreshToken))
                 .ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.BadRequest, refreshToken.HttpStatus);
+            Assert.Equal(HttpStatusCode.BadRequest, refreshToken.StatusCode);
             Assert.Equal("invalid_grant", refreshToken.Error.Title);
             Assert.Equal("the refresh token can be used only by the same issuer", refreshToken.Error.Detail);
         }
@@ -598,7 +598,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 new Uri(WellKnownOpenidConfigurationUrl));
             var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false);
 
-            Assert.False(result.ContainsError);
+            Assert.False(result.HasError);
             Assert.NotEmpty(result.Content.AccessToken);
         }
 
@@ -613,7 +613,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
                 .ConfigureAwait(false);
 
-            Assert.False(result.ContainsError);
+            Assert.False(result.HasError);
             Assert.NotEmpty(result.Content.AccessToken);
         }
 
@@ -627,7 +627,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var result = await tokenClient.GetToken(TokenRequest.FromPassword("superuser", "password", new[] {"role"}))
                 .ConfigureAwait(false);
 
-            Assert.False(result.ContainsError);
+            Assert.False(result.HasError);
             var payload = new JwtSecurityToken(result.Content.IdToken);
             var roles = payload.Claims.Where(x => x.Type == "role").ToArray();
             Assert.Single(roles);
@@ -647,7 +647,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"openid"}))
                 .ConfigureAwait(false);
 
-            Assert.False(result.ContainsError);
+            Assert.False(result.HasError);
             Assert.NotEmpty(result.Content.AccessToken);
         }
 
@@ -662,7 +662,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
                 .ConfigureAwait(false);
 
-            Assert.False(result.ContainsError);
+            Assert.False(result.HasError);
             Assert.NotEmpty(result.Content.AccessToken);
         }
 
@@ -679,7 +679,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             // TODO: Look into this
 
-            Assert.False(result.ContainsError);
+            Assert.False(result.HasError);
             Assert.NotEmpty(result.Content.AccessToken);
         }
 
@@ -692,7 +692,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 new Uri(WellKnownOpenidConfigurationUrl));
             var token = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-            Assert.False(token.ContainsError);
+            Assert.False(token.HasError);
             Assert.NotEmpty(token.Content.AccessToken);
         }
 
@@ -705,7 +705,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 new Uri(WellKnownOpenidConfigurationUrl));
             var firstToken = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-            Assert.False(firstToken.ContainsError);
+            Assert.False(firstToken.HasError);
             Assert.NotEmpty(firstToken.Content.AccessToken);
         }
 
@@ -743,7 +743,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 new Uri(WellKnownOpenidConfigurationUrl));
             var token = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-            Assert.False(token.ContainsError);
+            Assert.False(token.HasError);
         }
 
         [Fact]
@@ -774,7 +774,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 new Uri(WellKnownOpenidConfigurationUrl));
             var token = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
 
-            Assert.False(token.ContainsError);
+            Assert.False(token.HasError);
             Assert.NotEmpty(token.Content.AccessToken);
         }
     }

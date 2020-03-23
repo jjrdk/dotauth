@@ -28,7 +28,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<GenericResult<ResourceSet>> Search(
+        public async Task<PagedResult<ResourceSet>> Search(
             SearchResourceSet parameter,
             CancellationToken cancellationToken)
         {
@@ -40,7 +40,7 @@
                 .ToPagedListAsync(parameter.StartIndex + 1, parameter.TotalResults, cancellationToken)
                 .ConfigureAwait(false);
 
-            return new GenericResult<ResourceSet>
+            return new PagedResult<ResourceSet>
             {
                 Content = results.ToArray(),
                 StartIndex = parameter.StartIndex,

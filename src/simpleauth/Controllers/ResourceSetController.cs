@@ -57,7 +57,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult<GenericResult<ResourceSet>>> SearchResourceSets(
+        public async Task<ActionResult<PagedResult<ResourceSet>>> SearchResourceSets(
             [FromBody] SearchResourceSet searchResourceSet,
             CancellationToken cancellationToken)
         {
@@ -72,7 +72,7 @@ namespace SimpleAuth.Controllers
             var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken)
                 .ConfigureAwait(false);
             return new OkObjectResult(
-                new GenericResult<ResourceSet>
+                new PagedResult<ResourceSet>
                 {
                     Content = result.Content,
                     StartIndex = result.StartIndex,

@@ -76,13 +76,13 @@ namespace SimpleAuth.Client
                 return new GenericResponse<IntrospectionResponse>
                 {
                     Error = error,
-                    HttpStatus = result.StatusCode
+                    StatusCode = result.StatusCode
                 };
             }
 
             return new GenericResponse<IntrospectionResponse>
             {
-                HttpStatus = result.StatusCode,
+                StatusCode = result.StatusCode,
                 Content = Serializer.Default.Deserialize<IntrospectionResponse>(json)
             };
         }
@@ -119,14 +119,14 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<PermissionResponse>
                 {
-                    HttpStatus = result.StatusCode,
+                    StatusCode = result.StatusCode,
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content)
                 };
             }
 
             return new GenericResponse<PermissionResponse>
             {
-                HttpStatus = result.StatusCode,
+                StatusCode = result.StatusCode,
                 Content = Serializer.Default.Deserialize<PermissionResponse>(content)
             };
         }
@@ -167,14 +167,14 @@ namespace SimpleAuth.Client
             {
                 return new GenericResponse<PermissionResponse>
                 {
-                    HttpStatus = result.StatusCode,
+                    StatusCode = result.StatusCode,
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content)
                 };
             }
 
             return new GenericResponse<PermissionResponse>
             {
-                HttpStatus = result.StatusCode,
+                StatusCode = result.StatusCode,
                 Content = Serializer.Default.Deserialize<PermissionResponse>(content)
             };
         }
@@ -212,13 +212,13 @@ namespace SimpleAuth.Client
                 return new GenericResponse<UpdateResourceSetResponse>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<UpdateResourceSetResponse>
             {
-                HttpStatus = httpResult.StatusCode,
+                StatusCode = httpResult.StatusCode,
                 Content = Serializer.Default.Deserialize<UpdateResourceSetResponse>(content)
             };
         }
@@ -257,13 +257,13 @@ namespace SimpleAuth.Client
                 return new GenericResponse<AddResourceSetResponse>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<AddResourceSetResponse>
             {
-                HttpStatus = httpResult.StatusCode,
+                StatusCode = httpResult.StatusCode,
                 Content = Serializer.Default.Deserialize<AddResourceSetResponse>(content)
             };
         }
@@ -298,11 +298,11 @@ namespace SimpleAuth.Client
                 return new GenericResponse<object>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 
-            return new GenericResponse<object> { HttpStatus = httpResult.StatusCode, };
+            return new GenericResponse<object> { StatusCode = httpResult.StatusCode, };
         }
 
         /// <inheritdoc />
@@ -329,13 +329,13 @@ namespace SimpleAuth.Client
                 return new GenericResponse<ResourceSet[]>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(json),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<ResourceSet[]>
             {
-                HttpStatus = httpResult.StatusCode,
+                StatusCode = httpResult.StatusCode,
                 Content = Serializer.Default.Deserialize<ResourceSet[]>(json)
             };
         }
@@ -370,19 +370,19 @@ namespace SimpleAuth.Client
                 return new GenericResponse<ResourceSet>()
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(json),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 
             return new GenericResponse<ResourceSet>()
             {
-                HttpStatus = httpResult.StatusCode,
+                StatusCode = httpResult.StatusCode,
                 Content = Serializer.Default.Deserialize<ResourceSet>(json)
             };
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<GenericResult<ResourceSet>>> SearchResources(
+        public async Task<GenericResponse<PagedResult<ResourceSet>>> SearchResources(
             SearchResourceSet parameter,
             string token,
             CancellationToken cancellationToken = default)
@@ -404,17 +404,17 @@ namespace SimpleAuth.Client
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
             {
-                return new GenericResponse<GenericResult<ResourceSet>>()
+                return new GenericResponse<PagedResult<ResourceSet>>()
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 
-            return new GenericResponse<GenericResult<ResourceSet>>
+            return new GenericResponse<PagedResult<ResourceSet>>
             {
-                HttpStatus = httpResult.StatusCode,
-                Content = Serializer.Default.Deserialize<GenericResult<ResourceSet>>(content)
+                StatusCode = httpResult.StatusCode,
+                Content = Serializer.Default.Deserialize<PagedResult<ResourceSet>>(content)
             };
         }
 

@@ -19,7 +19,7 @@
                             _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     subject = response.Content;
                 });
@@ -30,7 +30,7 @@
                     var response = await _managerClient.GetResourceOwner("test", _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
                     Assert.True(response.Content.IsLocalAccount);
                 });
         }
@@ -46,7 +46,7 @@
                             _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
                 });
 
             "Then can update resource owner password".x(
@@ -57,7 +57,7 @@
                             _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
                 });
         }
     }

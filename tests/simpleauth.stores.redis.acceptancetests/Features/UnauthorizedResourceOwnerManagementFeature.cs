@@ -26,7 +26,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
                 });
         }
 
@@ -47,7 +47,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
                 });
         }
 
@@ -72,7 +72,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
                 });
         }
 
@@ -93,7 +93,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
                 });
         }
 
@@ -112,7 +112,7 @@
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.HttpStatus);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
                 });
         }
     }

@@ -66,11 +66,11 @@ namespace SimpleAuth.Client
             return (!result.IsSuccessStatusCode)
                 ? new GenericResponse<Client>
                 {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content), HttpStatus = result.StatusCode
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content), StatusCode = result.StatusCode
                 }
                 : new GenericResponse<Client>
                 {
-                    HttpStatus = result.StatusCode, Content = Serializer.Default.Deserialize<Client>(content)
+                    StatusCode = result.StatusCode, Content = Serializer.Default.Deserialize<Client>(content)
                 };
         }
     }

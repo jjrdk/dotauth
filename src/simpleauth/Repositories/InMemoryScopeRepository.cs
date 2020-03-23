@@ -207,7 +207,7 @@
         }
 
         /// <inheritdoc />
-        public Task<GenericResult<Scope>> Search(
+        public Task<PagedResult<Scope>> Search(
             SearchScopesRequest parameter,
             CancellationToken cancellationToken = default)
         {
@@ -241,7 +241,7 @@
             var nbResult = content.Length;
 
             return Task.FromResult(
-                new GenericResult<Scope>
+                new PagedResult<Scope>
                 {
                     Content = content, StartIndex = parameter.StartIndex, TotalResults = nbResult
                 });

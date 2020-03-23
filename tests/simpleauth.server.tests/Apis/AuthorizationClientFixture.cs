@@ -257,7 +257,7 @@ namespace SimpleAuth.Server.Tests.Apis
                         "state"))
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal("invalid_request", result.Error.Title);
         }
 
@@ -276,7 +276,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             UserStore.Instance().IsInactive = false;
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal("login_required", result.Error.Title);
             Assert.Equal("the user needs to be authenticated", result.Error.Detail);
         }
@@ -297,7 +297,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             UserStore.Instance().Subject = "administrator";
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal("interaction_required", result.Error.Title);
             Assert.Equal("the user needs to give his consent", result.Error.Detail);
         }
@@ -315,7 +315,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     { id_token_hint = "token", prompt = "none" })
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal("invalid_request", result.Error.Title);
             Assert.Equal("the id_token_hint parameter is not a valid token", result.Error.Detail);
         }
@@ -344,7 +344,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     { id_token_hint = jws, prompt = "none" })
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
         }
 
@@ -374,7 +374,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     { id_token_hint = jws, prompt = "none" })
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal("invalid_request", result.Error.Title);
             Assert.Equal("the current authenticated user doesn't match with the identity token", result.Error.Detail);
         }
@@ -504,7 +504,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     { id_token_hint = jwe, prompt = "none" })
                 .ConfigureAwait(false);
 
-            Assert.False(result.ContainsError);
+            Assert.False(result.HasError);
         }
 
         [Fact]

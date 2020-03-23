@@ -26,7 +26,7 @@
         {
             var result = await _openidClients.AddClient(new Client()).ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
         }
 
@@ -45,7 +45,7 @@
                     })
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal("invalid_redirect_uri", result.Error.Title);
             Assert.Equal("The redirect_uri http://localhost/#fragment cannot contain fragment", result.Error.Detail);
         }
@@ -55,7 +55,7 @@
         {
             var result = await _openidClients.UpdateClient(new Client()).ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
             Assert.Equal(ErrorDescriptions.RequestIsNotValid, result.Error.Detail);
         }
@@ -85,7 +85,7 @@
             client.AllowedScopes = new[] { "not_valid" };
             var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidScope, result.Error.Title);
             Assert.Equal("Unknown scopes: not_valid", result.Error.Detail);
         }
@@ -95,7 +95,7 @@
         {
             var newClient = await _openidClients.GetClient("unknown_client").ConfigureAwait(false);
 
-            Assert.True(newClient.ContainsError);
+            Assert.True(newClient.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, newClient.Error.Title);
             Assert.Equal(ErrorDescriptions.TheClientDoesntExist, newClient.Error.Detail);
         }
@@ -105,7 +105,7 @@
         {
             var newClient = await _openidClients.DeleteClient("unknown_client").ConfigureAwait(false);
 
-            Assert.True(newClient.ContainsError);
+            Assert.True(newClient.HasError);
         }
 
         [Fact]
@@ -142,11 +142,11 @@
             };
             var result = await _openidClients.AddClient(client).ConfigureAwait(false);
 
-            Assert.False(result.ContainsError, result.Error?.Detail);
+            Assert.False(result.HasError, result.Error?.Detail);
 
             var newClient = await _openidClients.GetClient(result.Content.ClientId).ConfigureAwait(false);
 
-            Assert.False(newClient.ContainsError);
+            Assert.False(newClient.HasError);
             Assert.Equal(ApplicationTypes.Web, newClient.Content.ApplicationType);
             Assert.Equal("client_name", newClient.Content.ClientName);
             Assert.Equal(new Uri("http://clienturi.com"), newClient.Content.ClientUri);
@@ -191,7 +191,7 @@
             var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
             var newClient = await _openidClients.GetClient(addClientResult.Content.ClientId).ConfigureAwait(false);
 
-            Assert.False(result.ContainsError);
+            Assert.False(result.HasError);
             Assert.Equal(2, newClient.Content.PostLogoutRedirectUris.Length);
             Assert.Single(newClient.Content.RedirectionUrls);
             Assert.Equal(2, newClient.Content.GrantTypes.Length);
@@ -223,7 +223,7 @@
             var deleteResult =
                 await _openidClients.DeleteClient(addClientResult.Content.ClientId).ConfigureAwait(false);
 
-            Assert.False(deleteResult.ContainsError);
+            Assert.False(deleteResult.HasError);
         }
 
         [Fact]
@@ -268,7 +268,7 @@
                     new SearchClientsRequest { StartIndex = 0, NbResults = 1 })
                 .ConfigureAwait(false);
 
-            Assert.False(searchResult.ContainsError);
+            Assert.False(searchResult.HasError);
             Assert.Single(searchResult.Content.Content);
         }
     }

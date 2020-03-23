@@ -57,7 +57,7 @@ namespace SimpleAuth.Tests.Api.Token
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.True(result.ContainsError);
+            Assert.True(result.HasError);
         }
 
         [Fact]

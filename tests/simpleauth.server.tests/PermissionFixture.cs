@@ -46,7 +46,7 @@ namespace SimpleAuth.Server.Tests
                 .RequestPermission("header", new PermissionRequest { ResourceSetId = string.Empty })
                 .ConfigureAwait(false);
 
-            Assert.True(ticket.ContainsError);
+            Assert.True(ticket.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
             Assert.Equal("the parameter resource_set_id needs to be specified", ticket.Error.Detail);
         }
@@ -58,7 +58,7 @@ namespace SimpleAuth.Server.Tests
                 .RequestPermission("header", new PermissionRequest { ResourceSetId = "resource" })
                 .ConfigureAwait(false);
 
-            Assert.True(ticket.ContainsError);
+            Assert.True(ticket.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
             Assert.Equal(string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"), ticket.Error.Detail);
         }
@@ -71,7 +71,7 @@ namespace SimpleAuth.Server.Tests
                     new PermissionRequest { ResourceSetId = "resource", Scopes = new[] { "scope" } })
                 .ConfigureAwait(false);
 
-            Assert.True(ticket.ContainsError);
+            Assert.True(ticket.HasError);
             Assert.Equal(ErrorCodes.InvalidResourceSetId, ticket.Error.Title);
             Assert.Equal(string.Format(ErrorDescriptions.TheResourceSetDoesntExist, "resource"), ticket.Error.Detail);
         }
@@ -89,7 +89,7 @@ namespace SimpleAuth.Server.Tests
                     new PermissionRequest { ResourceSetId = resource.Content.Id, Scopes = new[] { "scopescopescope" } })
                 .ConfigureAwait(false);
 
-            Assert.True(ticket.ContainsError);
+            Assert.True(ticket.HasError);
             Assert.Equal("invalid_scope", ticket.Error.Title);
             Assert.Equal("one or more scopes are not valid", ticket.Error.Detail);
         }

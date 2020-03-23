@@ -51,7 +51,7 @@ namespace SimpleAuth.Manager.Client
                 return new GenericResponse<Scope>
                 {
                     Error = JsonConvert.DeserializeObject<ErrorDetails>(content),
-                    HttpStatus = httpResult.StatusCode
+                    StatusCode = httpResult.StatusCode
                 };
             }
 

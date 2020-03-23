@@ -31,7 +31,7 @@
                     var response = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
                 });
 
             "and then requesting token".x(

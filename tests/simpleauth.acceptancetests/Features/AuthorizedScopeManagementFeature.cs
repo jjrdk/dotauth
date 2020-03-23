@@ -17,7 +17,7 @@
                     var response = await _managerClient.GetScope("test", _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.ContainsError);
+                    Assert.False(response.HasError);
 
                     scope = response.Content;
                 });

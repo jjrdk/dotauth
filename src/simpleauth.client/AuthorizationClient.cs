@@ -67,12 +67,12 @@ namespace SimpleAuth.Client
             var response = await _client.GetAsync(uriBuilder.Uri).ConfigureAwait(false);
 
             return (int)response.StatusCode < 400
-                ? new GenericResponse<Uri> { HttpStatus = response.StatusCode, Content = response.Headers.Location }
+                ? new GenericResponse<Uri> { StatusCode = response.StatusCode, Content = response.Headers.Location }
                 : new GenericResponse<Uri>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(
                         await response.Content.ReadAsStringAsync().ConfigureAwait(false)),
-                    HttpStatus = response.StatusCode
+                    StatusCode = response.StatusCode
                 };
         }
     }
