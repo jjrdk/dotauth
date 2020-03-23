@@ -57,7 +57,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                            new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -66,7 +66,9 @@
             "and adding permission".x(
                 async () =>
                 {
-                    var response = await client.RequestPermission(grantedToken.AccessToken, new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
+                    var response = await client.RequestPermission(
+                            grantedToken.AccessToken,
+                            requests: new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
                         .ConfigureAwait(false);
 
                     Assert.False(response.HasError);
@@ -107,7 +109,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
+                            new ResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -118,11 +120,11 @@
             "and adding permission".x(
                 async () =>
                 {
-                    var response = await client.RequestPermissions(
+                    var response = await client.RequestPermission(
                             grantedToken.AccessToken,
                             CancellationToken.None,
-                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
-                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"write"}},
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
                         .ConfigureAwait(false);
 
                     Assert.False(response.HasError);

@@ -27,20 +27,6 @@ namespace SimpleAuth.Client
     public interface IUmaPermissionClient
     {
         /// <summary>
-        /// Adds the permission.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="request">The request.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// token
-        /// </exception>
-        Task<GenericResponse<PermissionResponse>> RequestPermission(string token, PermissionRequest request, CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Adds the permissions.
         /// </summary>
         /// <param name="token">The token.</param>
@@ -52,6 +38,6 @@ namespace SimpleAuth.Client
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<PermissionResponse>> RequestPermissions(string token, CancellationToken cancellationToken = default, params PermissionRequest[] requests);
+        Task<GenericResponse<PermissionResponse>> RequestPermission(string token, CancellationToken cancellationToken = default, params PermissionRequest[] requests);
     }
 }

@@ -4,7 +4,6 @@ namespace SimpleAuth.ResourceServer.Tests
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Internal;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
     using Moq;
@@ -24,8 +23,8 @@ namespace SimpleAuth.ResourceServer.Tests
                 .Setup(
                     x => x.RequestPermission(
                         It.IsAny<string>(),
-                        It.IsAny<PermissionRequest>(),
-                        It.IsAny<CancellationToken>()))
+                        It.IsAny<CancellationToken>(),
+                        It.IsAny<PermissionRequest[]>()))
                 .ReturnsAsync(
                     new GenericResponse<PermissionResponse> { Content = new PermissionResponse { TicketId = "123" } });
             var response = new UmaResponse(
@@ -49,7 +48,7 @@ namespace SimpleAuth.ResourceServer.Tests
             var permissionClient = new Mock<IUmaPermissionClient>();
             permissionClient
                 .Setup(
-                    x => x.RequestPermissions(
+                    x => x.RequestPermission(
                         It.IsAny<string>(),
                         It.IsAny<CancellationToken>(),
                         It.IsAny<PermissionRequest[]>()))

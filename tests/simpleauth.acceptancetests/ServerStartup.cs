@@ -2,7 +2,6 @@
 {
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using SimpleAuth;
@@ -24,7 +23,6 @@
 
     public class ServerStartup
     {
-        //private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
         private readonly SimpleAuthOptions _options;
         private readonly SharedContext _context;
 

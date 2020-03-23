@@ -90,50 +90,6 @@ namespace SimpleAuth.Client
         /// <inheritdoc />
         public async Task<GenericResponse<PermissionResponse>> RequestPermission(
             string token,
-            PermissionRequest request,
-            CancellationToken cancellationToken = default)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentNullException(nameof(token));
-            }
-
-            var serializedPostPermission = Serializer.Default.Serialize(request);
-            var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                Content = body,
-                RequestUri = new Uri(configuration.PermissionEndpoint)
-            };
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var result = await _client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!result.IsSuccessStatusCode)
-            {
-                return new GenericResponse<PermissionResponse>
-                {
-                    StatusCode = result.StatusCode,
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content)
-                };
-            }
-
-            return new GenericResponse<PermissionResponse>
-            {
-                StatusCode = result.StatusCode,
-                Content = Serializer.Default.Deserialize<PermissionResponse>(content)
-            };
-        }
-
-        /// <inheritdoc />
-        public async Task<GenericResponse<PermissionResponse>> RequestPermissions(
-            string token,
             CancellationToken cancellationToken = default,
             params PermissionRequest[] requests)
         {
@@ -150,9 +106,14 @@ namespace SimpleAuth.Client
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
             var url = configuration.PermissionEndpoint;
 
-            url += url.EndsWith("/") ? "bulk" : "/bulk";
+            if (requests.Length > 1)
+            {
+                url += url.EndsWith("/") ? "bulk" : "/bulk";
+            }
 
-            var serializedPostPermission = Serializer.Default.Serialize(requests);
+            var serializedPostPermission = requests.Length > 1
+                ? Serializer.Default.Serialize(requests)
+                : Serializer.Default.Serialize(requests[0]);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
             {
@@ -161,7 +122,7 @@ namespace SimpleAuth.Client
                 RequestUri = new Uri(url)
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var result = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+            var result = await _client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {

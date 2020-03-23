@@ -2,17 +2,15 @@
 {
     using System;
     using SimpleAuth.Client;
-    using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
 
-    public class PatTokenIntrospectionFeature : AuthFlowFeature
+    public class PatTokenUserInfoFeature : AuthFlowFeature
     {
-        [Scenario(DisplayName = "Can register a resource for a user and manage policies")]
-        public void CanGetIntrospectionInfoFromPatToken()
+        [Scenario(DisplayName = "Can get user info for PAT token")]
+        public void CanGetUserInfoFromPatToken()
         {
             TokenClient client = null;
-            UmaClient umaClient = null;
             string token = null;
 
             "Given a token client".x(
@@ -23,8 +21,6 @@
                         _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration));
                 });
-
-            "And a UMA client".x(() => { umaClient = new UmaClient(_fixture.Client, new Uri(BaseUrl)); });
 
             "When getting a PAT token".x(
                 async () =>

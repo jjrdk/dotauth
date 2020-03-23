@@ -324,7 +324,7 @@
                 {
                     var permission =
                         new PermissionRequest { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
-                    var permissionResponse = await umaClient.RequestPermission(result.AccessToken, permission)
+                    var permissionResponse = await umaClient.RequestPermission(result.AccessToken, requests: permission)
                         .ConfigureAwait(false);
                     ticketId = permissionResponse.Content.TicketId;
 

@@ -44,7 +44,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		DockerfilePostgres = DockerfilePostgres
 		README.md = README.md
 		shared.proj = shared.proj
-		specifications\specifications.xml = specifications\specifications.xml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.stores.marten.acceptancetests", "tests\simpleauth.stores.marten.acceptancetests\simpleauth.stores.marten.acceptancetests.csproj", "{816CBA5B-357C-4D00-9A9B-F06A33F93B10}"
@@ -61,7 +60,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.resourceserver",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.integrationtests", "tests\simpleauth.integrationtests\simpleauth.integrationtests.csproj", "{4EC6178C-DA40-4750-B5D6-7197394E19D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleauth.resourceserver.tests", "tests\simpleauth.resourceserver.tests\simpleauth.resourceserver.tests.csproj", "{6248F80B-1931-4073-81D8-F4B06450D73C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.resourceserver.tests", "tests\simpleauth.resourceserver.tests\simpleauth.resourceserver.tests.csproj", "{6248F80B-1931-4073-81D8-F4B06450D73C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

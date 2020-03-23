@@ -97,10 +97,9 @@
 
             var ticket = await _umaClient.RequestPermission(
                     "header",
-                    new PermissionRequest // Add permission & retrieve a ticket id.
+                    requests: new PermissionRequest // Add permission & retrieve a ticket id.
                     {
-                        ResourceSetId = resource.Content.Id,
-                        Scopes = new[] { "read" }
+                        ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}
                     })
                 .ConfigureAwait(false);
 

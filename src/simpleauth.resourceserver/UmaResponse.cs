@@ -52,13 +52,7 @@
                 throw new InvalidOperationException("Cannot request ticket without bearer token.");
             }
 
-            var ticket = _permissionRequest.Length == 1
-                ? await _permissionClient.RequestPermission(
-                        headerValue.Parameter,
-                        _permissionRequest[0],
-                        CancellationToken.None)
-                    .ConfigureAwait(false)
-                : await _permissionClient.RequestPermissions(
+            var ticket = await _permissionClient.RequestPermission(
                         headerValue.Parameter,
                         CancellationToken.None,
                         _permissionRequest)

@@ -130,14 +130,11 @@ namespace SimpleAuth.ResourceServer.Authentication
             }
 
             var tokenResponse = await Options.TokenCache.GetToken("uma_protection").ConfigureAwait(false);
-            var ticket = permissionRequests.Length > 1
-                ? await _permissionClient.RequestPermissions(
-                        tokenResponse.AccessToken,
-                        CancellationToken.None,
-                        permissionRequests)
-                    .ConfigureAwait(false)
-                : await _permissionClient.RequestPermission(tokenResponse.AccessToken, permissionRequests[0])
-                    .ConfigureAwait(false);
+            var ticket = await _permissionClient.RequestPermission(
+                    tokenResponse.AccessToken,
+                    CancellationToken.None,
+                    permissionRequests)
+                .ConfigureAwait(false);
 
             Response.ConfigureResponse(ticket, Options.Authority, Options.Realm);
         }

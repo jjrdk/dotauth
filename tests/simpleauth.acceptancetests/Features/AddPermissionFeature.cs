@@ -76,7 +76,7 @@
                 {
                     var response = await client.RequestPermission(
                             grantedToken.AccessToken,
-                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                            requests: new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
                         .ConfigureAwait(false);
 
                     Assert.False(response.HasError);
@@ -86,7 +86,6 @@
 
             "then returns ticket id".x(() => { Assert.NotNull(ticketId); });
         }
-
 
         [Scenario]
         public void SuccessfulPermissionsCreation()
@@ -128,7 +127,7 @@
             "and adding permission".x(
                 async () =>
                 {
-                    var response = await client.RequestPermissions(
+                    var response = await client.RequestPermission(
                             grantedToken.AccessToken,
                             CancellationToken.None,
                             new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"write"}},

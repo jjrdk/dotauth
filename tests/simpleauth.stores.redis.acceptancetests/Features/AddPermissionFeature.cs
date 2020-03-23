@@ -34,53 +34,50 @@
 
             "and the server's signing key".x(
                 async () =>
-                    {
-                        var json = await _fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
-                        jwks = new JsonWebKeySet(json);
+                {
+                    var json = await _fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    jwks = new JsonWebKeySet(json);
 
-                        Assert.NotEmpty(jwks.Keys);
-                    });
+                    Assert.NotEmpty(jwks.Keys);
+                });
 
             "and a valid UMA token".x(
                 async () =>
-                    {
-                        var tokenClient = new TokenClient(
-                            TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                            _fixture.Client,
-                            new Uri(WellKnownUmaConfiguration));
-                        var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
-                                        .ConfigureAwait(false);
-                        grantedToken = token.Content;
-                    });
+                {
+                    var tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                        _fixture.Client,
+                        new Uri(WellKnownUmaConfiguration));
+                    var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
+                        .ConfigureAwait(false);
+                    grantedToken = token.Content;
+                });
 
             "and a properly configured uma client".x(
                 () => client = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration)));
 
             "when registering resource".x(
                 async () =>
-                    {
-                        var resource = await client.AddResource(
-                                               new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
-                                               grantedToken.AccessToken)
-                                           .ConfigureAwait(false);
-                        resourceId = resource.Content.Id;
-                    });
+                {
+                    var resource = await client.AddResource(
+                            new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                            grantedToken.AccessToken)
+                        .ConfigureAwait(false);
+                    resourceId = resource.Content.Id;
+                });
 
             "and adding permission".x(
                 async () =>
-                    {
-                        var response = await client.RequestPermission(grantedToken.AccessToken,
-                                new PermissionRequest
-                                {
-                                    ResourceSetId = resourceId,
-                                    Scopes = new[] { "read" }
-                                })
-                                           .ConfigureAwait(false);
+                {
+                    var response = await client.RequestPermission(
+                            grantedToken.AccessToken,
+                            requests: new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                        .ConfigureAwait(false);
 
-                        Assert.False(response.HasError);
+                    Assert.False(response.HasError);
 
-                        ticketId = response.Content.TicketId;
-                    });
+                    ticketId = response.Content.TicketId;
+                });
 
             "then returns ticket id".x(() => { Assert.NotNull(ticketId); });
         }
@@ -96,61 +93,49 @@
 
             "and a valid UMA token".x(
                 async () =>
-                    {
-                        var tokenClient = new TokenClient(
-                            TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                            _fixture.Client,
-                            new Uri(WellKnownUmaConfiguration));
-                        var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
-                                        .ConfigureAwait(false);
-                        grantedToken = token.Content;
+                {
+                    var tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                        _fixture.Client,
+                        new Uri(WellKnownUmaConfiguration));
+                    var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
+                        .ConfigureAwait(false);
+                    grantedToken = token.Content;
 
-                        Assert.NotNull(grantedToken);
-                    });
+                    Assert.NotNull(grantedToken);
+                });
 
             "and a properly configured uma client".x(
                 () => client = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration)));
 
             "when registering resource".x(
                 async () =>
-                    {
-                        var resource = await client.AddResource(
-                                               new ResourceSet
-                                               {
-                                                   Name = "picture",
-                                                   Scopes = new[] { "read", "write" }
-                                               },
-                                               grantedToken.AccessToken)
-                                           .ConfigureAwait(false);
-                        resourceId = resource.Content.Id;
+                {
+                    var resource = await client.AddResource(
+                            new ResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
+                            grantedToken.AccessToken)
+                        .ConfigureAwait(false);
+                    resourceId = resource.Content.Id;
 
-                        Assert.NotNull(resourceId);
-                    });
+                    Assert.NotNull(resourceId);
+                });
 
             "and adding permission".x(
                 async () =>
-                    {
-                        var response = await client.RequestPermissions(
-                                               grantedToken.AccessToken,
-                                               CancellationToken.None,
-                                               new PermissionRequest
-                                               {
-                                                   ResourceSetId = resourceId,
-                                                   Scopes = new[] { "write" }
-                                               },
-                                               new PermissionRequest
-                                               {
-                                                   ResourceSetId = resourceId,
-                                                   Scopes = new[] { "read" }
-                                               })
-                                           .ConfigureAwait(false);
+                {
+                    var response = await client.RequestPermission(
+                            grantedToken.AccessToken,
+                            CancellationToken.None,
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"write"}},
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                        .ConfigureAwait(false);
 
-                        Assert.False(response.HasError);
+                    Assert.False(response.HasError);
 
-                        ticketId = response.Content.TicketId;
+                    ticketId = response.Content.TicketId;
 
-                        Assert.NotNull(ticketId);
-                    });
+                    Assert.NotNull(ticketId);
+                });
 
             "then returns ticket id".x(() => { Assert.NotNull(ticketId); });
         }

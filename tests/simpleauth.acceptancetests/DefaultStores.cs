@@ -223,10 +223,7 @@ namespace SimpleAuth.AcceptanceTests
                     AllowedScopes = new[] {"api1", "uma_protection"},
                     GrantTypes = GrantTypes.All,
                     ResponseTypes = ResponseTypeNames.All,
-                    JsonWebKeys =
-                        TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
-                            .ToSet(),
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ApplicationType = ApplicationTypes.Web,
                     RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
                 },
