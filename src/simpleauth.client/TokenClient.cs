@@ -23,10 +23,8 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
-    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
-    using Newtonsoft.Json;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
 
@@ -122,6 +120,42 @@ namespace SimpleAuth.Client
             {
                 StatusCode = result.StatusCode,
                 Content = Serializer.Default.Deserialize<GrantedTokenResponse>(content)
+            };
+        }
+
+        /// <summary>
+        /// Executes the specified introspection request.
+        /// </summary>
+        /// <param name="introspectionRequest">The introspection request.</param>
+        /// <returns></returns>
+        public async Task<GenericResponse<OauthIntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
+        {
+            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = new FormUrlEncodedContent(introspectionRequest),
+                RequestUri = new Uri(discoveryInformation.IntrospectionEndpoint)
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", introspectionRequest.PatToken);
+
+            var result = await _client.SendAsync(request).ConfigureAwait(false);
+            var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                var error = Serializer.Default.Deserialize<ErrorDetails>(json);
+                return new GenericResponse<OauthIntrospectionResponse>
+                {
+                    Error = error,
+                    StatusCode = result.StatusCode
+                };
+            }
+
+            return new GenericResponse<OauthIntrospectionResponse>
+            {
+                StatusCode = result.StatusCode,
+                Content = Serializer.Default.Deserialize<OauthIntrospectionResponse>(json)
             };
         }
 

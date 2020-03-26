@@ -18,10 +18,8 @@ namespace SimpleAuth.Extensions
     using Microsoft.AspNetCore.Routing;
     using Results;
     using Shared.Requests;
-    using SimpleAuth.Shared;
     using System;
     using System.IO;
-    using System.Linq;
     using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;

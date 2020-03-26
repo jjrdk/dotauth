@@ -27,7 +27,7 @@ namespace SimpleAuth.Shared.Responses
         /// <summary>
         /// Gets or sets the authorization end point.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.AuthorizationEndPoint)]
+        [DataMember(Name = "authorization_endpoint")]
         public string AuthorizationEndPoint { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace SimpleAuth.Shared.Responses
         /// <value>
         /// The check session end point.
         /// </value>
-        [DataMember(Name = DiscoveryInformationNames.CheckSessionEndPoint)]
+        [DataMember(Name = "check_session_iframe")]
         public string CheckSessionEndPoint { get; set; }
 
         /// <summary>
@@ -44,15 +44,17 @@ namespace SimpleAuth.Shared.Responses
         /// </summary>
         [DataMember(Name = "claim_types_supported")]
         public string[] ClaimTypesSupported { get; set; }
+
         /// <summary>
         /// Gets or sets boolean specifying whether the OP supports use of the claims parameter.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.ClaimsParameterSupported)]
+        [DataMember(Name = "claims_parameter_supported")]
         public bool ClaimsParameterSupported { get; set; }
+
         /// <summary>
         /// Gets or sets a list of the Claim Names of the Claims.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.ClaimsSupported)]
+        [DataMember(Name = "claims_supported")]
         public string[] ClaimsSupported { get; set; }
 
         /// <summary>
@@ -61,56 +63,61 @@ namespace SimpleAuth.Shared.Responses
         /// <value>
         /// The end session end point.
         /// </value>
-        [DataMember(Name = DiscoveryInformationNames.EndSessionEndPoint)]
+        [DataMember(Name = "end_session_endpoint")]
         public string EndSessionEndPoint { get; set; }
+
         /// <summary>
         /// Gets or sets the grant-types supported : authorization_code, implicit
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.GrantTypesSupported)]
+        [DataMember(Name = "grant_types_supported")]
         public string[] GrantTypesSupported { get; set; }
+
         /// <summary>
         /// Gets or sets the list of the JWS signing algorithms (alg values) supported.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.IdTokenSigningAlgValuesSupported)]
+        [DataMember(Name = "id_token_signing_alg_values_supported")]
         public string[] IdTokenSigningAlgValuesSupported { get; set; }
+
         /// <summary>
         /// Gets or sets the issuer.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.Issuer)]
+        [DataMember(Name = "issuer")]
         public string Issuer { get; set; }
+
         /// <summary>
         /// Gets or sets the JSON Web Key Set document.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.JwksUri)]
+        [DataMember(Name = "jwks_uri")]
         public string JwksUri { get; set; }
+
         /// <summary>
         /// Gets or sets boolean specifying whether the OP supports use of the request parameter.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.RequestParameterSupported)]
+        [DataMember(Name = "request_parameter_supported")]
         public bool RequestParameterSupported { get; set; }
 
         /// <summary>
         /// Gets or sets boolean specifying whether the OP supports use of the request request_uri
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.RequestUriParameterSupported)]
+        [DataMember(Name = "request_uri_parameter_supported")]
         public bool RequestUriParameterSupported { get; set; }
 
         /// <summary>
         /// Gets or sets boolean specifying whether the OP requires any request_uri values.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.RequireRequestUriRegistration)]
+        [DataMember(Name = "require_request_uri_registration")]
         public bool RequireRequestUriRegistration { get; set; }
 
         /// <summary>
         /// Gets or sets the response modes supported : query, fragment
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.ResponseModesSupported)]
+        [DataMember(Name = "response_modes_supported")]
         public string[] ResponseModesSupported { get; set; }
 
         /// <summary>
         /// Gets or sets the response types supported : code, id_token &amp; token id_token
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.ResponseTypesSupported)]
+        [DataMember(Name = "response_types_supported")]
         public string[] ResponseTypesSupported { get; set; }
 
         /// <summary>
@@ -119,7 +126,7 @@ namespace SimpleAuth.Shared.Responses
         /// <value>
         /// The revocation end point.
         /// </value>
-        [DataMember(Name = DiscoveryInformationNames.RevocationEndPoint)]
+        [DataMember(Name = "revocation_endpoint")]
         public string RevocationEndPoint { get; set; }
 
         /// <summary>
@@ -128,42 +135,48 @@ namespace SimpleAuth.Shared.Responses
         /// <value>
         /// The introspection end point.
         /// </value>
-        [DataMember(Name = DiscoveryInformationNames.IntrospectionEndPoint)]
-        public string IntrospectionEndPoint { get; set; }
+        [DataMember(Name = "introspection_endpoint")]
+        public string IntrospectionEndpoint { get; set; }
+
         /// <summary>
         /// Gets or sets the list of supported scopes.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.ScopesSupported)]
+        [DataMember(Name = "scopes_supported")]
         public string[] ScopesSupported { get; set; }
+
         /// <summary>
         /// Gets or sets the subject types supported : pairwise &amp; public.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.SubjectTypesSupported)]
+        [DataMember(Name = "subject_types_supported")]
         public string[] SubjectTypesSupported { get; set; }
+
         /// <summary>
         /// Gets or sets the token endpoint.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.TokenEndPoint)]
+        [DataMember(Name = "token_endpoint")]
         public string TokenEndPoint { get; set; }
+
         /// <summary>
         /// Gets or sets the list of Client Authentication methods supported by the TokenEndpoint : client_secret_post, client_secret_basic etc ...
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.TokenEndpointAuthMethodSupported)]
+        [DataMember(Name = "token_endpoint_auth_methods_supported")]
         public string[] TokenEndpointAuthMethodSupported { get; set; }
+
         /// <summary>
         /// Gets or sets the user-info endpoint.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.UserInfoEndPoint)]
+        [DataMember(Name = "userinfo_endpoint")]
         public Uri UserInfoEndPoint { get; set; }
+
         /// <summary>
         /// Gets or sets the version of the discovery document
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.Version)]
+        [DataMember(Name = "version")]
         public string Version { get; set; }
         /// <summary>
         /// Gets or sets the Registration End Point.
         /// </summary>
-        [DataMember(Name = DiscoveryInformationNames.RegistrationEndPoint)]
+        [DataMember(Name = "registration_endpoint")]
         public string RegistrationEndPoint { get; set; }
 
         /// <summary>

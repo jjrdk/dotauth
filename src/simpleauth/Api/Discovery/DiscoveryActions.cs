@@ -74,7 +74,7 @@ namespace SimpleAuth.Api.Discovery
             result.JwksUri = issuer + "/" + CoreConstants.EndPoints.Jwks;
             result.RegistrationEndPoint = issuer + "/" + CoreConstants.EndPoints.Registration;
             result.RevocationEndPoint = issuer + "/" + CoreConstants.EndPoints.Revocation;
-            result.IntrospectionEndPoint = issuer + "/" + CoreConstants.EndPoints.Introspection;
+            result.IntrospectionEndpoint = issuer + "/" + CoreConstants.EndPoints.Introspection;
             result.Jws = issuer + "/" + CoreConstants.EndPoints.Jws;
             result.Jwe = issuer + "/" + CoreConstants.EndPoints.Jwe;
             result.Clients = issuer + "/" + CoreConstants.EndPoints.Clients;

@@ -16,7 +16,6 @@ namespace SimpleAuth.Controllers
 {
     using System;
     using Api.PermissionController;
-    using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Shared.Responses;

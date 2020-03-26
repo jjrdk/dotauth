@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Shared.Repositories;
-
 namespace SimpleAuth.Controllers
 {
     using Api.Introspection;
@@ -23,11 +21,10 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using System.Net;
-    using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.Net.Http.Headers;
+    using SimpleAuth.Shared.Repositories;
 
     /// <summary>
     /// Defines the introspection controller.
@@ -41,10 +38,8 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectionController"/> class.
         /// </summary>
-        /// <param name="clientStore">The client store.</param>
         /// <param name="tokenStore">The token store.</param>
-        /// <param name="jwksStore">The key store.</param>
-        public IntrospectionController(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore)
+        public IntrospectionController(ITokenStore tokenStore)
         {
             _introspectionActions = new PostIntrospectionAction(tokenStore);
         }
@@ -61,7 +56,7 @@ namespace SimpleAuth.Controllers
             [FromForm] IntrospectionRequest introspectionRequest,
             CancellationToken cancellationToken)
         {
-            if (introspectionRequest.token == null)
+            if (introspectionRequest?.token == null)
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,

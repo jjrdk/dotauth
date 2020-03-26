@@ -17,11 +17,9 @@ namespace SimpleAuth.Server.Tests.Policies
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
-    using System.Security.Cryptography;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Logging;
-    using Microsoft.IdentityModel.Tokens;
     using Moq;
     using SimpleAuth.Parameters;
     using SimpleAuth.Policies;

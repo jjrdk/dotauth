@@ -50,7 +50,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
         }
 
         [Fact]
-        public async Task WhenAccessTokenCannotBeExtractedThenReturnsBadRequest()
+        public async Task WhenAccessTokenCannotBeExtractedThenTokenIsInactive()
         {
             var parameter = new IntrospectionParameter
             {
@@ -61,46 +61,35 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             };
 
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
-            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
+                .ReturnsAsync(() => null);
 
             var response = await _postIntrospectionAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
 
-            Assert.True(response.HasError);
-            Assert.Equal(ErrorCodes.InvalidGrant, response.Error.Title);
-            Assert.Equal(ErrorDescriptions.TheTokenIsNotValid, response.Error.Detail);
+            Assert.False(response.Content.Active);
         }
 
         [Fact]
-        public async Task When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
+        public async Task When_Passing_Expired_RefreshToken_Then_Result_Should_Be_Returned()
         {
-            const string clientId = "client_id";
-            const string subject = "subject";
-            const string audience = "audience";
-            var audiences = new[] { audience };
             var parameter = new IntrospectionParameter
             {
                 TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken,
                 Token = "token"
             };
-            var idtp = new JwtPayload
-            {
-                {OpenIdClaimTypes.Subject, subject},
-                {StandardClaimNames.Audiences, audiences}
-            };
             var grantedToken = new GrantedToken
             {
                 Scope = "scope",
-                ClientId = clientId,
-                IdTokenPayLoad = idtp,
-                CreateDateTime = DateTimeOffset.UtcNow.AddDays(-2),
-                ExpiresIn = 2
+                ClientId = "client_id",
+                IdTokenPayLoad = new JwtPayload
+                {
+                    {OpenIdClaimTypes.Subject, "tester"},
+                    {StandardClaimNames.Audiences, new[]{"audience"}}
+                },
+                CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
+                ExpiresIn = 0
             };
             _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
-            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(grantedToken));
+                .ReturnsAsync(() => grantedToken);
 
             var response = await _postIntrospectionAction
                 .Execute(parameter, CancellationToken.None)
@@ -108,12 +97,10 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
 
             var result = response.Content;
             Assert.False(result.Active);
-            Assert.Equal(audience, result.Audience);
-            Assert.Equal(subject, result.Subject);
         }
 
         [Fact]
-        public async Task When_Passing_Active_AccessToken_Then_Result_Should_Be_Returned()
+        public async Task When_Passing_Active_RefreshToken_Then_Result_Should_Be_Returned()
         {
             const string clientId = "client_id";
             const string subject = "subject";
@@ -138,7 +125,74 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             };
 
             _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
+                .Returns(() => Task.FromResult(grantedToken));
+
+            var response = await _postIntrospectionAction
+                .Execute(parameter, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            var result = response.Content;
+            Assert.True(result.Active);
+            Assert.Equal(audience, result.Audience);
+            Assert.Equal(subject, result.Subject);
+        }
+
+        [Fact]
+        public async Task When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
+        {
+            var parameter = new IntrospectionParameter
+            {
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
+                Token = "token"
+            };
+            var grantedToken = new GrantedToken
+            {
+                Scope = "scope",
+                ClientId = "client_id",
+                IdTokenPayLoad = new JwtPayload
+                {
+                    {OpenIdClaimTypes.Subject, "tester"},
+                    {StandardClaimNames.Audiences, new[]{"audience"}}
+                },
+                CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
+                ExpiresIn = 0
+            };
+            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => grantedToken);
+
+            var response = await _postIntrospectionAction
+                .Execute(parameter, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            var result = response.Content;
+            Assert.False(result.Active);
+        }
+
+        [Fact]
+        public async Task When_Passing_Active_AccessToken_Then_Result_Should_Be_Returned()
+        {
+            const string clientId = "client_id";
+            const string subject = "subject";
+            const string audience = "audience";
+            var audiences = new[] { audience };
+            var parameter = new IntrospectionParameter
+            {
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
+                Token = "token"
+            };
+            var grantedToken = new GrantedToken
+            {
+                Scope = "scope",
+                ClientId = clientId,
+                IdTokenPayLoad = new JwtPayload
+                {
+                    {OpenIdClaimTypes.Subject, subject},
+                    {StandardClaimNames.Audiences, audiences}
+                },
+                CreateDateTime = DateTimeOffset.UtcNow,
+                ExpiresIn = 20000
+            };
+
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(grantedToken));
 

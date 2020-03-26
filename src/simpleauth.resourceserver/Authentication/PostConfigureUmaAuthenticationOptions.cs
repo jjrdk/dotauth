@@ -15,15 +15,7 @@
 namespace SimpleAuth.ResourceServer.Authentication
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Options;
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Client;
-    using SimpleAuth.Shared.Responses;
 
     internal class PostConfigureUmaAuthenticationOptions : IPostConfigureOptions<UmaAuthenticationOptions>
     {

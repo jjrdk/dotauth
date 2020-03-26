@@ -3,7 +3,6 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using Parameters;
     using Shared.Models;
 
     internal interface IAuthorizationPolicy

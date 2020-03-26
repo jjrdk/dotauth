@@ -115,19 +115,19 @@ namespace SimpleAuth.Policies
             var requiredClaims = claims.Select(
                     claim => new Dictionary<string, string>
                     {
-                        {UmaConstants.ErrorDetailNames.ClaimName, claim.Type},
-                        {UmaConstants.ErrorDetailNames.ClaimFriendlyName, claim.Type},
-                        {UmaConstants.ErrorDetailNames.ClaimIssuer, openidConfigurationUrl}
+                        {"name", claim.Type},
+                        {"friendly_name", claim.Type},
+                        {"issuer", openidConfigurationUrl}
                     })
                 .ToList();
 
-            requestingPartyClaims.Add(UmaConstants.ErrorDetailNames.RequiredClaims, requiredClaims);
-            requestingPartyClaims.Add(UmaConstants.ErrorDetailNames.RedirectUser, false);
+            requestingPartyClaims.Add("required_claims", requiredClaims);
+            requestingPartyClaims.Add("redirect_user", false);
             return new AuthorizationPolicyResult(
                 AuthorizationPolicyResultKind.NeedInfo,
                 new Dictionary<string, object>
                 {
-                    {UmaConstants.ErrorDetailNames.RequestingPartyClaims, requestingPartyClaims}
+                    {"requesting_party_claims", requestingPartyClaims}
                 });
         }
 

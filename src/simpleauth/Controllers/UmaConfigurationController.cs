@@ -19,29 +19,23 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
 
     /// <summary>
     /// Defines the UMA configuration controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.Configuration)]
     public class UmaConfigurationController : ControllerBase
     {
         private readonly IScopeStore _scopeStore;
 
-        private static readonly string[] UmaProfilesSupported = new[]
+        private static readonly string[] UmaProfilesSupported =
         {
             "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
         };
-
-        // OAUTH2.0
-        private const string AuthorizationApi = "/authorization";
-        private const string RegistrationApi = "/registration";
-        private const string IntrospectionApi = "/introspect";
-        //private const string PolicyApi = "/policies";
-        private const string RevocationApi = "/token/revoke";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UmaConfigurationController"/> class.
@@ -68,19 +62,21 @@ namespace SimpleAuth.Controllers
             {
                 ClaimTokenProfilesSupported = Array.Empty<string>(),
                 UmaProfilesSupported = UmaProfilesSupported,
-                ResourceRegistrationEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.ResourceSet,
-                PermissionEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Permission,
+                ResourceRegistrationEndpoint = absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.ResourceSet,
+                PermissionEndpoint = absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Permission,
                 ScopesSupported = scopeSupportedNames,
                 //PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
                 // OAUTH2.0
                 Issuer = absoluteUriWithVirtualPath,
-                AuthorizationEndpoint = absoluteUriWithVirtualPath + AuthorizationApi,
-                TokenEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Token,
-                JwksUri = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Jwks,
-                RegistrationEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Registration,
-                IntrospectionEndpoint = absoluteUriWithVirtualPath + UmaConstants.RouteValues.Introspection,
-                RevocationEndpoint = absoluteUriWithVirtualPath + RevocationApi,
-                UiLocalesSupported = new[] { "en" }
+                AuthorizationEndpoint = absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Authorization,
+                TokenEndpoint = absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token,
+                JwksUri = absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Jwks,
+                RegistrationEndpoint = absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Registration,
+                IntrospectionEndpoint = absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Introspection,
+                RevocationEndpoint = absoluteUriWithVirtualPath + "/token/revoke",
+                UiLocalesSupported = new[] { "en" },
+                GrantTypesSupported = GrantTypes.All,
+                ResponseTypesSupported = ResponseTypeNames.All
             };
 
             return new OkObjectResult(result);

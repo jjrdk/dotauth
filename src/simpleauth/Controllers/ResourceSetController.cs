@@ -274,7 +274,7 @@ namespace SimpleAuth.Controllers
             {
                 Id = resourceSet.Id,
                 UserAccessPolicyUri =
-                    $"{Request.GetAbsoluteUriWithVirtualPath()}{UmaConstants.RouteValues.ResourceSet}/{resourceSet.Id}/policy"
+                    $"{Request.GetAbsoluteUriWithVirtualPath()}/{UmaConstants.RouteValues.ResourceSet}/{resourceSet.Id}/policy"
             };
 
             return new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Created };

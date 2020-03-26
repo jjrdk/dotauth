@@ -1,45 +1,31 @@
-﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-namespace SimpleAuth.Api.Introspection
+﻿namespace SimpleAuth.Api.Introspection
 {
-    using Parameters;
-    using Shared;
-    using Shared.Models;
     using System;
     using System.Linq;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
 
-    internal class PostIntrospectionAction
+    internal class UmaIntrospectionAction
     {
         private readonly ITokenStore _tokenStore;
 
-        public PostIntrospectionAction(ITokenStore tokenStore)
+        public UmaIntrospectionAction(ITokenStore tokenStore)
         {
             _tokenStore = tokenStore;
         }
 
-        public async Task<GenericResponse<OauthIntrospectionResponse>> Execute(
+        public async Task<GenericResponse<UmaIntrospectionResponse>> Execute(
             IntrospectionParameter introspectionParameter,
             CancellationToken cancellationToken)
         {
-            // Read this RFC for more information - https://www.rfc-editor.org/rfc/rfc7662.txt
+            // Read this RFC for more information - https://docs.kantarainitiative.org/uma/wg/rec-oauth-uma-federated-authz-2.0.html#introspection-endpoint
 
             // 3. Retrieve the token type hint
             var tokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken;
@@ -63,18 +49,22 @@ namespace SimpleAuth.Api.Introspection
             // 5. Return an error if there's no granted token
             if (grantedToken == null)
             {
-                return new GenericResponse<OauthIntrospectionResponse>
+                return new GenericResponse<UmaIntrospectionResponse>
                 {
-                    Content = new OauthIntrospectionResponse(),
-                    StatusCode = HttpStatusCode.OK
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = ErrorDescriptions.TheTokenIsNotValid
+                    }
                 };
             }
 
             // 6. Fill-in parameters
             //// default : Specify the other parameters : NBF & JTI
-            var result = new OauthIntrospectionResponse
+            var result = new UmaIntrospectionResponse
             {
-                Scope = grantedToken.Scope.Split(' ', StringSplitOptions.RemoveEmptyEntries),
+                //Scope = grantedToken.Scope.Split(' ', StringSplitOptions.RemoveEmptyEntries),
                 ClientId = grantedToken.ClientId,
                 Expiration = grantedToken.ExpiresIn,
                 TokenType = grantedToken.TokenType
@@ -117,7 +107,7 @@ namespace SimpleAuth.Api.Introspection
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
             result.Active = DateTimeOffset.UtcNow < expirationDateTime;
 
-            return new GenericResponse<OauthIntrospectionResponse>
+            return new GenericResponse<UmaIntrospectionResponse>
             {
                 Content = result,
                 StatusCode = HttpStatusCode.OK

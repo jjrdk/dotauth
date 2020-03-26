@@ -31,27 +31,13 @@ namespace SimpleAuth
             public const string Scopes = "scopes";
         }
 
-        public static class ErrorDetailNames
-        {
-            public const string RequestingPartyClaims = "requesting_party_claims";
-            public const string RequiredClaims = "required_claims";
-            public const string ClaimName = "name";
-            public const string ClaimFriendlyName = "friendly_name";
-            public const string ClaimIssuer = "issuer";
-            public const string RedirectUser = "redirect_user";
-        }
-
         public static class RouteValues
         {
             public const string Configuration = ".well-known/uma2-configuration";
-            public const string ResourceSet = "/resource_set";
-            public const string Permission = "/perm";
-            public const string Policies = "/policies";
-            public const string Introspection = "/introspect";
-            public const string Token = "/token";
-            public const string Jwks = "/jwks";
-            public const string Registration = "/registration";
-            public const string DiscoveryAction = ".well-known/openid-configuration";
+            public const string ResourceSet = "resource_set";
+            public const string Permission = "perm";
+            public const string Introspection = "umaintrospect";
+            public const string Token = "token";
         }
     }
 }

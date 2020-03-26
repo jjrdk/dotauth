@@ -56,7 +56,7 @@ namespace SimpleAuth.Client
         /// </summary>
         /// <param name="introspectionRequest">The introspection request.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<IntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
+        public async Task<GenericResponse<UmaIntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
         {
             var discoveryInformation = await GetUmaConfiguration().ConfigureAwait(false);
             var request = new HttpRequestMessage
@@ -73,17 +73,17 @@ namespace SimpleAuth.Client
             if (!result.IsSuccessStatusCode)
             {
                 var error = Serializer.Default.Deserialize<ErrorDetails>(json);
-                return new GenericResponse<IntrospectionResponse>
+                return new GenericResponse<UmaIntrospectionResponse>
                 {
                     Error = error,
                     StatusCode = result.StatusCode
                 };
             }
 
-            return new GenericResponse<IntrospectionResponse>
+            return new GenericResponse<UmaIntrospectionResponse>
             {
                 StatusCode = result.StatusCode,
-                Content = Serializer.Default.Deserialize<IntrospectionResponse>(json)
+                Content = Serializer.Default.Deserialize<UmaIntrospectionResponse>(json)
             };
         }
 
