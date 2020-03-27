@@ -228,7 +228,7 @@ namespace SimpleAuth.Controllers
             {
                 if (!authorizationRequest.request_uri.IsAbsoluteUri)
                 {
-                    var httpResult = await _httpClient.GetAsync(authorizationRequest.request_uri)
+                    var httpResult = await _httpClient.GetAsync(authorizationRequest.request_uri, cancellationToken)
                             .ConfigureAwait(false);
                     if (!httpResult.IsSuccessStatusCode)
                     {

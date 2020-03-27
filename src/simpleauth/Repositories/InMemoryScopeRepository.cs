@@ -14,7 +14,7 @@
     /// Defines the in-memory scope repository.
     /// </summary>
     /// <seealso cref="IScopeRepository" />
-    public sealed class InMemoryScopeRepository : IScopeRepository
+    internal sealed class InMemoryScopeRepository : IScopeRepository
     {
         private readonly ICollection<Scope> _scopes;
 

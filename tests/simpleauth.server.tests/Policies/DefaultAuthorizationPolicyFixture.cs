@@ -20,12 +20,10 @@ namespace SimpleAuth.Server.Tests.Policies
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using Moq;
     using SimpleAuth.Parameters;
     using SimpleAuth.Policies;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
     using Xunit;
 
@@ -35,7 +33,7 @@ namespace SimpleAuth.Server.Tests.Policies
 
         public DefaultAuthorizationPolicyFixture()
         {
-            _authorizationPolicy = new DefaultAuthorizationPolicy(new Mock<IClientStore>().Object);
+            _authorizationPolicy = new DefaultAuthorizationPolicy();
         }
 
         [Fact]

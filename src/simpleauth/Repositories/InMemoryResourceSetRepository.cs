@@ -13,7 +13,7 @@
     /// Defines the in-memory resource set repository.
     /// </summary>
     /// <seealso cref="IResourceSetRepository" />
-    public sealed class InMemoryResourceSetRepository : IResourceSetRepository
+    internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     {
         private readonly ICollection<OwnedResourceSet> _resources;
 

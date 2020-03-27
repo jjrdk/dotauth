@@ -88,7 +88,7 @@ namespace SimpleAuth.Controllers
         /// <param name="subjectBuilder"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="runtimeSettings">The runtime settings.</param>
-        public BaseAuthenticateController(
+        protected BaseAuthenticateController(
             IDataProtectionProvider dataProtectionProvider,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,

@@ -131,7 +131,7 @@ namespace SimpleAuth.Api.Authorization
             }
 
             await _eventPublisher.Publish(
-                    new AuthorizationGranted(Id.Create(), claimsPrincipal?.Identity.Name, client?.ClientId, DateTimeOffset.UtcNow))
+                    new AuthorizationGranted(Id.Create(), claimsPrincipal?.Identity.Name, client.ClientId, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             endpointResult.ProcessId = processId;
             endpointResult.Amr = _resourceOwnerServices.GetAmrs().ToArray().GetAmr(parameter.AmrValues.ToArray());

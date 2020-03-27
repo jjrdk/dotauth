@@ -327,7 +327,7 @@
                     var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request);
                     if (result != null)
                     {
-                        await LogAuthenticateUser(subject, actionResult?.EndpointResult?.Amr).ConfigureAwait(false);
+                        await LogAuthenticateUser(subject, actionResult.EndpointResult?.Amr).ConfigureAwait(false);
                         return result;
                     }
                 }

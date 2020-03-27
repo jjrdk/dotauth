@@ -44,7 +44,6 @@ namespace SimpleAuth.Server.Tests.Policies
             _clientStoreStub = new Mock<IClientStore>();
             _inMemoryJwksRepository = new InMemoryJwksRepository();
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(
-                _clientStoreStub.Object,
                 _inMemoryJwksRepository,
                 _resourceSetRepositoryStub.Object,
                 new Mock<IEventPublisher>().Object);

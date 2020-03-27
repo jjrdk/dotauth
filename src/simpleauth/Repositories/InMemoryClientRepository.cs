@@ -15,7 +15,7 @@
     /// Defines the in-memory client repository.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Repositories.IClientRepository" />
-    public sealed class InMemoryClientRepository : IClientRepository
+    internal sealed class InMemoryClientRepository : IClientRepository
     {
         private readonly ILogger<InMemoryClientRepository> _logger;
         private readonly List<Client> _clients;

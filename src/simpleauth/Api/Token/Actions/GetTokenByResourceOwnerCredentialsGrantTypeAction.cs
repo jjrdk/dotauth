@@ -190,7 +190,7 @@ namespace SimpleAuth.Api.Token.Actions
                     allowedTokenScopes,
                     client.ClientId,
                     cancellationToken,
-                    idTokenJwsPayload: userInfo,
+                    idTokenJwsPayload: idPayload,
                     userInfoJwsPayload: userInfo)
                 .ConfigureAwait(false);
             if (generatedToken == null)

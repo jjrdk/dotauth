@@ -42,7 +42,6 @@
             _ticketStore = ticketStore;
             _configurationService = configurationService;
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(
-                clientStore,
                 jwksStore,
                 resourceSetRepository,
                 eventPublisher);

@@ -61,7 +61,7 @@ namespace SimpleAuth.Extensions
 
             try
             {
-                var result = handler.ValidateToken(grantedToken.AccessToken, validationParameters, out _);
+                handler.ValidateToken(grantedToken.AccessToken, validationParameters, out _);
 
                 return new GrantedTokenValidationResult { IsValid = true };
             }

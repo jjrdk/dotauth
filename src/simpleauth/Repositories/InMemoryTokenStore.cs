@@ -9,7 +9,7 @@
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
-    internal sealed class InMemoryTokenStore : ITokenStore
+    internal sealed class InMemoryTokenStore : ITokenStore, ICleanable
     {
         private readonly List<GrantedToken> _tokens = new List<GrantedToken>();
 
@@ -20,6 +20,7 @@
             JwtPayload userInfoJwsPayload,
             CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (_tokens == null || !_tokens.Any())
             {
                 return Task.FromResult((GrantedToken)null);
@@ -124,10 +125,11 @@
             return Task.FromResult(removed > 0);
         }
 
-        public Task<bool> Clean()
+        public Task Clean(CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             _tokens.Clear();
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         }
 
         private static bool CompareJwsPayload(JwtPayload firstJwsPayload, JwtPayload secondJwsPayload)

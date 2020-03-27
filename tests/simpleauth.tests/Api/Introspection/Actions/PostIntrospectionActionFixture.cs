@@ -26,7 +26,6 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public class PostIntrospectionActionFixture

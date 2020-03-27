@@ -37,16 +37,16 @@ namespace SimpleAuth
         // Open-ClientId Provider Authentication Policy Extension 1.0
         public static class StandardArcParameterNames
         {
-            public static string _openIdNsPage = "openid.ns.pape";
+            //public static string _openIdNsPage = "openid.ns.pape";
 
-            public static string _openIdMaxAuthAge = "openid.pape.max_auth_age";
+            //public static string _openIdMaxAuthAge = "openid.pape.max_auth_age";
 
-            public static string _openIdAuthPolicies = "openid.pape.preferred_auth_policies";
+            //public static string _openIdAuthPolicies = "openid.pape.preferred_auth_policies";
 
-            // Namespace for the custom Assurance Level
-            public static string _openIdCustomAuthLevel = "openid.pape.auth_level.ns";
+            //// Namespace for the custom Assurance Level
+            public const string OpenIdCustomAuthLevel = "openid.pape.auth_level.ns";
 
-            public static string _openIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
+            //public static string _openIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
         }
 
         //// Standard authentication policies.

@@ -12,7 +12,7 @@
     /// Defines the in-memory ticket store.
     /// </summary>
     /// <seealso cref="ITicketStore" />
-    public sealed class InMemoryTicketStore : ITicketStore
+    internal sealed class InMemoryTicketStore : ITicketStore
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
         private readonly Dictionary<string, Ticket> _tickets;

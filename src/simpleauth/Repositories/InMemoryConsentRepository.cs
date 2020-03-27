@@ -12,7 +12,7 @@
     /// Defines the in-memory consent repository.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Repositories.IConsentRepository" />
-    public sealed class InMemoryConsentRepository : IConsentRepository
+    internal sealed class InMemoryConsentRepository : IConsentRepository
     {
         private readonly ICollection<Consent> _consents;
 

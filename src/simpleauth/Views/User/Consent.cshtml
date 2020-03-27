@@ -51,7 +51,7 @@
                         <div class="col s12 m9">
                         @foreach (var consent in client)
                         {
-                            <form method="post" action="@Url.Action("Consent", new { @id = consent.Id })">
+                            <form method="post" action="@Url.Action("Consent", new { id = consent.Id })">
                                 <ul class="collection with-header">
                                     <li class="collection-header"><h5>Scopes</h5></li>
                                     @if (!consent.AllowedScopeDescriptions.Any())

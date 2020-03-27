@@ -15,7 +15,6 @@
 namespace SimpleAuth.Policies
 {
     using Shared.Models;
-    using Shared.Repositories;
     using Shared.Responses;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
@@ -27,51 +26,47 @@ namespace SimpleAuth.Policies
 
     internal class DefaultAuthorizationPolicy : IAuthorizationPolicy
     {
-        private readonly IClientStore _clientStore;
-
-        public DefaultAuthorizationPolicy(IClientStore clientStore)
-        {
-            _clientStore = clientStore;
-        }
-
-        public async Task<AuthorizationPolicyResult> Execute(
+        public Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticketLineParameter,
             string claimTokenFormat,
             Claim[] claims,
             CancellationToken cancellationToken,
             params PolicyRule[] authorizationPolicy)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (authorizationPolicy == null)
             {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
+                return Task.FromResult(new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized));
             }
 
             AuthorizationPolicyResult result = null;
             foreach (var rule in authorizationPolicy)
             {
-                result = await ExecuteAuthorizationPolicyRule(
+                cancellationToken.ThrowIfCancellationRequested();
+                result = ExecuteAuthorizationPolicyRule(
                         ticketLineParameter,
                         rule,
                         claimTokenFormat,
                         claims,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+                        cancellationToken);
                 if (result.Result == AuthorizationPolicyResultKind.Authorized)
                 {
-                    return result;
+                    return Task.FromResult(result);
                 }
             }
 
-            return result;
+            return Task.FromResult(result);
         }
 
-        private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(
+        private AuthorizationPolicyResult ExecuteAuthorizationPolicyRule(
             TicketLineParameter ticketLineParameter,
             PolicyRule authorizationPolicy,
             string claimTokenFormat,
             Claim[] claims,
             CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // 1. Check can access to the scope
             if (ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
             {
@@ -93,13 +88,10 @@ namespace SimpleAuth.Policies
             }
 
             // 3. Check claims are correct
-            var claimAuthorizationResult = await CheckClaims(
-                    ticketLineParameter.ClientId,
+            var claimAuthorizationResult = CheckClaims(
                     authorizationPolicy,
                     claimTokenFormat,
-                    claims,
-                    cancellationToken)
-                .ConfigureAwait(false);
+                    claims);
             if (claimAuthorizationResult != null
                 && claimAuthorizationResult.Result != AuthorizationPolicyResultKind.Authorized)
             {
@@ -131,12 +123,10 @@ namespace SimpleAuth.Policies
                 });
         }
 
-        private async Task<AuthorizationPolicyResult> CheckClaims(
-            string clientId,
+        private AuthorizationPolicyResult CheckClaims(
             PolicyRule authorizationPolicy,
             string claimTokenFormat,
-            Claim[] claims,
-            CancellationToken cancellationToken)
+            Claim[] claims)
         {
             if (authorizationPolicy.Claims == null || !authorizationPolicy.Claims.Any())
             {
@@ -147,8 +137,6 @@ namespace SimpleAuth.Policies
             {
                 return GetNeedInfoResult(authorizationPolicy.Claims, authorizationPolicy.OpenIdProvider);
             }
-
-            var client = await _clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
 
             if (claims == null)
             {
@@ -166,7 +154,7 @@ namespace SimpleAuth.Policies
                 if (payload.ValueType == JsonClaimValueTypes.JsonArray) // is IEnumerable<string> strings)
                 {
                     var strings = JsonConvert.DeserializeObject<object[]>(payload.Value);
-                    if (!strings.Any(s => string.Equals(s, claim.Value)))
+                    if (!strings.Any(s => Equals(s, claim.Value)))
                     {
                         return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
                     }

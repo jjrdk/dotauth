@@ -257,7 +257,7 @@ namespace SimpleAuth.JwtToken
             }
         }
 
-        private async Task<JwtPayload> FillInResourceOwnerClaimsFromScopes(
+        private async Task FillInResourceOwnerClaimsFromScopes(
             JwtPayload jwsPayload,
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,
@@ -265,20 +265,17 @@ namespace SimpleAuth.JwtToken
         {
             // 1. Fill-in the subject claim
             var subject = claimsPrincipal.GetSubject();
-            jwsPayload.Add(Shared.OpenIdClaimTypes.Subject, subject);
+            jwsPayload.Add(OpenIdClaimTypes.Subject, subject);
 
             if (authorizationParameter != null && !string.IsNullOrWhiteSpace(authorizationParameter.Scope))
             {
                 var scopes = authorizationParameter.Scope.ParseScopes();
-                var claims = await this.GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes).ConfigureAwait(false);
-                foreach (var claim in claims.GroupBy(c => c.Type).Where(x => x.Key != Shared.OpenIdClaimTypes.Subject))
+                var claims = await GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes).ConfigureAwait(false);
+                foreach (var claim in claims.GroupBy(c => c.Type).Where(x => x.Key != OpenIdClaimTypes.Subject))
                 {
                     jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
                 }
             }
-
-            // 2. Fill-in the other claims
-            return jwsPayload;
         }
 
         private void FillInResourceOwnerClaimsByClaimsParameter(
@@ -365,7 +362,7 @@ namespace SimpleAuth.JwtToken
             var timeKeyValuePair = GetExpirationAndIssuedTime(cl?.TokenLifetime);
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
-            var acrValues = CoreConstants.StandardArcParameterNames._openIdCustomAuthLevel + ".password=1";
+            var acrValues = CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
             var amr = new[] { "password" };
             if (amrValues != null)
             {

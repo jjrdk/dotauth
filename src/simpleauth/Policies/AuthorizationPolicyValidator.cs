@@ -35,12 +35,11 @@ namespace SimpleAuth.Policies
         private readonly IEventPublisher _eventPublisher;
 
         public AuthorizationPolicyValidator(
-            IClientStore clientStore,
             IJwksStore jwksStore,
             IResourceSetRepository resourceSetRepository,
             IEventPublisher eventPublisher)
         {
-            _authorizationPolicy = new DefaultAuthorizationPolicy(clientStore);
+            _authorizationPolicy = new DefaultAuthorizationPolicy();
             _jwksStore = jwksStore;
             _resourceSetRepository = resourceSetRepository;
             _eventPublisher = eventPublisher;

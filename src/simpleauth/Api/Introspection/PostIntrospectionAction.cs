@@ -16,13 +16,11 @@ namespace SimpleAuth.Api.Introspection
 {
     using Parameters;
     using Shared;
-    using Shared.Models;
     using System;
     using System.Linq;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
 

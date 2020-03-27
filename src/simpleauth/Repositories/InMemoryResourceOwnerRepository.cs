@@ -14,7 +14,7 @@
     /// Defines the in-memory resource owner repository.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Repositories.IResourceOwnerRepository" />
-    public sealed class InMemoryResourceOwnerRepository : IResourceOwnerRepository
+    internal sealed class InMemoryResourceOwnerRepository : IResourceOwnerRepository
     {
         private readonly List<ResourceOwner> _users;
 
