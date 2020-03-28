@@ -12,12 +12,14 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
 
     /// <summary>
     /// Defines the session controller
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
-    public class SessionController : Controller
+    /// <seealso cref="ControllerBase" />
+    [ThrottleFilter]
+    public class SessionController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly IJwksStore _jwksStore;

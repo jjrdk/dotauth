@@ -26,6 +26,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
     using SimpleAuth.WebSite.User;
 
     /// <summary>
@@ -33,6 +34,7 @@
     /// </summary>
     /// <seealso cref="SimpleAuth.Controllers.BaseAuthenticateController" />
     [Area(SmsConstants.Amr)]
+    [ThrottleFilter]
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IEventPublisher _eventPublisher;

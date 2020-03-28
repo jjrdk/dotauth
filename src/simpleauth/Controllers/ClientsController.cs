@@ -25,12 +25,14 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
 
     /// <summary>
     /// Defines the client controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.Clients)]
+    [ThrottleFilter]
     public class ClientsController : ControllerBase
     {
         private readonly IClientStore _clientStore;

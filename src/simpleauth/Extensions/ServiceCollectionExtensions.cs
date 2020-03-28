@@ -213,6 +213,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
+        /// <param name="mvcConfig">MVC configuration.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
         /// <param name="authPolicies"></param>
         /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
@@ -220,12 +221,13 @@ namespace SimpleAuth.Extensions
             this IServiceCollection services,
             Action<SimpleAuthOptions> configuration,
             string[] authPolicies,
+            Action<MvcOptions> mvcConfig = null,
             IRequestThrottle requestThrottle = null)
         {
             var options = new SimpleAuthOptions();
             configuration(options);
 
-            return AddSimpleAuth(services, options, authPolicies, requestThrottle);
+            return AddSimpleAuth(services, options, authPolicies, mvcConfig, requestThrottle);
         }
 
         /// <summary>
@@ -233,6 +235,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="options">The options.</param>
+        /// <param name="mvcConfig">MVC configuration.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
         /// <param name="authPolicies"></param>
         /// <param name="applicationParts">Assemblies with additional application parts.</param>
@@ -242,6 +245,7 @@ namespace SimpleAuth.Extensions
             this IServiceCollection services,
             SimpleAuthOptions options,
             string[] authPolicies,
+            Action<MvcOptions> mvcConfig = null,
             IRequestThrottle requestThrottle = null,
             params Assembly[] applicationParts)
         {
@@ -262,15 +266,15 @@ namespace SimpleAuth.Extensions
                             new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                 })
                 .AddAntiforgery(
-                    options =>
+                    o =>
                     {
-                        options.FormFieldName = "XrsfField";
-                        options.HeaderName = "XSRF-TOKEN";
-                        options.SuppressXFrameOptionsHeader = false;
+                        o.FormFieldName = "XrsfField";
+                        o.HeaderName = "XSRF-TOKEN";
+                        o.SuppressXFrameOptionsHeader = false;
                     })
                 .AddCors(
                     o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
-                .AddControllersWithViews()
+                .AddControllersWithViews(mvcConfig ?? (_ => { }))
                 .AddRazorRuntimeCompilation()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             mvcBuilder = applicationParts.Concat(new[] { typeof(ServiceCollectionExtensions).Assembly })
@@ -365,6 +369,7 @@ namespace SimpleAuth.Extensions
                 authorizationCodeValidityPeriod: options.AuthorizationCodeValidityPeriod,
                 claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,
                 rptLifeTime: options.RptLifeTime,
+                patLifeTime: options.PatLifeTime,
                 ticketLifeTime: options.TicketLifeTime);
         }
     }

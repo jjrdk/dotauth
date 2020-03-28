@@ -42,7 +42,7 @@ namespace SimpleAuth.Controllers
     /// <summary>
     /// Defines the base authentication controller.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Controllers.BaseController" />
+    /// <seealso cref="BaseController" />
     public abstract class BaseAuthenticateController : BaseController
     {
         private const string ExternalAuthenticateCookieName = "ExternalAuth-{0}";
@@ -144,7 +144,7 @@ namespace SimpleAuth.Controllers
         }
 
         /// <summary>
-        /// Logouts this instance.
+        /// Logs out this instance.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -566,7 +566,7 @@ namespace SimpleAuth.Controllers
                 claims = claims.Add(new Claim(ClaimTypes.NameIdentifier, sub));
             }
 
-            var subject = claims.GetSubject();
+            var subject = claims.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value;
 
             if (resourceOwner != null && !string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
             {

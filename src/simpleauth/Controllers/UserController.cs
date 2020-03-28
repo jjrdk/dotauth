@@ -17,6 +17,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
     using SimpleAuth.WebSite.User;
 
     /// <summary>
@@ -24,6 +25,7 @@
     /// </summary>
     /// <seealso cref="BaseController" />
     [Authorize("authenticated")]
+    [ThrottleFilter]
     public class UserController : BaseController
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

@@ -200,7 +200,8 @@
             string issuerName,
             string idToken)
         {
-            var expiresIn = _configurationService.RptLifeTime; // 1. Retrieve the expiration time of the granted token.
+            // 1. Retrieve the expiration time of the granted token.
+            var expiresIn = _configurationService.RptLifeTime;
             var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName)
                 .ConfigureAwait(false);
 

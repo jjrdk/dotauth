@@ -29,6 +29,7 @@ namespace SimpleAuth.Controllers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
     using ViewModels;
 
     /// <summary>
@@ -36,6 +37,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="BaseController" />
     [Authorize("authenticated")]
+    [ThrottleFilter]
     public class ConsentController : BaseController
     {
         private readonly DisplayConsentAction _displayConsent;

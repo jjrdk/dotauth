@@ -25,14 +25,16 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the resource set controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.ResourceSet)]
+    [ThrottleFilter]
     public class ResourceSetController : ControllerBase
     {
         private const string NoParameterInBodyRequest = "no parameter in body request";

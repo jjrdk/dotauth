@@ -15,11 +15,13 @@
 namespace SimpleAuth.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Filters;
     using SimpleAuth.ViewModels;
 
     /// <summary>
     /// Defines the form controller.
     /// </summary>
+    [ThrottleFilter]
     public class FormController : Controller
     {
         /// <summary>

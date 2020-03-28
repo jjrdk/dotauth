@@ -17,12 +17,14 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Net.Http.Headers;
+    using SimpleAuth.Filters;
 
     /// <summary>
     /// Defines the token controller.
     /// </summary>
     /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.Token)]
+    [ThrottleFilter]
     public class TokenController : ControllerBase
     {
         private readonly TokenActions _tokenActions;
@@ -84,7 +86,6 @@
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         [HttpPost]
-        [ThrottleFilter]
         public async Task<IActionResult> PostToken(
             [FromForm] TokenRequest tokenRequest,
             CancellationToken cancellationToken)

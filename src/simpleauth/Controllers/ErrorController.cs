@@ -4,13 +4,15 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Models;
     using System;
     using System.Net;
+    using SimpleAuth.Filters;
     using ViewModels;
 
     /// <summary>
     /// Defines the error controller
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="Controller" />
     [Route("error")]
+    [ThrottleFilter]
     public class ErrorController : Controller
     {
         /// <summary>

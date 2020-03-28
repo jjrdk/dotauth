@@ -24,13 +24,15 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using SimpleAuth.Filters;
     using SimpleAuth.Shared.Repositories;
 
     /// <summary>
     /// Defines the introspection controller.
     /// </summary>
-    /// <seealso cref="Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.Introspection)]
+    [ThrottleFilter]
     public class IntrospectionController : ControllerBase
     {
         private readonly PostIntrospectionAction _introspectionActions;

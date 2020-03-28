@@ -7,6 +7,7 @@
     using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Api.Introspection;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Filters;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -15,8 +16,9 @@
     /// <summary>
     /// Defines the introspection controller.
     /// </summary>
-    /// <seealso cref="Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.Introspection)]
+    [ThrottleFilter]
     public class UmaIntrospectionController : ControllerBase
     {
         private readonly UmaIntrospectionAction _introspectionActions;

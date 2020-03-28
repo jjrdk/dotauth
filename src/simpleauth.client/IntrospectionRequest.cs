@@ -24,7 +24,6 @@ namespace SimpleAuth.Client
     /// <seealso cref="IEnumerable{KeyValuePair}" />
     public class IntrospectionRequest : IEnumerable<KeyValuePair<string, string>>
     {
-        public string PatToken { get; }
         private readonly Dictionary<string, string> _form;
 
         private IntrospectionRequest(Dictionary<string, string> form, string patToken)
@@ -32,6 +31,11 @@ namespace SimpleAuth.Client
             PatToken = patToken;
             _form = form;
         }
+
+        /// <summary>
+        /// Gets the PAT token of the request.
+        /// </summary>
+        internal string PatToken { get; }
 
         /// <summary>
         /// Creates the specified request.

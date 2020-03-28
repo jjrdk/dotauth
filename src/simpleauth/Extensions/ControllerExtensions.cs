@@ -26,7 +26,7 @@ namespace SimpleAuth.Extensions
 
     internal static class ControllerExtensions
     {
-        public static string GetOriginUrl(this Controller controller)
+        public static string GetOriginUrl(this ControllerBase controller)
         {
             if (!controller.Request.Headers.ContainsKey("Referer"))
             {
@@ -38,7 +38,7 @@ namespace SimpleAuth.Extensions
             return $"{uri.Scheme}://{uri.Authority}";
         }
 
-        public static Task DisplayInternalHtml(this Controller controller, string resourceName, Func<string, string> manipulateHtmlCallback = null)
+        public static Task DisplayInternalHtml(this ControllerBase controller, string resourceName, Func<string, string> manipulateHtmlCallback = null)
         {
             if (string.IsNullOrWhiteSpace(resourceName))
             {

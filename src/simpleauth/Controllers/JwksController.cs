@@ -6,12 +6,14 @@
     using SimpleAuth.Shared.Repositories;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
 
     /// <summary>
     /// Defines the JwksController.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.Jwks)]
+    [ThrottleFilter]
     public class JwksController : ControllerBase
     {
         private readonly IJwksRepository _jwksStore;

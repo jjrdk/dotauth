@@ -180,6 +180,11 @@ namespace SimpleAuth
         public TimeSpan RptLifeTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the PAT lifetime.
+        /// </summary>
+        public TimeSpan PatLifeTime { get; set; }
+
+        /// <summary>
         /// Gets or sets the ticket lifetime.
         /// </summary>
         public TimeSpan TicketLifeTime { get; set; }

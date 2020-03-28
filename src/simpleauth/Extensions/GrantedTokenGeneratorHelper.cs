@@ -90,6 +90,7 @@ namespace SimpleAuth.Extensions
 
             var signingCredentials = await jwksStore.GetSigningKey(client.TokenEndPointAuthSigningAlg, cancellationToken).ConfigureAwait(false);
 
+            //var tokenLifetime = scope.Contains("uma_protection", StringComparison.Ordinal) ? client.TokenLifetime
             var accessToken = handler.CreateEncodedJwt(
                 issuerName,
                 client.ClientId,

@@ -1,6 +1,7 @@
-﻿namespace SimpleAuth.Controllers
+﻿namespace SimpleAuth.Filters
 {
     using System;
+    using System.Net;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
@@ -24,7 +25,6 @@
         {
             private readonly IRequestThrottle _requestThrottle;
 
-            /// <inheritdoc />
             public ThrottleFilterAttribute(IRequestThrottle requestThrottle)
             {
                 _requestThrottle = requestThrottle;
@@ -35,7 +35,7 @@
             {
                 if (!await _requestThrottle.Allow(context.HttpContext.Request).ConfigureAwait(false))
                 {
-                    context.Result = new StatusCodeResult(429);
+                    context.Result = new StatusCodeResult((int)HttpStatusCode.TooManyRequests);
                     return;
                 }
 

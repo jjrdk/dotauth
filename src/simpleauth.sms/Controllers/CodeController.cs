@@ -13,6 +13,7 @@ namespace SimpleAuth.Sms.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Controllers;
+    using SimpleAuth.Filters;
     using SimpleAuth.Shared.Requests;
 
     /// <summary>
@@ -20,6 +21,7 @@ namespace SimpleAuth.Sms.Controllers
     /// </summary>
     /// <seealso cref="Controller" />
     [Route(SmsConstants.CodeController)]
+    [ThrottleFilter]
     public class CodeController : ControllerBase
     {
         private readonly SmsAuthenticationOperation _smsAuthenticationOperation;

@@ -25,12 +25,14 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
 
     /// <summary>
     /// Defines the scopes controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.Scopes)]
+    [ThrottleFilter]
     public class ScopesController : ControllerBase
     {
         private readonly IScopeRepository _scopeRepository;

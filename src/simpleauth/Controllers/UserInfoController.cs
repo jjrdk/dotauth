@@ -25,6 +25,7 @@ namespace SimpleAuth.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
+    using SimpleAuth.Filters;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -32,8 +33,9 @@ namespace SimpleAuth.Controllers
     /// <summary>
     /// Endpoint for user info introspection requests.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.UserInfo)]
+    [ThrottleFilter]
     public class UserInfoController : ControllerBase
     {
         private readonly ITokenStore _tokenStore;

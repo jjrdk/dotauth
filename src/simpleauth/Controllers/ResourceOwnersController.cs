@@ -31,6 +31,7 @@ namespace SimpleAuth.Controllers
     using System.Threading.Tasks;
     using Shared.Events.Logging;
     using SimpleAuth.Api.Token.Actions;
+    using SimpleAuth.Filters;
     using SimpleAuth.Parameters;
     using SimpleAuth.Shared.Events.OAuth;
     using SimpleAuth.Shared.Responses;
@@ -38,8 +39,9 @@ namespace SimpleAuth.Controllers
     /// <summary>
     /// Defines the resource owner controller.
     /// </summary>
-    /// <seealso cref="Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.ResourceOwners)]
+    [ThrottleFilter]
     public class ResourceOwnersController : ControllerBase
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
@@ -158,7 +160,7 @@ namespace SimpleAuth.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteMe(CancellationToken cancellationToken)
         {
-            var sub = User?.Claims?.GetSubject();
+            var sub = User.GetSubject();
 
             if (sub == null)
             {
@@ -271,7 +273,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest("No parameter in body request");
             }
 
-            var sub = User?.Claims?.GetSubject();
+            var sub = User.GetSubject();
 
             if (sub == null || sub != request.Subject)
             {
@@ -300,7 +302,7 @@ namespace SimpleAuth.Controllers
             [FromQuery]string[] type,
             CancellationToken cancellationToken)
         {
-            var sub = User?.Claims?.GetSubject();
+            var sub = User.GetSubject();
 
             var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
             var previousClaims = resourceOwner.Claims

@@ -21,6 +21,7 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
     using SimpleAuth.Shared.Errors;
 
     /// <summary>
@@ -28,6 +29,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.Registration)]
+    [ThrottleFilter]
     [Authorize(Policy = "registration")]
     public class RegistrationController : ControllerBase
     {

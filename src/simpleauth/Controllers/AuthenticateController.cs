@@ -21,12 +21,14 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
     using ViewModels;
 
     /// <summary>
     /// Defines the authentication controller.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Controllers.BaseAuthenticateController" />
+    /// <seealso cref="BaseAuthenticateController" />
+    [ThrottleFilter]
     public class AuthenticateController : BaseAuthenticateController
     {
         private readonly IEventPublisher _eventPublisher;

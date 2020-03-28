@@ -23,6 +23,7 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Events.Uma;
@@ -33,8 +34,9 @@ namespace SimpleAuth.Controllers
     /// <summary>
     /// Defines the permission controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.Permission)]
+    [ThrottleFilter]
     public class PermissionsController : ControllerBase
     {
         private readonly ITicketStore _ticketStore;

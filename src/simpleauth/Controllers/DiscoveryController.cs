@@ -20,12 +20,14 @@ namespace SimpleAuth.Controllers
     using Shared.Responses;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
 
     /// <summary>
     /// Defines the discovery controller
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.DiscoveryAction)]
+    [ThrottleFilter]
     public class DiscoveryController : ControllerBase
     {
         private readonly DiscoveryActions _discoveryActions;

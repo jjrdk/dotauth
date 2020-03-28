@@ -3,11 +3,13 @@
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
 
     /// <summary>
     /// Defines the home controller.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Controllers.BaseController" />
+    /// <seealso cref="BaseController" />
+    [ThrottleFilter]
     public class HomeController : BaseController
     {
         /// <summary>

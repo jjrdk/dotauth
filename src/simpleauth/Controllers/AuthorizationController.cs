@@ -32,13 +32,15 @@ namespace SimpleAuth.Controllers
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Filters;
 
     /// <summary>
     /// Defines the authorization controller.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.Authorization)]
-    public class AuthorizationController : Controller
+    [ThrottleFilter]
+    public class AuthorizationController : ControllerBase
     {
         private readonly HttpClient _httpClient;
         private readonly IClientStore _clientStore;
