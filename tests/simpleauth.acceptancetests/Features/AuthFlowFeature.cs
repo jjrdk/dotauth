@@ -2,6 +2,7 @@
 {
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
+    using Newtonsoft.Json;
     using Xbehave;
     using Xunit;
 
@@ -27,8 +28,9 @@
                 async () =>
                 {
                     var keysJson = await _fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
-                    _jwks = new JsonWebKeySet(keysJson);
+                    var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(keysJson);
 
+                    _jwks = keys;
                     Assert.NotEmpty(_jwks.Keys);
                 });
         }
