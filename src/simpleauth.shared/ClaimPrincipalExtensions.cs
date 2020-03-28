@@ -41,7 +41,9 @@ namespace SimpleAuth.Shared
         /// <returns>User's subject</returns>
         public static string GetSubject(this ClaimsPrincipal principal)
         {
-            return principal?.FindFirst(OpenIdClaimTypes.Subject)?.Value;
+            var claim = principal?.FindFirst(OpenIdClaimTypes.Subject)
+                ?? principal?.FindFirst(ClaimTypes.NameIdentifier);
+            return claim?.Value;
         }
 
         /// <summary>

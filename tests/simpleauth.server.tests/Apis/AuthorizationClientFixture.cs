@@ -37,7 +37,7 @@ namespace SimpleAuth.Server.Tests.Apis
         private const string BaseUrl = "http://localhost:5000";
         private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
         private readonly TestOauthServerFixture _server;
-        private readonly AuthorizationClient _authorizationClient;
+        private readonly TokenClient _authorizationClient;
         private readonly JwtSecurityTokenHandler _jwsGenerator = new JwtSecurityTokenHandler();
 
         public AuthorizationClientFixture()
@@ -45,10 +45,10 @@ namespace SimpleAuth.Server.Tests.Apis
             IdentityModelEventSource.ShowPII = true;
             _server = new TestOauthServerFixture();
 
-            _authorizationClient = AuthorizationClient.Create(
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration))
-                .Result;
+            _authorizationClient = new TokenClient(
+                TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
         }
 
         [Fact]
@@ -387,14 +387,15 @@ namespace SimpleAuth.Server.Tests.Apis
             // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] {"openid", "api1"},
-                        new[] {ResponseTypeNames.Code},
+                        new[] { "openid", "api1" },
+                        new[] { ResponseTypeNames.Code },
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
-                        "state") {prompt = PromptNames.None})
+                        "state")
+                    { prompt = PromptNames.None })
                 .ConfigureAwait(false);
             var location = result.Content;
-            var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(location.Query);
+            var queries = QueryHelpers.ParseQuery(location.Query);
             var tokenClient = new TokenClient(
                 TokenCredentials.FromClientCredentials("authcode_client", "authcode_client"),
                 _server.Client,

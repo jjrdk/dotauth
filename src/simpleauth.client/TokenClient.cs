@@ -160,6 +160,33 @@ namespace SimpleAuth.Client
         }
 
         /// <summary>
+        /// Gets the authorization.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">request</exception>
+        public async Task<GenericResponse<Uri>> GetAuthorization(AuthorizationRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
+            var uriBuilder = new UriBuilder(discoveryInformation.AuthorizationEndPoint) { Query = request.ToRequest() };
+            var response = await _client.GetAsync(uriBuilder.Uri).ConfigureAwait(false);
+
+            return (int)response.StatusCode < 400
+                ? new GenericResponse<Uri> { StatusCode = response.StatusCode, Content = response.Headers.Location }
+                : new GenericResponse<Uri>
+                {
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(
+                        await response.Content.ReadAsStringAsync().ConfigureAwait(false)),
+                    StatusCode = response.StatusCode
+                };
+        }
+
+        /// <summary>
         /// Gets the public web keys.
         /// </summary>
         /// <returns>The public <see cref="JsonWebKeySet"/> as a <see cref="Task{TResult}"/>.</returns>
