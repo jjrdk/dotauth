@@ -36,6 +36,7 @@ namespace SimpleAuth.Extensions
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
+    using SimpleAuth.Filters;
     using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Events;
 
@@ -291,7 +292,7 @@ namespace SimpleAuth.Extensions
                 .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
                 .ConfigureOptions<ConfigureMvcNewtonsoftJsonOptions>()
                 .AddSingleton(runtimeConfig)
-                .AddSingleton(requestThrottle ?? NoopThrottle.Default)
+                .AddSingleton(requestThrottle ?? NoopThrottle.Instance)
                 .AddSingleton(sp => options.HttpClientFactory.Invoke())
                 .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
                 .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())

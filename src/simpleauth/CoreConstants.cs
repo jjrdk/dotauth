@@ -336,7 +336,6 @@ namespace SimpleAuth
             public const string Token = "token";
             public const string UserInfo = "userinfo";
             public const string Jwks = "jwks";
-            public const string Registration = "registration";
             public const string RevokeSessionCallback = "revoke_session_callback";
             public const string Revocation = "token/revoke";
             public const string Introspection = "introspect";

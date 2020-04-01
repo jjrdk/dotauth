@@ -90,7 +90,7 @@
                 throw new ArgumentException("Duplicate client");
             }
 
-            var toInsert = await _clientFactory.Build(newClient).ConfigureAwait(false);
+            var toInsert = await _clientFactory.Build(newClient, cancellationToken).ConfigureAwait(false);
             _clients.Add(toInsert);
             return toInsert;
         }

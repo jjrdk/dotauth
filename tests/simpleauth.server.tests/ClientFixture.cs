@@ -27,7 +27,7 @@
             var result = await _openidClients.AddClient(new Client()).ConfigureAwait(false);
 
             Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
         }
 
         [Fact]
@@ -189,7 +189,7 @@
             };
             client.GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, };
             var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
-            var newClient = await _openidClients.GetClient(addClientResult.Content.ClientId).ConfigureAwait(false);
+            var newClient = await _openidClients.GetClient(result.Content.ClientId).ConfigureAwait(false);
 
             Assert.False(result.HasError);
             Assert.Equal(2, newClient.Content.PostLogoutRedirectUris.Length);

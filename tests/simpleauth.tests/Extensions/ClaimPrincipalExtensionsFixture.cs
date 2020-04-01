@@ -30,9 +30,10 @@
         }
 
         [Fact]
-        public void When_Passing_ClaimsPrincipal_With_NameIdentifier_And_Calling_GetSubject_Then_Null_Is_Returned()
+        public void When_Passing_ClaimsPrincipal_With_NameIdentifier_And_Calling_GetSubject_Then_NameIdentifier_Is_Returned()
         {
-            const string subject = "subject"; var claims = new List<Claim>
+            const string subject = "subject";
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, subject)
             };
@@ -41,7 +42,7 @@
 
             var result = claimsPrincipal.GetSubject();
 
-            Assert.Null(result);
+            Assert.Equal(subject, result);
         }
 
         [Fact]

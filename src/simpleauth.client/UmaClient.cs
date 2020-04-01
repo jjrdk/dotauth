@@ -63,7 +63,7 @@ namespace SimpleAuth.Client
             {
                 Method = HttpMethod.Post,
                 Content = new FormUrlEncodedContent(introspectionRequest),
-                RequestUri = new Uri(discoveryInformation.IntrospectionEndpoint)
+                RequestUri = discoveryInformation.IntrospectionEndpoint
             };
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", introspectionRequest.PatToken);
 
@@ -104,7 +104,7 @@ namespace SimpleAuth.Client
             }
 
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var url = configuration.PermissionEndpoint;
+            var url = configuration.PermissionEndpoint.AbsoluteUri;
 
             if (requests.Length > 1)
             {
@@ -163,7 +163,7 @@ namespace SimpleAuth.Client
             {
                 Content = body,
                 Method = HttpMethod.Put,
-                RequestUri = new Uri(configuration.ResourceRegistrationEndpoint)
+                RequestUri = configuration.ResourceRegistrationEndpoint
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
@@ -207,7 +207,7 @@ namespace SimpleAuth.Client
             {
                 Content = body,
                 Method = HttpMethod.Post,
-                RequestUri = new Uri(umaConfiguration.ResourceRegistrationEndpoint)
+                RequestUri = umaConfiguration.ResourceRegistrationEndpoint
             };
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
 
@@ -246,7 +246,7 @@ namespace SimpleAuth.Client
             }
 
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var resourceSetUrl = configuration.ResourceRegistrationEndpoint;
+            var resourceSetUrl = configuration.ResourceRegistrationEndpoint.AbsoluteUri;
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
             var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
@@ -280,7 +280,7 @@ namespace SimpleAuth.Client
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri(configuration.ResourceRegistrationEndpoint)
+                RequestUri = configuration.ResourceRegistrationEndpoint
             };
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
             var httpResult = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -318,7 +318,7 @@ namespace SimpleAuth.Client
             }
 
             var configuration = await GetUmaConfiguration().ConfigureAwait(false);
-            var resourceSetUrl = configuration.ResourceRegistrationEndpoint;
+            var resourceSetUrl = configuration.ResourceRegistrationEndpoint.AbsoluteUri;
 
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 

@@ -67,23 +67,23 @@ namespace SimpleAuth.Api.Discovery
 
             // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
 
-            result.Issuer = issuer;
-            result.AuthorizationEndPoint = issuer + "/" + CoreConstants.EndPoints.Authorization;
-            result.TokenEndPoint = issuer + "/" + CoreConstants.EndPoints.Token;
+            result.Issuer = new Uri(issuer);
+            result.AuthorizationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Authorization);
+            result.TokenEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Token);
             result.UserInfoEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.UserInfo);
-            result.JwksUri = issuer + "/" + CoreConstants.EndPoints.Jwks;
-            result.RegistrationEndPoint = issuer + "/" + CoreConstants.EndPoints.Registration;
-            result.RevocationEndPoint = issuer + "/" + CoreConstants.EndPoints.Revocation;
-            result.IntrospectionEndpoint = issuer + "/" + CoreConstants.EndPoints.Introspection;
-            result.Jws = issuer + "/" + CoreConstants.EndPoints.Jws;
-            result.Jwe = issuer + "/" + CoreConstants.EndPoints.Jwe;
-            result.Clients = issuer + "/" + CoreConstants.EndPoints.Clients;
-            result.Scopes = issuer + "/" + CoreConstants.EndPoints.Scopes;
-            result.ResourceOwners = issuer + "/" + CoreConstants.EndPoints.ResourceOwners;
-            result.Manage = issuer + "/" + CoreConstants.EndPoints.Manage;
-            result.Claims = issuer + "/" + CoreConstants.EndPoints.Claims;
-            result.CheckSessionEndPoint = issuer + "/" + CoreConstants.EndPoints.CheckSession;
-            result.EndSessionEndPoint = issuer + "/" + CoreConstants.EndPoints.EndSession;
+            result.JwksUri = new Uri(issuer + "/" + CoreConstants.EndPoints.Jwks);
+            result.RegistrationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Clients);
+            result.RevocationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Revocation);
+            result.IntrospectionEndpoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Introspection);
+            result.Jws = new Uri(issuer + "/" + CoreConstants.EndPoints.Jws);
+            result.Jwe = new Uri(issuer + "/" + CoreConstants.EndPoints.Jwe);
+            result.Clients = new Uri(issuer + "/" + CoreConstants.EndPoints.Clients);
+            result.Scopes = new Uri(issuer + "/" + CoreConstants.EndPoints.Scopes);
+            result.ResourceOwners = new Uri(issuer + "/" + CoreConstants.EndPoints.ResourceOwners);
+            result.Manage = new Uri(issuer + "/" + CoreConstants.EndPoints.Manage);
+            result.Claims = new Uri(issuer + "/" + CoreConstants.EndPoints.Claims);
+            result.CheckSessionEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.CheckSession);
+            result.EndSessionEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.EndSession);
 
             return result;
         }

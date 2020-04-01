@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Controllers
 {
+    using System;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -23,8 +24,10 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using System.Net;
+    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
     using SimpleAuth.Filters;
 
     /// <summary>
@@ -35,18 +38,25 @@ namespace SimpleAuth.Controllers
     [ThrottleFilter]
     public class ClientsController : ControllerBase
     {
-        private readonly IClientStore _clientStore;
         private readonly IClientRepository _clientRepository;
+        private readonly IScopeStore _scopeStore;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientsController"/> class.
         /// </summary>
         /// <param name="clientRepository">The client repository.</param>
-        /// <param name="clientStore">The client store.</param>
-        public ClientsController(IClientRepository clientRepository, IClientStore clientStore)
+        /// <param name="scopeStore"></param>
+        /// <param name="httpClient"></param>
+        /// <param name="uriReader"></param>
+        public ClientsController(
+            IClientRepository clientRepository,
+            IScopeStore scopeStore,
+            HttpClient httpClient)
         {
             _clientRepository = clientRepository;
-            _clientStore = clientStore;
+            _scopeStore = scopeStore;
+            _httpClient = httpClient;
         }
 
         /// <summary>
@@ -58,7 +68,7 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "manager")]
         public async Task<ActionResult<Client[]>> GetAll(CancellationToken cancellationToken)
         {
-            var result = await _clientStore.GetAll(cancellationToken).ConfigureAwait(false);
+            var result = await _clientRepository.GetAll(cancellationToken).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 
@@ -76,10 +86,7 @@ namespace SimpleAuth.Controllers
         {
             if (request == null)
             {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequest, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var result = await _clientRepository.Search(request, cancellationToken).ConfigureAwait(false);
@@ -101,7 +108,7 @@ namespace SimpleAuth.Controllers
                 return BuildError(ErrorCodes.InvalidRequest, "identifier is missing", HttpStatusCode.BadRequest);
             }
 
-            var result = await _clientStore.GetById(id, cancellationToken).ConfigureAwait(false);
+            var result = await _clientRepository.GetById(id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
                 return BuildError(
@@ -154,10 +161,7 @@ namespace SimpleAuth.Controllers
         {
             if (updateClientRequest == null)
             {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequest, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             try
@@ -165,7 +169,7 @@ namespace SimpleAuth.Controllers
                 var result = await _clientRepository.Update(updateClientRequest, cancellationToken)
                     .ConfigureAwait(false);
                 return result == null
-                    ? (IActionResult) BadRequest(
+                    ? (IActionResult)BadRequest(
                         new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
@@ -194,20 +198,8 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(client?.ClientId))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
-            }
-
-            var existing = await _clientStore.GetById(client.ClientId, cancellationToken).ConfigureAwait(false);
-            if (existing != null)
-            {
-                return BadRequest();
-            }
-
+            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>);
+            client = await factory.Build(client, cancellationToken).ConfigureAwait(false);
             var result = await _clientRepository.Insert(client, cancellationToken).ConfigureAwait(false);
 
             return Ok(result);
@@ -215,8 +207,8 @@ namespace SimpleAuth.Controllers
 
         private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
-            return StatusCode((int) statusCode, error);
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return StatusCode((int)statusCode, error);
         }
     }
 }

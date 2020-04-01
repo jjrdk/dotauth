@@ -114,7 +114,7 @@ namespace SimpleAuth.Manager.Client
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri(_discoveryInformation.Clients),
+                RequestUri = _discoveryInformation.Clients,
                 Content = body
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
@@ -186,7 +186,7 @@ namespace SimpleAuth.Manager.Client
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Put,
-                RequestUri = new Uri(_discoveryInformation.Clients),
+                RequestUri = _discoveryInformation.Clients,
                 Content = body
             };
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
@@ -207,7 +207,11 @@ namespace SimpleAuth.Manager.Client
                 };
             }
 
-            return new GenericResponse<Client>();
+            return new GenericResponse<Client>
+            {
+                Content = Serializer.Default.Deserialize<Client>(content),
+                StatusCode = httpResult.StatusCode
+            };
         }
 
         /// <summary>
@@ -217,7 +221,7 @@ namespace SimpleAuth.Manager.Client
         /// <returns></returns>
         public Task<GenericResponse<Client[]>> GetAllClients(string authorizationHeaderValue)
         {
-            return _getAllClientsOperation.Execute(new Uri(_discoveryInformation.Clients), authorizationHeaderValue);
+            return _getAllClientsOperation.Execute(_discoveryInformation.Clients, authorizationHeaderValue);
         }
 
         /// <summary>
@@ -285,7 +289,7 @@ namespace SimpleAuth.Manager.Client
         /// <returns></returns>
         public Task<GenericResponse<Scope>> AddScope(Scope scope, string authorizationHeaderValue = null)
         {
-            return _addScopeOperation.Execute(new Uri(_discoveryInformation.Scopes), scope, authorizationHeaderValue);
+            return _addScopeOperation.Execute(_discoveryInformation.Scopes, scope, authorizationHeaderValue);
         }
 
         /// <summary>
@@ -299,7 +303,7 @@ namespace SimpleAuth.Manager.Client
             string authorizationHeaderValue = null)
         {
             return _addResourceOwnerOperation.Execute(
-                new Uri(_discoveryInformation.ResourceOwners),
+                _discoveryInformation.ResourceOwners,
                 request,
                 authorizationHeaderValue);
         }
@@ -378,7 +382,7 @@ namespace SimpleAuth.Manager.Client
         public Task<GenericResponse<ResourceOwner[]>> GetAllResourceOwners(string authorizationHeaderValue = null)
         {
             return _getAllResourceOwnersOperation.Execute(
-                new Uri(_discoveryInformation.ResourceOwners),
+                _discoveryInformation.ResourceOwners,
                 authorizationHeaderValue);
         }
 

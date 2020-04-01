@@ -28,6 +28,7 @@ namespace SimpleAuth.Controllers
     /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.DiscoveryAction)]
     [ThrottleFilter]
+    [CacheFilter]
     public class DiscoveryController : ControllerBase
     {
         private readonly DiscoveryActions _discoveryActions;

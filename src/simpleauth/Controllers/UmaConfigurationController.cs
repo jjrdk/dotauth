@@ -19,6 +19,7 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Filters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
@@ -28,6 +29,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.Configuration)]
+    [CacheFilter]
     public class UmaConfigurationController : ControllerBase
     {
         private readonly IScopeStore _scopeStore;
@@ -62,18 +64,18 @@ namespace SimpleAuth.Controllers
             {
                 ClaimTokenProfilesSupported = Array.Empty<string>(),
                 UmaProfilesSupported = UmaProfilesSupported,
-                ResourceRegistrationEndpoint = absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.ResourceSet,
-                PermissionEndpoint = absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Permission,
+                ResourceRegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.ResourceSet),
+                PermissionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Permission),
                 ScopesSupported = scopeSupportedNames,
                 //PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
                 // OAUTH2.0
-                Issuer = absoluteUriWithVirtualPath,
-                AuthorizationEndpoint = absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Authorization,
-                TokenEndpoint = absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token,
-                JwksUri = absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Jwks,
-                RegistrationEndpoint = absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Registration,
-                IntrospectionEndpoint = absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Introspection,
-                RevocationEndpoint = absoluteUriWithVirtualPath + "/token/revoke",
+                Issuer = new Uri(absoluteUriWithVirtualPath),
+                AuthorizationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Authorization),
+                TokenEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token),
+                JwksUri = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Jwks),
+                RegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Clients),
+                IntrospectionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Introspection),
+                RevocationEndpoint = new Uri(absoluteUriWithVirtualPath + "/token/revoke"),
                 UiLocalesSupported = new[] { "en" },
                 GrantTypesSupported = GrantTypes.All,
                 ResponseTypesSupported = ResponseTypeNames.All

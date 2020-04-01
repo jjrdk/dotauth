@@ -145,7 +145,7 @@
                 });
         }
 
-        [Scenario(DisplayName = "Default policy ticket authentication")]
+        [Scenario(DisplayName = "Instance policy ticket authentication")]
         public void DefaultPolicyTicketAuthentication()
         {
             GrantedTokenResponse umaToken = null;

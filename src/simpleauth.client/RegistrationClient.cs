@@ -32,7 +32,7 @@ namespace SimpleAuth.Client
             _getDiscoveryOperation = new GetDiscoveryOperation(client);
         }
 
-        public async Task<GenericResponse<Client>> Resolve(Client client, string configurationUrl, string accessToken)
+        public async Task<GenericResponse<Client>> Register(Client client, string configurationUrl, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {
@@ -51,7 +51,7 @@ namespace SimpleAuth.Client
             {
                 Method = HttpMethod.Post,
                 Content = new StringContent(json),
-                RequestUri = new Uri(discoveryDocument.RegistrationEndPoint)
+                RequestUri = discoveryDocument.RegistrationEndPoint
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             if (!string.IsNullOrWhiteSpace(accessToken))
@@ -66,11 +66,13 @@ namespace SimpleAuth.Client
             return (!result.IsSuccessStatusCode)
                 ? new GenericResponse<Client>
                 {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content), StatusCode = result.StatusCode
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
+                    StatusCode = result.StatusCode
                 }
                 : new GenericResponse<Client>
                 {
-                    StatusCode = result.StatusCode, Content = Serializer.Default.Deserialize<Client>(content)
+                    StatusCode = result.StatusCode,
+                    Content = Serializer.Default.Deserialize<Client>(content)
                 };
         }
     }

@@ -23,24 +23,22 @@
             _urlReader = urlReader;
         }
 
-        public async Task<Client> Build(Client newClient)
+        public async Task<Client> Build(Client newClient, CancellationToken cancellationToken = default)
         {
             if (newClient == null)
             {
                 throw new ArgumentNullException(nameof(newClient));
             }
 
-            //ValidateNotMandatoryUri(newClient.LogoUri, "logo_uri");
             ValidateNotMandatoryUri(newClient.ClientUri, "client_uri");
             ValidateNotMandatoryUri(newClient.TosUri, "tos_uri");
-            //ValidateNotMandatoryUri(newClient.JwksUri, "jwks_uri");
             ValidateNotMandatoryUri(newClient.SectorIdentifierUri, "sector_identifier_uri", true);
 
             // Based on the RFC : http://openid.net/specs/openid-connect-registration-1_0.html#SectorIdentifierValidation validate the sector_identifier_uri
             if (newClient.SectorIdentifierUri != null)
             {
                 var sectorIdentifierUris =
-                    await GetSectorIdentifierUris(newClient.SectorIdentifierUri).ConfigureAwait(false);
+                    await GetSectorIdentifierUris(newClient.SectorIdentifierUri, cancellationToken).ConfigureAwait(false);
                 if (sectorIdentifierUris.Any(
                     sectorIdentifierUri => !newClient.RedirectionUrls.Contains(sectorIdentifierUri)))
                 {
@@ -96,17 +94,12 @@
 
             var client = new Client
             {
-                ClientId = string.IsNullOrWhiteSpace(newClient.ClientId) ? Id.Create() : newClient.ClientId
+                ClientId = Id.Create()
             };
 
-            if (string.IsNullOrWhiteSpace(newClient.ClientName))
-            {
-                client.ClientName = "Unnamed_" + client.ClientId;
-            }
-            else
-            {
-                client.ClientName = newClient.ClientName;
-            }
+            client.ClientName = string.IsNullOrWhiteSpace(newClient.ClientName)
+                ? "Unnamed_" + client.ClientId
+                : newClient.ClientName;
 
             client.TokenLifetime = newClient.TokenLifetime;
             client.ApplicationType = newClient.ApplicationType;
@@ -115,14 +108,9 @@
             client.DefaultAcrValues = newClient.DefaultAcrValues;
 
             // If omitted then the default value is authorization code grant type
-            if (newClient.GrantTypes == null || !newClient.GrantTypes.Any())
-            {
-                client.GrantTypes = new[] { GrantTypes.AuthorizationCode };
-            }
-            else
-            {
-                client.GrantTypes = newClient.GrantTypes;
-            }
+            client.GrantTypes = newClient.GrantTypes == null || !newClient.GrantTypes.Any()
+                ? new[] {GrantTypes.AuthorizationCode}
+                : newClient.GrantTypes;
 
             client.IdTokenEncryptedResponseAlg = !string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg)
                 ? newClient.IdTokenEncryptedResponseAlg
@@ -153,11 +141,9 @@
             client.PolicyUri = newClient.PolicyUri;
             client.PostLogoutRedirectUris = newClient.PostLogoutRedirectUris;
 
-            if (newClient.AllowedScopes == null || newClient.AllowedScopes.Length == 0)
+            if (newClient.AllowedScopes == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidScope,
-                    string.Format(ErrorDescriptions.MissingParameter, "allowed_scopes"));
+                newClient.AllowedScopes = Array.Empty<string>();
             }
 
             var scopes = await _scopeRepository.SearchByNames(CancellationToken.None, newClient.AllowedScopes)
@@ -285,11 +271,11 @@
             return client;
         }
 
-        private async Task<IReadOnlyCollection<Uri>> GetSectorIdentifierUris(Uri sectorIdentifierUri)
+        private async Task<IReadOnlyCollection<Uri>> GetSectorIdentifierUris(Uri sectorIdentifierUri, CancellationToken cancellationToken = default)
         {
             try
             {
-                var response = _httpClient.GetAsync(sectorIdentifierUri).Result;
+                var response = _httpClient.GetAsync(sectorIdentifierUri, cancellationToken).Result;
                 response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return _urlReader(result);

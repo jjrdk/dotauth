@@ -91,7 +91,7 @@ namespace SimpleAuth.Client
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = new Uri(discoveryInformation.TokenEndPoint)
+                RequestUri = discoveryInformation.TokenEndPoint
             };
             if (_certificate != null)
             {
@@ -135,7 +135,7 @@ namespace SimpleAuth.Client
             {
                 Method = HttpMethod.Post,
                 Content = new FormUrlEncodedContent(introspectionRequest),
-                RequestUri = new Uri(discoveryInformation.IntrospectionEndpoint)
+                RequestUri = discoveryInformation.IntrospectionEndpoint
             };
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", introspectionRequest.PatToken);
 
@@ -205,7 +205,7 @@ namespace SimpleAuth.Client
         public async Task<GenericResponse<object>> RequestSms(ConfirmationCodeRequest request)
         {
             var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
-            var requestUri = new Uri(discoveryInformation.Issuer + "/code");
+            var requestUri = new Uri(discoveryInformation.Issuer + "code");
 
             var json = Serializer.Default.Serialize(request);
             var req = new HttpRequestMessage
@@ -247,7 +247,7 @@ namespace SimpleAuth.Client
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = new Uri(discoveryInformation.RevocationEndPoint)
+                RequestUri = discoveryInformation.RevocationEndPoint
             };
             if (_certificate != null)
             {

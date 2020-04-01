@@ -22,7 +22,7 @@ namespace SimpleAuth
     public static class CookieNames
     {
         /// <summary>
-        /// Default cookie name
+        /// Instance cookie name
         /// </summary>
         public const string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
 
