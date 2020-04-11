@@ -40,6 +40,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <RazorGenerate Remove="Views\ResourceSet\GetResourceSetPolicy.cshtml" />
+    <RazorGenerate Remove="Views\ResourceSet\SetResourceSetPolicy.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="Views\Form\Index.cshtml" />
   </ItemGroup>
 

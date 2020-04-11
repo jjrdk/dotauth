@@ -75,6 +75,7 @@
                         {
                             new Uri("http://localhost:4200/login"),
                             new Uri("https://localhost:50001/signin-oidc"),
+                            new Uri("https://localhost:5001/signin-oidc"),
                         },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
                     PostLogoutRedirectUris = new[] {new Uri("http://localhost:4200/login")},

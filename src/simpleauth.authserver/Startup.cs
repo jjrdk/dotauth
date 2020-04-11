@@ -31,12 +31,15 @@ namespace SimpleAuth.AuthServer
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using SimpleAuth.ResourceServer;
     using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.Models;
 
     internal class Startup
     {
+        private const string SimpleAuthScheme = "simpleauth";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
 
@@ -114,8 +117,31 @@ namespace SimpleAuth.AuthServer
                         "AllowAll",
                         p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders()))
                 .AddLogging(log => { log.AddConsole(); });
-            services.AddAuthentication(CookieNames.CookieName)
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieNames.CookieName;
+                options.DefaultChallengeScheme = SimpleAuthScheme;
+            })
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
+                .AddOpenIdConnect(
+                    SimpleAuthScheme,
+                    '_' + SimpleAuthScheme,
+                    options =>
+                    {
+                        options.Authority = "https://localhost:5001";
+#if DEBUG
+                        options.RequireHttpsMetadata = false;
+#endif
+                        options.AuthenticationMethod = OpenIdConnectRedirectBehavior.RedirectGet;
+                        options.DisableTelemetry = true;
+                        options.ClientId = "web";
+                        options.ClientSecret = "secret";
+                        options.ResponseType = OpenIdConnectResponseType.Code;
+                        options.ResponseMode = OpenIdConnectResponseMode.FormPost;
+                        options.Scope.Clear();
+                        options.Scope.Add("openid");
+                        options.Scope.Add("uma_protection");
+                    })
                 .AddJwtBearer(
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
@@ -124,7 +150,7 @@ namespace SimpleAuth.AuthServer
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = new[] {"http://localhost:5000", "https://localhost:5001"}
+                            ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
                         };
                         cfg.RequireHttpsMetadata = false;
                     });
@@ -150,7 +176,7 @@ namespace SimpleAuth.AuthServer
 
             services.AddSimpleAuth(
                 _options,
-                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme},
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme },
                 applicationParts: GetType().Assembly);
 
             services.AddAuthorization(

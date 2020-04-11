@@ -27,6 +27,11 @@
         public string Password { get; set; }
 
         /// <summary>
+        /// Gets or sets the redirect url.
+        /// </summary>
+        public string ReturnUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this instance is checked.
         /// </summary>
         /// <value>

@@ -13,6 +13,7 @@
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
 
+
     /// <summary>
     /// Defines the introspection controller.
     /// </summary>

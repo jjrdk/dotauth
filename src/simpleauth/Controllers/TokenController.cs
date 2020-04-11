@@ -25,7 +25,7 @@
     /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.Token)]
     [ThrottleFilter]
-    [NoCacheFilter]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class TokenController : ControllerBase
     {
         private readonly TokenActions _tokenActions;

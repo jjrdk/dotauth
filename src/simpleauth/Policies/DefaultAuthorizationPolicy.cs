@@ -20,6 +20,7 @@ namespace SimpleAuth.Policies
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -143,24 +144,25 @@ namespace SimpleAuth.Policies
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
             }
 
-            foreach (var claim in authorizationPolicy.Claims)
+            foreach (var policyClaim in authorizationPolicy.Claims)
             {
-                var payload = claims.FirstOrDefault(j => j.Type == claim.Type);
-                if (payload.Equals(default(KeyValuePair<string, object>)))
+                var tokenClaim = claims.FirstOrDefault(j => j.Type == policyClaim.Type);
+                if (tokenClaim == null)
                 {
                     return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
                 }
 
-                if (payload.ValueType == JsonClaimValueTypes.JsonArray) // is IEnumerable<string> strings)
+                if (tokenClaim.ValueType == JsonClaimValueTypes.JsonArray) // is IEnumerable<string> strings)
                 {
-                    var strings = JsonConvert.DeserializeObject<object[]>(payload.Value);
-                    if (!strings.Any(s => Equals(s, claim.Value)))
+                    var strings = JsonConvert.DeserializeObject<object[]>(tokenClaim.Value);
+                    if (!strings.Any(s => Equals(s, policyClaim.Value)))
                     {
                         return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
                     }
                 }
 
-                if (payload.Value != claim.Value)
+                var regex = new Regex(policyClaim.Value);
+                if (!regex.IsMatch(tokenClaim.Value)) //tokenClaim.Value != policyClaim.Value)
                 {
                     return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
                 }

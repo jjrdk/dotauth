@@ -36,6 +36,7 @@ namespace SimpleAuth.Extensions
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
+    using SimpleAuth.Controllers;
     using SimpleAuth.Filters;
     using SimpleAuth.MiddleWare;
     using SimpleAuth.Shared.Events;
@@ -65,13 +66,7 @@ namespace SimpleAuth.Extensions
             {
                 throw new ArgumentNullException(nameof(options));
             }
-            options.AddPolicy(
-                "authenticated",
-                policy =>
-                {
-                    policy.AddAuthenticationSchemes(authenticationSchemes);
-                    policy.RequireAuthenticatedUser();
-                });
+
             options.AddPolicy(
                 "UmaProtection",
                 policy =>
@@ -111,37 +106,6 @@ namespace SimpleAuth.Extensions
                 });
 
             options.AddPolicy(
-                "registration",
-                policy => // Access token with scope = register_client
-                {
-                    policy.AddAuthenticationSchemes(authenticationSchemes);
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion(
-                        p =>
-                        {
-                            if (p.User?.Identity?.IsAuthenticated != true)
-                            {
-                                return false;
-                            }
-
-                            var claimsScopes = p.User.Claims.Where(c => c.Type == ScopeType);
-
-                            return claimsScopes.SelectMany(c => c.Value.Split(' ')).Any(v => v == "register_client");
-                        });
-                    policy.RequireAssertion(
-                        p =>
-                        {
-                            if (p.User?.Identity?.IsAuthenticated != true)
-                            {
-                                return false;
-                            }
-
-                            var result = p.User?.Claims?.Where(c => c.Type == ScopeType).Any(c => c.Value == "register_client");
-
-                            return result == true;
-                        });
-                });
-            options.AddPolicy(
                 ManageProfileClaim,
                 policy => // Access token with scope = manage_profile or with role = administrator
                 {
@@ -164,32 +128,6 @@ namespace SimpleAuth.Extensions
 
                             return claimRole != null && claimRole.Value == AdministratorRole
                                    || claimScopes.Any(s => s.Value == ManageProfileClaim);
-                        });
-                });
-            options.AddPolicy(
-                "manage_account_filtering",
-                policy => // Access token with scope = manage_account_filtering or role = administrator
-                {
-                    policy.AddAuthenticationSchemes(authenticationSchemes);
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion(
-                        p =>
-                        {
-                            if (p.User?.Identity == null || !p.User.Identity.IsAuthenticated)
-                            {
-                                return false;
-                            }
-
-                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == RoleType);
-                            var claimScopes = p.User.Claims.Where(c => c.Type == ScopeType).ToArray();
-                            if (claimRole == null && !claimScopes.Any())
-                            {
-                                return false;
-                            }
-
-                            return claimRole != null && claimRole.Value.Split(' ', ',').Any(v => v == AdministratorRole)
-                                   || claimScopes.SelectMany(s => s.Value.Split(' '))
-                                       .Any(s => s == "manage_account_filtering");
                         });
                 });
             return options;
@@ -275,7 +213,12 @@ namespace SimpleAuth.Extensions
                     })
                 .AddCors(
                     o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
-                .AddControllersWithViews(mvcConfig ?? (_ => { }))
+                .AddControllersWithViews(
+                    o =>
+                    {
+                        o.OutputFormatters.Add(new RazorOutputFormatter());
+                        mvcConfig?.Invoke(o);
+                    })
                 .AddRazorRuntimeCompilation()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             mvcBuilder = applicationParts.Concat(new[] { typeof(ServiceCollectionExtensions).Assembly })

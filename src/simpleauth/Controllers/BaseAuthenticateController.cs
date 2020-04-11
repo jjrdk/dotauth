@@ -612,7 +612,7 @@ namespace SimpleAuth.Controllers
         {
             var schemes =
                 (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(
-                    p => !string.IsNullOrWhiteSpace(p.DisplayName));
+                    p => !string.IsNullOrWhiteSpace(p.DisplayName) && !p.DisplayName.StartsWith('_'));
             var idProviders = schemes.Select(
                     scheme => new IdProviderViewModel
                     {

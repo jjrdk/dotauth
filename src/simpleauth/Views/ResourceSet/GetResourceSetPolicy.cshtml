@@ -1,0 +1,71 @@
+﻿@model SimpleAuth.ViewModels.EditPolicyViewModel
+@{
+    ViewBag.Title = "Resource Set Policy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts
+{
+    <script>
+        const fields = document.querySelectorAll(".input-field");
+        fields.forEach((field, index) => {
+            const input = field.querySelector("input");
+            const label = field.querySelector("label");
+            input.addEventListener("focus", () => { label.classList.add("active") });
+            input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col s12 m6 offset-m3">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <h5>Set Access Policy</h5>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        @using (Html.BeginForm("SetResourceSetPolicy", "ResourceSet", new { id = Model.Id }, method: FormMethod.Post, antiforgery: true, new { }))
+                        {
+                            @for (var i = 0; i < Model.Rules.Length; i++)
+                            {
+                                <div class="input-field col s12">
+                                    <label asp-for="@Model.Rules[i].OpenIdProvider"></label>
+                                    <input asp-for="@Model.Rules[i].OpenIdProvider" />
+                                </div>
+                                <div class="col s12 m12">
+                                    <label>
+                                        <input type="checkbox" asp-for="@Model.Rules[i].IsResourceOwnerConsentNeeded" class="filled-in blue-text text-darken-3" />
+                                        <span asp-for="@Model.Rules[i].IsResourceOwnerConsentNeeded">Resource Owner Consent Needed</span>
+                                    </label>
+                                </div>
+                                <div class="input-field col s12">
+                                    <label asp-for="@Model.Rules[i].ClientIdsAllowed"></label>
+                                    <input asp-for="@Model.Rules[i].ClientIdsAllowed" />
+                                </div>
+                                <div class="input-field col s12">
+                                    <label asp-for="@Model.Rules[i].Scopes"></label>
+                                    <input asp-for="@Model.Rules[i].Scopes" />
+                                </div>
+                                for (var j = 0; j < Model.Rules[i].Claims.Length; j++)
+                                {
+                                    <div class="input-field col s12">
+                                        <label asp-for="@Model.Rules[i].Claims[j].Type"></label>
+                                        <input asp-for="@Model.Rules[i].Claims[j].Type" />
+                                    </div>
+                                    <div class="input-field col s12">
+                                        <label asp-for="@Model.Rules[i].Claims[j].Value"></label>
+                                        <input asp-for="@Model.Rules[i].Claims[j].Value" />
+                                    </div>
+                                }
+                                <div class="col s12 m12">
+                                    <input type="submit" value="Save" class="waves-effect waves-light btn blue darken-3 right" />
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

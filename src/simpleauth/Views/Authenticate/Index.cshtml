@@ -50,6 +50,9 @@
                         <div class="col s12">@Html.ValidationMessage("invalid_credentials")</div>
                         <form class="col s12" name="form" enctype="application/x-www-form-urlencoded" method="POST" action="@Url.Action("LocalLogin")">
                             <div class="row">
+                                <div>
+                                    @Html.Hidden("ReturnUrl", Model.ReturnUrl)
+                                </div>
                                 <div class="input-field col s12">
                                     @if (loginState != null && loginState.Errors.Any())
                                     {

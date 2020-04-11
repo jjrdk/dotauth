@@ -20,5 +20,10 @@
         /// The password.
         /// </value>
         public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional return url.
+        /// </summary>
+        public string ReturnUrl { get; set; }
     }
 }

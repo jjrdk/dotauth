@@ -36,7 +36,7 @@ namespace SimpleAuth.Controllers
     /// Defines the consent controller.
     /// </summary>
     /// <seealso cref="BaseController" />
-    [Authorize("authenticated")]
+    [Authorize]
     [ThrottleFilter]
     public class ConsentController : BaseController
     {

@@ -21,7 +21,7 @@ namespace SimpleAuth.Sms.Controllers
     /// <seealso cref="Controller" />
     [Route(SmsConstants.CodeController)]
     [ThrottleFilter]
-    [NoCacheFilter]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class CodeController : ControllerBase
     {
         private readonly SmsAuthenticationOperation _smsAuthenticationOperation;

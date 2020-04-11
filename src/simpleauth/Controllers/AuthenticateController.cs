@@ -126,7 +126,8 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                var viewModel = new AuthorizeViewModel();
+                Request.Query.TryGetValue("ReturnUrl", out var returnUrl);
+                var viewModel = new AuthorizeViewModel { ReturnUrl = returnUrl };
                 await SetIdProviders(viewModel).ConfigureAwait(false);
                 return View("Index", viewModel);
             }
@@ -189,7 +190,9 @@
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
                     await SetLocalCookie(resourceOwner.Claims, Id.Create()).ConfigureAwait(false);
-                    return RedirectToAction("Index", "User");
+                    return !string.IsNullOrWhiteSpace(authorizeViewModel.ReturnUrl)
+                        ? (IActionResult)Redirect(authorizeViewModel.ReturnUrl)
+                        : RedirectToAction("Index", "User");
                 }
 
                 // 2.1 Store temporary information in cookie

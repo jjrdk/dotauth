@@ -29,7 +29,7 @@ namespace SimpleAuth.Controllers
     /// </summary>
     /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.Configuration)]
-    [CacheFilter]
+    [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any, NoStore = false)]
     public class UmaConfigurationController : ControllerBase
     {
         private readonly IScopeStore _scopeStore;
@@ -75,7 +75,7 @@ namespace SimpleAuth.Controllers
                 JwksUri = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Jwks),
                 RegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Clients),
                 IntrospectionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Introspection),
-                RevocationEndpoint = new Uri(absoluteUriWithVirtualPath + "/token/revoke"),
+                RevocationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token + "/revoke"),
                 UiLocalesSupported = new[] { "en" },
                 GrantTypesSupported = GrantTypes.All,
                 ResponseTypesSupported = ResponseTypeNames.All

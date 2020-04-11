@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Controllers
 {
+    using System;
     using System.Linq;
     using Api.ResourceSetController;
     using Microsoft.AspNetCore.Authorization;
@@ -28,6 +29,7 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Filters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.ViewModels;
 
     /// <summary>
     /// Defines the resource set controller.
@@ -96,7 +98,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest();
             }
             var resourceSets = await _resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
-            return new OkObjectResult(resourceSets);
+            return new OkObjectResult(resourceSets.Select(x => x.Id).ToArray());
         }
 
         /// <summary>
@@ -129,7 +131,7 @@ namespace SimpleAuth.Controllers
             var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
-                return Ok();
+                return NoContent();
             }
 
             return new OkObjectResult(result);
@@ -168,7 +170,33 @@ namespace SimpleAuth.Controllers
                 return BadRequest();
             }
 
-            return new OkObjectResult(result.AuthorizationPolicies);
+            return new OkObjectResult(new EditPolicyViewModel { Id = id, Rules = result.AuthorizationPolicies.Select(ToViewModel).ToArray() });
+        }
+
+        /// <summary>
+        /// Sets the access policy definition for the given resource.
+        /// </summary>
+        /// <param name="viewModel">The view model.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
+        [HttpPost("{id}/policy")]
+        [Authorize(Policy = "UmaProtection")]
+        public async Task<IActionResult> SetResourceSetPolicy(
+            EditPolicyViewModel viewModel,
+            CancellationToken cancellationToken)
+        {
+            if (viewModel == null)
+            {
+                return BadRequest(
+                    new ErrorDetails
+                    {
+                        Detail = "Input missing",
+                        Title = "Input missing",
+                        Status = HttpStatusCode.BadRequest
+                    });
+            }
+            var result = await SetResourceSetPolicy(viewModel.Id, viewModel.Rules.Select(ToModel).ToArray(), cancellationToken).ConfigureAwait(false);
+
+            return result is OkResult ? Ok(new object()) : result;
         }
 
         /// <summary>
@@ -267,6 +295,7 @@ namespace SimpleAuth.Controllers
             }
 
             resourceSet.Id = Id.Create();
+            resourceSet.AuthorizationPolicies = new[] { new PolicyRule { IsResourceOwnerConsentNeeded = true } };
             if (!await _resourceSetRepository.Add(subject, resourceSet, cancellationToken).ConfigureAwait(false))
             {
                 return Problem();
@@ -362,6 +391,36 @@ namespace SimpleAuth.Controllers
         {
             var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
             return new JsonResult(error) { StatusCode = (int)statusCode };
+        }
+
+        private static PolicyRuleViewModel ToViewModel(PolicyRule rule)
+        {
+            return new PolicyRuleViewModel
+            {
+                Claims = rule.Claims,
+                ClientIdsAllowed = string.Join(", ", rule.ClientIdsAllowed),
+                IsResourceOwnerConsentNeeded = rule.IsResourceOwnerConsentNeeded,
+                OpenIdProvider = rule.OpenIdProvider,
+                Scopes = string.Join(", ", rule.Scopes)
+            };
+        }
+
+        private static PolicyRule ToModel(PolicyRuleViewModel viewModel)
+        {
+            return new PolicyRule
+            {
+                Scopes =
+                    viewModel.Scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim())
+                        .ToArray(),
+                Claims = viewModel.Claims,
+                ClientIdsAllowed =
+                    viewModel.ClientIdsAllowed.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim())
+                        .ToArray(),
+                IsResourceOwnerConsentNeeded = viewModel.IsResourceOwnerConsentNeeded,
+                OpenIdProvider = viewModel.OpenIdProvider
+            };
         }
     }
 }

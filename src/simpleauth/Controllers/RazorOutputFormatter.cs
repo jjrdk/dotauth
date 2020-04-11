@@ -1,0 +1,84 @@
+﻿namespace SimpleAuth.Controllers
+{
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Abstractions;
+    using Microsoft.AspNetCore.Mvc.Formatters;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Net.Http.Headers;
+
+    internal class RazorOutputFormatter : TextOutputFormatter
+    {
+        public RazorOutputFormatter()
+        {
+            SupportedEncodings.Add(Encoding.UTF8);
+            SupportedEncodings.Add(Encoding.ASCII);
+            SupportedEncodings.Add(Encoding.UTF32);
+            SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
+            SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/xhtml"));
+            SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/xhtml"));
+            SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/xhtml+xml"));
+        }
+
+        /// <inheritdoc />
+        public override bool CanWriteResult(OutputFormatterCanWriteContext context)
+        {
+            var viewEngine = context.HttpContext.RequestServices.GetRequiredService<IRazorViewEngine>();
+            var actionContext = new ActionContext(context.HttpContext, context.HttpContext.GetRouteData() ?? new RouteData(), new ActionDescriptor());
+            var viewName = actionContext.RouteData.Values["action"].ToString();
+            var result = viewEngine.FindView(actionContext, viewName, false);
+            return result.Success && base.CanWriteResult(context);
+        }
+
+        /// <inheritdoc />
+        public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
+        {
+            var httpContext = context.HttpContext;
+            var serviceProvider = httpContext.RequestServices;
+            var viewEngine = serviceProvider.GetRequiredService<IRazorViewEngine>();
+            var actionContext = new ActionContext(httpContext, httpContext.GetRouteData() ?? new RouteData(), new ActionDescriptor());
+            try
+            {
+                var viewName = actionContext.RouteData.Values["action"].ToString();
+                var viewEngineResult = viewEngine.FindView(actionContext, viewName, isMainPage: false);
+
+                if (!viewEngineResult.Success)
+                {
+                    throw new InvalidOperationException($"Couldn't find view '{viewName}'");
+                }
+
+                var view = viewEngineResult.View;
+                viewEngineResult.EnsureSuccessful(Array.Empty<string>());
+                await using var output = new StreamWriter(httpContext.Response.Body);
+                var viewContext = new ViewContext(
+                    actionContext,
+                    view,
+                    new ViewDataDictionary(
+                        metadataProvider: new EmptyModelMetadataProvider(),
+                        modelState: new ModelStateDictionary())
+                    {
+                        Model = context.Object
+                    },
+                    new TempDataDictionary(actionContext.HttpContext, serviceProvider.GetRequiredService<ITempDataProvider>()),
+                    output,
+                    new HtmlHelperOptions());
+
+                await view.RenderAsync(viewContext).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError(e.Message);
+                throw;
+            }
+        }
+    }
+}

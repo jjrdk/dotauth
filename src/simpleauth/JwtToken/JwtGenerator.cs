@@ -383,8 +383,9 @@ namespace SimpleAuth.JwtToken
                 audiences.Add(issuerName);
             }
 
-            var authenticationInstant =
-                claimsPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
+            var authenticationInstant = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.AuthenticationInstant)
+                .OrderByDescending(x => x.Value)
+                .FirstOrDefault();
             var authenticationInstantValue = authenticationInstant == null ? string.Empty : authenticationInstant.Value;
 
             if (issuerClaimParameter != null)
