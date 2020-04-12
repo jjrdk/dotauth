@@ -130,10 +130,11 @@ namespace SimpleAuth.Client
         /// Executes the specified introspection request.
         /// </summary>
         /// <param name="introspectionRequest">The introspection request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<OauthIntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
+        public async Task<GenericResponse<OauthIntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest, CancellationToken cancellationToken = default)
         {
-            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
+            var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -142,7 +143,7 @@ namespace SimpleAuth.Client
             };
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", introspectionRequest.PatToken);
 
-            var result = await _client.SendAsync(request).ConfigureAwait(false);
+            var result = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
             var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (!result.IsSuccessStatusCode)
@@ -166,6 +167,7 @@ namespace SimpleAuth.Client
         /// Gets the authorization.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">request</exception>
         public async Task<GenericResponse<Uri>> GetAuthorization(AuthorizationRequest request, CancellationToken cancellationToken = default)
@@ -175,7 +177,7 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
+            var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var uriBuilder = new UriBuilder(discoveryInformation.AuthorizationEndPoint) { Query = request.ToRequest() };
             var requestMessage = new HttpRequestMessage
             {
@@ -199,10 +201,11 @@ namespace SimpleAuth.Client
         /// <summary>
         /// Gets the public web keys.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns>The public <see cref="JsonWebKeySet"/> as a <see cref="Task{TResult}"/>.</returns>
-        public async Task<JsonWebKeySet> GetJwks()
+        public async Task<JsonWebKeySet> GetJwks(CancellationToken cancellationToken = default)
         {
-            var discoveryDoc = await GetDiscoveryInformation().ConfigureAwait(false);
+            var discoveryDoc = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var keyJson = await _client.GetStringAsync(discoveryDoc.JwksUri).ConfigureAwait(false);
             return JsonWebKeySet.Create(keyJson);
         }
@@ -211,10 +214,11 @@ namespace SimpleAuth.Client
         /// Sends the specified request URL.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<object>> RequestSms(ConfirmationCodeRequest request)
+        public async Task<GenericResponse<object>> RequestSms(ConfirmationCodeRequest request, CancellationToken cancellationToken = default)
         {
-            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
+            var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var requestUri = new Uri(discoveryInformation.Issuer + "code");
 
             var json = Serializer.Default.Serialize(request);
@@ -230,7 +234,7 @@ namespace SimpleAuth.Client
                 req.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
             }
 
-            var result = await _client.SendAsync(req).ConfigureAwait(false);
+            var result = await _client.SendAsync(req, cancellationToken).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
@@ -248,11 +252,12 @@ namespace SimpleAuth.Client
         /// Revokes the token.
         /// </summary>
         /// <param name="revokeTokenRequest">The revoke token request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<object>> RevokeToken(RevokeTokenRequest revokeTokenRequest)
+        public async Task<GenericResponse<object>> RevokeToken(RevokeTokenRequest revokeTokenRequest, CancellationToken cancellationToken = default)
         {
             var body = new FormUrlEncodedContent(_form.Concat(revokeTokenRequest));
-            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
+            var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -271,7 +276,7 @@ namespace SimpleAuth.Client
                 request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
             }
 
-            var result = await _client.SendAsync(request).ConfigureAwait(false);
+            var result = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
             var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
@@ -285,9 +290,9 @@ namespace SimpleAuth.Client
             return new GenericResponse<object> { StatusCode = result.StatusCode };
         }
 
-        private async Task<DiscoveryInformation> GetDiscoveryInformation()
+        private async Task<DiscoveryInformation> GetDiscoveryInformation(CancellationToken cancellationToken = default)
         {
-            return _discovery ??= await _discoveryOperation.Execute(_discoveryDocumentationUrl).ConfigureAwait(false);
+            return _discovery ??= await _discoveryOperation.Execute(_discoveryDocumentationUrl, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

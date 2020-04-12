@@ -36,7 +36,7 @@ namespace SimpleAuth.Shared
             _httpClient = httpClient;
         }
 
-        public async Task<DiscoveryInformation> Execute(Uri discoveryDocumentationUri)
+        public async Task<DiscoveryInformation> Execute(Uri discoveryDocumentationUri, CancellationToken cancellationToken = default)
         {
             if (discoveryDocumentationUri == null)
             {
@@ -46,7 +46,7 @@ namespace SimpleAuth.Shared
             var key = discoveryDocumentationUri.ToString();
             try
             {
-                await _semaphore.WaitAsync().ConfigureAwait(false);
+                await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                 if (_cache.TryGetValue(key, out var doc))
                 {
                     return doc;
