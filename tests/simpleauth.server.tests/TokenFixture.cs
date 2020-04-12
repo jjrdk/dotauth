@@ -78,23 +78,25 @@
             var result = await tc.GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
                 .ConfigureAwait(false);
 
-            var resource = await _umaClient.AddResource(
-                    new ResourceSet
+            var resourceSet = new ResourceSet
+            {
+                Name = "name",
+                Scopes = new[] {"read", "write", "execute"},
+                AuthorizationPolicies = new[]
+                {
+                    new PolicyRule
                     {
-                        Name = "name",
-                        Scopes = new[] {"read", "write", "execute"},
-                        AuthorizationPolicies = new[]
-                        {
-                            new PolicyRule
-                            {
-                                ClientIdsAllowed = new[] {"resource_server"},
-                                Scopes = new[] {"read", "write", "execute"}
-                            }
-                        }
-                    },
+                        ClientIdsAllowed = new[] {"resource_server"},
+                        Scopes = new[] {"read", "write", "execute"}
+                    }
+                }
+            };
+            var resource = await _umaClient.AddResource(
+                    resourceSet,
                     result.Content.AccessToken)
                 .ConfigureAwait(false);
-
+            resourceSet.Id = resource.Content.Id;
+            await _umaClient.UpdateResource(resourceSet, result.Content.AccessToken).ConfigureAwait(false);
             var ticket = await _umaClient.RequestPermission(
                     "header",
                     requests: new PermissionRequest // Add permission & retrieve a ticket id.

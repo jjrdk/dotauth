@@ -15,7 +15,7 @@
 namespace SimpleAuth.AuthServer
 {
     using System;
-
+    using System.IdentityModel.Tokens.Jwt;
     using Extensions;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,7 +31,10 @@ namespace SimpleAuth.AuthServer
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication.OAuth;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.Extensions.Options;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using SimpleAuth.ResourceServer;
     using SimpleAuth.ResourceServer.Authentication;
@@ -74,6 +77,13 @@ namespace SimpleAuth.AuthServer
                                     {
                                         new PolicyRule
                                         {
+                                            Claims = new[]
+                                            {
+                                                new ClaimData
+                                                {
+                                                    Type = "sub", Value = "administrator"
+                                                }
+                                            },
                                             ClientIdsAllowed = new[] {"web"},
                                             Scopes = new[] {"read"},
                                             IsResourceOwnerConsentNeeded = true
@@ -123,24 +133,11 @@ namespace SimpleAuth.AuthServer
                 options.DefaultChallengeScheme = SimpleAuthScheme;
             })
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-                .AddOpenIdConnect(
+                .AddOAuth(
                     SimpleAuthScheme,
                     '_' + SimpleAuthScheme,
                     options =>
                     {
-                        options.Authority = "https://localhost:5001";
-#if DEBUG
-                        options.RequireHttpsMetadata = false;
-#endif
-                        options.AuthenticationMethod = OpenIdConnectRedirectBehavior.RedirectGet;
-                        options.DisableTelemetry = true;
-                        options.ClientId = "web";
-                        options.ClientSecret = "secret";
-                        options.ResponseType = OpenIdConnectResponseType.Code;
-                        options.ResponseMode = OpenIdConnectResponseMode.FormPost;
-                        options.Scope.Clear();
-                        options.Scope.Add("openid");
-                        options.Scope.Add("uma_protection");
                     })
                 .AddJwtBearer(
                     JwtBearerDefaults.AuthenticationScheme,
@@ -154,6 +151,7 @@ namespace SimpleAuth.AuthServer
                         };
                         cfg.RequireHttpsMetadata = false;
                     });
+            services.ConfigureOptions<ConfigureOAuthOptions>();
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
@@ -176,7 +174,7 @@ namespace SimpleAuth.AuthServer
 
             services.AddSimpleAuth(
                 _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme },
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                 applicationParts: GetType().Assembly);
 
             services.AddAuthorization(
@@ -191,6 +189,44 @@ namespace SimpleAuth.AuthServer
         public void Configure(IApplicationBuilder app)
         {
             app.UseResponseCompression().UseSimpleAuthMvc();
+        }
+    }
+
+    internal class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions>
+    {
+        /// <inheritdoc />
+        public void PostConfigure(string name, OAuthOptions options)
+        {
+            options.AuthorizationEndpoint = "https://localhost:5001/authorization";
+            options.TokenEndpoint = "https://localhost:5001/token";
+            options.UserInformationEndpoint = "https://localhost:5001/userinfo";
+            options.UsePkce = true;
+            options.CallbackPath = "/callback";
+            options.Events = new OAuthEvents
+            {
+                OnCreatingTicket = ctx =>
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwt = handler.ReadJwtToken(ctx.AccessToken);
+                    ctx.Identity.AddClaims(jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)));
+                    ctx.Success();
+                    return Task.CompletedTask;
+                },
+                OnTicketReceived = ctx => Task.CompletedTask
+            };
+            options.SaveTokens = true;
+            //#if DEBUG
+            //options.RequireHttpsMetadata = false;
+            //#endif
+            //options.AuthenticationMethod = OpenIdConnectRedirectBehavior.RedirectGet;
+            //options.DisableTelemetry = true;
+            options.ClientId = "web";
+            options.ClientSecret = "secret";
+            //options.ResponseType = OpenIdConnectResponseType.Code;
+            //options.ResponseMode = OpenIdConnectResponseMode.FormPost;
+            options.Scope.Clear();
+            options.Scope.Add("openid");
+            options.Scope.Add("uma_protection");
         }
     }
 }

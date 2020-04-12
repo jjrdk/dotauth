@@ -2,7 +2,6 @@
 {
     using System;
     using SimpleAuth.Client;
-    using SimpleAuth.Manager.Client;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;

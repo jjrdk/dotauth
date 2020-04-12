@@ -27,6 +27,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Net;
+    using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Xunit;
@@ -44,7 +45,6 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             IdentityModelEventSource.ShowPII = true;
             _server = new TestOauthServerFixture();
-
             _authorizationClient = new TokenClient(
                 TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
                 _server.Client,

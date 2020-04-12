@@ -1,14 +1,15 @@
 ﻿namespace SimpleAuth.Server.Tests
 {
     using Shared.Requests;
-    using SimpleAuth.Manager.Client;
     using SimpleAuth.Shared.Errors;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using SimpleAuth.Client;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using Xunit;
+    using ErrorDescriptions = SimpleAuth.Shared.Errors.ErrorDescriptions;
 
     public class ResourceOwnerFixture
     {
@@ -54,7 +55,7 @@
         [Fact]
         public async Task When_Pass_No_Password_To_Add_ResourceOwner_Then_Error_Is_Returned()
         {
-            var result = await _resourceOwnerClient.AddResourceOwner(new AddResourceOwnerRequest {Subject = "subject"})
+            var result = await _resourceOwnerClient.AddResourceOwner(new AddResourceOwnerRequest { Subject = "subject" })
                 .ConfigureAwait(false);
 
             Assert.True(result.HasError);
@@ -65,7 +66,7 @@
         public async Task When_Login_Already_Exists_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.AddResourceOwner(
-                    new AddResourceOwnerRequest {Subject = "administrator", Password = "password"})
+                    new AddResourceOwnerRequest { Subject = "administrator", Password = "password" })
                 .ConfigureAwait(false);
 
             Assert.True(result.HasError);
@@ -74,7 +75,7 @@
         }
 
         [Fact]
-        public async Task When_Update_Claims_And_No_Login_Is_Passwed_Then_Error_Is_Returned()
+        public async Task When_Update_Claims_And_No_Login_Is_Passed_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerClaims(new UpdateResourceOwnerClaimsRequest())
                 .ConfigureAwait(false);
@@ -88,7 +89,7 @@
         public async Task When_Update_Claims_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerClaims(
-                    new UpdateResourceOwnerClaimsRequest {Subject = "invalid_login"})
+                    new UpdateResourceOwnerClaimsRequest { Subject = "invalid_login" })
                 .ConfigureAwait(false);
 
             Assert.True(result.HasError);
@@ -111,7 +112,7 @@
         public async Task When_Update_Password_And_No_Password_Is_Passed_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                    new UpdateResourceOwnerPasswordRequest {Subject = "login"})
+                    new UpdateResourceOwnerPasswordRequest { Subject = "login" })
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
@@ -122,7 +123,7 @@
         public async Task When_Update_Password_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                    new UpdateResourceOwnerPasswordRequest {Subject = "invalid_login", Password = "password"})
+                    new UpdateResourceOwnerPasswordRequest { Subject = "invalid_login", Password = "password" })
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
@@ -164,7 +165,7 @@
         public async Task When_Update_Password_Then_ResourceOwner_Is_Updated()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                    new UpdateResourceOwnerPasswordRequest {Subject = "administrator", Password = "pass"})
+                    new UpdateResourceOwnerPasswordRequest { Subject = "administrator", Password = "pass" })
                 .ConfigureAwait(false);
             var resourceOwner = await _resourceOwnerClient.GetResourceOwner("administrator").ConfigureAwait(false);
 
@@ -175,7 +176,7 @@
         public async Task When_Search_Resource_Owners_Then_One_Resource_Owner_Is_Returned()
         {
             var result = await _resourceOwnerClient.SearchResourceOwners(
-                    new SearchResourceOwnersRequest {StartIndex = 0, NbResults = 1})
+                    new SearchResourceOwnersRequest { StartIndex = 0, NbResults = 1 })
                 .ConfigureAwait(false);
 
             Assert.Single(result.Content.Content);
@@ -195,7 +196,7 @@
         public async Task When_Add_Resource_Owner_Then_Ok_Is_Returned()
         {
             var result = await _resourceOwnerClient.AddResourceOwner(
-                    new AddResourceOwnerRequest {Subject = "login", Password = "password"})
+                    new AddResourceOwnerRequest { Subject = "login", Password = "password" })
                 .ConfigureAwait(false);
 
             Assert.False(result.HasError);
@@ -205,9 +206,9 @@
         public async Task When_Delete_ResourceOwner_Then_ResourceOwner_Does_Not_Exist()
         {
             var result = await _resourceOwnerClient.AddResourceOwner(
-                    new AddResourceOwnerRequest {Subject = "login1", Password = "password"})
+                    new AddResourceOwnerRequest { Subject = "login1", Password = "password" })
                 .ConfigureAwait(false);
-            var remove = await _resourceOwnerClient.DeleteResourceOwner("login1").ConfigureAwait(false);
+            var remove = await _resourceOwnerClient.DeleteResourceOwner(result.Content.Subject).ConfigureAwait(false);
 
             Assert.False(remove.HasError);
         }

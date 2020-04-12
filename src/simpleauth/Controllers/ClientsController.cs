@@ -48,7 +48,6 @@ namespace SimpleAuth.Controllers
         /// <param name="clientRepository">The client repository.</param>
         /// <param name="scopeStore"></param>
         /// <param name="httpClient"></param>
-        /// <param name="uriReader"></param>
         public ClientsController(
             IClientRepository clientRepository,
             IScopeStore scopeStore,

@@ -16,6 +16,7 @@ namespace SimpleAuth.Server.Tests
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
 
@@ -38,6 +39,7 @@ namespace SimpleAuth.Server.Tests
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).Assembly.FullName)
                 .Configure(startup.Configure));
             Client = Server.CreateClient();
+            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         public void Dispose()

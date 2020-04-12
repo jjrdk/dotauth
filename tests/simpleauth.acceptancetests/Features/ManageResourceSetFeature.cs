@@ -7,6 +7,7 @@
     using SimpleAuth.Client;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Responses;
+    using SimpleAuth.ViewModels;
     using Xbehave;
     using Xunit;
 
@@ -19,7 +20,7 @@
             UmaClient umaClient = null;
             GrantedTokenResponse token = null;
             AddResourceSetResponse resourceSetResponse = null;
-            PolicyRule[] policyRules = null;
+            EditPolicyViewModel policyRules = null;
 
             "Given a token client".x(
                 () =>
@@ -76,6 +77,7 @@
                         Method = HttpMethod.Get,
                         RequestUri = new Uri(resourceSetResponse.UserAccessPolicyUri)
                     };
+                    msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
 
                     var policyResponse = await _fixture.Client.SendAsync(msg).ConfigureAwait(false);
@@ -83,15 +85,15 @@
                     Assert.True(policyResponse.IsSuccessStatusCode);
 
                     var content = await policyResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    policyRules = JsonConvert.DeserializeObject<PolicyRule[]>(content);
+                    policyRules = JsonConvert.DeserializeObject<EditPolicyViewModel>(content);
 
-                    Assert.Single(policyRules);
+                    Assert.Single(policyRules.Rules);
                 });
 
             "And can update resource policies".x(
                 async () =>
                 {
-                    policyRules[0].IsResourceOwnerConsentNeeded = false;
+                    policyRules.Rules[0].IsResourceOwnerConsentNeeded = false;
 
                     var msg = new HttpRequestMessage
                     {

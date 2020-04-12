@@ -74,16 +74,6 @@
                         Name = "Local",
                         Scopes = new[] { "api1" },
                         Type = "url",
-                        AuthorizationPolicies = new[]
-                        {
-                            new PolicyRule
-                            {
-                                Scopes = new[] {"api1"},
-                                Claims = new[] {new ClaimData {Type = "sub", Value = "user"}},
-                                ClientIdsAllowed = new[] {"post_client"},
-                                IsResourceOwnerConsentNeeded = false
-                            }
-                        }
                     };
 
                     var resourceResponse =
@@ -92,6 +82,31 @@
 
                     Assert.False(resourceResponse.HasError);
                 });
+
+            "and setting access policy".x(async () =>
+            {
+                var resourceSet = new ResourceSet
+                {
+                    Id = resourceSetResponse.Id,
+                    Name = "Local",
+                    Scopes = new[] {"api1"},
+                    Type = "url",
+                    AuthorizationPolicies = new[]
+                    {
+                        new PolicyRule
+                        {
+                            Scopes = new[] {"api1"},
+                            Claims = new[] {new ClaimData {Type = "sub", Value = "user"}},
+                            ClientIdsAllowed = new[] {"post_client"},
+                            IsResourceOwnerConsentNeeded = false
+                        }
+                    }
+                };
+                var resourceResponse =
+                    await umaClient.UpdateResource(resourceSet, result.AccessToken).ConfigureAwait(false);
+                
+                Assert.False(resourceResponse.HasError);
+            });
 
             "then can get redirection".x(
                 async () =>
@@ -141,7 +156,7 @@
                     var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                    Assert.Equal("Hello", content);
+                    Assert.Equal("\"Hello\"", content);
                 });
         }
 

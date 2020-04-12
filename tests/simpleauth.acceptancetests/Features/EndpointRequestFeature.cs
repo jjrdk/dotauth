@@ -20,7 +20,7 @@
                 response = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
             });
 
-            "Then response is hello".x(() => { Assert.Equal("Hello administrator", response); });
+            "Then response is hello".x(() => { Assert.Equal("\"Hello administrator\"", response); });
         }
     }
 }

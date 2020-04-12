@@ -267,7 +267,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<ResourceSet[]>> GetAllResources(
+        public async Task<GenericResponse<string[]>> GetAllResources(
             string token,
             CancellationToken cancellationToken = default)
         {
@@ -287,17 +287,17 @@ namespace SimpleAuth.Client
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
             {
-                return new GenericResponse<ResourceSet[]>
+                return new GenericResponse<string[]>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(json),
                     StatusCode = httpResult.StatusCode
                 };
             }
 
-            return new GenericResponse<ResourceSet[]>
+            return new GenericResponse<string[]>
             {
                 StatusCode = httpResult.StatusCode,
-                Content = Serializer.Default.Deserialize<ResourceSet[]>(json)
+                Content = Serializer.Default.Deserialize<string[]>(json)
             };
         }
 

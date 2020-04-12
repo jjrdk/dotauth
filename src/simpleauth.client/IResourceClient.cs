@@ -65,7 +65,7 @@
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">authorizationHeaderValue</exception>
-        Task<GenericResponse<ResourceSet[]>> GetAllResources(string token, CancellationToken cancellationToken = default);
+        Task<GenericResponse<string[]>> GetAllResources(string token, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the resource.

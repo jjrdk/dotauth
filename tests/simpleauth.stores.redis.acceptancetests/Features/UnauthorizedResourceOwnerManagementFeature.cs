@@ -1,9 +1,11 @@
 ﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests.Features
 {
     using System.Net;
+    using SimpleAuth.Client;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
 
@@ -12,7 +14,7 @@
         [Scenario]
         public void RejectAddResourceOwner()
         {
-            GenericResponse<string> response = null;
+            GenericResponse<AddResourceOwnerResponse> response = null;
 
             "When adding resource owner".x(
                 async () =>

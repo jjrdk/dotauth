@@ -218,16 +218,16 @@ namespace SimpleAuth.Controllers
             }
             else
             {
-                var result = await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(result.Subject))
+                var (subject, statusCode, s) = await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(subject))
                 {
-                    return RedirectToAction("Index", "Error", new { code = result.StatusCode.Value, message = result.Error });
+                    return RedirectToAction("Index", "Error", new { code = statusCode.Value, message = s });
                 }
 
                 var nameIdentifier = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
                 claims.Remove(nameIdentifier);
-                claims.Add(new Claim(ClaimTypes.NameIdentifier, result.Subject));
-                resourceOwner = await _resourceOwnerRepository.Get(result.Subject, cancellationToken)
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, subject));
+                resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken)
                     .ConfigureAwait(false);
             }
 

@@ -136,7 +136,6 @@ Task("Pack")
         DotNetCorePack("./src/simpleauth/simpleauth.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.client/simpleauth.client.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.resourceserver/simpleauth.resourceserver.csproj", packSettings);
-        DotNetCorePack("./src/simpleauth.manager.client/simpleauth.manager.client.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.stores.marten/simpleauth.stores.marten.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.stores.redis/simpleauth.stores.redis.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.sms/simpleauth.sms.csproj", packSettings);

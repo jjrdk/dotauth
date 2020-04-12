@@ -85,7 +85,7 @@ namespace SimpleAuth.Server.Tests
         {
             var resource = await _umaClient.GetResource("unknown", "header").ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.OK, resource.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, resource.StatusCode);
             Assert.Null(resource.Content);
         }
 
@@ -174,7 +174,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Getting_ResourceInformation_Then_Dto_Is_Returned()
         {
             var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false);
-            var resource = await _umaClient.GetResource(resources.Content.First().Id, "header").ConfigureAwait(false);
+            var resource = await _umaClient.GetResource(resources.Content.First(), "header").ConfigureAwait(false);
 
             Assert.NotNull(resource);
         }
@@ -183,10 +183,10 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Deleting_ResourceInformation_Then_It_Does_Not_Exist()
         {
             var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false);
-            await _umaClient.DeleteResource(resources.Content.First().Id, "header").ConfigureAwait(false);
-            var information = await _umaClient.GetResource(resources.Content.First().Id, "header").ConfigureAwait(false);
+            await _umaClient.DeleteResource(resources.Content.First(), "header").ConfigureAwait(false);
+            var information = await _umaClient.GetResource(resources.Content.First(), "header").ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.OK, information.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, information.StatusCode);
             Assert.Null(information.Content);
         }
 

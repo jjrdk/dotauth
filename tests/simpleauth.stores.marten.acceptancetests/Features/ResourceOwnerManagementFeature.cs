@@ -21,7 +21,7 @@
 
                     Assert.False(response.HasError);
 
-                    subject = response.Content;
+                    subject = response.Content.Subject;
                 });
 
             "Then resource owner is local account".x(

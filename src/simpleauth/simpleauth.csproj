@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <RazorGenerate Remove="Views\ResourceSet\GetResourceSetPolicy.cshtml" />
+    <RazorGenerate Remove="Views\ResourceSet\GetResourceSets.cshtml" />
     <RazorGenerate Remove="Views\ResourceSet\SetResourceSetPolicy.cshtml" />
   </ItemGroup>
 

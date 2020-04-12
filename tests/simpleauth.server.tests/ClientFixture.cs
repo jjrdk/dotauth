@@ -3,11 +3,12 @@
     using Shared;
     using Shared.Models;
     using Shared.Requests;
-    using SimpleAuth.Manager.Client;
     using SimpleAuth.Shared.Errors;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Client;
     using Xunit;
+    using ErrorDescriptions = SimpleAuth.Shared.Errors.ErrorDescriptions;
 
     public class ClientFixture
     {

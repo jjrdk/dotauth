@@ -15,6 +15,8 @@
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Net.Http.Headers;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.ViewModels;
 
     internal class RazorOutputFormatter : TextOutputFormatter
     {
@@ -55,10 +57,13 @@
                 {
                     throw new InvalidOperationException($"Couldn't find view '{viewName}'");
                 }
-
+                var model = context.Object is ErrorDetails details
+                    ? new ErrorViewModel { Code = (int)details.Status, Title = details.Title, Message = details.Detail }
+                    : context.Object;
                 var view = viewEngineResult.View;
                 viewEngineResult.EnsureSuccessful(Array.Empty<string>());
                 await using var output = new StreamWriter(httpContext.Response.Body);
+
                 var viewContext = new ViewContext(
                     actionContext,
                     view,
@@ -66,7 +71,7 @@
                         metadataProvider: new EmptyModelMetadataProvider(),
                         modelState: new ModelStateDictionary())
                     {
-                        Model = context.Object
+                        Model = model
                     },
                     new TempDataDictionary(actionContext.HttpContext, serviceProvider.GetRequiredService<ITempDataProvider>()),
                     output,

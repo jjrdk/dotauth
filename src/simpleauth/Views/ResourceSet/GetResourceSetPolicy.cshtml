@@ -10,6 +10,9 @@
         fields.forEach((field, index) => {
             const input = field.querySelector("input");
             const label = field.querySelector("label");
+            if (input.value) {
+                label.classList.add("active");
+            }
             input.addEventListener("focus", () => { label.classList.add("active") });
             input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
         });
@@ -47,17 +50,20 @@
                                     <label asp-for="@Model.Rules[i].Scopes"></label>
                                     <input asp-for="@Model.Rules[i].Scopes" />
                                 </div>
+                                <div class="col s12">Claims</div>
+                                <hr />
                                 for (var j = 0; j < Model.Rules[i].Claims.Length; j++)
                                 {
-                                    <div class="input-field col s12">
+                                    <div class="input-field col s6">
                                         <label asp-for="@Model.Rules[i].Claims[j].Type"></label>
                                         <input asp-for="@Model.Rules[i].Claims[j].Type" />
                                     </div>
-                                    <div class="input-field col s12">
+                                    <div class="input-field col s6">
                                         <label asp-for="@Model.Rules[i].Claims[j].Value"></label>
                                         <input asp-for="@Model.Rules[i].Claims[j].Value" />
                                     </div>
                                 }
+                                <hr />
                                 <div class="col s12 m12">
                                     <input type="submit" value="Save" class="waves-effect waves-light btn blue darken-3 right" />
                                 </div>

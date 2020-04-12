@@ -5,7 +5,6 @@
     using Microsoft.Extensions.Configuration;
 
     using SimpleAuth.Client;
-    using SimpleAuth.Manager.Client;
     using SimpleAuth.Shared.Responses;
 
     using Xbehave;

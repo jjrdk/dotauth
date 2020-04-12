@@ -52,6 +52,24 @@
                 {
                     var resourceSet = new ResourceSet
                     {
+                        Description = "Test resource",
+                        Name = "Test resource",
+                        Scopes = new[] { "read" },
+                        Type = "Test resource"
+                    };
+                    var response = await umaClient.AddResource(resourceSet, patToken).ConfigureAwait(false);
+
+                    Assert.False(response.HasError);
+
+                    resourceId = response.Content.Id;
+                });
+
+            "and an updated authorization policy".x(
+                async () =>
+                {
+                    var resourceSet = new ResourceSet
+                    {
+                        Id = resourceId,
                         AuthorizationPolicies = new[] { new PolicyRule
                         {
                             ClientIdsAllowed = new []{"clientCredentials"},
@@ -62,7 +80,7 @@
                         Scopes = new[] { "read" },
                         Type = "Test resource"
                     };
-                    var response = await umaClient.AddResource(resourceSet, patToken).ConfigureAwait(false);
+                    var response = await umaClient.UpdateResource(resourceSet, patToken).ConfigureAwait(false);
 
                     Assert.False(response.HasError);
 

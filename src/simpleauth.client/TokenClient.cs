@@ -23,6 +23,7 @@ namespace SimpleAuth.Client
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared.Models;
@@ -93,6 +94,8 @@ namespace SimpleAuth.Client
                 Content = body,
                 RequestUri = discoveryInformation.TokenEndPoint
             };
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             if (_certificate != null)
             {
                 var bytes = _certificate.RawData;
@@ -165,7 +168,7 @@ namespace SimpleAuth.Client
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">request</exception>
-        public async Task<GenericResponse<Uri>> GetAuthorization(AuthorizationRequest request)
+        public async Task<GenericResponse<Uri>> GetAuthorization(AuthorizationRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
             {
@@ -174,7 +177,14 @@ namespace SimpleAuth.Client
 
             var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
             var uriBuilder = new UriBuilder(discoveryInformation.AuthorizationEndPoint) { Query = request.ToRequest() };
-            var response = await _client.GetAsync(uriBuilder.Uri).ConfigureAwait(false);
+            var requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = uriBuilder.Uri
+            };
+            requestMessage.Headers.Accept.Clear();
+            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var response = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
             return (int)response.StatusCode < 400
                 ? new GenericResponse<Uri> { StatusCode = response.StatusCode, Content = response.Headers.Location }

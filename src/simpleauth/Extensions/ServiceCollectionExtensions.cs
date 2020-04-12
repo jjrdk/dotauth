@@ -46,7 +46,6 @@ namespace SimpleAuth.Extensions
     /// </summary>
     public static class ServiceCollectionExtensions
     {
-        private const string ManageProfileClaim = "manage_profile";
         private const string AdministratorRole = "administrator";
         private const string RoleType = "role";
         private const string ScopeType = "scope";
@@ -105,31 +104,6 @@ namespace SimpleAuth.Extensions
                         });
                 });
 
-            options.AddPolicy(
-                ManageProfileClaim,
-                policy => // Access token with scope = manage_profile or with role = administrator
-                {
-                    policy.AddAuthenticationSchemes(authenticationSchemes);
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion(
-                        p =>
-                        {
-                            if (p.User?.Identity?.IsAuthenticated != true)
-                            {
-                                return false;
-                            }
-
-                            var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == RoleType);
-                            var claimScopes = p.User.Claims.Where(c => c.Type == ScopeType).ToArray();
-                            if (claimRole == null && claimScopes.Length == 0)
-                            {
-                                return false;
-                            }
-
-                            return claimRole != null && claimRole.Value == AdministratorRole
-                                   || claimScopes.Any(s => s.Value == ManageProfileClaim);
-                        });
-                });
             return options;
         }
 

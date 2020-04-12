@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
 
@@ -27,6 +28,7 @@
                     .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
                     .Configure(startup.Configure));
             Client = Server.CreateClient();
+            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             SharedCtx.Client = Server.CreateClient();
             SharedCtx.Handler = Server.CreateHandler();
         }

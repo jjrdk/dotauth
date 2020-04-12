@@ -87,7 +87,7 @@ namespace SimpleAuth.WebSite.Authenticate
                 new Claim(
                     ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
-                    ClaimValueTypes.Integer)
+                    ClaimValueTypes.Integer) 
             }.Add(resourceOwner.Claims);
 
             return new LocalOpenIdAuthenticationResult
