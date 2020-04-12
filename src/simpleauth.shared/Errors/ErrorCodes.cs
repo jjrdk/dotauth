@@ -23,7 +23,7 @@ namespace SimpleAuth.Shared.Errors
         //public const string InvalidRequestCode = ErrorCodes.InvalidRequestCode;
         public const string InvalidResourceSetId = "invalid_resource_set_id";
         //public const string InvalidId = "invalid_id";
-        public const string InvalidTicket = "invalid_ticket";
+        //public const string InvalidTicket = "invalid_ticket";
         public const string ExpiredTicket = "expired_ticket";
         public const string ExpiredAuthorizationCode = "expired_code";
         public const string RequestSubmitted = "request_submitted";
