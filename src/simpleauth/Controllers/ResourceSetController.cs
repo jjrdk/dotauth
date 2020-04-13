@@ -29,7 +29,6 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Filters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
-    using SimpleAuth.ViewModels;
 
     /// <summary>
     /// Defines the resource set controller.
@@ -170,7 +169,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest();
             }
 
-            return new OkObjectResult(new EditPolicyViewModel { Id = id, Rules = result.AuthorizationPolicies.Select(ToViewModel).ToArray() });
+            return new OkObjectResult(new EditPolicyResponse { Id = id, Rules = result.AuthorizationPolicies.Select(ToViewModel).ToArray() });
         }
 
         /// <summary>
@@ -181,7 +180,7 @@ namespace SimpleAuth.Controllers
         [HttpPost("{id}/policy")]
         [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> SetResourceSetPolicy(
-            EditPolicyViewModel viewModel,
+            EditPolicyResponse viewModel,
             CancellationToken cancellationToken)
         {
             if (viewModel == null)

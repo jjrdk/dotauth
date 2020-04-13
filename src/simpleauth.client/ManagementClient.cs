@@ -16,7 +16,6 @@ namespace SimpleAuth.Client
 {
     using System;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -28,14 +27,13 @@ namespace SimpleAuth.Client
     /// <summary>
     /// Defines the management client.
     /// </summary>
-    public class ManagementClient
+    public class ManagementClient : ClientBase
     {
-        private readonly HttpClient _client;
         private readonly DiscoveryInformation _discoveryInformation;
 
         private ManagementClient(HttpClient client, DiscoveryInformation discoveryInformation)
+        : base(client)
         {
-            _client = client;
             _discoveryInformation = discoveryInformation;
         }
 
@@ -68,17 +66,15 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<Client>> GetClient(
             string clientId,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
-                },
-                authorizationHeaderValue);
-            return GetResult<Client>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
+            };
+            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -90,7 +86,7 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<Client>> AddClient(
             Client client,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
             if (client == null)
@@ -100,16 +96,14 @@ namespace SimpleAuth.Client
 
             var serializedJson = Serializer.Default.Serialize(client);
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Post,
-                    RequestUri = _discoveryInformation.Clients,
-                    Content = body
-                },
-                authorizationHeaderValue);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = _discoveryInformation.Clients,
+                Content = body
+            };
 
-            return GetResult<Client>(request, cancellationToken);
+            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -121,17 +115,15 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<Client>> DeleteClient(
             string clientId,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Delete,
-                    RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
-                },
-                authorizationHeaderValue);
-            return GetResult<Client>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
+            };
+            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -143,7 +135,7 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<Client>> UpdateClient(
             Client client,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
             if (client == null)
@@ -151,18 +143,16 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(client));
             }
 
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Put,
-                    RequestUri = _discoveryInformation.Clients,
-                    Content = new StringContent(
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Put,
+                RequestUri = _discoveryInformation.Clients,
+                Content = new StringContent(
                         Serializer.Default.Serialize(client),
                         Encoding.UTF8,
                         "application/json")
-                },
-                authorizationHeaderValue);
-            return GetResult<Client>(request, cancellationToken);
+            };
+            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -175,10 +165,8 @@ namespace SimpleAuth.Client
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            var request = PrepareRequest(
-                new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryInformation.Clients },
-                authorizationHeaderValue);
-            return GetResult<Client[]>(request, cancellationToken);
+            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryInformation.Clients };
+            return GetResult<Client[]>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -190,20 +178,18 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<PagedResponse<Client>>> SearchClients(
             SearchClientsRequest searchClientParameter,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
             var serializedPostPermission = Serializer.Default.Serialize(searchClientParameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Post,
-                    RequestUri = new Uri(_discoveryInformation.Clients + "/.search"),
-                    Content = body
-                },
-                authorizationHeaderValue);
-            return GetResult<PagedResponse<Client>>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(_discoveryInformation.Clients + "/.search"),
+                Content = body
+            };
+            return GetResult<PagedResponse<Client>>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -215,7 +201,7 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<Scope>> GetScope(
             string id,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -223,14 +209,12 @@ namespace SimpleAuth.Client
                 throw new ArgumentException(nameof(id));
             }
 
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri($"{_discoveryInformation.Scopes}/{id}")
-                },
-                authorizationHeaderValue);
-            return GetResult<Scope>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"{_discoveryInformation.Scopes}/{id}")
+            };
+            return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -242,20 +226,18 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<Scope>> AddScope(
             Scope scope,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
             var serializedJson = Serializer.Default.Serialize(scope);
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Post,
-                    RequestUri = _discoveryInformation.Scopes,
-                    Content = body
-                },
-                authorizationHeaderValue);
-            return GetResult<Scope>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = _discoveryInformation.Scopes,
+                Content = body
+            };
+            return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -267,7 +249,7 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<AddResourceOwnerResponse>> AddResourceOwner(
             AddResourceOwnerRequest resourceOwner,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
             if (resourceOwner == null)
@@ -275,18 +257,16 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(resourceOwner));
             }
 
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Post,
-                    RequestUri = _discoveryInformation.ResourceOwners,
-                    Content = new StringContent(
-                        Serializer.Default.Serialize(resourceOwner),
-                        Encoding.UTF8,
-                        "application/json")
-                },
-                authorizationHeaderValue);
-            return GetResult<AddResourceOwnerResponse>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = _discoveryInformation.ResourceOwners,
+                Content = new StringContent(
+                    Serializer.Default.Serialize(resourceOwner),
+                    Encoding.UTF8,
+                    "application/json")
+            };
+            return GetResult<AddResourceOwnerResponse>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -298,17 +278,15 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<ResourceOwner>> GetResourceOwner(
             string resourceOwnerId,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
-                },
-                authorizationHeaderValue);
-            return GetResult<ResourceOwner>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
+            };
+            return GetResult<ResourceOwner>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -320,17 +298,15 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<object>> DeleteResourceOwner(
             string resourceOwnerId,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Delete,
-                    RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
-                },
-                authorizationHeaderValue);
-            return GetResult<object>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
+            };
+            return GetResult<object>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -342,7 +318,7 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<object>> UpdateResourceOwnerPassword(
             UpdateResourceOwnerPasswordRequest updateResourceOwnerPasswordRequest,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
             if (updateResourceOwnerPasswordRequest == null)
@@ -352,15 +328,13 @@ namespace SimpleAuth.Client
 
             var serializedJson = Serializer.Default.Serialize(updateResourceOwnerPasswordRequest);
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Put,
-                    RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/password"),
-                    Content = body
-                },
-                authorizationHeaderValue);
-            return GetResult<object>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Put,
+                RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/password"),
+                Content = body
+            };
+            return GetResult<object>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -372,7 +346,7 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<object>> UpdateResourceOwnerClaims(
             UpdateResourceOwnerClaimsRequest updateResourceOwnerClaimsRequest,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
             if (updateResourceOwnerClaimsRequest == null)
@@ -382,15 +356,13 @@ namespace SimpleAuth.Client
 
             var serializedJson = Serializer.Default.Serialize(updateResourceOwnerClaimsRequest);
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Put,
-                    RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/claims"),
-                    Content = body
-                },
-                authorizationHeaderValue);
-            return GetResult<object>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Put,
+                RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/claims"),
+                Content = body
+            };
+            return GetResult<object>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -400,13 +372,15 @@ namespace SimpleAuth.Client
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         public Task<GenericResponse<ResourceOwner[]>> GetAllResourceOwners(
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            var request = PrepareRequest(
-                new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryInformation.ResourceOwners },
-                authorizationHeaderValue);
-            return GetResult<ResourceOwner[]>(request, cancellationToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = _discoveryInformation.ResourceOwners
+            };
+            return GetResult<ResourceOwner[]>(request, authorizationHeaderValue, cancellationToken);
         }
 
         /// <summary>
@@ -418,64 +392,19 @@ namespace SimpleAuth.Client
         /// <returns></returns>
         public Task<GenericResponse<PagedResponse<ResourceOwner>>> SearchResourceOwners(
             SearchResourceOwnersRequest searchResourceOwnersRequest,
-            string authorizationHeaderValue = null,
+            string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
             var serializedPostPermission = Serializer.Default.Serialize(searchResourceOwnersRequest);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
-            var request = PrepareRequest(
-                new HttpRequestMessage
-                {
-                    Method = HttpMethod.Post,
-                    RequestUri = new Uri(_discoveryInformation.ResourceOwners + "/.search"),
-                    Content = body
-                },
-                authorizationHeaderValue);
-
-            return GetResult<PagedResponse<ResourceOwner>>(request, cancellationToken);
-        }
-
-        private async Task<GenericResponse<T>> GetResult<T>(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
-        {
-            var result = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            if (result.IsSuccessStatusCode)
+            var request = new HttpRequestMessage
             {
-                return new GenericResponse<T>
-                {
-                    StatusCode = result.StatusCode,
-                    Content = Serializer.Default.Deserialize<T>(content)
-                };
-            }
-
-            var genericResult = new GenericResponse<T>
-            {
-                Error = string.IsNullOrWhiteSpace(content)
-                    ? new ErrorDetails { Status = result.StatusCode }
-                    : Serializer.Default.Deserialize<ErrorDetails>(content),
-                StatusCode = result.StatusCode
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(_discoveryInformation.ResourceOwners + "/.search"),
+                Content = body
             };
 
-            return genericResult;
-        }
-
-        private static HttpRequestMessage PrepareRequest(
-            HttpRequestMessage request,
-            string authorizationHeaderValue = null)
-        {
-            request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue(
-                    JwtBearerConstants.BearerScheme,
-                    authorizationHeaderValue);
-            }
-
-            return request;
+            return GetResult<PagedResponse<ResourceOwner>>(request, authorizationHeaderValue, cancellationToken);
         }
     }
 }

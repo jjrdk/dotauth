@@ -36,7 +36,7 @@ namespace SimpleAuth.AcceptanceTests
         [InlineData("", HttpStatusCode.OK)]
         [InlineData("error?code=404", HttpStatusCode.NotFound)]
         [InlineData("error/404", HttpStatusCode.NotFound)]
-        [InlineData("home", HttpStatusCode.MovedPermanently)]
+        [InlineData("home", HttpStatusCode.OK)]
         [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
         [InlineData("authenticate", HttpStatusCode.OK)]
         [InlineData("jwks", HttpStatusCode.OK)]

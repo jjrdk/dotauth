@@ -201,6 +201,11 @@ namespace SimpleAuth
         /// <value>
         /// The name of the application.
         /// </value>
-        public string ApplicationName { get; set; } = "Simple Auth";
+        public string ApplicationName { get; set; } = "SimpleAuth";
+
+        /// <summary>
+        /// Gets or sets whether to redirect home screen to login screen.
+        /// </summary>
+        public bool RedirectToLogin { get; set; }
     }
 }

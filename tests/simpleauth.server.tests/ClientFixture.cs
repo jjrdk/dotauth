@@ -10,7 +10,7 @@
     using Xunit;
     using ErrorDescriptions = SimpleAuth.Shared.Errors.ErrorDescriptions;
 
-    public class ClientFixture
+    public class ClientFixture : IDisposable
     {
         private const string OpenidmanagerConfiguration = "http://localhost:5000/.well-known/openid-configuration";
         private readonly TestManagerServerFixture _server;
@@ -25,7 +25,7 @@
         [Fact]
         public async Task When_Pass_No_Parameter_Then_Error_Is_Returned()
         {
-            var result = await _openidClients.AddClient(new Client()).ConfigureAwait(false);
+            var result = await _openidClients.AddClient(new Client(), "token").ConfigureAwait(false);
 
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
@@ -43,7 +43,8 @@
                         ClientName = "name",
                         RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
                         RequestUris = new[] { new Uri("https://localhost") }
-                    })
+                    },
+                    null)
                 .ConfigureAwait(false);
 
             Assert.True(result.HasError);
@@ -54,7 +55,7 @@
         [Fact]
         public async Task When_Update_And_Pass_No_Parameter_Then_Error_Is_Returned()
         {
-            var result = await _openidClients.UpdateClient(new Client()).ConfigureAwait(false);
+            var result = await _openidClients.UpdateClient(new Client(), "token").ConfigureAwait(false);
 
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
@@ -81,10 +82,10 @@
                 PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                 //LogoUri = new Uri("http://logouri.com")
             };
-            var addClientResult = await _openidClients.AddClient(client).ConfigureAwait(false);
+            var addClientResult = await _openidClients.AddClient(client, "token").ConfigureAwait(false);
             client = addClientResult.Content;
             client.AllowedScopes = new[] { "not_valid" };
-            var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
+            var result = await _openidClients.UpdateClient(client, "token").ConfigureAwait(false);
 
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidScope, result.Error.Title);
@@ -94,7 +95,7 @@
         [Fact]
         public async Task When_Get_Unknown_Client_Then_Error_Is_Returned()
         {
-            var newClient = await _openidClients.GetClient("unknown_client").ConfigureAwait(false);
+            var newClient = await _openidClients.GetClient("unknown_client", "token").ConfigureAwait(false);
 
             Assert.True(newClient.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, newClient.Error.Title);
@@ -104,13 +105,13 @@
         [Fact]
         public async Task When_Delete_An_Unknown_Client_Then_Error_Is_Returned()
         {
-            var newClient = await _openidClients.DeleteClient("unknown_client").ConfigureAwait(false);
+            var newClient = await _openidClients.DeleteClient("unknown_client", "token").ConfigureAwait(false);
 
             Assert.True(newClient.HasError);
         }
 
         [Fact]
-        public async Task When_Add_Client_Then_Informations_Are_Correct()
+        public async Task When_Add_Client_Then_Information_Is_Correct()
         {
             var client = new Client
             {
@@ -141,11 +142,11 @@
                 PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback"), },
                 //LogoUri = new Uri("http://logouri.com")
             };
-            var result = await _openidClients.AddClient(client).ConfigureAwait(false);
+            var result = await _openidClients.AddClient(client, "token").ConfigureAwait(false);
 
             Assert.False(result.HasError, result.Error?.Detail);
 
-            var newClient = await _openidClients.GetClient(result.Content.ClientId).ConfigureAwait(false);
+            var newClient = await _openidClients.GetClient(result.Content.ClientId, "token").ConfigureAwait(false);
 
             Assert.False(newClient.HasError);
             Assert.Equal(ApplicationTypes.Web, newClient.Content.ApplicationType);
@@ -182,15 +183,15 @@
                 //LogoUri = new Uri("http://logouri.com")
             };
 
-            var addClientResult = await _openidClients.AddClient(client).ConfigureAwait(false);
+            var addClientResult = await _openidClients.AddClient(client, "token").ConfigureAwait(false);
             client = addClientResult.Content;
             client.PostLogoutRedirectUris = new[]
             {
                 new Uri("http://localhost/callback"), new Uri("http://localhost/callback2"),
             };
             client.GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, };
-            var result = await _openidClients.UpdateClient(client).ConfigureAwait(false);
-            var newClient = await _openidClients.GetClient(result.Content.ClientId).ConfigureAwait(false);
+            var result = await _openidClients.UpdateClient(client, "token").ConfigureAwait(false);
+            var newClient = await _openidClients.GetClient(result.Content.ClientId, "token").ConfigureAwait(false);
 
             Assert.False(result.HasError);
             Assert.Equal(2, newClient.Content.PostLogoutRedirectUris.Length);
@@ -218,11 +219,12 @@
                         RedirectionUrls = new[] { new Uri("http://localhost") },
                         PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                         //LogoUri = new Uri("http://logouri.com")
-                    })
+                    },
+                    null)
                 .ConfigureAwait(false);
 
             var deleteResult =
-                await _openidClients.DeleteClient(addClientResult.Content.ClientId).ConfigureAwait(false);
+                await _openidClients.DeleteClient(addClientResult.Content.ClientId, "token").ConfigureAwait(false);
 
             Assert.False(deleteResult.HasError);
         }
@@ -262,15 +264,23 @@
                         RedirectionUrls = new[] { new Uri("http://localhost") },
                         PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                         //LogoUri = new Uri("http://logouri.com")
-                    })
+                    },
+                    null)
                 .ConfigureAwait(false);
 
             var searchResult = await _openidClients.SearchClients(
-                    new SearchClientsRequest { StartIndex = 0, NbResults = 1 })
+                    new SearchClientsRequest { StartIndex = 0, NbResults = 1 },
+                    null)
                 .ConfigureAwait(false);
 
             Assert.False(searchResult.HasError);
             Assert.Single(searchResult.Content.Content);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _server?.Dispose();
         }
     }
 }

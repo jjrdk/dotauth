@@ -20,7 +20,7 @@
             UmaClient umaClient = null;
             GrantedTokenResponse token = null;
             AddResourceSetResponse resourceSetResponse = null;
-            EditPolicyViewModel policyRules = null;
+            EditPolicyResponse policyRules = null;
 
             "Given a token client".x(
                 () =>
@@ -85,7 +85,7 @@
                     Assert.True(policyResponse.IsSuccessStatusCode);
 
                     var content = await policyResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    policyRules = JsonConvert.DeserializeObject<EditPolicyViewModel>(content);
+                    policyRules = JsonConvert.DeserializeObject<EditPolicyResponse>(content);
 
                     Assert.Single(policyRules.Rules);
                 });

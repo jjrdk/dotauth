@@ -1,42 +1,31 @@
-﻿namespace SimpleAuth.ViewModels
+﻿namespace SimpleAuth.Shared.Responses
 {
     using System;
+    using System.Runtime.Serialization;
     using SimpleAuth.Shared.Models;
-
-    /// <summary>
-    /// Defines the view model for editing policies.
-    /// </summary>
-    public class EditPolicyViewModel
-    {
-        /// <summary>
-        /// Gets or sets the resource id.
-        /// </summary>
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the authorization policies.
-        /// </summary>
-        public PolicyRuleViewModel[] Rules { get; set; }
-    }
 
     /// <summary>
     /// Defines the policy rule view model.
     /// </summary>
+    [DataContract]
     public class PolicyRuleViewModel
     {
         /// <summary>
         /// Gets or sets a comma separated string with allowed client ids.
         /// </summary>
+        [DataMember(Name = "client_ids_allowed")]
         public string ClientIdsAllowed { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes.
         /// </summary>
+        [DataMember(Name = "scopes")]
         public string Scopes { get; set; }
 
         /// <summary>
         /// Gets or sets the claims.
         /// </summary>
+        [DataMember(Name = "claims")]
         public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
 
         /// <summary>
@@ -45,11 +34,13 @@
         /// <value>
         ///   <c>true</c> if this instance is resource owner consent needed; otherwise, <c>false</c>.
         /// </value>
+        [DataMember(Name = "is_resource_owner_consent_needed")]
         public bool IsResourceOwnerConsentNeeded { get; set; }
 
         /// <summary>
         /// Gets or sets the open identifier provider.
         /// </summary>
+        [DataMember(Name = "openid_provider")]
         public string OpenIdProvider { get; set; }
     }
 }

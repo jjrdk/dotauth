@@ -27,7 +27,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Shared.Requests;
     using Xunit;
 
-    public class ResourceFixture
+    public class ResourceFixture : IDisposable
     {
         private const string BaseUrl = "http://localhost:5000";
         private const string WellKnownUma2Configuration = "/.well-known/uma2-configuration";
@@ -43,7 +43,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Add_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.AddResource(new ResourceSet { Name = string.Empty }, "header")
+            var resource = await _umaClient.AddResource(new ResourceSet {Name = string.Empty}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.HasError);
@@ -54,7 +54,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Add_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.AddResource(new ResourceSet { Name = "name" }, "header")
+            var resource = await _umaClient.AddResource(new ResourceSet {Name = "name"}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.HasError);
@@ -65,16 +65,15 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Add_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
         {
-            var request = new { name = "name", scopes = new[] { "scope" }, icon_uri = "invalid" };
+            var request = new {name = "name", scopes = new[] {"scope"}, icon_uri = "invalid"};
             var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, "application/json");
             var httpRequest = new HttpRequestMessage
             {
-                Content = body,
-                Method = HttpMethod.Post,
-                RequestUri = new Uri(BaseUrl + "/rs/resource_set")
+                Content = body, Method = HttpMethod.Post, RequestUri = new Uri(BaseUrl + "/rs/resource_set")
             };
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
+            httpRequest.Headers.Authorization =
+                new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
 
             Assert.False(httpResult.IsSuccessStatusCode);
@@ -111,7 +110,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.UpdateResource(
-                    new ResourceSet { Id = "invalid", Name = string.Empty },
+                    new ResourceSet {Id = "invalid", Name = string.Empty},
                     "header")
                 .ConfigureAwait(false);
 
@@ -123,7 +122,7 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Update_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.UpdateResource(new ResourceSet { Id = "invalid", Name = "name" }, "header")
+            var resource = await _umaClient.UpdateResource(new ResourceSet {Id = "invalid", Name = "name"}, "header")
                 .ConfigureAwait(false);
 
             Assert.True(resource.HasError);
@@ -134,16 +133,15 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Update_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
         {
-            var request = new { _id = "invalid", name = "name", scopes = new[] { "scope" }, icon_uri = "invalid" };
+            var request = new {_id = "invalid", name = "name", scopes = new[] {"scope"}, icon_uri = "invalid"};
             var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, "application/json");
             var httpRequest = new HttpRequestMessage
             {
-                Content = body,
-                Method = HttpMethod.Put,
-                RequestUri = new Uri(BaseUrl + "/rs/resource_set")
+                Content = body, Method = HttpMethod.Put, RequestUri = new Uri(BaseUrl + "/rs/resource_set")
             };
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
+            httpRequest.Headers.Authorization =
+                new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
             var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
 
             Assert.False(httpResult.IsSuccessStatusCode);
@@ -153,7 +151,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Update_Unknown_Resource_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.UpdateResource(
-                    new ResourceSet { Id = "invalid", Name = "name", Scopes = new[] { "scope" } },
+                    new ResourceSet {Id = "invalid", Name = "name", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -194,7 +192,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Adding_Resource_Then_Information_Can_Be_Retrieved()
         {
             var resource = await _umaClient.AddResource(
-                    new ResourceSet { Name = "name", Scopes = new[] { "scope" } },
+                    new ResourceSet {Name = "name", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
@@ -205,7 +203,7 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Search_Resources_Then_List_Is_Returned()
         {
             var resource = await _umaClient.SearchResources(
-                    new SearchResourceSet { StartIndex = 0, TotalResults = 100 },
+                    new SearchResourceSet {StartIndex = 0, TotalResults = 100},
                     "header")
                 .ConfigureAwait(false);
 
@@ -217,18 +215,15 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Updating_Resource_Then_Changes_Are_Persisted()
         {
             var resource = await _umaClient.AddResource(
-                    new ResourceSet { Name = "name", Scopes = new[] { "scope" } },
+                    new ResourceSet {Name = "name", Scopes = new[] {"scope"}},
                     "header")
                 .ConfigureAwait(false);
 
             var updateResult = await _umaClient.UpdateResource(
                     new ResourceSet
-                    {
-                        Id = resource.Content.Id,
-                        Name = "name2",
-                        Type = "type",
-                        Scopes = new[] { "scope2" }
-                    },
+                        {
+                            Id = resource.Content.Id, Name = "name2", Type = "type", Scopes = new[] {"scope2"}
+                        },
                     "header")
                 .ConfigureAwait(false);
             var information = await _umaClient.GetResource(updateResult.Content.Id, "header").ConfigureAwait(false);
@@ -236,6 +231,12 @@ namespace SimpleAuth.Server.Tests
             Assert.Equal("name2", information.Content.Name);
             Assert.Equal("type", information.Content.Type);
             Assert.Equal("scope2", information.Content.Scopes.Single());
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _server?.Dispose();
         }
     }
 }

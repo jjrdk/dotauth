@@ -1,18 +1,25 @@
 @{
-    ViewBag.Title = "Home";
+    ViewBag.Title = SimpleAuth.Extensions.Globals.ApplicationName;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-
-@section Scripts
-{
-<script>
-    location.href ='/Authenticate';
-</script>
-}
-
-<div class="row valign-wrapper center-align" style="height:66vh">
+<div class="row">
     <div class="col s12">
-        <h5 class="center-align grey-text">Loading...</h5>
+        <div class="card">
+            <div class="card-content">
+                <h5>@ViewBag.Title</h5>
+                <div class="row">
+                    <div class="col s12">
+                        Simple Auth is an open source OpenId Connect, OAuth 2.0 and UMA 2.0 server.
+                    </div>
+                </div>
+            </div>
+            <div class="card-action">
+                <div class="row">
+                    @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", null, new { @class = "btn blue darken-3 waves-effect waves-light right" });
+                    <span style="width: 10px;" class="right">&nbsp;</span>
+                    @Html.ActionLink("Authenticate Locally", "Index", "Authenticate", null, new { @class = "btn blue darken-3 waves-effect waves-light right" });
+                </div>
+            </div>
+        </div>
     </div>
 </div>

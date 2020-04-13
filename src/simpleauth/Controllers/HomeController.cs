@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Filters;
 
     /// <summary>
@@ -12,12 +13,23 @@
     [ThrottleFilter]
     public class HomeController : BaseController
     {
+        private readonly RuntimeSettings _settings;
+        private readonly ILogger<HomeController> _logger;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="authenticationService">The authentication service.</param>
-        public HomeController(IAuthenticationService authenticationService) : base(authenticationService)
+        /// <param name="settings"></param>
+        /// <param name="logger"></param>
+        public HomeController(
+            IAuthenticationService authenticationService,
+            RuntimeSettings settings,
+            ILogger<HomeController> logger)
+            : base(authenticationService)
         {
+            _settings = settings;
+            _logger = logger;
         }
 
         /// <summary>
@@ -28,7 +40,13 @@
         public async Task<IActionResult> Index()
         {
             await SetUser().ConfigureAwait(false);
-            return RedirectToActionPermanent("Index", "Authenticate"); //View("Index");
+            if (_settings.RedirectToLogin)
+            {
+                _logger.Log(LogLevel.Debug, "Redirecting to login page");
+                return RedirectToActionPermanent("Index", "Authenticate");
+            }
+
+            return Ok(new object());
         }
     }
 }

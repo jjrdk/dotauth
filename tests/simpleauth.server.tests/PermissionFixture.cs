@@ -24,7 +24,7 @@ namespace SimpleAuth.Server.Tests
     using Xunit;
     using ErrorDescriptions = Shared.Errors.ErrorDescriptions;
 
-    public class PermissionFixture
+    public class PermissionFixture : IDisposable
     {
         private const string BaseUrl = "http://localhost:5000";
         private const string WellKnownUma2Configuration = "/.well-known/uma2-configuration";
@@ -133,6 +133,12 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.NotNull(ticket);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _server?.Dispose();
         }
     }
 }

@@ -129,7 +129,7 @@
                 Request.Query.TryGetValue("ReturnUrl", out var returnUrl);
                 var viewModel = new AuthorizeViewModel { ReturnUrl = returnUrl };
                 await SetIdProviders(viewModel).ConfigureAwait(false);
-                return View("Index", viewModel);
+                return Ok(viewModel);
             }
 
             return RedirectToAction("Index", "User");

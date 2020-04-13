@@ -17,15 +17,18 @@
         /// <param name="rptLifeTime">The RPT life time.</param>
         /// <param name="patLifeTime">The PAT life time.</param>
         /// <param name="ticketLifeTime">The ticket life time.</param>
+        /// <param name="redirectToLogin">Flag to determine whether to redirect home screen to login screen.</param>
         public RuntimeSettings(
             Action<ResourceOwner> onResourceOwnerCreated = null,
             TimeSpan authorizationCodeValidityPeriod = default,
             string[] claimsIncludedInUserCreation = null,
             TimeSpan rptLifeTime = default,
             TimeSpan patLifeTime = default,
-            TimeSpan ticketLifeTime = default)
+            TimeSpan ticketLifeTime = default,
+            bool redirectToLogin = false)
         {
             PatLifeTime = patLifeTime;
+            RedirectToLogin = redirectToLogin;
             OnResourceOwnerCreated = onResourceOwnerCreated ?? (r => { });
             AuthorizationCodeValidityPeriod = authorizationCodeValidityPeriod == default
                 ? TimeSpan.FromHours(1)
@@ -66,6 +69,11 @@
         /// Gets the PAT lifetime.
         /// </summary>
         public TimeSpan PatLifeTime { get; }
+
+        /// <summary>
+        /// Gets whether home screen redirects to login.
+        /// </summary>
+        public bool RedirectToLogin { get; }
 
         /// <summary>
         /// Gets the ticket lifetime (seconds).

@@ -271,12 +271,12 @@ namespace SimpleAuth.Extensions
                 .UseEndpoints(
                     endpoint =>
                     {
-                        endpoint.MapRazorPages();
+                        //endpoint.MapRazorPages();
                         endpoint.MapControllerRoute(
                             "areaexists",
-                            "{area:exists}/{controller=Authenticate}/{action=Index}");
-                        endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Authenticate}/{action=Index}");
-                        endpoint.MapControllerRoute("default", "{controller=Authenticate}/{action=Index}");
+                            "{area:exists}/{controller=Home}/{action=Index}");
+                        endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Home}/{action=Index}");
+                        endpoint.MapControllerRoute("default", "{controller=Home}/{action=Index}");
                     });
         }
 
@@ -288,7 +288,8 @@ namespace SimpleAuth.Extensions
                 claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,
                 rptLifeTime: options.RptLifeTime,
                 patLifeTime: options.PatLifeTime,
-                ticketLifeTime: options.TicketLifeTime);
+                ticketLifeTime: options.TicketLifeTime,
+                redirectToLogin: options.RedirectToLogin);
         }
     }
 }

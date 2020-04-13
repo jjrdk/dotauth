@@ -16,7 +16,6 @@ namespace SimpleAuth.Client
 {
     using System;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -28,10 +27,9 @@ namespace SimpleAuth.Client
     /// <summary>
     /// Defines the UMA client.
     /// </summary>
-    public class UmaClient : IUmaPermissionClient, IResourceClient
+    public class UmaClient : ClientBase, IUmaPermissionClient, IResourceClient, IIntrospectionClient
     {
         private const string JsonMimeType = "application/json";
-        private readonly HttpClient _client;
         private readonly Uri _configurationUri;
         private UmaConfiguration _umaConfiguration;
 
@@ -41,50 +39,31 @@ namespace SimpleAuth.Client
         /// <param name="client">The <see cref="HttpClient"/> to use for requests.</param>
         /// <param name="authorityUri">The <see cref="Uri"/> of the UMA authority.</param>
         public UmaClient(HttpClient client, Uri authorityUri)
+            : base(client)
         {
             var builder = new UriBuilder(
                 authorityUri.Scheme,
                 authorityUri.Host,
                 authorityUri.Port,
                 "/.well-known/uma2-configuration");
-            _client = client;
             _configurationUri = builder.Uri;
         }
 
-        /// <summary>
-        /// Executes the specified introspection request.
-        /// </summary>
-        /// <param name="introspectionRequest">The introspection request.</param>
-        /// <returns></returns>
-        public async Task<GenericResponse<UmaIntrospectionResponse>> Introspect(IntrospectionRequest introspectionRequest)
+        /// <inheritdoc />
+        public async Task<GenericResponse<UmaIntrospectionResponse>> Introspect(
+            IntrospectionRequest introspectionRequest,
+            CancellationToken cancellationToken = default)
         {
-            var discoveryInformation = await GetUmaConfiguration().ConfigureAwait(false);
+            var discoveryInformation = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = new FormUrlEncodedContent(introspectionRequest),
                 RequestUri = discoveryInformation.IntrospectionEndpoint
             };
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", introspectionRequest.PatToken);
 
-            var result = await _client.SendAsync(request).ConfigureAwait(false);
-            var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            if (!result.IsSuccessStatusCode)
-            {
-                var error = Serializer.Default.Deserialize<ErrorDetails>(json);
-                return new GenericResponse<UmaIntrospectionResponse>
-                {
-                    Error = error,
-                    StatusCode = result.StatusCode
-                };
-            }
-
-            return new GenericResponse<UmaIntrospectionResponse>
-            {
-                StatusCode = result.StatusCode,
-                Content = Serializer.Default.Deserialize<UmaIntrospectionResponse>(json)
-            };
+            return await GetResult<UmaIntrospectionResponse>(request, introspectionRequest.PatToken, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -103,7 +82,7 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
+            var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
             var url = configuration.PermissionEndpoint.AbsoluteUri;
 
             if (requests.Length > 1)
@@ -115,29 +94,9 @@ namespace SimpleAuth.Client
                 ? Serializer.Default.Serialize(requests)
                 : Serializer.Default.Serialize(requests[0]);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                Content = body,
-                RequestUri = new Uri(url)
-            };
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var result = await _client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!result.IsSuccessStatusCode)
-            {
-                return new GenericResponse<PermissionResponse>
-                {
-                    StatusCode = result.StatusCode,
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content)
-                };
-            }
-
-            return new GenericResponse<PermissionResponse>
-            {
-                StatusCode = result.StatusCode,
-                Content = Serializer.Default.Deserialize<PermissionResponse>(content)
-            };
+            var httpRequest =
+                new HttpRequestMessage { Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url) };
+            return await GetResult<PermissionResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -156,7 +115,7 @@ namespace SimpleAuth.Client
                 throw new ArgumentNullException(nameof(token));
             }
 
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
+            var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
             var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
             var httpRequest = new HttpRequestMessage
@@ -165,23 +124,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Put,
                 RequestUri = configuration.ResourceRegistrationEndpoint
             };
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var httpResult = await _client.SendAsync(httpRequest).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<UpdateResourceSetResponse>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    StatusCode = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<UpdateResourceSetResponse>
-            {
-                StatusCode = httpResult.StatusCode,
-                Content = Serializer.Default.Deserialize<UpdateResourceSetResponse>(content)
-            };
+            return await GetResult<UpdateResourceSetResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -202,31 +145,14 @@ namespace SimpleAuth.Client
 
             var serializedPostResourceSet = Serializer.Default.Serialize(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
-            var umaConfiguration = await GetUmaConfiguration().ConfigureAwait(false);
+            var umaConfiguration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
             var httpRequest = new HttpRequestMessage
             {
                 Content = body,
                 Method = HttpMethod.Post,
                 RequestUri = umaConfiguration.ResourceRegistrationEndpoint
             };
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-
-            var httpResult = await _client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<AddResourceSetResponse>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    StatusCode = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<AddResourceSetResponse>
-            {
-                StatusCode = httpResult.StatusCode,
-                Content = Serializer.Default.Deserialize<AddResourceSetResponse>(content)
-            };
+            return await GetResult<AddResourceSetResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -245,25 +171,12 @@ namespace SimpleAuth.Client
                 throw new ArgumentException("Invalid token", nameof(token));
             }
 
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
+            var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
             var resourceSetUrl = configuration.ResourceRegistrationEndpoint.AbsoluteUri;
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
             var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var httpResult = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<object>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    StatusCode = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<object> { StatusCode = httpResult.StatusCode, };
+            return await GetResult<object>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -276,29 +189,13 @@ namespace SimpleAuth.Client
                 throw new ArgumentException("Invalid token", nameof(token));
             }
 
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
+            var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = configuration.ResourceRegistrationEndpoint
             };
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var httpResult = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<string[]>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
-                    StatusCode = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<string[]>
-            {
-                StatusCode = httpResult.StatusCode,
-                Content = Serializer.Default.Deserialize<string[]>(json)
-            };
+            return await GetResult<string[]>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -317,29 +214,13 @@ namespace SimpleAuth.Client
                 throw new ArgumentException("Invalid token", nameof(token));
             }
 
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
+            var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
             var resourceSetUrl = configuration.ResourceRegistrationEndpoint.AbsoluteUri;
 
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
             var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl) };
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-            var httpResult = await _client.SendAsync(request).ConfigureAwait(false);
-            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<ResourceSet>()
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
-                    StatusCode = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<ResourceSet>()
-            {
-                StatusCode = httpResult.StatusCode,
-                Content = Serializer.Default.Deserialize<ResourceSet>(json)
-            };
+            return await GetResult<ResourceSet>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -353,41 +234,27 @@ namespace SimpleAuth.Client
                 throw new ArgumentException("Invalid token", nameof(token));
             }
 
-            var configuration = await GetUmaConfiguration().ConfigureAwait(false);
+            var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
             var url = configuration.ResourceRegistrationEndpoint + "/.search";
 
             var serializedPostPermission = Serializer.Default.Serialize(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
-            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token);
-
-            var httpResult = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!httpResult.IsSuccessStatusCode)
-            {
-                return new GenericResponse<PagedResult<ResourceSet>>()
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    StatusCode = httpResult.StatusCode
-                };
-            }
-
-            return new GenericResponse<PagedResult<ResourceSet>>
-            {
-                StatusCode = httpResult.StatusCode,
-                Content = Serializer.Default.Deserialize<PagedResult<ResourceSet>>(content)
-            };
+            return await GetResult<PagedResult<ResourceSet>>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<UmaConfiguration> GetUmaConfiguration()
+        private async Task<UmaConfiguration> GetUmaConfiguration(CancellationToken cancellationToken)
         {
             if (_umaConfiguration != null)
             {
                 return _umaConfiguration;
             }
 
-            var result = await _client.GetStringAsync(_configurationUri).ConfigureAwait(false);
-            _umaConfiguration = Serializer.Default.Deserialize<UmaConfiguration>(result);
+            var result = await GetResult<UmaConfiguration>(
+                new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _configurationUri },
+                null,
+                cancellationToken).ConfigureAwait(false);
+            _umaConfiguration = result.Content;
 
             return _umaConfiguration;
         }

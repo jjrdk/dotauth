@@ -15,7 +15,6 @@
 namespace SimpleAuth.AuthServer
 {
     using System;
-    using System.IdentityModel.Tokens.Jwt;
     using Extensions;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,11 +30,6 @@ namespace SimpleAuth.AuthServer
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authentication.OAuth;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.Extensions.Options;
-    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using SimpleAuth.ResourceServer;
     using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.Models;
@@ -50,9 +44,11 @@ namespace SimpleAuth.AuthServer
         {
             var client = new HttpClient();
             _configuration = configuration;
+            bool.TryParse(_configuration["Redirect"], out var redirect);
             _options = new SimpleAuthOptions
             {
-                ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
+                RedirectToLogin = redirect,
+                ApplicationName = _configuration["ServerName"] ?? "SimpleAuth",
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
                 Tickets = sp => new InMemoryTicketStore(),
                 Clients =
@@ -127,18 +123,14 @@ namespace SimpleAuth.AuthServer
                         "AllowAll",
                         p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders()))
                 .AddLogging(log => { log.AddConsole(); });
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieNames.CookieName;
-                options.DefaultChallengeScheme = SimpleAuthScheme;
-            })
-                .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-                .AddOAuth(
-                    SimpleAuthScheme,
-                    '_' + SimpleAuthScheme,
+            services.AddAuthentication(
                     options =>
                     {
+                        options.DefaultScheme = CookieNames.CookieName;
+                        options.DefaultChallengeScheme = SimpleAuthScheme;
                     })
+                .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
+                .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, options => { })
                 .AddJwtBearer(
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
@@ -147,7 +139,7 @@ namespace SimpleAuth.AuthServer
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
+                            ValidIssuers = new[] {"http://localhost:5000", "https://localhost:5001"}
                         };
                         cfg.RequireHttpsMetadata = false;
                     });
@@ -174,7 +166,7 @@ namespace SimpleAuth.AuthServer
 
             services.AddSimpleAuth(
                 _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
                 applicationParts: GetType().Assembly);
 
             services.AddAuthorization(
@@ -189,44 +181,6 @@ namespace SimpleAuth.AuthServer
         public void Configure(IApplicationBuilder app)
         {
             app.UseResponseCompression().UseSimpleAuthMvc();
-        }
-    }
-
-    internal class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions>
-    {
-        /// <inheritdoc />
-        public void PostConfigure(string name, OAuthOptions options)
-        {
-            options.AuthorizationEndpoint = "https://localhost:5001/authorization";
-            options.TokenEndpoint = "https://localhost:5001/token";
-            options.UserInformationEndpoint = "https://localhost:5001/userinfo";
-            options.UsePkce = true;
-            options.CallbackPath = "/callback";
-            options.Events = new OAuthEvents
-            {
-                OnCreatingTicket = ctx =>
-                {
-                    var handler = new JwtSecurityTokenHandler();
-                    var jwt = handler.ReadJwtToken(ctx.AccessToken);
-                    ctx.Identity.AddClaims(jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)));
-                    ctx.Success();
-                    return Task.CompletedTask;
-                },
-                OnTicketReceived = ctx => Task.CompletedTask
-            };
-            options.SaveTokens = true;
-            //#if DEBUG
-            //options.RequireHttpsMetadata = false;
-            //#endif
-            //options.AuthenticationMethod = OpenIdConnectRedirectBehavior.RedirectGet;
-            //options.DisableTelemetry = true;
-            options.ClientId = "web";
-            options.ClientSecret = "secret";
-            //options.ResponseType = OpenIdConnectResponseType.Code;
-            //options.ResponseMode = OpenIdConnectResponseMode.FormPost;
-            options.Scope.Clear();
-            options.Scope.Add("openid");
-            options.Scope.Add("uma_protection");
         }
     }
 }
