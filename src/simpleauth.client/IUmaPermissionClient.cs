@@ -27,6 +27,11 @@ namespace SimpleAuth.Client
     public interface IUmaPermissionClient
     {
         /// <summary>
+        /// Gets the <see cref="Uri"/> of the UMA authority.
+        /// </summary>
+        Uri Authority { get; }
+
+        /// <summary>
         /// Adds the permissions.
         /// </summary>
         /// <param name="token">The token.</param>

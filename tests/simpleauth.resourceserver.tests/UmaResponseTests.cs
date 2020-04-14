@@ -31,6 +31,7 @@ namespace SimpleAuth.ResourceServer.Tests
                 new Uri("http://localhost"),
                 permissionClient.Object,
                 null,
+                null,
                 new PermissionRequest { ResourceSetId = "abc", Scopes = new[] { "read" } });
             var httpContext = new DefaultHttpContext();
             httpContext.Request.Headers[HeaderNames.Authorization] = "Bearer testtoken";
@@ -57,6 +58,7 @@ namespace SimpleAuth.ResourceServer.Tests
             var response = new UmaResponse(
                 new Uri("http://localhost"),
                 permissionClient.Object,
+                null,
                 null,
                 new PermissionRequest { ResourceSetId = "abc", Scopes = new[] { "read" } },
                 new PermissionRequest { ResourceSetId = "def", Scopes = new[] { "read" } });

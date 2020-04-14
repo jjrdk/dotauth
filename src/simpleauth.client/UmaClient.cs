@@ -41,6 +41,7 @@ namespace SimpleAuth.Client
         public UmaClient(HttpClient client, Uri authorityUri)
             : base(client)
         {
+            Authority = authorityUri;
             var builder = new UriBuilder(
                 authorityUri.Scheme,
                 authorityUri.Host,
@@ -48,6 +49,9 @@ namespace SimpleAuth.Client
                 "/.well-known/uma2-configuration");
             _configurationUri = builder.Uri;
         }
+        
+        /// <inheritdoc />
+        public Uri Authority { get; }
 
         /// <inheritdoc />
         public async Task<GenericResponse<UmaIntrospectionResponse>> Introspect(

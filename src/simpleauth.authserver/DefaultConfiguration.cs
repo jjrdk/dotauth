@@ -113,7 +113,18 @@
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,
                     CreateDateTime = DateTimeOffset.UtcNow,
-                }
+                },
+                new ResourceOwner
+                {
+                    Subject = "user",
+                    Claims = new[]
+                    {
+                        new Claim(StandardClaimNames.Subject, "user"),
+                    },
+                    Password = "password".ToSha256Hash(),
+                    IsLocalAccount = true,
+                    CreateDateTime = DateTimeOffset.UtcNow,
+                },
             };
         }
     }
