@@ -51,8 +51,8 @@ namespace SimpleAuth.Client
                     string.Format(Shared.Errors.ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUri));
             }
 
-            var operation = new GetDiscoveryOperation(client);
-            var discoveryInformation = await operation.Execute(discoveryDocumentationUri).ConfigureAwait(false);
+            var operation = new GetDiscoveryOperation(discoveryDocumentationUri, client);
+            var discoveryInformation = await operation.Execute().ConfigureAwait(false);
 
             return new ManagementClient(client, discoveryInformation);
         }

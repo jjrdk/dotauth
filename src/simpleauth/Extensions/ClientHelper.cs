@@ -17,11 +17,13 @@ namespace SimpleAuth.Extensions
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Tokens;
 
     internal static class ClientHelper
     {
@@ -35,14 +37,28 @@ namespace SimpleAuth.Extensions
                 : await GenerateIdToken(client, jwsPayload, jwksStore, cancellationToken).ConfigureAwait(false);
         }
 
+        public static async Task<List<SigningCredentials>> GetSigningCredentials(this Client client, IJwksStore jwksStore, CancellationToken cancellationToken = default)
+        {
+            var signingKeys = client.JsonWebKeys?.Keys.Where(key => key.Use == JsonWebKeyUseNames.Sig)
+                .Select(key => new SigningCredentials(key, key.Alg))
+                .ToList();
+            if (signingKeys?.Count == 0)
+            {
+                var keys = await (client.IdTokenSignedResponseAlg == null
+                    ? jwksStore.GetDefaultSigningKey(cancellationToken)
+                    : jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken)).ConfigureAwait(false);
+
+                signingKeys = new List<SigningCredentials> { keys };
+            }
+
+            return signingKeys;
+        }
+
         public static async Task<string> GenerateIdToken(
             this Client client, JwtPayload jwsPayload, IJwksStore jwksStore, CancellationToken cancellationToken)
         {
             var handler = new JwtSecurityTokenHandler();
-            var signingCredentials = client.JsonWebKeys?.Keys?.Count > 0
-                ? client.JsonWebKeys.GetSigningCredentials(client.IdTokenSignedResponseAlg).First()
-                : await jwksStore.GetDefaultSigningKey(cancellationToken).ConfigureAwait(false);
-
+            var signingCredentials = await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
             var jwt = handler.CreateEncodedJwt(
                 jwsPayload.Iss,
                 client.ClientName,
@@ -50,7 +66,7 @@ namespace SimpleAuth.Extensions
                 DateTime.UtcNow,
                 DateTime.UtcNow.Add(client.TokenLifetime),
                 DateTime.UtcNow,
-                signingCredentials);
+                signingCredentials.First());
 
             return jwt;
         }

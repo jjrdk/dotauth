@@ -18,6 +18,7 @@ namespace SimpleAuth.Client
     using System;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
 
@@ -26,25 +27,20 @@ namespace SimpleAuth.Client
         private readonly HttpClient _client;
         private readonly GetDiscoveryOperation _getDiscoveryOperation;
 
-        public RegistrationClient(HttpClient client)
+        public RegistrationClient(Uri authority, HttpClient client)
         {
+            if (authority == null)
+            {
+                throw new ArgumentNullException(nameof(authority));
+            }
+
             _client = client;
-            _getDiscoveryOperation = new GetDiscoveryOperation(client);
+            _getDiscoveryOperation = new GetDiscoveryOperation(authority, client);
         }
 
-        public async Task<GenericResponse<Client>> Register(Client client, string configurationUrl, string accessToken)
+        public async Task<GenericResponse<Client>> Register(Client client, string accessToken, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out var uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
-            }
-
-            var discoveryDocument = await _getDiscoveryOperation.Execute(uri).ConfigureAwait(false);
+            var discoveryDocument = await _getDiscoveryOperation.Execute(cancellationToken).ConfigureAwait(false);
 
             var json = Serializer.Default.Serialize(client);
             var request = new HttpRequestMessage
@@ -61,7 +57,7 @@ namespace SimpleAuth.Client
                     accessToken);
             }
 
-            var result = await _client.SendAsync(request).ConfigureAwait(false);
+            var result = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             return (!result.IsSuccessStatusCode)
                 ? new GenericResponse<Client>

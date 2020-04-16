@@ -239,7 +239,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var grantedToken = await tokenClient.GetToken(TokenRequest.FromScopes("manager"))
                 .ConfigureAwait(false);
 
-            var registrationClient = new RegistrationClient(_server.Client);
+            var registrationClient = new RegistrationClient(new Uri(BaseUrl), _server.Client);
             var client = await registrationClient.Register(
                     new Client
                     {
@@ -250,7 +250,6 @@ namespace SimpleAuth.Server.Tests.Apis
                         RedirectionUrls = new[] { new Uri("https://localhost"), },
                         RequestUris = new[] { new Uri("https://localhost") },
                     },
-                    BaseUrl + "/.well-known/openid-configuration",
                     grantedToken.Content.AccessToken)
                 .ConfigureAwait(false);
 

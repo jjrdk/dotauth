@@ -69,11 +69,5 @@ namespace SimpleAuth.ResourceServer.Tests
             var responseHeader = httpContext.Response.Headers[HeaderNames.WWWAuthenticate];
             Assert.NotNull(responseHeader.ToString());
         }
-
-        [Fact]
-        public async Task WhenGeneratingResponseForHtmlThenRedirectsToTokenEndpoint()
-        {
-
-        }
     }
 }

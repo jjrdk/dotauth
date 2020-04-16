@@ -30,21 +30,28 @@ namespace SimpleAuth.Shared
         private readonly Dictionary<string, DiscoveryInformation> _cache =
             new Dictionary<string, DiscoveryInformation>();
 
+        private readonly Uri _discoveryDocumentationUri;
         private readonly HttpClient _httpClient;
 
-        public GetDiscoveryOperation(HttpClient httpClient)
+        public GetDiscoveryOperation(Uri authority, HttpClient httpClient)
         {
+            if (authority == null)
+            {
+                throw new ArgumentNullException(nameof(authority));
+            }
+
+            var uri = new UriBuilder(
+                authority.Scheme,
+                authority.Host,
+                authority.Port,
+                "/.well-known/openid-configuration");
+            _discoveryDocumentationUri = uri.Uri;
             _httpClient = httpClient;
         }
 
-        public async Task<DiscoveryInformation> Execute(Uri discoveryDocumentationUri, CancellationToken cancellationToken = default)
+        public async Task<DiscoveryInformation> Execute(CancellationToken cancellationToken = default)
         {
-            if (discoveryDocumentationUri == null)
-            {
-                throw new ArgumentNullException(nameof(discoveryDocumentationUri));
-            }
-
-            var key = discoveryDocumentationUri.ToString();
+            var key = _discoveryDocumentationUri.ToString();
             try
             {
                 await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -53,7 +60,7 @@ namespace SimpleAuth.Shared
                     return doc;
                 }
 
-                var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = discoveryDocumentationUri};
+                var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryDocumentationUri };
                 request.Headers.Accept.Clear();
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response =

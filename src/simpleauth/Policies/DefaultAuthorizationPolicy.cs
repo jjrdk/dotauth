@@ -69,15 +69,16 @@ namespace SimpleAuth.Policies
             cancellationToken.ThrowIfCancellationRequested();
 
             // 1. Check can access to the scope
-            if (ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
+            if (ticketLineParameter.Scopes.Any(s => authorizationPolicy.Scopes?.Contains(s) != true))
             {
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
             }
 
             // 2. Check clients are correct
-            var clientAuthorizationResult =
-                authorizationPolicy.ClientIdsAllowed?.Contains(ticketLineParameter.ClientId);
-            if (clientAuthorizationResult != true)
+            var clientAuthorizationResult = authorizationPolicy.ClientIdsAllowed == null
+                || authorizationPolicy.ClientIdsAllowed.Length == 0
+                || authorizationPolicy.ClientIdsAllowed?.Contains(ticketLineParameter.ClientId) == true;
+            if (!clientAuthorizationResult)
             {
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
             }

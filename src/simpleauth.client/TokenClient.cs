@@ -88,7 +88,6 @@ namespace SimpleAuth.Client
         private readonly GetDiscoveryOperation _discoveryOperation;
         private readonly string _authorizationValue;
         private readonly X509Certificate2 _certificate;
-        private readonly Uri _discoveryDocumentationUrl;
         private readonly TokenCredentials _form;
         private readonly HttpClient _client;
         private DiscoveryInformation _discovery;
@@ -98,22 +97,21 @@ namespace SimpleAuth.Client
         /// </summary>
         /// <param name="credentials">The <see cref="TokenCredentials"/>.</param>
         /// <param name="client">The <see cref="HttpClient"/> for requests.</param>
-        /// <param name="discoveryDocumentationUrl">The <see cref="Uri"/> of the discovery document.</param>
-        public TokenClient(TokenCredentials credentials, HttpClient client, Uri discoveryDocumentationUrl)
+        /// <param name="authority">The <see cref="Uri"/> of the discovery document.</param>
+        public TokenClient(TokenCredentials credentials, HttpClient client, Uri authority)
             : base(client)
         {
-            if (!discoveryDocumentationUrl.IsAbsoluteUri)
+            if (!authority.IsAbsoluteUri)
             {
                 throw new ArgumentException(
-                    string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
+                    string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, authority));
             }
 
             _form = credentials;
             _client = client;
-            _discoveryDocumentationUrl = discoveryDocumentationUrl;
             _authorizationValue = credentials.AuthorizationValue;
             _certificate = credentials.Certificate;
-            _discoveryOperation = new GetDiscoveryOperation(client);
+            _discoveryOperation = new GetDiscoveryOperation(authority, client);
         }
 
         /// <summary>
@@ -340,7 +338,7 @@ namespace SimpleAuth.Client
 
         private async Task<DiscoveryInformation> GetDiscoveryInformation(CancellationToken cancellationToken = default)
         {
-            return _discovery ??= await _discoveryOperation.Execute(_discoveryDocumentationUrl, cancellationToken)
+            return _discovery ??= await _discoveryOperation.Execute(cancellationToken)
                 .ConfigureAwait(false);
         }
 

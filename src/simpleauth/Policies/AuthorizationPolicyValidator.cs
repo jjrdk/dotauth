@@ -66,7 +66,7 @@ namespace SimpleAuth.Policies
             AuthorizationPolicyResult validationResult = null;
 
             var handler = new JwtSecurityTokenHandler();
-            var validationParameters = await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false);
+            var validationParameters = await client.CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
             handler.ValidateToken(claimTokenParameter.Token, validationParameters, out var securityToken);
             var tokenClaims = (securityToken as JwtSecurityToken)?.Claims.ToArray();
 

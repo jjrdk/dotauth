@@ -16,30 +16,22 @@ namespace SimpleAuth
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
     using Shared.Models;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
 
     internal static class ClientExtensions
     {
-        public static async Task<TokenValidationParameters> CreateValidationParameters(this Client client, IJwksStore jwksStore, string audience = null, string issuer = null)
+        public static async Task<TokenValidationParameters> CreateValidationParameters(this Client client, IJwksStore jwksStore, string audience = null, string issuer = null, CancellationToken cancellationToken = default)
         {
-            var signingKeys = client.JsonWebKeys?.Keys.Where(key => key.Use == JsonWebKeyUseNames.Sig)
-                .Select(key => new SigningCredentials(key, key.Alg))
-                .ToList();
-            if (signingKeys?.Count == 0)
-            {
-                var keys = await (client.IdTokenSignedResponseAlg == null
-                    ? jwksStore.GetDefaultSigningKey()
-                    : jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg)).ConfigureAwait(false);
-
-                signingKeys = new List<SigningCredentials> { keys };
-            }
+            var signingKeys = await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
             var encryptionKeys = client.JsonWebKeys.GetEncryptionKeys().ToArray();
             if (encryptionKeys.Length == 0 && client.IdTokenEncryptedResponseAlg != null)
             {
-                var key = await jwksStore.GetEncryptionKey(client.IdTokenEncryptedResponseAlg).ConfigureAwait(false);
+                var key = await jwksStore.GetEncryptionKey(client.IdTokenEncryptedResponseAlg, cancellationToken).ConfigureAwait(false);
 
                 encryptionKeys = new[] { key };
             }

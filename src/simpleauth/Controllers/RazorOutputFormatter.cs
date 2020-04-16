@@ -34,11 +34,16 @@
         /// <inheritdoc />
         public override bool CanWriteResult(OutputFormatterCanWriteContext context)
         {
+            if (!base.CanWriteResult(context))
+            {
+                return false;
+            }
+
             var viewEngine = context.HttpContext.RequestServices.GetRequiredService<IRazorViewEngine>();
             var actionContext = new ActionContext(context.HttpContext, context.HttpContext.GetRouteData() ?? new RouteData(), new ActionDescriptor());
             var viewName = actionContext.RouteData.Values["action"].ToString();
             var result = viewEngine.FindView(actionContext, viewName, false);
-            return result.Success && base.CanWriteResult(context);
+            return result.Success;
         }
 
         /// <inheritdoc />
