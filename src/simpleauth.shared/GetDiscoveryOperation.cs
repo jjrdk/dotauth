@@ -17,6 +17,7 @@ namespace SimpleAuth.Shared
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -52,8 +53,12 @@ namespace SimpleAuth.Shared
                     return doc;
                 }
 
-                var serializedContent =
-                    await _httpClient.GetStringAsync(discoveryDocumentationUri).ConfigureAwait(false);
+                var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = discoveryDocumentationUri};
+                request.Headers.Accept.Clear();
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response =
+                    await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent);
                 _cache.Add(key, doc);
                 return doc;

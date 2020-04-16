@@ -67,7 +67,9 @@
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.RptClaims.Ticket)
+                        Detail = string.Format(
+                            ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                            UmaConstants.RptClaims.Ticket)
                     }
                 };
             }
@@ -144,12 +146,17 @@
 
             if (authorizationResult.Result == AuthorizationPolicyResultKind.Authorized)
             {
-                var grantedToken =
-                    await GenerateToken(client, ticket.Lines, "openid", issuerName, parameter.ClaimToken.Token).ConfigureAwait(false);
+                var grantedToken = await GenerateToken(
+                        client,
+                        ticket.Lines,
+                        "openid",
+                        issuerName,
+                        parameter.ClaimToken.Token)
+                    .ConfigureAwait(false);
                 if (await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false))
                 {
                     await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
-                    return new GenericResponse<GrantedToken> { Content = grantedToken, StatusCode = HttpStatusCode.OK };
+                    return new GenericResponse<GrantedToken> {Content = grantedToken, StatusCode = HttpStatusCode.OK};
                 }
 
                 return new GenericResponse<GrantedToken>
@@ -166,6 +173,13 @@
 
             if (authorizationResult.Result == AuthorizationPolicyResultKind.RequestSubmitted)
             {
+                await _eventPublisher.Publish(
+                        new UmaRequestSubmitted(
+                            Id.Create(),
+                            parameter.Ticket,
+                            parameter.ClientId,
+                            DateTimeOffset.UtcNow))
+                    .ConfigureAwait(false);
                 return new GenericResponse<GrantedToken>
                 {
                     StatusCode = HttpStatusCode.Forbidden,
@@ -179,7 +193,11 @@
             }
 
             await _eventPublisher.Publish(
-                    new UmaRequestNotAuthorized(Id.Create(), parameter.Ticket, parameter.ClientId, DateTimeOffset.UtcNow))
+                    new UmaRequestNotAuthorized(
+                        Id.Create(),
+                        parameter.Ticket,
+                        parameter.ClientId,
+                        DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return new GenericResponse<GrantedToken>
             {
@@ -214,7 +232,7 @@
             {
                 AccessToken = accessToken,
                 RefreshToken = Id.Create(),
-                ExpiresIn = (int)expiresIn.TotalSeconds,
+                ExpiresIn = (int) expiresIn.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTimeOffset.UtcNow,
                 Scope = scope,

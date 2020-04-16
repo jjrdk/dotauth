@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.ResourceServer
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using Newtonsoft.Json;
@@ -33,15 +34,30 @@ namespace SimpleAuth.ResourceServer
         /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
         public static bool TryGetUmaTickets(this ClaimsIdentity identity, out TicketLine[] tickets)
         {
+            TicketLine[] t = null;
+            var result = identity?.Claims.TryGetUmaTickets(out t);
+            tickets = t;
+            return result == true;
+        }
+
+        /// <summary>
+        /// Tries to get the ticket lines from the current user claims.
+        /// </summary>
+        /// <param name="claims">The user claims.</param>
+        /// <param name="tickets">The found array of <see cref="TicketLine"/>. If none are found, then returns an empty array.
+        /// If no user is found then returns <c>null</c>.</param>
+        /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
+        public static bool TryGetUmaTickets(this IEnumerable<Claim> claims, out TicketLine[] tickets)
+        {
             tickets = null;
-            if (identity == null)
+            if (claims == null)
             {
                 return false;
             }
 
             try
             {
-                tickets = identity?.Claims?.Where(c => c.Type == "ticket")
+                tickets = claims?.Where(c => c.Type == "ticket")
                     .Select(c => JsonConvert.DeserializeObject<TicketLine>(c.Value))
                     .ToArray();
                 return tickets?.Length > 0;

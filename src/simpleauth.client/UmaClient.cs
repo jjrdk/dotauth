@@ -49,7 +49,7 @@ namespace SimpleAuth.Client
                 "/.well-known/uma2-configuration");
             _configurationUri = builder.Uri;
         }
-        
+
         /// <inheritdoc />
         public Uri Authority { get; }
 
@@ -101,6 +101,12 @@ namespace SimpleAuth.Client
             var httpRequest =
                 new HttpRequestMessage { Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url) };
             return await GetResult<PermissionResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public Task<UmaConfiguration> GetUmaDocument(CancellationToken cancellationToken = default)
+        {
+            return GetUmaConfiguration(cancellationToken);
         }
 
         /// <inheritdoc />

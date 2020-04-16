@@ -409,12 +409,12 @@ namespace SimpleAuth.Controllers
             return new PolicyRule
             {
                 Scopes =
-                    viewModel.Scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    viewModel.Scopes?.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => x.Trim())
                         .ToArray(),
-                Claims = viewModel.Claims,
+                Claims = viewModel.Claims ?? Array.Empty<ClaimData>(),
                 ClientIdsAllowed =
-                    viewModel.ClientIdsAllowed.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    viewModel.ClientIdsAllowed?.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => x.Trim())
                         .ToArray(),
                 IsResourceOwnerConsentNeeded = viewModel.IsResourceOwnerConsentNeeded,

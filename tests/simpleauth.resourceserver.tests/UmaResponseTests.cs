@@ -28,7 +28,6 @@ namespace SimpleAuth.ResourceServer.Tests
                 .ReturnsAsync(
                     new GenericResponse<PermissionResponse> { Content = new PermissionResponse { TicketId = "123" } });
             var response = new UmaResponse(
-                new Uri("http://localhost"),
                 permissionClient.Object,
                 null,
                 null,
@@ -56,7 +55,6 @@ namespace SimpleAuth.ResourceServer.Tests
                 .ReturnsAsync(
                     new GenericResponse<PermissionResponse> { Content = new PermissionResponse { TicketId = "123" } });
             var response = new UmaResponse(
-                new Uri("http://localhost"),
                 permissionClient.Object,
                 null,
                 null,
@@ -70,6 +68,12 @@ namespace SimpleAuth.ResourceServer.Tests
 
             var responseHeader = httpContext.Response.Headers[HeaderNames.WWWAuthenticate];
             Assert.NotNull(responseHeader.ToString());
+        }
+
+        [Fact]
+        public async Task WhenGeneratingResponseForHtmlThenRedirectsToTokenEndpoint()
+        {
+
         }
     }
 }

@@ -44,5 +44,12 @@ namespace SimpleAuth.Client
         /// token
         /// </exception>
         Task<GenericResponse<PermissionResponse>> RequestPermission(string token, CancellationToken cancellationToken = default, params PermissionRequest[] requests);
+
+        /// <summary>
+        /// Gets the <see cref="UmaConfiguration"/>.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns></returns>
+        Task<UmaConfiguration> GetUmaDocument(CancellationToken cancellationToken = default);
     }
 }
