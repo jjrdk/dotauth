@@ -32,9 +32,9 @@ namespace SimpleAuth.ResourceServer
         /// <param name="tickets">The found array of <see cref="TicketLine"/>. If none are found, then returns an empty array.
         /// If no user is found then returns <c>null</c>.</param>
         /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
-        public static bool TryGetUmaTickets(this ClaimsIdentity identity, out TicketLine[] tickets)
+        public static bool TryGetUmaTickets(this ClaimsIdentity identity, out Permission[] tickets)
         {
-            TicketLine[] t = null;
+            Permission[] t = null;
             var result = identity?.Claims.TryGetUmaTickets(out t);
             tickets = t;
             return result == true;
@@ -47,7 +47,7 @@ namespace SimpleAuth.ResourceServer
         /// <param name="tickets">The found array of <see cref="TicketLine"/>. If none are found, then returns an empty array.
         /// If no user is found then returns <c>null</c>.</param>
         /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
-        public static bool TryGetUmaTickets(this IEnumerable<Claim> claims, out TicketLine[] tickets)
+        public static bool TryGetUmaTickets(this IEnumerable<Claim> claims, out Permission[] tickets)
         {
             tickets = null;
             if (claims == null)
@@ -57,8 +57,8 @@ namespace SimpleAuth.ResourceServer
 
             try
             {
-                tickets = claims?.Where(c => c.Type == "ticket")
-                    .Select(c => JsonConvert.DeserializeObject<TicketLine>(c.Value))
+                tickets = claims.Where(c => c.Type == "permissions")
+                    .Select(c => JsonConvert.DeserializeObject<Permission>(c.Value))
                     .ToArray();
                 return tickets?.Length > 0;
             }

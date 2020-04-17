@@ -6,7 +6,6 @@
     using Shared;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
     using SimpleAuth.WebSite.Consent.Actions;
     using System;
     using System.Collections.Generic;

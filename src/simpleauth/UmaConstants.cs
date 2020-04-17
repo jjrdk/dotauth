@@ -21,8 +21,9 @@ namespace SimpleAuth
         public static class RptClaims
         {
             public const string Ticket = "ticket";
-            public const string Scopes = "scopes";
-            public const string ResourceSetId = "resource_id";
+            //public const string Scopes = "scopes";
+            //public const string ResourceSetId = "resource_id";
+            public const string Permissions = "permissions";
         }
 
         public static class AddPermissionNames

@@ -5,7 +5,6 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
 

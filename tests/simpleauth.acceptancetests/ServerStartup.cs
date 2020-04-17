@@ -16,7 +16,6 @@
     using Microsoft.IdentityModel.Logging;
 
     using SimpleAuth.ResourceServer;
-    using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
@@ -79,7 +78,6 @@
                     {
                         CookieAuthenticationDefaults.AuthenticationScheme,
                         JwtBearerDefaults.AuthenticationScheme,
-                        UmaAuthenticationDefaults.AuthenticationScheme
                     })
                 .AddSmsAuthentication(mockSmsClient.Object);
             services.AddLogging().AddAccountFilter();
@@ -92,33 +90,12 @@
                         cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     })
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddUmaTicket(
-                    configureOptions: cfg =>
-                    {
-                        cfg.ResourceSetRequest = r => new[]
-                        {
-                            new PermissionRequest
-                            {
-                                ResourceSetId = r.Path.Value.Replace("/data/", string.Empty),
-                                Scopes = new[] {"api1"}
-                            }
-                        };
-                        cfg.UmaResourcePaths = new[] { new Regex("/data/.+", RegexOptions.Compiled), };
-                        cfg.Authority = new Uri("http://localhost");
-                        cfg.BackchannelHttpHandler = _context.Handler;
-                        cfg.RequireHttpsMetadata = false;
-                        cfg.DiscoveryDocumentUri = new Uri("http://localhost/.well-known/openid-configuration");
-                        cfg.ClientId = "clientCredentials";
-                        cfg.ClientSecret = "clientCredentials";
-                        cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
-                    })
                 .AddJwtBearer(
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     { });
 
-            services.AddUmaClient(new Uri("http://localhost/.well-known/uma2-configuration"));
-            services.AddAuthorization(opt => { opt.AddPolicy("uma_ticket", builder => builder.RequireUmaTicket()); });
+            services.AddUmaClient(new Uri("http://localhost/"));
             services.ConfigureOptions<JwtBearerPostConfigureOptions>();
         }
 

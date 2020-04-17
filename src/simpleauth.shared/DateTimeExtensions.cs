@@ -37,11 +37,16 @@ namespace SimpleAuth.Shared
             return (long)Math.Floor(diff.TotalSeconds);
         }
 
+        public static DateTimeOffset ConvertFromUnixTicks(this long? value)
+        {
+            return value.HasValue ? UnixStart.AddTicks(value.Value * TicksFactor) : default;
+        }
+
         public static DateTimeOffset ConvertFromUnixTimestamp(this string timestamp)
         {
             return !long.TryParse(timestamp, out var value)
                 ? UnixStart
-                : UnixStart.AddTicks(value * TicksFactor);
+                : ConvertFromUnixTicks(value);
         }
     }
 }

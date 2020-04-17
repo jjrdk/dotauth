@@ -7,7 +7,6 @@
     using SimpleAuth.Results;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
     using System;
     using System.Linq;
     using System.Security.Claims;

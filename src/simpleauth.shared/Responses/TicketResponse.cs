@@ -1,4 +1,4 @@
-﻿// Copyright © 2016 Habart Thierry, © 2018 Jacob Reimers
+﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.ResourceServer.Authentication
+namespace SimpleAuth.Shared.Responses
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
-    /// Defines the UMA authentication defaults.
+    /// Defines the add permission response.
     /// </summary>
-    public static class UmaAuthenticationDefaults
+    [DataContract]
+    public class TicketResponse
     {
         /// <summary>
-        /// The authentication scheme name.
+        /// Gets or sets the ticket identifier.
         /// </summary>
-        public const string AuthenticationScheme = "UMA";
+        /// <value>
+        /// The ticket identifier.
+        /// </value>
+        [DataMember(Name = "ticket_id")]
+        public string TicketId { get; set; }
     }
 }

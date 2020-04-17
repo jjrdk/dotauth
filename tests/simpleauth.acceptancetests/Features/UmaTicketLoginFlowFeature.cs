@@ -89,7 +89,7 @@
                 {
                     Id = resourceSetResponse.Id,
                     Name = "Local",
-                    Scopes = new[] {"api1"},
+                    Scopes = new[] { "api1" },
                     Type = "url",
                     AuthorizationPolicies = new[]
                     {
@@ -104,7 +104,7 @@
                 };
                 var resourceResponse =
                     await umaClient.UpdateResource(resourceSet, result.AccessToken).ConfigureAwait(false);
-                
+
                 Assert.False(resourceResponse.HasError);
             });
 
@@ -116,6 +116,7 @@
                         Method = HttpMethod.Get,
                         RequestUri = new Uri("http://localhost/data/" + resourceSetResponse.Id)
                     };
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
                     var response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
 
@@ -229,6 +230,7 @@
                         Method = HttpMethod.Get,
                         RequestUri = new Uri("http://localhost/data/" + resourceSetResponse.Id)
                     };
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
                     var response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
 

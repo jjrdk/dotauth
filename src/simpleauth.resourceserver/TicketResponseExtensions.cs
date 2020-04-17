@@ -11,7 +11,7 @@
     {
         public static void ConfigureResponse(
             this HttpResponse response,
-            GenericResponse<PermissionResponse> permissionResponse,
+            GenericResponse<TicketResponse> permissionResponse,
             Uri umaAuthority,
             string realm)
         {

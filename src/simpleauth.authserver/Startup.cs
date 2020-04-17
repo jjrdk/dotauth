@@ -31,7 +31,6 @@ namespace SimpleAuth.AuthServer
     using System.Net.Http;
     using System.Security.Claims;
     using SimpleAuth.ResourceServer;
-    using SimpleAuth.ResourceServer.Authentication;
     using SimpleAuth.Shared.Models;
 
     internal class Startup
@@ -168,14 +167,6 @@ namespace SimpleAuth.AuthServer
                 _options,
                 new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
                 applicationParts: GetType().Assembly);
-
-            services.AddAuthorization(
-                o =>
-                {
-                    o.AddPolicy(
-                        "uma_auth",
-                        builder => builder.RequireUmaTicket(UmaAuthenticationDefaults.AuthenticationScheme));
-                });
         }
 
         public void Configure(IApplicationBuilder app)

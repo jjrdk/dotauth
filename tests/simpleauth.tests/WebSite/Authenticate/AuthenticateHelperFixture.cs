@@ -6,7 +6,6 @@
     using Shared.Models;
     using Shared.Repositories;
     using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Requests;
     using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Security.Claims;

@@ -71,7 +71,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<PermissionResponse>> RequestPermission(
+        public async Task<GenericResponse<TicketResponse>> RequestPermission(
             string token,
             CancellationToken cancellationToken = default,
             params PermissionRequest[] requests)
@@ -100,7 +100,7 @@ namespace SimpleAuth.Client
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var httpRequest =
                 new HttpRequestMessage { Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url) };
-            return await GetResult<PermissionResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
+            return await GetResult<TicketResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />

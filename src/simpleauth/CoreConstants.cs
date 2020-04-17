@@ -17,7 +17,6 @@ namespace SimpleAuth
     using Api.Authorization;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
     using System.Collections.Generic;
 
     internal static class StandardAuthorizationResponseNames

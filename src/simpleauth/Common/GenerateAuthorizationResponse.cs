@@ -21,7 +21,6 @@ namespace SimpleAuth.Common
     using Shared;
     using Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;

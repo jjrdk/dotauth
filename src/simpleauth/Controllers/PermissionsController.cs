@@ -108,7 +108,7 @@ namespace SimpleAuth.Controllers
             await _eventPublisher.Publish(
                     new UmaTicketCreated(Id.Create(), User.GetClientId(), ticketId, DateTimeOffset.UtcNow, permissionRequest))
                 .ConfigureAwait(false);
-            var result = new PermissionResponse { TicketId = ticketId };
+            var result = new TicketResponse { TicketId = ticketId };
             return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
@@ -135,7 +135,7 @@ namespace SimpleAuth.Controllers
             await _eventPublisher.Publish(
                     new UmaTicketCreated(Id.Create(), User.GetClientId(), ticketId, DateTimeOffset.UtcNow, permissionRequests))
                 .ConfigureAwait(false);
-            var result = new PermissionResponse { TicketId = ticketId };
+            var result = new TicketResponse { TicketId = ticketId };
             return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 

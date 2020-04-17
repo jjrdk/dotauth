@@ -2,7 +2,7 @@
 
 [assembly:InternalsVisibleTo("simpleauth")]
 [assembly:InternalsVisibleTo("simpleauth.client")]
-[assembly:InternalsVisibleTo("simpleauth.manager.client")]
+[assembly:InternalsVisibleTo("simpleauth.resourceserver")]
 [assembly:InternalsVisibleTo("simpleauth.sms")]
 [assembly:InternalsVisibleTo("simpleauth.sms.tests")]
 [assembly:InternalsVisibleTo("simpleauth.tests")]

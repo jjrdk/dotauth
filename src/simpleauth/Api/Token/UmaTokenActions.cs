@@ -18,6 +18,7 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
 
     internal sealed class UmaTokenActions
     {
@@ -33,7 +34,7 @@
             ITicketStore ticketStore,
             RuntimeSettings configurationService,
             IClientStore clientStore,
-            IScopeRepository scopeRepository,
+            IScopeStore scopeRepository,
             ITokenStore tokenStore,
             IResourceSetRepository resourceSetRepository,
             IJwksStore jwksStore,
@@ -156,7 +157,7 @@
                 if (await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false))
                 {
                     await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
-                    return new GenericResponse<GrantedToken> {Content = grantedToken, StatusCode = HttpStatusCode.OK};
+                    return new GenericResponse<GrantedToken> { Content = grantedToken, StatusCode = HttpStatusCode.OK };
                 }
 
                 return new GenericResponse<GrantedToken>
@@ -224,7 +225,9 @@
                 .ConfigureAwait(false);
 
             // 2. Construct the JWT token (client).
-            jwsPayload.Payload.Add(UmaConstants.RptClaims.Ticket, ticketLines);
+            var permissions = ticketLines.Select(x => x.ToPermission(_configurationService.RptLifeTime))
+                .ToArray();
+            jwsPayload.Payload.Add(UmaConstants.RptClaims.Permissions, permissions);
             var handler = new JwtSecurityTokenHandler();
             var accessToken = handler.WriteToken(jwsPayload);
 
@@ -232,7 +235,7 @@
             {
                 AccessToken = accessToken,
                 RefreshToken = Id.Create(),
-                ExpiresIn = (int) expiresIn.TotalSeconds,
+                ExpiresIn = (int)expiresIn.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTimeOffset.UtcNow,
                 Scope = scope,

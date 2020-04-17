@@ -21,7 +21,6 @@ namespace SimpleAuth.Tests.Common
     using Shared.Models;
     using SimpleAuth;
     using SimpleAuth.Common;
-    using SimpleAuth.Shared.Requests;
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
