@@ -4,23 +4,7 @@
     var loginState = ViewData.ModelState["Login"];
     var passwordState = ViewData.ModelState["Password"];
 }
-
 @model SimpleAuth.ViewModels.AuthorizeOpenIdViewModel
-
-@section Scripts
-    {
-    <script>
-        const fields = document.querySelectorAll(".input-field");
-        console.log(fields);
-        fields.forEach((field, index) => {
-            const input = field.querySelector("input");
-            const label = field.querySelector("label");
-            input.addEventListener("focus", () => { label.classList.add("active") });
-            input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
-        });
-    </script>
-}
-
 <div class="row">
     <div class="col s12 m6 offset-m3">
         @if (Model.IdProviders.Any())

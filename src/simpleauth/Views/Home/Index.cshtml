@@ -7,17 +7,23 @@
         <div class="card">
             <div class="card-content">
                 <h5>@ViewBag.Title</h5>
-                <div class="row">
-                    <div class="col s12">
-                        Simple Auth is an open source OpenId Connect, OAuth 2.0 and UMA 2.0 server.
-                    </div>
+                <div class="m12">
+                    Simple Auth is an open source OpenId Connect, OAuth 2.0 and UMA 2.0 server.
                 </div>
             </div>
             <div class="card-action">
                 <div class="row">
-                    @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", null, new { @class = "btn blue darken-3 waves-effect waves-light right" });
-                    <span style="width: 10px;" class="right">&nbsp;</span>
-                    @Html.ActionLink("Authenticate Locally", "Index", "Authenticate", null, new { @class = "btn blue darken-3 waves-effect waves-light right" });
+                    <div class="col s12">
+                        <span class="col m4 left-align">
+                            <a href="@Url.Content("~/perm")" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
+                        </span>
+                        <span class="col m4 center-align">
+                            @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                        </span>
+                        <span class="col m4 right-align">
+                            @Html.ActionLink("Authenticate Locally", "Index", "Authenticate", null, new { @class = "btn blue darken-3 waves-effect waves-light right" })
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

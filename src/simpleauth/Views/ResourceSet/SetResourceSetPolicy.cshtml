@@ -3,18 +3,6 @@
     ViewBag.Title = "Resource Policy Set";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@section Scripts
-{
-    <script>
-        const fields = document.querySelectorAll(".input-field");
-        fields.forEach((field) => {
-            const input = field.querySelector("input");
-            const label = field.querySelector("label");
-            input.addEventListener("focus", () => { label.classList.add("active") });
-            input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
-        });
-    </script>
-}
 <div class="row">
     <div class="col s12 m6 offset-m3">
         <div class="col s12">
@@ -28,7 +16,7 @@
                 <div class="card-action">
                     <div class="row">
                         <div class="col s12 m12">
-                            <input type="button" value="Close" class="waves-effect waves-light btn blue darken-3 right" onclick="~/resource_set" />
+                            @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", null, new { @class = "btn blue darken-3 waves-effect waves-light right" })
                         </div>
                     </div>
                 </div>

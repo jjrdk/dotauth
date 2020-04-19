@@ -45,14 +45,8 @@
             }
 
             var ticket = JsonConvert.DeserializeObject<Ticket>(value);
-            if (ticket.IsAuthorizedByRo)
-            {
-                return false;
-            }
-
             ticket.IsAuthorizedByRo = true;
             return await _database.StringSetAsync(ticket.Id, JsonConvert.SerializeObject(ticket), _expiry).ConfigureAwait(false);
-
         }
 
         /// <inheritdoc />

@@ -3,33 +3,15 @@
     ViewBag.Title = "Resource Set Policy";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@section Scripts
-{
-    <script>
-        const fields = document.querySelectorAll(".input-field");
-        fields.forEach((field, index) => {
-            const input = field.querySelector("input");
-            const label = field.querySelector("label");
-            if (input.value) {
-                label.classList.add("active");
-            }
-            input.addEventListener("focus", () => { label.classList.add("active") });
-            input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
-        });
-    </script>
-}
-
 <div class="row">
     <div class="col s12 m6 offset-m3">
         <div class="col s12">
             <div class="card">
-                <div class="card-content">
-                    <h5>Set Access Policy</h5>
-                </div>
-                <div class="card-action">
-                    <div class="row">
-                        @using (Html.BeginForm("SetResourceSetPolicy", "ResourceSet", new { id = Model.Id }, method: FormMethod.Post, antiforgery: true, new { }))
-                        {
+                @using (Html.BeginForm("SetResourceSetPolicy", "ResourceSet", new { id = Model.Id }, method: FormMethod.Post, antiforgery: true, new { }))
+                {
+                    <div class="card-content">
+                        <h5>Set Access Policy</h5>
+                        <div class="row">
                             @for (var i = 0; i < Model.Rules.Length; i++)
                             {
                                 <div class="col s12 m12">
@@ -63,14 +45,22 @@
                                         <input asp-for="@Model.Rules[i].Claims[j].Value" />
                                     </div>
                                 }
-                                <hr />
-                                <div class="col s12 m12">
-                                    <input type="submit" value="Save" class="waves-effect waves-light btn blue darken-3 right" />
-                                </div>
                             }
-                        }
+                        </div>
                     </div>
-                </div>
+                    <div class="card-action">
+                        <div class="row">
+                            <p class="small">
+                                By setting the authorization policy, you accept to share the resource with everyone who satisfies the policy conditions.
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col s12 m12">
+                                <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>

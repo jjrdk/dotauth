@@ -40,15 +40,19 @@
         {
             using var session = _sessionFactory();
             var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
+            if (ticket == null)
+            {
+                return false;
+            }
+
             if (!ticket.IsAuthorizedByRo)
             {
                 ticket.IsAuthorizedByRo = true;
                 session.Store(ticket);
                 await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return true;
             }
 
-            return false;
+            return true;
         }
 
         /// <inheritdoc />
@@ -75,7 +79,7 @@
             using var session = _sessionFactory();
             var now = DateTimeOffset.UtcNow;
             var tickets = await session.Query<Ticket>()
-                .Where(x => x.Created <= now && x.Expires > now)
+                .Where(x => x.ResourceOwner == owner && x.Created <= now && x.Expires > now)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 

@@ -22,7 +22,25 @@
         /// </summary>
         public InMemoryTicketStore()
         {
-            _tickets = new Dictionary<string, Ticket>();
+            _tickets = new Dictionary<string, Ticket>
+            {
+                {
+                    "1234",
+                    new Ticket
+                    {
+                        ResourceOwner = "administrator",
+                        Created = DateTimeOffset.UtcNow.AddHours(-1),
+                        Expires = DateTimeOffset.MaxValue,
+                        Id = "1234",
+                        IsAuthorizedByRo = false,
+                        Lines = new[]
+                        {
+                            new TicketLine {ResourceSetId = "abc", Scopes = new[] {"read", "write"}},
+                            new TicketLine {ResourceSetId = "def", Scopes = new[] {"read", "write", "print"}},
+                        }
+                    }
+                }
+            };
         }
 
         /// <inheritdoc />
@@ -92,7 +110,7 @@
             {
                 await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                 var now = DateTimeOffset.UtcNow;
-                bool Predicate(Ticket x) => x.Created <= now && x.Expires > now;
+                bool Predicate(Ticket x) => x.ResourceOwner == owner && x.Created <= now && x.Expires > now;
                 return _tickets.Values.Where(Predicate).ToArray();
             }
             finally

@@ -50,6 +50,7 @@ namespace SimpleAuth.Api.PermissionController
             var ticket = new Ticket
             {
                 Id = Id.Create(),
+                ResourceOwner = owner,
                 Created = DateTimeOffset.UtcNow,
                 Expires = DateTimeOffset.UtcNow.Add(_configurationService.TicketLifeTime),
                 Lines = addPermissionParameters.Select(

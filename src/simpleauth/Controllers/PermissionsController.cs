@@ -30,6 +30,7 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.ViewModels;
 
     /// <summary>
     /// Defines the permission controller.
@@ -37,6 +38,7 @@ namespace SimpleAuth.Controllers
     /// <seealso cref="ControllerBase" />
     [Route(UmaConstants.RouteValues.Permission)]
     [ThrottleFilter]
+    [Authorize(Policy = "UmaProtection")]
     public class PermissionsController : ControllerBase
     {
         private readonly ITicketStore _ticketStore;
@@ -67,13 +69,28 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns>All permission requests for the user.</returns>
         [HttpGet]
-        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> GetPermissionRequests(CancellationToken cancellationToken)
         {
             var owner = User.GetSubject();
             var tickets = await _ticketStore.GetAll(owner, cancellationToken).ConfigureAwait(false);
 
-            return new OkObjectResult(tickets.Select(x => !x.IsAuthorizedByRo).ToArray());
+            return Ok(tickets.Where(x => !x.IsAuthorizedByRo).ToArray());
+        }
+
+        [HttpPost]
+        [Route("{id}/approve")]
+        public async Task<IActionResult> ApprovePermissionRequest(string id, CancellationToken cancellationToken)
+        {
+            var result = await _ticketStore.ApproveAccess(id, cancellationToken);
+            return result
+                ? (IActionResult)RedirectToAction("GetPermissionRequests", "Permissions")
+                : BadRequest(
+                    new ErrorViewModel
+                    {
+                        Title = "Update Failed",
+                        Message = "Could not update approval for ticket " + id,
+                        Code = (int)HttpStatusCode.BadRequest
+                    });
         }
 
         /// <summary>
@@ -83,7 +100,6 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> RequestPermission(
             [FromBody] PermissionRequest permissionRequest,
             CancellationToken cancellationToken)
@@ -119,7 +135,6 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("bulk")]
-        [Authorize(Policy = "UmaProtection")]
         public async Task<IActionResult> BulkRequestPermissions(
             [FromBody] PermissionRequest[] permissionRequests,
             CancellationToken cancellationToken)

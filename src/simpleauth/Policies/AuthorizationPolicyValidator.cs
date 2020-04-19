@@ -126,9 +126,10 @@ namespace SimpleAuth.Policies
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted);
             }
 
+            AuthorizationPolicyResult result = null;
             foreach (var authorizationPolicy in resource.AuthorizationPolicies)
             {
-                var result = await _authorizationPolicy.Execute(
+                result = await _authorizationPolicy.Execute(
                         ticketLineParameter,
                         claimTokenFormat,
                         claims,
@@ -137,11 +138,11 @@ namespace SimpleAuth.Policies
                     .ConfigureAwait(false);
                 if (result.Result == AuthorizationPolicyResultKind.Authorized)
                 {
-                    return result;
+                    break;
                 }
             }
 
-            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
+            return result;
         }
     }
 }

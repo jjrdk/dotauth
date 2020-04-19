@@ -1,0 +1,67 @@
+﻿@model SimpleAuth.Shared.Models.Ticket[]
+@{
+    ViewBag.Title = "Resource Set Policy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col s12">
+        <div class="card">
+            @if (Model.Length > 0)
+            {
+                <div class="card-content">
+                    <span class="card-title">Review Open Permissions</span>
+                    <div class="row">
+                        <div class="col">
+                            By approving the permission request, you accept to share the resource with the ticket holder.
+                        </div>
+                    </div>
+                    <div class="row col s12">
+                        <div class="row col s12">
+                            <div class="col m2">Ticket ID</div>
+                            <div class="col m3">Request</div>
+                            <div class="col m3">Created</div>
+                            <div class="col m3">Expires</div>
+                            <div class="col m1"> </div>
+                        </div>
+                        @for (var i = 0; i < Model.Length; i++)
+                        {
+                            <div class="row col s12">
+                                @using (Html.BeginForm("ApprovePermissionRequest", "Permissions", new { id = Model[i].Id }, FormMethod.Post))
+                                {
+                                    <div class="col m2">@Model[i].Id</div>
+                                    <div class="col m3">
+                                        @for (var j = 0; j < Model[i].Lines.Length; j++)
+                                        {
+                                            <span style="font-weight: bold">@Model[i].Lines[j].ResourceSetId: </span>
+                                            <span>@string.Join(", ", Model[i].Lines[j].Scopes)</span>
+                                            <br />
+                                        }
+                                    </div>
+                                    <div class="col m3">@Model[i].Created</div>
+                                    <div class="col m3">@Model[i].Expires</div>
+                                    <div class="col m1">
+                                        <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Approve</button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="row">
+                        <div class="col s12 m12">
+
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card-content">
+                    <h5>No Open Permissions</h5>
+                    <div class="m12">
+                        <p>There are currently no open permission requests to review.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

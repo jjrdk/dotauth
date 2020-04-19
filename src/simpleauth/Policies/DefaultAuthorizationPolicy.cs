@@ -52,7 +52,8 @@ namespace SimpleAuth.Policies
                         cancellationToken);
                 if (result.Result == AuthorizationPolicyResultKind.Authorized)
                 {
-                    return Task.FromResult(result);
+                    //return Task.FromResult(result);
+                    break;
                 }
             }
 

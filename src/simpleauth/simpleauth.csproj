@@ -40,13 +40,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <RazorGenerate Remove="Views\ResourceSet\GetResourceSetPolicy.cshtml" />
-    <RazorGenerate Remove="Views\ResourceSet\GetResourceSets.cshtml" />
-    <RazorGenerate Remove="Views\ResourceSet\SetResourceSetPolicy.cshtml" />
+    <Content Remove="Views\Home\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Views\Form\Index.cshtml" />
+    <RazorGenerate Remove="Views\Permissions\ApprovePermissionRequest.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Home\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

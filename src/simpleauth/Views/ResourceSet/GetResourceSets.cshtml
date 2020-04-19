@@ -14,7 +14,10 @@
                             <ul class="collection">
                                 @foreach (var id in Model)
                                 {
-                                    <li>@Html.ActionLink(id, "GetResourceSetPolicy", "ResourceSet", new { id = id })</li>
+                                    <li>
+                                        <div class="col m4">@id</div>
+                                        <div class="col m4">@Html.ActionLink("Manage", "GetResourceSetPolicy", "ResourceSet", new { id = id })</div>
+                                    </li>
                                 }
                             </ul>
                         </div>
