@@ -5,10 +5,16 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
 
+    /// <summary>
+    /// Defines the UMA server unreachable result.
+    /// </summary>
     public class UmaServerUnreachableResult : UmaResult<string>
     {
         private const string UmaAuthorizationServerUnreachable = "199 - \"UMA Authorization Server Unreachable\"";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UmaServerUnreachableResult"/> class.
+        /// </summary>
         public UmaServerUnreachableResult() : base(UmaAuthorizationServerUnreachable)
         {
         }

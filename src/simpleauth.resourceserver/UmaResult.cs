@@ -8,15 +8,31 @@
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
 
+    /// <summary>
+    /// Defines the UMA result base class.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class UmaResult<T> : IActionResult
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UmaResult{T}"/> class.
+        /// </summary>
+        /// <param name="value"></param>
         protected UmaResult(T value = default)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Gets the result value.
+        /// </summary>
         protected T Value { get; }
 
+        /// <summary>
+        /// Executes the result processing.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         protected abstract Task ExecuteResult(ActionContext context);
 
         /// <inheritdoc />

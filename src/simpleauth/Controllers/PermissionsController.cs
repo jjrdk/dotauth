@@ -77,6 +77,12 @@ namespace SimpleAuth.Controllers
             return Ok(tickets.Where(x => !x.IsAuthorizedByRo).ToArray());
         }
 
+        /// <summary>
+        /// Approves the permission request by the resource owner.
+        /// </summary>
+        /// <param name="id">The ticket id to approve.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns>If successful, redirects to the open permission request, otherwise returns an error.</returns>
         [HttpPost]
         [Route("{id}/approve")]
         public async Task<IActionResult> ApprovePermissionRequest(string id, CancellationToken cancellationToken)
