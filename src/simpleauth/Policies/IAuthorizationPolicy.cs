@@ -10,7 +10,7 @@
         Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticket,
             string claimTokenFormat,
-            Claim[] claims,
+            ClaimsPrincipal requester,
             CancellationToken cancellationToken,
             params PolicyRule[] policy);
     }

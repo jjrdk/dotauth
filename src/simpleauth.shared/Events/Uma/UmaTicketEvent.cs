@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Shared.Events.Uma
 {
     using System;
+    using System.Security.Claims;
 
     /// <summary>
     /// Defines the UMA request not authorized event.
@@ -12,14 +13,16 @@
         /// Initializes a new instance of the <see cref="UmaRequestNotAuthorized"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="ticket">The ticket.</param>
+        /// <param name="ticketId">The ticket.</param>
         /// <param name="clientId">The client identifier.</param>
+        /// <param name="requester">The ticket requester.</param>
         /// <param name="timestamp">The timestamp.</param>
-        protected UmaTicketEvent(string id, string ticket, string clientId, DateTimeOffset timestamp)
+        protected UmaTicketEvent(string id, string ticketId, string clientId, ClaimsPrincipal requester, DateTimeOffset timestamp)
             : base(id, timestamp)
         {
-            Ticket = ticket;
+            TicketId = ticketId;
             ClientId = clientId;
+            Requester = requester;
         }
 
         /// <summary>
@@ -28,7 +31,7 @@
         /// <value>
         /// The ticket.
         /// </value>
-        public string Ticket { get; }
+        public string TicketId { get; }
 
         /// <summary>
         /// Gets the client identifier.
@@ -37,5 +40,10 @@
         /// The client identifier.
         /// </value>
         public string ClientId { get; }
+
+        /// <summary>
+        /// Gets the ticket requester.
+        /// </summary>
+        public ClaimsPrincipal Requester { get; }
     }
 }

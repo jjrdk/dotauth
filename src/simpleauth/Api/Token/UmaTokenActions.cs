@@ -147,12 +147,13 @@
 
             if (authorizationResult.Result == AuthorizationPolicyResultKind.Authorized)
             {
+                var claimToken = parameter.ClaimToken.Token;
                 var grantedToken = await GenerateToken(
                         client,
                         ticket.Lines,
                         "openid",
                         issuerName,
-                        parameter.ClaimToken.Token)
+                        claimToken)
                     .ConfigureAwait(false);
                 if (await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false))
                 {
@@ -160,6 +161,14 @@
                     return new GenericResponse<GrantedToken> { Content = grantedToken, StatusCode = HttpStatusCode.OK };
                 }
 
+                await _eventPublisher.Publish(
+                    new RptIssued(
+                        Id.Create(),
+                        ticket.Id,
+                        client.ClientId,
+                        ticket.ResourceOwner,
+                        authorizationResult.Principal,
+                        DateTimeOffset.UtcNow));
                 return new GenericResponse<GrantedToken>
                 {
                     StatusCode = HttpStatusCode.InternalServerError,
@@ -179,6 +188,7 @@
                             Id.Create(),
                             parameter.Ticket,
                             parameter.ClientId,
+                            authorizationResult.Principal,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 return new GenericResponse<GrantedToken>
@@ -198,6 +208,7 @@
                         Id.Create(),
                         parameter.Ticket,
                         parameter.ClientId,
+                        authorizationResult.Principal,
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return new GenericResponse<GrantedToken>

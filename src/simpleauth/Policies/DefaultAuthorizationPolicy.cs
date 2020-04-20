@@ -30,14 +30,19 @@ namespace SimpleAuth.Policies
         public Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticketLineParameter,
             string claimTokenFormat,
-            Claim[] claims,
+            ClaimsPrincipal requester,
             CancellationToken cancellationToken,
             params PolicyRule[] authorizationPolicy)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (authorizationPolicy == null)
+            if (authorizationPolicy == null || authorizationPolicy.Length == 0)
             {
-                return Task.FromResult(new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized));
+                return Task.FromResult(new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester));
+            }
+
+            if (claimTokenFormat != UmaConstants.IdTokenType)
+            {
+                return GetNeedInfoResult(authorizationPolicy[0].Claims, requester, authorizationPolicy[0].OpenIdProvider);
             }
 
             AuthorizationPolicyResult result = null;
@@ -47,8 +52,7 @@ namespace SimpleAuth.Policies
                 result = ExecuteAuthorizationPolicyRule(
                         ticketLineParameter,
                         rule,
-                        claimTokenFormat,
-                        claims,
+                        requester,
                         cancellationToken);
                 if (result.Result == AuthorizationPolicyResultKind.Authorized)
                 {
@@ -63,8 +67,7 @@ namespace SimpleAuth.Policies
         private AuthorizationPolicyResult ExecuteAuthorizationPolicyRule(
             TicketLineParameter ticketLineParameter,
             PolicyRule authorizationPolicy,
-            string claimTokenFormat,
-            Claim[] claims,
+            ClaimsPrincipal requester,
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -72,7 +75,7 @@ namespace SimpleAuth.Policies
             // 1. Check can access to the scope
             if (ticketLineParameter.Scopes.Any(s => authorizationPolicy.Scopes?.Contains(s) != true))
             {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
+                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
             }
 
             // 2. Check clients are correct
@@ -81,30 +84,29 @@ namespace SimpleAuth.Policies
                 || authorizationPolicy.ClientIdsAllowed?.Contains(ticketLineParameter.ClientId) == true;
             if (!clientAuthorizationResult)
             {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
+                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
             }
 
             // 4. Check the resource owner consent is needed
             if (authorizationPolicy.IsResourceOwnerConsentNeeded && !ticketLineParameter.IsAuthorizedByRo)
             {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted);
+                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted, requester);
             }
 
             // 3. Check claims are correct
             var claimAuthorizationResult = CheckClaims(
                     authorizationPolicy,
-                    claimTokenFormat,
-                    claims);
+                    requester);
             if (claimAuthorizationResult != null
                 && claimAuthorizationResult.Result != AuthorizationPolicyResultKind.Authorized)
             {
                 return claimAuthorizationResult;
             }
 
-            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized);
+            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
         }
 
-        private static AuthorizationPolicyResult GetNeedInfoResult(ClaimData[] claims, string openidConfigurationUrl)
+        private static Task<AuthorizationPolicyResult> GetNeedInfoResult(ClaimData[] claims, ClaimsPrincipal requester, string openidConfigurationUrl)
         {
             var requestingPartyClaims = new Dictionary<string, object>();
             var requiredClaims = claims.Select(
@@ -118,40 +120,30 @@ namespace SimpleAuth.Policies
 
             requestingPartyClaims.Add("required_claims", requiredClaims);
             requestingPartyClaims.Add("redirect_user", false);
-            return new AuthorizationPolicyResult(
+            return Task.FromResult(new AuthorizationPolicyResult(
                 AuthorizationPolicyResultKind.NeedInfo,
+                requester,
                 new Dictionary<string, object>
                 {
                     {"requesting_party_claims", requestingPartyClaims}
-                });
+                }));
         }
 
         private AuthorizationPolicyResult CheckClaims(
             PolicyRule authorizationPolicy,
-            string claimTokenFormat,
-            Claim[] claims)
+            ClaimsPrincipal requester)
         {
             if (authorizationPolicy.Claims == null || !authorizationPolicy.Claims.Any())
             {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized);
-            }
-
-            if (claimTokenFormat != UmaConstants.IdTokenType)
-            {
-                return GetNeedInfoResult(authorizationPolicy.Claims, authorizationPolicy.OpenIdProvider);
-            }
-
-            if (claims == null)
-            {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
+                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
             }
 
             foreach (var policyClaim in authorizationPolicy.Claims)
             {
-                var tokenClaim = claims.FirstOrDefault(j => j.Type == policyClaim.Type);
+                var tokenClaim = requester.Claims.FirstOrDefault(j => j.Type == policyClaim.Type);
                 if (tokenClaim == null)
                 {
-                    return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
+                    return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
                 }
 
                 if (tokenClaim.ValueType == JsonClaimValueTypes.JsonArray) // is IEnumerable<string> strings)
@@ -159,18 +151,18 @@ namespace SimpleAuth.Policies
                     var strings = JsonConvert.DeserializeObject<object[]>(tokenClaim.Value);
                     if (!strings.Any(s => Equals(s, policyClaim.Value)))
                     {
-                        return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
+                        return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
                     }
                 }
 
                 var regex = new Regex(policyClaim.Value);
                 if (!regex.IsMatch(tokenClaim.Value)) //tokenClaim.Value != policyClaim.Value)
                 {
-                    return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized);
+                    return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
                 }
             }
 
-            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized);
+            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
         }
     }
 }

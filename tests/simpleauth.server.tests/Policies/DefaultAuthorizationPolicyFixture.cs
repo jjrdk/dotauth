@@ -20,7 +20,6 @@ namespace SimpleAuth.Server.Tests.Policies
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Parameters;
     using SimpleAuth.Policies;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
@@ -37,13 +36,13 @@ namespace SimpleAuth.Server.Tests.Policies
         }
 
         [Fact]
-        public async Task WhenPassingNullTicketLineParameterThenExceptionsAreThrown()
+        public async Task WhenPassingNullTicketLineParameterThenExceptionIsThrown()
         {
             await Assert.ThrowsAsync<NullReferenceException>(
                     () => _authorizationPolicy.Execute(
                         null,
-                        "x",
-                        new Claim[0],
+                        UmaConstants.IdTokenType,
+                        new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                         CancellationToken.None,
                         new PolicyRule()))
                 .ConfigureAwait(false);
@@ -55,7 +54,7 @@ namespace SimpleAuth.Server.Tests.Policies
             var result = await _authorizationPolicy.Execute(
                     new TicketLineParameter("client_id"),
                     "x",
-                    new Claim[0],
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     null)
                 .ConfigureAwait(false);
@@ -72,7 +71,7 @@ namespace SimpleAuth.Server.Tests.Policies
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    TokenTypes.AccessToken,
+                    UmaConstants.IdTokenType,
                     null,
                     CancellationToken.None,
                     authorizationPolicy)
@@ -95,7 +94,7 @@ namespace SimpleAuth.Server.Tests.Policies
             var result = await _authorizationPolicy.Execute(
                     ticket,
                     "http://openid.net/specs/openid-connect-core-1_0.html#IDToken",
-                    new Claim[0],
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);
@@ -127,7 +126,7 @@ namespace SimpleAuth.Server.Tests.Policies
             var result = await _authorizationPolicy.Execute(
                     ticket,
                     "bad_format",
-                    Array.Empty<Claim>(),
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);
@@ -185,7 +184,7 @@ namespace SimpleAuth.Server.Tests.Policies
             var result = await _authorizationPolicy.Execute(
                     ticket,
                     "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Array.Empty<Claim>(),
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);
@@ -217,7 +216,7 @@ namespace SimpleAuth.Server.Tests.Policies
             var result = await _authorizationPolicy.Execute(
                     ticket,
                     "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Array.Empty<Claim>(),
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);
@@ -249,7 +248,7 @@ namespace SimpleAuth.Server.Tests.Policies
             var result = await _authorizationPolicy.Execute(
                     ticket,
                     "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Array.Empty<Claim>(),
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);
@@ -277,16 +276,11 @@ namespace SimpleAuth.Server.Tests.Policies
                     OpenIdProvider = configurationUrl
                 }
             };
-            var claimTokenParameters = new ClaimTokenParameter
-            {
-                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                Token = "token"
-            };
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
                     "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Array.Empty<Claim>(),
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);
@@ -318,7 +312,7 @@ namespace SimpleAuth.Server.Tests.Policies
             var result = await _authorizationPolicy.Execute(
                     ticket,
                     "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Array.Empty<Claim>(),
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);
@@ -350,7 +344,7 @@ namespace SimpleAuth.Server.Tests.Policies
             var result = await _authorizationPolicy.Execute(
                     ticket,
                     "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Array.Empty<Claim>(),
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);
@@ -379,8 +373,8 @@ namespace SimpleAuth.Server.Tests.Policies
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Array.Empty<Claim>(),
+                    UmaConstants.IdTokenType,
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);
@@ -405,8 +399,8 @@ namespace SimpleAuth.Server.Tests.Policies
 
             var result = await _authorizationPolicy.Execute(
                     ticket,
-                    "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Array.Empty<Claim>(),
+                    UmaConstants.IdTokenType,
+                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     authorizationPolicy)
                 .ConfigureAwait(false);

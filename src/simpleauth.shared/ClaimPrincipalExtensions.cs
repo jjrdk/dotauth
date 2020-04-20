@@ -74,6 +74,17 @@ namespace SimpleAuth.Shared
                    ?? GetClaimValue(principal, ClaimTypes.NameIdentifier);
         }
 
+        /// <summary>
+        /// Gets the name of the authenticated user.
+        /// </summary>
+        /// <param name="principal">The user principal.</param>
+        /// <returns>The user's name.</returns>
+        public static string GetEmail(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, OpenIdClaimTypes.Email)
+                   ?? GetClaimValue(principal, ClaimTypes.Email);
+        }
+
         private static string GetClaimValue(ClaimsPrincipal principal, string claimName)
         {
             var claim = principal?.FindFirst(claimName);

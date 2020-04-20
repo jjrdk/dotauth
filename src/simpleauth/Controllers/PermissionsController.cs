@@ -88,6 +88,12 @@ namespace SimpleAuth.Controllers
         public async Task<IActionResult> ApprovePermissionRequest(string id, CancellationToken cancellationToken)
         {
             var result = await _ticketStore.ApproveAccess(id, cancellationToken);
+            if (result)
+            {
+                await _eventPublisher.Publish(
+                    new UmaRequestApproved(Id.Create(), id, User.GetClientId(), User.GetSubject(), DateTimeOffset.UtcNow))
+                    .ConfigureAwait(false);
+            }
             return result
                 ? (IActionResult)RedirectToAction("GetPermissionRequests", "Permissions")
                 : BadRequest(

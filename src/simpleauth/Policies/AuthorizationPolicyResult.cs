@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Policies
 {
+    using System.Security.Claims;
     using Shared.Responses;
 
     /// <summary>
@@ -25,15 +26,17 @@ namespace SimpleAuth.Policies
         /// Initializes a new instance of the <see cref="AuthorizationPolicyResult"/> class.
         /// </summary>
         /// <param name="result"></param>
+        /// <param name="principal">The requesting principal.</param>
         /// <param name="errorDetails"></param>
-        public AuthorizationPolicyResult(AuthorizationPolicyResultKind result, object errorDetails = null)
+        public AuthorizationPolicyResult(AuthorizationPolicyResultKind result, ClaimsPrincipal principal, object errorDetails = null)
         {
             Result = result;
+            Principal = principal;
             ErrorDetails = errorDetails;
         }
 
         /// <summary>
-        /// Gets or sets the type.
+        /// Gets the result kind.
         /// </summary>
         /// <value>
         /// The type.
@@ -41,7 +44,12 @@ namespace SimpleAuth.Policies
         public AuthorizationPolicyResultKind Result { get; }
 
         /// <summary>
-        /// Gets or sets the error details.
+        /// Gets the requesting principal.
+        /// </summary>
+        public ClaimsPrincipal Principal { get; }
+
+        /// <summary>
+        /// Get the error details.
         /// </summary>
         /// <value>
         /// The error details.

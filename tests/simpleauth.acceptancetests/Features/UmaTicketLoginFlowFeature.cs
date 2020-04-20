@@ -6,6 +6,7 @@
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Security.Claims;
     using System.Text.RegularExpressions;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
@@ -96,7 +97,7 @@
                         new PolicyRule
                         {
                             Scopes = new[] {"api1"},
-                            Claims = new[] {new ClaimData {Type = "sub", Value = "user"}},
+                            Claims = new[] {new ClaimData {Type = ClaimTypes.NameIdentifier, Value = "user"}},
                             ClientIdsAllowed = new[] {"post_client"},
                             IsResourceOwnerConsentNeeded = false
                         }
