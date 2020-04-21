@@ -75,35 +75,31 @@
         }
 
         /// <inheritdoc />
-        public async Task<Client> Update(Client client, CancellationToken cancellationToken = default)
+        public async Task<bool> Update(Client client, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
             if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
             {
-                throw new ArgumentException("Duplicate client");
+                return false;
             }
 
-            var clientFactory = new ClientFactory(_httpClient, _scopeRepository, _urlReader);
-            var toInsert = await clientFactory.Build(client).ConfigureAwait(false);
             session.Update(client);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return toInsert;
+            return true;
         }
 
         /// <inheritdoc />
-        public async Task<Client> Insert(Client client, CancellationToken cancellationToken = default)
+        public async Task<bool> Insert(Client client, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
             if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
             {
-                throw new ArgumentException("Duplicate client");
+                return false;
             }
 
-            var clientFactory = new ClientFactory(_httpClient, _scopeRepository, _urlReader);
-            var toInsert = await clientFactory.Build(client).ConfigureAwait(false);
             session.Store(client);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return toInsert;
+            return true;
         }
 
         /// <inheritdoc />

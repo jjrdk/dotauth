@@ -27,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Repositories;
     using Newtonsoft.Json;
     using SimpleAuth.Filters;
 
@@ -38,6 +39,9 @@ namespace SimpleAuth.Controllers
     [ThrottleFilter]
     public class ClientsController : ControllerBase
     {
+        private readonly IScopeRepository _scopeRepository;
+        private readonly HttpClient _httpClient;
+        private readonly Func<string, Uri[]> _urlReader;
         private readonly IClientRepository _clientRepository;
         private readonly IScopeStore _scopeStore;
         private readonly HttpClient _httpClient;
@@ -56,6 +60,9 @@ namespace SimpleAuth.Controllers
             _clientRepository = clientRepository;
             _scopeStore = scopeStore;
             _httpClient = httpClient;
+            _scopeRepository = scopeRepository;
+            _httpClient = httpClient;
+            _urlReader = urlReader;
         }
 
         /// <summary>
@@ -151,31 +158,34 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Puts the specified update client request.
         /// </summary>
-        /// <param name="updateClientRequest">The update client request.</param>
+        /// <param name="client">The update client request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut]
         [Authorize(Policy = "manager")]
-        public async Task<IActionResult> Put([FromBody] Client updateClientRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> Put([FromBody] Client client, CancellationToken cancellationToken)
         {
-            if (updateClientRequest == null)
+            if (client == null)
             {
                 return BuildError(ErrorCodes.InvalidRequest, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             try
             {
-                var result = await _clientRepository.Update(updateClientRequest, cancellationToken)
+
+                var clientFactory = new ClientFactory(_httpClient, _scopeRepository, _urlReader);
+                var toInsert = await clientFactory.Build(client).ConfigureAwait(false);
+                var result = await _clientRepository.Update(toInsert, cancellationToken)
                     .ConfigureAwait(false);
-                return result == null
-                    ? (IActionResult)BadRequest(
+                return result
+                    ? Ok(toInsert)
+                    : (IActionResult)BadRequest(
                         new ErrorDetails
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.UnhandledExceptionCode,
                             Detail = ErrorDescriptions.RequestIsNotValid
-                        })
-                    : Ok(result);
+                        });
             }
             catch (SimpleAuthException e)
             {
@@ -199,9 +209,11 @@ namespace SimpleAuth.Controllers
         {
             var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>);
             client = await factory.Build(client, cancellationToken).ConfigureAwait(false);
-            var result = await _clientRepository.Insert(client, cancellationToken).ConfigureAwait(false);
+            var clientFactory = new ClientFactory(_httpClient, _scopeRepository, _urlReader);
+            var toInsert = await clientFactory.Build(client).ConfigureAwait(false);
+            var result = await _clientRepository.Insert(toInsert, cancellationToken).ConfigureAwait(false);
 
-            return Ok(result);
+            return result ? Ok(toInsert) : (IActionResult)BadRequest();
         }
 
         private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)

@@ -88,7 +88,7 @@
 
             if (_clients.Any(x => x.ClientId == client.ClientId || x.ClientName == client.ClientName))
             {
-                throw new ArgumentException("Duplicate client");
+                return false;
             }
 
             _clients.Add(client);
@@ -141,17 +141,17 @@
         }
 
         /// <inheritdoc />
-        public async Task<Client> Update(Client newClient, CancellationToken cancellationToken = default)
+        public async Task<bool> Update(Client newClient, CancellationToken cancellationToken = default)
         {
             if (newClient == null)
             {
-                throw new ArgumentNullException(nameof(newClient));
+                return false;
             }
 
             if (string.IsNullOrWhiteSpace(newClient.ClientId)
                 || !_clients.Exists(x => x.ClientId == newClient.ClientId))
             {
-                return null;
+                return false;
             }
 
             var id = newClient.ClientId;
@@ -169,7 +169,7 @@
                 _clients.Add(newClient);
             }
 
-            return newClient;
+            return true;
         }
     }
 }

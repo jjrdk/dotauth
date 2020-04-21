@@ -1,14 +1,16 @@
-﻿namespace SimpleAuth.Shared.Repositories
+﻿namespace SimpleAuth.Repositories
 {
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Repositories;
 
     internal class ClientFactory
     {
