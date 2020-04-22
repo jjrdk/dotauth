@@ -102,24 +102,6 @@
             new Scope
             {
                 Claims = new[] {OpenIdClaimTypes.Role},
-                Name = "manage_profile",
-                IsExposed = false,
-                IsDisplayedInConsent = true,
-                Description = "Manage the user's profiles",
-                Type = ScopeTypes.ProtectedApi
-            },
-            new Scope
-            {
-                Claims = new[] {OpenIdClaimTypes.Role},
-                Name = "manage_account_filtering",
-                IsExposed = false,
-                IsDisplayedInConsent = true,
-                Description = "Manage the account filtering.",
-                Type = ScopeTypes.ProtectedApi
-            },
-            new Scope
-            {
-                Claims = new[] {OpenIdClaimTypes.Role},
                 Description = "Manage server resources.",
                 IsDisplayedInConsent = true,
                 IsExposed = true,

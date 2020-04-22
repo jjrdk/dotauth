@@ -17,7 +17,9 @@ namespace SimpleAuth.Api.PermissionController
     using Shared;
     using Shared.Models;
     using System;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Errors;
@@ -28,31 +30,40 @@ namespace SimpleAuth.Api.PermissionController
     {
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly ITicketStore _ticketStore;
-        private readonly RuntimeSettings _configurationService;
+        private readonly RuntimeSettings _settings;
 
         public RequestPermissionHandler(
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
-            RuntimeSettings configurationService)
+            RuntimeSettings settings)
         {
             _resourceSetRepository = resourceSetRepository;
             _ticketStore = ticketStore;
-            _configurationService = configurationService;
+            _settings = settings;
         }
 
-        public async Task<string> Execute(
+        public async Task<(string ticketId, Claim[] requesterClaims)> Execute(
             string owner,
             CancellationToken cancellationToken,
             params PermissionRequest[] addPermissionParameters)
         {
             await CheckAddPermissionParameter(owner, addPermissionParameters, cancellationToken).ConfigureAwait(false);
+            var handler = new JwtSecurityTokenHandler();
+            var claims = addPermissionParameters
+                .Select(x => x.IdToken)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct()
+                .Select(x => handler.ReadJwtToken(x))
+                .SelectMany(x => x.Claims)
+                .ToArray();
 
             var ticket = new Ticket
             {
                 Id = Id.Create(),
                 ResourceOwner = owner,
+                Requester = claims,
                 Created = DateTimeOffset.UtcNow,
-                Expires = DateTimeOffset.UtcNow.Add(_configurationService.TicketLifeTime),
+                Expires = DateTimeOffset.UtcNow.Add(_settings.TicketLifeTime),
                 Lines = addPermissionParameters.Select(
                         addPermissionParameter => new TicketLine
                         {
@@ -67,7 +78,7 @@ namespace SimpleAuth.Api.PermissionController
                 throw new SimpleAuthException(ErrorCodes.InternalError, ErrorDescriptions.TheTicketCannotBeInserted);
             }
 
-            return ticket.Id;
+            return (ticket.Id, claims);
         }
 
         private async Task CheckAddPermissionParameter(

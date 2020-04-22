@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using global::Marten;
@@ -36,13 +37,15 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> ApproveAccess(string ticketId, CancellationToken cancellationToken = default)
+        public async Task<(bool success, Claim[] requester)> ApproveAccess(
+            string ticketId,
+            CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
             var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
             if (ticket == null)
             {
-                return false;
+                return (false, Array.Empty<Claim>());
             }
 
             if (!ticket.IsAuthorizedByRo)
@@ -52,7 +55,7 @@
                 await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            return true;
+            return (true, ticket.Requester);
         }
 
         /// <inheritdoc />

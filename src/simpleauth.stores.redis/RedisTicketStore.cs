@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -36,17 +37,21 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> ApproveAccess(string ticketId, CancellationToken cancellationToken = default)
+        public async Task<(bool success, Claim[] requester)> ApproveAccess(
+            string ticketId,
+            CancellationToken cancellationToken = default)
         {
             var value = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
             if (!value.HasValue)
             {
-                return false;
+                return (false, Array.Empty<Claim>());
             }
 
             var ticket = JsonConvert.DeserializeObject<Ticket>(value);
             ticket.IsAuthorizedByRo = true;
-            return await _database.StringSetAsync(ticket.Id, JsonConvert.SerializeObject(ticket), _expiry).ConfigureAwait(false);
+            var result = await _database.StringSetAsync(ticket.Id, JsonConvert.SerializeObject(ticket), _expiry).ConfigureAwait(false);
+
+            return (result, result ? ticket.Requester : Array.Empty<Claim>());
         }
 
         /// <inheritdoc />

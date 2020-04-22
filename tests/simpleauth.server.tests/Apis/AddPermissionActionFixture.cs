@@ -15,7 +15,9 @@
 namespace SimpleAuth.Server.Tests.Apis
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Moq;
@@ -103,9 +105,20 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Adding_Permission_Then_TicketId_Is_Returned()
         {
+            var handler = new JwtSecurityTokenHandler();
+            var idtoken = handler.CreateEncodedJwt(
+                "test",
+                "test",
+                new ClaimsIdentity(new[] { new Claim("sub", "tester") }),
+                null,
+                null,
+                null,
+                null);
             const string resourceSetId = "resource_set_id";
-            var addPermissionParameter =
-                new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
+            var addPermissionParameter = new PermissionRequest
+            {
+                ResourceSetId = resourceSetId, Scopes = new[] {"scope"}, IdToken = idtoken
+            };
             var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
             InitializeFakeObjects(resources);
             _ticketStoreStub.Setup(r => r.Add(It.IsAny<Ticket>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
@@ -114,7 +127,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .Execute("tester", CancellationToken.None, addPermissionParameter)
                 .ConfigureAwait(false);
 
-            Assert.NotEmpty(result);
+            Assert.NotEmpty(result.requesterClaims);
         }
 
         private void InitializeFakeObjects(params ResourceSet[] resourceSets)
@@ -123,7 +136,7 @@ namespace SimpleAuth.Server.Tests.Apis
             _resourceSetRepositoryStub
                 .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns<string, string, CancellationToken>(
-                    (o,s, c) => Task.FromResult(resourceSets.FirstOrDefault(x => x.Id == s)));
+                    (o, s, c) => Task.FromResult(resourceSets.FirstOrDefault(x => x.Id == s)));
             _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(resourceSets);
             _ticketStoreStub = new Mock<ITicketStore>();

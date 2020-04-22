@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Shared.Repositories
 {
     using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Models;
@@ -24,7 +25,7 @@
         /// <param name="ticketId">The ticket to approve.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<bool> ApproveAccess(string ticketId, CancellationToken cancellationToken = default);
+        Task<(bool success, Claim[] requester)> ApproveAccess(string ticketId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes the specified ticket identifier.

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Shared.Models;
@@ -59,18 +60,20 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> ApproveAccess(string ticketId, CancellationToken cancellationToken = default)
+        public async Task<(bool success, Claim[] requester)> ApproveAccess(
+            string ticketId,
+            CancellationToken cancellationToken = default)
         {
             try
             {
                 await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                 if (!_tickets.ContainsKey(ticketId))
                 {
-                    return false;
+                    return (false, Array.Empty<Claim>());
                 }
 
                 _tickets[ticketId].IsAuthorizedByRo = true;
-                return true;
+                return (true, _tickets[ticketId].Requester.ToArray());
             }
             finally
             {

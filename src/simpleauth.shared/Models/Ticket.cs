@@ -15,6 +15,7 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
+    using System.Security.Claims;
 
     /// <summary>
     /// Defines the ticket content.
@@ -65,5 +66,10 @@ namespace SimpleAuth.Shared.Models
         /// The lines.
         /// </value>
         public TicketLine[] Lines { get; set; }
+
+        /// <summary>
+        /// Gets or sets the claims associated with the requester.
+        /// </summary>
+        public Claim[] Requester { get; set; }
     }
 }

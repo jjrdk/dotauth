@@ -440,7 +440,7 @@ namespace SimpleAuth.AcceptanceTests
                     },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
 
-                    AllowedScopes = new[] {"openid", "register_client", "manage_profile", "manage_account_filtering"},
+                    AllowedScopes = new[] {"openid", "register_client", "manage_account_filtering"},
                     GrantTypes = new[] {GrantTypes.ClientCredentials},
                     JsonWebKeys =
                         new JsonWebKeySet().AddKey(

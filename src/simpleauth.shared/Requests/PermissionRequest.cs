@@ -39,5 +39,11 @@ namespace SimpleAuth.Shared.Requests
         /// </value>
         [DataMember(Name = "scopes")]
         public string[] Scopes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id token of the ticket requester.
+        /// </summary>
+        [DataMember(Name = "id_token")]
+        public string IdToken { get; set; }
     }
 }

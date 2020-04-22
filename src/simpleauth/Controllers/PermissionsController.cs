@@ -87,21 +87,28 @@ namespace SimpleAuth.Controllers
         [Route("{id}/approve")]
         public async Task<IActionResult> ApprovePermissionRequest(string id, CancellationToken cancellationToken)
         {
-            var result = await _ticketStore.ApproveAccess(id, cancellationToken);
-            if (result)
+            var (success, claims) = await _ticketStore.ApproveAccess(id, cancellationToken);
+            if (success)
             {
                 await _eventPublisher.Publish(
-                    new UmaRequestApproved(Id.Create(), id, User.GetClientId(), User.GetSubject(), DateTimeOffset.UtcNow))
+                        new UmaRequestApproved(
+                            Id.Create(),
+                            id,
+                            User.GetClientId(),
+                            User.GetSubject(),
+                            claims,
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
-            return result
-                ? (IActionResult)RedirectToAction("GetPermissionRequests", "Permissions")
+
+            return success
+                ? (IActionResult) RedirectToAction("GetPermissionRequests", "Permissions")
                 : BadRequest(
                     new ErrorViewModel
                     {
                         Title = "Update Failed",
                         Message = "Could not update approval for ticket " + id,
-                        Code = (int)HttpStatusCode.BadRequest
+                        Code = (int) HttpStatusCode.BadRequest
                     });
         }
 
@@ -131,13 +138,20 @@ namespace SimpleAuth.Controllers
 
             var subject = User.GetSubject();
 
-            var ticketId = await _requestPermission.Execute(subject, cancellationToken, permissionRequest)
+            var (ticketId, requesterClaims) = await _requestPermission
+                .Execute(subject, cancellationToken, permissionRequest)
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
-                    new UmaTicketCreated(Id.Create(), User.GetClientId(), ticketId, DateTimeOffset.UtcNow, permissionRequest))
+                    new UmaTicketCreated(
+                        Id.Create(),
+                        User.GetClientId(),
+                        ticketId,
+                        requesterClaims,
+                        DateTimeOffset.UtcNow,
+                        permissionRequest))
                 .ConfigureAwait(false);
-            var result = new TicketResponse { TicketId = ticketId };
-            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
+            var result = new TicketResponse {TicketId = ticketId};
+            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
         }
 
         /// <summary>
@@ -157,19 +171,26 @@ namespace SimpleAuth.Controllers
             }
 
             var subject = User.GetSubject();
-            var ticketId = await _requestPermission.Execute(subject, cancellationToken, permissionRequests)
+            var (ticketId, requesterClaims) = await _requestPermission
+                .Execute(subject, cancellationToken, permissionRequests)
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
-                    new UmaTicketCreated(Id.Create(), User.GetClientId(), ticketId, DateTimeOffset.UtcNow, permissionRequests))
+                    new UmaTicketCreated(
+                        Id.Create(),
+                        User.GetClientId(),
+                        ticketId,
+                        requesterClaims,
+                        DateTimeOffset.UtcNow,
+                        permissionRequests))
                 .ConfigureAwait(false);
-            var result = new TicketResponse { TicketId = ticketId };
-            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
+            var result = new TicketResponse {TicketId = ticketId};
+            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
         }
 
         private static IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
-            return new BadRequestObjectResult(error) { StatusCode = (int)statusCode };
+            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
+            return new BadRequestObjectResult(error) {StatusCode = (int) statusCode};
         }
     }
 }
