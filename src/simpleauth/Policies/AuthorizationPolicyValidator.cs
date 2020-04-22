@@ -91,7 +91,7 @@ namespace SimpleAuth.Policies
                                     Id.Create(),
                                     validTicket.Id,
                                     client.ClientId,
-                                    requester,
+                                    requester.Claims,
                                     DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
 

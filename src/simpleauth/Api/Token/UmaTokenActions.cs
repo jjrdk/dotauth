@@ -167,7 +167,7 @@
                         ticket.Id,
                         client.ClientId,
                         ticket.ResourceOwner,
-                        authorizationResult.Principal,
+                        authorizationResult.Principal.Claims,
                         DateTimeOffset.UtcNow));
                 return new GenericResponse<GrantedToken>
                 {
@@ -188,7 +188,7 @@
                             Id.Create(),
                             parameter.Ticket,
                             parameter.ClientId,
-                            authorizationResult.Principal,
+                            authorizationResult.Principal.Claims,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 return new GenericResponse<GrantedToken>
@@ -208,7 +208,7 @@
                         Id.Create(),
                         parameter.Ticket,
                         parameter.ClientId,
-                        authorizationResult.Principal,
+                        authorizationResult.Principal.Claims,
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return new GenericResponse<GrantedToken>

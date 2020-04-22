@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Shared.Events.Uma
 {
     using System;
+    using System.Collections.Generic;
     using System.Security.Claims;
 
     /// <summary>
@@ -17,7 +18,7 @@
         /// <param name="clientId">The client identifier.</param>
         /// <param name="requester">The ticket requester.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public UmaRequestNotAuthorized(string id, string ticket, string clientId, ClaimsPrincipal requester, DateTimeOffset timestamp)
+        public UmaRequestNotAuthorized(string id, string ticket, string clientId, IEnumerable<Claim> requester, DateTimeOffset timestamp)
             : base(id, ticket, clientId, requester, timestamp)
         {
         }

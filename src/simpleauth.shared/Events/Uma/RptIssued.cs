@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Shared.Events.Uma
 {
     using System;
+    using System.Collections.Generic;
     using System.Security.Claims;
 
     /// <summary>
@@ -9,7 +10,7 @@
     public class RptIssued : UmaTicketEvent
     {
         /// <inheritdoc />
-        public RptIssued(string id, string ticketId, string clientId, string resourceOwner, ClaimsPrincipal requester, DateTimeOffset timestamp)
+        public RptIssued(string id, string ticketId, string clientId, string resourceOwner, IEnumerable<Claim> requester, DateTimeOffset timestamp)
             : base(id, ticketId, clientId, requester, timestamp)
         {
             ResourceOwner = resourceOwner;

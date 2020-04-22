@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Shared.Events.Uma
 {
     using System;
+    using System.Collections.Generic;
     using System.Security.Claims;
 
     /// <summary>
@@ -17,7 +18,7 @@
         /// <param name="requester"></param>
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="clientId"></param>
-        public AuthorizationRequestSubmitted(string id, string ticketId, string clientId, ClaimsPrincipal requester, DateTimeOffset timestamp)
+        public AuthorizationRequestSubmitted(string id, string ticketId, string clientId, IEnumerable<Claim> requester, DateTimeOffset timestamp)
             : base(id, ticketId, clientId, requester, timestamp)
         {
         }

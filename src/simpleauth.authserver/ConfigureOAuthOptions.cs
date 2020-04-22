@@ -40,6 +40,8 @@
             //options.ResponseMode = OpenIdConnectResponseMode.FormPost;
             options.Scope.Clear();
             options.Scope.Add("openid");
+            options.Scope.Add("profile");
+            options.Scope.Add("email");
             options.Scope.Add("uma_protection");
         }
     }

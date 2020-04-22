@@ -17,8 +17,9 @@
                     </div>
                     <div class="row col s12">
                         <div class="row col s12">
-                            <div class="col m2">Ticket ID</div>
-                            <div class="col m3">Request</div>
+                            <div class="col m1">Ticket ID</div>
+                            <div class="col m2">Requester</div>
+                            <div class="col m2">Request</div>
                             <div class="col m3">Created</div>
                             <div class="col m3">Expires</div>
                             <div class="col m1"> </div>
@@ -28,8 +29,16 @@
                             <div class="row col s12">
                                 @using (Html.BeginForm("ApprovePermissionRequest", "Permissions", new { id = Model[i].Id }, FormMethod.Post))
                                 {
-                                    <div class="col m2">@Model[i].Id</div>
-                                    <div class="col m3">
+                                    <div class="col m1">@Model[i].Id</div>
+                                    @if (Model[i].Requester == null)
+                                    {
+                                        <div class="col m2">Unidentified</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col m2">@string.Join(", ", Model[i].Requester.Select(claim => $"{claim.Type}={claim.Value}"))</div>
+                                    }
+                                    <div class="col m2">
                                         @for (var j = 0; j < Model[i].Lines.Length; j++)
                                         {
                                             <span style="font-weight: bold">@Model[i].Lines[j].ResourceSetId: </span>
