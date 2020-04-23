@@ -18,10 +18,10 @@
                     <div class="row col s12">
                         <div class="row col s12">
                             <div class="col m1">Ticket ID</div>
-                            <div class="col m2">Requester</div>
-                            <div class="col m2">Request</div>
-                            <div class="col m3">Created</div>
-                            <div class="col m3">Expires</div>
+                            <div class="col m3">Requester</div>
+                            <div class="col m3">Request</div>
+                            <div class="col m2">Created</div>
+                            <div class="col m2">Expires</div>
                             <div class="col m1"> </div>
                         </div>
                         @for (var i = 0; i < Model.Length; i++)
@@ -32,13 +32,18 @@
                                     <div class="col m1">@Model[i].Id</div>
                                     @if (Model[i].Requester == null)
                                     {
-                                        <div class="col m2">Unidentified</div>
+                                        <div class="col m3">Unidentified</div>
                                     }
                                     else
                                     {
-                                        <div class="col m2">@string.Join(", ", Model[i].Requester.Select(claim => $"{claim.Type}={claim.Value}"))</div>
+                                        <div class="col m3">
+                                            @foreach (var claim in Model[i].Requester)
+                                            {
+                                                <span>@claim.Type: @claim.Value</span><br />
+                                            }
+                                        </div>
                                     }
-                                    <div class="col m2">
+                                    <div class="col m3">
                                         @for (var j = 0; j < Model[i].Lines.Length; j++)
                                         {
                                             <span style="font-weight: bold">@Model[i].Lines[j].ResourceSetId: </span>
@@ -46,8 +51,8 @@
                                             <br />
                                         }
                                     </div>
-                                    <div class="col m3">@Model[i].Created</div>
-                                    <div class="col m3">@Model[i].Expires</div>
+                                    <div class="col m2">@Model[i].Created</div>
+                                    <div class="col m2">@Model[i].Expires</div>
                                     <div class="col m1">
                                         <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Approve</button>
                                     </div>

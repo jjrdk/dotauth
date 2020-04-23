@@ -17,8 +17,14 @@
             RequesterClaims = requesterClaims;
         }
 
+        /// <summary>
+        /// Gets the approver subject.
+        /// </summary>
         public string ApproverSubject { get; }
 
+        /// <summary>
+        /// Gets the requester's id claims (if any).
+        /// </summary>
         public Claim[] RequesterClaims { get; }
     }
 }

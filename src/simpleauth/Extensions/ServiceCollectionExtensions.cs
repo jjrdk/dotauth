@@ -197,8 +197,8 @@ namespace SimpleAuth.Extensions
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             mvcBuilder = applicationParts.Concat(new[] { typeof(ServiceCollectionExtensions).Assembly })
                 .Distinct()
-                .Aggregate(mvcBuilder, (b, a) => b.AddApplicationPart(a));
-            services.AddRazorPages().AddNewtonsoftJson();
+                .Aggregate(mvcBuilder, (b, a) => b.AddApplicationPart(a))
+                .AddNewtonsoftJson();
             Globals.ApplicationName = options.ApplicationName ?? "SimpleAuth";
             var runtimeConfig = GetRuntimeConfig(options);
             services.AddAuthentication();

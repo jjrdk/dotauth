@@ -120,6 +120,9 @@
                     Claims = new[]
                     {
                         new Claim(StandardClaimNames.Subject, "user"),
+                        new Claim(OpenIdClaimTypes.Name, "Anne User"),
+                        new Claim(OpenIdClaimTypes.Email, "user@server.com"), 
+                        new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString), 
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,

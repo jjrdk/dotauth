@@ -109,5 +109,29 @@
         /// The role
         /// </summary>
         public const string Role = "role";
+
+        public static readonly string[] All = new[]
+        {
+            Subject,
+            Name,
+            NickName,
+            GivenName,
+            FamilyName,
+            MiddleName,
+            Email,
+            EmailVerified,
+            Address,
+            BirthDate,
+            Gender,
+            Locale,
+            PhoneNumber,
+            PhoneNumberVerified,
+            Picture,
+            PreferredUserName,
+            Profile,
+            Role,
+            WebSite,
+            ZoneInfo
+        };
     }
 }

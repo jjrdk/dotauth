@@ -58,7 +58,10 @@ namespace SimpleAuth.ResourceServer
             try
             {
                 tickets = claims.Where(c => c.Type == "permissions")
-                    .Select(c => JsonConvert.DeserializeObject<Permission>(c.Value))
+                    .SelectMany(
+                        c => c.Value.StartsWith("[")
+                            ? JsonConvert.DeserializeObject<Permission[]>(c.Value)
+                            : new[] {JsonConvert.DeserializeObject<Permission>(c.Value)})
                     .ToArray();
                 return tickets?.Length > 0;
             }

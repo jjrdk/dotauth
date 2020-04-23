@@ -30,7 +30,6 @@ namespace SimpleAuth.AuthServer
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
-    using SimpleAuth.ResourceServer;
     using SimpleAuth.Shared.Models;
 
     internal class Startup

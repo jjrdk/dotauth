@@ -19,12 +19,20 @@
         /// <param name="clientId">The client identifier.</param>
         /// <param name="requester">The ticket requester.</param>
         /// <param name="timestamp">The timestamp.</param>
-        protected UmaTicketEvent(string id, string ticketId, string clientId, IEnumerable<Claim> requester, DateTimeOffset timestamp)
+        protected UmaTicketEvent(
+            string id,
+            string ticketId,
+            string clientId,
+            IEnumerable<Claim> requester,
+            DateTimeOffset timestamp)
             : base(id, timestamp)
         {
             TicketId = ticketId;
             ClientId = clientId;
-            Requester = requester.Select(claim => new Claim(claim.Type, claim.Value, claim.ValueType, claim.Issuer)).ToArray();
+            Requester = requester == null
+                ? Array.Empty<Claim>()
+                : requester.Select(claim => new Claim(claim.Type, claim.Value, claim.ValueType, claim.Issuer))
+                    .ToArray();
         }
 
         /// <summary>

@@ -55,6 +55,7 @@ namespace SimpleAuth.Api.PermissionController
                 .Distinct()
                 .Select(x => handler.ReadJwtToken(x))
                 .SelectMany(x => x.Claims)
+                .Where(claim => OpenIdClaimTypes.All.Contains(claim.Type))
                 .ToArray();
 
             var ticket = new Ticket
