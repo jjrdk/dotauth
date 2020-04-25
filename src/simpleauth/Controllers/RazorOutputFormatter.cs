@@ -25,6 +25,7 @@
             SupportedEncodings.Add(Encoding.UTF8);
             SupportedEncodings.Add(Encoding.ASCII);
             SupportedEncodings.Add(Encoding.UTF32);
+            SupportedEncodings.Add(Encoding.Unicode);
             SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
             SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/xhtml"));
             SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/xhtml"));

@@ -5,20 +5,19 @@
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using SimpleAuth;
-    using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.Sms;
     using System;
-    using System.Text.RegularExpressions;
+    using System.Net.Http;
     using System.Threading;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
-
-    using SimpleAuth.ResourceServer;
+    using SimpleAuth.Client;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Sms.Ui;
+    using SimpleAuth.UI;
 
     public class ServerStartup
     {
@@ -78,7 +77,8 @@
                     {
                         CookieAuthenticationDefaults.AuthenticationScheme,
                         JwtBearerDefaults.AuthenticationScheme,
-                    })
+                    },
+                    assemblyTypes: new[] { typeof(IDefaultUi), typeof(IDefaultSmsUi) })
                 .AddSmsAuthentication(mockSmsClient.Object);
             services.AddLogging().AddAccountFilter();
             services.AddAuthentication(
@@ -101,7 +101,28 @@
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseSimpleAuthMvc();
+            app.UseSimpleAuthMvc(typeof(IDefaultUi));
         }
     }
+
+    /// <summary>
+    /// Defines extensions to <see cref="IServiceCollection"/>.
+    /// </summary>
+    public static class ServiceCollectionExtensions
+    {
+        /// <summary>
+        /// Adds UMA dependencies to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <param name="serviceCollection">The <see cref="IServiceCollection"/> to add dependencies to.</param>
+        /// <param name="umaAuthority">The <see cref="Uri"/> where to find the discovery document.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddUmaClient(this IServiceCollection serviceCollection, Uri umaAuthority)
+        {
+            serviceCollection.AddSingleton(sp => new UmaClient(sp.GetRequiredService<HttpClient>(), umaAuthority));
+            serviceCollection.AddTransient<IUmaPermissionClient, UmaClient>(sp => sp.GetRequiredService<UmaClient>());
+
+            return serviceCollection;
+        }
+    }
+
 }

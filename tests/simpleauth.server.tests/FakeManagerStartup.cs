@@ -15,7 +15,6 @@
 namespace SimpleAuth.Server.Tests
 {
     using Controllers;
-    using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using SimpleAuth;
@@ -23,6 +22,7 @@ namespace SimpleAuth.Server.Tests
     using System.Net.Http;
     using System.Reflection;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using SimpleAuth.UI;
 
     public class FakeManagerStartup
     {
@@ -36,18 +36,20 @@ namespace SimpleAuth.Server.Tests
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseSimpleAuthMvc();
+            app.UseSimpleAuthMvc(typeof(IDefaultUi));
         }
 
         private void RegisterServices(IServiceCollection serviceCollection)
         {
             var client = new HttpClient();
-            serviceCollection.AddSimpleAuth(new SimpleAuthOptions
-            {
-                Users = sp => new InMemoryResourceOwnerRepository(DefaultStorage.GetUsers()),
-                HttpClientFactory = () => client
-            },
-                new[] { JwtBearerDefaults.AuthenticationScheme });
+            serviceCollection.AddSimpleAuth(
+                new SimpleAuthOptions
+                {
+                    Users = sp => new InMemoryResourceOwnerRepository(DefaultStorage.GetUsers()),
+                    HttpClientFactory = () => client
+                },
+                new[] {JwtBearerDefaults.AuthenticationScheme},
+                assemblyTypes: typeof(IDefaultUi));
             serviceCollection.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;

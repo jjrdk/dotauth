@@ -16,12 +16,6 @@
   </PropertyGroup>
 
   <Import Project="..\..\shared.proj" />
-  <ItemGroup>
-    <None Remove="Areas\**\*.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <RazorGenerate Include="Areas\sms\Views\**\*.cshtml" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />

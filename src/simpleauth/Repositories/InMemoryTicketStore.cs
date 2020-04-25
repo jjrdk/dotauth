@@ -73,7 +73,7 @@
                 }
 
                 _tickets[ticketId].IsAuthorizedByRo = true;
-                return (true, _tickets[ticketId].Requester.ToArray());
+                return (true, _tickets[ticketId].Requester?.ToArray());
             }
             finally
             {

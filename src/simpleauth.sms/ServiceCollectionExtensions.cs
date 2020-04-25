@@ -10,36 +10,6 @@
     /// </summary>
     public static class ServiceCollectionExtensions
     {
-        ///// <summary>
-        ///// Adds the two factor SMS authentication.
-        ///// </summary>
-        ///// <param name="services">The services.</param>
-        ///// <param name="smsOptions">The SMS options.</param>
-        ///// <returns></returns>
-        ///// <exception cref="ArgumentNullException">
-        ///// services
-        ///// or
-        ///// smsOptions
-        ///// </exception>
-        //public static IServiceCollection AddTwoFactorSmsAuthentication(
-        //    this IServiceCollection services,
-        //    TwoFactorSmsOptions smsOptions)
-        //{
-        //    if (services == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(services));
-        //    }
-
-        //    if (smsOptions == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(smsOptions));
-        //    }
-
-        //    services.AddSingleton(smsOptions);
-        //    services.AddTransient<ITwoFactorAuthenticationService, DefaultSmsService>();
-        //    return services;
-        //}
-
         /// <summary>
         /// Adds the SMS authentication.
         /// </summary>

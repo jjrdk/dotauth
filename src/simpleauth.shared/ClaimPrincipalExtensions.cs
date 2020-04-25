@@ -14,14 +14,63 @@
 
 namespace SimpleAuth.Shared
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using Newtonsoft.Json;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the ClaimPrincipal extensions.
     /// </summary>
     public static class ClaimPrincipalExtensions
     {
+        /// <summary>
+        /// Tries to get the ticket lines from the current user claims.
+        /// </summary>
+        /// <param name="identity">The user as a <see cref="ClaimsIdentity"/> instance.</param>
+        /// <param name="tickets">The found array of <see cref="TicketLine"/>. If none are found, then returns an empty array.
+        /// If no user is found then returns <c>null</c>.</param>
+        /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
+        public static bool TryGetUmaTickets(this ClaimsIdentity identity, out Permission[] tickets)
+        {
+            Permission[] t = null;
+            var result = identity?.Claims.TryGetUmaTickets(out t);
+            tickets = t;
+            return result == true;
+        }
+
+        /// <summary>
+        /// Tries to get the ticket lines from the current user claims.
+        /// </summary>
+        /// <param name="claims">The user claims.</param>
+        /// <param name="tickets">The found array of <see cref="TicketLine"/>. If none are found, then returns an empty array.
+        /// If no user is found then returns <c>null</c>.</param>
+        /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
+        public static bool TryGetUmaTickets(this IEnumerable<Claim> claims, out Permission[] tickets)
+        {
+            tickets = null;
+            if (claims == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                tickets = claims.Where(c => c.Type == "permissions")
+                    .SelectMany(
+                        c => c.Value.StartsWith("[")
+                            ? JsonConvert.DeserializeObject<Permission[]>(c.Value)
+                            : new[] {JsonConvert.DeserializeObject<Permission>(c.Value)})
+                    .ToArray();
+                return tickets?.Length > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Returns if the user is authenticated
         /// </summary>

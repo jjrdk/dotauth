@@ -1,0 +1,67 @@
+﻿@using SimpleAuth.Extensions
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="icon" type="image/png" href="@Url.Content("~/img/favicon/favicon.ico")">
+    <link rel="stylesheet" href="@Url.Content("~/css/materialize.custom.css")" media="screen,projection" />
+    <script type="text/javascript" src="@Url.Content("~/js/materialize.min.js")"></script>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="white">
+        <div class="nav-wrapper">
+            <a href="@Url.Content("~/")" class="brand-logo"><img src="@Url.Content("~/img/icon.png")" alt="icon" class="hide-on-small-only" />@Globals.ApplicationName</a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <ul id="nav-mobile" class="right">
+                    <li>
+                        <a class='dropdown-trigger' href='#' data-target='dropdown1'>
+                            <i class="material-icons grey-text">account_circle</i>
+                        </a>
+                    </li>
+                </ul>
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li><a href="@Url.Content("~/Authenticate/Logout")">Log Out</a></li>
+                </ul>
+            }
+        </div>
+    </nav>
+
+<div class="container">
+    <div class="section">
+        @RenderSection("PageTitle", false)
+        @RenderBody()
+    </div>
+</div>
+<script type="text/javascript">
+    const fields = document.querySelectorAll(".input-field");
+    fields.forEach((field, index) => {
+        const input = field.querySelector("input");
+        const label = field.querySelector("label");
+        if (input.value) {
+            label.classList.add("active");
+        }
+        input.addEventListener("focus", () => { label.classList.add("active") });
+        input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
+    });
+</script>
+    @RenderSection("Scripts", required: false)
+    @if (User.Identity.IsAuthenticated)
+    {
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                var elems = document.querySelectorAll('.dropdown-trigger');
+                M.Dropdown.init(elems, {});
+            });
+            //$(document).ready(function () {
+            //    $(function () {
+            //        $('.dropdown-trigger').dropdown({ alignment: 'right' });
+            //    });
+            //});
+        </script>
+    }
+</body>
+</html>

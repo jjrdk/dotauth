@@ -31,6 +31,7 @@ namespace SimpleAuth.AuthServer
     using System.Net.Http;
     using System.Security.Claims;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.UI;
 
     internal class Startup
     {
@@ -137,7 +138,7 @@ namespace SimpleAuth.AuthServer
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = new[] {"http://localhost:5000", "https://localhost:5001"}
+                            ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
                         };
                         cfg.RequireHttpsMetadata = false;
                     });
@@ -164,13 +165,15 @@ namespace SimpleAuth.AuthServer
 
             services.AddSimpleAuth(
                 _options,
-                new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
-                applicationParts: GetType().Assembly);
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                null,
+                null,
+                (GetType().Namespace, GetType().Assembly), (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseResponseCompression().UseSimpleAuthMvc();
+            app.UseResponseCompression().UseSimpleAuthMvc((typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
         }
     }
 }

@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "Authenticate";
+    var phoneNumberState = ViewData.ModelState["PhoneNumber"];
+}
+
+@model SimpleAuth.ViewModels.AuthorizeViewModel
+@section Scripts
+{
+    <script>
+        const fields = document.querySelectorAll(".input-field");
+        fields.forEach((field, index) => {
+            const input = field.querySelector("input");
+            const label = field.querySelector("label");
+            input.addEventListener("focus", () => { label.classList.add("active") });
+            input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
+        });
+    </script>
+}
+<div class="row">
+    <div class="col s12 m6 offset-m3">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <h5>Log in with one-time password</h5>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        <div class="col s12">@Html.ValidationMessage("invalid_credentials")</div>
+                        <form name="form" method="POST" action="@Url.Action("LocalLogin")">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    @if (phoneNumberState != null && phoneNumberState.Errors.Any())
+                                    {
+                                    <i class="material-icons prefix">call</i>
+                                    <input id="phonenumber" class="invalid" name="PhoneNumber" type="text" />
+                                    <label for="phonenumber">Phone Number</label>
+                                    <span class="helper-text">@string.Join(",", phoneNumberState.Errors.Select(e => e.ErrorMessage))</span>
+                                    }
+                                    else
+                                    {
+                                    <i class="material-icons prefix">call</i>
+                                    <input id="phonenumber" name="PhoneNumber" type="text" />
+                                    <label for="phonenumber">Phone Number</label>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col s12">
+                                <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Log In</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

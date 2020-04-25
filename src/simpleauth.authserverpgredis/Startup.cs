@@ -34,9 +34,10 @@ namespace SimpleAuth.AuthServerPgRedis
     using SimpleAuth;
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.Stores.Redis;
-
+    using SimpleAuth.UI;
     using StackExchange.Redis;
 
     internal class Startup
@@ -121,10 +122,10 @@ namespace SimpleAuth.AuthServerPgRedis
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
                 .AddHttpContextAccessor()
                 .AddCors(
@@ -136,7 +137,7 @@ namespace SimpleAuth.AuthServerPgRedis
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.TokenValidationParameters = new TokenValidationParameters {ValidateAudience = false,};
+                        cfg.TokenValidationParameters = new TokenValidationParameters { ValidateAudience = false, };
 #if DEBUG
                         cfg.RequireHttpsMetadata = false;
 #endif
@@ -163,12 +164,13 @@ namespace SimpleAuth.AuthServerPgRedis
 
             services.AddSimpleAuth(
                 _options,
-                new[] {CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme});
+                new[] { CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme },
+                assemblyTypes: new[] { typeof(IDefaultUi), typeof(IDefaultSmsUi) });
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseResponseCompression().UseSimpleAuthMvc();
+            app.UseResponseCompression().UseSimpleAuthMvc(typeof(IDefaultUi));
         }
     }
 }

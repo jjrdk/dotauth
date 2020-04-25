@@ -30,6 +30,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Server.Tests.MiddleWares;
     using SimpleAuth.Server.Tests.Stores;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.UI;
 
     public class FakeUmaStartup
     {
@@ -84,7 +85,8 @@ namespace SimpleAuth.Server.Tests
                     Scopes = sp => new InMemoryScopeRepository(OAuthStores.GetScopes()),
                     ResourceSets = sp => new InMemoryResourceSetRepository(UmaStores.GetResources())
                 },
-                new[] { DefaultSchema });
+                new[] {DefaultSchema},
+                assemblyTypes: typeof(IDefaultUi));
 
             // 3. Enable logging.
             services.AddLogging();
@@ -113,7 +115,7 @@ namespace SimpleAuth.Server.Tests
                     await next.Invoke().ConfigureAwait(false);
                 });
 
-            app.UseSimpleAuthMvc();
+            app.UseSimpleAuthMvc(typeof(IDefaultUi));
         }
     }
 }

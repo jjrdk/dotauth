@@ -54,6 +54,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.authserverpgredi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.integrationtests", "tests\simpleauth.integrationtests\simpleauth.integrationtests.csproj", "{4EC6178C-DA40-4750-B5D6-7197394E19D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleauth.ui", "src\simpleauth.ui\simpleauth.ui.csproj", "{240705F8-254F-4749-A61D-0AFF512B7C27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleauth.sms.ui", "src\simpleauth.sms.ui\simpleauth.sms.ui.csproj", "{F6F67CDE-62BF-4833-8A2A-CD2BE981B546}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,6 +124,14 @@ Global
 		{4EC6178C-DA40-4750-B5D6-7197394E19D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EC6178C-DA40-4750-B5D6-7197394E19D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EC6178C-DA40-4750-B5D6-7197394E19D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{240705F8-254F-4749-A61D-0AFF512B7C27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{240705F8-254F-4749-A61D-0AFF512B7C27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{240705F8-254F-4749-A61D-0AFF512B7C27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{240705F8-254F-4749-A61D-0AFF512B7C27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6F67CDE-62BF-4833-8A2A-CD2BE981B546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6F67CDE-62BF-4833-8A2A-CD2BE981B546}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6F67CDE-62BF-4833-8A2A-CD2BE981B546}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6F67CDE-62BF-4833-8A2A-CD2BE981B546}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

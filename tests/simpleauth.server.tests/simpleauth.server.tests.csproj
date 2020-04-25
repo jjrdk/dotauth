@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\simpleauth.sms\simpleauth.sms.csproj" />
+    <ProjectReference Include="..\..\src\simpleauth.ui\simpleauth.ui.csproj" />
     <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
     <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
   </ItemGroup>

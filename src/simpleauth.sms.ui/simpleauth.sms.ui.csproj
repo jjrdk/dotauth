@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>SimpleAuth.Sms.Ui</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Areas\**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Areas\**\*.*" />
+  </ItemGroup>
+
+</Project>

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>SimpleAuth Server</Description>
@@ -15,41 +15,6 @@
   </PropertyGroup>
 
   <Import Project="..\..\shared.proj" />
-
-  <ItemGroup>
-    <None Remove="Views\**\*.cshtml" />
-    <None Remove="Views\**\*.html" />
-    <None Remove="wwwroot\**\*.css" />
-    <None Remove="wwwroot\**\*.js" />
-    <None Remove="wwwroot\**\*.png" />
-    <None Remove="wwwroot\**\*.ico" />
-    <None Remove="wwwroot\**\*.woff2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Views\**\*.html" />
-    <EmbeddedResource Include="wwwroot\**\*.css" />
-    <EmbeddedResource Include="wwwroot\**\*.js" />
-    <EmbeddedResource Include="wwwroot\**\*.png" />
-    <EmbeddedResource Include="wwwroot\**\*.ico" />
-    <EmbeddedResource Include="wwwroot\**\*.woff2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <RazorGenerate Include="Views\**\*.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Views\Home\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <RazorGenerate Remove="Views\Permissions\ApprovePermissionRequest.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Home\Index.cshtml" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.3" />

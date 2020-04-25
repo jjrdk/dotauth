@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>SimpleAuth.UI</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="**\*.html" />
+    <EmbeddedResource Include="**\*.cshtml" />
+    <EmbeddedResource Include="**\*.css" />
+    <EmbeddedResource Include="**\*.js" />
+    <EmbeddedResource Include="**\*.png" />
+    <EmbeddedResource Include="**\*.ico" />
+    <EmbeddedResource Include="**\*.woff2" />
+  </ItemGroup>
+
+</Project>

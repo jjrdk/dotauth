@@ -14,8 +14,6 @@
 
 namespace SimpleAuth.Server.Tests
 {
-    using Extensions;
-
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.IdentityModel.Logging;
@@ -36,6 +34,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Shared;
     using SimpleAuth.Sms;
     using SimpleAuth.Sms.Services;
+    using SimpleAuth.UI;
 
     public class FakeStartup
     {
@@ -91,7 +90,7 @@ namespace SimpleAuth.Server.Tests
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseSimpleAuthMvc();
+            app.UseSimpleAuthMvc(typeof(IDefaultUi));
         }
     }
 }

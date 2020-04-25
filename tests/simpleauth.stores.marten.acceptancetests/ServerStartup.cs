@@ -12,6 +12,7 @@
     using Microsoft.AspNetCore.Authentication.JwtBearer;
 
     using SimpleAuth.Repositories;
+    using SimpleAuth.UI;
 
     public class ServerStartup
     {
@@ -59,7 +60,10 @@
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-            services.AddSimpleAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme });
+            services.AddSimpleAuth(
+                _martenOptions,
+                new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme },
+                assemblyTypes: typeof(IDefaultUi));
             services.AddLogging().AddAccountFilter().AddSingleton(sp => _context.Client);
             services.AddAuthentication(
                     cfg =>
@@ -80,7 +84,7 @@
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseSimpleAuthMvc();
+            app.UseSimpleAuthMvc(typeof(IDefaultUi));
         }
     }
 }

@@ -15,7 +15,6 @@
 namespace SimpleAuth.AuthServerPg
 {
     using System;
-    using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
@@ -31,7 +30,9 @@ namespace SimpleAuth.AuthServerPg
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
+    using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;
+    using SimpleAuth.UI;
 
     public class Startup
     {
@@ -101,10 +102,10 @@ namespace SimpleAuth.AuthServerPg
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
                 .AddHttpContextAccessor()
                 .AddCors(
@@ -146,12 +147,13 @@ namespace SimpleAuth.AuthServerPg
 
             services.AddSimpleAuth(
                 _options,
-                new[] { CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme });
+                new[] { CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme },
+                assemblyTypes: new[] { typeof(IDefaultUi), typeof(IDefaultSmsUi) });
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseResponseCompression().UseSimpleAuthMvc();
+            app.UseResponseCompression().UseSimpleAuthMvc(typeof(IDefaultUi));
         }
     }
 }

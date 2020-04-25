@@ -15,12 +15,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.3" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\simpleauth.sms.ui\simpleauth.sms.ui.csproj" />
     <ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
+    <ProjectReference Include="..\simpleauth.ui\simpleauth.ui.csproj" />
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
   </ItemGroup>
 

@@ -8,7 +8,7 @@
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
-
+    
     /// <summary>
     /// Defines the base client for interacting with an authorization server.
     /// </summary>

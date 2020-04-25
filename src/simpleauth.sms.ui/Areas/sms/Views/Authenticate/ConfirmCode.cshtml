@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "Confirm code";
+}
+
+@model SimpleAuth.Sms.ViewModels.ConfirmCodeViewModel
+@section Scripts
+{
+    <script>
+        const fields = document.querySelectorAll(".input-field");
+        fields.forEach((field, index) => {
+            const input = field.querySelector("input");
+            const label = field.querySelector("label");
+            input.addEventListener("focus", () => { label.classList.add("active") });
+            input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
+        });
+    </script>
+}
+<div class="row">
+    <div class="col s12 m6 offset-m3">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <h5>Confirmation code</h5>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        @Html.ValidationMessage("message_error")
+                    </div>
+                    <div class="row">
+                        @using (Html.BeginForm("ConfirmCode", "Authenticate", null, FormMethod.Post))
+                        {
+                            <div class="row">
+                                @Html.AntiForgeryToken()
+                                @Html.HiddenFor(i => i.Code)
+                                <div class="input-field col s12">
+                                    <!-- Confirmation code -->
+                                    <i class="material-icons prefix">perm_phone_msg</i>
+                                    <input id="confcode" name="ConfirmationCode" type="text" />
+                                    <label for="confcode">Confirmation Code</label>
+                                </div>
+                            </div>
+                            <!-- Submit buttons code -->
+                            <div class="col s12">
+                                <button type="submit" name="Action" value="submit" class="waves-effect waves-light btn blue darken-3 right">Validate code</button>
+                                <button type="submit" name="Action" value="resend" class="waves-effect waves-light btn red darken-3 left">Resend code</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

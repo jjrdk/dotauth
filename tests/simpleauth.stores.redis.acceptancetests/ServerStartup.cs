@@ -14,6 +14,7 @@
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Stores.Marten;
+    using SimpleAuth.UI;
     using StackExchange.Redis;
 
     internal class ServerStartup
@@ -81,7 +82,7 @@
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             // 2. Configure server
-            services.AddSimpleAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme });
+            services.AddSimpleAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme }, assemblyTypes: typeof(IDefaultUi));
             services.AddLogging().AddAccountFilter().AddSingleton(sp => _context.Client);
             services.AddAuthentication(
                     cfg =>
@@ -104,7 +105,7 @@
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseSimpleAuthMvc();
+            app.UseSimpleAuthMvc(typeof(IDefaultUi));
         }
     }
 }
