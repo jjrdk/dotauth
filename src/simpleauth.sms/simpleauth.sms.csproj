@@ -21,6 +21,6 @@
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.101.149" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.101.155" />
   </ItemGroup>
 </Project>
