@@ -38,24 +38,6 @@ namespace SimpleAuth.Extensions
             return $"{uri.Scheme}://{uri.Authority}";
         }
 
-        public static Task DisplayInternalHtml(this ControllerBase controller, string resourceName, Func<string, string> manipulateHtmlCallback = null)
-        {
-            if (string.IsNullOrWhiteSpace(resourceName))
-            {
-                throw new ArgumentNullException(nameof(resourceName));
-            }
-
-            var html = GetHtml(resourceName);
-            if (manipulateHtmlCallback != null)
-            {
-                html = manipulateHtmlCallback(html);
-            }
-
-            controller.Response.ContentType = "text/html; charset=UTF-8";
-            var payload = Encoding.UTF8.GetBytes(html);
-            return controller.Response.Body.WriteAsync(payload, 0, payload.Length);
-        }
-
         public static ActionResult CreateRedirectionFromActionResult(
             this EndpointResult endpointResult,
             AuthorizationRequest authorizationRequest)
@@ -108,10 +90,7 @@ namespace SimpleAuth.Extensions
             return new RedirectResult(uri.AbsoluteUri);
         }
 
-        private static string CreateRedirectHttp(
-            Uri uri,
-            RouteValueDictionary parameters,
-            string responseMode)
+        private static string CreateRedirectHttp(Uri uri, RouteValueDictionary parameters, string responseMode)
         {
             uri = responseMode switch
             {
@@ -120,19 +99,6 @@ namespace SimpleAuth.Extensions
             };
 
             return uri.ToString();
-        }
-
-        private static string GetHtml(string resourceName)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            string html;
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                using var reader = new StreamReader(stream);
-                html = reader.ReadToEnd();
-            }
-
-            return html;
         }
     }
 }
