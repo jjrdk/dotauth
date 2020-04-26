@@ -36,8 +36,10 @@
         @RenderBody()
     </div>
 </div>
-<script type="text/javascript">
-    const fields = document.querySelectorAll(".input-field");
+    @RenderSection("Scripts", required: false)
+    
+        <script type="text/javascript">
+            const fields = document.querySelectorAll(".input-field");
     fields.forEach((field, index) => {
         const input = field.querySelector("input");
         const label = field.querySelector("label");
@@ -47,21 +49,10 @@
         input.addEventListener("focus", () => { label.classList.add("active") });
         input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
     });
-</script>
-    @RenderSection("Scripts", required: false)
-    @if (User.Identity.IsAuthenticated)
-    {
-        <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
                 var elems = document.querySelectorAll('.dropdown-trigger');
                 M.Dropdown.init(elems, {});
             });
-            //$(document).ready(function () {
-            //    $(function () {
-            //        $('.dropdown-trigger').dropdown({ alignment: 'right' });
-            //    });
-            //});
         </script>
-    }
-</body>
+    </body>
 </html>
