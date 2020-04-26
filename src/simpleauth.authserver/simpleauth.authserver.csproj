@@ -20,15 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\simpleauth.sms.ui\simpleauth.sms.ui.csproj" />
+    <ProjectReference Include="..\simpleauth.sms\simpleauth.sms.csproj" />
     <ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
     <ProjectReference Include="..\simpleauth.ui\simpleauth.ui.csproj" />
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\tests\mycert.pfx" Link="mycert.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

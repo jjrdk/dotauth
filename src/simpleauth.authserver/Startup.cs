@@ -15,7 +15,6 @@
 namespace SimpleAuth.AuthServer
 {
     using System;
-    using Extensions;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -30,7 +29,12 @@ namespace SimpleAuth.AuthServer
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
+    using Amazon;
+    using Amazon.Runtime;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Sms;
+    using SimpleAuth.Sms.Ui;
     using SimpleAuth.UI;
 
     internal class Startup
@@ -140,7 +144,9 @@ namespace SimpleAuth.AuthServer
                             ValidateAudience = false,
                             ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
                         };
+#if DEBUG
                         cfg.RequireHttpsMetadata = false;
+#endif
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>();
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
@@ -163,12 +169,32 @@ namespace SimpleAuth.AuthServer
                         });
             }
 
-            services.AddSimpleAuth(
-                _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
-                null,
-                null,
-                (GetType().Namespace, GetType().Assembly), (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
+            if (!string.IsNullOrWhiteSpace(_configuration["Amazon:AccessKey"])
+                && !string.IsNullOrWhiteSpace(_configuration["Amazon:SecretKey"]))
+            {
+                services.AddSimpleAuth(
+                        _options,
+                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                        assemblies: new[]
+                        {
+                            (GetType().Namespace, GetType().Assembly),
+                            (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly),
+                            (typeof(IDefaultSmsUi).Namespace, typeof(IDefaultSmsUi).Assembly)
+                        })
+                    .AddSmsAuthentication(
+                        new AwsSmsClient(new BasicAWSCredentials(_configuration["Amazon:AccessKey"], _configuration["Amazon:SecretKey"]), RegionEndpoint.EUNorth1, Globals.ApplicationName));
+            }
+            else
+            {
+                services.AddSimpleAuth(
+                    _options,
+                    new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
+                    assemblies: new[]
+                    {
+                        (GetType().Namespace, GetType().Assembly),
+                        (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
+                    });
+            }
         }
 
         public void Configure(IApplicationBuilder app)
