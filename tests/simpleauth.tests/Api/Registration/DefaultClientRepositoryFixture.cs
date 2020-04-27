@@ -74,11 +74,11 @@ namespace SimpleAuth.Tests.Api.Registration
             var inserted = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
 
             var result = await _clientRepositoryFake.Search(
-                    new SearchClientsRequest { ClientIds = new[] { inserted.ClientId } },
+                    new SearchClientsRequest { ClientIds = new[] { client.ClientId } },
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(inserted.ClientId, result.Content.First().ClientId);
+            Assert.Equal(client.ClientId, result.Content.First().ClientId);
         }
 
         [Fact]
@@ -136,12 +136,8 @@ namespace SimpleAuth.Tests.Api.Registration
                 RequestUris = new[] { requestUri }
             };
 
-            var jsonClient = JsonConvert.SerializeObject(client);
             var result = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
-            result.ClientId = null;
-            var jsonResult = JsonConvert.SerializeObject(result);
-
-            Assert.Equal(jsonClient, jsonResult);
+            Assert.True(result);
         }
 
         public void Dispose()

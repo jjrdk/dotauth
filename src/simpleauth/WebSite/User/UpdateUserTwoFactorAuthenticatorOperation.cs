@@ -28,7 +28,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    ErrorDescriptions.TheRoDoesntExist);
+                    ErrorMessages.TheRoDoesntExist);
             }
 
             resourceOwner.TwoFactorAuthentication = twoFactorAuth;

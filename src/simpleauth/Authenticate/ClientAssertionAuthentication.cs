@@ -77,14 +77,14 @@ namespace SimpleAuth.Authenticate
             var isJwsToken = instruction.ClientAssertion.IsJwsToken();
             if (!isJwsToken)
             {
-                return new AuthenticationResult(null, ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
+                return new AuthenticationResult(null, ErrorMessages.TheClientAssertionIsNotAJwsToken);
             }
 
             //var jws = instruction.ClientAssertion;
             var jwsPayload = new JwtSecurityToken(instruction.ClientAssertion); //_jwsParser.GetPayload(jws);
             if (jwsPayload.Payload == null)
             {
-                return new AuthenticationResult(null, ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
+                return new AuthenticationResult(null, ErrorMessages.TheJwsPayloadCannotBeExtracted);
             }
 
             var clientId = jwsPayload.Issuer;
@@ -99,7 +99,7 @@ namespace SimpleAuth.Authenticate
                     out var securityToken);
                 var payload = (securityToken as JwtSecurityToken)?.Payload;
                 return payload == null
-                    ? new AuthenticationResult(null, ErrorDescriptions.TheSignatureIsNotCorrect)
+                    ? new AuthenticationResult(null, ErrorMessages.TheSignatureIsNotCorrect)
                     : new AuthenticationResult(client, null);
             }
             catch (SecurityTokenValidationException validationException)
@@ -121,7 +121,7 @@ namespace SimpleAuth.Authenticate
             var isJweToken = clientAssertion.IsJweToken();
             if (!isJweToken)
             {
-                return new AuthenticationResult(null, ErrorDescriptions.TheClientAssertionIsNotAJweToken);
+                return new AuthenticationResult(null, ErrorMessages.TheClientAssertionIsNotAJweToken);
             }
 
             var jwe = instruction.ClientAssertion;
@@ -132,7 +132,7 @@ namespace SimpleAuth.Authenticate
             var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 
             return jwsPayload == null
-                ? new AuthenticationResult(null, ErrorDescriptions.TheJwsPayloadCannotBeExtracted)
+                ? new AuthenticationResult(null, ErrorMessages.TheJwsPayloadCannotBeExtracted)
                 : new AuthenticationResult(client, null);
         }
     }

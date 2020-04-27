@@ -40,7 +40,7 @@ namespace SimpleAuth.WebSite.User
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    ErrorDescriptions.TheRoDoesntExist);
+                    ErrorMessages.TheRoDoesntExist);
             }
 
             var claimsToBeRemoved = resourceOwner.Claims.Where(cl => claims.Any(c => c.Type == cl.Type))

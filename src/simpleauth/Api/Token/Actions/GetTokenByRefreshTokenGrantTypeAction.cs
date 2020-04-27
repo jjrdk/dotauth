@@ -98,7 +98,7 @@ namespace SimpleAuth.Api.Token.Actions
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
                         Detail = string.Format(
-                            ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                            ErrorMessages.TheClientDoesntSupportTheGrantType,
                             client.ClientId,
                             GrantTypes.RefreshToken)
                     }
@@ -117,7 +117,7 @@ namespace SimpleAuth.Api.Token.Actions
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
-                        Detail = ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer
+                        Detail = ErrorMessages.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer
                     }
                 };
             }
@@ -178,7 +178,7 @@ namespace SimpleAuth.Api.Token.Actions
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheRefreshTokenIsNotValid);
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant, ErrorMessages.TheRefreshTokenIsNotValid);
             }
 
             return grantedToken;

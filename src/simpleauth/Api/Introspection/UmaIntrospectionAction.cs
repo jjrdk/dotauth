@@ -55,7 +55,7 @@
                     Error = new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidGrant,
-                        Detail = ErrorDescriptions.TheTokenIsNotValid
+                        Detail = ErrorMessages.TheTokenIsNotValid
                     }
                 };
             }

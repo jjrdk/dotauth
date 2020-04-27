@@ -53,7 +53,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRedirectUri, ex.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, localhost), ex.Message);
+            Assert.Equal(string.Format(ErrorMessages.TheRedirectUrlCannotContainsFragment, localhost), ex.Message);
         }
 
         [Fact]
@@ -119,7 +119,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved, ex.Message);
+            Assert.Equal(ErrorMessages.TheSectorIdentifierUrisCannotBeRetrieved, ex.Message);
         }
 
         [Fact]
@@ -134,7 +134,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.ParameterIsNotCorrect, "sector_identifier_uri"), ex.Message);
+            Assert.Equal(string.Format(ErrorMessages.ParameterIsNotCorrect, "sector_identifier_uri"), ex.Message);
         }
 
         [Fact]
@@ -154,7 +154,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved, ex.Message);
+            Assert.Equal(ErrorMessages.TheSectorIdentifierUrisCannotBeRetrieved, ex.Message);
         }
 
         [Fact]
@@ -182,7 +182,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(ErrorDescriptions.OneOrMoreSectorIdentifierUriIsNotARedirectUri, ex.Message);
+            Assert.Equal(ErrorMessages.OneOrMoreSectorIdentifierUriIsNotARedirectUri, ex.Message);
         }
 
         [Fact]
@@ -198,7 +198,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Message);
+            Assert.Equal(ErrorMessages.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Message);
         }
 
         [Fact]
@@ -217,7 +217,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Message);
+            Assert.Equal(ErrorMessages.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Message);
         }
 
         [Fact]
@@ -233,7 +233,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Message);
+            Assert.Equal(ErrorMessages.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Message);
         }
 
         [Fact]
@@ -250,7 +250,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Message);
+            Assert.Equal(ErrorMessages.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Message);
         }
 
         [Fact]
@@ -266,7 +266,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Message);
+            Assert.Equal(ErrorMessages.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Message);
         }
 
         [Fact]
@@ -285,7 +285,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Message);
+            Assert.Equal(ErrorMessages.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Message);
         }
 
         [Fact]
@@ -300,7 +300,7 @@
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.ParameterIsNotCorrect, "initiate_login_uri"), ex.Message);
+            Assert.Equal(string.Format(ErrorMessages.ParameterIsNotCorrect, "initiate_login_uri"), ex.Message);
         }
 
         [Fact]

@@ -14,7 +14,7 @@
             var exception = Assert.Throws<SimpleAuthException>(() => Array.Empty<string>().GetAmr(new[] {"pwd"}));
 
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(ErrorDescriptions.NoActiveAmr, exception.Message);
+            Assert.Equal(ErrorMessages.NoActiveAmr, exception.Message);
         }
 
         [Fact]
@@ -23,7 +23,7 @@
             var exception = Assert.Throws<SimpleAuthException>(() => new[] {"invalid"}.GetAmr(new[] {"pwd"}));
 
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheAmrDoesntExist, "pwd"), exception.Message);
+            Assert.Equal(string.Format(ErrorMessages.TheAmrDoesntExist, "pwd"), exception.Message);
         }
 
         [Fact]

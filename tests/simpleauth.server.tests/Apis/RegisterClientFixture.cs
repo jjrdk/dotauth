@@ -147,7 +147,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal("invalid_redirect_uri", error.Title);
             Assert.Equal(
                 string.Format(
-                    SimpleAuth.Shared.Errors.ErrorDescriptions.TheRedirectUrlCannotContainsFragment,
+                    SimpleAuth.Shared.Errors.ErrorMessages.TheRedirectUrlCannotContainsFragment,
                     "http://localhost/#fragment"),
                 error.Detail);
         }

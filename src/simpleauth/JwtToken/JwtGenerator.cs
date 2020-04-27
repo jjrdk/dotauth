@@ -321,7 +321,7 @@ namespace SimpleAuth.JwtToken
                     {
                         throw new SimpleAuthExceptionWithState(
                             ErrorCodes.InvalidGrant,
-                            string.Format(ErrorDescriptions.TheClaimIsNotValid, resourceOwnerClaimParameter.Name),
+                            string.Format(ErrorMessages.TheClaimIsNotValid, resourceOwnerClaimParameter.Name),
                             state);
                     }
 
@@ -390,7 +390,7 @@ namespace SimpleAuth.JwtToken
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Issuer),
+                        string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.Issuer),
                         state);
                 }
             }
@@ -407,7 +407,7 @@ namespace SimpleAuth.JwtToken
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Audiences),
+                        string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.Audiences),
                         state);
                 }
             }
@@ -421,7 +421,7 @@ namespace SimpleAuth.JwtToken
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.ExpirationTime),
+                        string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.ExpirationTime),
                         state);
                 }
             }
@@ -433,7 +433,7 @@ namespace SimpleAuth.JwtToken
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Iat),
+                        string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.Iat),
                         state);
                 }
             }
@@ -447,7 +447,7 @@ namespace SimpleAuth.JwtToken
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.AuthenticationTime),
+                        string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.AuthenticationTime),
                         state);
                 }
             }
@@ -459,7 +459,7 @@ namespace SimpleAuth.JwtToken
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Acr),
+                        string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.Acr),
                         state);
                 }
             }
@@ -471,7 +471,7 @@ namespace SimpleAuth.JwtToken
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Nonce),
+                        string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.Nonce),
                         state);
                 }
             }
@@ -483,7 +483,7 @@ namespace SimpleAuth.JwtToken
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Amr),
+                        string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.Amr),
                         state);
                 }
             }
@@ -496,7 +496,7 @@ namespace SimpleAuth.JwtToken
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Azp),
+                        string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.Azp),
                         state);
                 }
             }

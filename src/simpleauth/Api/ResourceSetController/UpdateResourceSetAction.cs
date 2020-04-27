@@ -54,14 +54,14 @@ namespace SimpleAuth.Api.ResourceSetController
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"));
+                    string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, "name"));
             }
 
             if (resourceSet.Scopes == null || !resourceSet.Scopes.Any())
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
+                    string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, "scopes"));
             }
         }
     }

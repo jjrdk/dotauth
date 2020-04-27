@@ -90,7 +90,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheAuthorizationFlowIsNotSupported, exception.Message);
+            Assert.Equal(ErrorMessages.TheAuthorizationFlowIsNotSupported, exception.Message);
             Assert.Equal(state, exception.State);
         }
 

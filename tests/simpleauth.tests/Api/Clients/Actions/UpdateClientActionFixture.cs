@@ -52,7 +52,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
 
             var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None).ConfigureAwait(false);
 
-            Assert.Null(result);
+            Assert.False(result);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
             var jsonParameter = JsonConvert.SerializeObject(parameter);
             var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None).ConfigureAwait(false);
 
-            Assert.Null(result);
+            Assert.False(result);
         }
 
         [Fact]

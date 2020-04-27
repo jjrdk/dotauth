@@ -39,7 +39,7 @@ namespace SimpleAuth.WebSite.User
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TheUserNeedsToBeAuthenticated);
+                    ErrorMessages.TheUserNeedsToBeAuthenticated);
             }
 
             var subject = claimsPrincipal.GetSubject();
@@ -47,7 +47,7 @@ namespace SimpleAuth.WebSite.User
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TheSubjectCannotBeRetrieved);
+                    ErrorMessages.TheSubjectCannotBeRetrieved);
             }
 
             return _resourceOwnerRepository.Get(subject, cancellationToken);

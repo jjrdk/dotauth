@@ -119,7 +119,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
-                        Detail = string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, id),
+                        Detail = ErrorMessages.TheRoDoesntExist,
                         Title = ErrorCodes.InvalidRequest
                     });
             }
@@ -143,7 +143,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Title = ErrorCodes.UnhandledExceptionCode,
-                        Detail = ErrorDescriptions.TheResourceOwnerCannotBeRemoved,
+                        Detail = ErrorMessages.TheResourceOwnerCannotBeRemoved,
                         Status = HttpStatusCode.BadRequest
                     });
             }
@@ -194,7 +194,7 @@ namespace SimpleAuth.Controllers
                 new ErrorDetails
                 {
                     Title = ErrorCodes.UnhandledExceptionCode,
-                    Detail = ErrorDescriptions.TheResourceOwnerCannotBeRemoved,
+                    Detail = ErrorMessages.TheResourceOwnerCannotBeRemoved,
                     Status = HttpStatusCode.BadRequest
                 });
         }
@@ -227,9 +227,13 @@ namespace SimpleAuth.Controllers
                 await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidParameterCode,
-                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
+                return BadRequest(
+                       new ErrorDetails
+                       {
+                           Status = HttpStatusCode.BadRequest,
+                           Title = ErrorCodes.InvalidParameterCode,
+                           Detail = ErrorMessages.TheRoDoesntExist
+                       });
             }
 
             //resourceOwner.UpdateDateTime = DateTimeOffset.UtcNow;
@@ -250,7 +254,7 @@ namespace SimpleAuth.Controllers
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (!result)
             {
-                return BadRequest(ErrorDescriptions.TheClaimsCannotBeUpdated);
+                return BadRequest(ErrorMessages.TheClaimsCannotBeUpdated);
             }
 
             return new OkResult();
@@ -401,9 +405,12 @@ namespace SimpleAuth.Controllers
                 await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidParameterCode,
-                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, request.Subject));
+                return BadRequest(new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidParameterCode,
+                    Detail = ErrorMessages.TheRoDoesntExist
+                });
             }
 
             var result = await _resourceOwnerRepository
@@ -411,7 +418,7 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
             if (!result)
             {
-                return BadRequest(ErrorDescriptions.ThePasswordCannotBeUpdated);
+                return BadRequest(ErrorMessages.ThePasswordCannotBeUpdated);
             }
 
             return new OkResult();
@@ -468,11 +475,7 @@ namespace SimpleAuth.Controllers
             [FromBody] SearchResourceOwnersRequest searchResourceOwnersRequest,
             CancellationToken cancellationToken)
         {
-            if (searchResourceOwnersRequest == null)
-            {
-                searchResourceOwnersRequest = new SearchResourceOwnersRequest { Descending = true, NbResults = 50, StartIndex = 0 };
-                //return BadRequest(new ErrorDetails {Title = ErrorCodes.InvalidRequest, Detail = "Parameter in request body not valid", Status = HttpStatusCode.BadRequest});
-            }
+            searchResourceOwnersRequest ??= new SearchResourceOwnersRequest { Descending = true, NbResults = 50, StartIndex = 0 };
 
             var result = await _resourceOwnerRepository.Search(searchResourceOwnersRequest, cancellationToken)
                 .ConfigureAwait(false);

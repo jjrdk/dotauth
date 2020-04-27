@@ -99,7 +99,7 @@
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(ErrorDescriptions.MissingParameter, RequestTokenNames.GrantType)
+                        Detail = string.Format(ErrorMessages.MissingParameter, RequestTokenNames.GrantType)
                     });
             }
 

@@ -51,14 +51,14 @@ namespace SimpleAuth.WebSite.Authenticate
             var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheRoDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, ErrorMessages.TheRoDoesntExist);
             }
 
             if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TwoFactorAuthenticationIsNotEnabled);
+                    ErrorMessages.TwoFactorAuthenticationIsNotEnabled);
             }
 
             var confirmationCode = new ConfirmationCode
@@ -76,7 +76,7 @@ namespace SimpleAuth.WebSite.Authenticate
 
             if (!await _confirmationCodeStore.Add(confirmationCode, cancellationToken).ConfigureAwait(false))
             {
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, ErrorMessages.TheConfirmationCodeCannotBeSaved);
             }
 
             await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Value, resourceOwner.TwoFactorAuthentication, resourceOwner).ConfigureAwait(false);

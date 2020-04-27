@@ -53,8 +53,7 @@
             var client = await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {
-                throw new InvalidOperationException(
-                    string.Format(ErrorDescriptions.TheClientIdDoesntExist, authorizationParameter.ClientId));
+                throw new InvalidOperationException(ErrorMessages.TheClientDoesntExist);
             }
 
             // Redirect to the consent page if the prompt parameter contains "consent"
@@ -106,7 +105,7 @@
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
+                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 
@@ -116,7 +115,7 @@
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
+                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 

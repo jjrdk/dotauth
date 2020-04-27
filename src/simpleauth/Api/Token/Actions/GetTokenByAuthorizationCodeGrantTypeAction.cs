@@ -184,7 +184,7 @@ namespace SimpleAuth.Api.Token.Actions
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidGrant,
                             Detail = string.Format(
-                                ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                                ErrorMessages.TheClientDoesntSupportTheGrantType,
                                 client.ClientId,
                                 GrantTypes.AuthorizationCode)
                         }
@@ -202,7 +202,7 @@ namespace SimpleAuth.Api.Token.Actions
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidResponse,
                             Detail = string.Format(
-                                ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                                ErrorMessages.TheClientDoesntSupportTheResponseType,
                                 client.ClientId,
                                 ResponseTypeNames.Code)
                         }
@@ -223,7 +223,7 @@ namespace SimpleAuth.Api.Token.Actions
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidGrant,
-                            Detail = ErrorDescriptions.TheAuthorizationCodeIsNotCorrect
+                            Detail = ErrorMessages.TheAuthorizationCodeIsNotCorrect
                         }
                     });
             }
@@ -239,7 +239,7 @@ namespace SimpleAuth.Api.Token.Actions
                            {
                                Status = HttpStatusCode.BadRequest,
                                Title = ErrorCodes.InvalidRequest,
-                               Detail = ErrorDescriptions.TheCodeVerifierIsNotCorrect
+                               Detail = ErrorMessages.TheCodeVerifierIsNotCorrect
                            }
                        });
             }
@@ -257,7 +257,7 @@ namespace SimpleAuth.Api.Token.Actions
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidRequest,
                             Detail = string.Format(
-                                ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
+                                ErrorMessages.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
                                 authorizationClientId)
                         }
                     });
@@ -273,7 +273,7 @@ namespace SimpleAuth.Api.Token.Actions
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidRedirectUri,
-                            Detail = ErrorDescriptions.TheRedirectionUrlIsNotTheSame
+                            Detail = ErrorMessages.TheRedirectionUrlIsNotTheSame
                         }
                     });
             }
@@ -292,7 +292,7 @@ namespace SimpleAuth.Api.Token.Actions
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.ExpiredAuthorizationCode,
-                            Detail = ErrorDescriptions.TheAuthorizationCodeIsObsolete
+                            Detail = ErrorMessages.TheAuthorizationCodeIsObsolete
                         }
                     });
             }
@@ -310,7 +310,7 @@ namespace SimpleAuth.Api.Token.Actions
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidRedirectUri,
                             Detail = string.Format(
-                                ErrorDescriptions.RedirectUrlIsNotValid,
+                                ErrorMessages.RedirectUrlIsNotValid,
                                 authorizationCodeGrantTypeParameter.RedirectUri)
                         }
                     });

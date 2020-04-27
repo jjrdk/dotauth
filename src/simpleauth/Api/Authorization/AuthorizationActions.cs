@@ -101,7 +101,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId),
+                    string.Format(ErrorMessages.TheClientRequiresPkce, parameter.ClientId),
                     parameter.State);
             }
 

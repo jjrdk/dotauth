@@ -47,7 +47,7 @@ namespace SimpleAuth.Extensions
             var client = await clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, ErrorDescriptions.TheClientIdDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, ErrorMessages.TheClientDoesntExist);
             }
 
             return await GenerateToken(

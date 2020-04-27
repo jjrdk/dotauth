@@ -40,7 +40,7 @@
                 .ConfigureAwait(false);
 
             Assert.Null(result.Client);
-            Assert.Equal(ErrorDescriptions.TheClientDoesntExist, result.ErrorMessage);
+            Assert.Equal(ErrorMessages.TheClientDoesntExist, result.ErrorMessage);
         }
 
         [Fact]
@@ -54,7 +54,7 @@
                 .ConfigureAwait(false);
 
             Assert.Null(result.Client);
-            Assert.Equal(ErrorDescriptions.TheClientDoesntExist, result.ErrorMessage);
+            Assert.Equal(ErrorMessages.TheClientDoesntExist, result.ErrorMessage);
         }
 
         [Fact]

@@ -14,6 +14,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -80,6 +81,15 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var actualScheme = authenticatedUser.Identity.AuthenticationType;
             var ro = await GetUserProfile(authenticatedUser.GetSubject(), cancellationToken).ConfigureAwait(false);
+            if (ro == null)
+            {
+                return BadRequest(new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InternalError,
+                    Detail = ErrorMessages.TheRoDoesntExist
+                });
+            }
             var authenticationSchemes =
                 (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false))
                 .Where(a => !string.IsNullOrWhiteSpace(a.DisplayName));
@@ -121,7 +131,7 @@
         [HttpPost]
         public async Task<IActionResult> Consent(string id, CancellationToken cancellationToken)
         {
-            var removed = await _consentRepository.Delete(new Consent {Id = id}, cancellationToken)
+            var removed = await _consentRepository.Delete(new Consent { Id = id }, cancellationToken)
                 .ConfigureAwait(false);
             if (!removed)
             {
@@ -231,7 +241,7 @@
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties {RedirectUri = redirectUrl})
+                    new AuthenticationProperties { RedirectUri = redirectUrl })
                 .ConfigureAwait(false);
         }
 
@@ -248,7 +258,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                    string.Format(ErrorMessages.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             try
@@ -298,7 +308,7 @@
             }
 
             await SetUser().ConfigureAwait(false);
-            var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType;
+            var authenticationType = ((ClaimsIdentity)externalClaims.Identity).AuthenticationType;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
             return Ok(viewModel);
         }
@@ -362,11 +372,11 @@
             }
             catch (SimpleAuthException ex)
             {
-                return RedirectToAction("Index", "Error", new {code = ex.Code, message = ex.Message});
+                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index", "Error", new {code = ErrorCodes.InternalError, message = ex.Message});
+                return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message });
             }
 
             return await Index(cancellationToken).ConfigureAwait(false);
@@ -470,20 +480,9 @@
         /// <returns></returns>
         private async Task<ResourceOwner> GetUserProfile(string subject, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                throw new ArgumentNullException(nameof(subject));
-            }
-
-            var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
-            if (resourceOwner == null)
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
-            }
-
-            return resourceOwner;
+            return string.IsNullOrWhiteSpace(subject)
+                ? null
+                : await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<bool> UnlinkProfile(
@@ -498,7 +497,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
+                    ErrorMessages.TheRoDoesntExist);
             }
 
             var unlink = resourceOwner.ExternalLogins.Where(
@@ -526,7 +525,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, localSubject));
+                    ErrorMessages.TheRoDoesntExist);
             }
 
             var issuer = externalPrincipal.Identity.AuthenticationType;

@@ -27,7 +27,7 @@
             _consentRepository = new Mock<IConsentRepository>();
             var scopeRepository = new Mock<IScopeRepository>();
             scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-                .ReturnsAsync(new[] {new Scope {Name = "scope"}});
+                .ReturnsAsync(new[] { new Scope { Name = "scope" } });
             _authenticateHelper = new AuthenticateHelper(
                 new Mock<IAuthorizationCodeStore>().Object,
                 new Mock<ITokenStore>().Object,
@@ -50,8 +50,8 @@
         public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
         {
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Client) null);
-            var authorizationParameter = new AuthorizationParameter {ClientId = "client_id"};
+                .ReturnsAsync((Client)null);
+            var authorizationParameter = new AuthorizationParameter { ClientId = "client_id" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(
                     () => _authenticateHelper.ProcessRedirection(
@@ -63,7 +63,7 @@
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClientIdDoesntExist, authorizationParameter.ClientId),
+                string.Format(ErrorMessages.TheClientDoesntExist),
                 exception.Message);
         }
 
@@ -112,11 +112,11 @@
                 .ReturnsAsync(Array.Empty<Client>());
             var consent = new Consent
             {
-                GrantedScopes = new[] {"scope"},
-                Client = new Client {ClientId = "client", AllowedScopes = new[] {"scope"}}
+                GrantedScopes = new[] { "scope" },
+                Client = new Client { ClientId = "client", AllowedScopes = new[] { "scope" } }
             };
             _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new[] {consent});
+                .ReturnsAsync(new[] { consent });
 
             var actionResult = await _authenticateHelper.ProcessRedirection(
                     authorizationParameter,

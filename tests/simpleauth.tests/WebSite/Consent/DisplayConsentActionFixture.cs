@@ -146,7 +146,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheAuthorizationFlowIsNotSupported, exception.Message);
+            Assert.Equal(ErrorMessages.TheAuthorizationFlowIsNotSupported, exception.Message);
             Assert.Equal(state, exception.State);
 
         }
@@ -171,7 +171,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.ClientIsNotValid, clientId), exception.Message);
+            Assert.Equal(string.Format(ErrorMessages.ClientIsNotValid, clientId), exception.Message);
             Assert.Equal(state, exception.State);
         }
 

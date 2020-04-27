@@ -53,7 +53,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheRoDoesntExist, exception.Message);
+            Assert.Equal(ErrorMessages.TheRoDoesntExist, exception.Message);
         }
 
         [Fact]

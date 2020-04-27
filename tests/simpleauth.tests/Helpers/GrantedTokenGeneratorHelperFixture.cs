@@ -66,7 +66,7 @@ namespace SimpleAuth.Tests.Helpers
                         userInformationPayload: null))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClient, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheClientIdDoesntExist, ex.Message);
+            Assert.Equal(ErrorMessages.TheClientDoesntExist, ex.Message);
         }
 
         [Fact]

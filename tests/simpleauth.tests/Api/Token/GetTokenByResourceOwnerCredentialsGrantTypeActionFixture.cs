@@ -88,7 +88,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidClient, result.Error.Title);
-            Assert.Equal(string.Format(ErrorDescriptions.TheClientDoesntExist), result.Error.Detail);
+            Assert.Equal(string.Format(ErrorMessages.TheClientDoesntExist), result.Error.Detail);
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, clientId, GrantTypes.Password),
+                string.Format(ErrorMessages.TheClientDoesntSupportTheGrantType, clientId, GrantTypes.Password),
                 result.Error.Detail);
         }
 
@@ -169,7 +169,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             Assert.Equal(ErrorCodes.InvalidResponse, result.Error.Title);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, clientId, "token id_token"),
+                string.Format(ErrorMessages.TheClientDoesntSupportTheResponseType, clientId, "token id_token"),
                 result.Error.Detail);
         }
 
@@ -217,7 +217,7 @@ namespace SimpleAuth.Tests.Api.Token
                     CancellationToken.None)
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidCredentials, result.Error.Title);
-            Assert.Equal(ErrorDescriptions.ResourceOwnerCredentialsAreNotValid, result.Error.Detail);
+            Assert.Equal(ErrorMessages.ResourceOwnerCredentialsAreNotValid, result.Error.Detail);
         }
 
         [Fact]

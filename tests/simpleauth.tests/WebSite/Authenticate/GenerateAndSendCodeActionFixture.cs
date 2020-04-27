@@ -66,7 +66,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheRoDoesntExist, exception.Message);
+            Assert.Equal(ErrorMessages.TheRoDoesntExist, exception.Message);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorDescriptions.TwoFactorAuthenticationIsNotEnabled, exception.Message);
+            Assert.Equal(ErrorMessages.TwoFactorAuthenticationIsNotEnabled, exception.Message);
         }
 
         [Fact]
@@ -133,7 +133,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheConfirmationCodeCannotBeSaved, exception.Message);
+            Assert.Equal(ErrorMessages.TheConfirmationCodeCannotBeSaved, exception.Message);
         }
 
         [Fact]

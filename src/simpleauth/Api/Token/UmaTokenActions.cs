@@ -69,7 +69,7 @@
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(
-                            ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                            ErrorMessages.TheParameterNeedsToBeSpecified,
                             UmaConstants.RptClaims.Ticket)
                     }
                 };
@@ -103,7 +103,7 @@
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
                         Detail = string.Format(
-                            ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                            ErrorMessages.TheClientDoesntSupportTheGrantType,
                             client.ClientId,
                             GrantTypes.UmaTicket)
                     }
@@ -120,7 +120,7 @@
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
-                        Detail = string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket)
+                        Detail = string.Format(ErrorMessages.TheTicketDoesntExist, parameter.Ticket)
                     }
                 };
             }
@@ -135,7 +135,7 @@
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.ExpiredTicket,
-                        Detail = ErrorDescriptions.TheTicketIsExpired
+                        Detail = ErrorMessages.TheTicketIsExpired
                     }
                 };
             }
@@ -176,7 +176,7 @@
                     {
                         Status = HttpStatusCode.InternalServerError,
                         Title = ErrorCodes.InternalError,
-                        Detail = ErrorDescriptions.InternalError
+                        Detail = ErrorMessages.InternalError
                     }
                 };
             }
@@ -198,7 +198,7 @@
                     {
                         Status = HttpStatusCode.Forbidden,
                         Title = ErrorCodes.RequestSubmitted,
-                        Detail = ErrorDescriptions.PermissionRequested
+                        Detail = ErrorMessages.PermissionRequested
                     }
                 };
             }
@@ -218,7 +218,7 @@
                 {
                     Status = HttpStatusCode.BadRequest,
                     Title = ErrorCodes.RequestDenied,
-                    Detail = ErrorDescriptions.TheAuthorizationPolicyIsNotSatisfied
+                    Detail = ErrorMessages.TheAuthorizationPolicyIsNotSatisfied
                 }
             };
         }

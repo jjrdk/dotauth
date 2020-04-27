@@ -117,7 +117,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(ErrorDescriptions.TheScopeDoesntExist, id),
+                        Detail = string.Format(ErrorMessages.TheScopeDoesntExist, id),
                         Status = HttpStatusCode.BadRequest
                     });
             }
@@ -130,7 +130,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(ErrorDescriptions.TheScopeDoesntExist, id),
+                        Detail = string.Format(ErrorMessages.TheScopeDoesntExist, id),
                         Status = HttpStatusCode.BadRequest
                     });
         }

@@ -64,7 +64,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.MissingParameter,
+                    string.Format(ErrorMessages.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                     authorizationParameter.State);
             }
@@ -73,7 +73,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                    string.Format(ErrorMessages.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
                         "implicit"),
                     authorizationParameter.State);

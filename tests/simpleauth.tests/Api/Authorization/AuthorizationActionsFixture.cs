@@ -68,7 +68,7 @@ namespace SimpleAuth.Tests.Api.Authorization
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, result.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheClientRequiresPkce, clientId), result.Message);
+            Assert.Equal(string.Format(ErrorMessages.TheClientRequiresPkce, clientId), result.Message);
         }
 
         private void InitializeFakeObjects(Client client = null)

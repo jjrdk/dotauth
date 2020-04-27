@@ -66,7 +66,7 @@ namespace SimpleAuth.Api.Token.Actions
 
             if (grantedToken == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.InvalidToken, ErrorMessages.TheTokenDoesntExist);
             }
 
             // 3. Verifies whether the token was issued to the client making the revocation request
@@ -74,7 +74,7 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidToken,
-                    string.Format(ErrorDescriptions.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
+                    string.Format(ErrorMessages.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
             }
 
             // 4. Invalid the granted token

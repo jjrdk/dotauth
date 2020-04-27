@@ -22,7 +22,6 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xunit;
-    using ErrorDescriptions = Shared.Errors.ErrorDescriptions;
 
     public class PermissionFixture : IDisposable
     {
@@ -62,7 +61,7 @@ namespace SimpleAuth.Server.Tests
             Assert.True(ticket.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"),
+                string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, "scopes"),
                 ticket.Error.Detail);
         }
 
@@ -76,7 +75,7 @@ namespace SimpleAuth.Server.Tests
 
             Assert.True(ticket.HasError);
             Assert.Equal(ErrorCodes.InvalidResourceSetId, ticket.Error.Title);
-            Assert.Equal(string.Format(ErrorDescriptions.TheResourceSetDoesntExist, "resource"), ticket.Error.Detail);
+            Assert.Equal(string.Format(ErrorMessages.TheResourceSetDoesntExist, "resource"), ticket.Error.Detail);
         }
 
         [Fact]

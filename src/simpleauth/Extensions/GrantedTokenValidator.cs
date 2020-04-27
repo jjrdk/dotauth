@@ -32,7 +32,7 @@ namespace SimpleAuth.Extensions
                 return new GrantedTokenValidationResult
                 {
                     MessageErrorCode = ErrorCodes.InvalidToken,
-                    MessageErrorDescription = ErrorDescriptions.TheTokenIsNotValid,
+                    MessageErrorDescription = ErrorMessages.TheTokenIsNotValid,
                     IsValid = false
                 };
             }
@@ -44,7 +44,7 @@ namespace SimpleAuth.Extensions
                 return new GrantedTokenValidationResult
                 {
                     MessageErrorCode = ErrorCodes.InvalidToken,
-                    MessageErrorDescription = ErrorDescriptions.TheTokenIsExpired,
+                    MessageErrorDescription = ErrorMessages.TheTokenIsExpired,
                     IsValid = false
                 };
             }

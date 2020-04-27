@@ -179,7 +179,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
+                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 
@@ -189,7 +189,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
+                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 

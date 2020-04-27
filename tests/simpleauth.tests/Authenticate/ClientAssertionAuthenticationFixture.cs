@@ -87,7 +87,7 @@
                 .ConfigureAwait(false);
 
             Assert.Null(result.Client);
-            Assert.Equal(ErrorDescriptions.TheClientAssertionIsNotAJwsToken, result.ErrorMessage);
+            Assert.Equal(ErrorMessages.TheClientAssertionIsNotAJwsToken, result.ErrorMessage);
         }
 
         [Theory]

@@ -48,7 +48,7 @@ namespace SimpleAuth.Client
             if (!discoveryDocumentationUri.IsAbsoluteUri)
             {
                 throw new ArgumentException(
-                    string.Format(Shared.Errors.ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUri));
+                    string.Format(Shared.Errors.ErrorMessages.TheUrlIsNotWellFormed, discoveryDocumentationUri));
             }
 
             var operation = new GetDiscoveryOperation(discoveryDocumentationUri, client);

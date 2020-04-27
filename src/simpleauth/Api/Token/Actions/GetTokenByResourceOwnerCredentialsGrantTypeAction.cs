@@ -98,7 +98,7 @@ namespace SimpleAuth.Api.Token.Actions
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
                         Detail = string.Format(
-                            ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                            ErrorMessages.TheClientDoesntSupportTheGrantType,
                             client.ClientId,
                             GrantTypes.Password)
                     }
@@ -117,7 +117,7 @@ namespace SimpleAuth.Api.Token.Actions
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidResponse,
                         Detail = string.Format(
-                            ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                            ErrorMessages.TheClientDoesntSupportTheResponseType,
                             client.ClientId,
                             "token id_token")
                     }
@@ -140,7 +140,7 @@ namespace SimpleAuth.Api.Token.Actions
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidCredentials,
-                        Detail = ErrorDescriptions.ResourceOwnerCredentialsAreNotValid
+                        Detail = ErrorMessages.ResourceOwnerCredentialsAreNotValid
                     }
                 };
             }

@@ -85,7 +85,7 @@
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, clientId, "authorization_code"),
+                string.Format(ErrorMessages.TheClientDoesntSupportTheGrantType, clientId, "authorization_code"),
                 exception.Message);
         }
 

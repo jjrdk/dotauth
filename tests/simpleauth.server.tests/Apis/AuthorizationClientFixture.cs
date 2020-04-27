@@ -145,7 +145,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal(SimpleAuth.Shared.Errors.ErrorDescriptions.TheRedirectionUriIsNotWellFormed, error.Detail);
+            Assert.Equal(SimpleAuth.Shared.Errors.ErrorMessages.TheRedirectionUriIsNotWellFormed, error.Detail);
         }
 
         [Fact]

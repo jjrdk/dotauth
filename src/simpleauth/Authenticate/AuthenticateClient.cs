@@ -65,7 +65,7 @@ namespace SimpleAuth.Authenticate
 
             if (client == null)
             {
-                return new AuthenticationResult(null, ErrorDescriptions.TheClientDoesntExist);
+                return new AuthenticationResult(null, ErrorMessages.TheClientDoesntExist);
             }
 
             var errorMessage = string.Empty;
@@ -75,7 +75,7 @@ namespace SimpleAuth.Authenticate
                     client = instruction.AuthenticateClient(client);
                     if (client == null)
                     {
-                        errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithSecretBasic;
+                        errorMessage = ErrorMessages.TheClientCannotBeAuthenticatedWithSecretBasic;
                     }
 
                     break;
@@ -83,7 +83,7 @@ namespace SimpleAuth.Authenticate
                     client = ClientSecretPostAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
                     {
-                        errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithSecretPost;
+                        errorMessage = ErrorMessages.TheClientCannotBeAuthenticatedWithSecretPost;
                     }
 
                     break;
@@ -91,7 +91,7 @@ namespace SimpleAuth.Authenticate
                     if (client.Secrets == null || client.Secrets.All(s => s.Type != ClientSecretTypes.SharedSecret))
                     {
                         errorMessage = string.Format(
-                            ErrorDescriptions.TheClientDoesntContainASharedSecret,
+                            ErrorMessages.TheClientDoesntContainASharedSecret,
                             client.ClientId);
                         break;
                     }
@@ -106,7 +106,7 @@ namespace SimpleAuth.Authenticate
                     client = ClientTlsAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
                     {
-                        errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithTls;
+                        errorMessage = ErrorMessages.TheClientCannotBeAuthenticatedWithTls;
                     }
 
                     break;

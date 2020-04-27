@@ -10,7 +10,7 @@
         {
             if (currentAmrs == null || currentAmrs.Length == 0)
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError, ErrorDescriptions.NoActiveAmr);
+                throw new SimpleAuthException(ErrorCodes.InternalError, ErrorMessages.NoActiveAmr);
             }
 
             var amr = CoreConstants.DefaultAmr;
@@ -28,7 +28,7 @@
 
             if (!currentAmrs.Contains(amr))
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError, string.Format(ErrorDescriptions.TheAmrDoesntExist, amr));
+                throw new SimpleAuthException(ErrorCodes.InternalError, string.Format(ErrorMessages.TheAmrDoesntExist, amr));
             }
 
             return amr;

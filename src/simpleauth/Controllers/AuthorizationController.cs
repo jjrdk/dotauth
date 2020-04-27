@@ -228,7 +228,7 @@ namespace SimpleAuth.Controllers
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequest,
-                        ErrorDescriptions.TheRequestParameterIsNotCorrect,
+                        ErrorMessages.TheRequestParameterIsNotCorrect,
                         authorizationRequest.state);
                 }
 
@@ -245,7 +245,7 @@ namespace SimpleAuth.Controllers
                     {
                         throw new SimpleAuthExceptionWithState(
                             ErrorCodes.InvalidRequest,
-                            ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
+                            ErrorMessages.TheRequestDownloadedFromRequestUriIsNotValid,
                             authorizationRequest.state);
                     }
 
@@ -259,7 +259,7 @@ namespace SimpleAuth.Controllers
                     {
                         throw new SimpleAuthExceptionWithState(
                             ErrorCodes.InvalidRequest,
-                            ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
+                            ErrorMessages.TheRequestDownloadedFromRequestUriIsNotValid,
                             authorizationRequest.state);
                     }
 
@@ -268,7 +268,7 @@ namespace SimpleAuth.Controllers
 
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestUriCode,
-                    ErrorDescriptions.TheRequestUriParameterIsNotWellFormed,
+                    ErrorMessages.TheRequestUriParameterIsNotWellFormed,
                     authorizationRequest.state);
             }
 

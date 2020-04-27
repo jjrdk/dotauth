@@ -19,7 +19,7 @@
                 Assert.Throws<SimpleAuthExceptionWithState>(
                     () => collection.GetAuthorizationFlow(state));
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheAuthorizationFlowIsNotSupported, exception.Message);
+            Assert.Equal(ErrorMessages.TheAuthorizationFlowIsNotSupported, exception.Message);
             Assert.Equal(state, exception.State);
         }
 
@@ -31,7 +31,7 @@
             var exception = Assert.Throws<SimpleAuthExceptionWithState>(
                 () => new List<string>().GetAuthorizationFlow(state));
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheAuthorizationFlowIsNotSupported, exception.Message);
+            Assert.Equal(ErrorMessages.TheAuthorizationFlowIsNotSupported, exception.Message);
             Assert.Equal(state, exception.State);
         }
 

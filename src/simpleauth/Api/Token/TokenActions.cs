@@ -101,7 +101,7 @@ namespace SimpleAuth.Api.Token
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(
-                            ErrorDescriptions.MissingParameter,
+                            ErrorMessages.MissingParameter,
                             StandardTokenRequestParameterNames.UserName)
                     }
                 };
@@ -117,7 +117,7 @@ namespace SimpleAuth.Api.Token
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(
-                               ErrorDescriptions.MissingParameter,
+                               ErrorMessages.MissingParameter,
                                StandardTokenRequestParameterNames.PasswordName)
                     }
                 };
@@ -133,7 +133,7 @@ namespace SimpleAuth.Api.Token
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(
-                            ErrorDescriptions.MissingParameter,
+                            ErrorMessages.MissingParameter,
                             StandardTokenRequestParameterNames.ScopeName)
                     }
                 };
@@ -181,7 +181,7 @@ namespace SimpleAuth.Api.Token
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(
-                            ErrorDescriptions.MissingParameter,
+                            ErrorMessages.MissingParameter,
                             StandardTokenRequestParameterNames.RefreshToken)
                     }
                 };
@@ -211,7 +211,7 @@ namespace SimpleAuth.Api.Token
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(ErrorDescriptions.MissingParameter, StandardTokenRequestParameterNames.ScopeName)
+                        Detail = string.Format(ErrorMessages.MissingParameter, StandardTokenRequestParameterNames.ScopeName)
                     }
                 };
             }
@@ -248,7 +248,7 @@ namespace SimpleAuth.Api.Token
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
                         Detail = string.Format(
-                            ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                            ErrorMessages.TheClientDoesntSupportTheGrantType,
                             client.ClientId,
                             GrantTypes.ClientCredentials)
                     }
@@ -265,7 +265,7 @@ namespace SimpleAuth.Api.Token
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidClient,
                         Detail = string.Format(
-                            ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                            ErrorMessages.TheClientDoesntSupportTheResponseType,
                             client.ClientId,
                             ResponseTypeNames.Token)
                     }
@@ -288,7 +288,7 @@ namespace SimpleAuth.Api.Token
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidScope,
                             Detail = string.Format(
-                                ErrorDescriptions.ScopesAreNotAllowedOrInvalid,
+                                ErrorMessages.ScopesAreNotAllowedOrInvalid,
                                 clientCredentialsGrantTypeParameter.Scope)
                         }
                     };
@@ -344,7 +344,7 @@ namespace SimpleAuth.Api.Token
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
+                    string.Format(ErrorMessages.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
             }
 
             var result = await _revokeTokenAction.Execute(
@@ -373,7 +373,7 @@ namespace SimpleAuth.Api.Token
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(
-                            ErrorDescriptions.MissingParameter,
+                            ErrorMessages.MissingParameter,
                             StandardTokenRequestParameterNames.AuthorizationCodeName)
                     }
                 };
@@ -391,7 +391,7 @@ namespace SimpleAuth.Api.Token
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = ErrorDescriptions.TheRedirectionUriIsNotWellFormed
+                        Detail = ErrorMessages.TheRedirectionUriIsNotWellFormed
                     }
                 };
             }

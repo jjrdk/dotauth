@@ -45,7 +45,7 @@
             if (!await _confirmationCodeStore.Add(confirmationCode, cancellationToken).ConfigureAwait(false))
             {
                 throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
+                    ErrorMessages.TheConfirmationCodeCannotBeSaved);
             }
 
             return confirmationCode.Value;

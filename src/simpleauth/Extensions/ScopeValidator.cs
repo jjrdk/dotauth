@@ -25,7 +25,7 @@ namespace SimpleAuth.Extensions
             var scopes = scope.ParseScopes();
             if (!scopes.Any())
             {
-                return new ScopeValidationResult(ErrorDescriptions.TheScopesNeedToBeSpecified);
+                return new ScopeValidationResult(ErrorMessages.TheScopesNeedToBeSpecified);
             }
 
             var duplicates = scopes.GroupBy(p => p)
@@ -35,7 +35,7 @@ namespace SimpleAuth.Extensions
             if (duplicates.Count > 1)
             {
                 return new ScopeValidationResult(
-                    string.Format(ErrorDescriptions.DuplicateScopeValues,
+                    string.Format(ErrorMessages.DuplicateScopeValues,
                     string.Join(",", duplicates)));
             }
 
@@ -46,7 +46,7 @@ namespace SimpleAuth.Extensions
             if (scopesNotAllowedOrInvalid.Any())
             {
                 return new ScopeValidationResult(
-                    string.Format(ErrorDescriptions.ScopesAreNotAllowedOrInvalid,
+                    string.Format(ErrorMessages.ScopesAreNotAllowedOrInvalid,
                     string.Join(",", scopesNotAllowedOrInvalid)));
             }
 

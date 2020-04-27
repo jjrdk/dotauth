@@ -41,7 +41,7 @@ namespace SimpleAuth.Extensions
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
                     string.Format(
-                        ErrorDescriptions.MissingParameter,
+                        ErrorMessages.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
                     parameter.State);
             }
@@ -51,7 +51,7 @@ namespace SimpleAuth.Extensions
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
                     string.Format(
-                        ErrorDescriptions.MissingParameter,
+                        ErrorMessages.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
                     parameter.State);
             }
@@ -61,7 +61,7 @@ namespace SimpleAuth.Extensions
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
                     string.Format(
-                        ErrorDescriptions.MissingParameter,
+                        ErrorMessages.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName),
                     parameter.State);
             }
@@ -71,7 +71,7 @@ namespace SimpleAuth.Extensions
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
                     string.Format(
-                        ErrorDescriptions.MissingParameter,
+                        ErrorMessages.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
                     parameter.State);
             }
@@ -86,7 +86,7 @@ namespace SimpleAuth.Extensions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorDescriptions.TheRedirectionUriIsNotWellFormed,
+                    ErrorMessages.TheRedirectionUriIsNotWellFormed,
                     parameter.State);
             }
 
@@ -95,7 +95,7 @@ namespace SimpleAuth.Extensions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.ClientIsNotValid, parameter.ClientId),
+                    string.Format(ErrorMessages.ClientIsNotValid, parameter.ClientId),
                     parameter.State);
             }
 
@@ -103,7 +103,7 @@ namespace SimpleAuth.Extensions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorDescriptions.RedirectUrlIsNotValid, parameter.RedirectUrl),
+                    string.Format(ErrorMessages.RedirectUrlIsNotValid, parameter.RedirectUrl),
                     parameter.State);
             }
 
@@ -130,7 +130,7 @@ namespace SimpleAuth.Extensions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorDescriptions.AtLeastOneResponseTypeIsNotSupported,
+                    ErrorMessages.AtLeastOneResponseTypeIsNotSupported,
                     state);
             }
         }
@@ -154,7 +154,7 @@ namespace SimpleAuth.Extensions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorDescriptions.AtLeastOnePromptIsNotSupported,
+                    ErrorMessages.AtLeastOnePromptIsNotSupported,
                     state);
             }
 
@@ -166,7 +166,7 @@ namespace SimpleAuth.Extensions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorDescriptions.PromptParameterShouldHaveOnlyNoneValue,
+                    ErrorMessages.PromptParameterShouldHaveOnlyNoneValue,
                     state);
             }
         }

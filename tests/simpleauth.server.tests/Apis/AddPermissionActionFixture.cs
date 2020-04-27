@@ -48,7 +48,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
-                    ErrorDescriptions.TheParameterNeedsToBeSpecified,
+                    ErrorMessages.TheParameterNeedsToBeSpecified,
                     UmaConstants.AddPermissionNames.ResourceSetId),
                 exception.Message);
         }
@@ -64,7 +64,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes),
+                string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes),
                 exception.Message);
         }
 
@@ -80,7 +80,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     () => _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Code);
-            Assert.Equal(string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId), exception.Message);
+            Assert.Equal(string.Format(ErrorMessages.TheResourceSetDoesntExist, resourceSetId), exception.Message);
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     () => _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidScope, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheScopeAreNotValid, exception.Message);
+            Assert.Equal(ErrorMessages.TheScopeAreNotValid, exception.Message);
         }
 
         [Fact]

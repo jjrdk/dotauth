@@ -349,7 +349,7 @@ namespace SimpleAuth.Tests.JwtToken
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Audiences),
+                string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.Audiences),
                 exception.Message);
             Assert.Equal(state, exception.State);
         }
@@ -397,7 +397,7 @@ namespace SimpleAuth.Tests.JwtToken
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(
                 exception.Message,
-                string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Issuer));
+                string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.Issuer));
             Assert.Equal(state, exception.State);
         }
 
@@ -443,7 +443,7 @@ namespace SimpleAuth.Tests.JwtToken
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.ExpirationTime),
+                string.Format(ErrorMessages.TheClaimIsNotValid, StandardClaimNames.ExpirationTime),
                 exception.Message);
             Assert.Equal(state, exception.State);
         }
@@ -486,7 +486,7 @@ namespace SimpleAuth.Tests.JwtToken
                 .ConfigureAwait(false);
 
             Assert.Equal(result.Code, ErrorCodes.InvalidGrant);
-            Assert.Equal(result.Message, string.Format(ErrorDescriptions.TheClaimIsNotValid, OpenIdClaimTypes.Subject));
+            Assert.Equal(result.Message, string.Format(ErrorMessages.TheClaimIsNotValid, OpenIdClaimTypes.Subject));
         }
 
         [Fact]
@@ -658,7 +658,7 @@ namespace SimpleAuth.Tests.JwtToken
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClaimIsNotValid, OpenIdClaimTypes.Subject),
+                string.Format(ErrorMessages.TheClaimIsNotValid, OpenIdClaimTypes.Subject),
                 exception.Message);
             Assert.Equal(state, exception.State);
         }
@@ -699,7 +699,7 @@ namespace SimpleAuth.Tests.JwtToken
 
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(
-                exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, OpenIdClaimTypes.Subject));
+                exception.Message == string.Format(ErrorMessages.TheClaimIsNotValid, OpenIdClaimTypes.Subject));
             Assert.True(exception.State == state);
         }
 
@@ -738,7 +738,7 @@ namespace SimpleAuth.Tests.JwtToken
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(
-                exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, OpenIdClaimTypes.Name));
+                exception.Message == string.Format(ErrorMessages.TheClaimIsNotValid, OpenIdClaimTypes.Name));
             Assert.True(exception.State == state);
         }
 
@@ -788,7 +788,7 @@ namespace SimpleAuth.Tests.JwtToken
 
             Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
             Assert.True(
-                exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, OpenIdClaimTypes.Name));
+                exception.Message == string.Format(ErrorMessages.TheClaimIsNotValid, OpenIdClaimTypes.Name));
             Assert.True(exception.State == state);
         }
 

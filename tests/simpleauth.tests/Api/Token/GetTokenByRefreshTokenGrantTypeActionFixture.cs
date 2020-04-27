@@ -84,7 +84,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidClient, result.Error.Title);
-            Assert.Equal(ErrorDescriptions.TheClientDoesntExist, result.Error.Detail);
+            Assert.Equal(ErrorMessages.TheClientDoesntExist, result.Error.Detail);
         }
 
         [Fact]
@@ -110,7 +110,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
             Assert.Equal(
-                string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, "id", GrantTypes.RefreshToken),
+                string.Format(ErrorMessages.TheClientDoesntSupportTheGrantType, "id", GrantTypes.RefreshToken),
                 result.Error.Detail);
         }
 
@@ -139,7 +139,7 @@ namespace SimpleAuth.Tests.Api.Token
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidGrant, ex.Code);
-            Assert.Equal(ErrorDescriptions.TheRefreshTokenIsNotValid, ex.Message);
+            Assert.Equal(ErrorMessages.TheRefreshTokenIsNotValid, ex.Message);
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
-            Assert.Equal(ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, result.Error.Detail);
+            Assert.Equal(ErrorMessages.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, result.Error.Detail);
         }
 
         [Fact]

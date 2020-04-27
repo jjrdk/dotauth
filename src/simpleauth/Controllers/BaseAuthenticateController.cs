@@ -195,7 +195,7 @@ namespace SimpleAuth.Controllers
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                    string.Format(ErrorMessages.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             // 1. Get the authenticated user.
@@ -283,7 +283,7 @@ namespace SimpleAuth.Controllers
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                    ErrorMessages.TwoFactorAuthenticationCannotBePerformed);
             }
 
             // 2. Return translated view.
@@ -333,7 +333,7 @@ namespace SimpleAuth.Controllers
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                    ErrorMessages.TwoFactorAuthenticationCannotBePerformed);
             }
 
             // 2. Resend the confirmation code.
@@ -507,7 +507,7 @@ namespace SimpleAuth.Controllers
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
+                    ErrorMessages.TheRequestCannotBeExtractedFromTheCookie);
             }
 
             // 2 : remove the cookie
@@ -521,7 +521,7 @@ namespace SimpleAuth.Controllers
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                    string.Format(ErrorMessages.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             // 4. Check if the user is authenticated
@@ -534,7 +534,7 @@ namespace SimpleAuth.Controllers
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TheUserNeedsToBeAuthenticated);
+                    ErrorMessages.TheUserNeedsToBeAuthenticated);
             }
 
             // 5. Rerieve the claims & insert the resource owner if needed.

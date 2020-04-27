@@ -55,7 +55,7 @@ namespace SimpleAuth.Tests.WebSite.User
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheUserNeedsToBeAuthenticated, exception.Message);
+            Assert.Equal(ErrorMessages.TheUserNeedsToBeAuthenticated, exception.Message);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace SimpleAuth.Tests.WebSite.User
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorDescriptions.TheSubjectCannotBeRetrieved, exception.Message);
+            Assert.Equal(ErrorMessages.TheSubjectCannotBeRetrieved, exception.Message);
         }
 
         [Fact]

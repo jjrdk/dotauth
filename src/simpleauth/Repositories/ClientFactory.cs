@@ -46,7 +46,7 @@
                 {
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
-                        ErrorDescriptions.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
+                        ErrorMessages.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
                 }
             }
 
@@ -56,7 +56,7 @@
                 {
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
-                        ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
+                        ErrorMessages.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
                 }
             }
 
@@ -66,7 +66,7 @@
                 {
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
-                        ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
+                        ErrorMessages.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
                 }
             }
 
@@ -76,7 +76,7 @@
                 {
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidClientMetaData,
-                        ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
+                        ErrorMessages.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
                 }
             }
 
@@ -91,7 +91,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidClientMetaData,
-                    ErrorDescriptions.OneOfTheRequestUriIsNotValid);
+                    ErrorMessages.OneOfTheRequestUriIsNotValid);
             }
 
             var client = new Client
@@ -128,7 +128,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidClientMetaData,
-                    ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
+                    ErrorMessages.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
             }
 
             client.IdTokenSignedResponseAlg = !string.IsNullOrWhiteSpace(newClient.IdTokenSignedResponseAlg)
@@ -164,7 +164,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRedirectUri,
-                    string.Format(ErrorDescriptions.MissingParameter, "redirect_uris"));
+                    string.Format(ErrorMessages.MissingParameter, "redirect_uris"));
             }
 
             // Check the newClients when the application type is web
@@ -176,14 +176,14 @@
                     {
                         throw new SimpleAuthException(
                             ErrorCodes.InvalidRedirectUri,
-                            string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
+                            string.Format(ErrorMessages.TheRedirectUrlIsNotValid, redirectUri));
                     }
 
                     if (!string.IsNullOrWhiteSpace(redirectUri.Fragment))
                     {
                         throw new SimpleAuthException(
                             ErrorCodes.InvalidRedirectUri,
-                            string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, redirectUri));
+                            string.Format(ErrorMessages.TheRedirectUrlCannotContainsFragment, redirectUri));
                     }
 
                     client.RedirectionUrls = client.RedirectionUrls.Add(redirectUri);
@@ -197,7 +197,7 @@
                     {
                         throw new SimpleAuthException(
                             ErrorCodes.InvalidRedirectUri,
-                            string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
+                            string.Format(ErrorMessages.TheRedirectUrlIsNotValid, redirectUri));
                     }
 
                     client.RedirectionUrls = client.RedirectionUrls.Add(redirectUri);
@@ -287,7 +287,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidClientMetaData,
-                    ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved,
+                    ErrorMessages.TheSectorIdentifierUrisCannotBeRetrieved,
                     ex);
             }
         }
@@ -303,14 +303,14 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidClientMetaData,
-                    string.Format(ErrorDescriptions.ParameterIsNotCorrect, newClientName));
+                    string.Format(ErrorMessages.ParameterIsNotCorrect, newClientName));
             }
 
             if (checkSchemeIsHttps && uri.Scheme != Uri.UriSchemeHttps)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidClientMetaData,
-                    string.Format(ErrorDescriptions.ParameterIsNotCorrect, newClientName));
+                    string.Format(ErrorMessages.ParameterIsNotCorrect, newClientName));
             }
         }
     }

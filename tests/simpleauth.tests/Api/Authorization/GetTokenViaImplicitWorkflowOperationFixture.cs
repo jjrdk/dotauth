@@ -69,7 +69,7 @@
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
-                    ErrorDescriptions.MissingParameter,
+                    ErrorMessages.MissingParameter,
                     CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                 exception.Message);
             Assert.Equal(authorizationParameter.State, exception.State);
@@ -91,7 +91,7 @@
             Assert.Equal(ErrorCodes.InvalidRequest, ex.Code);
             Assert.Equal(
                 string.Format(
-                    ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                    ErrorMessages.TheClientDoesntSupportTheGrantType,
                     authorizationParameter.ClientId,
                     "implicit"),
                 ex.Message);

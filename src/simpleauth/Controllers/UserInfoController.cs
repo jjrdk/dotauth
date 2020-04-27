@@ -67,7 +67,7 @@ namespace SimpleAuth.Controllers
             var grantedToken = await _tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
             return grantedToken == null
                 ? BadRequest(
-                    new ErrorDetails { Detail = ErrorDescriptions.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken })
+                    new ErrorDetails {Detail = ErrorMessages.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken})
                 : new ObjectResult(grantedToken.UserInfoPayLoad ?? grantedToken.IdTokenPayLoad ?? new JwtPayload());
         }
 
@@ -81,7 +81,7 @@ namespace SimpleAuth.Controllers
 
             accessToken = await GetAccessTokenFromBodyParameter().ConfigureAwait(false);
             return string.IsNullOrWhiteSpace(accessToken) ? GetAccessTokenFromQueryString() : accessToken;
-        }
+            }
 
         /// <summary>
         /// Get an access token from the authorization header.
@@ -130,6 +130,6 @@ namespace SimpleAuth.Controllers
             var query = Request.Query;
             var record = query.FirstOrDefault(q => q.Key == accessTokenName);
             return record.Equals(default(KeyValuePair<string, StringValues>)) ? string.Empty : record.Value.First();
+            }
         }
     }
-}
