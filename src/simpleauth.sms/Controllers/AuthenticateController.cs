@@ -32,7 +32,7 @@
     /// <summary>
     /// Defines the authenticate controller.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Controllers.BaseAuthenticateController" />
+    /// <seealso cref="BaseAuthenticateController" />
     [Area(SmsConstants.Amr)]
     [ThrottleFilter]
     public class AuthenticateController : BaseAuthenticateController

@@ -119,11 +119,11 @@ namespace SimpleAuth.Controllers
             switch (actionResult.Type)
             {
                 case ActionResultType.RedirectToCallBackUrl:
-                {
-                    return authorizationRequest.redirect_uri.CreateRedirectHttpTokenResponse(
-                        actionResult.GetRedirectionParameters(),
-                        actionResult.RedirectInstruction.ResponseMode);
-                }
+                    {
+                        return authorizationRequest.redirect_uri.CreateRedirectHttpTokenResponse(
+                            actionResult.GetRedirectionParameters(),
+                            actionResult.RedirectInstruction.ResponseMode);
+                    }
                 case ActionResultType.RedirectToAction:
                     {
                         if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex
@@ -185,7 +185,16 @@ namespace SimpleAuth.Controllers
             SimpleAuthEndPoints simpleAuthEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
-            var partialUri = HostConstants.MappingEndPointToPartialUrl[simpleAuthEndPoints];
+            var partialUri = simpleAuthEndPoints switch
+            {
+                SimpleAuthEndPoints.AuthenticateIndex => "/Authenticate/OpenId",
+                SimpleAuthEndPoints.ConsentIndex => "/Consent",
+                SimpleAuthEndPoints.FormIndex => "/Form",
+                SimpleAuthEndPoints.SendCode => "/Code",
+                _ => throw new ArgumentOutOfRangeException(nameof(simpleAuthEndPoints), simpleAuthEndPoints, null)
+            };
+
+
             if (!string.IsNullOrWhiteSpace(amr)
                 && simpleAuthEndPoints != SimpleAuthEndPoints.ConsentIndex
                 && simpleAuthEndPoints != SimpleAuthEndPoints.FormIndex)

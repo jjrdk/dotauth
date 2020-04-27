@@ -109,6 +109,9 @@
                         new Claim(StandardClaimNames.Subject, "administrator"),
                         new Claim("role", "administrator"),
                         new Claim("role", "uma_admin"),
+                        new Claim(OpenIdClaimTypes.Name, "Anne Admin"),
+                        new Claim(OpenIdClaimTypes.Email, "admin@server.com"), 
+                        new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString) 
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,
@@ -122,7 +125,7 @@
                         new Claim(StandardClaimNames.Subject, "user"),
                         new Claim(OpenIdClaimTypes.Name, "Anne User"),
                         new Claim(OpenIdClaimTypes.Email, "user@server.com"), 
-                        new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString), 
+                        new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString) 
                     },
                     Password = "password".ToSha256Hash(),
                     IsLocalAccount = true,
