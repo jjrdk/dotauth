@@ -58,7 +58,7 @@ namespace SimpleAuth.Controllers
                 viewModel.RedirectUri = queryString["redirect_uri"];
             }
 
-            return View(viewModel);
+            return Ok(viewModel);
         }
     }
 }

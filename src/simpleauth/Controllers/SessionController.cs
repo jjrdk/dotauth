@@ -46,9 +46,9 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet(CoreConstants.EndPoints.CheckSession)]
-        public async Task<IActionResult> CheckSession()
+        public Task<IActionResult> CheckSession()
         {
-            return Ok(new { CookieName = CoreConstants.SessionId });
+            return Task.FromResult<IActionResult>(Ok(new { CookieName = CoreConstants.SessionId }));
         }
 
         /// <summary>
@@ -63,7 +63,6 @@
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                //await this.DisplayInternalHtml("SimpleAuth.Views.UserNotConnected.html").ConfigureAwait(false);
                 return Ok(new { Authenticated = false });
             }
 

@@ -29,12 +29,6 @@ namespace SimpleAuth.Controllers
                 statusCode = HttpStatusCode.BadRequest;
             }
 
-            if (Request.ContentType == "text/html")
-            {
-                var viewModel = new ErrorViewModel { Code = (int)statusCode, Title = title, Message = message };
-                return View("Index", viewModel);
-            }
-
             return StatusCode(
                 (int) statusCode,
                 new ErrorDetails {Detail = message, Status = statusCode, Title = title});

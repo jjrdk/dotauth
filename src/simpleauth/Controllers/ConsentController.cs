@@ -128,7 +128,7 @@ namespace SimpleAuth.Controllers
                 TosUri = client.TosUri?.AbsoluteUri,
                 Code = code
             };
-            return View("Index", viewModel);
+            return Ok(viewModel);
         }
 
         /// <summary>

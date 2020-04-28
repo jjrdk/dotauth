@@ -72,7 +72,7 @@ namespace SimpleAuth.Server.Tests
                 .AddControllersWithViews()
                 .AddRazorRuntimeCompilation()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .AddApplicationPart(typeof(HostConstants).Assembly);
+                .AddApplicationPart(typeof(CoreConstants).Assembly);
             services.AddRazorPages();
             services.AddSimpleAuth(
                 new SimpleAuthOptions

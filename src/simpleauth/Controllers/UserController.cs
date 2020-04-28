@@ -97,7 +97,7 @@
                 .Where(a => !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
                 .Select(p => new IdentityProviderViewModel(p.Name))
                 .ToList();
-            return View("Index", viewModel);
+            return Ok(viewModel); // View("Index", viewModel);
         }
 
         /// <summary>
@@ -300,7 +300,7 @@
             await SetUser().ConfigureAwait(false);
             var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
-            return View("LinkProfileConfirmation", viewModel);
+            return Ok(viewModel);
         }
 
         /// <summary>
@@ -430,7 +430,7 @@
                     });
             }
 
-            return View(result);
+            return Ok(result);
         }
 
         private UpdateResourceOwnerViewModel BuildViewModel(
