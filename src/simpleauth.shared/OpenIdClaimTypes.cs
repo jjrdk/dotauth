@@ -110,6 +110,9 @@
         /// </summary>
         public const string Role = "role";
 
+        /// <summary>
+        /// Gets all openid claim types.
+        /// </summary>
         public static readonly string[] All = new[]
         {
             Subject,

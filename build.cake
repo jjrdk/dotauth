@@ -138,6 +138,8 @@ Task("Pack")
         DotNetCorePack("./src/simpleauth.stores.marten/simpleauth.stores.marten.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.stores.redis/simpleauth.stores.redis.csproj", packSettings);
         DotNetCorePack("./src/simpleauth.sms/simpleauth.sms.csproj", packSettings);
+        DotNetCorePack("./src/simpleauth.ui/simpleauth.ui.csproj", packSettings);
+        DotNetCorePack("./src/simpleauth.sms.ui/simpleauth.sms.ui.csproj", packSettings);
     });
 
 // the rest of your build script
