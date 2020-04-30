@@ -2,11 +2,13 @@
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Mvc.ModelBinding;
 
     /// <summary>
     /// Defines the update resource owner credentials view model.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class UpdateResourceOwnerCredentialsViewModel
     {
         /// <summary>

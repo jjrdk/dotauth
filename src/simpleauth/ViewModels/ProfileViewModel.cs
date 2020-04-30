@@ -1,12 +1,14 @@
 ﻿namespace SimpleAuth.ViewModels
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Security.Claims;
 
     /// <summary>
     /// Defines the profile view model.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ProfileViewModel
     {
         /// <summary>

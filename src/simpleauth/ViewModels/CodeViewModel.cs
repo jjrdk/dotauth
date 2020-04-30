@@ -15,11 +15,13 @@
 namespace SimpleAuth.ViewModels
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Mvc.ModelBinding;
 
     /// <summary>
     /// Defines the code view model.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class CodeViewModel
     {
         /// <summary>

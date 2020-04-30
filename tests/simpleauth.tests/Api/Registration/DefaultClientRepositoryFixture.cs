@@ -65,6 +65,7 @@ namespace SimpleAuth.Tests.Api.Registration
         {
             var client = new Client
             {
+                ClientId = "test",
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 AllowedScopes = new[] { "scope" },
                 RedirectionUrls = new[] { new Uri("https://localhost"), },

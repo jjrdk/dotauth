@@ -47,14 +47,6 @@ namespace SimpleAuth
         }
 
         /// <summary>
-        /// Gets or sets the HTTP client factory.
-        /// </summary>
-        /// <value>
-        /// The HTTP client factory.
-        /// </value>
-        public Func<HttpClient> HttpClientFactory { get; set; }
-
-        /// <summary>
         /// Gets or sets the delegate to run when resource owner created.
         /// </summary>
         /// <value>

@@ -41,12 +41,11 @@ namespace SimpleAuth.Server.Tests
 
         private void RegisterServices(IServiceCollection serviceCollection)
         {
-            var client = new HttpClient();
+            serviceCollection.AddSingleton<HttpClient>();
             serviceCollection.AddSimpleAuth(
                 new SimpleAuthOptions
                 {
                     Users = sp => new InMemoryResourceOwnerRepository(DefaultStorage.GetUsers()),
-                    HttpClientFactory = () => client
                 },
                 new[] {JwtBearerDefaults.AuthenticationScheme},
                 assemblyTypes: typeof(IDefaultUi));

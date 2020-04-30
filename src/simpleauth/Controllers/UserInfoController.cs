@@ -67,7 +67,7 @@ namespace SimpleAuth.Controllers
             var grantedToken = await _tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
             return grantedToken == null
                 ? BadRequest(
-                    new ErrorDetails {Detail = ErrorDescriptions.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken})
+                    new ErrorDetails { Detail = ErrorDescriptions.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken })
                 : new ObjectResult(grantedToken.UserInfoPayLoad ?? grantedToken.IdTokenPayLoad ?? new JwtPayload());
         }
 
@@ -80,12 +80,7 @@ namespace SimpleAuth.Controllers
             }
 
             accessToken = await GetAccessTokenFromBodyParameter().ConfigureAwait(false);
-            if (!string.IsNullOrWhiteSpace(accessToken))
-            {
-                return accessToken;
-            }
-
-            return GetAccessTokenFromQueryString();
+            return string.IsNullOrWhiteSpace(accessToken) ? GetAccessTokenFromQueryString() : accessToken;
         }
 
         /// <summary>
@@ -113,22 +108,14 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         private async Task<string> GetAccessTokenFromBodyParameter()
         {
-            const string contentTypeValue = "application/x-www-form-urlencoded";
-
-            if (Request.Headers == null || !Request.Headers.TryGetValue(HeaderNames.ContentType, out var values))
+            if (!Request.HasFormContentType)
             {
                 return null;
             }
 
-            if (!string.Equals(values.First(), contentTypeValue, StringComparison.Ordinal))
-            {
-                return null;
-            }
+            var content = await Request.ReadFormAsync();
 
-            var content = await Request.ReadAsStringAsync().ConfigureAwait(false);
-            var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(content);
-
-            return !queryString.TryGetValue(StandardAuthorizationResponseNames.AccessTokenName, out var result)
+            return !content.TryGetValue(StandardAuthorizationResponseNames.AccessTokenName, out var result)
                 ? null
                 : result.First();
         }
@@ -142,12 +129,7 @@ namespace SimpleAuth.Controllers
             var accessTokenName = StandardAuthorizationResponseNames.AccessTokenName;
             var query = Request.Query;
             var record = query.FirstOrDefault(q => q.Key == accessTokenName);
-            if (record.Equals(default(KeyValuePair<string, StringValues>)))
-            {
-                return string.Empty;
-            }
-
-            return record.Value.First();
+            return record.Equals(default(KeyValuePair<string, StringValues>)) ? string.Empty : record.Value.First();
         }
     }
 }

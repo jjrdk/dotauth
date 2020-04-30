@@ -42,7 +42,6 @@ namespace SimpleAuth.AuthServerPg
 
         public Startup(IConfiguration configuration)
         {
-            var client = new HttpClient();
             _configuration = configuration;
             _options = new SimpleAuthOptions
             {
@@ -59,7 +58,6 @@ namespace SimpleAuth.AuthServerPg
                 AuthorizationCodes = sp => new MartenAuthorizationCodeStore(sp.GetRequiredService<IDocumentSession>),
                 ConfirmationCodes = sp => new MartenConfirmationCodeStore(sp.GetRequiredService<IDocumentSession>),
                 Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
-                HttpClientFactory = () => client,
                 JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
                 Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
                 Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
@@ -86,6 +84,7 @@ namespace SimpleAuth.AuthServerPg
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient<HttpClient>();
             services.AddSingleton<IDocumentStore>(
                 provider =>
                 {

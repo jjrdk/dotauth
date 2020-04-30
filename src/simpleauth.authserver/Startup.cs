@@ -45,7 +45,6 @@ namespace SimpleAuth.AuthServer
 
         public Startup(IConfiguration configuration)
         {
-            var client = new HttpClient();
             _configuration = configuration;
             bool.TryParse(_configuration["Redirect"], out var redirect);
             _options = new SimpleAuthOptions
@@ -91,7 +90,6 @@ namespace SimpleAuth.AuthServer
                                 })
                         }),
                 EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
-                HttpClientFactory = () => client,
                 ClaimsIncludedInUserCreation = new[]
                 {
                     ClaimTypes.Name,
@@ -113,6 +111,7 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient<HttpClient>();
             services.AddHttpContextAccessor()
                 .AddAntiforgery(
                     options =>
@@ -142,7 +141,7 @@ namespace SimpleAuth.AuthServer
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = new[] { "http://localhost:5000", "https://localhost:5001" }
+                            ValidIssuers = new[] {"http://localhost:5000", "https://localhost:5001"}
                         };
 #if DEBUG
                         cfg.RequireHttpsMetadata = false;
@@ -174,7 +173,7 @@ namespace SimpleAuth.AuthServer
             {
                 services.AddSimpleAuth(
                         _options,
-                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                        new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
                         assemblies: new[]
                         {
                             (GetType().Namespace, GetType().Assembly),
@@ -182,7 +181,12 @@ namespace SimpleAuth.AuthServer
                             (typeof(IDefaultSmsUi).Namespace, typeof(IDefaultSmsUi).Assembly)
                         })
                     .AddSmsAuthentication(
-                        new AwsSmsClient(new BasicAWSCredentials(_configuration["Amazon:AccessKey"], _configuration["Amazon:SecretKey"]), RegionEndpoint.EUNorth1, Globals.ApplicationName));
+                        new AwsSmsClient(
+                            new BasicAWSCredentials(
+                                _configuration["Amazon:AccessKey"],
+                                _configuration["Amazon:SecretKey"]),
+                            RegionEndpoint.EUNorth1,
+                            Globals.ApplicationName));
             }
             else
             {

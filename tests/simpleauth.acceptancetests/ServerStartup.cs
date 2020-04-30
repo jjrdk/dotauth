@@ -59,13 +59,13 @@
                 Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users()),
                 ClaimsIncludedInUserCreation = new[] { "acceptance_test" },
-                HttpClientFactory = () => context.Client
             };
             _context = context;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient(sp => _context.Client);
             var mockSmsClient = new Mock<ISmsClient>();
             mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((true, null));
 

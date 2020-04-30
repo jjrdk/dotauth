@@ -1,8 +1,11 @@
 ﻿namespace SimpleAuth.ViewModels
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// Defines the link profile confirmation view model.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class LinkProfileConfirmationViewModel
     {
         /// <summary>

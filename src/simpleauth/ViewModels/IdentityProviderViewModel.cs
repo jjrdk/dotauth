@@ -1,8 +1,11 @@
 ﻿namespace SimpleAuth.ViewModels
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// Defines the identity provider view model.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class IdentityProviderViewModel
     {
         /// <summary>

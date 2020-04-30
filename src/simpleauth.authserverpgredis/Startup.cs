@@ -48,7 +48,6 @@ namespace SimpleAuth.AuthServerPgRedis
 
         public Startup(IConfiguration configuration)
         {
-            var client = new HttpClient();
             _configuration = configuration;
             _options = new SimpleAuthOptions
             {
@@ -71,7 +70,6 @@ namespace SimpleAuth.AuthServerPgRedis
                         sp.GetRequiredService<IDatabaseAsync>(),
                         TimeSpan.FromMinutes(30)),
                 Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
-                HttpClientFactory = () => client,
                 JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
                 Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>()),
                 Tokens =
@@ -101,7 +99,7 @@ namespace SimpleAuth.AuthServerPgRedis
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient();
+            services.AddHttpClient<HttpClient>();
             services.AddSingleton<IDocumentStore>(
                 provider =>
                 {

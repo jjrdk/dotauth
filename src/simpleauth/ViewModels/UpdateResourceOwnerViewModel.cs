@@ -1,10 +1,12 @@
 ﻿namespace SimpleAuth.ViewModels
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Defines the update resource owner view model.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class UpdateResourceOwnerViewModel
     {
         /// <summary>
