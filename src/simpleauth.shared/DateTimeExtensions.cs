@@ -16,37 +16,54 @@ namespace SimpleAuth.Shared
 {
     using System;
 
-    internal static class DateTimeExtensions
+    /// <summary>
+    /// Defines the date time extensions.
+    /// </summary>
+    public static class DateTimeExtensions
     {
-        private static readonly DateTimeOffset UnixStart;
+        private static readonly DateTimeOffset UnixStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         private const long TicksFactor = 10000000L;
 
-        static DateTimeExtensions()
-        {
-            UnixStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        }
-
+        /// <summary>
+        /// Convert the input <see cref="DateTimeOffset"/> to a unix timestamp.
+        /// </summary>
+        /// <param name="dateTime">The time to convert.</param>
+        /// <returns></returns>
         public static long ConvertToUnixTimestamp(this DateTimeOffset dateTime)
         {
-            return (dateTime.ToUniversalTime().Ticks - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero).Ticks) / TicksFactor;
+            return (dateTime.ToUniversalTime().Ticks - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero).Ticks)
+                   / TicksFactor;
         }
 
+        /// <summary>
+        /// Convert the input <see cref="DateTime"/> to a unix timestamp.
+        /// </summary>
+        /// <param name="date">The time to convert.</param>
+        /// <returns></returns>
         public static long ConvertToUnixTimestamp(this DateTime date)
         {
             var diff = date.ToUniversalTime() - UnixStart;
-            return (long)Math.Floor(diff.TotalSeconds);
+            return (long) Math.Floor(diff.TotalSeconds);
         }
 
+        /// <summary>
+        /// Converts the unix timestamp to a <see cref="DateTimeOffset"/>.
+        /// </summary>
+        /// <param name="value">The timestamp to convert.</param>
+        /// <returns></returns>
         public static DateTimeOffset ConvertFromUnixTicks(this long? value)
         {
             return value.HasValue ? UnixStart.AddTicks(value.Value * TicksFactor) : default;
         }
 
+        /// <summary>
+        /// Converts the unix timestamp to a <see cref="DateTimeOffset"/>.
+        /// </summary>
+        /// <param name="timestamp">The timestamp to convert.</param>
+        /// <returns></returns>
         public static DateTimeOffset ConvertFromUnixTimestamp(this string timestamp)
         {
-            return !long.TryParse(timestamp, out var value)
-                ? UnixStart
-                : ConvertFromUnixTicks(value);
+            return !long.TryParse(timestamp, out var value) ? UnixStart : ConvertFromUnixTicks(value);
         }
     }
 }
