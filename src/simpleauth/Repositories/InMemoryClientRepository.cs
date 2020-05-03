@@ -78,21 +78,20 @@
         }
 
         /// <inheritdoc />
-        public async Task<Client> Insert(Client newClient, CancellationToken cancellationToken = default)
+        public Task<Client> Insert(Client client, CancellationToken cancellationToken = default)
         {
-            if (newClient == null)
+            if (client == null)
             {
-                throw new ArgumentNullException(nameof(newClient));
+                throw new ArgumentNullException(nameof(client));
             }
 
-            if (_clients.Any(x => x.ClientId == newClient.ClientId || x.ClientName == newClient.ClientName))
+            if (_clients.Any(x => x.ClientId == client.ClientId || x.ClientName == client.ClientName))
             {
                 throw new ArgumentException("Duplicate client");
             }
 
-            var toInsert = await _clientFactory.Build(newClient, cancellationToken).ConfigureAwait(false);
-            _clients.Add(toInsert);
-            return toInsert;
+            _clients.Add(client);
+            return Task.FromResult(client);
         }
 
         /// <inheritdoc />
@@ -154,7 +153,9 @@
                 return null;
             }
 
-            newClient = await _clientFactory.Build(newClient).ConfigureAwait(false);
+            var id = newClient.ClientId;
+            newClient = await _clientFactory.Build(newClient, cancellationToken).ConfigureAwait(false);
+            newClient.ClientId = id;
             lock (_clients)
             {
                 var removed = _clients.RemoveAll(

@@ -7,6 +7,9 @@
     <RootNamespace>SimpleAuth.Tests</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\shared.proj" />
+  <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="testCert.pfx">
