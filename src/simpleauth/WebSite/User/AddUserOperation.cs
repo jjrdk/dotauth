@@ -61,8 +61,8 @@ namespace SimpleAuth.WebSite.User
             {
                 return (false, null);
             }
-
-            resourceOwner.UpdateDateTime = DateTimeOffset.UtcNow;
+            
+            resourceOwner.Password = resourceOwner.Password.ToSha256Hash();
             var additionalClaims = _settings.ClaimsIncludedInUserCreation
                 .Except(resourceOwner.Claims.Select(x => x.Type))
                 .Select(x => new Claim(x, string.Empty));
@@ -71,6 +71,7 @@ namespace SimpleAuth.WebSite.User
             // Customize new resource owner.
             _settings.OnResourceOwnerCreated(resourceOwner);
 
+            var now = DateTimeOffset.UtcNow;
             if (_accountFilters != null)
             {
                 var isFilterValid = true;
@@ -89,12 +90,12 @@ namespace SimpleAuth.WebSite.User
                                 new FilterValidationFailure(
                                     Id.Create(),
                                     $"The filter rule '{ruleResult.RuleName}' failed",
-                                    DateTimeOffset.UtcNow))
+                                    now))
                             .ConfigureAwait(false);
                         foreach (var errorMessage in ruleResult.ErrorMessages)
                         {
                             await _eventPublisher
-                                .Publish(new FilterValidationFailure(Id.Create(), errorMessage, DateTimeOffset.UtcNow))
+                                .Publish(new FilterValidationFailure(Id.Create(), errorMessage, now))
                                 .ConfigureAwait(false);
                         }
                     }
@@ -105,8 +106,9 @@ namespace SimpleAuth.WebSite.User
                     return (false, null);
                 }
             }
-
-            resourceOwner.CreateDateTime = DateTimeOffset.UtcNow;
+            
+            resourceOwner.UpdateDateTime = now;
+            resourceOwner.CreateDateTime = now;
             if (!await _resourceOwnerRepository.Insert(resourceOwner, cancellationToken).ConfigureAwait(false))
             {
                 return (false, null);
@@ -122,7 +124,7 @@ namespace SimpleAuth.WebSite.User
                                 Value = claim.Value
                             })
                             .ToArray(),
-                        DateTimeOffset.UtcNow))
+                        now))
                 .ConfigureAwait(false);
             return (true, resourceOwner.Subject);
         }

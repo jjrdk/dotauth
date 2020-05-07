@@ -111,7 +111,7 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient<HttpClient>();
+            services.AddSingleton<HttpClient>();
             services.AddHttpContextAccessor()
                 .AddAntiforgery(
                     options =>
