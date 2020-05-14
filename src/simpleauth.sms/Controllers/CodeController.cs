@@ -59,7 +59,7 @@ namespace SimpleAuth.Sms.Controllers
         /// Send the confirmation code to the phone number.
         /// </summary>
         /// <param name="confirmationCodeRequest"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         [HttpPost]
         [ThrottleFilter]

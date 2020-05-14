@@ -66,7 +66,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
         /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="claimsPrincipal"></param>
         /// <param name="issuerName"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns>Action resultKind.</returns>
         public async Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,

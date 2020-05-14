@@ -56,7 +56,7 @@ namespace SimpleAuth.WebSite.Authenticate
         /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
         /// <param name="code">Encrypted parameter</param>
         /// <param name="issuerName"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns>Action resultKind to the controller's action</returns>
         public async Task<EndpointResult> Execute(
             AuthorizationParameter authorizationParameter,

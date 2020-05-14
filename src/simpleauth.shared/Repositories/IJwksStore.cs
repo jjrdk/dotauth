@@ -12,7 +12,7 @@
         /// <summary>
         /// Gets all available public keys as a <see cref="JsonWebKeySet"/>.
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default);
 

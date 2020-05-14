@@ -28,7 +28,7 @@ namespace SimpleAuth.Shared.Repositories
         /// Searches the specified parameter.
         /// </summary>
         /// <param name="parameter">The parameter.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<PagedResult<ResourceSet>> Search(SearchResourceSet parameter, CancellationToken cancellationToken);
 
@@ -37,7 +37,7 @@ namespace SimpleAuth.Shared.Repositories
         /// </summary>
         /// <param name="owner">The resource owner.</param>
         /// <param name="resourceSet">The resource set.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken);
 
@@ -46,7 +46,7 @@ namespace SimpleAuth.Shared.Repositories
         /// </summary>
         /// <param name="owner">The resource owner.</param>
         /// <param name="id">The identifier.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<ResourceSet> Get(string owner, string id, CancellationToken cancellationToken);
 
@@ -54,7 +54,7 @@ namespace SimpleAuth.Shared.Repositories
         /// Updates the specified resource set.
         /// </summary>
         /// <param name="resourceSet">The resource set.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<bool> Update(ResourceSet resourceSet, CancellationToken cancellationToken);
 
@@ -62,7 +62,7 @@ namespace SimpleAuth.Shared.Repositories
         /// Gets all.
         /// </summary>
         /// <param name="owner"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken);
 
@@ -70,14 +70,14 @@ namespace SimpleAuth.Shared.Repositories
         /// Deletes the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<bool> Remove(string id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the specified ids.
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <param name="ids">The ids.</param>
         /// <returns></returns>
         Task<ResourceSet[]> Get(CancellationToken cancellationToken, params string[] ids);

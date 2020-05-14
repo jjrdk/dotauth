@@ -340,7 +340,7 @@
         /// Unlink the external account.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Unlink(string id, CancellationToken cancellationToken)
@@ -466,7 +466,7 @@
         /// Get the profiles linked to the user account.
         /// </summary>
         /// <param name="subject"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         private async Task<ResourceOwner> GetUserProfile(string subject, CancellationToken cancellationToken)
         {

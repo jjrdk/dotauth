@@ -13,7 +13,7 @@
         /// Adds the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<bool> Add(JsonWebKey key, CancellationToken cancellationToken = default);
 
@@ -21,7 +21,7 @@
         /// Rotates the specified key set.
         /// </summary>
         /// <param name="keySet">The key set.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<bool> Rotate(JsonWebKeySet keySet, CancellationToken cancellationToken = default);
     }

@@ -13,7 +13,7 @@
         /// Gets the authorization code.
         /// </summary>
         /// <param name="code">The code.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<AuthorizationCode> Get(string code, CancellationToken cancellationToken);
 
@@ -21,7 +21,7 @@
         /// Adds the authorization code.
         /// </summary>
         /// <param name="authorizationCode">The authorization code.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken);
 
@@ -29,7 +29,7 @@
         /// Removes the authorization code.
         /// </summary>
         /// <param name="code">The code.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<bool> Remove(string code, CancellationToken cancellationToken);
     }

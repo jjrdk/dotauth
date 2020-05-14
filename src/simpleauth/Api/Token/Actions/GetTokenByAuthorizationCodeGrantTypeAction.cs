@@ -141,7 +141,7 @@ namespace SimpleAuth.Api.Token.Actions
         /// <param name="authenticationHeaderValue"></param>
         /// <param name="certificate"></param>
         /// <param name="issuerName"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         private async Task<(ValidationResult, GenericResponse<GrantedToken>)> ValidateParameter(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,

@@ -56,7 +56,7 @@ namespace SimpleAuth.Controllers
         /// Searches the resource sets.
         /// </summary>
         /// <param name="searchResourceSet">The search resource set.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
@@ -104,7 +104,7 @@ namespace SimpleAuth.Controllers
         /// Gets the resource set.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         [HttpGet("{id}")]
         [Authorize(Policy = "UmaProtection")]
@@ -244,7 +244,7 @@ namespace SimpleAuth.Controllers
         /// Adds the resource set.
         /// </summary>
         /// <param name="resourceSet">The post resource set.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         [HttpPost]
         [Authorize("UmaProtection")]
@@ -314,7 +314,7 @@ namespace SimpleAuth.Controllers
         /// Updates the resource set.
         /// </summary>
         /// <param name="resourceSet">The put resource set.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         [HttpPut]
         [Authorize("UmaProtection")]

@@ -71,7 +71,7 @@
         }
 
         /// <param name="owner"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <inheritdoc />
         public Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken)
         {

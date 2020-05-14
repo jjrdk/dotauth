@@ -17,7 +17,7 @@
         /// <param name="clientId"></param>
         /// <param name="idTokenJwsPayload"></param>
         /// <param name="userInfoJwsPayload"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<GrantedToken> GetToken(string scopes, string clientId, JwtPayload idTokenJwsPayload, JwtPayload userInfoJwsPayload, CancellationToken cancellationToken = default);
 

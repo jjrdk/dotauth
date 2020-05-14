@@ -14,7 +14,7 @@
         /// Builds the subject.
         /// </summary>
         /// <param name="claims">The claims.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<string> BuildSubject(IEnumerable<Claim> claims, CancellationToken cancellationToken = default);
     }

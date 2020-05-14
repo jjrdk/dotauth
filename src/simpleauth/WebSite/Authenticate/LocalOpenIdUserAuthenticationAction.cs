@@ -60,7 +60,7 @@ namespace SimpleAuth.WebSite.Authenticate
         /// <param name="authorizationParameter">Authorization parameters</param>
         /// <param name="code">Encrypted &amp; signed authorization parameters</param>
         /// <param name="issuerName"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns>Consent screen or redirect to the Index page.</returns>
         public async Task<LocalOpenIdAuthenticationResult> Execute(
             LocalAuthenticationParameter localAuthenticationParameter,

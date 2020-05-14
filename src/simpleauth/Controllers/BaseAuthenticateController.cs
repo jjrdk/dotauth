@@ -688,7 +688,7 @@ namespace SimpleAuth.Controllers
         /// Add an external account.
         /// </summary>
         /// <param name="authenticatedUser"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         private async Task<(string Subject, int? StatusCode, string Error)> AddExternalUser(
             ClaimsPrincipal authenticatedUser,

@@ -297,7 +297,7 @@ namespace SimpleAuth.Common
         /// </summary>
         /// <param name="claimsPrincipal"></param>
         /// <param name="authorizationParameter"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         private async Task<JwtPayload> GenerateUserInformationPayload(
             ClaimsPrincipal claimsPrincipal,
