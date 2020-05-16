@@ -37,7 +37,8 @@
                 throw new ArgumentNullException(nameof(password));
             }
 
-            var confirmationCode = await _confirmationCodeStore.Get(password, cancellationToken).ConfigureAwait(false);
+            var confirmationCode =
+                await _confirmationCodeStore.Get(password, login, cancellationToken).ConfigureAwait(false);
             if (confirmationCode == null || confirmationCode.Subject != login)
             {
                 return null;
@@ -55,7 +56,8 @@
                 .ConfigureAwait(false);
             if (resourceOwner != null)
             {
-                await _confirmationCodeStore.Remove(password, cancellationToken).ConfigureAwait(false);
+                await _confirmationCodeStore.Remove(password, resourceOwner.Subject, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             return resourceOwner;

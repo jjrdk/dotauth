@@ -337,6 +337,7 @@ namespace SimpleAuth.Controllers
             }
 
             // 2. Resend the confirmation code.
+            var subject = authenticatedUser.GetSubject();
             if (codeViewModel.Action == CodeViewModel.ResendAction)
             {
                 var resourceOwner = await _getUserOperation.Execute(authenticatedUser, cancellationToken)
@@ -349,15 +350,15 @@ namespace SimpleAuth.Controllers
 
                 resourceOwner.Claims = resourceOwner.Claims.Add(new Claim(codeViewModel.ClaimName, codeViewModel.ClaimValue));
                 var claimsLst = resourceOwner.Claims.Select(c => new Claim(c.Type, c.Value));
-                await _updateUserClaimsOperation.Execute(authenticatedUser.GetSubject(), claimsLst, cancellationToken)
+                await _updateUserClaimsOperation.Execute(subject, claimsLst, cancellationToken)
                     .ConfigureAwait(false);
-                await _generateAndSendCode.Send(authenticatedUser.GetSubject(), cancellationToken)
+                await _generateAndSendCode.Send(subject, cancellationToken)
                     .ConfigureAwait(false);
                 return View(codeViewModel);
             }
 
             // 3. Validate the confirmation code
-            if (!await _validateConfirmationCode.Execute(codeViewModel.Code, cancellationToken).ConfigureAwait(false))
+            if (!await _validateConfirmationCode.Execute(codeViewModel.Code, subject, cancellationToken).ConfigureAwait(false))
             {
                 ModelState.AddModelError("Code", "confirmation code is not valid");
                 return View(codeViewModel);
@@ -365,7 +366,7 @@ namespace SimpleAuth.Controllers
 
             // 4. Remove the code
             if (string.IsNullOrWhiteSpace(codeViewModel.Code)
-                || !await _confirmationCodeStore.Remove(codeViewModel.Code, cancellationToken).ConfigureAwait(false))
+                || !await _confirmationCodeStore.Remove(codeViewModel.Code, subject, cancellationToken).ConfigureAwait(false))
             {
                 ModelState.AddModelError("Code", "an error occured while trying to remove the code");
                 return View(codeViewModel);
@@ -388,12 +389,12 @@ namespace SimpleAuth.Controllers
                 var actionResult = await _authenticateHelper.ProcessRedirection(
                         request.ToParameter(),
                         codeViewModel.AuthRequestCode,
-                        authenticatedUser.GetSubject(),
+                        subject,
                         authenticatedUserClaims,
                         issuerName,
                         cancellationToken)
                     .ConfigureAwait(false);
-                await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr).ConfigureAwait(false);
+                await LogAuthenticateUser(subject, actionResult.Amr).ConfigureAwait(false);
                 var result = actionResult.CreateRedirectionFromActionResult(request);
                 return result;
             }

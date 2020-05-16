@@ -147,7 +147,7 @@ namespace SimpleAuth.Api.Token.Actions
             // 5. Fill-in the id token
             if (generatedToken.IdTokenPayLoad != null)
             {
-                _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, authResult.Client?.TokenLifetime);
+                generatedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, authResult.Client?.TokenLifetime);
                 generatedToken.IdToken = await _clientStore.GenerateIdToken(
                         generatedToken.ClientId,
                         generatedToken.IdTokenPayLoad,
@@ -166,7 +166,7 @@ namespace SimpleAuth.Api.Token.Actions
                         GrantTypes.RefreshToken,
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
-            return new GenericResponse<GrantedToken> {StatusCode = HttpStatusCode.OK, Content = generatedToken};
+            return new GenericResponse<GrantedToken> { StatusCode = HttpStatusCode.OK, Content = generatedToken };
         }
 
         private async Task<GrantedToken> ValidateParameter(

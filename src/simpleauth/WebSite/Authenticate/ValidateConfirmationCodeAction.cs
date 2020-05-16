@@ -28,21 +28,27 @@ namespace SimpleAuth.WebSite.Authenticate
             _confirmationCodeStore = confirmationCodeStore;
         }
 
-        public async Task<bool> Execute(string code, CancellationToken cancellationToken)
+        public async Task<bool> Execute(string code, string subject, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
                 return false;
             }
 
-            var confirmationCode = await _confirmationCodeStore.Get(code, cancellationToken).ConfigureAwait(false);
+            var confirmationCode = await _confirmationCodeStore.Get(code, subject, cancellationToken).ConfigureAwait(false);
             if (confirmationCode == null)
             {
                 return false;
             }
 
             var expirationDateTime = confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn);
-            return DateTimeOffset.UtcNow < expirationDateTime;
+            if (DateTimeOffset.UtcNow < expirationDateTime)
+            {
+                return true;
+            }
+
+            await _confirmationCodeStore.Remove(code, subject, cancellationToken).ConfigureAwait(false);
+            return false;
         }
     }
 }

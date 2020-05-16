@@ -618,9 +618,9 @@ namespace SimpleAuth.Tests.JwtToken
         {
             var authorizationParameter = new AuthorizationParameter();
 
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => JwtGenerator.GenerateFilteredUserInfoPayload(null, null, null));
             Assert.Throws<ArgumentNullException>(
-                () => _jwtGenerator.GenerateFilteredUserInfoPayload(null, null, authorizationParameter));
+                () => JwtGenerator.GenerateFilteredUserInfoPayload(null, null, authorizationParameter));
         }
 
         [Fact]
@@ -651,7 +651,7 @@ namespace SimpleAuth.Tests.JwtToken
                 .ReturnsAsync(scopes);
 
             var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => _jwtGenerator.GenerateFilteredUserInfoPayload(
+                () => JwtGenerator.GenerateFilteredUserInfoPayload(
                     claimsParameter,
                     claimsPrincipal,
                     authorizationParameter));
@@ -692,7 +692,7 @@ namespace SimpleAuth.Tests.JwtToken
                 .ReturnsAsync(scopes);
 
             var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => _jwtGenerator.GenerateFilteredUserInfoPayload(
+                () => JwtGenerator.GenerateFilteredUserInfoPayload(
                     claimsParameter,
                     claimsPrincipal,
                     authorizationParameter));
@@ -731,7 +731,7 @@ namespace SimpleAuth.Tests.JwtToken
                 .ReturnsAsync(scopes);
 
             var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => _jwtGenerator.GenerateFilteredUserInfoPayload(
+                () => JwtGenerator.GenerateFilteredUserInfoPayload(
                     claimsParameter,
                     claimsPrincipal,
                     authorizationParameter));
@@ -781,7 +781,7 @@ namespace SimpleAuth.Tests.JwtToken
                 .ReturnsAsync(scopes);
 
             var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => _jwtGenerator.GenerateFilteredUserInfoPayload(
+                () => JwtGenerator.GenerateFilteredUserInfoPayload(
                     claimsParameter,
                     claimsPrincipal,
                     authorizationParameter));
@@ -831,7 +831,7 @@ namespace SimpleAuth.Tests.JwtToken
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(scopes);
 
-            var result = _jwtGenerator.GenerateFilteredUserInfoPayload(
+            var result = JwtGenerator.GenerateFilteredUserInfoPayload(
                 claimsParameter,
                 claimsPrincipal,
                 authorizationParameter);

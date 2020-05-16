@@ -121,7 +121,8 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
             fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
             _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
-            _confirmationCodeStoreStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _confirmationCodeStoreStub
+                .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((ConfirmationCode) null);
             _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
@@ -150,7 +151,8 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
             fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
             _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
-            _confirmationCodeStoreStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _confirmationCodeStoreStub
+                .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((ConfirmationCode) null);
             _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);

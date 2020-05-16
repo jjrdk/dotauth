@@ -34,7 +34,6 @@
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
         private readonly LocalOpenIdUserAuthenticationAction _localOpenIdAuthentication;
-        private readonly GenerateAndSendCodeAction _generateAndSendCode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticateController"/> class.
@@ -101,10 +100,6 @@
             _eventPublisher = eventPublisher;
             var services = resourceOwnerServices.ToArray();
             _resourceOwnerServices = services;
-            _generateAndSendCode = new GenerateAndSendCodeAction(
-                resourceOwnerRepository,
-                confirmationCodeStore,
-                twoFactorAuthenticationHandler);
             _localOpenIdAuthentication = new LocalOpenIdUserAuthenticationAction(
                 authorizationCodeStore,
                 services,
@@ -200,7 +195,7 @@
                 // 2.2. Send confirmation code
                 try
                 {
-                    await _generateAndSendCode.Send(subject, cancellationToken).ConfigureAwait(false);
+                    await SendCode(subject, cancellationToken).ConfigureAwait(false);
                     return RedirectToAction("SendCode");
                 }
                 catch (ClaimRequiredException cre)
@@ -302,7 +297,7 @@
                     try
                     {
                         await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
-                        await _generateAndSendCode.Send(subject, cancellationToken).ConfigureAwait(false);
+                        await SendCode(subject, cancellationToken).ConfigureAwait(false);
                         return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
                     catch (ClaimRequiredException cre)

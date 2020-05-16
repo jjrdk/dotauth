@@ -307,7 +307,7 @@ namespace SimpleAuth.Common
             JwtPayload jwsPayload;
             if (authorizationParameter.Claims != null && authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
             {
-                jwsPayload = _jwtGenerator.GenerateFilteredUserInfoPayload(
+                jwsPayload = JwtGenerator.GenerateFilteredUserInfoPayload(
                     authorizationParameter.Claims.UserInfo,
                     claimsPrincipal,
                     authorizationParameter);

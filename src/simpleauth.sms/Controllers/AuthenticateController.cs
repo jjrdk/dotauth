@@ -289,7 +289,7 @@
                 return View("ConfirmCode", confirmCodeViewModel);
             }
 
-            if (!await _validateConfirmationCode.Execute(confirmCodeViewModel.ConfirmationCode, cancellationToken).ConfigureAwait(false)
+            if (!await _validateConfirmationCode.Execute(confirmCodeViewModel.ConfirmationCode, subject, cancellationToken).ConfigureAwait(false)
             ) // Check the confirmation code.
             {
                 ModelState.AddModelError("message_error", "Confirmation code is not valid");
@@ -350,7 +350,7 @@
 
             if (!string.IsNullOrWhiteSpace(modelCode))
             {
-                await _confirmationCodeStore.Remove(modelCode, cancellationToken).ConfigureAwait(false);
+                await _confirmationCodeStore.Remove(modelCode, subject, cancellationToken).ConfigureAwait(false);
             }
 
             return RedirectToAction("Index", "User", new { Area = "pwd" });

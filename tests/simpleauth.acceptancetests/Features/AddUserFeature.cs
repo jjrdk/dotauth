@@ -51,7 +51,7 @@
             "When local account user is added to storage".x(
                 async () =>
                 {
-                    var resourceOwner = new ResourceOwner { Subject = "tester", IsLocalAccount = true };
+                    var resourceOwner = new ResourceOwner { Subject = "tester", Password = "password", IsLocalAccount = true };
                     var (_, s) = await _addUserOperation.Execute(resourceOwner, CancellationToken.None).ConfigureAwait(false);
                     subject = s;
                 });

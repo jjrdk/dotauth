@@ -62,7 +62,6 @@ namespace SimpleAuth.WebSite.User
                 return (false, null);
             }
             
-            resourceOwner.Password = resourceOwner.Password.ToSha256Hash();
             var additionalClaims = _settings.ClaimsIncludedInUserCreation
                 .Except(resourceOwner.Claims.Select(x => x.Type))
                 .Select(x => new Claim(x, string.Empty));

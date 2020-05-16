@@ -13,9 +13,10 @@
         /// Gets the specified code.
         /// </summary>
         /// <param name="code">The code.</param>
+        /// <param name="subject">The subject for the confirmation code.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<ConfirmationCode> Get(string code, CancellationToken cancellationToken);
+        Task<ConfirmationCode> Get(string code, string subject, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the specified confirmation code.
@@ -29,8 +30,9 @@
         /// Removes the specified code.
         /// </summary>
         /// <param name="code">The code.</param>
+        /// <param name="subject">The subject for the confirmation code.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<bool> Remove(string code, CancellationToken cancellationToken);
+        Task<bool> Remove(string code, string subject, CancellationToken cancellationToken);
     }
 }

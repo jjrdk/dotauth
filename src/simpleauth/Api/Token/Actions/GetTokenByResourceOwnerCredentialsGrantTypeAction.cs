@@ -208,7 +208,7 @@ namespace SimpleAuth.Api.Token.Actions
                     .ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)
                 {
-                    _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client?.TokenLifetime);
+                    generatedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client?.TokenLifetime);
                     generatedToken.IdToken = await client.GenerateIdToken(
                             generatedToken.IdTokenPayLoad,
                             _jwksStore,

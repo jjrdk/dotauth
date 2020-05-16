@@ -25,7 +25,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<ConfirmationCode> Get(string code, CancellationToken cancellationToken)
+        public async Task<ConfirmationCode> Get(string code, string subject, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var authorizationCode =
@@ -44,7 +44,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> Remove(string code, CancellationToken cancellationToken)
+        public async Task<bool> Remove(string code, string subject, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             session.Delete<ConfirmationCode>(code);

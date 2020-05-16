@@ -63,7 +63,7 @@ namespace SimpleAuth.WebSite.Authenticate
 
             var confirmationCode = new ConfirmationCode
             {
-                Value = await GetCode(cancellationToken).ConfigureAwait(false),
+                Value = await GetCode(subject, cancellationToken).ConfigureAwait(false),
                 IssueAt = DateTimeOffset.UtcNow,
                 ExpiresIn = 300
             };
@@ -83,13 +83,13 @@ namespace SimpleAuth.WebSite.Authenticate
             return confirmationCode.Value;
         }
 
-        private async Task<string> GetCode(CancellationToken cancellationToken)
+        private async Task<string> GetCode(string subject, CancellationToken cancellationToken)
         {
             var random = new Random();
             var number = random.Next(100000, 999999);
-            if (await _confirmationCodeStore.Get(number.ToString(), cancellationToken).ConfigureAwait(false) != null)
+            if (await _confirmationCodeStore.Get(number.ToString(), subject, cancellationToken).ConfigureAwait(false) != null)
             {
-                return await GetCode(cancellationToken).ConfigureAwait(false);
+                return await GetCode(subject, cancellationToken).ConfigureAwait(false);
             }
 
             return number.ToString();

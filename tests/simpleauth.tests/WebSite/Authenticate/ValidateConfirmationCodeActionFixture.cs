@@ -37,7 +37,8 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         [Fact]
         public async Task When_Passing_Null_Parameter_Then_Returns_False()
         {
-            var result = await _validateConfirmationCodeAction.Execute(null, CancellationToken.None).ConfigureAwait(false);
+            var result = await _validateConfirmationCodeAction.Execute(null, null, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.False(result);
         }
@@ -45,7 +46,8 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         [Fact]
         public async Task When_Passing_Empty_Parameter_Then_Returns_False()
         {
-            var result = await _validateConfirmationCodeAction.Execute(string.Empty, CancellationToken.None).ConfigureAwait(false);
+            var result = await _validateConfirmationCodeAction.Execute(string.Empty, string.Empty, CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.False(result);
         }
@@ -54,10 +56,10 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         [Fact]
         public async Task When_Code_Does_Not_Exist_Then_False_Is_Returned()
         {
-            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ConfirmationCode) null);
+            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((ConfirmationCode)null);
 
-            var result = await _validateConfirmationCodeAction.Execute("code", CancellationToken.None)
+            var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
                 .ConfigureAwait(false);
             Assert.False(result);
         }
@@ -65,15 +67,12 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         [Fact]
         public async Task When_Code_Is_Expired_Then_False_Is_Returned()
         {
-            var confirmationCode = new ConfirmationCode
-            {
-                ExpiresIn = 10,
-                IssueAt = DateTimeOffset.UtcNow.AddDays(-2)
-            };
-            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            var confirmationCode = new ConfirmationCode { ExpiresIn = 10, IssueAt = DateTimeOffset.UtcNow.AddDays(-2) };
+            _confirmationCodeStoreStub
+                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(confirmationCode);
 
-            var result = await _validateConfirmationCodeAction.Execute("code", CancellationToken.None)
+            var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.False(result);
@@ -82,15 +81,12 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         [Fact]
         public async Task When_Code_Is_Not_Expired_Then_True_Is_Returned()
         {
-            var confirmationCode = new ConfirmationCode
-            {
-                ExpiresIn = 200,
-                IssueAt = DateTimeOffset.UtcNow
-            };
-            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            var confirmationCode = new ConfirmationCode { ExpiresIn = 200, IssueAt = DateTimeOffset.UtcNow };
+            _confirmationCodeStoreStub
+                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(confirmationCode);
 
-            var result = await _validateConfirmationCodeAction.Execute("code", CancellationToken.None)
+            var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.True(result);

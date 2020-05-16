@@ -26,7 +26,7 @@
         {
             var confirmationCode = new ConfirmationCode
             {
-                Value = await GetCode(cancellationToken).ConfigureAwait(false),
+                Value = await GetCode(phoneNumber, cancellationToken).ConfigureAwait(false),
                 IssueAt = DateTimeOffset.UtcNow,
                 ExpiresIn = 120,
                 Subject = phoneNumber
@@ -51,12 +51,12 @@
             return confirmationCode.Value;
         }
 
-        private async Task<string> GetCode(CancellationToken cancellationToken)
+        private async Task<string> GetCode(string subject, CancellationToken cancellationToken)
         {
             var number = _random.Next(100000, 999999).ToString();
-            if ((await _confirmationCodeStore.Get(number, cancellationToken).ConfigureAwait(false))?.Value == number)
+            if ((await _confirmationCodeStore.Get(number, subject, cancellationToken).ConfigureAwait(false))?.Value == number)
             {
-                return await GetCode(cancellationToken).ConfigureAwait(false);
+                return await GetCode(subject, cancellationToken).ConfigureAwait(false);
             }
 
             return number;

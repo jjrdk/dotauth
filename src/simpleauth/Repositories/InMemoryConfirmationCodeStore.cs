@@ -28,7 +28,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<ConfirmationCode> Get(string code, CancellationToken cancellationToken)
+        public Task<ConfirmationCode> Get(string code, string subject, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -38,7 +38,7 @@
             return Task.FromResult(_confirmationCodes.FirstOrDefault(c => c.Value == code));
         }
 
-        public Task<bool> Remove(string code, CancellationToken cancellationToken)
+        public Task<bool> Remove(string code, string subject, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(code))
             {

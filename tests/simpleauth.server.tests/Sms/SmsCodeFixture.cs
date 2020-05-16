@@ -48,7 +48,8 @@
         {
             // ACT : TWILIO NO CONFIGURED
             ConfirmationCode confirmationCode;
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _server.SharedCtx.ConfirmationCodeStore
+                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode) null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
@@ -69,7 +70,8 @@
         [Fact]
         public async Task WhenNoConfirmationCodeThenReturnsError()
         {
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _server.SharedCtx.ConfirmationCodeStore
+                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode) null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
@@ -95,7 +97,8 @@
         {
             _server.SharedCtx.TwilioClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync((true, ""));
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _server.SharedCtx.ConfirmationCodeStore
+                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode) null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
@@ -116,7 +119,8 @@
         [Fact]
         public async Task When_Send_ConfirmationCode_Then_Json_Is_Returned()
         {
-            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _server.SharedCtx.ConfirmationCodeStore
+                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode) null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
