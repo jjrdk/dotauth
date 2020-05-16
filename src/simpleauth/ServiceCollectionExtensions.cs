@@ -33,6 +33,7 @@ namespace SimpleAuth
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
@@ -195,6 +196,11 @@ namespace SimpleAuth
                 throw new ArgumentNullException(nameof(options));
             }
 
+            services.Replace(
+                new ServiceDescriptor(
+                    typeof(IActionResultExecutor<ObjectResult>),
+                    typeof(ConnegObjectResultExecutor),
+                    ServiceLifetime.Transient));
             var mvcBuilder = services.AddResponseCompression(
                     o =>
                     {

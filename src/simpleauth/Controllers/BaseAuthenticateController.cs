@@ -298,7 +298,7 @@ namespace SimpleAuth.Controllers
             }
 
             ViewBag.IsAuthenticated = false;
-            return View(viewModel);
+            return Ok(viewModel);
         }
 
         /// <summary>
@@ -322,7 +322,7 @@ namespace SimpleAuth.Controllers
             codeViewModel.Validate(ModelState);
             if (!ModelState.IsValid)
             {
-                return View(codeViewModel);
+                return Ok(codeViewModel);
             }
 
             // 1. Check user is authenticated
@@ -354,14 +354,14 @@ namespace SimpleAuth.Controllers
                     .ConfigureAwait(false);
                 await _generateAndSendCode.Send(subject, cancellationToken)
                     .ConfigureAwait(false);
-                return View(codeViewModel);
+                return Ok(codeViewModel);
             }
 
             // 3. Validate the confirmation code
             if (!await _validateConfirmationCode.Execute(codeViewModel.Code, subject, cancellationToken).ConfigureAwait(false))
             {
                 ModelState.AddModelError("Code", "confirmation code is not valid");
-                return View(codeViewModel);
+                return Ok(codeViewModel);
             }
 
             // 4. Remove the code
@@ -369,7 +369,7 @@ namespace SimpleAuth.Controllers
                 || !await _confirmationCodeStore.Remove(codeViewModel.Code, subject, cancellationToken).ConfigureAwait(false))
             {
                 ModelState.AddModelError("Code", "an error occured while trying to remove the code");
-                return View(codeViewModel);
+                return Ok(codeViewModel);
             }
 
             // 5. Authenticate the resource owner
@@ -420,7 +420,7 @@ namespace SimpleAuth.Controllers
                 var vm = new AuthorizeOpenIdViewModel { Code = code };
 
                 await SetIdProviders(vm).ConfigureAwait(false);
-                return View(vm);
+                return Ok(vm);
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
@@ -443,7 +443,7 @@ namespace SimpleAuth.Controllers
             var viewModel = new AuthorizeOpenIdViewModel { Code = code };
 
             await SetIdProviders(viewModel).ConfigureAwait(false);
-            return View(viewModel);
+            return Ok(viewModel);
         }
 
         /// <summary>

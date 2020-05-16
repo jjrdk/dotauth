@@ -159,7 +159,8 @@
             {
                 var viewModel = new AuthorizeViewModel();
                 await SetIdProviders(viewModel).ConfigureAwait(false);
-                return View("Index", viewModel);
+                RouteData.Values["view"] = "Index";
+                return Ok(viewModel);
             }
 
             try
@@ -236,7 +237,8 @@
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 var viewModel = new AuthorizeViewModel();
                 await SetIdProviders(viewModel).ConfigureAwait(false);
-                return View("Index", viewModel);
+                RouteData.Values["view"] = "Index";
+                return Ok(viewModel);
             }
         }
 
@@ -276,7 +278,8 @@
                 if (!ModelState.IsValid)
                 {
                     await SetIdProviders(viewModel).ConfigureAwait(false);
-                    return View("OpenId", viewModel);
+                    RouteData.Values["view"] = "OpenId";
+                    return Ok(viewModel);
                 }
 
                 // 4. Local authentication
@@ -342,7 +345,8 @@
             }
 
             await SetIdProviders(viewModel).ConfigureAwait(false);
-            return View("OpenId", viewModel);
+            RouteData.Values["view"] = "OpenId";
+            return Ok(viewModel);
         }
     }
 }

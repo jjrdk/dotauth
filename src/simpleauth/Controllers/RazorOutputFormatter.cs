@@ -1,14 +1,17 @@
 ﻿namespace SimpleAuth.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Abstractions;
     using Microsoft.AspNetCore.Mvc.Formatters;
     using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -41,9 +44,18 @@
             }
 
             var viewEngine = context.HttpContext.RequestServices.GetRequiredService<IRazorViewEngine>();
-            var actionContext = new ActionContext(context.HttpContext, context.HttpContext.GetRouteData() ?? new RouteData(), new ActionDescriptor());
-            var viewName = actionContext.RouteData.Values["action"].ToString();
+
+            var actionContext = new ActionContext(
+                context.HttpContext,
+                context.HttpContext.GetRouteData() ?? new RouteData(),
+                new ActionDescriptor());
+            if (!actionContext.RouteData.Values.TryGetValue("view", out var viewObject) || !(viewObject is string viewName))
+            {
+                viewName = actionContext.RouteData.Values["action"].ToString();
+            }
+
             var result = viewEngine.FindView(actionContext, viewName, false);
+
             return result.Success;
         }
 
@@ -53,10 +65,21 @@
             var httpContext = context.HttpContext;
             var serviceProvider = httpContext.RequestServices;
             var viewEngine = serviceProvider.GetRequiredService<IRazorViewEngine>();
-            var actionContext = new ActionContext(httpContext, httpContext.GetRouteData() ?? new RouteData(), new ActionDescriptor());
+            httpContext.Items.TryGetValue("ModelState", out var modelState);
+            httpContext.Items.TryGetValue("RouteData", out var routeData);
+            httpContext.Items.TryGetValue("ActionDescriptor", out var actionDescriptor);
+            var actionContext = new ActionContext(
+                httpContext,
+                routeData as RouteData ?? new RouteData(),
+                actionDescriptor as ActionDescriptor ?? new ActionDescriptor(),
+                modelState as ModelStateDictionary ?? new ModelStateDictionary());
             try
             {
-                var viewName = actionContext.RouteData.Values["action"].ToString();
+                if (!actionContext.RouteData.Values.TryGetValue("view", out var viewObject) || !(viewObject is string viewName))
+                {
+                    viewName = actionContext.RouteData.Values["action"].ToString();
+                }
+
                 var viewEngineResult = viewEngine.FindView(actionContext, viewName, isMainPage: false);
 
                 if (!viewEngineResult.Success)
@@ -75,7 +98,7 @@
                     view,
                     new ViewDataDictionary(
                         metadataProvider: new EmptyModelMetadataProvider(),
-                        modelState: new ModelStateDictionary())
+                        modelState: actionContext.ModelState)
                     {
                         Model = model
                     },

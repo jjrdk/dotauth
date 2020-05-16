@@ -143,7 +143,7 @@
             {
                 var viewModel = new AuthorizeViewModel();
                 await SetIdProviders(viewModel).ConfigureAwait(false);
-                return View(viewModel);
+                return Ok(viewModel);
             }
 
             return RedirectToAction("Index", "User", new { area = "pwd" });
@@ -213,7 +213,8 @@
 
             var viewModel = new AuthorizeViewModel();
             await SetIdProviders(viewModel).ConfigureAwait(false);
-            return View("Index", viewModel);
+            RouteData.Values["view"] = "Index";
+            return Ok(viewModel);
         }
 
         /// <summary>
@@ -241,7 +242,7 @@
                     "SMS authentication cannot be performed");
             }
 
-            return View(new ConfirmCodeViewModel { Code = code });
+            return Ok(new ConfirmCodeViewModel { Code = code });
         }
 
         /// <summary>
@@ -286,14 +287,14 @@
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
                 var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken).ConfigureAwait(false);
-                return View("ConfirmCode", confirmCodeViewModel);
+                return Ok(confirmCodeViewModel);
             }
 
             if (!await _validateConfirmationCode.Execute(confirmCodeViewModel.ConfirmationCode, subject, cancellationToken).ConfigureAwait(false)
             ) // Check the confirmation code.
             {
                 ModelState.AddModelError("message_error", "Confirmation code is not valid");
-                return View("ConfirmCode", confirmCodeViewModel);
+                return Ok(confirmCodeViewModel);
             }
 
             await _authenticationService.SignOutAsync(
@@ -317,7 +318,7 @@
                 catch (Exception)
                 {
                     ModelState.AddModelError("message_error", "Two factor authenticator is not properly configured");
-                    return View("ConfirmCode", confirmCodeViewModel);
+                    return Ok(confirmCodeViewModel);
                 }
             }
 
@@ -425,7 +426,8 @@
             }
 
             await SetIdProviders(viewModel).ConfigureAwait(false);
-            return View("OpenId", viewModel);
+            RouteData.Values["view"] = "OpenId";
+            return Ok(viewModel);
         }
 
         private async Task SetPasswordLessCookie(IEnumerable<Claim> claims)

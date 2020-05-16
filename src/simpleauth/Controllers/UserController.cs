@@ -97,7 +97,7 @@
                 .Where(a => !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
                 .Select(p => new IdentityProviderViewModel(p.Name))
                 .ToList();
-            return Ok(viewModel); // View("Index", viewModel);
+            return Ok(viewModel);
         }
 
         /// <summary>
