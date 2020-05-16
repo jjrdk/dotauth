@@ -43,12 +43,17 @@
                 return false;
             }
 
-            var viewEngine = context.HttpContext.RequestServices.GetRequiredService<IRazorViewEngine>();
-
+            var httpContext = context.HttpContext;
+            var viewEngine = httpContext.RequestServices.GetRequiredService<IRazorViewEngine>();
+            
+            httpContext.Items.TryGetValue("ModelState", out var modelState);
+            httpContext.Items.TryGetValue("RouteData", out var routeData);
+            httpContext.Items.TryGetValue("ActionDescriptor", out var actionDescriptor);
             var actionContext = new ActionContext(
-                context.HttpContext,
-                context.HttpContext.GetRouteData() ?? new RouteData(),
-                new ActionDescriptor());
+                httpContext,
+                routeData as RouteData ?? new RouteData(),
+                actionDescriptor as ActionDescriptor ?? new ActionDescriptor(),
+                modelState as ModelStateDictionary ?? new ModelStateDictionary());
             if (!actionContext.RouteData.Values.TryGetValue("view", out var viewObject) || !(viewObject is string viewName))
             {
                 viewName = actionContext.RouteData.Values["action"].ToString();
