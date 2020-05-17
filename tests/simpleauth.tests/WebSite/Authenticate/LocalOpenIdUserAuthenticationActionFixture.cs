@@ -44,7 +44,7 @@
         }
 
         [Fact]
-        public async Task When_Resource_Owner_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
+        public async Task When_Resource_Owner_Cannot_Be_Authenticated_Then_Error_Message_Is_Returned()
         {
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
             authenticateService.SetupGet(x => x.Amr).Returns("pwd");
@@ -54,19 +54,19 @@
                         It.IsAny<string>(),
                         It.IsAny<string>(),
                         It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ResourceOwner) null);
+                .ReturnsAsync((ResourceOwner)null);
             InitializeFakeObjects(authenticateService.Object);
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
 
-            await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _localUserAuthenticationAction.Execute(
-                        localAuthenticationParameter,
-                        authorizationParameter,
-                        null,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
+            var result = await _localUserAuthenticationAction.Execute(
+                       localAuthenticationParameter,
+                       authorizationParameter,
+                       null,
+                       null,
+                       CancellationToken.None);
+
+            Assert.NotNull(result.ErrorMessage);
         }
 
         [Fact]
@@ -75,7 +75,7 @@
             const string subject = "subject";
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
-            var resourceOwner = new ResourceOwner {Subject = subject};
+            var resourceOwner = new ResourceOwner { Subject = subject };
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
             authenticateService.SetupGet(x => x.Amr).Returns("pwd");
             authenticateService

@@ -31,5 +31,10 @@
         /// The two factor.
         /// </value>
         public string TwoFactor { get; set; }
+
+        /// <summary>
+        /// Gets or sets an error message for the authentication.
+        /// </summary>
+        public string ErrorMessage { get; set; }
     }
 }

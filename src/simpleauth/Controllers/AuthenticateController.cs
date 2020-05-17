@@ -144,15 +144,15 @@
             [FromForm] LocalAuthenticationViewModel authorizeViewModel,
             CancellationToken cancellationToken)
         {
+            if (authorizeViewModel?.Login == null || authorizeViewModel.Password == null)
+            {
+                BadRequest();
+            }
+
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "User");
-            }
-
-            if (authorizeViewModel == null)
-            {
-                BadRequest();
             }
 
             if (!ModelState.IsValid)
@@ -269,29 +269,30 @@
             }
 
             await SetUser().ConfigureAwait(false);
-            try
+
+            // 1. Decrypt the request
+            var request = DataProtector.Unprotect<AuthorizationRequest>(viewModel.Code);
+
+            // 3. Check the state of the view model
+            if (!ModelState.IsValid)
             {
-                // 1. Decrypt the request
-                var request = DataProtector.Unprotect<AuthorizationRequest>(viewModel.Code);
+                await SetIdProviders(viewModel).ConfigureAwait(false);
+                RouteData.Values["view"] = "OpenId";
+                return Ok(viewModel);
+            }
 
-                // 3. Check the state of the view model
-                if (!ModelState.IsValid)
-                {
-                    await SetIdProviders(viewModel).ConfigureAwait(false);
-                    RouteData.Values["view"] = "OpenId";
-                    return Ok(viewModel);
-                }
+            // 4. Local authentication
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
 
-                // 4. Local authentication
-                var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-
-                var actionResult = await _localOpenIdAuthentication.Execute(
-                        new LocalAuthenticationParameter { UserName = viewModel.Login, Password = viewModel.Password },
-                        request.ToParameter(),
-                        viewModel.Code,
-                        issuerName,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+            var actionResult = await _localOpenIdAuthentication.Execute(
+                    new LocalAuthenticationParameter { UserName = viewModel.Login, Password = viewModel.Password },
+                    request.ToParameter(),
+                    viewModel.Code,
+                    issuerName,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (actionResult.ErrorMessage == null)
+            {
                 var subject = actionResult.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value;
 
                 // 5. Two factor authentication.
@@ -306,7 +307,12 @@
                     catch (ClaimRequiredException cre)
                     {
                         await _eventPublisher.Publish(
-                                new SimpleAuthError(Id.Create(), cre.Code, cre.Message, string.Empty, DateTimeOffset.UtcNow))
+                                new SimpleAuthError(
+                                    Id.Create(),
+                                    cre.Code,
+                                    cre.Message,
+                                    string.Empty,
+                                    DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
                         return RedirectToAction("SendCode", new { code = viewModel.Code });
                     }
@@ -314,7 +320,12 @@
                     {
                         var se = ex as SimpleAuthException;
                         await _eventPublisher.Publish(
-                                new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
+                                new SimpleAuthError(
+                                    Id.Create(),
+                                    se?.Code,
+                                    ex.Message,
+                                    string.Empty,
+                                    DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError(
                             "invalid_credentials",
@@ -335,13 +346,17 @@
                     }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                var se = ex as SimpleAuthException;
-                await _eventPublisher
-                    .Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
+                await _eventPublisher.Publish(
+                        new SimpleAuthError(
+                            Id.Create(),
+                            ErrorCodes.InvalidRequest,
+                            actionResult.ErrorMessage,
+                            string.Empty,
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
-                ModelState.AddModelError("invalid_credentials", ex.Message);
+                ModelState.AddModelError("invalid_credentials", actionResult.ErrorMessage);
             }
 
             await SetIdProviders(viewModel).ConfigureAwait(false);

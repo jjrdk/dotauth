@@ -77,9 +77,10 @@ namespace SimpleAuth.WebSite.Authenticate
                 .ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    "The resource owner credentials are not correct");
+                return new LocalOpenIdAuthenticationResult
+                {
+                    ErrorMessage = ErrorDescriptions.TheResourceOwnerCredentialsAreNotCorrect
+                };
             }
 
             var claims = new[]
