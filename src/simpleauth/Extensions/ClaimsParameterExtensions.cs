@@ -31,11 +31,23 @@ namespace SimpleAuth.Extensions
             var result = new List<string>();
             if (parameter.IdToken != null)
             {
-                result.AddRange(parameter.IdToken.Where(cl => IsStandardClaim(cl.Name)).Select(s => s.Name));
+                foreach (var claimParameter in parameter.IdToken)
+                {
+                    if (IsStandardClaim(claimParameter.Name))
+                    {
+                        result.Add(claimParameter.Name);
+                    }
+                }
             }
             if (parameter.UserInfo != null)
             {
-                result.AddRange(parameter.UserInfo.Where(cl => IsStandardClaim(cl.Name)).Select(s => s.Name));
+                foreach (var claimParameter in parameter.UserInfo)
+                {
+                    if (IsStandardClaim(claimParameter.Name))
+                    {
+                        result.Add(claimParameter.Name);
+                    }
+                }
             }
 
             return result;

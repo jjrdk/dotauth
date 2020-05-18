@@ -73,13 +73,15 @@
                 .Select(
                     webKey =>
                     {
-                        if (webKey.X5c != null)
+                        if (webKey.X5c == null)
                         {
-                            foreach (var certString in webKey.X5c)
-                            {
-                                return new X509SigningCredentials(
-                                    new X509Certificate2(Convert.FromBase64String(certString)));
-                            }
+                            return new SigningCredentials(webKey, alg);
+                        }
+
+                        foreach (var certString in webKey.X5c)
+                        {
+                            return new X509SigningCredentials(
+                                new X509Certificate2(Convert.FromBase64String(certString)));
                         }
 
                         return new SigningCredentials(webKey, alg);

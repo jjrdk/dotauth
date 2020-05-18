@@ -14,6 +14,8 @@
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
     using Xunit;
 
     public sealed class ClientFactoryFixture
@@ -336,6 +338,22 @@
 
             var ex = await Record.ExceptionAsync(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Null(ex);
+        }
+    }
+    
+
+    internal static class ObjectExtensions
+    {
+        private static readonly JsonConverter[] Converters = { new StringEnumConverter() };
+
+        public static string SerializeWithJavascript(this object parameter)
+        {
+            return JsonConvert.SerializeObject(parameter, Converters);
+        }
+
+        public static T DeserializeWithJavascript<T>(this string parameter)
+        {
+            return JsonConvert.DeserializeObject<T>(parameter, Converters);
         }
     }
 }

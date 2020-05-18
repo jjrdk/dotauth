@@ -10,6 +10,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Defines the in-memory client repository.
@@ -35,7 +36,7 @@
             IReadOnlyCollection<Client> clients = null)
         {
             _logger = logger;
-            _clientFactory = new ClientFactory(httpClient, scopeStore, s => s.DeserializeWithJavascript<Uri[]>());
+            _clientFactory = new ClientFactory(httpClient, scopeStore, JsonConvert.DeserializeObject<Uri[]>);
             _clients = clients == null
                 ? new List<Client>()
                 : clients.ToList();

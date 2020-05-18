@@ -290,8 +290,8 @@
                 return Ok(confirmCodeViewModel);
             }
 
-            if (!await _validateConfirmationCode.Execute(confirmCodeViewModel.ConfirmationCode, subject, cancellationToken).ConfigureAwait(false)
-            ) // Check the confirmation code.
+            // Check the confirmation code.
+            if (!await _validateConfirmationCode.Execute(confirmCodeViewModel.ConfirmationCode, subject, cancellationToken).ConfigureAwait(false))
             {
                 ModelState.AddModelError("message_error", "Confirmation code is not valid");
                 return Ok(confirmCodeViewModel);

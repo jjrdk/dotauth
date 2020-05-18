@@ -3,10 +3,8 @@
     using Microsoft.AspNetCore.Http;
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Security.Cryptography.X509Certificates;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Primitives;
 
     internal static class HttpRequestsExtensions
@@ -27,13 +25,6 @@
             }
 
             return uri.Uri.AbsoluteUri.TrimEnd('/');
-        }
-
-        public static async Task<string> ReadAsStringAsync(this HttpRequest request)
-        {
-            request.Body.Position = 0;
-            using var reader = new StreamReader(request.Body);
-            return await reader.ReadToEndAsync().ConfigureAwait(false);
         }
 
         public static X509Certificate2 GetCertificate(this HttpRequest request)

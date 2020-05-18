@@ -235,19 +235,11 @@ namespace SimpleAuth.Common
             }
         }
 
-        private string GetSessionState(string clientId, string originUrl, string sessionId)
+        private static string GetSessionState(string clientId, string originUrl, string sessionId)
         {
-            if (string.IsNullOrWhiteSpace(clientId))
-            {
-                return null;
-            }
-
-            if (string.IsNullOrWhiteSpace(originUrl))
-            {
-                return null;
-            }
-
-            if (string.IsNullOrWhiteSpace(sessionId))
+            if (string.IsNullOrWhiteSpace(clientId)
+            || string.IsNullOrWhiteSpace(originUrl)
+            || string.IsNullOrWhiteSpace(sessionId))
             {
                 return null;
             }
@@ -256,7 +248,7 @@ namespace SimpleAuth.Common
             var s = $"{clientId}{originUrl}{sessionId}{salt}";
             var hex = s.ToSha256Hash();
 
-            return hex.Base64Encode() + "==." + salt;
+            return string.Concat(hex.Base64Encode(), "==.", salt);
         }
 
         private async Task<JwtPayload> GenerateIdTokenPayload(
@@ -265,29 +257,21 @@ namespace SimpleAuth.Common
             string issuerName,
             CancellationToken cancellationToken)
         {
-            JwtPayload jwsPayload;
-            if (authorizationParameter.Claims != null
-                && authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
-            {
-                jwsPayload = await _jwtGenerator.GenerateFilteredIdTokenPayload(
-                        claimsPrincipal,
-                        authorizationParameter,
-                        authorizationParameter.Claims.IdToken,
-                        issuerName,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            else
-            {
-                jwsPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
-                        claimsPrincipal,
-                        authorizationParameter,
-                        issuerName,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            }
-
-            return jwsPayload;
+            return authorizationParameter.Claims != null
+                   && authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter()
+                    ? await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                            claimsPrincipal,
+                            authorizationParameter,
+                            authorizationParameter.Claims.IdToken,
+                            issuerName,
+                            cancellationToken)
+                        .ConfigureAwait(false)
+                    : await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+                            claimsPrincipal,
+                            authorizationParameter,
+                            issuerName,
+                            cancellationToken)
+                        .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -304,24 +288,16 @@ namespace SimpleAuth.Common
             AuthorizationParameter authorizationParameter,
             CancellationToken cancellationToken)
         {
-            JwtPayload jwsPayload;
-            if (authorizationParameter.Claims != null && authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
-            {
-                jwsPayload = JwtGenerator.GenerateFilteredUserInfoPayload(
+            return authorizationParameter.Claims != null && authorizationParameter.Claims.IsAnyUserInfoClaimParameter()
+                ? JwtGenerator.GenerateFilteredUserInfoPayload(
                     authorizationParameter.Claims.UserInfo,
                     claimsPrincipal,
-                    authorizationParameter);
-            }
-            else
-            {
-                jwsPayload = await _jwtGenerator.GenerateUserInfoPayloadForScope(
+                    authorizationParameter)
+                : await _jwtGenerator.GenerateUserInfoPayloadForScope(
                         claimsPrincipal,
                         authorizationParameter,
                         cancellationToken)
                     .ConfigureAwait(false);
-            }
-
-            return jwsPayload;
         }
     }
 }
