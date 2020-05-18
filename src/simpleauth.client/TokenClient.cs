@@ -327,7 +327,6 @@ namespace SimpleAuth.Client
             else
             {
                 request.Method = HttpMethod.Get;
-                //request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, accessToken);
             }
 
             return await GetResult<JwtPayload>(request, inBody ? null : accessToken, cancellationToken, _certificate)
