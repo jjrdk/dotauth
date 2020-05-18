@@ -9,6 +9,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
 
     /// <summary>
     /// Defines the in-memory scope repository.
@@ -25,7 +26,7 @@
                 Name = "openid",
                 IsExposed = true,
                 IsDisplayedInConsent = true,
-                Description = "Access to the OpenId scope.",
+                Description = Strings.AccessToOpenIdScope,
                 Type = ScopeTypes.ResourceOwner,
                 Claims = Array.Empty<string>()
             },
@@ -33,7 +34,7 @@
             {
                 Name = "profile",
                 IsExposed = true,
-                Description = "Access to the profile information.",
+                Description = Strings.AccessToProfileInformation,
                 Claims = new[]
                 {
                     OpenIdClaimTypes.Name,
@@ -59,7 +60,7 @@
                 Name = "email",
                 IsExposed = true,
                 IsDisplayedInConsent = true,
-                Description = "Access to email addresses.",
+                Description = Strings.AccessToEmailAddresses,
                 Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
                 Type = ScopeTypes.ResourceOwner
             },
@@ -68,7 +69,7 @@
                 Name = "address",
                 IsExposed = true,
                 IsDisplayedInConsent = true,
-                Description = "Access to address information.",
+                Description = Strings.AccessToAddressInformation,
                 Claims = new[] {OpenIdClaimTypes.Address},
                 Type = ScopeTypes.ResourceOwner
             },
@@ -77,7 +78,7 @@
                 Name = "phone",
                 IsExposed = true,
                 IsDisplayedInConsent = true,
-                Description = "Access to phone information.",
+                Description = Strings.AccessToPhoneInformation,
                 Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
                 Type = ScopeTypes.ResourceOwner
             },
@@ -86,7 +87,7 @@
                 Name = "role",
                 IsExposed = true,
                 IsDisplayedInConsent = true,
-                Description = "Access to your roles.",
+                Description = Strings.AccessToRoles,
                 Claims = new[] {OpenIdClaimTypes.Role},
                 Type = ScopeTypes.ResourceOwner
             },
@@ -95,23 +96,23 @@
                 Claims = new[] {OpenIdClaimTypes.Role},
                 Name = "register_client",
                 IsExposed = false,
-                IsDisplayedInConsent = true,
-                Description = "Register a client",
+                IsDisplayedInConsent = false,
+                Description = Strings.RegisterAClient,
                 Type = ScopeTypes.ProtectedApi
             },
             new Scope
             {
                 Claims = new[] {OpenIdClaimTypes.Role},
-                Description = "Manage server resources.",
-                IsDisplayedInConsent = true,
-                IsExposed = true,
+                Description = Strings.ManageServerResources,
+                IsDisplayedInConsent = false,
+                IsExposed = false,
                 Name = "manager",
                 Type = ScopeTypes.ProtectedApi
             },
             new Scope
             {
                 Claims = new[] {OpenIdClaimTypes.Subject},
-                Description = "Manage user managed resources and policies.",
+                Description = Strings.ManageUma,
                 IsDisplayedInConsent = true,
                 IsExposed = true,
                 Name = "uma_protection",
@@ -225,7 +226,9 @@
             return Task.FromResult(
                 new PagedResult<Scope>
                 {
-                    Content = content, StartIndex = parameter.StartIndex, TotalResults = nbResult
+                    Content = content,
+                    StartIndex = parameter.StartIndex,
+                    TotalResults = nbResult
                 });
         }
 

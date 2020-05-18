@@ -27,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
 
@@ -38,7 +39,6 @@ namespace SimpleAuth.Controllers
     [ThrottleFilter]
     public class ResourceSetController : ControllerBase
     {
-        private const string NoParameterInBodyRequest = "no parameter in body request";
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly UpdateResourceSetAction _updateResourceSet;
 
@@ -68,7 +68,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    NoParameterInBodyRequest,
+                    Strings.NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
 
@@ -123,7 +123,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    "the identifier must be specified",
+                    Strings.TheIdentifierMustBeSpecified,
                     HttpStatusCode.BadRequest);
             }
 
@@ -159,7 +159,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    "the identifier must be specified",
+                    Strings.TheIdentifierMustBeSpecified,
                     HttpStatusCode.BadRequest);
             }
 
@@ -188,8 +188,8 @@ namespace SimpleAuth.Controllers
                 return BadRequest(
                     new ErrorDetails
                     {
-                        Detail = "Input missing",
-                        Title = "Input missing",
+                        Detail = Strings.InputMissing,
+                        Title = Strings.InputMissing,
                         Status = HttpStatusCode.BadRequest
                     });
             }
@@ -221,7 +221,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    "the identifier must be specified",
+                    Strings.TheIdentifierMustBeSpecified,
                     HttpStatusCode.BadRequest);
             }
 
@@ -230,7 +230,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    "invalid resource",
+                    Strings.InvalidResource,
                     HttpStatusCode.BadRequest);
             }
 
@@ -265,7 +265,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    NoParameterInBodyRequest,
+                    Strings.NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
 
@@ -326,7 +326,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    NoParameterInBodyRequest,
+                    Strings.NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
 
@@ -364,7 +364,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    "the identifier must be specified",
+                    Strings.TheIdentifierMustBeSpecified,
                     HttpStatusCode.BadRequest);
             }
 
@@ -380,7 +380,7 @@ namespace SimpleAuth.Controllers
             {
                 Status = HttpStatusCode.NotFound,
                 Title = "not_updated",
-                Detail = "resource cannot be updated"
+                Detail = Strings.ResourceCannotBeUpdated
             };
 
             return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };

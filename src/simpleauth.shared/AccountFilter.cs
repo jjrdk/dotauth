@@ -8,12 +8,13 @@
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the account filtering.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.IAccountFilter" />
+    /// <seealso cref="IAccountFilter" />
     public class AccountFilter : IAccountFilter
     {
         private readonly IFilterStore _filterStore;
@@ -56,7 +57,7 @@
                             var claim = claims.FirstOrDefault(c => c.Type == rule.ClaimType);
                             if (claim == null)
                             {
-                                errorMessages.Add($"the claim '{rule.ClaimType}' doesn't exist");
+                                errorMessages.Add(string.Format(ErrorMessages.TheClaimDoesntExist, rule.ClaimType));
                                 continue;
                             }
 
@@ -65,20 +66,23 @@
                                 case ComparisonOperations.Equal:
                                     if (rule.ClaimValue != claim.Value)
                                     {
-                                        errorMessages.Add($"the filter claims['{claim.Type}'] == '{rule.ClaimValue}' is wrong");
+                                        errorMessages.Add(
+                                            string.Format(ErrorMessages.TheFilterEqualsIsWrong, claim.Type, rule.ClaimValue));
                                     }
                                     break;
                                 case ComparisonOperations.NotEqual:
                                     if (rule.ClaimValue == claim.Value)
                                     {
-                                        errorMessages.Add($"the filter claims['{claim.Type}'] != '{rule.ClaimValue}' is wrong");
+                                        errorMessages.Add(
+                                            string.Format(ErrorMessages.TheFilterNotEqualsIsWrong, claim.Type, rule.ClaimValue));
                                     }
                                     break;
                                 case ComparisonOperations.RegularExpression:
                                     var regex = new Regex(rule.ClaimValue);
                                     if (!regex.IsMatch(claim.Value))
                                     {
-                                        errorMessages.Add($"the filter claims['{claim.Type}'] match regular expression {rule.ClaimValue} is wrong");
+                                        errorMessages.Add(
+                                            string.Format(ErrorMessages.TheFilterRegexIsWrong, claim.Type, rule.ClaimValue));
                                     }
                                     break;
                             }

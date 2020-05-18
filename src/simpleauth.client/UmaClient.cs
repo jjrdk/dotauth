@@ -19,6 +19,7 @@ namespace SimpleAuth.Client
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Client.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
@@ -99,7 +100,7 @@ namespace SimpleAuth.Client
                 : Serializer.Default.Serialize(requests[0]);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var httpRequest =
-                new HttpRequestMessage { Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url) };
+                new HttpRequestMessage {Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url)};
             return await GetResult<TicketResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
         }
 
@@ -134,7 +135,8 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Put,
                 RequestUri = configuration.ResourceRegistrationEndpoint
             };
-            return await GetResult<UpdateResourceSetResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
+            return await GetResult<UpdateResourceSetResponse>(httpRequest, token, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -178,14 +180,14 @@ namespace SimpleAuth.Client
 
             if (string.IsNullOrWhiteSpace(token))
             {
-                throw new ArgumentException("Invalid token", nameof(token));
+                throw new ArgumentException(ClientStrings.InvalidToken, nameof(token));
             }
 
             var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
             var resourceSetUrl = configuration.ResourceRegistrationEndpoint.AbsoluteUri;
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
-            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
+            var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl)};
             return await GetResult<object>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
@@ -196,7 +198,7 @@ namespace SimpleAuth.Client
         {
             if (string.IsNullOrWhiteSpace(token))
             {
-                throw new ArgumentException("Invalid token", nameof(token));
+                throw new ArgumentException(ClientStrings.InvalidToken, nameof(token));
             }
 
             var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
@@ -221,7 +223,7 @@ namespace SimpleAuth.Client
 
             if (string.IsNullOrWhiteSpace(token))
             {
-                throw new ArgumentException("Invalid token", nameof(token));
+                throw new ArgumentException(ClientStrings.InvalidToken, nameof(token));
             }
 
             var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
@@ -229,7 +231,7 @@ namespace SimpleAuth.Client
 
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
-            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl) };
+            var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl)};
             return await GetResult<ResourceSet>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
@@ -241,7 +243,7 @@ namespace SimpleAuth.Client
         {
             if (string.IsNullOrWhiteSpace(token))
             {
-                throw new ArgumentException("Invalid token", nameof(token));
+                throw new ArgumentException(ClientStrings.InvalidToken, nameof(token));
             }
 
             var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
@@ -249,7 +251,7 @@ namespace SimpleAuth.Client
 
             var serializedPostPermission = Serializer.Default.Serialize(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
-            var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
+            var request = new HttpRequestMessage {Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body};
             return await GetResult<PagedResult<ResourceSet>>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
@@ -261,7 +263,7 @@ namespace SimpleAuth.Client
             }
 
             var result = await GetResult<UmaConfiguration>(
-                new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _configurationUri },
+                new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = _configurationUri},
                 null,
                 cancellationToken).ConfigureAwait(false);
             _umaConfiguration = result.Content;

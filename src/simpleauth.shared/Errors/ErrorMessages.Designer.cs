@@ -277,6 +277,15 @@ namespace SimpleAuth.Shared.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The claim &apos;{0}&apos; doesn&apos;t exist.
+        /// </summary>
+        internal static string TheClaimDoesntExist {
+            get {
+                return ResourceManager.GetString("TheClaimDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to the claim {0} is not valid.
         /// </summary>
         internal static string TheClaimIsNotValid {
@@ -408,6 +417,33 @@ namespace SimpleAuth.Shared.Errors {
         internal static string TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken {
             get {
                 return ResourceManager.GetString("TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The filter claims[&apos;{0}&apos;] == &apos;{1}&apos; is wrong.
+        /// </summary>
+        internal static string TheFilterEqualsIsWrong {
+            get {
+                return ResourceManager.GetString("TheFilterEqualsIsWrong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The filter claims[&apos;{0}&apos;] != &apos;{1}&apos; is wrong.
+        /// </summary>
+        internal static string TheFilterNotEqualsIsWrong {
+            get {
+                return ResourceManager.GetString("TheFilterNotEqualsIsWrong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The filter claims[&apos;{0}&apos;] match regular expression {1} is wrong.
+        /// </summary>
+        internal static string TheFilterRegexIsWrong {
+            get {
+                return ResourceManager.GetString("TheFilterRegexIsWrong", resourceCulture);
             }
         }
         

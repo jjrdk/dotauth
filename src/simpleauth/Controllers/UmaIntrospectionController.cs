@@ -8,6 +8,7 @@
     using SimpleAuth.Api.Introspection;
     using SimpleAuth.Extensions;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -49,7 +50,7 @@
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    "no parameter in body request",
+                    Strings.NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
 

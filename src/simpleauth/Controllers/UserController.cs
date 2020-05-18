@@ -19,6 +19,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
     using SimpleAuth.WebSite.User;
 
     /// <summary>
@@ -135,7 +136,7 @@
                 .ConfigureAwait(false);
             if (!removed)
             {
-                ViewBag.ErrorMessage = "the consent cannot be deleted";
+                ViewBag.ErrorMessage = Strings.TheConsentCannotBeDeleted;
                 return await GetConsents(cancellationToken).ConfigureAwait(false);
             }
 
@@ -276,10 +277,6 @@
                     .ConfigureAwait(false);
                 return RedirectToAction("Index", "User");
             }
-            //catch (ProfileAssignedAnotherAccountException)
-            //{
-            //    return RedirectToAction("LinkProfileConfirmation");
-            //}
             catch (Exception)
             {
                 await _authenticationService.SignOutAsync(

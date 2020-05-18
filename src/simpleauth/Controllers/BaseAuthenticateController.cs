@@ -36,6 +36,7 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.WebSite.User;
     using ViewModels;
 
@@ -725,7 +726,7 @@ namespace SimpleAuth.Controllers
             var (success, subject) = await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);
             if (!success)
             {
-                return (null, (int)HttpStatusCode.Conflict, "Failed to add user");
+                return (null, (int)HttpStatusCode.Conflict, Strings.FailedToAddUser);
             }
 
             record.Password = string.Empty;

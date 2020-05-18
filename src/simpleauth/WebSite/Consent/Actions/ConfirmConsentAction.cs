@@ -30,6 +30,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Events.Openid;
 
     internal class ConfirmConsentAction
@@ -88,7 +89,10 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 .ConfigureAwait(false);
             if (client == null)
             {
-                throw new InvalidOperationException($"the client id {authorizationParameter.ClientId} doesn't exist");
+                throw new InvalidOperationException(
+                    string.Format(
+                        Strings.TheClientIdDoesntExist,
+                        authorizationParameter.ClientId));
             }
 
             var subject = claimsPrincipal.GetSubject();

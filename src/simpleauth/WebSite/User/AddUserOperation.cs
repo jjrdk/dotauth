@@ -20,6 +20,7 @@ namespace SimpleAuth.WebSite.User
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Logging;
     using SimpleAuth.Shared.Models;
@@ -47,7 +48,8 @@ namespace SimpleAuth.WebSite.User
             _eventPublisher = eventPublisher;
         }
 
-        public async Task<(bool Success, string Subject)> Execute(ResourceOwner resourceOwner, CancellationToken cancellationToken)
+        public async Task<(bool Success, string Subject)> Execute(
+            ResourceOwner resourceOwner, CancellationToken cancellationToken)
         {
             if (!resourceOwner.IsLocalAccount || string.IsNullOrWhiteSpace(resourceOwner.Subject))
             {
@@ -57,11 +59,12 @@ namespace SimpleAuth.WebSite.User
             }
 
             // 1. Check the resource owner already exists.
-            if (await _resourceOwnerRepository.Get(resourceOwner.Subject, cancellationToken).ConfigureAwait(false) != null)
+            if (await _resourceOwnerRepository.Get(resourceOwner.Subject, cancellationToken).ConfigureAwait(false) !=
+                null)
             {
                 return (false, null);
             }
-            
+
             var additionalClaims = _settings.ClaimsIncludedInUserCreation
                 .Except(resourceOwner.Claims.Select(x => x.Type))
                 .Select(x => new Claim(x, string.Empty));
@@ -76,7 +79,8 @@ namespace SimpleAuth.WebSite.User
                 var isFilterValid = true;
                 foreach (var resourceOwnerFilter in _accountFilters)
                 {
-                    var userFilterResult = await resourceOwnerFilter.Check(resourceOwner.Claims, cancellationToken).ConfigureAwait(false);
+                    var userFilterResult = await resourceOwnerFilter.Check(resourceOwner.Claims, cancellationToken)
+                        .ConfigureAwait(false);
                     if (userFilterResult.IsValid)
                     {
                         continue;
@@ -88,7 +92,7 @@ namespace SimpleAuth.WebSite.User
                         await _eventPublisher.Publish(
                                 new FilterValidationFailure(
                                     Id.Create(),
-                                    $"The filter rule '{ruleResult.RuleName}' failed",
+                                    string.Format(Strings.TheFilterRuleFailed, ruleResult.RuleName),
                                     now))
                             .ConfigureAwait(false);
                         foreach (var errorMessage in ruleResult.ErrorMessages)
@@ -105,7 +109,7 @@ namespace SimpleAuth.WebSite.User
                     return (false, null);
                 }
             }
-            
+
             resourceOwner.UpdateDateTime = now;
             resourceOwner.CreateDateTime = now;
             if (!await _resourceOwnerRepository.Insert(resourceOwner, cancellationToken).ConfigureAwait(false))
@@ -118,10 +122,10 @@ namespace SimpleAuth.WebSite.User
                         Id.Create(),
                         resourceOwner.Subject,
                         resourceOwner.Claims.Select(claim => new ClaimData
-                            {
-                                Type = claim.Type,
-                                Value = claim.Value
-                            })
+                        {
+                            Type = claim.Type,
+                            Value = claim.Value
+                        })
                             .ToArray(),
                         now))
                 .ConfigureAwait(false);

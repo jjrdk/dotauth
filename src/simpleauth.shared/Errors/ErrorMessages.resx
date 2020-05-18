@@ -189,6 +189,9 @@
   <data name="TheAuthorizationRequestCannotBeProcessedBecauseThereIsNotValidPrompt" xml:space="preserve">
     <value>the authorization request cannot be processed because there is not valid prompt</value>
   </data>
+  <data name="TheClaimDoesntExist" xml:space="preserve">
+    <value>The claim '{0}' doesn't exist</value>
+  </data>
   <data name="TheClaimIsNotValid" xml:space="preserve">
     <value>the claim {0} is not valid</value>
   </data>
@@ -233,6 +236,15 @@
   </data>
   <data name="TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken" xml:space="preserve">
     <value>the current authenticated user doesn't match with the identity token</value>
+  </data>
+  <data name="TheFilterEqualsIsWrong" xml:space="preserve">
+    <value>The filter claims['{0}'] == '{1}' is wrong</value>
+  </data>
+  <data name="TheFilterNotEqualsIsWrong" xml:space="preserve">
+    <value>The filter claims['{0}'] != '{1}' is wrong</value>
+  </data>
+  <data name="TheFilterRegexIsWrong" xml:space="preserve">
+    <value>The filter claims['{0}'] match regular expression {1} is wrong</value>
   </data>
   <data name="TheIdentityTokenDoesntContainSimpleAuthAsAudience" xml:space="preserve">
     <value>The identity token does not contain SimpleAuth in the audience</value>

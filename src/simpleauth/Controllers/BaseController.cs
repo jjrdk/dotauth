@@ -5,6 +5,7 @@
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
 
     /// <summary>
@@ -36,7 +37,7 @@
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
             var isAuthenticed = authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated;
             ViewBag.IsAuthenticated = isAuthenticed;
-            ViewBag.Name = isAuthenticed ? authenticatedUser.GetName() : "unknown";
+            ViewBag.Name = isAuthenticed ? authenticatedUser.GetName() : Strings.Unknown;
 
             return authenticatedUser;
         }

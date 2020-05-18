@@ -17,6 +17,7 @@ namespace SimpleAuth.ViewModels
     using System;
     using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using SimpleAuth.Properties;
 
     /// <summary>
     /// Defines the code view model.
@@ -84,7 +85,7 @@ namespace SimpleAuth.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(ClaimValue))
                 {
-                    modelState.AddModelError("ClaimValue", "The claim must be specified");
+                    modelState.AddModelError("ClaimValue", Strings.TheClaimMustBeSpecified);
                 }
             }
 
@@ -92,7 +93,7 @@ namespace SimpleAuth.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(Code))
                 {
-                    modelState.AddModelError("Code", "The confirmation code must be specified");
+                    modelState.AddModelError("Code", Strings.TheConfirmationCodeMustBeSpecified);
                 }
             }
         }

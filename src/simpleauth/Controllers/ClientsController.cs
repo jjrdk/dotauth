@@ -30,6 +30,7 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Repositories;
     using Newtonsoft.Json;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
 
     /// <summary>
     /// Defines the client controller.
@@ -135,7 +136,7 @@ namespace SimpleAuth.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BuildError(ErrorCodes.InvalidRequest, "identifier is missing", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequest, Strings.IdentifierIsMissing, HttpStatusCode.BadRequest);
             }
 
             if (!await _clientRepository.Delete(id, cancellationToken).ConfigureAwait(false))
@@ -143,9 +144,9 @@ namespace SimpleAuth.Controllers
                 return new BadRequestObjectResult(
                     new ErrorDetails
                     {
-                        Detail = "Could not delete client",
+                        Detail = Strings.CouldNotDeleteClient,
                         Status = HttpStatusCode.BadRequest,
-                        Title = "Delete failed"
+                        Title = Strings.DeleteFailed
                     });
             }
 
@@ -164,7 +165,7 @@ namespace SimpleAuth.Controllers
         {
             if (client == null)
             {
-                return BuildError(ErrorCodes.InvalidRequest, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequest, Strings.NoParameterInBodyRequest, HttpStatusCode.BadRequest);
             }
 
             try

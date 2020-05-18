@@ -24,6 +24,7 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Events.Uma;
@@ -102,13 +103,13 @@ namespace SimpleAuth.Controllers
             }
 
             return success
-                ? (IActionResult) RedirectToAction("GetPermissionRequests", "Permissions")
+                ? (IActionResult)RedirectToAction("GetPermissionRequests", "Permissions")
                 : BadRequest(
                     new ErrorViewModel
                     {
-                        Title = "Update Failed",
-                        Message = "Could not update approval for ticket " + id,
-                        Code = (int) HttpStatusCode.BadRequest
+                        Title = Strings.UpdateFailed,
+                        Message = string.Format(Strings.CouldNotUpdateApproval, id),
+                        Code = (int)HttpStatusCode.BadRequest
                     });
         }
 
@@ -125,14 +126,14 @@ namespace SimpleAuth.Controllers
         {
             if (permissionRequest == null)
             {
-                return BuildError(ErrorCodes.InvalidRequest, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequest, Strings.NoParameterInBodyRequest, HttpStatusCode.BadRequest);
             }
 
             if (string.IsNullOrWhiteSpace(permissionRequest.ResourceSetId))
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    "the parameter resource_set_id needs to be specified",
+                    Strings.ResourceSetIdParameterNeedsToBeSpecified,
                     HttpStatusCode.BadRequest);
             }
 
@@ -150,8 +151,8 @@ namespace SimpleAuth.Controllers
                         DateTimeOffset.UtcNow,
                         permissionRequest))
                 .ConfigureAwait(false);
-            var result = new TicketResponse {TicketId = ticketId};
-            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
+            var result = new TicketResponse { TicketId = ticketId };
+            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         /// <summary>
@@ -167,7 +168,7 @@ namespace SimpleAuth.Controllers
         {
             if (permissionRequests == null)
             {
-                return BuildError(ErrorCodes.InvalidRequest, "no parameter in body request", HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequest, Strings.NoParameterInBodyRequest, HttpStatusCode.BadRequest);
             }
 
             var subject = User.GetSubject();
@@ -183,14 +184,14 @@ namespace SimpleAuth.Controllers
                         DateTimeOffset.UtcNow,
                         permissionRequests))
                 .ConfigureAwait(false);
-            var result = new TicketResponse {TicketId = ticketId};
-            return new ObjectResult(result) {StatusCode = (int) HttpStatusCode.Created};
+            var result = new TicketResponse { TicketId = ticketId };
+            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
         }
 
         private static IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
-            var error = new ErrorDetails {Title = code, Detail = message, Status = statusCode};
-            return new BadRequestObjectResult(error) {StatusCode = (int) statusCode};
+            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+            return new BadRequestObjectResult(error) { StatusCode = (int)statusCode };
         }
     }
 }

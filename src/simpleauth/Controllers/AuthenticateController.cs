@@ -22,6 +22,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
     using ViewModels;
 
     /// <summary>
@@ -221,7 +222,7 @@
                                 string.Empty,
                                 DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
-                    throw new Exception("Two factor authenticator is not properly configured", ex);
+                    throw new Exception(Strings.TwoFactorNotProperlyConfigured, ex);
                 }
             }
             catch (Exception exception)

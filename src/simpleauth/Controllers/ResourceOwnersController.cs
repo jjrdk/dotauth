@@ -33,6 +33,7 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Filters;
     using SimpleAuth.Parameters;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Events.OAuth;
     using SimpleAuth.Shared.Responses;
 
@@ -218,7 +219,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = "Parameter in request body not valid",
+                        Detail = Strings.ParameterInRequestBodyIsNotValid,
                         Status = HttpStatusCode.BadRequest
                     });
             }
@@ -274,14 +275,14 @@ namespace SimpleAuth.Controllers
         {
             if (request == null)
             {
-                return BadRequest("No parameter in body request");
+                return BadRequest(Strings.NoParameterInBodyRequest);
             }
 
             var sub = User.GetSubject();
 
             if (sub == null || sub != request.Subject)
             {
-                return BadRequest("Invalid user");
+                return BadRequest(Strings.InvalidUser);
             }
 
             var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
@@ -398,7 +399,7 @@ namespace SimpleAuth.Controllers
         {
             if (request == null)
             {
-                return BadRequest("Parameter in request body not valid");
+                return BadRequest(Strings.ParameterInRequestBodyIsNotValid);
             }
 
             var resourceOwner =
@@ -438,7 +439,7 @@ namespace SimpleAuth.Controllers
         {
             if (addResourceOwnerRequest == null)
             {
-                return BadRequest("Parameter in request body not valid");
+                return BadRequest(Strings.ParameterInRequestBodyIsNotValid);
             }
 
             var resourceOwner = new ResourceOwner
@@ -458,7 +459,7 @@ namespace SimpleAuth.Controllers
                 new ErrorDetails
                 {
                     Title = ErrorCodes.UnhandledExceptionCode,
-                    Detail = "a resource owner with same credentials already exists",
+                    Detail = Strings.DuplicateResourceOwner,
                     Status = HttpStatusCode.BadRequest
                 });
         }

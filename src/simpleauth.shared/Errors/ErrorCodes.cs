@@ -16,22 +16,12 @@ namespace SimpleAuth.Shared.Errors
 {
     internal static class ErrorCodes
     {
-        //uma
-        //public const string NeedInfo = "need_info";
-        //public const string NotAuthorized = "not_authorized";
-        //public const string RequestSubmitted = "request_submitted";
-        //public const string InvalidRequestCode = ErrorCodes.InvalidRequestCode;
         public const string InvalidResourceSetId = "invalid_resource_set_id";
-        //public const string InvalidId = "invalid_id";
-        //public const string InvalidTicket = "invalid_ticket";
         public const string ExpiredTicket = "expired_ticket";
         public const string ExpiredAuthorizationCode = "expired_code";
         public const string RequestSubmitted = "request_submitted";
         public const string RequestDenied = "request_denied";
-        //public const string InvalidRpt = "invalid_rpt";
-        //openid
         public const string UnhandledExceptionCode = "unhandled_error";
-
         public const string InvalidParameterCode = "invalid_parameter";
         public const string InvalidRequest = "invalid_request";
         public const string InvalidClient = "invalid_client";
