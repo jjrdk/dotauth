@@ -35,13 +35,12 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
         private Mock<IScopeRepository> _scopeRepositoryStub;
 
         [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Returns_False()
         {
             InitializeFakeObjects();
 
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _clientRepositoryMock.Update(null, CancellationToken.None))
-                .ConfigureAwait(false);
+            Assert.False(await _clientRepositoryMock.Update(null, CancellationToken.None)
+                .ConfigureAwait(false));
         }
 
         [Fact]

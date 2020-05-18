@@ -58,8 +58,8 @@
             var result = await _openidClients.UpdateClient(new Client(), "token").ConfigureAwait(false);
 
             Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal(Strings.RequestIsNotValid, result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
+            Assert.Equal("the parameter redirect_uris is missing", result.Error.Detail);
         }
 
         [Fact]
@@ -76,7 +76,6 @@
                 ClientUri = new Uri("http://clienturi.com"),
                 Contacts = new[] { "contact" },
                 DefaultAcrValues = "sms",
-                //DefaultMaxAge = 10,
                 GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
                 RedirectionUrls = new[] { new Uri("http://localhost") },
                 PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
@@ -232,7 +231,7 @@
         [Fact]
         public async Task When_Search_One_Client_Then_One_Client_Is_Returned()
         {
-            var result = await _openidClients.AddClient(
+            _ = await _openidClients.AddClient(
                     new Client
                     {
                         ClientId = Guid.NewGuid().ToString("N"),

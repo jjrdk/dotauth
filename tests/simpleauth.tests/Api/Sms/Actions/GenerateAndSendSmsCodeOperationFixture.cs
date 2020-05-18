@@ -61,7 +61,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal("the confirmation code cannot be saved", exception.Message);
+            Assert.Equal("The confirmation code cannot be saved", exception.Message);
         }
 
         [Fact]

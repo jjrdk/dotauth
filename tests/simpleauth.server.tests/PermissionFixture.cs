@@ -48,7 +48,7 @@ namespace SimpleAuth.Server.Tests
 
             Assert.True(ticket.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
-            Assert.Equal("the parameter resource_set_id needs to be specified", ticket.Error.Detail);
+            Assert.Equal("The parameter resource_set_id needs to be specified", ticket.Error.Detail);
         }
 
         [Fact]

@@ -418,7 +418,7 @@
     <value>the response cannot be generated because the resource owner needs to be authenticated</value>
   </data>
   <data name="TheRoDoesntExist" xml:space="preserve">
-    <value>the resource owner doesn't exist</value>
+    <value>The resource owner doesn't exist</value>
   </data>
   <data name="TheScopeAreNotValid" xml:space="preserve">
     <value>one or more scopes are not valid</value>
@@ -476,5 +476,8 @@
   </data>
   <data name="TheUrlIsNotWellFormed" xml:space="preserve">
     <value>The url is not well formed</value>
+  </data>
+  <data name="TheResourceOwnerCredentialsAreNotCorrect" xml:space="preserve">
+    <value>The resource owner credentials are not correct</value>
   </data>
 </root>

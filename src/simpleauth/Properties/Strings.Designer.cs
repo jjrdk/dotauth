@@ -916,6 +916,15 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The resource owner credentials are not correct.
+        /// </summary>
+        internal static string TheResourceOwnerCredentialsAreNotCorrect {
+            get {
+                return ResourceManager.GetString("TheResourceOwnerCredentialsAreNotCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to resource set {0} doesn&apos;t exist.
         /// </summary>
         internal static string TheResourceSetDoesntExist {
@@ -934,7 +943,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the resource owner doesn&apos;t exist.
+        ///   Looks up a localized string similar to The resource owner doesn&apos;t exist.
         /// </summary>
         internal static string TheRoDoesntExist {
             get {

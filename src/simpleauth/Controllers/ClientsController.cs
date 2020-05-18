@@ -172,7 +172,7 @@ namespace SimpleAuth.Controllers
             {
 
                 var clientFactory = new ClientFactory(_httpClient, _scopeStore, _urlReader);
-                var toInsert = await clientFactory.Build(client, cancellationToken).ConfigureAwait(false);
+                var toInsert = await clientFactory.Build(client, false, cancellationToken).ConfigureAwait(false);
                 var result = await _clientRepository.Update(toInsert, cancellationToken)
                     .ConfigureAwait(false);
                 return result
@@ -206,7 +206,7 @@ namespace SimpleAuth.Controllers
         public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
         {
             var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>);
-            var toInsert = await factory.Build(client, cancellationToken).ConfigureAwait(false);
+            var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
             var result = await _clientRepository.Insert(toInsert, cancellationToken).ConfigureAwait(false);
 
             return result ? Ok(toInsert) : (IActionResult)BadRequest();

@@ -44,7 +44,7 @@
 
             Assert.False(result.IsValid);
             Assert.Single(result.AccountFilterRules);
-            Assert.Equal("the claim 'key' doesn't exist", result.AccountFilterRules.First().ErrorMessages.First());
+            Assert.Equal("The claim 'key' doesn't exist", result.AccountFilterRules.First().ErrorMessages.First());
         }
 
         [Fact]
@@ -62,7 +62,7 @@
             Assert.False(result.IsValid);
             Assert.Single(result.AccountFilterRules);
             Assert.Equal(
-                "the filter claims['key'] == 'val' is wrong",
+                "The filter claims['key'] == 'val' is wrong",
                 result.AccountFilterRules.First().ErrorMessages.First());
         }
 
@@ -81,7 +81,7 @@
             Assert.False(result.IsValid);
             Assert.Single(result.AccountFilterRules);
             Assert.Equal(
-                "the filter claims['key'] != 'val' is wrong",
+                "The filter claims['key'] != 'val' is wrong",
                 result.AccountFilterRules.First().ErrorMessages.First());
         }
 
@@ -100,7 +100,7 @@
             Assert.False(result.IsValid);
             Assert.Single(result.AccountFilterRules);
             Assert.Equal(
-                "the filter claims['key'] match regular expression ^[0-9]{1}$ is wrong",
+                "The filter claims['key'] match regular expression ^[0-9]{1}$ is wrong",
                 result.AccountFilterRules.First().ErrorMessages.First());
         }
 

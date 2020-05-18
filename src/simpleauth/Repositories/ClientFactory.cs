@@ -26,7 +26,7 @@
             _urlReader = urlReader;
         }
 
-        public async Task<Client> Build(Client newClient, CancellationToken cancellationToken = default)
+        public async Task<Client> Build(Client newClient, bool updateId = true, CancellationToken cancellationToken = default)
         {
             if (newClient == null)
             {
@@ -81,12 +81,16 @@
                 }
             }
 
+            if (newClient.RedirectionUrls == null || newClient.RedirectionUrls.Length == 0)
+            {
+                throw new SimpleAuthException(
+                    ErrorCodes.InvalidRedirectUri,
+                    string.Format(Strings.MissingParameter, "redirect_uris"));
+            }
+
             ValidateNotMandatoryUri(newClient.InitiateLoginUri, "initiate_login_uri", true);
 
-            if (newClient.RequestUris == null)
-            {
-                newClient.RequestUris = Array.Empty<Uri>();
-            }
+            newClient.RequestUris ??= Array.Empty<Uri>();
 
             if (newClient.RequestUris.Any(requestUri => !requestUri.IsAbsoluteUri))
             {
@@ -97,7 +101,7 @@
 
             var client = new Client
             {
-                ClientId = Id.Create()
+                ClientId = updateId ? Id.Create() : newClient.ClientId
             };
 
             client.ClientName = string.IsNullOrWhiteSpace(newClient.ClientName)
@@ -112,7 +116,7 @@
 
             // If omitted then the default value is authorization code grant type
             client.GrantTypes = newClient.GrantTypes == null || !newClient.GrantTypes.Any()
-                ? new[] {GrantTypes.AuthorizationCode}
+                ? new[] { GrantTypes.AuthorizationCode }
                 : newClient.GrantTypes;
 
             client.IdTokenEncryptedResponseAlg = !string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg)
@@ -160,13 +164,6 @@
             }
 
             client.AllowedScopes = newClient.AllowedScopes.ToArray();
-
-            if (newClient.RedirectionUrls == null || newClient.RedirectionUrls.Length == 0)
-            {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRedirectUri,
-                    string.Format(Strings.MissingParameter, "redirect_uris"));
-            }
 
             // Check the newClients when the application type is web
             if (client.ApplicationType == ApplicationTypes.Web)

@@ -157,7 +157,7 @@ namespace SimpleAuth.Server.Tests
 
             Assert.True(resource.HasError);
             Assert.Equal("not_updated", resource.Error.Title);
-            Assert.Equal("resource cannot be updated", resource.Error.Detail);
+            Assert.Equal("Resource cannot be updated", resource.Error.Detail);
         }
 
         [Fact]

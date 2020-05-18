@@ -80,7 +80,7 @@ namespace SimpleAuth.WebSite.Authenticate
             {
                 return new LocalOpenIdAuthenticationResult
                 {
-                    ErrorMessage = ErrorDescriptions.TheResourceOwnerCredentialsAreNotCorrect
+                    ErrorMessage = Strings.TheResourceOwnerCredentialsAreNotCorrect
                 };
             }
 

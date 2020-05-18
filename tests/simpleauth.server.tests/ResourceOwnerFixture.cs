@@ -71,7 +71,7 @@
 
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal("a resource owner with same credentials already exists", result.Error.Detail);
+            Assert.Equal("A resource owner with same credentials already exists", result.Error.Detail);
         }
 
         [Fact]
@@ -96,7 +96,7 @@
 
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal("The resource owner invalid_login doesn't exist", result.Error.Detail);
+            Assert.Equal("The resource owner doesn't exist", result.Error.Detail);
         }
 
         [Fact]

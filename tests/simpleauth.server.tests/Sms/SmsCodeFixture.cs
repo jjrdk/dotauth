@@ -88,7 +88,7 @@
             // ASSERT : CANNOT INSERT CONFIRMATION CODE
             Assert.True(cannotInsertConfirmationCode.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, cannotInsertConfirmationCode.Error.Title);
-            Assert.Equal("the confirmation code cannot be saved", cannotInsertConfirmationCode.Error.Detail);
+            Assert.Equal("The confirmation code cannot be saved", cannotInsertConfirmationCode.Error.Detail);
             Assert.Equal(HttpStatusCode.InternalServerError, cannotInsertConfirmationCode.StatusCode);
         }
 

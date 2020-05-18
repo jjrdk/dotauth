@@ -155,9 +155,7 @@
                 return false;
             }
 
-            var id = newClient.ClientId;
-            newClient = await _clientFactory.Build(newClient, cancellationToken).ConfigureAwait(false);
-            newClient.ClientId = id;
+            newClient = await _clientFactory.Build(newClient, false, cancellationToken).ConfigureAwait(false);
             lock (_clients)
             {
                 var removed = _clients.RemoveAll(
