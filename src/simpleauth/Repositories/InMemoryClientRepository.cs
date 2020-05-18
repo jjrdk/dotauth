@@ -15,7 +15,7 @@
     /// <summary>
     /// Defines the in-memory client repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IClientRepository" />
+    /// <seealso cref="IClientRepository" />
     internal sealed class InMemoryClientRepository : IClientRepository
     {
         private readonly ILogger<InMemoryClientRepository> _logger;
@@ -79,7 +79,7 @@
         }
 
         /// <inheritdoc />
-        public Task<Client> Insert(Client client, CancellationToken cancellationToken = default)
+        public Task<bool> Insert(Client client, CancellationToken cancellationToken = default)
         {
             if (client == null)
             {
@@ -88,11 +88,11 @@
 
             if (_clients.Any(x => x.ClientId == client.ClientId || x.ClientName == client.ClientName))
             {
-                return false;
+                return Task.FromResult(false);
             }
 
             _clients.Add(client);
-            return Task.FromResult(client);
+            return Task.FromResult(true);
         }
 
         /// <inheritdoc />
@@ -119,22 +119,23 @@
 
             if (newClient.ClientTypes != null && newClient.ClientTypes.Any())
             {
-                var clientTypes = newClient.ClientTypes.Select(t => t);
+                var clientTypes = newClient.ClientTypes.Select(t => t).ToHashSet();
                 result = result.Where(c => clientTypes.Contains(c.ApplicationType))
                     .OrderBy(c => c.ClientName);
             }
 
-            var nbResult = result.Count();
+            var resultArray = result.ToArray();
+            var nbResult = resultArray.Length;
 
             if (newClient.NbResults > 0)
             {
-                result = result.Skip(newClient.StartIndex).Take(newClient.NbResults);
+                resultArray = resultArray.Skip(newClient.StartIndex).Take(newClient.NbResults).ToArray();
             }
 
             return Task.FromResult(
                 new PagedResult<Client>
                 {
-                    Content = result.ToArray(),
+                    Content = resultArray,
                     StartIndex = newClient.StartIndex,
                     TotalResults = nbResult
                 });
