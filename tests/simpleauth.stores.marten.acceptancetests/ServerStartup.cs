@@ -6,7 +6,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Newtonsoft.Json;
     using Npgsql;
-    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using System;
     using Microsoft.AspNetCore.Authentication.JwtBearer;

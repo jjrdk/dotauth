@@ -18,6 +18,7 @@ namespace SimpleAuth.Server.Tests
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Client;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
@@ -61,7 +62,7 @@ namespace SimpleAuth.Server.Tests
             Assert.True(ticket.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
             Assert.Equal(
-                string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, "scopes"),
+                string.Format(Strings.TheParameterNeedsToBeSpecified, "scopes"),
                 ticket.Error.Detail);
         }
 
@@ -75,7 +76,7 @@ namespace SimpleAuth.Server.Tests
 
             Assert.True(ticket.HasError);
             Assert.Equal(ErrorCodes.InvalidResourceSetId, ticket.Error.Title);
-            Assert.Equal(string.Format(ErrorMessages.TheResourceSetDoesntExist, "resource"), ticket.Error.Detail);
+            Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, "resource"), ticket.Error.Detail);
         }
 
         [Fact]

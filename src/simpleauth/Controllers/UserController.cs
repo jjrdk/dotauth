@@ -88,7 +88,7 @@
                 {
                     Status = HttpStatusCode.BadRequest,
                     Title = ErrorCodes.InternalError,
-                    Detail = ErrorMessages.TheRoDoesntExist
+                    Detail = Strings.TheRoDoesntExist
                 });
             }
             var authenticationSchemes =
@@ -259,7 +259,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    string.Format(ErrorMessages.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                    string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             try
@@ -494,7 +494,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    ErrorMessages.TheRoDoesntExist);
+                    Strings.TheRoDoesntExist);
             }
 
             var unlink = resourceOwner.ExternalLogins.Where(
@@ -522,7 +522,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    ErrorMessages.TheRoDoesntExist);
+                    Strings.TheRoDoesntExist);
             }
 
             var issuer = externalPrincipal.Identity.AuthenticationType;

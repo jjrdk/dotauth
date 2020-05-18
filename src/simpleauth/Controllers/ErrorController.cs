@@ -4,9 +4,7 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Shared.Models;
     using System;
     using System.Net;
-    using SimpleAuth.Filters;
     using SimpleAuth.Properties;
-    using ViewModels;
 
     /// <summary>
     /// Defines the error controller

@@ -20,6 +20,7 @@ namespace SimpleAuth.WebSite.User
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
@@ -40,7 +41,7 @@ namespace SimpleAuth.WebSite.User
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    ErrorMessages.TheRoDoesntExist);
+                    Strings.TheRoDoesntExist);
             }
 
             var claimsToBeRemoved = resourceOwner.Claims.Where(cl => claims.Any(c => c.Type == cl.Type))

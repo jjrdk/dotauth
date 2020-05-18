@@ -27,6 +27,7 @@ namespace SimpleAuth.Api.Authorization
     using System.Security.Principal;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
 
     internal sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
@@ -64,7 +65,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.MissingParameter,
+                    string.Format(Strings.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                     authorizationParameter.State);
             }
@@ -78,7 +79,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.TheClientDoesntSupportTheGrantType,
+                    string.Format(Strings.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
                         $"{GrantTypes.Implicit} and {GrantTypes.AuthorizationCode}"),
                     authorizationParameter.State);
@@ -90,7 +91,7 @@ namespace SimpleAuth.Api.Authorization
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequest,
-                        ErrorMessages.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated,
+                        Strings.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated,
                         authorizationParameter.State);
                 }
 

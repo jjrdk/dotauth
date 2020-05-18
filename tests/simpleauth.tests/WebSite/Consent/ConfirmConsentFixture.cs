@@ -12,6 +12,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
@@ -90,7 +91,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(ErrorMessages.TheAuthorizationFlowIsNotSupported, exception.Message);
+            Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, exception.Message);
             Assert.Equal(state, exception.State);
         }
 

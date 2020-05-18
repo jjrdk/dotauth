@@ -18,6 +18,7 @@
     using System.Threading.Tasks;
     using Microsoft.Net.Http.Headers;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
 
     /// <summary>
     /// Defines the token controller.
@@ -99,7 +100,7 @@
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(ErrorMessages.MissingParameter, RequestTokenNames.GrantType)
+                        Detail = string.Format(Strings.MissingParameter, RequestTokenNames.GrantType)
                     });
             }
 

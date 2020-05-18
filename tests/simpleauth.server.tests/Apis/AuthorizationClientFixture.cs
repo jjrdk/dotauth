@@ -29,6 +29,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 
@@ -145,7 +146,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal(SimpleAuth.Shared.Errors.ErrorMessages.TheRedirectionUriIsNotWellFormed, error.Detail);
+            Assert.Equal(Strings.TheRedirectionUriIsNotWellFormed, error.Detail);
         }
 
         [Fact]

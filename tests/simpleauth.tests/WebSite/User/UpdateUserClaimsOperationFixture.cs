@@ -8,6 +8,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.WebSite.User;
@@ -53,7 +54,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(ErrorMessages.TheRoDoesntExist, exception.Message);
+            Assert.Equal(Strings.TheRoDoesntExist, exception.Message);
         }
 
         [Fact]

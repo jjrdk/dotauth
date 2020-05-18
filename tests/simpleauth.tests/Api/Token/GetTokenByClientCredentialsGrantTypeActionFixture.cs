@@ -97,7 +97,7 @@
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
-//            Assert.True(exception.Message == string.Format(ErrorMessages.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantTypes.client_credentials));
+//            Assert.True(exception.Message == string.Format(Strings.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantTypes.client_credentials));
 //        }
 
 //        [Fact]
@@ -128,7 +128,7 @@
 //            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
-//            Assert.True(exception.Message == string.Format(ErrorMessages.TheClientDoesntSupportTheResponseType, client.Client.ClientId, ResponseType.token));
+//            Assert.True(exception.Message == string.Format(Strings.TheClientDoesntSupportTheResponseType, client.Client.ClientId, ResponseType.token));
 //        }
 
 //        [Fact]

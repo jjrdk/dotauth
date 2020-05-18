@@ -27,6 +27,7 @@ namespace SimpleAuth.Api.Authorization
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Properties;
 
     internal sealed class GetAuthorizationCodeOperation
     {
@@ -76,7 +77,7 @@ namespace SimpleAuth.Api.Authorization
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
                     string.Format(
-                        ErrorMessages.TheClientDoesntSupportTheGrantType,
+                        Strings.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
                         "authorization_code"),
                     authorizationParameter.State);
@@ -88,7 +89,7 @@ namespace SimpleAuth.Api.Authorization
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequest,
-                        ErrorMessages.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated,
+                        Strings.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated,
                         authorizationParameter.State);
                 }
 

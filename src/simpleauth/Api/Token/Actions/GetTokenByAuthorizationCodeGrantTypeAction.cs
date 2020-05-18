@@ -30,6 +30,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Events.OAuth;
 
     internal class GetTokenByAuthorizationCodeGrantTypeAction
@@ -184,7 +185,7 @@ namespace SimpleAuth.Api.Token.Actions
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidGrant,
                             Detail = string.Format(
-                                ErrorMessages.TheClientDoesntSupportTheGrantType,
+                                Strings.TheClientDoesntSupportTheGrantType,
                                 client.ClientId,
                                 GrantTypes.AuthorizationCode)
                         }
@@ -202,7 +203,7 @@ namespace SimpleAuth.Api.Token.Actions
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidResponse,
                             Detail = string.Format(
-                                ErrorMessages.TheClientDoesntSupportTheResponseType,
+                                Strings.TheClientDoesntSupportTheResponseType,
                                 client.ClientId,
                                 ResponseTypeNames.Code)
                         }
@@ -223,7 +224,7 @@ namespace SimpleAuth.Api.Token.Actions
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidGrant,
-                            Detail = ErrorMessages.TheAuthorizationCodeIsNotCorrect
+                            Detail = Strings.TheAuthorizationCodeIsNotCorrect
                         }
                     });
             }
@@ -239,7 +240,7 @@ namespace SimpleAuth.Api.Token.Actions
                            {
                                Status = HttpStatusCode.BadRequest,
                                Title = ErrorCodes.InvalidRequest,
-                               Detail = ErrorMessages.TheCodeVerifierIsNotCorrect
+                               Detail = Strings.TheCodeVerifierIsNotCorrect
                            }
                        });
             }
@@ -257,7 +258,7 @@ namespace SimpleAuth.Api.Token.Actions
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidRequest,
                             Detail = string.Format(
-                                ErrorMessages.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
+                                Strings.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
                                 authorizationClientId)
                         }
                     });
@@ -273,7 +274,7 @@ namespace SimpleAuth.Api.Token.Actions
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidRedirectUri,
-                            Detail = ErrorMessages.TheRedirectionUrlIsNotTheSame
+                            Detail = Strings.TheRedirectionUrlIsNotTheSame
                         }
                     });
             }
@@ -292,7 +293,7 @@ namespace SimpleAuth.Api.Token.Actions
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.ExpiredAuthorizationCode,
-                            Detail = ErrorMessages.TheAuthorizationCodeIsObsolete
+                            Detail = Strings.TheAuthorizationCodeIsObsolete
                         }
                     });
             }
@@ -310,7 +311,7 @@ namespace SimpleAuth.Api.Token.Actions
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidRedirectUri,
                             Detail = string.Format(
-                                ErrorMessages.RedirectUrlIsNotValid,
+                                Strings.RedirectUrlIsNotValid,
                                 authorizationCodeGrantTypeParameter.RedirectUri)
                         }
                     });

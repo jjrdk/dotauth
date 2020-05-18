@@ -27,6 +27,7 @@ namespace SimpleAuth.Api.Authorization
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Properties;
 
     internal sealed class GetTokenViaImplicitWorkflowOperation
     {
@@ -64,7 +65,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.MissingParameter,
+                    string.Format(Strings.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                     authorizationParameter.State);
             }
@@ -73,7 +74,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.TheClientDoesntSupportTheGrantType,
+                    string.Format(Strings.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
                         "implicit"),
                     authorizationParameter.State);

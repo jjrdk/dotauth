@@ -24,6 +24,7 @@ namespace SimpleAuth.Tests.Api.Authorization
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
@@ -68,7 +69,7 @@ namespace SimpleAuth.Tests.Api.Authorization
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, result.Code);
-            Assert.Equal(string.Format(ErrorMessages.TheClientRequiresPkce, clientId), result.Message);
+            Assert.Equal(string.Format(Strings.TheClientRequiresPkce, clientId), result.Message);
         }
 
         private void InitializeFakeObjects(Client client = null)

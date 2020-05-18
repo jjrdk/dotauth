@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
@@ -28,7 +29,7 @@
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InternalError,
-                    ErrorMessages.TheRoDoesntExist);
+                    Strings.TheRoDoesntExist);
             }
 
             resourceOwner.TwoFactorAuthentication = twoFactorAuth;

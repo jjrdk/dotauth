@@ -27,6 +27,7 @@ namespace SimpleAuth.Api.Authorization
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
 
     internal class AuthorizationActions
@@ -101,7 +102,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.TheClientRequiresPkce, parameter.ClientId),
+                    string.Format(Strings.TheClientRequiresPkce, parameter.ClientId),
                     parameter.State);
             }
 

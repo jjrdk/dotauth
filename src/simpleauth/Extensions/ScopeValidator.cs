@@ -15,7 +15,7 @@
 namespace SimpleAuth.Extensions
 {
     using System.Linq;
-    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Models;
 
     internal static class ScopeValidator
@@ -25,7 +25,7 @@ namespace SimpleAuth.Extensions
             var scopes = scope.ParseScopes();
             if (!scopes.Any())
             {
-                return new ScopeValidationResult(ErrorMessages.TheScopesNeedToBeSpecified);
+                return new ScopeValidationResult(Strings.TheScopesNeedToBeSpecified);
             }
 
             var duplicates = scopes.GroupBy(p => p)
@@ -35,7 +35,7 @@ namespace SimpleAuth.Extensions
             if (duplicates.Count > 1)
             {
                 return new ScopeValidationResult(
-                    string.Format(ErrorMessages.DuplicateScopeValues,
+                    string.Format(Strings.DuplicateScopeValues,
                     string.Join(",", duplicates)));
             }
 
@@ -46,7 +46,7 @@ namespace SimpleAuth.Extensions
             if (scopesNotAllowedOrInvalid.Any())
             {
                 return new ScopeValidationResult(
-                    string.Format(ErrorMessages.ScopesAreNotAllowedOrInvalid,
+                    string.Format(Strings.ScopesAreNotAllowedOrInvalid,
                     string.Join(",", scopesNotAllowedOrInvalid)));
             }
 

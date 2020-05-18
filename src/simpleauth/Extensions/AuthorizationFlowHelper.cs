@@ -18,6 +18,7 @@ namespace SimpleAuth.Extensions
     using System.Linq;
     using SimpleAuth.Api.Authorization;
     using SimpleAuth.Exceptions;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
 
     internal static class AuthorizationFlowHelper
@@ -28,7 +29,7 @@ namespace SimpleAuth.Extensions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
+                    Strings.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 
@@ -38,7 +39,7 @@ namespace SimpleAuth.Extensions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
+                    Strings.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 

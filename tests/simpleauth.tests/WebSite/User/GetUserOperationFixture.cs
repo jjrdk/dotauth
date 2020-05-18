@@ -22,6 +22,7 @@ namespace SimpleAuth.Tests.WebSite.User
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.WebSite.User;
     using Xunit;
 
@@ -55,7 +56,7 @@ namespace SimpleAuth.Tests.WebSite.User
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorMessages.TheUserNeedsToBeAuthenticated, exception.Message);
+            Assert.Equal(Strings.TheUserNeedsToBeAuthenticated, exception.Message);
         }
 
         [Fact]
@@ -71,7 +72,7 @@ namespace SimpleAuth.Tests.WebSite.User
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorMessages.TheSubjectCannotBeRetrieved, exception.Message);
+            Assert.Equal(Strings.TheSubjectCannotBeRetrieved, exception.Message);
         }
 
         [Fact]

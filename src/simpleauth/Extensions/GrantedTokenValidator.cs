@@ -19,6 +19,7 @@ namespace SimpleAuth.Extensions
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -32,7 +33,7 @@ namespace SimpleAuth.Extensions
                 return new GrantedTokenValidationResult
                 {
                     MessageErrorCode = ErrorCodes.InvalidToken,
-                    MessageErrorDescription = ErrorMessages.TheTokenIsNotValid,
+                    MessageErrorDescription = Strings.TheTokenIsNotValid,
                     IsValid = false
                 };
             }
@@ -44,7 +45,7 @@ namespace SimpleAuth.Extensions
                 return new GrantedTokenValidationResult
                 {
                     MessageErrorCode = ErrorCodes.InvalidToken,
-                    MessageErrorDescription = ErrorMessages.TheTokenIsExpired,
+                    MessageErrorDescription = Strings.TheTokenIsExpired,
                     IsValid = false
                 };
             }

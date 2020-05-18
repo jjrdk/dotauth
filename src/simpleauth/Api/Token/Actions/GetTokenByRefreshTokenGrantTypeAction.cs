@@ -30,6 +30,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Events.OAuth;
 
     internal sealed class GetTokenByRefreshTokenGrantTypeAction
@@ -98,7 +99,7 @@ namespace SimpleAuth.Api.Token.Actions
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
                         Detail = string.Format(
-                            ErrorMessages.TheClientDoesntSupportTheGrantType,
+                            Strings.TheClientDoesntSupportTheGrantType,
                             client.ClientId,
                             GrantTypes.RefreshToken)
                     }
@@ -117,7 +118,7 @@ namespace SimpleAuth.Api.Token.Actions
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
-                        Detail = ErrorMessages.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer
+                        Detail = Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer
                     }
                 };
             }
@@ -178,7 +179,7 @@ namespace SimpleAuth.Api.Token.Actions
                 .ConfigureAwait(false);
             if (grantedToken == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidGrant, ErrorMessages.TheRefreshTokenIsNotValid);
+                throw new SimpleAuthException(ErrorCodes.InvalidGrant, Strings.TheRefreshTokenIsNotValid);
             }
 
             return grantedToken;

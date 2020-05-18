@@ -117,16 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-   <data name="TheClaimDoesntExist" xml:space="preserve">
-    <value>The claim '{0}' doesn't exist</value>
+  <data name="TheConfirmationCodeCannotBeSaved" xml:space="preserve">
+    <value>The confirmation code cannot be saved</value>
   </data>
-  <data name="TheFilterEqualsIsWrong" xml:space="preserve">
-    <value>The filter claims['{0}'] == '{1}' is wrong</value>
+  <data name="TheConfirmationCodeIs" xml:space="preserve">
+    <value>The confirmation code is {0}</value>
   </data>
-  <data name="TheFilterNotEqualsIsWrong" xml:space="preserve">
-    <value>The filter claims['{0}'] != '{1}' is wrong</value>
-  </data>
-  <data name="TheFilterRegexIsWrong" xml:space="preserve">
-    <value>The filter claims['{0}'] match regular expression {1} is wrong</value>
+  <data name="TheSmsAccountIsNotProperlyConfigured" xml:space="preserve">
+    <value>The SMS account is not properly configured</value>
   </data>
 </root>

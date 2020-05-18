@@ -26,7 +26,7 @@ namespace SimpleAuth.Client
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Client.Properties;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
 
@@ -54,7 +54,7 @@ namespace SimpleAuth.Client
             if (!authority.IsAbsoluteUri)
             {
                 throw new ArgumentException(
-                    string.Format(ErrorMessages.TheUrlIsNotWellFormed, authority));
+                    string.Format(ClientStrings.TheUrlIsNotWellFormed, authority));
             }
 
             _form = credentials;

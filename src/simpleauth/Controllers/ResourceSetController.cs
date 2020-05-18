@@ -115,7 +115,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheSubjectCannotBeRetrieved,
+                    Strings.TheSubjectCannotBeRetrieved,
                     HttpStatusCode.BadRequest);
             }
 
@@ -151,7 +151,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheSubjectCannotBeRetrieved,
+                    Strings.TheSubjectCannotBeRetrieved,
                     HttpStatusCode.BadRequest);
             }
 
@@ -213,7 +213,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheSubjectCannotBeRetrieved,
+                    Strings.TheSubjectCannotBeRetrieved,
                     HttpStatusCode.BadRequest);
             }
 
@@ -257,7 +257,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheSubjectCannotBeRetrieved,
+                    Strings.TheSubjectCannotBeRetrieved,
                     HttpStatusCode.BadRequest);
             }
 
@@ -273,7 +273,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidUri,
-                    ErrorMessages.TheUrlIsNotWellFormed,
+                    Strings.TheUrlIsNotWellFormed,
                     HttpStatusCode.BadRequest);
             }
 
@@ -281,7 +281,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, "name"),
+                    string.Format(Strings.TheParameterNeedsToBeSpecified, "name"),
                     HttpStatusCode.BadRequest);
             }
 
@@ -289,7 +289,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, "scopes"),
+                    string.Format(Strings.TheParameterNeedsToBeSpecified, "scopes"),
                     HttpStatusCode.BadRequest);
             }
 
@@ -334,7 +334,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidUri,
-                    ErrorMessages.TheUrlIsNotWellFormed,
+                    Strings.TheUrlIsNotWellFormed,
                     HttpStatusCode.BadRequest);
             }
 

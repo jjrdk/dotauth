@@ -33,6 +33,7 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
 
     /// <summary>
     /// Defines the authorization controller.
@@ -228,7 +229,7 @@ namespace SimpleAuth.Controllers
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequest,
-                        ErrorMessages.TheRequestParameterIsNotCorrect,
+                        Strings.TheRequestParameterIsNotCorrect,
                         authorizationRequest.state);
                 }
 
@@ -245,7 +246,7 @@ namespace SimpleAuth.Controllers
                     {
                         throw new SimpleAuthExceptionWithState(
                             ErrorCodes.InvalidRequest,
-                            ErrorMessages.TheRequestDownloadedFromRequestUriIsNotValid,
+                            Strings.TheRequestDownloadedFromRequestUriIsNotValid,
                             authorizationRequest.state);
                     }
 
@@ -259,7 +260,7 @@ namespace SimpleAuth.Controllers
                     {
                         throw new SimpleAuthExceptionWithState(
                             ErrorCodes.InvalidRequest,
-                            ErrorMessages.TheRequestDownloadedFromRequestUriIsNotValid,
+                            Strings.TheRequestDownloadedFromRequestUriIsNotValid,
                             authorizationRequest.state);
                     }
 
@@ -268,7 +269,7 @@ namespace SimpleAuth.Controllers
 
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequestUriCode,
-                    ErrorMessages.TheRequestUriParameterIsNotWellFormed,
+                    Strings.TheRequestUriParameterIsNotWellFormed,
                     authorizationRequest.state);
             }
 

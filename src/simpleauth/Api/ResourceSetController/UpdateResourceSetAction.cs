@@ -18,6 +18,7 @@ namespace SimpleAuth.Api.ResourceSetController
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
@@ -54,14 +55,14 @@ namespace SimpleAuth.Api.ResourceSetController
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, "name"));
+                    string.Format(Strings.TheParameterNeedsToBeSpecified, "name"));
             }
 
             if (resourceSet.Scopes == null || !resourceSet.Scopes.Any())
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, "scopes"));
+                    string.Format(Strings.TheParameterNeedsToBeSpecified, "scopes"));
             }
         }
     }

@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Parameters;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -55,7 +56,7 @@
                     Error = new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidGrant,
-                        Detail = ErrorMessages.TheTokenIsNotValid
+                        Detail = Strings.TheTokenIsNotValid
                     }
                 };
             }

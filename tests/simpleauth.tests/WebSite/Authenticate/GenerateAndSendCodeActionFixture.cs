@@ -26,6 +26,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using Xunit;
 
     public class GenerateAndSendCodeActionFixture
@@ -66,7 +67,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorMessages.TheRoDoesntExist, exception.Message);
+            Assert.Equal(Strings.TheRoDoesntExist, exception.Message);
         }
 
         [Fact]
@@ -81,7 +82,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorMessages.TwoFactorAuthenticationIsNotEnabled, exception.Message);
+            Assert.Equal(Strings.TwoFactorAuthenticationIsNotEnabled, exception.Message);
         }
 
         [Fact]
@@ -133,7 +134,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(ErrorMessages.TheConfirmationCodeCannotBeSaved, exception.Message);
+            Assert.Equal(Strings.TheConfirmationCodeCannotBeSaved, exception.Message);
         }
 
         [Fact]

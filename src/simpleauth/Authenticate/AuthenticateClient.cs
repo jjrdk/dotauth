@@ -20,7 +20,7 @@ namespace SimpleAuth.Authenticate
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Properties;
 
     /// <summary>
     /// Defines the authenticate client.
@@ -65,7 +65,7 @@ namespace SimpleAuth.Authenticate
 
             if (client == null)
             {
-                return new AuthenticationResult(null, ErrorMessages.TheClientDoesntExist);
+                return new AuthenticationResult(null, Strings.TheClientDoesntExist);
             }
 
             var errorMessage = string.Empty;
@@ -75,7 +75,7 @@ namespace SimpleAuth.Authenticate
                     client = instruction.AuthenticateClient(client);
                     if (client == null)
                     {
-                        errorMessage = ErrorMessages.TheClientCannotBeAuthenticatedWithSecretBasic;
+                        errorMessage = Strings.TheClientCannotBeAuthenticatedWithSecretBasic;
                     }
 
                     break;
@@ -83,7 +83,7 @@ namespace SimpleAuth.Authenticate
                     client = ClientSecretPostAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
                     {
-                        errorMessage = ErrorMessages.TheClientCannotBeAuthenticatedWithSecretPost;
+                        errorMessage = Strings.TheClientCannotBeAuthenticatedWithSecretPost;
                     }
 
                     break;
@@ -91,7 +91,7 @@ namespace SimpleAuth.Authenticate
                     if (client.Secrets == null || client.Secrets.All(s => s.Type != ClientSecretTypes.SharedSecret))
                     {
                         errorMessage = string.Format(
-                            ErrorMessages.TheClientDoesntContainASharedSecret,
+                            Strings.TheClientDoesntContainASharedSecret,
                             client.ClientId);
                         break;
                     }
@@ -106,7 +106,7 @@ namespace SimpleAuth.Authenticate
                     client = ClientTlsAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
                     {
-                        errorMessage = ErrorMessages.TheClientCannotBeAuthenticatedWithTls;
+                        errorMessage = Strings.TheClientCannotBeAuthenticatedWithTls;
                     }
 
                     break;

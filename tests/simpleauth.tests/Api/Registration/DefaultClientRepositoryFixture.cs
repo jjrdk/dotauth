@@ -16,7 +16,6 @@ namespace SimpleAuth.Tests.Api.Registration
 {
     using Helpers;
     using Microsoft.IdentityModel.Tokens;
-    using Newtonsoft.Json;
     using Repositories;
     using Shared;
     using Shared.Models;

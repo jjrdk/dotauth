@@ -10,7 +10,6 @@
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Npgsql;
-    using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Stores.Marten;

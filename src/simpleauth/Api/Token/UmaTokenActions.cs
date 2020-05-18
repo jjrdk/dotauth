@@ -19,6 +19,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Properties;
 
     internal sealed class UmaTokenActions
     {
@@ -69,7 +70,7 @@
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(
-                            ErrorMessages.TheParameterNeedsToBeSpecified,
+                            Strings.TheParameterNeedsToBeSpecified,
                             UmaConstants.RptClaims.Ticket)
                     }
                 };
@@ -103,7 +104,7 @@
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
                         Detail = string.Format(
-                            ErrorMessages.TheClientDoesntSupportTheGrantType,
+                            Strings.TheClientDoesntSupportTheGrantType,
                             client.ClientId,
                             GrantTypes.UmaTicket)
                     }
@@ -120,7 +121,7 @@
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
-                        Detail = string.Format(ErrorMessages.TheTicketDoesntExist, parameter.Ticket)
+                        Detail = string.Format(Strings.TheTicketDoesntExist, parameter.Ticket)
                     }
                 };
             }
@@ -135,7 +136,7 @@
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.ExpiredTicket,
-                        Detail = ErrorMessages.TheTicketIsExpired
+                        Detail = Strings.TheTicketIsExpired
                     }
                 };
             }
@@ -176,7 +177,7 @@
                     {
                         Status = HttpStatusCode.InternalServerError,
                         Title = ErrorCodes.InternalError,
-                        Detail = ErrorMessages.InternalError
+                        Detail = Strings.InternalError
                     }
                 };
             }
@@ -198,7 +199,7 @@
                     {
                         Status = HttpStatusCode.Forbidden,
                         Title = ErrorCodes.RequestSubmitted,
-                        Detail = ErrorMessages.PermissionRequested
+                        Detail = Strings.PermissionRequested
                     }
                 };
             }
@@ -218,7 +219,7 @@
                 {
                     Status = HttpStatusCode.BadRequest,
                     Title = ErrorCodes.RequestDenied,
-                    Detail = ErrorMessages.TheAuthorizationPolicyIsNotSatisfied
+                    Detail = Strings.TheAuthorizationPolicyIsNotSatisfied
                 }
             };
         }

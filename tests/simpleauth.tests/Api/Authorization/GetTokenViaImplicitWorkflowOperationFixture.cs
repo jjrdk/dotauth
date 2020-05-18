@@ -11,6 +11,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
@@ -69,7 +70,7 @@
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
-                    ErrorMessages.MissingParameter,
+                    Strings.MissingParameter,
                     CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
                 exception.Message);
             Assert.Equal(authorizationParameter.State, exception.State);
@@ -91,7 +92,7 @@
             Assert.Equal(ErrorCodes.InvalidRequest, ex.Code);
             Assert.Equal(
                 string.Format(
-                    ErrorMessages.TheClientDoesntSupportTheGrantType,
+                    Strings.TheClientDoesntSupportTheGrantType,
                     authorizationParameter.ClientId,
                     "implicit"),
                 ex.Message);

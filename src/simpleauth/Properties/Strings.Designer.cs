@@ -115,11 +115,47 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to an error {0} has been raised when trying to authenticate.
+        /// </summary>
+        internal static string AnErrorHasBeenRaisedWhenTryingToAuthenticate {
+            get {
+                return ResourceManager.GetString("AnErrorHasBeenRaisedWhenTryingToAuthenticate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to at least one prompt parameter is not supported.
+        /// </summary>
+        internal static string AtLeastOnePromptIsNotSupported {
+            get {
+                return ResourceManager.GetString("AtLeastOnePromptIsNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to at least one response_type parameter is not supported.
+        /// </summary>
+        internal static string AtLeastOneResponseTypeIsNotSupported {
+            get {
+                return ResourceManager.GetString("AtLeastOneResponseTypeIsNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bad Request.
         /// </summary>
         internal static string Badrequest {
             get {
                 return ResourceManager.GetString("Badrequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client id parameter {0} doesn&apos;t exist or is not valid.
+        /// </summary>
+        internal static string ClientIsNotValid {
+            get {
+                return ResourceManager.GetString("ClientIsNotValid", resourceCulture);
             }
         }
         
@@ -156,6 +192,15 @@ namespace SimpleAuth.Properties {
         internal static string DuplicateResourceOwner {
             get {
                 return ResourceManager.GetString("DuplicateResourceOwner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to duplicate scopes {0} have been passed in parameter.
+        /// </summary>
+        internal static string DuplicateScopeValues {
+            get {
+                return ResourceManager.GetString("DuplicateScopeValues", resourceCulture);
             }
         }
         
@@ -223,6 +268,15 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error.
+        /// </summary>
+        internal static string InternalError {
+            get {
+                return ResourceManager.GetString("InternalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal Server Error.
         /// </summary>
         internal static string InternalServerError {
@@ -268,6 +322,24 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to the parameter {0} is missing.
+        /// </summary>
+        internal static string MissingParameter {
+            get {
+                return ResourceManager.GetString("MissingParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to no active AMR.
+        /// </summary>
+        internal static string NoActiveAmr {
+            get {
+                return ResourceManager.GetString("NoActiveAmr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No parameter in body request.
         /// </summary>
         internal static string NoParameterInBodyRequest {
@@ -286,6 +358,24 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to one of the request_uri is not valid.
+        /// </summary>
+        internal static string OneOfTheRequestUriIsNotValid {
+            get {
+                return ResourceManager.GetString("OneOfTheRequestUriIsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to one or more sector uri is not a redirect_uri.
+        /// </summary>
+        internal static string OneOrMoreSectorIdentifierUriIsNotARedirectUri {
+            get {
+                return ResourceManager.GetString("OneOrMoreSectorIdentifierUriIsNotARedirectUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parameter in request body not valid.
         /// </summary>
         internal static string ParameterInRequestBodyIsNotValid {
@@ -295,11 +385,56 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to the parameter {0} is not correct.
+        /// </summary>
+        internal static string ParameterIsNotCorrect {
+            get {
+                return ResourceManager.GetString("ParameterIsNotCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Permission request has been submitted..
+        /// </summary>
+        internal static string PermissionRequested {
+            get {
+                return ResourceManager.GetString("PermissionRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to prompt parameter should have only none value.
+        /// </summary>
+        internal static string PromptParameterShouldHaveOnlyNoneValue {
+            get {
+                return ResourceManager.GetString("PromptParameterShouldHaveOnlyNoneValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the redirect url {0} doesn&apos;t exist or is not valid.
+        /// </summary>
+        internal static string RedirectUrlIsNotValid {
+            get {
+                return ResourceManager.GetString("RedirectUrlIsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Register a client.
         /// </summary>
         internal static string RegisterAClient {
             get {
                 return ResourceManager.GetString("RegisterAClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The request is not valid.
+        /// </summary>
+        internal static string RequestIsNotValid {
+            get {
+                return ResourceManager.GetString("RequestIsNotValid", resourceCulture);
             }
         }
         
@@ -322,11 +457,101 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to resource owner credentials are not valid.
+        /// </summary>
+        internal static string ResourceOwnerCredentialsAreNotValid {
+            get {
+                return ResourceManager.GetString("ResourceOwnerCredentialsAreNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter resource_set_id needs to be specified.
         /// </summary>
         internal static string ResourceSetIdParameterNeedsToBeSpecified {
             get {
                 return ResourceManager.GetString("ResourceSetIdParameterNeedsToBeSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the scopes {0} are not allowed or invalid.
+        /// </summary>
+        internal static string ScopesAreNotAllowedOrInvalid {
+            get {
+                return ResourceManager.GetString("ScopesAreNotAllowedOrInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the amr {0} doesn&apos;t exist.
+        /// </summary>
+        internal static string TheAmrDoesntExist {
+            get {
+                return ResourceManager.GetString("TheAmrDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the authorization code has not been issued for the given client id {0}.
+        /// </summary>
+        internal static string TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId {
+            get {
+                return ResourceManager.GetString("TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the authorization code is not correct.
+        /// </summary>
+        internal static string TheAuthorizationCodeIsNotCorrect {
+            get {
+                return ResourceManager.GetString("TheAuthorizationCodeIsNotCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the authorization code is obsolete.
+        /// </summary>
+        internal static string TheAuthorizationCodeIsObsolete {
+            get {
+                return ResourceManager.GetString("TheAuthorizationCodeIsObsolete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the authorization flow is not supported.
+        /// </summary>
+        internal static string TheAuthorizationFlowIsNotSupported {
+            get {
+                return ResourceManager.GetString("TheAuthorizationFlowIsNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the authorization policy is not satisfied.
+        /// </summary>
+        internal static string TheAuthorizationPolicyIsNotSatisfied {
+            get {
+                return ResourceManager.GetString("TheAuthorizationPolicyIsNotSatisfied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the authorization request cannot be processed because there is not valid prompt.
+        /// </summary>
+        internal static string TheAuthorizationRequestCannotBeProcessedBecauseThereIsNotValidPrompt {
+            get {
+                return ResourceManager.GetString("TheAuthorizationRequestCannotBeProcessedBecauseThereIsNotValidPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the claim {0} is not valid.
+        /// </summary>
+        internal static string TheClaimIsNotValid {
+            get {
+                return ResourceManager.GetString("TheClaimIsNotValid", resourceCulture);
             }
         }
         
@@ -340,11 +565,128 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to the claims cannot be updated.
+        /// </summary>
+        internal static string TheClaimsCannotBeUpdated {
+            get {
+                return ResourceManager.GetString("TheClaimsCannotBeUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client assertion is not a JWE token.
+        /// </summary>
+        internal static string TheClientAssertionIsNotAJweToken {
+            get {
+                return ResourceManager.GetString("TheClientAssertionIsNotAJweToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client assertion is not a JWS token.
+        /// </summary>
+        internal static string TheClientAssertionIsNotAJwsToken {
+            get {
+                return ResourceManager.GetString("TheClientAssertionIsNotAJwsToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client cannot be authenticated with secret basic.
+        /// </summary>
+        internal static string TheClientCannotBeAuthenticatedWithSecretBasic {
+            get {
+                return ResourceManager.GetString("TheClientCannotBeAuthenticatedWithSecretBasic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client cannot be authenticated with secret post.
+        /// </summary>
+        internal static string TheClientCannotBeAuthenticatedWithSecretPost {
+            get {
+                return ResourceManager.GetString("TheClientCannotBeAuthenticatedWithSecretPost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client cannot be authenticated with TLS.
+        /// </summary>
+        internal static string TheClientCannotBeAuthenticatedWithTls {
+            get {
+                return ResourceManager.GetString("TheClientCannotBeAuthenticatedWithTls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client {0} doesn&apos;t have a shared secret.
+        /// </summary>
+        internal static string TheClientDoesntContainASharedSecret {
+            get {
+                return ResourceManager.GetString("TheClientDoesntContainASharedSecret", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client doesn&apos;t exist.
+        /// </summary>
+        internal static string TheClientDoesntExist {
+            get {
+                return ResourceManager.GetString("TheClientDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client {0} doesn&apos;t support the grant type {1}.
+        /// </summary>
+        internal static string TheClientDoesntSupportTheGrantType {
+            get {
+                return ResourceManager.GetString("TheClientDoesntSupportTheGrantType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client &apos;{0}&apos; doesn&apos;t support the response type: &apos;{1}&apos;.
+        /// </summary>
+        internal static string TheClientDoesntSupportTheResponseType {
+            get {
+                return ResourceManager.GetString("TheClientDoesntSupportTheResponseType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The client id {0} doesn&apos;t exist.
         /// </summary>
         internal static string TheClientIdDoesntExist {
             get {
                 return ResourceManager.GetString("TheClientIdDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the client {0} requires PKCE.
+        /// </summary>
+        internal static string TheClientRequiresPkce {
+            get {
+                return ResourceManager.GetString("TheClientRequiresPkce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the code verifier is not correct.
+        /// </summary>
+        internal static string TheCodeVerifierIsNotCorrect {
+            get {
+                return ResourceManager.GetString("TheCodeVerifierIsNotCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The confirmation code cannot be saved.
+        /// </summary>
+        internal static string TheConfirmationCodeCannotBeSaved {
+            get {
+                return ResourceManager.GetString("TheConfirmationCodeCannotBeSaved", resourceCulture);
             }
         }
         
@@ -367,6 +709,15 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to the current authenticated user doesn&apos;t match with the identity token.
+        /// </summary>
+        internal static string TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken {
+            get {
+                return ResourceManager.GetString("TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The filter rule &apos;{0}&apos; failed.
         /// </summary>
         internal static string TheFilterRuleFailed {
@@ -381,6 +732,375 @@ namespace SimpleAuth.Properties {
         internal static string TheIdentifierMustBeSpecified {
             get {
                 return ResourceManager.GetString("TheIdentifierMustBeSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The identity token does not contain SimpleAuth in the audience.
+        /// </summary>
+        internal static string TheIdentityTokenDoesntContainSimpleAuthAsAudience {
+            get {
+                return ResourceManager.GetString("TheIdentityTokenDoesntContainSimpleAuthAsAudience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the id_token_hint parameter is not a valid token.
+        /// </summary>
+        internal static string TheIdTokenHintParameterIsNotAValidToken {
+            get {
+                return ResourceManager.GetString("TheIdTokenHintParameterIsNotAValidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the jws payload cannot be extracted.
+        /// </summary>
+        internal static string TheJwsPayloadCannotBeExtracted {
+            get {
+                return ResourceManager.GetString("TheJwsPayloadCannotBeExtracted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the parameter id_token_encrypted_response_alg must be specified.
+        /// </summary>
+        internal static string TheParameterIsTokenEncryptedResponseAlgMustBeSpecified {
+            get {
+                return ResourceManager.GetString("TheParameterIsTokenEncryptedResponseAlgMustBeSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the parameter {0} needs to be specified.
+        /// </summary>
+        internal static string TheParameterNeedsToBeSpecified {
+            get {
+                return ResourceManager.GetString("TheParameterNeedsToBeSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the parameter request_object_encryption_alg must be specified.
+        /// </summary>
+        internal static string TheParameterRequestObjectEncryptionAlgMustBeSpecified {
+            get {
+                return ResourceManager.GetString("TheParameterRequestObjectEncryptionAlgMustBeSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the parameter userinfo_encrypted_response_alg must be specified.
+        /// </summary>
+        internal static string TheParameterUserInfoEncryptedResponseAlgMustBeSpecified {
+            get {
+                return ResourceManager.GetString("TheParameterUserInfoEncryptedResponseAlgMustBeSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the password cannot be updated.
+        /// </summary>
+        internal static string ThePasswordCannotBeUpdated {
+            get {
+                return ResourceManager.GetString("ThePasswordCannotBeUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the prompt parameter {0} is not supported.
+        /// </summary>
+        internal static string ThePromptParameterIsNotSupported {
+            get {
+                return ResourceManager.GetString("ThePromptParameterIsNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Based on the RFC-3986 the redirection-uri is not well formed.
+        /// </summary>
+        internal static string TheRedirectionUriIsNotWellFormed {
+            get {
+                return ResourceManager.GetString("TheRedirectionUriIsNotWellFormed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the redirection url is not the same than the one passed in the authorization request.
+        /// </summary>
+        internal static string TheRedirectionUrlIsNotTheSame {
+            get {
+                return ResourceManager.GetString("TheRedirectionUrlIsNotTheSame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The redirect_uri {0} cannot contain fragment.
+        /// </summary>
+        internal static string TheRedirectUrlCannotContainsFragment {
+            get {
+                return ResourceManager.GetString("TheRedirectUrlCannotContainsFragment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the redirect_uri {0} is not well formed.
+        /// </summary>
+        internal static string TheRedirectUrlIsNotValid {
+            get {
+                return ResourceManager.GetString("TheRedirectUrlIsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the refresh token can be used only by the same issuer.
+        /// </summary>
+        internal static string TheRefreshTokenCanBeUsedOnlyByTheSameIssuer {
+            get {
+                return ResourceManager.GetString("TheRefreshTokenCanBeUsedOnlyByTheSameIssuer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the refresh token is not valid.
+        /// </summary>
+        internal static string TheRefreshTokenIsNotValid {
+            get {
+                return ResourceManager.GetString("TheRefreshTokenIsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the request cannot be extracted from the cookie.
+        /// </summary>
+        internal static string TheRequestCannotBeExtractedFromTheCookie {
+            get {
+                return ResourceManager.GetString("TheRequestCannotBeExtractedFromTheCookie", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the request downloaded from request URI is not valid.
+        /// </summary>
+        internal static string TheRequestDownloadedFromRequestUriIsNotValid {
+            get {
+                return ResourceManager.GetString("TheRequestDownloadedFromRequestUriIsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the request parameter is not correct.
+        /// </summary>
+        internal static string TheRequestParameterIsNotCorrect {
+            get {
+                return ResourceManager.GetString("TheRequestParameterIsNotCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the request_uri parameter is not well formed.
+        /// </summary>
+        internal static string TheRequestUriParameterIsNotWellFormed {
+            get {
+                return ResourceManager.GetString("TheRequestUriParameterIsNotWellFormed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the resource owner cannot be removed.
+        /// </summary>
+        internal static string TheResourceOwnerCannotBeRemoved {
+            get {
+                return ResourceManager.GetString("TheResourceOwnerCannotBeRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to resource set {0} doesn&apos;t exist.
+        /// </summary>
+        internal static string TheResourceSetDoesntExist {
+            get {
+                return ResourceManager.GetString("TheResourceSetDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the response cannot be generated because the resource owner needs to be authenticated.
+        /// </summary>
+        internal static string TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated {
+            get {
+                return ResourceManager.GetString("TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the resource owner doesn&apos;t exist.
+        /// </summary>
+        internal static string TheRoDoesntExist {
+            get {
+                return ResourceManager.GetString("TheRoDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to one or more scopes are not valid.
+        /// </summary>
+        internal static string TheScopeAreNotValid {
+            get {
+                return ResourceManager.GetString("TheScopeAreNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the scope &apos;{0}&apos; doesn&apos;t exist.
+        /// </summary>
+        internal static string TheScopeDoesntExist {
+            get {
+                return ResourceManager.GetString("TheScopeDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the scope(s) need(s) to be specified.
+        /// </summary>
+        internal static string TheScopesNeedToBeSpecified {
+            get {
+                return ResourceManager.GetString("TheScopesNeedToBeSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the sector identifier uris cannot be retrieved.
+        /// </summary>
+        internal static string TheSectorIdentifierUrisCannotBeRetrieved {
+            get {
+                return ResourceManager.GetString("TheSectorIdentifierUrisCannotBeRetrieved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the signature is not correct.
+        /// </summary>
+        internal static string TheSignatureIsNotCorrect {
+            get {
+                return ResourceManager.GetString("TheSignatureIsNotCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the subject cannot be retrieved.
+        /// </summary>
+        internal static string TheSubjectCannotBeRetrieved {
+            get {
+                return ResourceManager.GetString("TheSubjectCannotBeRetrieved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the ticket cannot be inserted.
+        /// </summary>
+        internal static string TheTicketCannotBeInserted {
+            get {
+                return ResourceManager.GetString("TheTicketCannotBeInserted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the ticket {0} doesn&apos;t exist.
+        /// </summary>
+        internal static string TheTicketDoesntExist {
+            get {
+                return ResourceManager.GetString("TheTicketDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the ticket is expired.
+        /// </summary>
+        internal static string TheTicketIsExpired {
+            get {
+                return ResourceManager.GetString("TheTicketIsExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the token doesn&apos;t exist.
+        /// </summary>
+        internal static string TheTokenDoesntExist {
+            get {
+                return ResourceManager.GetString("TheTokenDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the token has not been issued for the given client id &apos;{0}&apos;.
+        /// </summary>
+        internal static string TheTokenHasNotBeenIssuedForTheGivenClientId {
+            get {
+                return ResourceManager.GetString("TheTokenHasNotBeenIssuedForTheGivenClientId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the token is expired.
+        /// </summary>
+        internal static string TheTokenIsExpired {
+            get {
+                return ResourceManager.GetString("TheTokenIsExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the token is not valid.
+        /// </summary>
+        internal static string TheTokenIsNotValid {
+            get {
+                return ResourceManager.GetString("TheTokenIsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The url is not well formed.
+        /// </summary>
+        internal static string TheUrlIsNotWellFormed {
+            get {
+                return ResourceManager.GetString("TheUrlIsNotWellFormed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the user needs to be authenticated.
+        /// </summary>
+        internal static string TheUserNeedsToBeAuthenticated {
+            get {
+                return ResourceManager.GetString("TheUserNeedsToBeAuthenticated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the user needs to give his consent.
+        /// </summary>
+        internal static string TheUserNeedsToGiveHisConsent {
+            get {
+                return ResourceManager.GetString("TheUserNeedsToGiveHisConsent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to two factor authentication cannot be performed.
+        /// </summary>
+        internal static string TwoFactorAuthenticationCannotBePerformed {
+            get {
+                return ResourceManager.GetString("TwoFactorAuthenticationCannotBePerformed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to two factor authentication is not enabled.
+        /// </summary>
+        internal static string TwoFactorAuthenticationIsNotEnabled {
+            get {
+                return ResourceManager.GetString("TwoFactorAuthenticationIsNotEnabled", resourceCulture);
             }
         }
         

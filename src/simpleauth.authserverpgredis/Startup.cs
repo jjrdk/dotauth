@@ -32,7 +32,6 @@ namespace SimpleAuth.AuthServerPgRedis
     using Newtonsoft.Json;
 
     using SimpleAuth;
-    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;

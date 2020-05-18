@@ -9,6 +9,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
@@ -85,7 +86,7 @@
             Assert.NotNull(exception);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
-                string.Format(ErrorMessages.TheClientDoesntSupportTheGrantType, clientId, "authorization_code"),
+                string.Format(Strings.TheClientDoesntSupportTheGrantType, clientId, "authorization_code"),
                 exception.Message);
         }
 

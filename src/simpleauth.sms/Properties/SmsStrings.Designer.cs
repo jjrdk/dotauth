@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SimpleAuth.Shared.Errors {
+namespace SimpleAuth.Sms.Properties {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace SimpleAuth.Shared.Errors {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ErrorMessages {
+    internal class SmsStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ErrorMessages() {
+        internal SmsStrings() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace SimpleAuth.Shared.Errors {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SimpleAuth.Shared.Errors.ErrorMessages", typeof(ErrorMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SimpleAuth.Sms.Properties.SmsStrings", typeof(SmsStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,29 @@ namespace SimpleAuth.Shared.Errors {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The claim &apos;{0}&apos; doesn&apos;t exist.
+        ///   Looks up a localized string similar to The confirmation code cannot be saved.
         /// </summary>
-        internal static string TheClaimDoesntExist {
+        internal static string TheConfirmationCodeCannotBeSaved {
             get {
-                return ResourceManager.GetString("TheClaimDoesntExist", resourceCulture);
+                return ResourceManager.GetString("TheConfirmationCodeCannotBeSaved", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The filter claims[&apos;{0}&apos;] == &apos;{1}&apos; is wrong.
+        ///   Looks up a localized string similar to The confirmation code is {0}.
         /// </summary>
-        internal static string TheFilterEqualsIsWrong {
+        internal static string TheConfirmationCodeIs {
             get {
-                return ResourceManager.GetString("TheFilterEqualsIsWrong", resourceCulture);
+                return ResourceManager.GetString("TheConfirmationCodeIs", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The filter claims[&apos;{0}&apos;] != &apos;{1}&apos; is wrong.
+        ///   Looks up a localized string similar to The SMS account is not properly configured.
         /// </summary>
-        internal static string TheFilterNotEqualsIsWrong {
+        internal static string TheSmsAccountIsNotProperlyConfigured {
             get {
-                return ResourceManager.GetString("TheFilterNotEqualsIsWrong", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The filter claims[&apos;{0}&apos;] match regular expression {1} is wrong.
-        /// </summary>
-        internal static string TheFilterRegexIsWrong {
-            get {
-                return ResourceManager.GetString("TheFilterRegexIsWrong", resourceCulture);
+                return ResourceManager.GetString("TheSmsAccountIsNotProperlyConfigured", resourceCulture);
             }
         }
     }

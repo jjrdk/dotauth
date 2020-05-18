@@ -11,6 +11,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Properties;
     using Xunit;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
@@ -41,7 +42,7 @@
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
-                    ErrorMessages.MissingParameter,
+                    Strings.MissingParameter,
                     CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
                 exception.Message);
             Assert.Equal(state, exception.State);
@@ -61,7 +62,7 @@
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
-                    ErrorMessages.MissingParameter,
+                    Strings.MissingParameter,
                     CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
                 exception.Message);
             Assert.Equal(state, exception.State);
@@ -87,7 +88,7 @@
             Assert.True(
                 exception.Message
                 == string.Format(
-                    ErrorMessages.MissingParameter,
+                    Strings.MissingParameter,
                     CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName));
             Assert.True(exception.State == state);
         }
@@ -113,7 +114,7 @@
             Assert.True(
                 exception.Message
                 == string.Format(
-                    ErrorMessages.MissingParameter,
+                    Strings.MissingParameter,
                     CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName));
             Assert.True(exception.State == state);
         }
@@ -137,7 +138,7 @@
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.True(exception.Message == ErrorMessages.AtLeastOneResponseTypeIsNotSupported);
+            Assert.True(exception.Message == Strings.AtLeastOneResponseTypeIsNotSupported);
             Assert.True(exception.State == state);
         }
 
@@ -161,7 +162,7 @@
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.True(exception.Message == ErrorMessages.AtLeastOnePromptIsNotSupported);
+            Assert.True(exception.Message == Strings.AtLeastOnePromptIsNotSupported);
             Assert.True(exception.State == state);
         }
 
@@ -186,7 +187,7 @@
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.True(exception.Message == ErrorMessages.PromptParameterShouldHaveOnlyNoneValue);
+            Assert.True(exception.Message == Strings.PromptParameterShouldHaveOnlyNoneValue);
             Assert.True(exception.State == state);
         }
 
@@ -214,7 +215,7 @@
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(string.Format(ErrorMessages.ClientIsNotValid, clientId), exception.Message);
+            Assert.Equal(string.Format(Strings.ClientIsNotValid, clientId), exception.Message);
             Assert.Equal(state, exception.State);
         }
 
@@ -245,7 +246,7 @@
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(string.Format(ErrorMessages.RedirectUrlIsNotValid, redirectUri), exception.Message);
+            Assert.Equal(string.Format(Strings.RedirectUrlIsNotValid, redirectUri), exception.Message);
             Assert.Equal(state, exception.State);
         }
     }

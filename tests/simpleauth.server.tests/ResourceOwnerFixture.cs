@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using SimpleAuth.Client;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using Xunit;
@@ -35,7 +36,7 @@
 
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
-            Assert.Equal(ErrorMessages.TheRoDoesntExist, result.Error.Detail);
+            Assert.Equal(Strings.TheRoDoesntExist, result.Error.Detail);
         }
 
         [Fact]
@@ -118,7 +119,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal(ErrorMessages.TheRoDoesntExist, result.Error.Detail);
+            Assert.Equal(Strings.TheRoDoesntExist, result.Error.Detail);
         }
 
         [Fact]
@@ -131,7 +132,7 @@
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
             Assert.Equal(
-                ErrorMessages.TheRoDoesntExist,
+                Strings.TheRoDoesntExist,
                 result.Error.Detail);
         }
 
@@ -141,7 +142,7 @@
             var result = await _resourceOwnerClient.DeleteResourceOwner("invalid_login", "token").ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal(ErrorMessages.TheResourceOwnerCannotBeRemoved, result.Error.Detail);
+            Assert.Equal(Strings.TheResourceOwnerCannotBeRemoved, result.Error.Detail);
         }
 
         [Fact]

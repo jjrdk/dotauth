@@ -32,6 +32,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Events.OAuth;
 
     internal class GetTokenByResourceOwnerCredentialsGrantTypeAction
@@ -98,7 +99,7 @@ namespace SimpleAuth.Api.Token.Actions
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidGrant,
                         Detail = string.Format(
-                            ErrorMessages.TheClientDoesntSupportTheGrantType,
+                            Strings.TheClientDoesntSupportTheGrantType,
                             client.ClientId,
                             GrantTypes.Password)
                     }
@@ -117,7 +118,7 @@ namespace SimpleAuth.Api.Token.Actions
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidResponse,
                         Detail = string.Format(
-                            ErrorMessages.TheClientDoesntSupportTheResponseType,
+                            Strings.TheClientDoesntSupportTheResponseType,
                             client.ClientId,
                             "token id_token")
                     }
@@ -140,7 +141,7 @@ namespace SimpleAuth.Api.Token.Actions
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidCredentials,
-                        Detail = ErrorMessages.ResourceOwnerCredentialsAreNotValid
+                        Detail = Strings.ResourceOwnerCredentialsAreNotValid
                     }
                 };
             }

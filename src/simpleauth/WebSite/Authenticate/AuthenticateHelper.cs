@@ -13,6 +13,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Extensions;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
 
     internal sealed class AuthenticateHelper
@@ -53,7 +54,7 @@
             var client = await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {
-                throw new InvalidOperationException(ErrorMessages.TheClientDoesntExist);
+                throw new InvalidOperationException(Strings.TheClientDoesntExist);
             }
 
             // Redirect to the consent page if the prompt parameter contains "consent"
@@ -105,7 +106,7 @@
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
+                    Strings.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 
@@ -115,7 +116,7 @@
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
+                    Strings.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 

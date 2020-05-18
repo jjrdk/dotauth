@@ -19,10 +19,6 @@ namespace SimpleAuth.Extensions
     using Results;
     using Shared.Requests;
     using System;
-    using System.IO;
-    using System.Reflection;
-    using System.Text;
-    using System.Threading.Tasks;
 
     internal static class ControllerExtensions
     {

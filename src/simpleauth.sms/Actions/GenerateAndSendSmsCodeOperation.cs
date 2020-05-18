@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Sms.Properties;
 
     internal sealed class GenerateAndSendSmsCodeOperation
     {
@@ -32,20 +33,20 @@
                 Subject = phoneNumber
             };
 
-            var message = "The confirmation code is " + confirmationCode.Value;
+            var message = string.Format(SmsStrings.TheConfirmationCodeIs, confirmationCode.Value);
             var sendResult = await _smsClient.SendMessage(phoneNumber, message).ConfigureAwait(false);
 
             if (!sendResult.Item1)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,
-                    "The SMS account is not properly configured");
+                    SmsStrings.TheSmsAccountIsNotProperlyConfigured);
             }
 
             if (!await _confirmationCodeStore.Add(confirmationCode, cancellationToken).ConfigureAwait(false))
             {
                 throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
-                    ErrorMessages.TheConfirmationCodeCannotBeSaved);
+                    SmsStrings.TheConfirmationCodeCannotBeSaved);
             }
 
             return confirmationCode.Value;

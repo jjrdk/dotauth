@@ -22,6 +22,7 @@ namespace SimpleAuth.Api.PermissionController
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
@@ -76,7 +77,7 @@ namespace SimpleAuth.Api.PermissionController
 
             if (!await _ticketStore.Add(ticket, cancellationToken).ConfigureAwait(false))
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError, ErrorMessages.TheTicketCannotBeInserted);
+                throw new SimpleAuthException(ErrorCodes.InternalError, Strings.TheTicketCannotBeInserted);
             }
 
             return (ticket.Id, claims);
@@ -95,7 +96,7 @@ namespace SimpleAuth.Api.PermissionController
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidRequest,
                         string.Format(
-                            ErrorMessages.TheParameterNeedsToBeSpecified,
+                            Strings.TheParameterNeedsToBeSpecified,
                             UmaConstants.AddPermissionNames.ResourceSetId));
                 }
 
@@ -104,7 +105,7 @@ namespace SimpleAuth.Api.PermissionController
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidRequest,
                         string.Format(
-                            ErrorMessages.TheParameterNeedsToBeSpecified,
+                            Strings.TheParameterNeedsToBeSpecified,
                             UmaConstants.AddPermissionNames.Scopes));
                 }
 
@@ -118,14 +119,14 @@ namespace SimpleAuth.Api.PermissionController
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidResourceSetId,
                         string.Format(
-                            ErrorMessages.TheResourceSetDoesntExist,
+                            Strings.TheResourceSetDoesntExist,
                             addPermissionParameter.ResourceSetId));
                 }
 
                 if (resourceSet.Scopes == null
                     || addPermissionParameter.Scopes.Any(s => !resourceSet.Scopes.Contains(s)))
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidScope, ErrorMessages.TheScopeAreNotValid);
+                    throw new SimpleAuthException(ErrorCodes.InvalidScope, Strings.TheScopeAreNotValid);
                 }
             }
         }

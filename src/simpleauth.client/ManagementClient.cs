@@ -19,6 +19,7 @@ namespace SimpleAuth.Client
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Client.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
@@ -48,7 +49,7 @@ namespace SimpleAuth.Client
             if (!discoveryDocumentationUri.IsAbsoluteUri)
             {
                 throw new ArgumentException(
-                    string.Format(Shared.Errors.ErrorMessages.TheUrlIsNotWellFormed, discoveryDocumentationUri));
+                    string.Format(ClientStrings.TheUrlIsNotWellFormed, discoveryDocumentationUri));
             }
 
             var operation = new GetDiscoveryOperation(discoveryDocumentationUri, client);

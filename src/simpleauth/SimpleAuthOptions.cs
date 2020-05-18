@@ -18,7 +18,6 @@ namespace SimpleAuth
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
-    using System.Net.Http;
 
     /// <summary>
     /// Defines the SimpleAuth configuration options.

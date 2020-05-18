@@ -120,7 +120,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Status = HttpStatusCode.BadRequest,
-                        Detail = ErrorMessages.TheRoDoesntExist,
+                        Detail = Strings.TheRoDoesntExist,
                         Title = ErrorCodes.InvalidRequest
                     });
             }
@@ -144,7 +144,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Title = ErrorCodes.UnhandledExceptionCode,
-                        Detail = ErrorMessages.TheResourceOwnerCannotBeRemoved,
+                        Detail = Strings.TheResourceOwnerCannotBeRemoved,
                         Status = HttpStatusCode.BadRequest
                     });
             }
@@ -195,7 +195,7 @@ namespace SimpleAuth.Controllers
                 new ErrorDetails
                 {
                     Title = ErrorCodes.UnhandledExceptionCode,
-                    Detail = ErrorMessages.TheResourceOwnerCannotBeRemoved,
+                    Detail = Strings.TheResourceOwnerCannotBeRemoved,
                     Status = HttpStatusCode.BadRequest
                 });
         }
@@ -233,7 +233,7 @@ namespace SimpleAuth.Controllers
                        {
                            Status = HttpStatusCode.BadRequest,
                            Title = ErrorCodes.InvalidParameterCode,
-                           Detail = ErrorMessages.TheRoDoesntExist
+                           Detail = Strings.TheRoDoesntExist
                        });
             }
 
@@ -255,7 +255,7 @@ namespace SimpleAuth.Controllers
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (!result)
             {
-                return BadRequest(ErrorMessages.TheClaimsCannotBeUpdated);
+                return BadRequest(Strings.TheClaimsCannotBeUpdated);
             }
 
             return new OkResult();
@@ -410,7 +410,7 @@ namespace SimpleAuth.Controllers
                 {
                     Status = HttpStatusCode.BadRequest,
                     Title = ErrorCodes.InvalidParameterCode,
-                    Detail = ErrorMessages.TheRoDoesntExist
+                    Detail = Strings.TheRoDoesntExist
                 });
             }
 
@@ -419,7 +419,7 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
             if (!result)
             {
-                return BadRequest(ErrorMessages.ThePasswordCannotBeUpdated);
+                return BadRequest(Strings.ThePasswordCannotBeUpdated);
             }
 
             return new OkResult();

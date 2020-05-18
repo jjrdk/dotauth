@@ -25,7 +25,6 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.Extensions.Logging;
     using Moq;
     using SimpleAuth;
-    using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.Server.Tests.MiddleWares;
     using SimpleAuth.Server.Tests.Stores;

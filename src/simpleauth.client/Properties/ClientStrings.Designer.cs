@@ -68,5 +68,14 @@ namespace SimpleAuth.Client.Properties {
                 return ResourceManager.GetString("InvalidToken", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The url {0} is not well formed.
+        /// </summary>
+        internal static string TheUrlIsNotWellFormed {
+            get {
+                return ResourceManager.GetString("TheUrlIsNotWellFormed", resourceCulture);
+            }
+        }
     }
 }

@@ -26,6 +26,7 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
 
     /// <summary>
     /// Defines the scopes controller.
@@ -117,7 +118,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(ErrorMessages.TheScopeDoesntExist, id),
+                        Detail = string.Format(Strings.TheScopeDoesntExist, id),
                         Status = HttpStatusCode.BadRequest
                     });
             }
@@ -130,7 +131,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(ErrorMessages.TheScopeDoesntExist, id),
+                        Detail = string.Format(Strings.TheScopeDoesntExist, id),
                         Status = HttpStatusCode.BadRequest
                     });
         }

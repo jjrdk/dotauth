@@ -27,6 +27,7 @@ namespace SimpleAuth.Api.Authorization
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
 
@@ -80,7 +81,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.RedirectUrlIsNotValid, authorizationParameter.RedirectUrl),
+                    string.Format(Strings.RedirectUrlIsNotValid, authorizationParameter.RedirectUrl),
                     authorizationParameter.State);
             }
 
@@ -98,7 +99,7 @@ namespace SimpleAuth.Api.Authorization
             //{
             //    throw new SimpleAuthExceptionWithState(
             //        ErrorCodes.InvalidScope,
-            //        string.Format(ErrorMessages.TheScopesNeedToBeSpecified, CoreConstants.StandardScopes.OpenId.Name),
+            //        string.Format(Strings.TheScopesNeedToBeSpecified, CoreConstants.StandardScopes.OpenId.Name),
             //        authorizationParameter.State);
             //}
 
@@ -108,7 +109,7 @@ namespace SimpleAuth.Api.Authorization
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
                     string.Format(
-                        ErrorMessages.MissingParameter,
+                        Strings.MissingParameter,
                         CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
                     authorizationParameter.State);
             }
@@ -118,7 +119,7 @@ namespace SimpleAuth.Api.Authorization
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
                     string.Format(
-                        ErrorMessages.TheClientDoesntSupportTheResponseType,
+                        Strings.TheClientDoesntSupportTheResponseType,
                         authorizationParameter.ClientId,
                         string.Join(",", responseTypes)),
                     authorizationParameter.State);
@@ -178,7 +179,7 @@ namespace SimpleAuth.Api.Authorization
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequest,
-                        ErrorMessages.TheIdTokenHintParameterIsNotAValidToken,
+                        Strings.TheIdTokenHintParameterIsNotAValidToken,
                         authorizationParameter.State);
                 }
 
@@ -194,7 +195,7 @@ namespace SimpleAuth.Api.Authorization
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequest,
-                        ErrorMessages.TheIdentityTokenDoesntContainSimpleAuthAsAudience,
+                        Strings.TheIdentityTokenDoesntContainSimpleAuthAsAudience,
                         authorizationParameter.State);
                 }
 
@@ -209,7 +210,7 @@ namespace SimpleAuth.Api.Authorization
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequest,
-                        ErrorMessages.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken,
+                        Strings.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken,
                         authorizationParameter.State);
                 }
             }
@@ -225,7 +226,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheAuthorizationRequestCannotBeProcessedBecauseThereIsNotValidPrompt,
+                    Strings.TheAuthorizationRequestCannotBeProcessedBecauseThereIsNotValidPrompt,
                     authorizationParameter.State);
             }
 
@@ -239,7 +240,7 @@ namespace SimpleAuth.Api.Authorization
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.LoginRequiredCode,
-                        ErrorMessages.TheUserNeedsToBeAuthenticated,
+                        Strings.TheUserNeedsToBeAuthenticated,
                         authorizationParameter.State);
                 }
 
@@ -247,7 +248,7 @@ namespace SimpleAuth.Api.Authorization
                 {
                     throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InteractionRequiredCode,
-                        ErrorMessages.TheUserNeedsToGiveHisConsent,
+                        Strings.TheUserNeedsToGiveHisConsent,
                         authorizationParameter.State);
                 }
 
@@ -280,7 +281,7 @@ namespace SimpleAuth.Api.Authorization
 
             throw new SimpleAuthExceptionWithState(
                 ErrorCodes.InvalidRequest,
-                string.Format(ErrorMessages.ThePromptParameterIsNotSupported, string.Join(",", prompts)),
+                string.Format(Strings.ThePromptParameterIsNotSupported, string.Join(",", prompts)),
                 authorizationParameter.State);
         }
 

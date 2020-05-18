@@ -28,6 +28,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
 
     internal class DisplayConsentAction
@@ -79,7 +80,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    string.Format(ErrorMessages.ClientIsNotValid, authorizationParameter.ClientId),
+                    string.Format(Strings.ClientIsNotValid, authorizationParameter.ClientId),
                     authorizationParameter.State);
             }
 
@@ -147,7 +148,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
+                    Strings.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 
@@ -157,7 +158,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheAuthorizationFlowIsNotSupported,
+                    Strings.TheAuthorizationFlowIsNotSupported,
                     state);
             }
 

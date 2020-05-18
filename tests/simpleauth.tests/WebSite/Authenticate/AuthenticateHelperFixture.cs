@@ -5,12 +5,12 @@
     using Results;
     using Shared.Models;
     using Shared.Repositories;
-    using SimpleAuth.Shared.Errors;
     using SimpleAuth.WebSite.Authenticate;
     using System;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Events;
     using Xunit;
@@ -63,7 +63,7 @@
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(
-                string.Format(ErrorMessages.TheClientDoesntExist),
+                string.Format(Strings.TheClientDoesntExist),
                 exception.Message);
         }
 

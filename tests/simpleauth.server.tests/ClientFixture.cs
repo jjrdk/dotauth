@@ -7,6 +7,7 @@
     using System;
     using System.Threading.Tasks;
     using SimpleAuth.Client;
+    using SimpleAuth.Properties;
     using Xunit;
 
     public class ClientFixture : IDisposable
@@ -58,7 +59,7 @@
 
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal(ErrorMessages.RequestIsNotValid, result.Error.Detail);
+            Assert.Equal(Strings.RequestIsNotValid, result.Error.Detail);
         }
 
         [Fact]
@@ -98,7 +99,7 @@
 
             Assert.True(newClient.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, newClient.Error.Title);
-            Assert.Equal(ErrorMessages.TheClientDoesntExist, newClient.Error.Detail);
+            Assert.Equal(Strings.TheClientDoesntExist, newClient.Error.Detail);
         }
 
         [Fact]

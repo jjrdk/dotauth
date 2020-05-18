@@ -117,7 +117,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    ErrorMessages.TheClientDoesntExist,
+                    Strings.TheClientDoesntExist,
                     HttpStatusCode.NotFound);
             }
 
@@ -182,7 +182,7 @@ namespace SimpleAuth.Controllers
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.UnhandledExceptionCode,
-                            Detail = ErrorMessages.RequestIsNotValid
+                            Detail = Strings.RequestIsNotValid
                         });
             }
             catch (SimpleAuthException e)

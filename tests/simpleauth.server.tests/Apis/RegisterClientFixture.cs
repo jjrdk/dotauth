@@ -24,6 +24,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using Xunit;
     using TokenRequest = Client.TokenRequest;
 
@@ -147,7 +148,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal("invalid_redirect_uri", error.Title);
             Assert.Equal(
                 string.Format(
-                    SimpleAuth.Shared.Errors.ErrorMessages.TheRedirectUrlCannotContainsFragment,
+                    Strings.TheRedirectUrlCannotContainsFragment,
                     "http://localhost/#fragment"),
                 error.Detail);
         }

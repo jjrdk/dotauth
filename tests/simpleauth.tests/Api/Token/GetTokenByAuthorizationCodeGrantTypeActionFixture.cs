@@ -31,6 +31,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Logging;
+    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Events.OAuth;
     using Xunit;
@@ -124,7 +125,7 @@ namespace SimpleAuth.Tests.Api.Token
             Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
             Assert.Equal(
                 string.Format(
-                    ErrorMessages.TheClientDoesntSupportTheGrantType,
+                    Strings.TheClientDoesntSupportTheGrantType,
                     clientId,
                     GrantTypes.AuthorizationCode),
                 result.Error.Detail);
@@ -165,7 +166,7 @@ namespace SimpleAuth.Tests.Api.Token
             Assert.Equal(ErrorCodes.InvalidResponse, result.Error.Title);
             Assert.Equal(
                 string.Format(
-                    ErrorMessages.TheClientDoesntSupportTheResponseType,
+                    Strings.TheClientDoesntSupportTheResponseType,
                     clientId,
                     ResponseTypeNames.Code),
                 result.Error.Detail);
@@ -207,7 +208,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
-            Assert.Equal(ErrorMessages.TheAuthorizationCodeIsNotCorrect, result.Error.Detail);
+            Assert.Equal(Strings.TheAuthorizationCodeIsNotCorrect, result.Error.Detail);
         }
 
         [Fact]
@@ -249,7 +250,7 @@ namespace SimpleAuth.Tests.Api.Token
                         CancellationToken.None)
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
-            Assert.Equal(ErrorMessages.TheCodeVerifierIsNotCorrect, result.Error.Detail);
+            Assert.Equal(Strings.TheCodeVerifierIsNotCorrect, result.Error.Detail);
         }
 
         [Fact]
@@ -292,7 +293,7 @@ namespace SimpleAuth.Tests.Api.Token
             Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
             Assert.Equal(
                 string.Format(
-                    ErrorMessages.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
+                    Strings.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
                     "clientId"),
                 result.Error.Detail);
         }
@@ -339,7 +340,7 @@ namespace SimpleAuth.Tests.Api.Token
                         CancellationToken.None)
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
-            Assert.Equal(ErrorMessages.TheRedirectionUrlIsNotTheSame, result.Error.Detail);
+            Assert.Equal(Strings.TheRedirectionUrlIsNotTheSame, result.Error.Detail);
         }
 
         [Fact]
@@ -385,7 +386,7 @@ namespace SimpleAuth.Tests.Api.Token
                         CancellationToken.None)
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.ExpiredAuthorizationCode, result.Error.Title);
-            Assert.Equal(ErrorMessages.TheAuthorizationCodeIsObsolete, result.Error.Detail);
+            Assert.Equal(Strings.TheAuthorizationCodeIsObsolete, result.Error.Detail);
         }
 
         [Fact]
@@ -433,7 +434,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
             Assert.Equal(
-                string.Format(ErrorMessages.RedirectUrlIsNotValid, "https://redirecturi/"),
+                string.Format(Strings.RedirectUrlIsNotValid, "https://redirecturi/"),
                 result.Error.Detail);
         }
 

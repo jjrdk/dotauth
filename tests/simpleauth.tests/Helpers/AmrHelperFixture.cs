@@ -4,6 +4,7 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using System;
+    using SimpleAuth.Properties;
     using Xunit;
 
     public class AmrHelperFixture
@@ -14,7 +15,7 @@
             var exception = Assert.Throws<SimpleAuthException>(() => Array.Empty<string>().GetAmr(new[] {"pwd"}));
 
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(ErrorMessages.NoActiveAmr, exception.Message);
+            Assert.Equal(Strings.NoActiveAmr, exception.Message);
         }
 
         [Fact]
@@ -23,7 +24,7 @@
             var exception = Assert.Throws<SimpleAuthException>(() => new[] {"invalid"}.GetAmr(new[] {"pwd"}));
 
             Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(string.Format(ErrorMessages.TheAmrDoesntExist, "pwd"), exception.Message);
+            Assert.Equal(string.Format(Strings.TheAmrDoesntExist, "pwd"), exception.Message);
         }
 
         [Fact]

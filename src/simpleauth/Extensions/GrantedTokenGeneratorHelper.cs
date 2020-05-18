@@ -25,6 +25,7 @@ namespace SimpleAuth.Extensions
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
 
     internal static class GrantedTokenGeneratorHelper
     {
@@ -47,7 +48,7 @@ namespace SimpleAuth.Extensions
             var client = await clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, ErrorMessages.TheClientDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, Strings.TheClientDoesntExist);
             }
 
             return await GenerateToken(

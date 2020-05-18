@@ -22,6 +22,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using Moq;
     using SimpleAuth.Api.PermissionController;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -48,7 +49,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
-                    ErrorMessages.TheParameterNeedsToBeSpecified,
+                    Strings.TheParameterNeedsToBeSpecified,
                     UmaConstants.AddPermissionNames.ResourceSetId),
                 exception.Message);
         }
@@ -64,7 +65,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
-                string.Format(ErrorMessages.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes),
+                string.Format(Strings.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes),
                 exception.Message);
         }
 
@@ -80,7 +81,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     () => _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Code);
-            Assert.Equal(string.Format(ErrorMessages.TheResourceSetDoesntExist, resourceSetId), exception.Message);
+            Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, resourceSetId), exception.Message);
         }
 
         [Fact]
@@ -99,7 +100,7 @@ namespace SimpleAuth.Server.Tests.Apis
                     () => _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidScope, exception.Code);
-            Assert.Equal(ErrorMessages.TheScopeAreNotValid, exception.Message);
+            Assert.Equal(Strings.TheScopeAreNotValid, exception.Message);
         }
 
         [Fact]

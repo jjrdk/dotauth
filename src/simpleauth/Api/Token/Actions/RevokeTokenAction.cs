@@ -22,6 +22,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
 
@@ -66,7 +67,7 @@ namespace SimpleAuth.Api.Token.Actions
 
             if (grantedToken == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidToken, ErrorMessages.TheTokenDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.InvalidToken, Strings.TheTokenDoesntExist);
             }
 
             // 3. Verifies whether the token was issued to the client making the revocation request
@@ -74,7 +75,7 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 throw new SimpleAuthException(
                     ErrorCodes.InvalidToken,
-                    string.Format(ErrorMessages.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
+                    string.Format(Strings.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
             }
 
             // 4. Invalid the granted token

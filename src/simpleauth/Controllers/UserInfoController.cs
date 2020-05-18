@@ -26,6 +26,7 @@ namespace SimpleAuth.Controllers
     using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
@@ -67,7 +68,7 @@ namespace SimpleAuth.Controllers
             var grantedToken = await _tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
             return grantedToken == null
                 ? BadRequest(
-                    new ErrorDetails {Detail = ErrorMessages.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken})
+                    new ErrorDetails {Detail = Strings.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken})
                 : new ObjectResult(grantedToken.UserInfoPayLoad ?? grantedToken.IdTokenPayLoad ?? new JwtPayload());
         }
 

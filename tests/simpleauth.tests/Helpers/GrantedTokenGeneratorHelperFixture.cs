@@ -24,6 +24,7 @@ namespace SimpleAuth.Tests.Helpers
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using Xunit;
 
@@ -66,7 +67,7 @@ namespace SimpleAuth.Tests.Helpers
                         userInformationPayload: null))
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidClient, ex.Code);
-            Assert.Equal(ErrorMessages.TheClientDoesntExist, ex.Message);
+            Assert.Equal(Strings.TheClientDoesntExist, ex.Message);
         }
 
         [Fact]

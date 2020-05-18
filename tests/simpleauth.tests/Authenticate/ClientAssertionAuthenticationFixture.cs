@@ -11,8 +11,8 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public class ClientAssertionAuthenticationFixture
@@ -87,7 +87,7 @@
                 .ConfigureAwait(false);
 
             Assert.Null(result.Client);
-            Assert.Equal(ErrorMessages.TheClientAssertionIsNotAJwsToken, result.ErrorMessage);
+            Assert.Equal(Strings.TheClientAssertionIsNotAJwsToken, result.ErrorMessage);
         }
 
         [Theory]
