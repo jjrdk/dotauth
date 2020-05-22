@@ -6,6 +6,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Net.Http;
+    using SimpleAuth.Extensions;
 
     public class TestServerFixture : IDisposable
     {
@@ -15,6 +16,7 @@
 
         public TestServerFixture(string connectionString, params string[] urls)
         {
+            Globals.ApplicationName = "test";
             SharedCtx = SharedContext.Instance;
             var startup = new ServerStartup(SharedCtx, connectionString);
             Server = new TestServer(

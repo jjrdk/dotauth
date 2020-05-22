@@ -61,7 +61,7 @@
                 : Array.Empty<GrantedToken>();
             var scopeTokens = JsonConvert.SerializeObject(existingScopeToken.Concat(new[] { grantedToken }).ToArray());
             var expiry = TimeSpan.FromSeconds(grantedToken.ExpiresIn);
-            var idtask = _database.StringSetAsync(grantedToken.Id.ToString("N"), value, expiry, When.NotExists);
+            var idtask = _database.StringSetAsync(grantedToken.Id, value, expiry, When.NotExists);
             var scopeTokenTask = _database.StringSetAsync(grantedToken.ClientId + grantedToken.Scope, scopeTokens, expiry, When.NotExists);
             var accessTokenTask = _database.StringSetAsync(grantedToken.AccessToken, value, expiry, When.NotExists);
             var refreshTokenTask = _database.StringSetAsync(grantedToken.RefreshToken, value, expiry, When.NotExists);
@@ -89,7 +89,7 @@
 
         private async Task<bool> RemoveToken(GrantedToken grantedToken)
         {
-            var idtask = _database.KeyDeleteAsync(grantedToken.Id.ToString("N"));
+            var idtask = _database.KeyDeleteAsync(grantedToken.Id);
             var scopeTokenTask = _database.KeyDeleteAsync(grantedToken.ClientId + grantedToken.Scope);
             var accessTokenTask = _database.KeyDeleteAsync(grantedToken.AccessToken);
             var refreshTokenTask = _database.KeyDeleteAsync(grantedToken.RefreshToken);

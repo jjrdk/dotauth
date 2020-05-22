@@ -47,9 +47,12 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
 
         [Theory]
         [InlineData("", HttpStatusCode.OK)]
-        [InlineData("home", HttpStatusCode.Moved)]
+        [InlineData("error?code=404", HttpStatusCode.NotFound)]
+        [InlineData("error/404", HttpStatusCode.NotFound)]
+        [InlineData("home", HttpStatusCode.OK)]
         [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
         [InlineData("authenticate", HttpStatusCode.OK)]
+        [InlineData("jwks", HttpStatusCode.OK)]
         public async Task WhenRequestingEndpointThenReturnsExpectedStatus(string path, HttpStatusCode statusCode)
         {
             var httpRequest = new HttpRequestMessage

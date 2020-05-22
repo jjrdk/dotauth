@@ -28,7 +28,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier.
         /// </value>
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the access token.
@@ -116,6 +116,6 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The parent token identifier.
         /// </value>
-        public Guid ParentTokenId { get; set; }
+        public string ParentTokenId { get; set; }
     }
 }

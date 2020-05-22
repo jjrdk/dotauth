@@ -105,6 +105,7 @@ namespace SimpleAuth.Extensions
             // 3. Construct the refresh token.
             return new GrantedToken
             {
+                Id = Id.Create(),
                 AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
                 ExpiresIn = (int)client.TokenLifetime.TotalSeconds,

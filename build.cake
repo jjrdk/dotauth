@@ -116,8 +116,55 @@ Task("Tests")
     }
 });
 
-Task("Pack")
+Task("Postgres")
     .IsDependentOn("Tests")
+    .Does(() => 
+    {
+        try
+        {
+            Information("Docker compose up");
+
+            var upsettings = new DockerComposeUpSettings
+            {
+                DetachedMode = true,
+                Files = new string[] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" }
+            };
+            DockerComposeUp(upsettings);
+            
+            var project = new FilePath("./tests/simpleauth.stores.marten.acceptancetests/simpleauth.stores.marten.acceptancetests.csproj");
+            Information("Testing: " + project.FullPath);
+            var reportName = buildDir + "/artifacts/testreports/" + versionInfo.FullSemVer + "_" + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_') + ".xml";
+            reportName = System.IO.Path.GetFullPath(reportName);
+
+            Information(reportName);
+
+            var coreTestSettings = new DotNetCoreTestSettings()
+              {
+		    	NoBuild = false,
+		    	NoRestore = false,
+                // Set configuration as passed by command line
+                Configuration = configuration,
+                ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
+              };
+
+            DotNetCoreTest(project.FullPath, coreTestSettings);
+        }
+        finally 
+        {
+            DotNetCoreBuildServerShutdown();
+
+            Information("Docker compose down");
+            
+            var downsettings = new DockerComposeDownSettings
+            {
+                Files = new string[] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" }
+            };
+            DockerComposeDown(downsettings);
+        }
+    });
+
+Task("Pack")
+    .IsDependentOn("Postgres")
     .Does(()=>
     {
         Information("Package version: " + buildVersion);
@@ -210,7 +257,7 @@ Task("Docker-Build")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Docker-Build");
+    .IsDependentOn("Postgres");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

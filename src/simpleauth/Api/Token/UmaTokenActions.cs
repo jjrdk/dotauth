@@ -245,6 +245,7 @@
 
             return new GrantedToken
             {
+                Id = Id.Create(),
                 AccessToken = accessToken,
                 RefreshToken = Id.Create(),
                 ExpiresIn = (int)expiresIn.TotalSeconds,
