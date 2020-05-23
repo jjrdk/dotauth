@@ -3,17 +3,17 @@
   <PropertyGroup>
     <Description>SimpleAuth Marten Stores</Description>
     <Title>SimpleAuth Marten Stores</Title>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net5.0</TargetFrameworks>
     <AssemblyName>simpleauth.stores.marten</AssemblyName>
     <PackageId>simpleauth.stores.marten</PackageId>
     <RootNamespace>SimpleAuth.Stores.Marten</RootNamespace>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
   </PropertyGroup>
   <Import Project="..\..\shared.proj" />
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0-preview.4.20251.6" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />

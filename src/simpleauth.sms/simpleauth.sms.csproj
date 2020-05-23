@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>SimpleAuth SMS Authentication Library</Description>
     <Title>SimpleAuth SMS Authentication</Title>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>simpleauth.sms</AssemblyName>
     <PackageId>simpleauth.sms</PackageId>
     <RootNamespace>SimpleAuth.Sms</RootNamespace>
@@ -11,7 +11,7 @@
     <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
   </PropertyGroup>
 
