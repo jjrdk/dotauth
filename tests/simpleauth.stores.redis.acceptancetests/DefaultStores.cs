@@ -25,9 +25,9 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
 
     public static class DefaultStores
     {
-        public static List<Consent> Consents()
+        public static IEnumerable<Consent> Consents()
         {
-            return new List<Consent>()
+            return new[]
             {
                 new Consent
                 {
@@ -60,24 +60,9 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
             };
         }
 
-        //public static List<JsonWebKey> JsonWebKeys(SharedContext sharedContext)
-        //{
-        //    var serializedRsa = string.Empty;
-        //    using (var provider = new RSACryptoServiceProvider())
-        //    {
-        //        serializedRsa = RsaExtensions.ToXml(provider, true);
-        //    }
-
-        //    return new List<JsonWebKey>
-        //    {
-        //        sharedContext.SignatureKey,
-        //        sharedContext.EncryptionKey
-        //    };
-        //}
-
-        public static List<ResourceOwner> Users()
+        public static IEnumerable<ResourceOwner> Users()
         {
-            return new List<ResourceOwner>
+            return new[]
             {
                 new ResourceOwner
                 {
@@ -117,9 +102,9 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
             };
         }
 
-        public static List<Client> Clients(SharedContext sharedCtx)
+        public static IEnumerable<Client> Clients(SharedContext sharedCtx)
         {
-            return new List<Client>
+            return new[]
             {
                 new Client
                 {
@@ -222,7 +207,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
                     {
                         new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "clientCredentials"}
                     },
-                    Claims = new[] {new Claim("test", "test")},
+                    Claims = new[] {new Claim("test", "test"), new Claim("sub", "ClientCredentials"), },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
@@ -508,7 +493,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
             };
         }
 
-        public static IReadOnlyCollection<Scope> Scopes()
+        public static IEnumerable<Scope> Scopes()
         {
             return new[]
             {

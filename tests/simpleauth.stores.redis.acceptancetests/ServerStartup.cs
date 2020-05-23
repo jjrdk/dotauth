@@ -7,6 +7,7 @@
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Npgsql;
@@ -63,8 +64,9 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var db = new Random(DateTime.UtcNow.Millisecond).Next(16);
             services.AddSingleton(ConnectionMultiplexer.Connect("localhost"));
-            services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
+            services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase(db));
             services.AddSingleton<IDocumentStore>(
                 provider => new DocumentStore(
                     new SimpleAuthMartenOptions(
@@ -104,6 +106,13 @@
 
         public void Configure(IApplicationBuilder app)
         {
+            var lifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+            lifetime.ApplicationStopping.Register(
+                () =>
+                {
+                    var disposable = app.ApplicationServices.GetService<ConnectionMultiplexer>();
+                    disposable?.Dispose();
+                });
             app.UseSimpleAuthMvc(typeof(IDefaultUi));
         }
     }
