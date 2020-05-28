@@ -304,6 +304,24 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} authenticated.
+        /// </summary>
+        internal static string LogAuthenticated {
+            get {
+                return ResourceManager.GetString("LogAuthenticated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not authenticate {0}.
+        /// </summary>
+        internal static string LogCouldNotAuthenticate {
+            get {
+                return ResourceManager.GetString("LogCouldNotAuthenticate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage server resources..
         /// </summary>
         internal static string ManageServerResources {

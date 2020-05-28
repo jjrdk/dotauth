@@ -18,22 +18,42 @@ namespace SimpleAuth.Services
     using Shared.Repositories;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
 
     internal class UsernamePasswordAuthenticationService : IAuthenticateResourceOwnerService
     {
         private readonly IResourceOwnerStore _resourceOwnerRepository;
+        private readonly ILogger<IAuthenticateResourceOwnerService> _logger;
 
-        public UsernamePasswordAuthenticationService(IResourceOwnerStore resourceOwnerRepository)
+        public UsernamePasswordAuthenticationService(
+            IResourceOwnerStore resourceOwnerRepository,
+            ILogger<IAuthenticateResourceOwnerService> logger)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
+            _logger = logger;
         }
 
         public string Amr => "pwd";
 
-        public async Task<ResourceOwner> AuthenticateResourceOwner(string login, string password, CancellationToken cancellationToken)
+        public async Task<ResourceOwner> AuthenticateResourceOwner(
+            string login,
+            string password,
+            CancellationToken cancellationToken = default)
         {
-            return await _resourceOwnerRepository.Get(login, password, cancellationToken).ConfigureAwait(false);
+            var resourceOwner =
+                await _resourceOwnerRepository.Get(login, password, cancellationToken).ConfigureAwait(false);
+            if (resourceOwner == null)
+            {
+                _logger.LogError(Strings.LogCouldNotAuthenticate, login);
+            }
+            else
+            {
+                _logger.LogDebug(Strings.LogAuthenticated, resourceOwner.Subject);
+            }
+
+            return resourceOwner;
         }
     }
 }

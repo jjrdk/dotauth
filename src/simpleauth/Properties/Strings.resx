@@ -480,4 +480,10 @@
   <data name="TheResourceOwnerCredentialsAreNotCorrect" xml:space="preserve">
     <value>The resource owner credentials are not correct</value>
   </data>
+  <data name="LogAuthenticated" xml:space="preserve">
+    <value>{0} authenticated</value>
+  </data>
+  <data name="LogCouldNotAuthenticate" xml:space="preserve">
+    <value>Could not authenticate {0}</value>
+  </data>
 </root>

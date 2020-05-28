@@ -33,7 +33,7 @@ namespace SimpleAuth.Shared
         Task<ResourceOwner> AuthenticateResourceOwner(
             string login,
             string password,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the amr.
