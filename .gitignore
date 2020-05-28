@@ -225,3 +225,4 @@ simpleauth.authserver.exe
 /src/simpleauth.authserver/simpleauth.authserver
 docker-compose.yml
 .vscode
+kubernetes_*.yml

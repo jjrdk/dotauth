@@ -29,11 +29,8 @@ namespace SimpleAuth.AuthServerPgRedis
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
 
-    using Newtonsoft.Json;
-
     using SimpleAuth;
     using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.Stores.Redis;
     using SimpleAuth.UI;
@@ -41,23 +38,22 @@ namespace SimpleAuth.AuthServerPgRedis
 
     internal class Startup
     {
-        private static readonly string DefaultGoogleScopes = "openid,profile,email";
+        private const string SimpleAuthScheme = "simpleauth";
+        private const string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
 
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
+            bool.TryParse(_configuration["REDIRECT"], out var redirect);
             _options = new SimpleAuthOptions
             {
-                ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
+                RedirectToLogin = redirect,
+                ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
                 Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
                 Clients =
-                    sp => new MartenClientStore(
-                        sp.GetRequiredService<IDocumentSession>,
-                        sp.GetRequiredService<IScopeStore>(),
-                        sp.GetRequiredService<HttpClient>(),
-                        JsonConvert.DeserializeObject<Uri[]>),
+                    sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
                 Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
                 AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
                 AuthorizationCodes =
@@ -98,12 +94,12 @@ namespace SimpleAuth.AuthServerPgRedis
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient<HttpClient>();
+            services.AddSingleton<HttpClient>();
             services.AddSingleton<IDocumentStore>(
                 provider =>
                 {
                     var options = new SimpleAuthMartenOptions(
-                        _configuration["ConnectionString"],
+                        _configuration["CONNECTIONSTRING"],
                         new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()));
                     return new DocumentStore(options);
                 });
@@ -124,21 +120,34 @@ namespace SimpleAuth.AuthServerPgRedis
                             new BrotliCompressionProvider(
                                 new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
-                .AddHttpContextAccessor()
-                .AddCors(
-                    options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
-                .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); });
-            services.AddAuthentication(CookieNames.CookieName)
+                .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); })
+                .AddAuthentication(
+                    options =>
+                    {
+                        options.DefaultScheme = CookieNames.CookieName;
+                        options.DefaultChallengeScheme = SimpleAuthScheme;
+                    })
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
+                .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, options => { })
                 .AddJwtBearer(
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.TokenValidationParameters = new TokenValidationParameters { ValidateAudience = false, };
+                        cfg.Authority = _configuration["OAUTH_AUTHORITY"];
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false,
+                            ValidIssuers = _configuration["OAUTH_VALID_ISSUERS"]
+                                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Trim())
+                                .ToArray()
+                        };
 #if DEBUG
                         cfg.RequireHttpsMetadata = false;
 #endif
                     });
+            services.ConfigureOptions<ConfigureOAuthOptions>();
+
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
@@ -161,8 +170,12 @@ namespace SimpleAuth.AuthServerPgRedis
 
             services.AddSimpleAuth(
                 _options,
-                new[] { CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme },
-                assemblyTypes: new[] { typeof(IDefaultUi), typeof(IDefaultSmsUi) });
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                assemblies: new[]
+                {
+                    (GetType().Namespace, GetType().Assembly),
+                    (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
+                });
         }
 
         public void Configure(IApplicationBuilder app)

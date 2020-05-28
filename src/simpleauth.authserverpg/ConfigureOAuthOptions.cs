@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AuthServer
+﻿namespace SimpleAuth.AuthServerPg
 {
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
@@ -32,7 +32,7 @@
             //#if DEBUG
             //options.RequireHttpsMetadata = false;
             //#endif
-
+            
             options.ClientId = "web";
             options.ClientSecret = "secret";
             options.Scope.Clear();

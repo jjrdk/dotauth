@@ -26,7 +26,9 @@ namespace SimpleAuth.AuthServer
     {
         public static async Task Main()
         {
+#if DEBUG
             IdentityModelEventSource.ShowPII = true;
+#endif
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
             await new WebHostBuilder()

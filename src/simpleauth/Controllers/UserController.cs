@@ -26,7 +26,7 @@
     /// Handles user related requests.
     /// </summary>
     /// <seealso cref="BaseController" />
-    [Authorize]
+    [Authorize("authenticated")]
     [ThrottleFilter]
     public class UserController : BaseController
     {

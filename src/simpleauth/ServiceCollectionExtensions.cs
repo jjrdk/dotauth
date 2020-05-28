@@ -67,6 +67,13 @@ namespace SimpleAuth
             }
 
             options.AddPolicy(
+                "authenticated",
+                policy =>
+                {
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    policy.RequireAuthenticatedUser();
+                });
+            options.AddPolicy(
                 "UmaProtection",
                 policy =>
                 {

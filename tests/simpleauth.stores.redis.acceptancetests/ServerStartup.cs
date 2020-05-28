@@ -33,11 +33,7 @@
                     sp => new RedisAuthorizationCodeStore(
                         sp.GetRequiredService<IDatabaseAsync>(),
                         _martenOptions.AuthorizationCodeValidityPeriod),
-                Clients = sp => new MartenClientStore(
-                    sp.GetService<Func<IDocumentSession>>(),
-                    sp.GetService<IScopeStore>(),
-                    context.Client,
-                    JsonConvert.DeserializeObject<Uri[]>),
+                Clients = sp => new MartenClientStore(sp.GetService<Func<IDocumentSession>>()),
                 ConfirmationCodes =
                     sp => new RedisConfirmationCodeStore(
                         sp.GetRequiredService<IDatabaseAsync>(),

@@ -46,11 +46,11 @@ namespace SimpleAuth.AuthServer
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            bool.TryParse(_configuration["Redirect"], out var redirect);
+            bool.TryParse(_configuration["REDIRECT"], out var redirect);
             _options = new SimpleAuthOptions
             {
                 RedirectToLogin = redirect,
-                ApplicationName = _configuration["ServerName"] ?? "SimpleAuth",
+                ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
                 Tickets = sp => new InMemoryTicketStore(),
                 Clients =
@@ -111,19 +111,7 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<HttpClient>();
-            services.AddHttpContextAccessor()
-                .AddAntiforgery(
-                    options =>
-                    {
-                        options.FormFieldName = "XrsfField";
-                        options.HeaderName = "XSRF-TOKEN";
-                        options.SuppressXFrameOptionsHeader = false;
-                    })
-                .AddCors(
-                    options => options.AddPolicy(
-                        "AllowAll",
-                        p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders()))
+            services.AddSingleton<HttpClient>()
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(
                     options =>
@@ -137,17 +125,21 @@ namespace SimpleAuth.AuthServer
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.Authority = "https://localhost:5001";
+                        cfg.Authority = _configuration["OAUTH_AUTHORITY"];
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = new[] {"http://localhost:5000", "https://localhost:5001"}
+                            ValidIssuers = _configuration["OAUTH_VALID_ISSUERS"]
+                                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Trim())
+                                .ToArray()
                         };
 #if DEBUG
                         cfg.RequireHttpsMetadata = false;
 #endif
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>();
+
             if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
@@ -173,7 +165,7 @@ namespace SimpleAuth.AuthServer
             {
                 services.AddSimpleAuth(
                         _options,
-                        new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
+                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                         assemblies: new[]
                         {
                             (GetType().Namespace, GetType().Assembly),
@@ -192,7 +184,7 @@ namespace SimpleAuth.AuthServer
             {
                 services.AddSimpleAuth(
                     _options,
-                    new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                     assemblies: new[]
                     {
                         (GetType().Namespace, GetType().Assembly),
@@ -203,7 +195,9 @@ namespace SimpleAuth.AuthServer
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseResponseCompression().UseSimpleAuthMvc((typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
+            app.UseResponseCompression()
+                .UseSimpleAuthMvc(
+                    (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
         }
     }
 }
