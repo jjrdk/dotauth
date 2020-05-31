@@ -109,9 +109,9 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     assignedConsent = new Consent
                     {
                         Id = Id.Create(),
-                        Client = client,
-                        ResourceOwner =
-                            await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false),
+                        ClientId = client.ClientId,
+                        ClientName = client.ClientName,
+                        Subject = subject,
                         Claims = claimsParameter.GetClaimNames()
                     };
                 }
@@ -121,12 +121,12 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     assignedConsent = new Consent
                     {
                         Id = Id.Create(),
-                        Client = client,
+                        ClientId = client.ClientId,
+                        ClientName = client.ClientName,
                         GrantedScopes =
                             (await GetScopes(authorizationParameter.Scope, cancellationToken).ConfigureAwait(false))
                             .ToArray(),
-                        ResourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken)
-                            .ConfigureAwait(false),
+                        Subject = subject,
                     };
                 }
 

@@ -42,7 +42,7 @@ namespace SimpleAuth.Extensions
                 {
                     var expectedClaims = claimsParameter.GetClaimNames();
                     confirmedConsent = consents.FirstOrDefault(
-                        c => c.Client.ClientId == authorizationParameter.ClientId
+                        c => c.ClientId == authorizationParameter.ClientId
                              && c.Claims != null
                              && c.Claims.Count > 0
                              && expectedClaims.Count == c.Claims.Count
@@ -52,7 +52,7 @@ namespace SimpleAuth.Extensions
                 {
                     var scopeNames = authorizationParameter.Scope.ParseScopes();
                     confirmedConsent = consents.FirstOrDefault(
-                        c => c.Client.ClientId == authorizationParameter.ClientId
+                        c => c.ClientId == authorizationParameter.ClientId
                              && c.GrantedScopes != null
                              && c.GrantedScopes.Length > 0
                              && scopeNames.Length == c.GrantedScopes.Length

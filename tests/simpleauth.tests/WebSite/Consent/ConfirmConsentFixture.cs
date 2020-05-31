@@ -135,8 +135,8 @@
                 .ConfigureAwait(false);
 
             Assert.Contains(OpenIdClaimTypes.Subject, insertedConsent.Claims);
-            Assert.Equal(subject, insertedConsent.ResourceOwner.Subject);
-            Assert.Equal(clientId, insertedConsent.Client.ClientId);
+            Assert.Equal(subject, insertedConsent.Subject);
+            Assert.Equal(clientId, insertedConsent.ClientId);
         }
 
         [Fact]

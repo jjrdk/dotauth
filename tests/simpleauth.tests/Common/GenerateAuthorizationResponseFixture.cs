@@ -254,7 +254,7 @@ namespace SimpleAuth.Tests.Common
             var consent = new Consent
             {
                 GrantedScopes = new[] { scope },
-                Client = new Client { ClientId = clientId, AllowedScopes = new[] { scope } }
+                ClientId = clientId
             };
             var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
 

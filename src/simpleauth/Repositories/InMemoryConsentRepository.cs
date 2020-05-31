@@ -54,7 +54,7 @@
             }
 
             return Task.FromResult<IReadOnlyCollection<Consent>>(
-                _consents.Where(c => c.ResourceOwner.Subject == subject).ToList());
+                _consents.Where(c => c.Subject == subject).ToList());
         }
 
         /// <inheritdoc />

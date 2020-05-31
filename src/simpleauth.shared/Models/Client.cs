@@ -53,7 +53,11 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The user claims to include in authentication token.
         /// </value>
+        [DataMember(Name = "included_user_claims")]
         public Regex[] UserClaimsToIncludeInAuthToken { get; set; } = Array.Empty<Regex>();
+        
+        [DataMember(Name = "include_scope_claims")]
+        public bool IncludeScopeClaimsInAuthToken { get; set; }
 
         /// <summary>
         /// Gets or sets the logo uri

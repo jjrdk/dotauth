@@ -31,20 +31,38 @@ namespace SimpleAuth.Shared.Models
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the client.
+        /// Gets or sets the client id.
         /// </summary>
         /// <value>
-        /// The client.
+        /// The client id.
         /// </value>
-        public Client Client { get; set; }
+        public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource owner.
+        /// Gets or sets the client name.
         /// </summary>
         /// <value>
-        /// The resource owner.
+        /// The client name.
         /// </value>
-        public ResourceOwner ResourceOwner { get; set; }
+        public string ClientName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the policy <see cref="Uri"/>.
+        /// </summary>
+        public Uri PolicyUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the terms of service <see cref="Uri"/>.
+        /// </summary>
+        public Uri TosUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource owner's subject.
+        /// </summary>
+        /// <value>
+        /// The resource owner's subject.
+        /// </value>
+        public string Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the granted scopes.

@@ -32,29 +32,29 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
                 new Consent
                 {
                     Id = "1",
-                    Client = new Client {ClientId = "authcode_client"},
-                    ResourceOwner = new ResourceOwner {Subject = "administrator"},
+                    ClientId = "authcode_client",
+                    Subject = "administrator",
                     GrantedScopes = new[] {"api1", "openid"}
                 },
                 new Consent
                 {
                     Id = "2",
-                    Client = new Client {ClientId = "implicit_client"},
-                    ResourceOwner = new ResourceOwner {Subject = "administrator"},
+                    ClientId = "implicit_client",
+                    Subject = "administrator",
                     GrantedScopes = new[] {"api1", "openid"}
                 },
                 new Consent
                 {
                     Id = "3",
-                    Client = new Client {ClientId = "hybrid_client"},
-                    ResourceOwner = new ResourceOwner {Subject = "administrator"},
+                    ClientId = "hybrid_client",
+                    Subject = "administrator",
                     GrantedScopes = new[] {"api1", "openid"}
                 },
                 new Consent
                 {
                     Id = "4",
-                    Client = new Client {ClientId = "pkce_client"},
-                    ResourceOwner = new ResourceOwner {Subject = "administrator"},
+                    ClientId = "pkce_client",
+                    Subject = "administrator",
                     GrantedScopes = new[] {"api1", "openid"}
                 }
             };

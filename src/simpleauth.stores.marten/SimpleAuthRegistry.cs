@@ -29,7 +29,7 @@
                 .GinIndexJsonData();
             For<Consent>()
                 .Identity(x => x.Id)
-                .Duplicate(x => x.ResourceOwner.Subject)
+                .Duplicate(x => x.Subject)
                 .GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)
