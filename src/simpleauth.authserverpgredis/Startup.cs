@@ -19,6 +19,8 @@ namespace SimpleAuth.AuthServerPgRedis
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
+    using Amazon;
+    using Amazon.Runtime;
     using Marten;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,7 +32,10 @@ namespace SimpleAuth.AuthServerPgRedis
     using Microsoft.IdentityModel.Tokens;
 
     using SimpleAuth;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Sms;
+    using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.Stores.Redis;
     using SimpleAuth.UI;
@@ -50,7 +55,7 @@ namespace SimpleAuth.AuthServerPgRedis
             _options = new SimpleAuthOptions
             {
                 RedirectToLogin = redirect,
-                ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
+                ApplicationName = _configuration["SERVER:NAME"] ?? "SimpleAuth",
                 Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
                 Clients =
                     sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
@@ -99,7 +104,7 @@ namespace SimpleAuth.AuthServerPgRedis
                 provider =>
                 {
                     var options = new SimpleAuthMartenOptions(
-                        _configuration["CONNECTIONSTRING"],
+                        _configuration["DB:CONNECTIONSTRING"],
                         new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()));
                     return new DocumentStore(options);
                 });
@@ -133,11 +138,11 @@ namespace SimpleAuth.AuthServerPgRedis
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.Authority = _configuration["OAUTH_AUTHORITY"];
+                        cfg.Authority = _configuration["OAUTH:AUTHORITY"];
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = _configuration["OAUTH_VALID_ISSUERS"]
+                            ValidIssuers = _configuration["OAUTH:VALIDISSUERS"]
                                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim())
                                 .ToArray()
@@ -148,7 +153,7 @@ namespace SimpleAuth.AuthServerPgRedis
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>();
 
-            if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
+            if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
                     .AddCookie(CookieNames.ExternalCookieName)
@@ -156,10 +161,10 @@ namespace SimpleAuth.AuthServerPgRedis
                         opts =>
                         {
                             opts.AccessType = "offline";
-                            opts.ClientId = _configuration["Google:ClientId"];
-                            opts.ClientSecret = _configuration["Google:ClientSecret"];
+                            opts.ClientId = _configuration["GOOGLE:CLIENTID"];
+                            opts.ClientSecret = _configuration["GOOGLE:CLIENTSECRET"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
-                            var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
+                            var scopes = _configuration["GOOGLE:SCOPES"] ?? DefaultGoogleScopes;
                             foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim()))
                             {
@@ -167,15 +172,38 @@ namespace SimpleAuth.AuthServerPgRedis
                             }
                         });
             }
-
-            services.AddSimpleAuth(
-                _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
-                assemblies: new[]
-                {
-                    (GetType().Namespace, GetType().Assembly),
-                    (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
-                });
+            
+            if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
+                && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
+            {
+                services.AddSimpleAuth(
+                        _options,
+                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                        assemblies: new[]
+                        {
+                            (GetType().Namespace, GetType().Assembly),
+                            (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly),
+                            (typeof(IDefaultSmsUi).Namespace, typeof(IDefaultSmsUi).Assembly)
+                        })
+                    .AddSmsAuthentication(
+                        new AwsSmsClient(
+                            new BasicAWSCredentials(
+                                _configuration["AMAZON:ACCESSKEY"],
+                                _configuration["AMAZON:SECRETKEY"]),
+                            RegionEndpoint.EUNorth1,
+                            Globals.ApplicationName));
+            }
+            else
+            {
+                services.AddSimpleAuth(
+                    _options,
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                    assemblies: new[]
+                    {
+                        (GetType().Namespace, GetType().Assembly),
+                        (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
+                    });
+            }
         }
 
         public void Configure(IApplicationBuilder app)

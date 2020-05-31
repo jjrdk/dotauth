@@ -27,12 +27,18 @@ namespace SimpleAuth.AuthServerPg
     using System.Security.Claims;
     using System.Security.Cryptography;
     using System.Text.RegularExpressions;
+    using Amazon;
+    using Amazon.Runtime;
     using Marten;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Sms;
+    using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.UI;
 
@@ -46,11 +52,11 @@ namespace SimpleAuth.AuthServerPg
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            bool.TryParse(_configuration["REDIRECT"], out var redirect);
+            bool.TryParse(_configuration["SERVER:REDIRECT"], out var redirect);
             _options = new SimpleAuthOptions
             {
                 RedirectToLogin = redirect,
-                ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
+                ApplicationName = _configuration["SERVER:NAME"] ?? "SimpleAuth",
                 Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
                 Clients =
                     sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
@@ -91,7 +97,7 @@ namespace SimpleAuth.AuthServerPg
                     provider =>
                     {
                         var options = new SimpleAuthMartenOptions(
-                            _configuration["CONNECTIONSTRING"],
+                            _configuration["DB:CONNECTIONSTRING"],
                             new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()));
                         return new DocumentStore(options);
                     })
@@ -121,11 +127,11 @@ namespace SimpleAuth.AuthServerPg
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.Authority = _configuration["OAUTH_AUTHORITY"];
+                        cfg.Authority = _configuration["OAUTH:AUTHORITY"];
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = _configuration["OAUTH_VALID_ISSUERS"]
+                            ValidIssuers = _configuration["OAUTH:VALIDISSUERS"]
                                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim())
                                 .ToArray()
@@ -136,7 +142,7 @@ namespace SimpleAuth.AuthServerPg
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>();
 
-            if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
+            if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
                     .AddCookie(CookieNames.ExternalCookieName)
@@ -144,10 +150,10 @@ namespace SimpleAuth.AuthServerPg
                         opts =>
                         {
                             opts.AccessType = "offline";
-                            opts.ClientId = _configuration["Google:ClientId"];
-                            opts.ClientSecret = _configuration["Google:ClientSecret"];
+                            opts.ClientId = _configuration["GOOGLE:CLIENTID"];
+                            opts.ClientSecret = _configuration["GOOGLE:CLIENTSECRET"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
-                            var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
+                            var scopes = _configuration["GOOGLE:SCOPES"] ?? DefaultGoogleScopes;
                             foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim()))
                             {
@@ -156,30 +162,53 @@ namespace SimpleAuth.AuthServerPg
                         });
             }
 
-            services.AddSimpleAuth(
-                _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
-                assemblies: new[]
-                {
-                    (GetType().Namespace, GetType().Assembly),
-                    (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
-                });
+            if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
+                && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
+            {
+                services.AddSimpleAuth(
+                        _options,
+                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                        assemblies: new[]
+                        {
+                            (GetType().Namespace, GetType().Assembly),
+                            (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly),
+                            (typeof(IDefaultSmsUi).Namespace, typeof(IDefaultSmsUi).Assembly)
+                        })
+                    .AddSmsAuthentication(
+                        new AwsSmsClient(
+                            new BasicAWSCredentials(
+                                _configuration["AMAZON:ACCESSKEY"],
+                                _configuration["AMAZON:SECRETKEY"]),
+                            RegionEndpoint.EUNorth1,
+                            Globals.ApplicationName));
+            }
+            else
+            {
+                services.AddSimpleAuth(
+                    _options,
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                    assemblies: new[]
+                    {
+                        (GetType().Namespace, GetType().Assembly),
+                        (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
+                    });
+            }
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            //var lifetime = app.ApplicationServices.GetService<IHostApplicationLifetime>();
-            //lifetime.ApplicationStarted.Register(
-            //    () =>
-            //    {
-            //        using var session = app.ApplicationServices.GetService<IDocumentSession>();
-            //        session.Store(DefaultConfiguration.GetClients());
-            //        session.Store(DefaultConfiguration.GetJwks());
-            //        session.Store(DefaultConfiguration.GetUsers());
-            //        session.Store(DefaultConfiguration.GetScopes());
-            //        session.Store(new GrantedToken { Id = Guid.NewGuid().ToString("N"), AccessToken = "abc" });
-            //        session.SaveChanges();
-            //    });
+            var lifetime = app.ApplicationServices.GetService<IHostApplicationLifetime>();
+            lifetime.ApplicationStarted.Register(
+                () =>
+                {
+                    //using var session = app.ApplicationServices.GetService<IDocumentSession>();
+                    //session.Store(DefaultConfiguration.GetClients());
+                    //session.Store(DefaultConfiguration.GetJwks());
+                    //session.Store(DefaultConfiguration.GetUsers());
+                    //session.Store(DefaultConfiguration.GetScopes());
+                    //session.Store(new GrantedToken { Id = Guid.NewGuid().ToString("N"), AccessToken = "abc" });
+                    //session.SaveChanges();
+                });
             app.UseResponseCompression().UseSimpleAuthMvc((typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
         }
     }
@@ -205,53 +234,6 @@ namespace SimpleAuth.AuthServerPg
             {
                 new Client
                 {
-                    ClientId = "api",
-                    ClientName = "api",
-                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "api"}},
-                    JsonWebKeys =
-                        new[]
-                        {
-                            "longsupersecretkey".CreateSignatureJwk(),
-                            "longsupersecretkey".CreateEncryptionJwk()
-                        }.ToJwks(),
-                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                    PolicyUri = new Uri("http://openid.net"),
-                    TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {"register_client"},
-                    GrantTypes =
-                        new[] {GrantTypes.ClientCredentials, GrantTypes.Implicit, GrantTypes.AuthorizationCode},
-                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.Code},
-                    ApplicationType = ApplicationTypes.Native,
-                    RedirectionUrls = new[] {new Uri("http://localhost:60000"),}
-                },
-                new Client
-                {
-                    ClientId = "mobileapp",
-                    ClientName = "Admin client",
-                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "Secret"}},
-                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                    //LogoUri = null,
-                    AllowedScopes = new[] {"openid", "profile", "role"},
-                    GrantTypes =
-                        new[]
-                        {
-                            GrantTypes.AuthorizationCode,
-                            GrantTypes.ClientCredentials,
-                            GrantTypes.Implicit,
-                            GrantTypes.Password,
-                            GrantTypes.RefreshToken,
-                            GrantTypes.UmaTicket,
-                            GrantTypes.ValidateBearer
-                        },
-                    JsonWebKeys =
-                        new[] {"longsupersecretkey".CreateSignatureJwk(), "longsupersecretkey".CreateEncryptionJwk()}
-                            .ToJwks(),
-                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
-                    ApplicationType = ApplicationTypes.Native
-                },
-                new Client
-                {
                     ClientId = "web",
                     ClientName = "web",
                     AllowedScopes = new[] {"openid", "role", "profile", "email", "manager", "uma_protection"},
@@ -271,6 +253,7 @@ namespace SimpleAuth.AuthServerPg
                     ResponseTypes = ResponseTypeNames.All,
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                    IncludeScopeClaimsInAuthToken = true,
                     UserClaimsToIncludeInAuthToken = new[]
                     {
                         new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),

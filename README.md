@@ -32,11 +32,13 @@ The demo servers can be customized by setting the environment variables defined 
 
 |Environment Variable|Type|Description|
 |---|---|---|
-|SERVER_NAME|string|Defines a custom name to display as the application name in UI headers. Default value is ```SimpleAuth```|
-|REDIRECT|bool|When set to ```true``` then requests for ```/ or /home``` are redirected to ```/authenticate```. This effectively hides the default home page.|
-|OAUTH_AUTHORITY|url string|Used to set the OAuth server where authorization for access to management UI.|
-|OAUTH_VALID_ISSUERS|comma separated url strings|The comma-separated set of valid issuers for access tokens.|
-|CONNECTIONSTRING|string|Sets the connection string when using a backing database.|
+|SERVER__NAME|string|Defines a custom name to display as the application name in UI headers. Default value is ```SimpleAuth```|
+|SERVER__REDIRECT|bool|When set to ```true``` then requests for ```/``` or ```/home``` are redirected to ```/authenticate```. This effectively hides the default home page.|
+|OAUTH__AUTHORITY|url string|Used to set the OAuth server where authorization for access to management UI.|
+|OAUTH__VALIDISSUERS|comma separated url strings|The comma-separated set of valid issuers for access tokens.|
+|DB__CONNECTIONSTRING|string|Sets the connection string when using a backing database.|
+|AMAZON__ACCESSKEY|string|When set then the server will configure sms authentication.|
+|AMAZON__SECRETKEY|string|When set then the server will configure sms authentication.|
 
 ## Reporting Issues and Bugs
 

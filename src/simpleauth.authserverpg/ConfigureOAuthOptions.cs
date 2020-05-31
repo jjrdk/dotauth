@@ -19,9 +19,9 @@
         /// <inheritdoc />
         public void PostConfigure(string name, OAuthOptions options)
         {
-            options.AuthorizationEndpoint = _configuration["OAUTH_AUTHORITY"] + "/authorization";
-            options.TokenEndpoint = _configuration["OAUTH_AUTHORITY"] + "/token";
-            options.UserInformationEndpoint = _configuration["OAUTH_AUTHORITY"] + "/userinfo";
+            options.AuthorizationEndpoint = _configuration["OAUTH:AUTHORITY"] + "/authorization";
+            options.TokenEndpoint = _configuration["OAUTH:AUTHORITY"] + "/token";
+            options.UserInformationEndpoint = _configuration["OAUTH:AUTHORITY"] + "/userinfo";
             options.UsePkce = true;
             options.CallbackPath = "/callback";
             options.Events = new OAuthEvents
@@ -30,15 +30,16 @@
                 {
                     var handler = new JwtSecurityTokenHandler();
                     var jwt = handler.ReadJwtToken(ctx.AccessToken);
-                    ctx.Identity.AddClaims(jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)));
+                    var claims = jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)).ToArray();
+                    ctx.Identity.AddClaims(claims);
                     ctx.Success();
                     return Task.CompletedTask;
                 },
                 OnTicketReceived = ctx => Task.CompletedTask
             };
             options.SaveTokens = true;
-            options.ClientId = _configuration["OAUTH_CLIENTID"];
-            options.ClientSecret = _configuration["OAUTH_CLIENTSECRET"];
+            options.ClientId = _configuration["OAUTH:CLIENTID"];
+            options.ClientSecret = _configuration["OAUTH:CLIENTSECRET"];
             options.Scope.Clear();
             options.Scope.Add("openid");
             options.Scope.Add("profile");

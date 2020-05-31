@@ -125,11 +125,11 @@ namespace SimpleAuth.AuthServer
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.Authority = _configuration["OAUTH_AUTHORITY"];
+                        cfg.Authority = _configuration["OAUTH:AUTHORITY"];
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = _configuration["OAUTH_VALID_ISSUERS"]
+                            ValidIssuers = _configuration["OAUTH:VALIDISSUERS"]
                                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim())
                                 .ToArray()
@@ -140,7 +140,7 @@ namespace SimpleAuth.AuthServer
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>();
 
-            if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
+            if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
                     .AddCookie(CookieNames.ExternalCookieName)
@@ -148,10 +148,10 @@ namespace SimpleAuth.AuthServer
                         opts =>
                         {
                             opts.AccessType = "offline";
-                            opts.ClientId = _configuration["Google:ClientId"];
-                            opts.ClientSecret = _configuration["Google:ClientSecret"];
+                            opts.ClientId = _configuration["GOOGLE:CLIENTID"];
+                            opts.ClientSecret = _configuration["GOOGLE:CLIENTSECRET"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
-                            var scopes = _configuration["Google:Scopes"] ?? "openid,profile,email";
+                            var scopes = _configuration["GOOGLE:SCOPES"] ?? "openid,profile,email";
                             foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim()))
                             {
@@ -160,8 +160,8 @@ namespace SimpleAuth.AuthServer
                         });
             }
 
-            if (!string.IsNullOrWhiteSpace(_configuration["Amazon:AccessKey"])
-                && !string.IsNullOrWhiteSpace(_configuration["Amazon:SecretKey"]))
+            if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
+                && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
             {
                 services.AddSimpleAuth(
                         _options,
@@ -175,8 +175,8 @@ namespace SimpleAuth.AuthServer
                     .AddSmsAuthentication(
                         new AwsSmsClient(
                             new BasicAWSCredentials(
-                                _configuration["Amazon:AccessKey"],
-                                _configuration["Amazon:SecretKey"]),
+                                _configuration["AMAZON:ACCESSKEY"],
+                                _configuration["AMAZON:SECRETKEY"]),
                             RegionEndpoint.EUNorth1,
                             Globals.ApplicationName));
             }
