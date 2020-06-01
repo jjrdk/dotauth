@@ -30,6 +30,8 @@ See the example [Auth Server project](https://github.com/jjrdk/SimpleAuth/tree/m
 
 The demo servers can be customized by setting the environment variables defined below. In addition to the application specific variables below, the standard ASP.NET environments can also be passed.
 
+Note that some environment variables use double underscore ```__```. This is to ensure compatibility with the .NET conversion from environment variable to hierarchical configuration value.
+
 |Environment Variable|Type|Description|
 |---|---|---|
 |SERVER__NAME|string|Defines a custom name to display as the application name in UI headers. Default value is ```SimpleAuth```|
@@ -37,6 +39,7 @@ The demo servers can be customized by setting the environment variables defined 
 |OAUTH__AUTHORITY|url string|Used to set the OAuth server where authorization for access to management UI.|
 |OAUTH__VALIDISSUERS|comma separated url strings|The comma-separated set of valid issuers for access tokens.|
 |DB__CONNECTIONSTRING|string|Sets the connection string when using a backing database.|
+|DB__REDISCONFIG|string|Sets the connection string for the redis server.|
 |AMAZON__ACCESSKEY|string|When set then the server will configure sms authentication.|
 |AMAZON__SECRETKEY|string|When set then the server will configure sms authentication.|
 

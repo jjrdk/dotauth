@@ -12,7 +12,7 @@
     /// <summary>
     /// Defines the Marten based consent repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IConsentRepository" />
+    /// <seealso cref="IConsentRepository" />
     public class MartenConsentRepository : IConsentRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;

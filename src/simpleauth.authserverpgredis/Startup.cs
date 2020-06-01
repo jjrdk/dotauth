@@ -110,7 +110,7 @@ namespace SimpleAuth.AuthServerPgRedis
                 });
             services.AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession());
 
-            services.AddSingleton(ConnectionMultiplexer.Connect(_configuration["RedisConfig"]));
+            services.AddSingleton(ConnectionMultiplexer.Connect(_configuration["DB:REDISCONFIG"]));
             services.AddTransient(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
             services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
 
