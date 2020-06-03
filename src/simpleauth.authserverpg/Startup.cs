@@ -92,7 +92,7 @@ namespace SimpleAuth.AuthServerPg
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<HttpClient>();
+            services.AddHttpClient();
             services.AddSingleton<IDocumentStore>(
                     provider =>
                     {

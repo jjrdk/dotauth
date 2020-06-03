@@ -262,7 +262,7 @@ namespace SimpleAuth
                 .AddSingleton(
                     sp => options.Clients?.Invoke(sp)
                           ?? new InMemoryClientRepository(
-                              sp.GetService<HttpClient>(),
+                              sp.GetService<IHttpClientFactory>(),
                               sp.GetService<IScopeStore>(),
                               sp.GetService<ILogger<InMemoryClientRepository>>()))
                 .AddSingleton<IClientStore>(sp => sp.GetService<IClientRepository>())

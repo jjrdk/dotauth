@@ -55,7 +55,7 @@ namespace SimpleAuth.AuthServer
                 Tickets = sp => new InMemoryTicketStore(),
                 Clients =
                     sp => new InMemoryClientRepository(
-                        sp.GetRequiredService<HttpClient>(),
+                        sp.GetRequiredService<IHttpClientFactory>(),
                         sp.GetRequiredService<IScopeStore>(),
                         sp.GetRequiredService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
@@ -111,7 +111,7 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<HttpClient>()
+            services.AddHttpClient()
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(
                     options =>

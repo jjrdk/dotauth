@@ -22,7 +22,6 @@ namespace SimpleAuth.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Parameters;
     using Results;
-    using Shared;
     using Shared.Repositories;
     using Shared.Requests;
     using SimpleAuth.Shared.Errors;
@@ -45,7 +44,7 @@ namespace SimpleAuth.Controllers
     [ThrottleFilter]
     public class AuthorizationController : ControllerBase
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClient;
         private readonly IClientStore _clientStore;
         private readonly IJwksStore _jwksStore;
         private readonly AuthorizationActions _authorizationActions;
@@ -68,7 +67,7 @@ namespace SimpleAuth.Controllers
         /// <param name="dataProtectionProvider">The data protection provider.</param>
         /// <param name="authenticationService">The authentication service.</param>
         public AuthorizationController(
-            HttpClient httpClient,
+            IHttpClientFactory httpClient,
             IEventPublisher eventPublisher,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IClientStore clientStore,
@@ -242,7 +241,8 @@ namespace SimpleAuth.Controllers
             {
                 if (!authorizationRequest.request_uri.IsAbsoluteUri)
                 {
-                    var httpResult = await _httpClient.GetAsync(authorizationRequest.request_uri, cancellationToken)
+                    var client = _httpClient.CreateClient();
+                    var httpResult = await client.GetAsync(authorizationRequest.request_uri, cancellationToken)
                             .ConfigureAwait(false);
                     if (!httpResult.IsSuccessStatusCode)
                     {

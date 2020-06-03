@@ -32,7 +32,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
         public RemoveClientActionFixture()
         {
             _clientRepositoryStub = new InMemoryClientRepository(
-                new HttpClient(),
+                new Mock<IHttpClientFactory>().Object,
                 new InMemoryScopeRepository(),
                 new Mock<ILogger<InMemoryClientRepository>>().Object,
                 new Client[0]);

@@ -10,10 +10,10 @@
     using System;
     using System.Net.Http;
     using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
-    using SimpleAuth.Client;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms.Ui;
@@ -51,7 +51,7 @@
                 ConfirmationCodes = sp => mockConfirmationCodeStore.Object,
                 Clients =
                     sp => new InMemoryClientRepository(
-                        context.Client,
+                        new TestHttpClientFactory(context.Client),
                         new InMemoryScopeRepository(),
                         new Mock<ILogger<InMemoryClientRepository>>().Object,
                         DefaultStores.Clients(context)),
@@ -65,6 +65,7 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient<HttpClient>(x => { }).AddHttpMessageHandler(d => new TestDelegatingHandler(_context.Handler));
             services.AddTransient(sp => _context.Client);
             var mockSmsClient = new Mock<ISmsClient>();
             mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((true, null));
@@ -105,24 +106,10 @@
         }
     }
 
-    /// <summary>
-    /// Defines extensions to <see cref="IServiceCollection"/>.
-    /// </summary>
-    public static class ServiceCollectionExtensions
+    internal class TestDelegatingHandler : DelegatingHandler
     {
-        /// <summary>
-        /// Adds UMA dependencies to the <see cref="IServiceCollection"/>.
-        /// </summary>
-        /// <param name="serviceCollection">The <see cref="IServiceCollection"/> to add dependencies to.</param>
-        /// <param name="umaAuthority">The <see cref="Uri"/> where to find the discovery document.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddUmaClient(this IServiceCollection serviceCollection, Uri umaAuthority)
+        public TestDelegatingHandler(HttpMessageHandler innerHandler) : base(innerHandler)
         {
-            serviceCollection.AddSingleton(sp => new UmaClient(sp.GetRequiredService<HttpClient>(), umaAuthority));
-            serviceCollection.AddTransient<IUmaPermissionClient, UmaClient>(sp => sp.GetRequiredService<UmaClient>());
-
-            return serviceCollection;
         }
     }
-
 }

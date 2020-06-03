@@ -30,7 +30,7 @@
         /// <param name="logger">The logger.</param>
         /// <param name="clients">The clients.</param>
         public InMemoryClientRepository(
-            HttpClient httpClient,
+            IHttpClientFactory httpClient,
             IScopeStore scopeStore,
             ILogger<InMemoryClientRepository> logger,
             IReadOnlyCollection<Client> clients = null)

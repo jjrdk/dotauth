@@ -32,7 +32,7 @@
                     inMemoryScopeRepository,
                     new InMemoryJwksRepository(),
                     new InMemoryClientRepository(
-                        new HttpClient(),
+                        new Mock<IHttpClientFactory>().Object,
                         inMemoryScopeRepository,
                         new Mock<ILogger<InMemoryClientRepository>>().Object),
                     Array.Empty<AccountFilter>(),

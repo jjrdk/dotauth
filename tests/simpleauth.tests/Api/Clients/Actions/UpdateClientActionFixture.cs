@@ -101,7 +101,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
         private void InitializeFakeObjects(IReadOnlyCollection<Client> clients = null)
         {
             _clientRepositoryMock = new InMemoryClientRepository(
-                new HttpClient(),
+                new Mock<IHttpClientFactory>().Object,
                 new InMemoryScopeRepository(),
                 new Mock<ILogger<InMemoryClientRepository>>().Object,
                 clients ?? new Client[0]);

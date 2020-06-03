@@ -40,7 +40,7 @@
             CancellationToken cancellationToken = default,
             X509Certificate2 certificate = null)
         {
-            request = PrepareRequest(request, token);
+            request = PrepareRequest(request, token, certificate);
             var result = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
 

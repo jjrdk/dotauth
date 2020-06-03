@@ -14,8 +14,6 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
     using Xunit;
 
     public sealed class ClientFactoryFixture
@@ -27,7 +25,7 @@
         {
             _httpClientFake = new HttpClient();
             _factory = new ClientFactory(
-                _httpClientFake,
+                new TestHttpClientFactory(_httpClientFake),
                 new InMemoryScopeRepository(new[] {new Scope {Name = "test"}}),
                 s => s.DeserializeWithJavascript<Uri[]>());
         }
@@ -45,9 +43,9 @@
             var parameter = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new [] {new Uri(localhost)},
-                AllowedScopes = new[] {"test"},
-                RequestUris = new[] {new Uri("https://localhost"),}
+                RedirectionUrls = new[] { new Uri(localhost) },
+                AllowedScopes = new[] { "test" },
+                RequestUris = new[] { new Uri("https://localhost"), }
             };
 
             var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
@@ -62,10 +60,10 @@
             var parameter = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 ResponseTypes = Array.Empty<string>(),
-                AllowedScopes = new[] {"test"},
-                RequestUris = new[] {new Uri("https://localhost"),}
+                AllowedScopes = new[] { "test" },
+                RequestUris = new[] { new Uri("https://localhost"), }
             };
 
             parameter = await _factory.Build(parameter).ConfigureAwait(false);
@@ -80,9 +78,9 @@
             var parameter = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new [] {new Uri("https://google.com")},
-                AllowedScopes = new[] {"test"},
-                RequestUris = new[] {new Uri("https://localhost"),}
+                RedirectionUrls = new[] { new Uri("https://google.com") },
+                AllowedScopes = new[] { "test" },
+                RequestUris = new[] { new Uri("https://localhost"), }
             };
 
             parameter = await _factory.Build(parameter).ConfigureAwait(false);
@@ -97,9 +95,9 @@
             var parameter = new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new [] {new Uri("https://google.com")},
-                AllowedScopes = new[] {"test"},
-                RequestUris = new[] {new Uri("https://localhost"),}
+                RedirectionUrls = new[] { new Uri("https://google.com") },
+                AllowedScopes = new[] { "test" },
+                RequestUris = new[] { new Uri("https://localhost"), }
             };
 
             parameter = await _factory.Build(parameter).ConfigureAwait(false);
@@ -112,7 +110,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 SectorIdentifierUri = new Uri("https://sector_identifier_uri/")
             };
 
@@ -127,7 +125,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 SectorIdentifierUri = new Uri("http://localhost/identity")
             };
 
@@ -142,7 +140,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 SectorIdentifierUri = new Uri("https://localhost/identity")
             };
 
@@ -162,11 +160,11 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 SectorIdentifierUri = new Uri("https://localhost/identity")
             };
 
-            var sectorIdentifierUris = new List<string> {"https://localhost/sector_identifier"};
+            var sectorIdentifierUris = new List<string> { "https://localhost/sector_identifier" };
             var json = sectorIdentifierUris.SerializeWithJavascript();
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.Accepted)
             {
@@ -175,7 +173,7 @@
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
             _factory = new ClientFactory(
-                httpClientFake,
+                new TestHttpClientFactory(httpClientFake),
                 new InMemoryScopeRepository(),
                 s => s.DeserializeWithJavascript<Uri[]>());
 
@@ -191,7 +189,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
@@ -207,10 +205,10 @@
         {
             var parameter = new Client
             {
-                AllowedScopes = new[] {"test"},
-                RequestUris = new[] {new Uri("https://localhost"),},
+                AllowedScopes = new[] { "test" },
+                RequestUris = new[] { new Uri("https://localhost"), },
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
@@ -226,7 +224,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
@@ -242,7 +240,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                 //UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
             };
@@ -259,7 +257,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
@@ -275,10 +273,10 @@
         {
             var parameter = new Client
             {
-                AllowedScopes = new[] {"test"},
+                AllowedScopes = new[] { "test" },
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                RequestUris = new[] {new Uri("https://localhost")},
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RequestUris = new[] { new Uri("https://localhost") },
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
             };
 
@@ -293,7 +291,7 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("https://google.com")},
+                RedirectionUrls = new[] { new Uri("https://google.com") },
                 InitiateLoginUri = new Uri("http://localhost/identity")
             };
 
@@ -308,8 +306,8 @@
         {
             var parameter = new Client
             {
-                RedirectionUrls = new [] {new Uri("http://localhost")},
-                AllowedScopes = new[] {"openid"},
+                RedirectionUrls = new[] { new Uri("http://localhost") },
+                AllowedScopes = new[] { "openid" },
                 ApplicationType = ApplicationTypes.Native,
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(), //new JsonWebKeySet(),
                 IdTokenEncryptedResponseAlg = SecurityAlgorithms.Aes128KW,
@@ -318,11 +316,11 @@
                 UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                 RequestObjectEncryptionAlg = SecurityAlgorithms.Aes128KW,
                 RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
-                RequestUris = new [] {new Uri("http://localhost")},
+                RequestUris = new[] { new Uri("http://localhost") },
                 SectorIdentifierUri = new Uri("https://localhost")
             };
 
-            var sectorIdentifierUris = new List<string> {"http://localhost"};
+            var sectorIdentifierUris = new List<string> { "http://localhost" };
             var json = sectorIdentifierUris.SerializeWithJavascript();
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.Accepted)
             {
@@ -332,28 +330,12 @@
             var httpClientFake = new HttpClient(handler);
 
             _factory = new ClientFactory(
-                httpClientFake,
+                new TestHttpClientFactory(httpClientFake),
                 new InMemoryScopeRepository(),
                 s => s.DeserializeWithJavascript<Uri[]>());
 
             var ex = await Record.ExceptionAsync(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Null(ex);
-        }
-    }
-    
-
-    internal static class ObjectExtensions
-    {
-        private static readonly JsonConverter[] Converters = { new StringEnumConverter() };
-
-        public static string SerializeWithJavascript(this object parameter)
-        {
-            return JsonConvert.SerializeObject(parameter, Converters);
-}
-
-        public static T DeserializeWithJavascript<T>(this string parameter)
-        {
-            return JsonConvert.DeserializeObject<T>(parameter, Converters);
         }
     }
 }
