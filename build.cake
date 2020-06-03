@@ -258,7 +258,7 @@ Task("Docker-Build")
         ForceRm = true,
         Rm = true,
 		Tag = new[] {
-			//"jjrdk/simpleauth:inmemory",
+			"jjrdk/simpleauth:inmemory-canary",
 			"jjrdk/simpleauth:" + buildVersion + "-inmemory"
 		}
 	};
@@ -273,7 +273,7 @@ Task("Docker-Build")
         ForceRm = true,
         Rm = true,
 		Tag = new[] {
-			//"jjrdk/simpleauth:postgres",
+			"jjrdk/simpleauth:postgres-canary",
 			"jjrdk/simpleauth:" + buildVersion + "-postgres"
 		}
 	};
@@ -288,7 +288,7 @@ Task("Docker-Build")
         ForceRm = true,
         Rm = true,
 		Tag = new[] {
-			//"jjrdk/simpleauth:pgredis",
+			"jjrdk/simpleauth:pgredis-canary",
 			"jjrdk/simpleauth:" + buildVersion + "-pgredis"
 		}
 	};
