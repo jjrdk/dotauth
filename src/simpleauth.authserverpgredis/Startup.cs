@@ -147,9 +147,9 @@ namespace SimpleAuth.AuthServerPgRedis
                                 .Select(x => x.Trim())
                                 .ToArray()
                         };
-#if DEBUG
-                        cfg.RequireHttpsMetadata = false;
-#endif
+                        
+                        var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
+                        cfg.RequireHttpsMetadata = !allowHttp;
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>();
 

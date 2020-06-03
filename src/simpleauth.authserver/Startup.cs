@@ -134,9 +134,7 @@ namespace SimpleAuth.AuthServer
                                 .Select(x => x.Trim())
                                 .ToArray()
                         };
-#if DEBUG
                         cfg.RequireHttpsMetadata = false;
-#endif
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>();
 

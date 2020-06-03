@@ -36,6 +36,7 @@ Note that some environment variables use double underscore ```__```. This is to 
 |---|---|---|
 |SERVER__NAME|string|Defines a custom name to display as the application name in UI headers. Default value is ```SimpleAuth```|
 |SERVER__REDIRECT|bool|When set to ```true``` then requests for ```/``` or ```/home``` are redirected to ```/authenticate```. This effectively hides the default home page.|
+|SERVER__ALLOWHTTP|bool|When set to ```true``` then allows downloading OAuth metadata over HTTP. This option should only be set in development environments. Default value is ```false```|
 |OAUTH__AUTHORITY|url string|Used to set the OAuth server where authorization for access to management UI.|
 |OAUTH__VALIDISSUERS|comma separated url strings|The comma-separated set of valid issuers for access tokens.|
 |DB__CONNECTIONSTRING|string|Sets the connection string when using a backing database.|
