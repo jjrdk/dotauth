@@ -15,11 +15,11 @@
 
     internal class ClientFactory
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClient;
         private readonly IScopeStore _scopeRepository;
         private readonly Func<string, Uri[]> _urlReader;
 
-        public ClientFactory(HttpClient httpClient, IScopeStore scopeRepository, Func<string, Uri[]> urlReader)
+        public ClientFactory(IHttpClientFactory httpClient, IScopeStore scopeRepository, Func<string, Uri[]> urlReader)
         {
             _httpClient = httpClient;
             _scopeRepository = scopeRepository;
@@ -275,7 +275,8 @@
         {
             try
             {
-                var response = _httpClient.GetAsync(sectorIdentifierUri, cancellationToken).Result;
+                var client = _httpClient.CreateClient();
+                var response = client.GetAsync(sectorIdentifierUri, cancellationToken).Result;
                 response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return _urlReader(result);

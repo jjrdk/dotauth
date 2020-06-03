@@ -31,12 +31,12 @@
         public Task<bool> Insert(Consent record, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(record);
-            return _database.StringSetAsync(record.ResourceOwner.Subject, json, _expiry);
+            return _database.StringSetAsync(record.Subject, json, _expiry);
         }
 
         public Task<bool> Delete(Consent record, CancellationToken cancellationToken)
         {
-            return _database.KeyDeleteAsync(record.ResourceOwner.Subject);
+            return _database.KeyDeleteAsync(record.Subject);
         }
     }
 }

@@ -28,7 +28,7 @@
 
             _consentRepositoryFake
                 .Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((IReadOnlyCollection<Consent>) null));
+                .Returns(() => Task.FromResult((IReadOnlyCollection<Consent>)null));
 
             var result = await _consentRepositoryFake.Object
                 .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
@@ -47,13 +47,13 @@
             {
                 Claims = new ClaimsParameter
                 {
-                    UserInfo = new List<ClaimParameter> {new ClaimParameter {Name = claimName}}
+                    UserInfo = new List<ClaimParameter> { new ClaimParameter { Name = claimName } }
                 },
                 ClientId = clientId
             };
             IReadOnlyCollection<Consent> consents = new List<Consent>
             {
-                new Consent {Claims = new List<string> {claimName}, Client = new Client {ClientId = clientId}}
+                new Consent {Claims = new List<string> {claimName}, ClientId = clientId}
             };
 
             _consentRepositoryFake
@@ -74,10 +74,10 @@
             const string subject = "subject";
             const string scope = "profile";
             const string clientId = "clientId";
-            var authorizationParameter = new AuthorizationParameter {ClientId = clientId, Scope = scope};
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
             IReadOnlyCollection<Consent> consents = new List<Consent>
             {
-                new Consent {Client = new Client {ClientId = clientId}, GrantedScopes = new[] {scope}}
+                new Consent {ClientId = clientId, GrantedScopes = new[] {scope}}
             };
 
             _consentRepositoryFake
@@ -103,13 +103,14 @@
             const string clientId = "clientId";
             var authorizationParameter = new AuthorizationParameter
             {
-                ClientId = clientId, Scope = openIdScope + " " + profileScope + " " + emailScope
+                ClientId = clientId,
+                Scope = openIdScope + " " + profileScope + " " + emailScope
             };
             IReadOnlyCollection<Consent> consents = new List<Consent>
             {
                 new Consent
                 {
-                    Client = new Client {ClientId = clientId}, GrantedScopes = new[] {profileScope, openIdScope}
+                    ClientId = clientId, GrantedScopes = new[] {profileScope, openIdScope}
                 }
             };
 

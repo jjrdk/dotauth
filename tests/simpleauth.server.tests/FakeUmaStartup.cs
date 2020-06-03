@@ -77,14 +77,14 @@ namespace SimpleAuth.Server.Tests
                 new SimpleAuthOptions
                 {
                     Clients = sp => new InMemoryClientRepository(
-                        new HttpClient(),
+                        new Mock<IHttpClientFactory>().Object,
                         sp.GetService<IScopeStore>(),
                         new Mock<ILogger<InMemoryClientRepository>>().Object,
                         OAuthStores.GetClients()),
                     Scopes = sp => new InMemoryScopeRepository(OAuthStores.GetScopes()),
                     ResourceSets = sp => new InMemoryResourceSetRepository(UmaStores.GetResources())
                 },
-                new[] {DefaultSchema},
+                new[] { DefaultSchema },
                 assemblyTypes: typeof(IDefaultUi));
 
             // 3. Enable logging.

@@ -1,5 +1,6 @@
-﻿namespace SimpleAuth.Shared
+﻿namespace SimpleAuth.Services
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Models;
 
@@ -12,7 +13,7 @@
         /// Gets all.
         /// </summary>
         /// <returns></returns>
-        ITwoFactorAuthenticationService[] GetAll();
+        IEnumerable<ITwoFactorAuthenticationService> GetAll();
 
         /// <summary>
         /// Gets the specified two factor authentication type.

@@ -38,6 +38,7 @@ namespace SimpleAuth
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using SimpleAuth.Controllers;
+    using SimpleAuth.Events;
     using SimpleAuth.Extensions;
     using SimpleAuth.Filters;
     using SimpleAuth.MiddleWare;
@@ -66,6 +67,13 @@ namespace SimpleAuth
                 throw new ArgumentNullException(nameof(options));
             }
 
+            options.AddPolicy(
+                "authenticated",
+                policy =>
+                {
+                    policy.AddAuthenticationSchemes(authenticationSchemes);
+                    policy.RequireAuthenticatedUser();
+                });
             options.AddPolicy(
                 "UmaProtection",
                 policy =>
@@ -254,7 +262,7 @@ namespace SimpleAuth
                 .AddSingleton(
                     sp => options.Clients?.Invoke(sp)
                           ?? new InMemoryClientRepository(
-                              sp.GetService<HttpClient>(),
+                              sp.GetService<IHttpClientFactory>(),
                               sp.GetService<IScopeStore>(),
                               sp.GetService<ILogger<InMemoryClientRepository>>()))
                 .AddSingleton<IClientStore>(sp => sp.GetService<IClientRepository>())

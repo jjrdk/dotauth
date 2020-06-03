@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Moq;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

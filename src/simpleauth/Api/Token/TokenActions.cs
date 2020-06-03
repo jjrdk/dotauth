@@ -32,7 +32,9 @@ namespace SimpleAuth.Api.Token
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
 
     internal class TokenActions
     {

@@ -27,6 +27,7 @@ namespace SimpleAuth.Api.Authorization
     using System.Security.Principal;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Properties;
 
     internal sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation

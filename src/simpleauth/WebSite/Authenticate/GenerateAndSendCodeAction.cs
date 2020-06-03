@@ -20,6 +20,7 @@ namespace SimpleAuth.WebSite.Authenticate
     using System.Threading.Tasks;
     using SimpleAuth.Exceptions;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;

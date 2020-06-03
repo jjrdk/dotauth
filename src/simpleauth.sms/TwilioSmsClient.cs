@@ -13,7 +13,7 @@
     /// <seealso cref="SimpleAuth.Sms.ISmsClient" />
     public class TwilioSmsClient : ISmsClient
     {
-        private readonly HttpClient _client;
+        private readonly IHttpClientFactory _client;
         private readonly TwilioSmsCredentials _credentials;
         private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages.json";
 
@@ -22,7 +22,7 @@
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="credentials">The credentials.</param>
-        public TwilioSmsClient(HttpClient client, TwilioSmsCredentials credentials)
+        public TwilioSmsClient(IHttpClientFactory client, TwilioSmsCredentials credentials)
         {
             _client = client;
             _credentials = credentials;
@@ -70,13 +70,14 @@
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(
                 "Basic",
                 CreateBasicAuthenticationHeader(_credentials.AccountSid, _credentials.AuthToken));
-            var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+            var client = _client.CreateClient();
+            var response = await client.SendAsync(httpRequest).ConfigureAwait(false);
             return !response.IsSuccessStatusCode
                 ? (false, await response.Content.ReadAsStringAsync().ConfigureAwait(false))
                 : (true, response.ReasonPhrase);
         }
 
-        private string CreateBasicAuthenticationHeader(string username, string password)
+        private static string CreateBasicAuthenticationHeader(string username, string password)
         {
             var credentials = username + ":" + password;
             var encoded = System.Text.Encoding.UTF8.GetBytes(credentials);

@@ -25,11 +25,7 @@
         {
             _martenOptions = new SimpleAuthOptions
             {
-                Clients = sp => new MartenClientStore(
-                    sp.GetService<Func<IDocumentSession>>(),
-                    sp.GetService<IScopeStore>(),
-                    context.Client,
-                    JsonConvert.DeserializeObject<Uri[]>),
+                Clients = sp => new MartenClientStore(sp.GetService<Func<IDocumentSession>>()),
                 JsonWebKeys = sp =>
                 {
                     var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();

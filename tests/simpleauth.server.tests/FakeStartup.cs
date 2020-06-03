@@ -31,7 +31,7 @@ namespace SimpleAuth.Server.Tests
     using Moq;
 
     using SimpleAuth.Server.Tests.MiddleWares;
-    using SimpleAuth.Shared;
+    using SimpleAuth.Services;
     using SimpleAuth.Sms;
     using SimpleAuth.Sms.Services;
     using SimpleAuth.UI;
@@ -50,6 +50,7 @@ namespace SimpleAuth.Server.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient();
             services.AddCors(
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
@@ -67,7 +68,7 @@ namespace SimpleAuth.Server.Tests
                     options =>
                         {
                             options.Clients = sp => new InMemoryClientRepository(
-                                sp.GetRequiredService<HttpClient>(),
+                                sp.GetRequiredService<IHttpClientFactory>(),
                                 sp.GetService<IScopeStore>(),
                                 new Mock<ILogger<InMemoryClientRepository>>().Object,
                                 DefaultStores.Clients(_context));

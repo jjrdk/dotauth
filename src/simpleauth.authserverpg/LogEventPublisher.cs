@@ -3,6 +3,7 @@
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
+    using SimpleAuth.Events;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Events.Logging;
 

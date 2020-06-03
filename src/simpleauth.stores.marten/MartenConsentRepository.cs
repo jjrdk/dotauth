@@ -12,7 +12,7 @@
     /// <summary>
     /// Defines the Marten based consent repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IConsentRepository" />
+    /// <seealso cref="IConsentRepository" />
     public class MartenConsentRepository : IConsentRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
@@ -33,7 +33,7 @@
         {
             using var session = _sessionFactory();
             var consents = await session.Query<Consent>()
-                .Where(x => x.ResourceOwner.Subject == subject)
+                .Where(x => x.Subject == subject)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
             return consents;

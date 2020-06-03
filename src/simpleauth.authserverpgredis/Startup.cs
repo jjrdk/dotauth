@@ -19,6 +19,8 @@ namespace SimpleAuth.AuthServerPgRedis
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
+    using Amazon;
+    using Amazon.Runtime;
     using Marten;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,10 +31,10 @@ namespace SimpleAuth.AuthServerPgRedis
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
 
-    using Newtonsoft.Json;
-
     using SimpleAuth;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Sms;
     using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.Stores.Redis;
@@ -41,23 +43,22 @@ namespace SimpleAuth.AuthServerPgRedis
 
     internal class Startup
     {
-        private static readonly string DefaultGoogleScopes = "openid,profile,email";
+        private const string SimpleAuthScheme = "simpleauth";
+        private const string DefaultGoogleScopes = "openid,profile,email";
         private readonly IConfiguration _configuration;
         private readonly SimpleAuthOptions _options;
 
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
+            bool.TryParse(_configuration["REDIRECT"], out var redirect);
             _options = new SimpleAuthOptions
             {
-                ApplicationName = _configuration["ApplicationName"] ?? "SimpleAuth",
+                RedirectToLogin = redirect,
+                ApplicationName = _configuration["SERVER:NAME"] ?? "SimpleAuth",
                 Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
                 Clients =
-                    sp => new MartenClientStore(
-                        sp.GetRequiredService<IDocumentSession>,
-                        sp.GetRequiredService<IScopeStore>(),
-                        sp.GetRequiredService<HttpClient>(),
-                        JsonConvert.DeserializeObject<Uri[]>),
+                    sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
                 Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
                 AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
                 AuthorizationCodes =
@@ -98,18 +99,18 @@ namespace SimpleAuth.AuthServerPgRedis
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient<HttpClient>();
+            services.AddHttpClient();
             services.AddSingleton<IDocumentStore>(
                 provider =>
                 {
                     var options = new SimpleAuthMartenOptions(
-                        _configuration["ConnectionString"],
+                        _configuration["DB:CONNECTIONSTRING"],
                         new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()));
                     return new DocumentStore(options);
                 });
             services.AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession());
 
-            services.AddSingleton(ConnectionMultiplexer.Connect(_configuration["RedisConfig"]));
+            services.AddSingleton(ConnectionMultiplexer.Connect(_configuration["DB:REDISCONFIG"]));
             services.AddTransient(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
             services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
 
@@ -124,22 +125,35 @@ namespace SimpleAuth.AuthServerPgRedis
                             new BrotliCompressionProvider(
                                 new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
-                .AddHttpContextAccessor()
-                .AddCors(
-                    options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
-                .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); });
-            services.AddAuthentication(CookieNames.CookieName)
+                .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); })
+                .AddAuthentication(
+                    options =>
+                    {
+                        options.DefaultScheme = CookieNames.CookieName;
+                        options.DefaultChallengeScheme = SimpleAuthScheme;
+                    })
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
+                .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, options => { })
                 .AddJwtBearer(
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.TokenValidationParameters = new TokenValidationParameters { ValidateAudience = false, };
-#if DEBUG
-                        cfg.RequireHttpsMetadata = false;
-#endif
+                        cfg.Authority = _configuration["OAUTH:AUTHORITY"];
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false,
+                            ValidIssuers = _configuration["OAUTH:VALIDISSUERS"]
+                                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Trim())
+                                .ToArray()
+                        };
+                        
+                        var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
+                        cfg.RequireHttpsMetadata = !allowHttp;
                     });
-            if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
+            services.ConfigureOptions<ConfigureOAuthOptions>();
+
+            if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
                     .AddCookie(CookieNames.ExternalCookieName)
@@ -147,10 +161,10 @@ namespace SimpleAuth.AuthServerPgRedis
                         opts =>
                         {
                             opts.AccessType = "offline";
-                            opts.ClientId = _configuration["Google:ClientId"];
-                            opts.ClientSecret = _configuration["Google:ClientSecret"];
+                            opts.ClientId = _configuration["GOOGLE:CLIENTID"];
+                            opts.ClientSecret = _configuration["GOOGLE:CLIENTSECRET"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
-                            var scopes = _configuration["Google:Scopes"] ?? DefaultGoogleScopes;
+                            var scopes = _configuration["GOOGLE:SCOPES"] ?? DefaultGoogleScopes;
                             foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim()))
                             {
@@ -158,11 +172,38 @@ namespace SimpleAuth.AuthServerPgRedis
                             }
                         });
             }
-
-            services.AddSimpleAuth(
-                _options,
-                new[] { CookieNames.CookieName, CookieNames.ExternalCookieName, JwtBearerDefaults.AuthenticationScheme },
-                assemblyTypes: new[] { typeof(IDefaultUi), typeof(IDefaultSmsUi) });
+            
+            if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
+                && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
+            {
+                services.AddSimpleAuth(
+                        _options,
+                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                        assemblies: new[]
+                        {
+                            (GetType().Namespace, GetType().Assembly),
+                            (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly),
+                            (typeof(IDefaultSmsUi).Namespace, typeof(IDefaultSmsUi).Assembly)
+                        })
+                    .AddSmsAuthentication(
+                        new AwsSmsClient(
+                            new BasicAWSCredentials(
+                                _configuration["AMAZON:ACCESSKEY"],
+                                _configuration["AMAZON:SECRETKEY"]),
+                            RegionEndpoint.EUNorth1,
+                            Globals.ApplicationName));
+            }
+            else
+            {
+                services.AddSimpleAuth(
+                    _options,
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                    assemblies: new[]
+                    {
+                        (GetType().Namespace, GetType().Assembly),
+                        (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
+                    });
+            }
         }
 
         public void Configure(IApplicationBuilder app)

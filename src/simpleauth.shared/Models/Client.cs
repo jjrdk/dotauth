@@ -48,13 +48,14 @@ namespace SimpleAuth.Shared.Models
         public string ClientName { get; set; }
 
         /// <summary>
-        /// Gets or sets the user claims to include in authentication token.
+        /// Gets or sets the user claims to include in authorization token.
         /// </summary>
         /// <value>
         /// The user claims to include in authentication token.
         /// </value>
+        [DataMember(Name = "included_user_claims")]
         public Regex[] UserClaimsToIncludeInAuthToken { get; set; } = Array.Empty<Regex>();
-
+        
         /// <summary>
         /// Gets or sets the logo uri
         /// </summary>

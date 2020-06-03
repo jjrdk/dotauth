@@ -21,8 +21,10 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
     using ViewModels;
 
     /// <summary>
@@ -32,6 +34,7 @@
     [ThrottleFilter]
     public class AuthenticateController : BaseAuthenticateController
     {
+        private const string InvalidCredentials = "invalid_credentials";
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
         private readonly LocalOpenIdUserAuthenticationAction _localOpenIdAuthentication;
@@ -175,7 +178,7 @@
                 {
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidRequest,
-                        "The resource owner credentials are not correct");
+                        Strings.TheResourceOwnerCredentialsAreNotCorrect);
                 }
 
                 resourceOwner.Claims = resourceOwner.Claims.Add(
@@ -230,12 +233,12 @@
                 await _eventPublisher.Publish(
                         new SimpleAuthError(
                             Id.Create(),
-                            "invalid_credentials",
+                            InvalidCredentials,
                             exception.Message,
                             string.Empty,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
-                ModelState.AddModelError("invalid_credentials", exception.Message);
+                ModelState.AddModelError(InvalidCredentials, exception.Message);
                 var viewModel = new AuthorizeViewModel();
                 await SetIdProviders(viewModel).ConfigureAwait(false);
                 RouteData.Values["view"] = "Index";
@@ -329,7 +332,7 @@
                                     DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError(
-                            "invalid_credentials",
+                            InvalidCredentials,
                             "Two factor authenticator is not properly configured");
                     }
                 }
@@ -357,7 +360,7 @@
                             string.Empty,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
-                ModelState.AddModelError("invalid_credentials", actionResult.ErrorMessage);
+                ModelState.AddModelError(InvalidCredentials, actionResult.ErrorMessage);
             }
 
             await SetIdProviders(viewModel).ConfigureAwait(false);

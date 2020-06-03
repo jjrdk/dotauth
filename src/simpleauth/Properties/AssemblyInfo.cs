@@ -15,6 +15,8 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("simpleauth.authserver")]
+[assembly: InternalsVisibleTo("simpleauth.authserverpg")]
+[assembly: InternalsVisibleTo("simpleauth.authserverpgredis")]
 [assembly: InternalsVisibleTo("simpleauth.sms")]
 [assembly: InternalsVisibleTo("simpleauth.tests")]
 [assembly: InternalsVisibleTo("simpleauth.acceptancetests")]

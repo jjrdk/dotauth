@@ -10,6 +10,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Events;
@@ -113,7 +114,7 @@
             var consent = new Consent
             {
                 GrantedScopes = new[] { "scope" },
-                Client = new Client { ClientId = "client", AllowedScopes = new[] { "scope" } }
+                ClientId = "client"
             };
             _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { consent });

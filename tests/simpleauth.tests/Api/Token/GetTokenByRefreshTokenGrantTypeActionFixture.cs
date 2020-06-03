@@ -29,6 +29,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Tests.Helpers;

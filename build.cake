@@ -35,14 +35,22 @@ Task("Version")
 		UpdateAssemblyInfo = false
 	});
 
-	Information("Branch: "+ versionInfo.BranchName);
-	Information("Version: "+ versionInfo.FullSemVer);
-	Information("Version: "+ versionInfo.MajorMinorPatch);
-
-    if(versionInfo.BranchName != "master")
+    buildVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName.Replace("features/", "") + "." + versionInfo.CommitsSinceVersionSource;
+	if(versionInfo.BranchName == "master")
+    {
+        buildVersion = versionInfo.MajorMinorPatch;
+    }
+    else
     {
         configuration = Argument("configuration", "Debug");
     }
+
+    Information("Build configuration: " + configuration);    
+	Information("Branch: " + versionInfo.BranchName);
+	Information("Version: " + versionInfo.FullSemVer);
+	Information("Version: " + versionInfo.MajorMinorPatch);
+    Information("Build version: " + buildVersion);
+    Information("CommitsSinceVersionSourcePadded: " + versionInfo.CommitsSinceVersionSourcePadded);
   });
 
 Task("Clean")
@@ -67,15 +75,8 @@ Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
 {
-    buildVersion = versionInfo.MajorMinorPatch + "-" + versionInfo.BranchName.Replace("features/", "") + "." + versionInfo.CommitsSinceVersionSource;
-	Information("Build version: " + buildVersion);
     var informationalVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
-	Information("CommitsSinceVersionSourcePadded: " + versionInfo.CommitsSinceVersionSourcePadded);
-    if(versionInfo.BranchName == "master" && versionInfo.CommitsSinceVersionSource == 0)
-    {
-        buildVersion = versionInfo.MajorMinorPatch;
-    }
-    var buildSettings = new DotNetCoreMSBuildSettings()
+	var buildSettings = new DotNetCoreMSBuildSettings()
         .SetConfiguration(configuration)
         .SetVersion(buildVersion)
         .SetInformationalVersion(informationalVersion);
@@ -163,6 +164,7 @@ Task("Postgres")
         }
     });
 
+
 Task("Postgres_Redis")
     .IsDependentOn("Postgres")
     .Does(() => 
@@ -243,6 +245,8 @@ Task("Docker-Build")
 
 	var publishSettings = new DotNetCorePublishSettings
     {
+        Runtime = "linux-musl-x64",
+        SelfContained = false,
         Configuration = configuration,
         OutputDirectory = "./artifacts/publish/inmemory/"
     };
@@ -260,11 +264,7 @@ Task("Docker-Build")
 	};
     DockerBuild(settings, "./");
 
-	publishSettings = new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = "./artifacts/publish/postgres/"
-    };
+	publishSettings.OutputDirectory = "./artifacts/publish/postgres/";
 
     DotNetCorePublish("./src/simpleauth.authserverpg/simpleauth.authserverpg.csproj", publishSettings);
     settings = new DockerImageBuildSettings {
@@ -279,11 +279,7 @@ Task("Docker-Build")
 	};
     DockerBuild(settings, "./");
 
-	publishSettings = new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = "./artifacts/publish/pgredis/"
-    };
+	publishSettings.OutputDirectory = "./artifacts/publish/pgredis/";
 
     DotNetCorePublish("./src/simpleauth.authserverpgredis/simpleauth.authserverpgredis.csproj", publishSettings);
     settings = new DockerImageBuildSettings {

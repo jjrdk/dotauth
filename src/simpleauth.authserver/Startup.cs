@@ -46,16 +46,16 @@ namespace SimpleAuth.AuthServer
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            bool.TryParse(_configuration["Redirect"], out var redirect);
+            bool.TryParse(_configuration["REDIRECT"], out var redirect);
             _options = new SimpleAuthOptions
             {
                 RedirectToLogin = redirect,
-                ApplicationName = _configuration["ServerName"] ?? "SimpleAuth",
+                ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
                 Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
                 Tickets = sp => new InMemoryTicketStore(),
                 Clients =
                     sp => new InMemoryClientRepository(
-                        sp.GetRequiredService<HttpClient>(),
+                        sp.GetRequiredService<IHttpClientFactory>(),
                         sp.GetRequiredService<IScopeStore>(),
                         sp.GetRequiredService<ILogger<InMemoryClientRepository>>(),
                         DefaultConfiguration.GetClients()),
@@ -111,19 +111,7 @@ namespace SimpleAuth.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<HttpClient>();
-            services.AddHttpContextAccessor()
-                .AddAntiforgery(
-                    options =>
-                    {
-                        options.FormFieldName = "XrsfField";
-                        options.HeaderName = "XSRF-TOKEN";
-                        options.SuppressXFrameOptionsHeader = false;
-                    })
-                .AddCors(
-                    options => options.AddPolicy(
-                        "AllowAll",
-                        p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders()))
+            services.AddHttpClient()
                 .AddLogging(log => { log.AddConsole(); });
             services.AddAuthentication(
                     options =>
@@ -137,18 +125,20 @@ namespace SimpleAuth.AuthServer
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.Authority = "https://localhost:5001";
+                        cfg.Authority = _configuration["OAUTH:AUTHORITY"];
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = new[] {"http://localhost:5000", "https://localhost:5001"}
+                            ValidIssuers = _configuration["OAUTH:VALIDISSUERS"]
+                                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Trim())
+                                .ToArray()
                         };
-#if DEBUG
                         cfg.RequireHttpsMetadata = false;
-#endif
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>();
-            if (!string.IsNullOrWhiteSpace(_configuration["Google:ClientId"]))
+
+            if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
                     .AddCookie(CookieNames.ExternalCookieName)
@@ -156,10 +146,10 @@ namespace SimpleAuth.AuthServer
                         opts =>
                         {
                             opts.AccessType = "offline";
-                            opts.ClientId = _configuration["Google:ClientId"];
-                            opts.ClientSecret = _configuration["Google:ClientSecret"];
+                            opts.ClientId = _configuration["GOOGLE:CLIENTID"];
+                            opts.ClientSecret = _configuration["GOOGLE:CLIENTSECRET"];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
-                            var scopes = _configuration["Google:Scopes"] ?? "openid,profile,email";
+                            var scopes = _configuration["GOOGLE:SCOPES"] ?? "openid,profile,email";
                             foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim()))
                             {
@@ -168,12 +158,12 @@ namespace SimpleAuth.AuthServer
                         });
             }
 
-            if (!string.IsNullOrWhiteSpace(_configuration["Amazon:AccessKey"])
-                && !string.IsNullOrWhiteSpace(_configuration["Amazon:SecretKey"]))
+            if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
+                && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
             {
                 services.AddSimpleAuth(
                         _options,
-                        new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
+                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                         assemblies: new[]
                         {
                             (GetType().Namespace, GetType().Assembly),
@@ -183,8 +173,8 @@ namespace SimpleAuth.AuthServer
                     .AddSmsAuthentication(
                         new AwsSmsClient(
                             new BasicAWSCredentials(
-                                _configuration["Amazon:AccessKey"],
-                                _configuration["Amazon:SecretKey"]),
+                                _configuration["AMAZON:ACCESSKEY"],
+                                _configuration["AMAZON:SECRETKEY"]),
                             RegionEndpoint.EUNorth1,
                             Globals.ApplicationName));
             }
@@ -192,7 +182,7 @@ namespace SimpleAuth.AuthServer
             {
                 services.AddSimpleAuth(
                     _options,
-                    new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                     assemblies: new[]
                     {
                         (GetType().Namespace, GetType().Assembly),
@@ -203,7 +193,9 @@ namespace SimpleAuth.AuthServer
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseResponseCompression().UseSimpleAuthMvc((typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
+            app.UseResponseCompression()
+                .UseSimpleAuthMvc(
+                    (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
         }
     }
 }

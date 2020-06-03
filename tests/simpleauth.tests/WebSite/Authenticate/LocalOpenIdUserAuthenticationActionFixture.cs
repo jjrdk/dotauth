@@ -11,6 +11,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Services;
     using Xunit;
 
     public sealed class LocalOpenIdUserAuthenticationActionFixture

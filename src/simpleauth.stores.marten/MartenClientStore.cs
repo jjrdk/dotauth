@@ -6,7 +6,6 @@
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Linq;
-    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -19,23 +18,14 @@
     public class MartenClientStore : IClientRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
-        private readonly IScopeStore _scopeRepository;
-        private readonly HttpClient _httpClient;
-        private readonly Func<string, Uri[]> _urlReader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MartenClientStore"/> class.
         /// </summary>
         /// <param name="sessionFactory">The session factory.</param>
-        /// <param name="scopeRepository">The scope repository.</param>
-        /// <param name="httpClient">The HTTP client.</param>
-        /// <param name="urlReader">The URL reader.</param>
-        public MartenClientStore(Func<IDocumentSession> sessionFactory, IScopeStore scopeRepository, HttpClient httpClient, Func<string, Uri[]> urlReader)
+        public MartenClientStore(Func<IDocumentSession> sessionFactory)
         {
             _sessionFactory = sessionFactory;
-            _scopeRepository = scopeRepository;
-            _httpClient = httpClient;
-            _urlReader = urlReader;
         }
 
         /// <inheritdoc />

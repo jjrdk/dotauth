@@ -43,7 +43,7 @@ namespace SimpleAuth.Controllers
         private readonly Func<string, Uri[]> _urlReader;
         private readonly IClientRepository _clientRepository;
         private readonly IScopeStore _scopeStore;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientsController"/> class.
@@ -54,7 +54,7 @@ namespace SimpleAuth.Controllers
         public ClientsController(
             IClientRepository clientRepository,
             IScopeStore scopeStore,
-            HttpClient httpClient)
+            IHttpClientFactory httpClient)
         {
             _clientRepository = clientRepository;
             _scopeStore = scopeStore;

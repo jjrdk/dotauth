@@ -20,13 +20,14 @@
     using System.Threading.Tasks;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
     using SimpleAuth.WebSite.User;
 
     /// <summary>
     /// Handles user related requests.
     /// </summary>
     /// <seealso cref="BaseController" />
-    [Authorize]
+    [Authorize("authenticated")]
     [ThrottleFilter]
     public class UserController : BaseController
     {
@@ -412,30 +413,31 @@
                 .GetConsentsForGivenUser(authenticatedUser.GetSubject(), cancellationToken)
                 .ConfigureAwait(false);
             var result = new List<ConsentViewModel>();
-            if (consents != null)
+            if (consents == null)
             {
-                var scopes = (await _scopeRepository.SearchByNames(
-                        cancellationToken,
-                        consents.SelectMany(x => x.GrantedScopes).Distinct().ToArray())
-                    .ConfigureAwait(false)).ToDictionary(x => x.Name, x => x);
-                result.AddRange(
-                    from consent in consents
-                    let client = consent.Client
-                    let scopeNames = consent.GrantedScopes
-                    let claims = consent.Claims
-                    select new ConsentViewModel
-                    {
-                        Id = consent.Id,
-                        ClientDisplayName = client == null ? string.Empty : client.ClientName,
-                        AllowedScopeDescriptions = scopeNames?.Any() != true
-                            ? new List<string>()
-                            : scopeNames.Select(g => scopes[g].Description).ToList(),
-                        AllowedIndividualClaims = claims ?? new List<string>(),
-                        //LogoUri = client?.LogoUri?.AbsoluteUri,
-                        PolicyUri = client?.PolicyUri?.AbsoluteUri,
-                        TosUri = client?.TosUri?.AbsoluteUri
-                    });
+                return Ok(result);
             }
+
+            var scopes = (await _scopeRepository.SearchByNames(
+                    cancellationToken,
+                    consents.SelectMany(x => x.GrantedScopes).Distinct().ToArray())
+                .ConfigureAwait(false)).ToDictionary(x => x.Name, x => x);
+            result.AddRange(
+                from consent in consents
+                let scopeNames = consent.GrantedScopes
+                let claims = consent.Claims
+                select new ConsentViewModel
+                {
+                    Id = consent.Id,
+                    ClientDisplayName = consent.ClientName ?? string.Empty,
+                    AllowedScopeDescriptions = scopeNames?.Any() != true
+                        ? new List<string>()
+                        : scopeNames.Select(g => scopes[g].Description).ToList(),
+                    AllowedIndividualClaims = claims ?? new List<string>(),
+                    //LogoUri = client?.LogoUri?.AbsoluteUri,
+                    PolicyUri = consent.PolicyUri?.AbsoluteUri,
+                    TosUri = consent.TosUri?.AbsoluteUri
+                });
 
             return Ok(result);
         }

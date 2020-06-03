@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared
+namespace SimpleAuth.Services
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -33,7 +33,7 @@ namespace SimpleAuth.Shared
         Task<ResourceOwner> AuthenticateResourceOwner(
             string login,
             string password,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the amr.

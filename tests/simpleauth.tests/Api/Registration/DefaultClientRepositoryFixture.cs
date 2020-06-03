@@ -25,23 +25,21 @@ namespace SimpleAuth.Tests.Api.Registration
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using SimpleAuth.Tests.Validators;
     using Xunit;
 
-    public sealed class DefaultClientRepositoryFixture : IDisposable
+    public sealed class DefaultClientRepositoryFixture
     {
         private readonly IClientRepository _clientRepositoryFake;
-        private readonly HttpClient _httpClient;
 
         public DefaultClientRepositoryFixture()
         {
-            _httpClient = new HttpClient();
             _clientRepositoryFake = new InMemoryClientRepository(
-                _httpClient,
+                new TestHttpClientFactory(),
                 new InMemoryScopeRepository(new[] { new Scope { Name = "scope" } }),
                 new Mock<ILogger<InMemoryClientRepository>>().Object,
                 new Client[0]);
@@ -70,7 +68,7 @@ namespace SimpleAuth.Tests.Api.Registration
                 RedirectionUrls = new[] { new Uri("https://localhost"), },
                 RequestUris = new[] { new Uri("https://localhost"), }
             };
-            var inserted = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
+            _ = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
 
             var result = await _clientRepositoryFake.Search(
                     new SearchClientsRequest { ClientIds = new[] { client.ClientId } },
@@ -137,11 +135,6 @@ namespace SimpleAuth.Tests.Api.Registration
 
             var result = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
             Assert.True(result);
-        }
-
-        public void Dispose()
-        {
-            _httpClient?.Dispose();
         }
     }
 }

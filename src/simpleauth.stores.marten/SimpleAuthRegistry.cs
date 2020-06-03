@@ -29,7 +29,7 @@
                 .GinIndexJsonData();
             For<Consent>()
                 .Identity(x => x.Id)
-                .Duplicate(x => x.ResourceOwner.Subject)
+                .Duplicate(x => x.Subject)
                 .GinIndexJsonData();
             For<Client>()
                 .Identity(x => x.ClientId)
@@ -56,13 +56,14 @@
                 .GinIndexJsonData();
             For<ConfirmationCode>().Identity(x => x.Value).GinIndexJsonData();
             For<GrantedToken>()
+                .Identity(x => x.Id)
                 .Duplicate(x => x.Scope)
                 .Duplicate(x => x.AccessToken)
                 .Duplicate(x => x.ClientId)
                 .Duplicate(x => x.CreateDateTime)
                 .Duplicate(x => x.ExpiresIn, dbType: NpgsqlDbType.Integer)
                 .Duplicate(x => x.IdToken)
-                .Duplicate(x => x.ParentTokenId, dbType: NpgsqlDbType.Uuid)
+                .Duplicate(x => x.ParentTokenId)
                 .Duplicate(x => x.RefreshToken)
                 .Duplicate(x => x.TokenType, "character(10)")
                 .GinIndexJsonData();

@@ -32,12 +32,9 @@
             //#if DEBUG
             //options.RequireHttpsMetadata = false;
             //#endif
-            //options.AuthenticationMethod = OpenIdConnectRedirectBehavior.RedirectGet;
-            //options.DisableTelemetry = true;
+
             options.ClientId = "web";
             options.ClientSecret = "secret";
-            //options.ResponseType = OpenIdConnectResponseType.Code;
-            //options.ResponseMode = OpenIdConnectResponseMode.FormPost;
             options.Scope.Clear();
             options.Scope.Add("openid");
             options.Scope.Add("profile");

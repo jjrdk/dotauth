@@ -21,6 +21,7 @@ namespace SimpleAuth.MiddleWare
     using System;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http.Features;
+    using SimpleAuth.Events;
     using SimpleAuth.Shared.Errors;
 
     internal class ExceptionHandlerMiddleware

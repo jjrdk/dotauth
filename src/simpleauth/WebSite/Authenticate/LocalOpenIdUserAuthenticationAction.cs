@@ -24,7 +24,9 @@ namespace SimpleAuth.WebSite.Authenticate
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
 
     internal class LocalOpenIdUserAuthenticationAction
     {

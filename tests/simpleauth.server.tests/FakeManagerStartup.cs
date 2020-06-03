@@ -41,7 +41,7 @@ namespace SimpleAuth.Server.Tests
 
         private void RegisterServices(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<HttpClient>();
+            serviceCollection.AddHttpClient();
             serviceCollection.AddSimpleAuth(
                 new SimpleAuthOptions
                 {

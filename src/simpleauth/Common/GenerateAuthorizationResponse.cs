@@ -27,6 +27,7 @@ namespace SimpleAuth.Common
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Shared.Events.OAuth;
 
     internal class GenerateAuthorizationResponse
@@ -103,7 +104,9 @@ namespace SimpleAuth.Common
                             userInformationPayload,
                             idTokenPayload,
                             cancellationToken: cancellationToken,
-                            claimsPrincipal.Claims.Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type))).ToArray())
+                            claimsPrincipal.Claims
+                                .Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                                .ToArray())
                         .ConfigureAwait(false);
                     newAccessTokenGranted = true;
                 }

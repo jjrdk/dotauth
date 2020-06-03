@@ -19,11 +19,15 @@ namespace SimpleAuth.AuthServerPg
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Server.Kestrel.Core;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Logging;
 
     public class Program
     {
         public static async Task Main()
         {
+#if DEBUG
+            IdentityModelEventSource.ShowPII = true;
+#endif
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
             await new WebHostBuilder().UseKestrel(

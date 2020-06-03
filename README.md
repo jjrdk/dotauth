@@ -10,7 +10,7 @@ All EntityFramework dependencies have been stripped away. It is up to you to pro
 
 ## Runtime Environment
 
-The project runs under .NET core >= 2.1.
+The project runs under .NET core >= 3.1.
 
 This project has been tested to run in Docker, AWS Lambda and as a simple process, in both Windows and Linux.
 
@@ -25,6 +25,24 @@ The support for SCIM has been removed.
 To build the project, run the build script (build.ps1 on Windows, build.sh on Linux/Mac). This will generate a set of nuget packages which can be used to integrate SimpleAuth into an ASP.NET Core server project.
 
 See the example [Auth Server project](https://github.com/jjrdk/SimpleAuth/tree/master/src/simpleauth.authserver) for an example of how to use SimpleAuth as an auth server.
+
+## Configuration Values for Demo Servers
+
+The demo servers can be customized by setting the environment variables defined below. In addition to the application specific variables below, the standard ASP.NET environments can also be passed.
+
+Note that some environment variables use double underscore ```__```. This is to ensure compatibility with the .NET conversion from environment variable to hierarchical configuration value.
+
+|Environment Variable|Type|Description|
+|---|---|---|
+|SERVER__NAME|string|Defines a custom name to display as the application name in UI headers. Default value is ```SimpleAuth```|
+|SERVER__REDIRECT|bool|When set to ```true``` then requests for ```/``` or ```/home``` are redirected to ```/authenticate```. This effectively hides the default home page.|
+|SERVER__ALLOWHTTP|bool|When set to ```true``` then allows downloading OAuth metadata over HTTP. This option should only be set in development environments. Default value is ```false```|
+|OAUTH__AUTHORITY|url string|Used to set the OAuth server where authorization for access to management UI.|
+|OAUTH__VALIDISSUERS|comma separated url strings|The comma-separated set of valid issuers for access tokens.|
+|DB__CONNECTIONSTRING|string|Sets the connection string when using a backing database.|
+|DB__REDISCONFIG|string|Sets the connection string for the redis server.|
+|AMAZON__ACCESSKEY|string|When set then the server will configure sms authentication.|
+|AMAZON__SECRETKEY|string|When set then the server will configure sms authentication.|
 
 ## Reporting Issues and Bugs
 

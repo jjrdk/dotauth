@@ -27,6 +27,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
     using Xunit;
 
     public class GenerateAndSendCodeActionFixture

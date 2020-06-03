@@ -26,8 +26,10 @@ namespace SimpleAuth.Api.Authorization
     using System.Security.Principal;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared.Errors;
 
     internal class AuthorizationActions
