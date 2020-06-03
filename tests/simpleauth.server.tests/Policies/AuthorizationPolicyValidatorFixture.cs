@@ -21,6 +21,7 @@ namespace SimpleAuth.Server.Tests.Policies
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Logging;
     using Moq;
+    using SimpleAuth.Events;
     using SimpleAuth.Parameters;
     using SimpleAuth.Policies;
     using SimpleAuth.Repositories;

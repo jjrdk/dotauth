@@ -20,6 +20,7 @@
     using System.Threading.Tasks;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
     using SimpleAuth.WebSite.User;
 
     /// <summary>

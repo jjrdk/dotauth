@@ -10,7 +10,7 @@
     /// <summary>
     /// Defines the marten based authorization code store.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IAuthorizationCodeStore" />
+    /// <seealso cref="IAuthorizationCodeStore" />
     public class MartenAuthorizationCodeStore : IAuthorizationCodeStore
     {
         private readonly Func<IDocumentSession> _sessionFactory;

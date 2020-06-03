@@ -17,8 +17,10 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Net.Http.Headers;
+    using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
 
     /// <summary>
     /// Defines the token controller.

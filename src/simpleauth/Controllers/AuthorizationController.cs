@@ -32,8 +32,10 @@ namespace SimpleAuth.Controllers
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
 
     /// <summary>
     /// Defines the authorization controller.

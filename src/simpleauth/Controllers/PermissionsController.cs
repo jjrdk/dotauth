@@ -23,6 +23,7 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;

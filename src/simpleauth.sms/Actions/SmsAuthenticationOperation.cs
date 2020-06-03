@@ -6,6 +6,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.WebSite.User;
 
     internal sealed class SmsAuthenticationOperation

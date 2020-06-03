@@ -21,8 +21,10 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
     using ViewModels;
 
     /// <summary>

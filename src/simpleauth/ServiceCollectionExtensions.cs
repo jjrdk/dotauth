@@ -38,6 +38,7 @@ namespace SimpleAuth
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using SimpleAuth.Controllers;
+    using SimpleAuth.Events;
     using SimpleAuth.Extensions;
     using SimpleAuth.Filters;
     using SimpleAuth.MiddleWare;

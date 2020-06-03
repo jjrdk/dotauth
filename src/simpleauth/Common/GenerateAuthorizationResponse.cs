@@ -27,6 +27,7 @@ namespace SimpleAuth.Common
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Shared.Events.OAuth;
 
     internal class GenerateAuthorizationResponse

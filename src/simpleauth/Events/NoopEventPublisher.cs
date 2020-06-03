@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.Events
+﻿namespace SimpleAuth.Events
 {
     using System.Threading.Tasks;
     using SimpleAuth.Shared;

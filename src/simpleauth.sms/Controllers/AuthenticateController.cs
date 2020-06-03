@@ -26,7 +26,9 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Filters;
+    using SimpleAuth.Services;
     using SimpleAuth.WebSite.User;
 
     /// <summary>

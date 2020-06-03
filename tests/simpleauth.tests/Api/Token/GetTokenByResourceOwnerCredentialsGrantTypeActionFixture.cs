@@ -26,8 +26,10 @@ namespace SimpleAuth.Tests.Api.Token
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Events.OAuth;
     using SimpleAuth.Tests.Helpers;

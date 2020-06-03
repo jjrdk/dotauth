@@ -42,7 +42,7 @@ namespace SimpleAuth.Services
             return _twoFactorServices?.FirstOrDefault(s => s.Name == twoFactorAuthType);
         }
 
-        public ITwoFactorAuthenticationService[] GetAll()
+        public IEnumerable<ITwoFactorAuthenticationService> GetAll()
         {
             return _twoFactorServices;
         }

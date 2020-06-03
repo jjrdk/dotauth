@@ -31,6 +31,7 @@ namespace SimpleAuth.Server.Tests
     using Moq;
 
     using SimpleAuth.Server.Tests.MiddleWares;
+    using SimpleAuth.Services;
     using SimpleAuth.Shared;
     using SimpleAuth.Sms;
     using SimpleAuth.Sms.Services;

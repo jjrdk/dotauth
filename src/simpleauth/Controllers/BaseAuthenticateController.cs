@@ -36,7 +36,9 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Properties;
+    using SimpleAuth.Services;
     using SimpleAuth.WebSite.User;
     using ViewModels;
 

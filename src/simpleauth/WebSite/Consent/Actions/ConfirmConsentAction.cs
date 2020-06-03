@@ -30,6 +30,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Events.Openid;
 

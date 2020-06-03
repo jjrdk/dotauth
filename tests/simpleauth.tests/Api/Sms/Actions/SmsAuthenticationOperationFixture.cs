@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Moq;
+    using SimpleAuth.Events;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms.Actions;

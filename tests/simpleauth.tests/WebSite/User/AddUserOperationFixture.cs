@@ -23,6 +23,7 @@ namespace SimpleAuth.Tests.WebSite.User
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.WebSite.User;
     using Xunit;
 

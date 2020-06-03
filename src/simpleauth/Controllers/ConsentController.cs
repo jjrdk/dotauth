@@ -29,6 +29,7 @@ namespace SimpleAuth.Controllers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using ViewModels;
 
