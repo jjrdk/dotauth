@@ -33,6 +33,7 @@
                     .Configure(startup.Configure));
             Client = Server.CreateClient();
             SharedCtx.Client = Client;
+            SharedCtx.Handler = () => Server.CreateHandler();
         }
 
         public void Dispose()

@@ -4,14 +4,20 @@
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
-    using Newtonsoft.Json;
     using Npgsql;
-    using SimpleAuth.Shared.Repositories;
     using System;
+    using System.Net.Http;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
 
     using SimpleAuth.Repositories;
     using SimpleAuth.UI;
+
+    internal class TestDelegatingHandler : DelegatingHandler
+    {
+        public TestDelegatingHandler(HttpMessageHandler innerHandler) : base(innerHandler)
+        {
+        }
+    }
 
     public class ServerStartup
     {
@@ -43,8 +49,11 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient<HttpClient>()
+                .AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
             services.AddSingleton<IDocumentStore>(
-                provider => new DocumentStore(new SimpleAuthMartenOptions(_connectionString, new NulloMartenLogger(), _schemaName)));
+                provider => new DocumentStore(
+                    new SimpleAuthMartenOptions(_connectionString, new NulloMartenLogger(), _schemaName)));
             services.AddTransient<Func<IDocumentSession>>(
                 sp =>
                 {
@@ -69,7 +78,8 @@
                         cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     })
                 .AddCookie(DefaultSchema)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
                         cfg.RequireHttpsMetadata = false;

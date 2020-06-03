@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests
 {
     using System;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using global::Marten;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,13 +10,19 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Npgsql;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.UI;
     using StackExchange.Redis;
+
+    internal class TestDelegatingHandler : DelegatingHandler
+    {
+        public TestDelegatingHandler(HttpMessageHandler innerHandler) : base(innerHandler)
+        {
+        }
+    }
 
     internal class ServerStartup
     {
@@ -60,6 +67,7 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient<HttpClient>().AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
             var db = new Random(DateTime.UtcNow.Millisecond).Next(16);
             services.AddSingleton(ConnectionMultiplexer.Connect("localhost"));
             services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase(db));
