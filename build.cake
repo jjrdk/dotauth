@@ -245,6 +245,8 @@ Task("Docker-Build")
 
 	var publishSettings = new DotNetCorePublishSettings
     {
+        Runtime = "linux-musl-x64",
+        SelfContained = false,
         Configuration = configuration,
         OutputDirectory = "./artifacts/publish/inmemory/"
     };
@@ -262,11 +264,7 @@ Task("Docker-Build")
 	};
     DockerBuild(settings, "./");
 
-	publishSettings = new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = "./artifacts/publish/postgres/"
-    };
+	publishSettings.OutputDirectory = "./artifacts/publish/postgres/";
 
     DotNetCorePublish("./src/simpleauth.authserverpg/simpleauth.authserverpg.csproj", publishSettings);
     settings = new DockerImageBuildSettings {
@@ -281,11 +279,7 @@ Task("Docker-Build")
 	};
     DockerBuild(settings, "./");
 
-	publishSettings = new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = "./artifacts/publish/pgredis/"
-    };
+	publishSettings.OutputDirectory = "./artifacts/publish/pgredis/";
 
     DotNetCorePublish("./src/simpleauth.authserverpgredis/simpleauth.authserverpgredis.csproj", publishSettings);
     settings = new DockerImageBuildSettings {
