@@ -31,11 +31,11 @@
         public async Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
-            var keysets = await session.Query<JsonWebKey>()
-                .Where(x => !x.HasPrivateKey)
+            var keysets = await session.Query<JsonWebKeyContainer>()
+                .Where(x => x.Jwk.HasPrivateKey == false)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
-            var jwks = keysets.ToSet();
+            var jwks = keysets.Select(x=>x.Jwk).ToSet();
             return jwks;
         }
 
@@ -43,74 +43,74 @@
         public async Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
-            var webKeys = await session.Query<JsonWebKey>()
-                .Where(x => x.Alg == alg && x.Use == JsonWebKeyUseNames.Sig)
+            var webKeys = await session.Query<JsonWebKeyContainer>()
+                .Where(x => x.Jwk.HasPrivateKey == true && x.Jwk.Alg == alg && x.Jwk.Use == JsonWebKeyUseNames.Sig)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            var webKey = webKeys.First(x => x.HasPrivateKey && x.KeyOps.Contains(KeyOperations.Sign));
+            var webKey = webKeys.First(x => x.Jwk.KeyOps.Contains(KeyOperations.Sign));
 
-            if (webKey.X5c != null)
+            if (webKey.Jwk.X5c != null)
             {
-                foreach (var certString in webKey.X5c)
+                foreach (var certString in webKey.Jwk.X5c)
                 {
                     return new X509SigningCredentials(new X509Certificate2(Convert.FromBase64String(certString)));
                 }
             }
 
-            return new SigningCredentials(webKey, alg);
+            return new SigningCredentials(webKey.Jwk, alg);
         }
 
         /// <inheritdoc />
         public async Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
-            var webKeys = await session.Query<JsonWebKey>()
+            var webKeys = await session.Query<JsonWebKeyContainer>()
                 .Where(
-                    x => x.HasPrivateKey && x.Alg == alg && x.Use == JsonWebKeyUseNames.Enc)
+                    x => x.Jwk.HasPrivateKey == true && x.Jwk.Alg == alg && x.Jwk.Use == JsonWebKeyUseNames.Enc)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            var webKey = webKeys.First(x => x.KeyOps.Contains(KeyOperations.Encrypt));
+            var webKey = webKeys.First(x => x.Jwk.KeyOps.Contains(KeyOperations.Encrypt));
 
-            if (webKey.X5c != null)
+            if (webKey.Jwk.X5c != null)
             {
-                foreach (var certString in webKey.X5c)
+                foreach (var certString in webKey.Jwk.X5c)
                 {
                     return new X509SecurityKey(new X509Certificate2(Convert.FromBase64String(certString)));
                 }
             }
 
-            return webKey;
+            return webKey.Jwk;
         }
 
         /// <inheritdoc />
         public async Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
-            var webKeys = await session.Query<JsonWebKey>()
-                .Where(x => x.Use == JsonWebKeyUseNames.Sig)
+            var webKeys = await session.Query<JsonWebKeyContainer>()
+                .Where(x => x.Jwk.Use == JsonWebKeyUseNames.Sig)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            var webKey = webKeys.OrderBy(x => x.KeyId).First(x => x.KeyOps.Contains(KeyOperations.Sign));
+            var webKey = webKeys.OrderBy(x => x.Jwk.KeyId).First(x => x.Jwk.KeyOps.Contains(KeyOperations.Sign));
 
-            if (webKey.X5c != null)
+            if (webKey.Jwk.X5c != null)
             {
-                foreach (var certString in webKey.X5c)
+                foreach (var certString in webKey.Jwk.X5c)
                 {
                     return new X509SigningCredentials(new X509Certificate2(Convert.FromBase64String(certString)));
                 }
             }
 
-            return new SigningCredentials(webKey, webKey.Alg);
+            return new SigningCredentials(webKey.Jwk, webKey.Jwk.Alg);
         }
 
         /// <inheritdoc />
         public async Task<bool> Add(JsonWebKey key, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
-            session.Store(key);
+            session.Store(JsonWebKeyContainer.Create(key));
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             return true;
@@ -122,10 +122,11 @@
             using var session = _sessionFactory();
             foreach (var key in keySet.Keys)
             {
-                session.Delete<JsonWebKey>(key.KeyId);
+                var keyKeyId = key.KeyId;
+                session.DeleteWhere<JsonWebKeyContainer>(x => x.Jwk.KeyId == keyKeyId);
             }
 
-            session.Store(keySet.Keys);
+            session.Store(keySet.Keys.Select(JsonWebKeyContainer.Create).ToArray());
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             return true;

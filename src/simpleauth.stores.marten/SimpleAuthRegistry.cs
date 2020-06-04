@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Stores.Marten
 {
     using global::Marten;
-    using Microsoft.IdentityModel.Tokens;
     using NpgsqlTypes;
     using SimpleAuth.Shared.Models;
 
@@ -67,12 +66,12 @@
                 .Duplicate(x => x.RefreshToken)
                 .Duplicate(x => x.TokenType, "character(10)")
                 .GinIndexJsonData();
-            For<JsonWebKey>()
-                .Identity(x => x.Kid)
-                .Duplicate(x => x.Alg, pgType: "character(20)")
-                .Duplicate(x => x.Use, "character(3)")
-                .Duplicate(x => x.HasPrivateKey, dbType: NpgsqlDbType.Boolean)
-                .Index(x => x.KeyOps)
+            For<JsonWebKeyContainer>()
+                .Identity(x => x.Id)
+                .Duplicate(x => x.Jwk.Alg, pgType: "character(20)")
+                .Duplicate(x => x.Jwk.Use, "character(3)")
+                .Duplicate(x => x.Jwk.HasPrivateKey, dbType: NpgsqlDbType.Boolean)
+                .Index(x => x.Jwk.KeyOps)
                 .GinIndexJsonData();
         }
     }
