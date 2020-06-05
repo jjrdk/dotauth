@@ -123,8 +123,7 @@ namespace SimpleAuth.Api.PermissionController
                             addPermissionParameter.ResourceSetId));
                 }
 
-                if (resourceSet.Scopes == null
-                    || addPermissionParameter.Scopes.Any(s => !resourceSet.Scopes.Contains(s)))
+                if (addPermissionParameter.Scopes.Any(s => !resourceSet.Scopes.Contains(s)))
                 {
                     throw new SimpleAuthException(ErrorCodes.InvalidScope, Strings.TheScopeAreNotValid);
                 }

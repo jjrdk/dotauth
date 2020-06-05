@@ -60,7 +60,7 @@ namespace SimpleAuth.Shared.Models
         /// The scopes.
         /// </value>
         [DataMember(Name = "resource_scopes")]
-        public string[] Scopes { get; set; }
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the icon URI.

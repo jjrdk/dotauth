@@ -38,8 +38,9 @@
                 .Index(x => x.ResponseTypes)
                 .Index(x => x.Claims)
                 .GinIndexJsonData();
-            For<ResourceSet>()
+            For<OwnedResourceSet>()
                 .Identity(x => x.Id)
+                .Duplicate(x => x.Owner)
                 .Duplicate(x => x.Name)
                 .Duplicate(x => x.Type)
                 .GinIndexJsonData();
