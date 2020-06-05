@@ -3,11 +3,26 @@
     using System;
     using Microsoft.IdentityModel.Tokens;
 
+    /// <summary>
+    /// Defines the JWK container.
+    /// </summary>
     public class JsonWebKeyContainer
     {
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the JWK.
+        /// </summary>
         public JsonWebKey Jwk { get; set; }
 
+        /// <summary>
+        /// Create a container instance from a key.
+        /// </summary>
+        /// <param name="key">The JWK to contain.</param>
+        /// <returns>A <see cref="JsonWebKeyContainer"/> instance.</returns>
         public static JsonWebKeyContainer Create(JsonWebKey key)
         {
             return new JsonWebKeyContainer
