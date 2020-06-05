@@ -44,6 +44,7 @@ namespace SimpleAuth.Controllers
     public class PermissionsController : ControllerBase
     {
         private readonly ITicketStore _ticketStore;
+        private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IEventPublisher _eventPublisher;
         private readonly RequestPermissionHandler _requestPermission;
 
@@ -62,6 +63,7 @@ namespace SimpleAuth.Controllers
         {
             _ticketStore = ticketStore;
             _eventPublisher = eventPublisher;
+            _resourceSetRepository = resourceSetRepository;
             _requestPermission = new RequestPermissionHandler(resourceSetRepository, ticketStore, options);
         }
 
@@ -76,7 +78,7 @@ namespace SimpleAuth.Controllers
             var owner = User.GetSubject();
             var tickets = await _ticketStore.GetAll(owner, cancellationToken).ConfigureAwait(false);
 
-            return Ok(tickets.Where(x => !x.IsAuthorizedByRo).ToArray());
+            return Ok(tickets.Where(x => x.IsAuthorizedByRo == false).ToArray());
         }
 
         /// <summary>
@@ -127,7 +129,10 @@ namespace SimpleAuth.Controllers
         {
             if (permissionRequest == null)
             {
-                return BuildError(ErrorCodes.InvalidRequest, Strings.NoParameterInBodyRequest, HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    Strings.NoParameterInBodyRequest,
+                    HttpStatusCode.BadRequest);
             }
 
             if (string.IsNullOrWhiteSpace(permissionRequest.ResourceSetId))
@@ -138,16 +143,34 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
+            if (permissionRequest.Scopes == null)
+            {
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    string.Format(Strings.TheParameterNeedsToBeSpecified, "scopes"),
+                    HttpStatusCode.BadRequest);
+            }
+
             var subject = User.GetSubject();
+            var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, permissionRequest.ResourceSetId);
+            if (resourceSetOwner == null)
+            {
+                return BuildError(
+                    ErrorCodes.InvalidResourceSetId,
+                    string.Format(Strings.TheResourceSetDoesntExist, permissionRequest.ResourceSetId),
+                    HttpStatusCode.BadRequest);
+            }
 
             var (ticketId, requesterClaims) = await _requestPermission
-                .Execute(subject, cancellationToken, permissionRequest)
+                .Execute(resourceSetOwner, cancellationToken, permissionRequest)
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
                     new UmaTicketCreated(
                         Id.Create(),
                         User.GetClientId(),
                         ticketId,
+                        resourceSetOwner,
+                        subject,
                         requesterClaims,
                         DateTimeOffset.UtcNow,
                         permissionRequest))
@@ -169,18 +192,33 @@ namespace SimpleAuth.Controllers
         {
             if (permissionRequests == null)
             {
-                return BuildError(ErrorCodes.InvalidRequest, Strings.NoParameterInBodyRequest, HttpStatusCode.BadRequest);
+                return BuildError(
+                    ErrorCodes.InvalidRequest,
+                    Strings.NoParameterInBodyRequest,
+                    HttpStatusCode.BadRequest);
+            }
+            
+            var ids = permissionRequests.Select(x => x.ResourceSetId).ToArray();
+            var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, ids);
+            if (resourceSetOwner == null)
+            {
+                return BuildError(
+                    ErrorCodes.InvalidResourceSetId,
+                    string.Join(" ", ids),
+                    HttpStatusCode.BadRequest);
             }
 
             var subject = User.GetSubject();
             var (ticketId, requesterClaims) = await _requestPermission
-                .Execute(subject, cancellationToken, permissionRequests)
+                .Execute(resourceSetOwner, cancellationToken, permissionRequests)
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
                     new UmaTicketCreated(
                         Id.Create(),
                         User.GetClientId(),
                         ticketId,
+                        resourceSetOwner,
+                        subject,
                         requesterClaims,
                         DateTimeOffset.UtcNow,
                         permissionRequests))

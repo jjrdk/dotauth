@@ -52,7 +52,7 @@
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var rec = _resources.FirstOrDefault(p => p.Resource.Id == id);
+            var rec = _resources.FirstOrDefault(p => p.Owner == owner && p.Resource.Id == id);
 
             return Task.FromResult(rec?.Resource);
         }
@@ -70,8 +70,14 @@
             return Task.FromResult(result);
         }
 
-        /// <param name="owner"></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <inheritdoc />
+        public Task<string> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
+        {
+            var owners = _resources.Where(r => ids.Contains(r.Resource.Id)).Select(x => x.Owner).Distinct();
+
+            return Task.FromResult(owners.SingleOrDefault());
+        }
+
         /// <inheritdoc />
         public Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken)
         {
@@ -119,11 +125,14 @@
 
             var sortedResult = result.OrderBy(c => c.Id).ToArray();
             var nbResult = sortedResult.Length;
-
+            if (parameter.TotalResults > 0)
+            {
+                sortedResult = sortedResult.Skip(parameter.StartIndex).Take(parameter.TotalResults).ToArray();
+            }
             return Task.FromResult(
                 new PagedResult<ResourceSet>
                 {
-                    Content = sortedResult.Skip(parameter.StartIndex).Take(parameter.TotalResults).ToArray(),
+                    Content = sortedResult,
                     StartIndex = parameter.StartIndex,
                     TotalResults = nbResult
                 });
