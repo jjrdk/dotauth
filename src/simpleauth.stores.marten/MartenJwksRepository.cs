@@ -13,7 +13,7 @@
     /// <summary>
     /// Defines the marten based jwks repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IJwksRepository" />
+    /// <seealso cref="IJwksRepository" />
     public class MartenJwksRepository : IJwksRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
