@@ -1,4 +1,4 @@
-@model System.Collections.Generic.List<SimpleAuth.ViewModels.ConsentViewModel>
+@model System.Collections.Generic.IList<SimpleAuth.ViewModels.ConsentViewModel>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -41,11 +41,11 @@
                         <div class="col s12 m3">
                             @if (string.IsNullOrWhiteSpace(client.First().LogoUri))
                             {
-                                <img class="center-align left" alt="logo" src="@Url.Content("~/img/oauth2.png")" style="width:100%"  />
+                                <img class="center-align left" alt="logo" src="@Url.Content("~/img/oauth2.png")" alt="logo" width="250" height="250"  />
                             }
                             else
                             {
-                                <img class="center-align left" alt="logo" src="@Url.Content(client.First().LogoUri)" style="width:100%"  />
+                                <img class="center-align left" alt="logo" src="@Url.Content(client.First().LogoUri)" alt="logo" width="250" height="250"  />
                             }
                         </div>
                         <div class="col s12 m9">
@@ -57,7 +57,7 @@
                                     @if (!consent.AllowedScopeDescriptions.Any())
                                     {
                                     <li class="collection-item grey-text text-lighten-1">
-                                        <i class="material-icons prefix">info_outline</i>No escopes
+                                        <i class="material-icons prefix">info_outline</i>No scopes
                                     </li>
                                     }
                                     else

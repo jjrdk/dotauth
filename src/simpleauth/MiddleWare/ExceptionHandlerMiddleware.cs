@@ -80,7 +80,6 @@ namespace SimpleAuth.MiddleWare
                         .Add("message", exception.Message);
                 }
 
-                //context.Response.Redirect(context.Request.Path+context.Request.QueryString);
                 if (!(context.Features[typeof(IEndpointFeature)] is IEndpointFeature endpointFeature))
                 {
                     context.Response.Clear();

@@ -96,17 +96,15 @@
                 (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false))
                 .Where(a => !string.IsNullOrWhiteSpace(a.DisplayName));
             var viewModel = new ProfileViewModel(ro.Claims);
-            //if (profiles != null && profiles.Any())
+
+            foreach (var profile in ro.ExternalLogins)
             {
-                foreach (var profile in ro.ExternalLogins)
-                {
-                    var record = new IdentityProviderViewModel(profile.Issuer, profile.Subject);
-                    viewModel.LinkedIdentityProviders.Add(record);
-                }
+                var record = new IdentityProviderViewModel(profile.Issuer, profile.Subject);
+                viewModel.LinkedIdentityProviders.Add(record);
             }
 
             viewModel.UnlinkedIdentityProviders = authenticationSchemes
-                .Where(a => !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
+                .Where(a => !a.DisplayName.StartsWith('_') && !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
                 .Select(p => new IdentityProviderViewModel(p.Name))
                 .ToList();
             return Ok(viewModel);

@@ -71,7 +71,7 @@ namespace SimpleAuth.AuthServerPgRedis
                         TimeSpan.FromMinutes(30)),
                 Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
                 JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
-                Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>()),
+                Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _options.TicketLifeTime),
                 Tokens =
                     sp => new RedisTokenStore(
                         sp.GetRequiredService<IDatabaseAsync>(),
@@ -147,7 +147,7 @@ namespace SimpleAuth.AuthServerPgRedis
                                 .Select(x => x.Trim())
                                 .ToArray()
                         };
-                        
+
                         var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
                         cfg.RequireHttpsMetadata = !allowHttp;
                     });
@@ -172,7 +172,7 @@ namespace SimpleAuth.AuthServerPgRedis
                             }
                         });
             }
-            
+
             if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
                 && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
             {

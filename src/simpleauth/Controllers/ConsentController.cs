@@ -29,6 +29,7 @@ namespace SimpleAuth.Controllers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using ViewModels;
@@ -101,6 +102,7 @@ namespace SimpleAuth.Controllers
         /// <param name="code">The code.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
+        [HttpGet]
         public async Task<IActionResult> Index(string code, CancellationToken cancellationToken)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
@@ -138,17 +140,21 @@ namespace SimpleAuth.Controllers
         /// <param name="code">The code.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
+        [HttpPost]
         public async Task<IActionResult> Confirm(string code, CancellationToken cancellationToken)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await _authenticationService
-                .GetAuthenticatedUser(this, CookieNames.CookieName)
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName)
                 .ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var actionResult = await _confirmConsent.Execute(parameter, authenticatedUser, issuerName, cancellationToken)
+            var actionResult = await _confirmConsent
+                .Execute(parameter, authenticatedUser, issuerName, cancellationToken)
                 .ConfigureAwait(false);
-            LogConsentAccepted(authenticatedUser.GetSubject(), request.client_id, request.scope);
+            var subject = authenticatedUser.GetSubject();
+            await _eventPublisher.Publish(
+                    new ConsentAccepted(Id.Create(), subject, request.client_id, request.scope, DateTimeOffset.UtcNow))
+                .ConfigureAwait(false);
             return actionResult.CreateRedirectionFromActionResult(request);
         }
 
@@ -158,23 +164,18 @@ namespace SimpleAuth.Controllers
         /// </summary>
         /// <param name="code">Encrypted &amp; signed authorization request</param>
         /// <returns>Redirect to the callback url.</returns>
-        public Task<IActionResult> Cancel(string code)
+        [HttpPost]
+        public async Task<IActionResult> Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            LogConsentRejected(request.client_id, request.scope);
-            var result = Redirect(request.redirect_uri.AbsoluteUri);
-
-            return Task.FromResult<IActionResult>(result);
-        }
-
-        private void LogConsentAccepted(string subject, string clientId, string scope)
-        {
-            _eventPublisher.Publish(new ConsentAccepted(Id.Create(), subject, clientId, scope, DateTimeOffset.UtcNow));
-        }
-
-        private void LogConsentRejected(string clientId, string scope)
-        {
-            _eventPublisher.Publish(new ConsentRejected(Id.Create(), clientId, scope.Trim().Split(' '), DateTimeOffset.UtcNow));
+            await _eventPublisher.Publish(
+                    new ConsentRejected(
+                        Id.Create(),
+                        request.client_id,
+                        request.scope.Trim().Split(' '),
+                        DateTimeOffset.UtcNow))
+                .ConfigureAwait(false);
+            return Redirect(request.redirect_uri.AbsoluteUri);
         }
     }
 }
