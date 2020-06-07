@@ -29,50 +29,58 @@
                     <div class="row">
                         @if (Model.AllowedScopeDescriptions.Any())
                         {
-                        <div class="col s12">
-                        <ul class="collection  with-header">
-                            <li class="collection-header"><h5>Scopes</h5></li>
-                            @foreach (var scope in Model.AllowedScopeDescriptions)
-                            {
-                                <li class="collection-item">@scope</li>
-                            }
-                        </ul>
-                        </div>
+                            <div class="col s12">
+                                <ul class="collection  with-header">
+                                    <li class="collection-header"><h5>Scopes</h5></li>
+                                    @foreach (var scope in Model.AllowedScopeDescriptions)
+                                    {
+                                        <li class="collection-item">@scope</li>
+                                    }
+                                </ul>
+                            </div>
                         }
 
                         @if (Model.AllowedIndividualClaims.Any())
                         {
-                        <div class="col s12">
-                        <ul class="collection  with-header">
-                            <li class="collection-header"><h5>Individual claims</h5></li>
-                            @foreach (var claim in Model.AllowedIndividualClaims)
-                            {
-                                <li class="collection-item">
-                                    @claim
-                                </li>
-                            }
-                        </ul>
-                        </div>
+                            <div class="col s12">
+                                <ul class="collection  with-header">
+                                    <li class="collection-header"><h5>Individual claims</h5></li>
+                                    @foreach (var claim in Model.AllowedIndividualClaims)
+                                    {
+                                        <li class="collection-item">
+                                            @claim
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
                         }
 
                         @if (!string.IsNullOrWhiteSpace(Model.PolicyUri) ||
-                            !string.IsNullOrWhiteSpace(Model.TosUri))
+                         !string.IsNullOrWhiteSpace(Model.TosUri))
                         {
-                                                <div class="col s12">
-                            @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
-                            {
-                                <a href="@Model.PolicyUri" target="_blank">Policy</a> <span>&nbsp;</span>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(Model.TosUri))
-                            {
-                                <a href="@Model.TosUri" target="_blank">Terms of Service</a>
-                            }
-                        </div>
+                            <div class="col s12">
+                                @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
+                                {
+                                    <a href="@Model.PolicyUri" target="_blank">Policy</a> <span>&nbsp;</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.TosUri))
+                                {
+                                    <a href="@Model.TosUri" target="_blank">Terms of Service</a>
+                                }
+                            </div>
                         }
-                        <div class="col s12">
-                            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">Cancel</a>
-                            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">Confirm</a>
-                        </div>
+                    <div class="col s12">
+                        @using (Html.BeginForm("Cancel", "Consent", new { code = Model.Code }, FormMethod.Post, true, new { style="display:inline;"}))
+                        {
+                            <button type="submit" class="waves-effect waves-light btn blue darken-3" id="cancel" name="cancel" title="Cancel consent">Cancel</button>
+                        }
+                        @using (Html.BeginForm("Confirm", "Consent", new { code = Model.Code }, FormMethod.Post, true, new { style="display:inline;"}))
+                        {
+                            <button type="submit" class="waves-effect waves-light btn blue darken-3" id="confirm" name="confirm" title="Confirm consent">Confirm</button>
+                        }
+                        @*<a href="@Url.Action("Cancel", new {code = Model.Code})" class="waves-effect waves-light btn blue darken-3">Cancel</a>
+                        <a href="@Url.Action("Confirm", new {code = Model.Code})" class="waves-effect waves-light btn blue darken-3">Confirm</a>*@
+                    </div>
                     </div>
                 </div>
             </div>
@@ -95,32 +103,32 @@
                 <div class="row">
                     @if (Model.AllowedScopeDescriptions.Any())
                     {
-                    <div class="col s12">
-                        <ul class="collection  with-header">
-                            <li class="collection-header"><strong>Scopes</strong></li>
-                            @foreach (var scope in Model.AllowedScopeDescriptions)
-                            {
-                                <li class="collection-item">@scope</li>
-                            }
-                        </ul>
-                    </div>
+                        <div class="col s12">
+                            <ul class="collection  with-header">
+                                <li class="collection-header"><strong>Scopes</strong></li>
+                                @foreach (var scope in Model.AllowedScopeDescriptions)
+                                {
+                                    <li class="collection-item">@scope</li>
+                                }
+                            </ul>
+                        </div>
                     }
 
                     @if (Model.AllowedIndividualClaims.Any())
                     {
-                    <div class="col s12">
-                        <ul class="collection  with-header">
-                            <li class="collection-header"><strong>Individual claims</strong></li>
-                            @foreach (var claim in Model.AllowedIndividualClaims)
-                            {
-                                <li class="collection-item">@claim</li>
-                            }
-                        </ul>
-                    </div>
+                        <div class="col s12">
+                            <ul class="collection  with-header">
+                                <li class="collection-header"><strong>Individual claims</strong></li>
+                                @foreach (var claim in Model.AllowedIndividualClaims)
+                                {
+                                    <li class="collection-item">@claim</li>
+                                }
+                            </ul>
+                        </div>
                     }
 
                     @if (!string.IsNullOrWhiteSpace(Model.PolicyUri) ||
-                        !string.IsNullOrWhiteSpace(Model.TosUri))
+                     !string.IsNullOrWhiteSpace(Model.TosUri))
                     {
                         <div class="col s12">
                             @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))

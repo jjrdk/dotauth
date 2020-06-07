@@ -1,6 +1,7 @@
 @model SimpleAuth.ViewModels.ProfileViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "User Info";
     ViewBag.IsEditDisplayed = false;
     ViewBag.IsConsentDisplayed = false;
     ViewBag.IsIndexDisplayed = true;
@@ -77,6 +78,26 @@
 <div class="s12">
     <div class="card">
         <div class="card-content">
+            <div class="card-title">Available actions</div>
+            <div class="card-action">
+                <div class="row col s12">
+                    <span class="col m4 left-align">
+                        <a href="@Url.Content("~/perm")" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
+                    </span>
+                    <span class="col m4 center-align">
+                        @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                    </span>
+                    <span class="col m4 right-align">
+                        @Html.ActionLink("Manage Consents", "Consent", "User", null, new { @class = "btn blue darken-3 waves-effect waves-light right" })
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="s12">
+    <div class="card">
+        <div class="card-content">
             <div class="card-title">The following profiles are linked to your account</div>
         </div>
         <div class="card-action">
@@ -105,19 +126,22 @@
         </div>
     </div>
 </div>
-<div class="s12">
-    <div class="card">
-        <div class="card-content">
-            <div class="card-title">Link to an external identity provider</div>
-        </div>
-        <div class="card-action">
-            @using (Html.BeginForm("Link", "User"))
-            {
-                foreach (var loginProvider in Model.UnlinkedIdentityProviders)
+@if (Model.UnlinkedIdentityProviders.Any())
+{
+    <div class="s12">
+        <div class="card">
+            <div class="card-content">
+                <div class="card-title">Link to an external identity provider</div>
+            </div>
+            <div class="card-action">
+                @using (Html.BeginForm("Link", "User"))
                 {
-                    <button type="submit" class="btn blue darken-3 waves-effect waves-light" id="@loginProvider.DisplayName" name="provider" value="@loginProvider.DisplayName" title="Log in using your @loginProvider.DisplayName account">@loginProvider.DisplayName</button>
+                    foreach (var loginProvider in Model.UnlinkedIdentityProviders)
+                    {
+                        <button type="submit" class="btn blue darken-3 waves-effect waves-light" id="@loginProvider.DisplayName" name="provider" value="@loginProvider.DisplayName" title="Log in using your @loginProvider.DisplayName account">@loginProvider.DisplayName</button>
+                    }
                 }
-            }
+            </div>
         </div>
     </div>
-</div>
+}

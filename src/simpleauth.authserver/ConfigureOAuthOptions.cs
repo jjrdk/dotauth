@@ -29,9 +29,6 @@
                 OnTicketReceived = ctx => Task.CompletedTask
             };
             options.SaveTokens = true;
-            //#if DEBUG
-            //options.RequireHttpsMetadata = false;
-            //#endif
 
             options.ClientId = "web";
             options.ClientSecret = "secret";
