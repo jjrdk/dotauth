@@ -17,7 +17,7 @@
         public RedisConsentStore(IDatabaseAsync database, TimeSpan expiry = default)
         {
             _database = database;
-            _expiry = expiry == default ? TimeSpan.FromMinutes(30) : expiry;
+            _expiry = expiry == default ? TimeSpan.FromDays(365 * 5) : expiry;
         }
 
         public async Task<IReadOnlyCollection<Consent>> GetConsentsForGivenUser(string subject, CancellationToken cancellationToken)
