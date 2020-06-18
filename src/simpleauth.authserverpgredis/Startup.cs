@@ -25,6 +25,7 @@ namespace SimpleAuth.AuthServerPgRedis
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -114,6 +115,8 @@ namespace SimpleAuth.AuthServerPgRedis
             services.AddTransient(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
             services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
 
+            services.Configure<ForwardedHeadersOptions>(
+                options => { options.ForwardedHeaders = ForwardedHeaders.All; });
             services.AddResponseCompression(
                     x =>
                     {
@@ -208,7 +211,7 @@ namespace SimpleAuth.AuthServerPgRedis
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseResponseCompression().UseSimpleAuthMvc(typeof(IDefaultUi));
+            app.UseForwardedHeaders().UseResponseCompression().UseSimpleAuthMvc(typeof(IDefaultUi));
         }
     }
 }

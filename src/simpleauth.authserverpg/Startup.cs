@@ -30,6 +30,7 @@ namespace SimpleAuth.AuthServerPg
     using Amazon.Runtime;
     using Marten;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.Extensions.Hosting;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Extensions;
@@ -57,8 +58,7 @@ namespace SimpleAuth.AuthServerPg
                 RedirectToLogin = redirect,
                 ApplicationName = _configuration["SERVER:NAME"] ?? "SimpleAuth",
                 Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
-                Clients =
-                    sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
+                Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
                 Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
                 AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
                 AuthorizationCodes =
@@ -101,17 +101,17 @@ namespace SimpleAuth.AuthServerPg
                         return new DocumentStore(options);
                     })
                 .AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession());
-
-            services.AddResponseCompression(
+            services.Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.All; })
+                .AddResponseCompression(
                     x =>
                     {
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                     })
                 .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); })
                 .AddAuthentication(
@@ -166,7 +166,7 @@ namespace SimpleAuth.AuthServerPg
             {
                 services.AddSimpleAuth(
                         _options,
-                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                        new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
                         assemblies: new[]
                         {
                             (GetType().Namespace, GetType().Assembly),
@@ -185,7 +185,7 @@ namespace SimpleAuth.AuthServerPg
             {
                 services.AddSimpleAuth(
                     _options,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                    new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
                     assemblies: new[]
                     {
                         (GetType().Namespace, GetType().Assembly),
@@ -196,6 +196,7 @@ namespace SimpleAuth.AuthServerPg
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseForwardedHeaders();
             var lifetime = app.ApplicationServices.GetService<IHostApplicationLifetime>();
             lifetime.ApplicationStarted.Register(
                 () =>
@@ -205,13 +206,12 @@ namespace SimpleAuth.AuthServerPg
                     session.Store(DefaultConfiguration.GetJwks());
                     session.Store(DefaultConfiguration.GetUsers());
                     session.Store(DefaultConfiguration.GetScopes());
-                    session.Store(new GrantedToken { Id = Guid.NewGuid().ToString("N"), AccessToken = "abc" });
+                    session.Store(new GrantedToken {Id = Guid.NewGuid().ToString("N"), AccessToken = "abc"});
                     session.SaveChanges();
                 });
             app.UseResponseCompression().UseSimpleAuthMvc((typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
         }
     }
-
 
     public static class DefaultConfiguration
     {
