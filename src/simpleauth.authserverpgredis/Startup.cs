@@ -17,10 +17,11 @@ namespace SimpleAuth.AuthServerPgRedis
     using System;
     using System.IO.Compression;
     using System.Linq;
-    using System.Net.Http;
+    using System.Net;
     using System.Security.Claims;
     using Amazon;
     using Amazon.Runtime;
+    using Baseline;
     using Marten;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -211,7 +212,20 @@ namespace SimpleAuth.AuthServerPgRedis
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseForwardedHeaders().UseResponseCompression().UseSimpleAuthMvc(typeof(IDefaultUi));
+            //app.Seed();
+            var knownProxies = Array.Empty<IPAddress>();
+            if (!string.IsNullOrWhiteSpace(_configuration["KNOWN_PROXIES"]))
+            {
+                knownProxies = _configuration["KNOWN_PROXIES"]
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(IPAddress.Parse)
+                    .ToArray();
+            }
+
+            app.UseResponseCompression()
+                .UseSimpleAuthMvc(
+                    x => { x.KnownProxies.AddRange(knownProxies); },
+                    applicationTypes: typeof(IDefaultUi));
         }
     }
 }

@@ -29,7 +29,7 @@ namespace SimpleAuth.Controllers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using ViewModels;
@@ -47,6 +47,7 @@ namespace SimpleAuth.Controllers
         private readonly IDataProtector _dataProtector;
         private readonly IClientStore _clientStore;
         private readonly IEventPublisher _eventPublisher;
+        private readonly ILogger<ConsentController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsentController"/> class.
@@ -61,6 +62,7 @@ namespace SimpleAuth.Controllers
         /// <param name="jwksStore">The JWKS store.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="authenticationService">The authentication service.</param>
+        /// <param name="logger">The controller logger.</param>
         public ConsentController(
             IScopeRepository scopeRepository,
             IClientStore clientStore,
@@ -71,12 +73,14 @@ namespace SimpleAuth.Controllers
             ITokenStore tokenStore,
             IJwksStore jwksStore,
             IAuthorizationCodeStore authorizationCodeStore,
-            IAuthenticationService authenticationService)
+            IAuthenticationService authenticationService,
+            ILogger<ConsentController> logger)
             : base(authenticationService)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _clientStore = clientStore;
             _eventPublisher = eventPublisher;
+            _logger = logger;
             _displayConsent = new DisplayConsentAction(
                 scopeRepository,
                 clientStore,
@@ -112,7 +116,7 @@ namespace SimpleAuth.Controllers
             var actionResult = await _displayConsent.Execute(request.ToParameter(), authenticatedUser, issuerName, cancellationToken)
                 .ConfigureAwait(false);
 
-            var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request);
+            var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request, _logger);
             if (result != null)
             {
                 return result;
@@ -155,7 +159,7 @@ namespace SimpleAuth.Controllers
             await _eventPublisher.Publish(
                     new ConsentAccepted(Id.Create(), subject, request.client_id, request.scope, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
-            return actionResult.CreateRedirectionFromActionResult(request);
+            return actionResult.CreateRedirectionFromActionResult(request, _logger);
         }
 
         /// <summary>

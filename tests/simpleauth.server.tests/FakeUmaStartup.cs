@@ -114,7 +114,7 @@ namespace SimpleAuth.Server.Tests
                     await next.Invoke().ConfigureAwait(false);
                 });
 
-            app.UseSimpleAuthMvc(typeof(IDefaultUi));
+            app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
         }
     }
 }

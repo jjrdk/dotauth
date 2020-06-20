@@ -37,6 +37,8 @@ namespace SimpleAuth.AuthServerPg
                         o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
                     })
                 .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
+                //.PreferHostingUrls(true)
+                //.UseUrls("http://*:8080")
                 .UseStartup<Startup>()
                 .Build()
                 .RunAsync()

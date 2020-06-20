@@ -194,8 +194,7 @@ namespace SimpleAuth.AuthServer
         public void Configure(IApplicationBuilder app)
         {
             app.UseResponseCompression()
-                .UseSimpleAuthMvc(
-                    (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
+                .UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
         }
     }
 }

@@ -2,10 +2,7 @@
 {
     using Microsoft.AspNetCore.Http;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Security.Cryptography.X509Certificates;
-    using Microsoft.Extensions.Primitives;
 
     internal static class HttpRequestsExtensions
     {
@@ -30,15 +27,14 @@
         public static X509Certificate2 GetCertificate(this HttpRequest request)
         {
             const string headerName = "X-ARR-ClientCert";
-            var header = request.Headers.FirstOrDefault(h => h.Key == headerName);
-            if (header.Equals(default(KeyValuePair<string, StringValues>)))
+            if (!request.Headers.TryGetValue(headerName, out var header))
             {
                 return null;
             }
 
             try
             {
-                var encoded = Convert.FromBase64String(header.Value);
+                var encoded = Convert.FromBase64String(header);
                 return new X509Certificate2(encoded);
             }
             catch

@@ -21,6 +21,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
@@ -36,6 +37,7 @@
     {
         private const string InvalidCredentials = "invalid_credentials";
         private readonly IEventPublisher _eventPublisher;
+        private readonly ILogger<AuthenticateController> _logger;
         private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
         private readonly LocalOpenIdUserAuthenticationAction _localOpenIdAuthentication;
 
@@ -60,6 +62,7 @@
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
         /// <param name="jwksStore"></param>
         /// <param name="accountFilters">The account filters.</param>
+        /// <param name="logger">The controller logger.</param>
         /// <param name="runtimeSettings">The runtime settings.</param>
         public AuthenticateController(
             IDataProtectionProvider dataProtectionProvider,
@@ -80,6 +83,7 @@
             IResourceOwnerRepository resourceOwnerRepository,
             IJwksStore jwksStore,
             IEnumerable<AccountFilter> accountFilters,
+            ILogger<AuthenticateController> logger,
             RuntimeSettings runtimeSettings)
             : base(
                 dataProtectionProvider,
@@ -99,9 +103,11 @@
                 jwksStore,
                 subjectBuilder,
                 accountFilters,
+                logger,
                 runtimeSettings)
         {
             _eventPublisher = eventPublisher;
+            _logger = logger;
             var services = resourceOwnerServices.ToArray();
             _resourceOwnerServices = services;
             _localOpenIdAuthentication = new LocalOpenIdUserAuthenticationAction(
@@ -342,7 +348,7 @@
                     await SetLocalCookie(actionResult.Claims, request.session_id).ConfigureAwait(false);
 
                     // 7. Redirect the user agent
-                    var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request);
+                    var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request, _logger);
                     if (result != null)
                     {
                         await LogAuthenticateUser(subject, actionResult.EndpointResult?.Amr).ConfigureAwait(false);

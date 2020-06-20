@@ -42,7 +42,6 @@ namespace SimpleAuth
     using SimpleAuth.Extensions;
     using SimpleAuth.Filters;
     using SimpleAuth.MiddleWare;
-    using SimpleAuth.Shared.Events;
 
     /// <summary>
     /// Defines the service collection extensions.
@@ -88,7 +87,7 @@ namespace SimpleAuth
                                 return false;
                             }
 
-                            var claimScopes = p.User?.Claims?.FirstOrDefault(c => c.Type == ScopeType);
+                            var claimScopes = p.User?.Claims.FirstOrDefault(c => c.Type == ScopeType);
                             return claimScopes != null && claimScopes.Value.Split(' ').Any(s => s == "uma_protection");
                         });
                 });
@@ -106,7 +105,7 @@ namespace SimpleAuth
                                 return false;
                             }
 
-                            var result = p.User?.Claims?.Where(c => c.Type == ScopeType)
+                            var result = p.User?.Claims.Where(c => c.Type == ScopeType)
                                 .Any(c => c.HasClaimValue("manager"));
 
                             return result == true;
@@ -289,25 +288,47 @@ namespace SimpleAuth
         /// Registers the mvc routes for a SimpleAuth server.
         /// </summary>
         /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
+        /// <param name="forwardedHeaderConfiguration">Configuration action for handling proxy setup.</param>
         /// <param name="applicationTypes">Additional types to discover view assemblies.</param>
         /// <returns></returns>
-        public static IApplicationBuilder UseSimpleAuthMvc(this IApplicationBuilder app, params Type[] applicationTypes)
+        public static IApplicationBuilder UseSimpleAuthMvc(
+            this IApplicationBuilder app,
+            Action<ForwardedHeadersOptions> forwardedHeaderConfiguration = null,
+            params Type[] applicationTypes)
         {
-            return app.UseSimpleAuthMvc(applicationTypes.Select(type => (type.Namespace, type.Assembly)).ToArray());
+            return app.UseSimpleAuthMvc(
+                forwardedHeaderConfiguration,
+                applicationTypes.Select(type => (type.Namespace, type.Assembly)).ToArray());
         }
 
         /// <summary>
         /// Registers the mvc routes for a SimpleAuth server.
         /// </summary>
         /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
+        /// <param name="forwardedHeaderConfiguration">Configuration action for handling proxy setup.</param>
         /// <param name="assemblies">Additional view assemblies.</param>
         /// <returns></returns>
         public static IApplicationBuilder UseSimpleAuthMvc(
             this IApplicationBuilder app,
+            Action<ForwardedHeadersOptions> forwardedHeaderConfiguration = null,
             params (string defaultNamespace, Assembly assembly)[] assemblies)
         {
             var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
-            return app.UseMiddleware<ExceptionHandlerMiddleware>(publisher)
+            var forwardedHeadersOptions = new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All, ForwardLimit = null };
+            forwardedHeadersOptions.KnownNetworks.Clear();
+            forwardedHeadersOptions.KnownProxies.Clear();
+            forwardedHeaderConfiguration?.Invoke(forwardedHeadersOptions);
+            return app
+                .UseForwardedHeaders(forwardedHeadersOptions)
+                .Use(
+                    (ctx, next) =>
+                    {
+                        var logger = ctx.RequestServices.GetService<ILogger<IApplicationBuilder>>();
+                        logger.LogInformation(ctx.Request.Scheme);
+                        logger.LogInformation(ctx.Request.GetAbsoluteUriWithVirtualPath());
+                        return next();
+                    })
+                .UseMiddleware<ExceptionHandlerMiddleware>(publisher)
                 .UseResponseCompression()
                 .UseStaticFiles(
                     new StaticFileOptions
@@ -321,7 +342,6 @@ namespace SimpleAuth
                             assemblies.Select(x => new EmbeddedFileProvider(x.assembly, x.defaultNamespace)))
                     })
                 .UseRouting()
-                .UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All })
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseCors("AllowAll")

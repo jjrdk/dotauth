@@ -36,6 +36,7 @@ Note that some environment variables use double underscore ```__```. This is to 
 |---|---|---|
 |SERVER__NAME|string|Defines a custom name to display as the application name in UI headers. Default value is ```SimpleAuth```|
 |SERVER__REDIRECT|bool|When set to ```true``` then requests for ```/``` or ```/home``` are redirected to ```/authenticate```. This effectively hides the default home page.|
+|SERVER__ALLOWSELFSIGNEDCERT|bool|When set to ```true``` then allows self signed certificates and certificates whose root certificate is not trusted. The certificate must still be issued to a valid host.|
 |SERVER__ALLOWHTTP|bool|When set to ```true``` then allows downloading OAuth metadata over HTTP. This option should only be set in development environments. Default value is ```false```|
 |OAUTH__AUTHORITY|url string|Used to set the OAuth server where authorization for access to management UI.|
 |OAUTH__VALIDISSUERS|comma separated url strings|The comma-separated set of valid issuers for access tokens.|
@@ -43,6 +44,7 @@ Note that some environment variables use double underscore ```__```. This is to 
 |DB__REDISCONFIG|string|Sets the connection string for the redis server.|
 |AMAZON__ACCESSKEY|string|When set then the server will configure sms authentication.|
 |AMAZON__SECRETKEY|string|When set then the server will configure sms authentication.|
+|KNOWN_PROXIES|comma separated string|Sets the list of known proxy IP addresses.|
 
 ## Reporting Issues and Bugs
 

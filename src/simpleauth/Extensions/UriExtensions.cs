@@ -32,13 +32,13 @@ namespace SimpleAuth.Extensions
         {
             var uriBuilder = new UriBuilder(uri);
             var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
-            foreach (var keyPair in dic)
+            foreach (var (key, value) in dic)
             {
-                query[keyPair.Key] = keyPair.Value.ToString();
+                query[key] = value.ToString();
             }
 
             uriBuilder.Query = ConcatQueryStrings(query);
-            return new Uri(uriBuilder.ToString());
+            return uriBuilder.Uri;
         }
 
         /// <summary>
@@ -51,18 +51,18 @@ namespace SimpleAuth.Extensions
         {
             var uriBuilder = new UriBuilder(uri);
             var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
-            foreach (var keyPair in dic)
+            foreach (var (key, value) in dic)
             {
-                query[keyPair.Key] = keyPair.Value.ToString();
+                query[key] = value.ToString();
             }
 
             uriBuilder.Fragment = ConcatQueryStrings(query);
-            return new Uri(uriBuilder.ToString());
+            return uriBuilder.Uri;
         }
 
         private static string ConcatQueryStrings(IDictionary<string, StringValues> queryStrings)
         {
-            var lst = queryStrings.Select(keyValuePair => $"{keyValuePair.Key}={keyValuePair.Value.ToString()}");
+            var lst = queryStrings.Select(keyValuePair => $"{keyValuePair.Key}={keyValuePair.Value}");
 
             return string.Join("&", lst);
         }

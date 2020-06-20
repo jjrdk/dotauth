@@ -19,6 +19,7 @@ namespace SimpleAuth.Extensions
     using Results;
     using Shared.Requests;
     using System;
+    using Microsoft.Extensions.Logging;
 
     internal static class ControllerExtensions
     {
@@ -36,16 +37,18 @@ namespace SimpleAuth.Extensions
 
         public static ActionResult CreateRedirectionFromActionResult(
             this EndpointResult endpointResult,
-            AuthorizationRequest authorizationRequest)
+            AuthorizationRequest authorizationRequest,
+            ILogger logger)
         {
             if (endpointResult.Type == ActionResultType.RedirectToCallBackUrl)
             {
                 var parameters = endpointResult.GetRedirectionParameters();
-                //var uri = new Uri();
                 var redirectUrl = CreateRedirectHttp(
                     authorizationRequest.redirect_uri,
                     parameters,
-                    endpointResult.RedirectInstruction.ResponseMode);
+                    endpointResult.RedirectInstruction.ResponseMode).ToString();
+                logger.LogInformation($"Redirection uri: {redirectUrl}");
+
                 return new RedirectResult(redirectUrl);
             }
 
@@ -86,15 +89,13 @@ namespace SimpleAuth.Extensions
             return new RedirectResult(uri.AbsoluteUri);
         }
 
-        private static string CreateRedirectHttp(Uri uri, RouteValueDictionary parameters, string responseMode)
+        private static Uri CreateRedirectHttp(Uri uri, RouteValueDictionary parameters, string responseMode)
         {
-            uri = responseMode switch
+            return responseMode switch
             {
                 ResponseModes.Fragment => uri.AddParametersInFragment(parameters),
                 _ => uri.AddParametersInQuery(parameters)
             };
-
-            return uri.ToString();
         }
     }
 }

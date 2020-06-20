@@ -26,6 +26,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Services;
@@ -41,6 +42,7 @@
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly IConfirmationCodeStore _confirmationCodeStore;
+        private readonly ILogger<AuthenticateController> _logger;
         private readonly GetUserOperation _getUserOperation;
         private readonly SmsAuthenticationOperation _smsAuthenticationOperation;
         private readonly GenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
@@ -68,6 +70,7 @@
         /// <param name="clientStore">The client store.</param>
         /// <param name="jwksStore">The JWKS store.</param>
         /// <param name="accountFilters">The account filters.</param>
+        /// <param name="logger">The controller logger.</param>
         /// <param name="runtimeSettings">The runtime settings.</param>
         public AuthenticateController(
             ISmsClient smsClient,
@@ -88,6 +91,7 @@
             IClientStore clientStore,
             IJwksStore jwksStore,
             IEnumerable<IAccountFilter> accountFilters,
+            ILogger<AuthenticateController> logger,
             RuntimeSettings runtimeSettings)
             : base(
                 dataProtectionProvider,
@@ -107,10 +111,12 @@
                 jwksStore,
                 subjectBuilder,
                 accountFilters,
+                logger,
                 runtimeSettings)
         {
             _eventPublisher = eventPublisher;
             _confirmationCodeStore = confirmationCodeStore;
+            _logger = logger;
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
             var generateSms = new GenerateAndSendSmsCodeOperation(smsClient, confirmationCodeStore);
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
@@ -337,7 +343,7 @@
                         issuerName,
                         cancellationToken)
                     .ConfigureAwait(false);
-                var result = actionResult.CreateRedirectionFromActionResult(request);
+                var result = actionResult.CreateRedirectionFromActionResult(request, _logger);
                 if (result != null)
                 {
                     await LogAuthenticateUser(resourceOwner.Subject, actionResult.Amr).ConfigureAwait(false);

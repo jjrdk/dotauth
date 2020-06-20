@@ -36,6 +36,7 @@ namespace SimpleAuth.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
@@ -66,6 +67,7 @@ namespace SimpleAuth.Controllers
         private readonly RuntimeSettings _runtimeSettings;
         private readonly IResourceOwnerStore _resourceOwnerRepository;
         private readonly IConfirmationCodeStore _confirmationCodeStore;
+        private readonly ILogger _logger;
         private readonly AddUserOperation _addUser;
         private readonly GetUserOperation _getUserOperation;
         private readonly UpdateUserClaimsOperation _updateUserClaimsOperation;
@@ -90,6 +92,7 @@ namespace SimpleAuth.Controllers
         /// <param name="jwksStore"></param>
         /// <param name="subjectBuilder"></param>
         /// <param name="accountFilters">The account filters.</param>
+        /// <param name="logger">The controller logger.</param>
         /// <param name="runtimeSettings">The runtime settings.</param>
         protected BaseAuthenticateController(
             IDataProtectionProvider dataProtectionProvider,
@@ -109,6 +112,7 @@ namespace SimpleAuth.Controllers
             IJwksStore jwksStore,
             ISubjectBuilder subjectBuilder,
             IEnumerable<IAccountFilter> accountFilters,
+            ILogger logger,
             RuntimeSettings runtimeSettings)
             : base(authenticationService)
         {
@@ -144,6 +148,7 @@ namespace SimpleAuth.Controllers
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
             _resourceOwnerRepository = resourceOwnerRepository;
             _confirmationCodeStore = confirmationCodeStore;
+            _logger = logger;
         }
 
         /// <summary>
@@ -398,7 +403,7 @@ namespace SimpleAuth.Controllers
                         cancellationToken)
                     .ConfigureAwait(false);
                 await LogAuthenticateUser(subject, actionResult.Amr).ConfigureAwait(false);
-                var result = actionResult.CreateRedirectionFromActionResult(request);
+                var result = actionResult.CreateRedirectionFromActionResult(request, _logger);
                 return result;
             }
 
@@ -436,7 +441,7 @@ namespace SimpleAuth.Controllers
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            var result = actionResult.CreateRedirectionFromActionResult(request);
+            var result = actionResult.CreateRedirectionFromActionResult(request, _logger);
             if (result != null)
             {
                 await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr).ConfigureAwait(false);
@@ -540,7 +545,7 @@ namespace SimpleAuth.Controllers
                     Strings.TheUserNeedsToBeAuthenticated);
             }
 
-            // 5. Rerieve the claims & insert the resource owner if needed.
+            // 5. Retrieve the claims & insert the resource owner if needed.
             //var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = authenticatedUser.Claims.ToArray();
             var resourceOwner = await _resourceOwnerRepository.Get(new ExternalAccountLink { Issuer = authenticatedUser.Identity.AuthenticationType, Subject = authenticatedUser.GetSubject() }, cancellationToken)
@@ -601,7 +606,7 @@ namespace SimpleAuth.Controllers
                         new AuthenticationProperties())
                     .ConfigureAwait(false);
                 await LogAuthenticateUser(subject, actionResult.Amr).ConfigureAwait(false);
-                return actionResult.CreateRedirectionFromActionResult(authorizationRequest);
+                return actionResult.CreateRedirectionFromActionResult(authorizationRequest, _logger);
             }
 
             return RedirectToAction("OpenId", "Authenticate", new { code });

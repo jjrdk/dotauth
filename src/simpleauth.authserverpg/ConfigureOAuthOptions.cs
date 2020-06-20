@@ -2,18 +2,27 @@
 {
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication.OAuth;
+    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using SimpleAuth.Shared;
 
     internal class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions>
     {
         private readonly IConfiguration _configuration;
+        private readonly ILogger<ConfigureOAuthOptions> _logger;
 
-        public ConfigureOAuthOptions(IConfiguration configuration)
+        public ConfigureOAuthOptions(IConfiguration configuration, ILogger<ConfigureOAuthOptions> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -24,6 +33,34 @@
             options.UserInformationEndpoint = _configuration["OAUTH:AUTHORITY"] + "/userinfo";
             options.UsePkce = true;
             options.CallbackPath = "/callback";
+            if (bool.TryParse(_configuration["SERVER:ALLOWSELFSIGNEDCERT"], out var allowSelfSignedCert) && allowSelfSignedCert)
+            {
+                _logger.LogWarning("Self signed certs allowed");
+                options.Backchannel = new HttpClient(
+                    new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = (msg, cert, _, __) =>
+                        {
+                            var altNames = cert.GetSubjectAlternativeNames();
+                            _logger.LogInformation("Subject alt names: " + string.Join(", ", altNames));
+                            _logger.LogInformation($"Request host: {msg.RequestUri?.Host}");
+                            var allowed = altNames.Count == 0 || altNames.Contains(msg.RequestUri?.Host);
+                            if (!allowed)
+                            {
+                                _logger.LogWarning($"Certificate with thumbprint {cert.Thumbprint} not allowed");
+                            }
+                            return allowed;
+                        },
+                        AllowAutoRedirect = true,
+                        AutomaticDecompression = DecompressionMethods.All
+                    },
+                    true);
+            }
+            else
+            {
+                _logger.LogInformation("Default certificate validation");
+            }
+
             options.Events = new OAuthEvents
             {
                 OnCreatingTicket = ctx =>
@@ -35,7 +72,12 @@
                     ctx.Success();
                     return Task.CompletedTask;
                 },
-                OnTicketReceived = ctx => Task.CompletedTask
+                OnRemoteFailure = ctx =>
+                {
+                    var logger = ctx.HttpContext.RequestServices.GetService<ILogger<IApplicationBuilder>>();
+                    logger.LogError(ctx.Failure, ctx.Failure.Message);
+                    return Task.CompletedTask;
+                }
             };
             options.SaveTokens = true;
             options.ClientId = _configuration["OAUTH:CLIENTID"];

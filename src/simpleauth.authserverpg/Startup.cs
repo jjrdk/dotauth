@@ -23,20 +23,15 @@ namespace SimpleAuth.AuthServerPg
     using SimpleAuth;
     using System.IO.Compression;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
-    using System.Security.Cryptography;
-    using System.Text.RegularExpressions;
     using Amazon;
     using Amazon.Runtime;
+    using Baseline;
     using Marten;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.Extensions.Hosting;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Extensions;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
     using SimpleAuth.Sms;
     using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;
@@ -100,8 +95,7 @@ namespace SimpleAuth.AuthServerPg
                             new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()));
                         return new DocumentStore(options);
                     })
-                .AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession());
-            services.Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.All; })
+                .AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession())
                 .AddResponseCompression(
                     x =>
                     {
@@ -167,12 +161,7 @@ namespace SimpleAuth.AuthServerPg
                 services.AddSimpleAuth(
                         _options,
                         new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
-                        assemblies: new[]
-                        {
-                            (GetType().Namespace, GetType().Assembly),
-                            (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly),
-                            (typeof(IDefaultSmsUi).Namespace, typeof(IDefaultSmsUi).Assembly)
-                        })
+                        assemblyTypes: new[] {GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi)})
                     .AddSmsAuthentication(
                         new AwsSmsClient(
                             new BasicAWSCredentials(
@@ -186,249 +175,25 @@ namespace SimpleAuth.AuthServerPg
                 services.AddSimpleAuth(
                     _options,
                     new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
-                    assemblies: new[]
-                    {
-                        (GetType().Namespace, GetType().Assembly),
-                        (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
-                    });
+                    assemblyTypes: new[] {GetType(), typeof(IDefaultUi)});
             }
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseForwardedHeaders();
-            var lifetime = app.ApplicationServices.GetService<IHostApplicationLifetime>();
-            lifetime.ApplicationStarted.Register(
-                () =>
-                {
-                    using var session = app.ApplicationServices.GetService<IDocumentSession>();
-                    session.Store(DefaultConfiguration.GetClients());
-                    session.Store(DefaultConfiguration.GetJwks());
-                    session.Store(DefaultConfiguration.GetUsers());
-                    session.Store(DefaultConfiguration.GetScopes());
-                    session.Store(new GrantedToken {Id = Guid.NewGuid().ToString("N"), AccessToken = "abc"});
-                    session.SaveChanges();
-                });
-            app.UseResponseCompression().UseSimpleAuthMvc((typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly));
-        }
-    }
-
-    public static class DefaultConfiguration
-    {
-        public static JsonWebKeyContainer[] GetJwks()
-        {
-            using var rsa = RSA.Create();
-            return new[]
-                {
-                    rsa.CreateJwk("1", JsonWebKeyUseNames.Sig, true, KeyOperations.Sign, KeyOperations.Verify),
-                    rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, true, KeyOperations.Encrypt, KeyOperations.Decrypt),
-                    rsa.CreateJwk("1", JsonWebKeyUseNames.Sig, false, KeyOperations.Sign, KeyOperations.Verify),
-                    rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, false, KeyOperations.Encrypt, KeyOperations.Decrypt)
-                }
-                .Select(key => new JsonWebKeyContainer { Id = Id.Create(), Jwk = key })
-                .ToArray();
-        }
-
-        public static Client[] GetClients()
-        {
-            return new[]
+            var knownProxies = Array.Empty<IPAddress>();
+            if (!string.IsNullOrWhiteSpace(_configuration["KNOWN_PROXIES"]))
             {
-                new Client
-                {
-                    ClientId = "web",
-                    ClientName = "web",
-                    AllowedScopes = new[] {"openid", "role", "profile", "email", "manager", "uma_protection"},
-                    ApplicationType = ApplicationTypes.Web,
-                    GrantTypes = GrantTypes.All,
-                    RequirePkce = true,
-                    RedirectionUrls =
-                        new[]
-                        {
-                            new Uri("http://simpleauth.reimers.dk:8080/signin-oidc"),
-                            new Uri("http://simpleauth.reimers.dk:8080/callback"),
-                            new Uri("http://52.143.31.91:8080//signin-oidc"),
-                            new Uri("http://52.143.31.91:8080//callback"),
-                        },
-                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
-                    PostLogoutRedirectUris = new[] {new Uri("http://52.143.31.91:8080/login")},
-                    ResponseTypes = ResponseTypeNames.All,
-                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
-                    UserClaimsToIncludeInAuthToken = new[]
-                    {
-                        new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
-                        new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled)
-                    },
-                },
-                new Client
-                {
-                    ClientId = "health",
-                    ClientName = "health",
-                    AllowedScopes = new[] {"openid", "role", "profile", "email", "manager", "uma_protection"},
-                    ApplicationType = ApplicationTypes.Web,
-                    GrantTypes = GrantTypes.All,
-                    RequirePkce = true,
-                    RedirectionUrls =
-                        new[]
-                        {
-                            new Uri("http://simpleauth.reimers.dk:8080/signin-oidc"),
-                            new Uri("http://simpleauth.reimers.dk:8080/callback"),
-                            new Uri("http://52.143.31.91:8080/signin-oidc"),
-                            new Uri("http://52.143.31.91:8080/callback"),
-                        },
-                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
-                    PostLogoutRedirectUris = new[] {new Uri("http://52.143.31.91:8080/login")},
-                    ResponseTypes = ResponseTypeNames.All,
-                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
-                    UserClaimsToIncludeInAuthToken = new[]
-                    {
-                        new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
-                        new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled)
-                    },
-                },
-            };
-        }
-
-        public static Scope[] GetScopes()
-        {
-            return new[]
-        {
-            new Scope
-            {
-                Name = "openid",
-                IsExposed = true,
-                IsDisplayedInConsent = true,
-                Description = Strings.AccessToOpenIdScope,
-                Type = ScopeTypes.ResourceOwner,
-                Claims = Array.Empty<string>()
-            },
-            new Scope
-            {
-                Name = "profile",
-                IsExposed = true,
-                Description = Strings.AccessToProfileInformation,
-                Claims = new[]
-                {
-                    OpenIdClaimTypes.Name,
-                    OpenIdClaimTypes.FamilyName,
-                    OpenIdClaimTypes.GivenName,
-                    OpenIdClaimTypes.MiddleName,
-                    OpenIdClaimTypes.NickName,
-                    OpenIdClaimTypes.PreferredUserName,
-                    OpenIdClaimTypes.Profile,
-                    OpenIdClaimTypes.Picture,
-                    OpenIdClaimTypes.WebSite,
-                    OpenIdClaimTypes.Gender,
-                    OpenIdClaimTypes.BirthDate,
-                    OpenIdClaimTypes.ZoneInfo,
-                    OpenIdClaimTypes.Locale,
-                    OpenIdClaimTypes.UpdatedAt
-                },
-                Type = ScopeTypes.ResourceOwner,
-                IsDisplayedInConsent = true
-            },
-            new Scope
-            {
-                Name = "email",
-                IsExposed = true,
-                IsDisplayedInConsent = true,
-                Description = Strings.AccessToEmailAddresses,
-                Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
-                Type = ScopeTypes.ResourceOwner
-            },
-            new Scope
-            {
-                Name = "address",
-                IsExposed = true,
-                IsDisplayedInConsent = true,
-                Description = Strings.AccessToAddressInformation,
-                Claims = new[] {OpenIdClaimTypes.Address},
-                Type = ScopeTypes.ResourceOwner
-            },
-            new Scope
-            {
-                Name = "phone",
-                IsExposed = true,
-                IsDisplayedInConsent = true,
-                Description = Strings.AccessToPhoneInformation,
-                Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
-                Type = ScopeTypes.ResourceOwner
-            },
-            new Scope
-            {
-                Name = "role",
-                IsExposed = true,
-                IsDisplayedInConsent = true,
-                Description = Strings.AccessToRoles,
-                Claims = new[] {OpenIdClaimTypes.Role},
-                Type = ScopeTypes.ResourceOwner
-            },
-            new Scope
-            {
-                Claims = new[] {OpenIdClaimTypes.Role},
-                Name = "register_client",
-                IsExposed = false,
-                IsDisplayedInConsent = false,
-                Description = Strings.RegisterAClient,
-                Type = ScopeTypes.ProtectedApi
-            },
-            new Scope
-            {
-                Claims = new[] {OpenIdClaimTypes.Role},
-                Description = Strings.ManageServerResources,
-                IsDisplayedInConsent = false,
-                IsExposed = false,
-                Name = "manager",
-                Type = ScopeTypes.ProtectedApi
-            },
-            new Scope
-            {
-                Claims = new[] {OpenIdClaimTypes.Subject},
-                Description = Strings.ManageUma,
-                IsDisplayedInConsent = true,
-                IsExposed = true,
-                Name = "uma_protection",
-                Type = ScopeTypes.ProtectedApi
+                knownProxies = _configuration["KNOWN_PROXIES"]
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(IPAddress.Parse)
+                    .ToArray();
             }
-        };
-        }
 
-        public static ResourceOwner[] GetUsers()
-        {
-            return new[]
-            {
-                new ResourceOwner
-                {
-                    Subject = "administrator",
-                    Claims = new[]
-                    {
-                        new Claim(StandardClaimNames.Subject, "administrator"),
-                        new Claim("role", "administrator"),
-                        new Claim("role", "uma_admin"),
-                        new Claim(OpenIdClaimTypes.Name, "Anne Admin"),
-                        new Claim(OpenIdClaimTypes.Email, "admin@server.com"),
-                        new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString)
-                    },
-                    Password = "password".ToSha256Hash(),
-                    IsLocalAccount = true,
-                    CreateDateTime = DateTimeOffset.UtcNow,
-                },
-                new ResourceOwner
-                {
-                    Subject = "user",
-                    Claims = new[]
-                    {
-                        new Claim(StandardClaimNames.Subject, "user"),
-                        new Claim(OpenIdClaimTypes.Name, "Anne User"),
-                        new Claim(OpenIdClaimTypes.Email, "user@server.com"),
-                        new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString)
-                    },
-                    Password = "password".ToSha256Hash(),
-                    IsLocalAccount = true,
-                    CreateDateTime = DateTimeOffset.UtcNow,
-                },
-            };
+            app.UseResponseCompression()
+                .UseSimpleAuthMvc(
+                    x => { x.KnownProxies.AddRange(knownProxies); },
+                    applicationTypes: typeof(IDefaultUi));
         }
     }
 }

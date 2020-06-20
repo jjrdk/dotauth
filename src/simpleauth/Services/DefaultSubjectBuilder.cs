@@ -5,7 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal class DefaultSubjectBuilder : ISubjectBuilder
+    public class DefaultSubjectBuilder : ISubjectBuilder
     {
         public Task<string> BuildSubject(IEnumerable<Claim> claims, CancellationToken cancellationToken = default)
         {

@@ -21,6 +21,7 @@ namespace SimpleAuth.MiddleWare
     using System;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http.Features;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Shared.Errors;
 
@@ -28,13 +29,16 @@ namespace SimpleAuth.MiddleWare
     {
         private readonly RequestDelegate _next;
         private readonly IEventPublisher _publisher;
+        private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
         public ExceptionHandlerMiddleware(
             RequestDelegate next,
-            IEventPublisher publisher)
+            IEventPublisher publisher,
+            ILogger<ExceptionHandlerMiddleware> logger)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
             _publisher = publisher;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -47,37 +51,42 @@ namespace SimpleAuth.MiddleWare
             {
                 context.Response.Clear();
 
-                if (exception is SimpleAuthException serverException)
+                switch (exception)
                 {
-                    var state = exception is SimpleAuthExceptionWithState exceptionWithState
-                        ? exceptionWithState.State
-                        : string.Empty;
-                    await _publisher.Publish(new SimpleAuthError(Id.Create(),
-                        serverException.Code,
-                        serverException.Message,
-                        state,
-                        DateTimeOffset.UtcNow)).ConfigureAwait(false);
+                    case SimpleAuthException serverException:
+                        {
+                            var state = exception is SimpleAuthExceptionWithState exceptionWithState
+                                ? exceptionWithState.State
+                                : string.Empty;
+                            await _publisher.Publish(new SimpleAuthError(Id.Create(),
+                                serverException.Code,
+                                serverException.Message,
+                                state,
+                                DateTimeOffset.UtcNow)).ConfigureAwait(false);
 
-                    context.Request.Path = "/error";
-                    context.Request.QueryString = new QueryString()
-                        .Add("code", "400")
-                        .Add("title", serverException.Code)
-                        .Add("message", exception.Message);
-                }
-                else
-                {
-                    await _publisher.Publish(new SimpleAuthError(
-                        Id.Create(),
-                        exception.GetType().Name,
-                        exception.Message,
-                        string.Empty,
-                        DateTimeOffset.UtcNow)).ConfigureAwait(false);
+                            _logger.LogError(serverException.StackTrace);
+                            SetRedirection(context, exception, "400", serverException.Code);
+                            break;
+                        }
+                    case AggregateException aggregateException:
+                        {
+                            foreach (var ex in aggregateException.InnerExceptions)
+                            {
+                                await PublishError(ex).ConfigureAwait(false);
+                                _logger.LogError(ex.StackTrace);
+                            }
 
-                    context.Request.Path = "/error";
-                    context.Request.QueryString = new QueryString()
-                        .Add("code", "500")
-                        .Add("title", ErrorCodes.UnhandledExceptionCode)
-                        .Add("message", exception.Message);
+                            SetRedirection(context, exception);
+                            break;
+                        }
+                    default:
+                        {
+                            await PublishError(exception).ConfigureAwait(false);
+                            _logger.LogError(exception.StackTrace);
+
+                            SetRedirection(context, exception);
+                            break;
+                        }
                 }
 
                 if (!(context.Features[typeof(IEndpointFeature)] is IEndpointFeature endpointFeature))
@@ -90,6 +99,28 @@ namespace SimpleAuth.MiddleWare
                 endpointFeature.Endpoint = null;
                 await Invoke(context).ConfigureAwait(false);
             }
+        }
+
+        private async Task PublishError(Exception exception)
+        {
+            await _publisher
+                .Publish(
+                    new SimpleAuthError(
+                        Id.Create(),
+                        exception.GetType().Name,
+                        exception.Message,
+                        string.Empty,
+                        DateTimeOffset.UtcNow))
+                .ConfigureAwait(false);
+        }
+
+        private static void SetRedirection(HttpContext context, Exception exception, string code = null, string title = null)
+        {
+            context.Request.Path = "/error";
+            context.Request.QueryString = new QueryString()
+                .Add("code", code ?? "500")
+                .Add("title", title ?? ErrorCodes.UnhandledExceptionCode)
+                .Add("message", exception.Message);
         }
     }
 }

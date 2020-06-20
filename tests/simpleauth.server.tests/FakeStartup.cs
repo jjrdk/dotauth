@@ -91,7 +91,7 @@ namespace SimpleAuth.Server.Tests
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseSimpleAuthMvc(typeof(IDefaultUi));
+            app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
         }
     }
 }

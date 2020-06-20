@@ -117,7 +117,7 @@
                     var disposable = app.ApplicationServices.GetService<ConnectionMultiplexer>();
                     disposable?.Dispose();
                 });
-            app.UseSimpleAuthMvc(typeof(IDefaultUi));
+            app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
         }
     }
 }
