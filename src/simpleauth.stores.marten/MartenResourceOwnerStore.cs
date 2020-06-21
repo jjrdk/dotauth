@@ -60,16 +60,19 @@
                 throw new ArgumentNullException(nameof(externalAccount));
             }
 
+
+            var externalAccountSubject = externalAccount.Subject;
+            var externalAccountIssuer = externalAccount.Issuer;
+
             using var session = _sessionFactory();
             var ro = await session.Query<ResourceOwner>()
-                .Where(
-                    x => x.ExternalLogins != null
-                         && x.ExternalLogins.Any(
-                             e => e.Subject == externalAccount.Subject && e.Issuer == externalAccount.Issuer))
-                .SingleOrDefaultAsync(cancellationToken)
+                .Where(x => x.ExternalLogins.Any(e => e.Subject == externalAccountSubject))
+                .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            return ro;
+            return ro.SingleOrDefault(
+                x => x.ExternalLogins.Any(
+                    e => e.Subject == externalAccountSubject && e.Issuer == externalAccountIssuer));
         }
 
         /// <inheritdoc />

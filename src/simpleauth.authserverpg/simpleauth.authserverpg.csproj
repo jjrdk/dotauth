@@ -31,9 +31,7 @@
   </ItemGroup>
 
   <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/phraseapp" />
-    </VisualStudio>
+    <VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="https://json.schemastore.org/epr-manifest" /></VisualStudio>
   </ProjectExtensions>
 
 </Project>
