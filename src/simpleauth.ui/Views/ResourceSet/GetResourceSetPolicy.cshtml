@@ -1,67 +1,112 @@
 ﻿@model SimpleAuth.Shared.Responses.EditPolicyResponse
+@using System.Linq
 @{
     ViewBag.Title = "Resource Set Policy";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@section Scripts{
+
+    <script type="text/javascript">
+        var ruleClaims = [@string.Join(", ", Model.Rules.Select(x => x.Claims.Length))];
+
+        function deleteClaim(rule, claim) {
+            const claimElm = document.getElementById(`rule${rule}claim${claim}`);
+            claimElm.style.display = 'none';
+            const inputElms = claimElm.getElementsByTagName('input');
+            console.log(inputElms);
+            for (let i = 0; i < inputElms.length; i++) {
+                inputElms[i].value = '';
+            }
+        }
+
+        function addClaim(rule) {
+            const claim = ruleClaims[rule];
+            ruleClaims[rule] = claim + 1;
+            const container = document.getElementById('rule' + rule + 'claims');
+            const html = `<div id="rule${rule}claim${claim}">
+<div class="input-field col s5">
+<label for="Rules_${rule}__Claims_${claim}__Type">Type</label>
+<input id="Rules_${rule}__Claims_${claim}__Type" type="text" name="Rules[${rule}].Claims[${claim}].Type" />
+</div>
+<div class="input-field col s5">
+<label for="Rules_${rule}__Claims_${claim}__Value">Value</label>
+<input id="Rules_${rule}__Claims_${claim}__Value" type="text" name="Rules[${rule}].Claims[${claim}].Value" />
+</div>
+<div class="input-field col s2">
+<i class="material-icons prefix right-align hand" onclick="deleteClaim(${rule},${claim});">delete_forever</i>
+</div></div>`;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+    </script>
+}
 <div class="row">
-    <div class="col s12 m6 offset-m3">
-        <div class="col s12">
-            <div class="card">
-                @using (Html.BeginForm("SetResourceSetPolicy", "ResourceSet", new { id = Model.Id }, method: FormMethod.Post, antiforgery: true, new { }))
-                {
-                    <div class="card-content">
-                        <h5>Set Access Policy</h5>
-                        <div class="row">
-                            @for (var i = 0; i < Model.Rules.Length; i++)
-                            {
-                                <div class="col s12 m12">
-                                    <label>
-                                        <input type="checkbox" asp-for="@Model.Rules[i].IsResourceOwnerConsentNeeded" class="filled-in blue-text text-darken-3" />
-                                        <span asp-for="@Model.Rules[i].IsResourceOwnerConsentNeeded">Resource Owner Consent Needed</span>
-                                    </label>
-                                </div>
-                                <div class="input-field col s12">
-                                    <label asp-for="@Model.Rules[i].OpenIdProvider"></label>
-                                    <input asp-for="@Model.Rules[i].OpenIdProvider" />
-                                </div>
-                                <div class="input-field col s12">
-                                    <label asp-for="@Model.Rules[i].ClientIdsAllowed"></label>
-                                    <input asp-for="@Model.Rules[i].ClientIdsAllowed" />
-                                </div>
-                                <div class="input-field col s12">
-                                    <label asp-for="@Model.Rules[i].Scopes"></label>
-                                    <input asp-for="@Model.Rules[i].Scopes" />
-                                </div>
-                                <div class="col s12">Claims</div>
-                                <hr />
-                                for (var j = 0; j < Model.Rules[i].Claims.Length; j++)
+    <div class="col s12 m12">
+        <div class="card">
+            @using (Html.BeginForm("SetResourceSetPolicy", "ResourceSet", new { id = Model.Id }, method: FormMethod.Post, antiforgery: true, new { }))
+            {
+                <div class="card-content">
+                    <h5>Set Access Policy</h5>
+                    <div class="row">
+                        @for (var i = 0; i < Model.Rules.Length; i++)
+                        {
+                            <div class="col s12 m12">
+                                <label>
+                                    <input type="checkbox" asp-for="@Model.Rules[i].IsResourceOwnerConsentNeeded" class="filled-in blue-text text-darken-3" />
+                                    <span asp-for="@Model.Rules[i].IsResourceOwnerConsentNeeded">Resource Owner Consent Needed</span>
+                                </label>
+                            </div>
+                            <div class="input-field col s12">
+                                <label asp-for="@Model.Rules[i].OpenIdProvider"></label>
+                                <input asp-for="@Model.Rules[i].OpenIdProvider" />
+                            </div>
+                            <div class="input-field col s12">
+                                <label asp-for="@Model.Rules[i].ClientIdsAllowed"></label>
+                                <input asp-for="@Model.Rules[i].ClientIdsAllowed" />
+                            </div>
+                            <div class="input-field col s12">
+                                <label asp-for="@Model.Rules[i].Scopes"></label>
+                                <input asp-for="@Model.Rules[i].Scopes" />
+                            </div>
+                            <div class="col s12"><h6>Claims</h6></div>
+                            <hr />
+
+                            <div id="@string.Concat("rule",@i,"claims")">
+                                @for (var j = 0; j < Model.Rules[i].Claims.Length; j++)
                                 {
-                                    <div class="input-field col s6">
-                                        <label asp-for="@Model.Rules[i].Claims[j].Type"></label>
-                                        <input asp-for="@Model.Rules[i].Claims[j].Type" />
-                                    </div>
-                                    <div class="input-field col s6">
-                                        <label asp-for="@Model.Rules[i].Claims[j].Value"></label>
-                                        <input asp-for="@Model.Rules[i].Claims[j].Value" />
+                                    <div id="@string.Concat("rule", @i, "claim", @j)">
+                                        <div class="input-field col s5">
+                                            <label asp-for="@Model.Rules[i].Claims[j].Type"></label>
+                                            <input asp-for="@Model.Rules[i].Claims[j].Type" />
+                                        </div>
+                                        <div class="input-field col s5">
+                                            <label asp-for="@Model.Rules[i].Claims[j].Value"></label>
+                                            <input asp-for="@Model.Rules[i].Claims[j].Value" />
+                                        </div>
+                                        <div class="input-field col s2">
+                                            <i class="material-icons prefix right-align hand" onclick="deleteClaim(@i,@j);">delete_forever</i>
+                                        </div>
                                     </div>
                                 }
-                            }
-                        </div>
-                    </div>
-                    <div class="card-action">
-                        <div class="row">
-                            <p class="small">
-                                By setting the authorization policy, you accept to share the resource with everyone who satisfies the policy conditions.
-                            </p>
-                        </div>
-                        <div class="row">
-                            <div class="col s12 m12">
-                                <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Save</button>
                             </div>
+                            <div class="col s12 m12">
+                                <button type="button" class="waves-effect waves-light btn blue darken-3" onclick="addClaim(@i);">Add Claim</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        <p class="small">
+                            By setting the authorization policy, you accept to share the resource with everyone who satisfies the policy conditions.
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 m12">
+                            <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Save</button>
                         </div>
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
     </div>
 </div>
