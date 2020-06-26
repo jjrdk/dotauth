@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0-preview.5.20279.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0-preview.6.20312.15" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.0-preview-20200519-01" />
     <PackageReference Include="xbehave" Version="2.4.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -23,8 +23,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Moq" Version="4.14.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.0-preview.5.20279.2" />
+    <PackageReference Include="Moq" Version="4.14.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.0-preview.6.20312.15" />
   </ItemGroup>
 
   <ItemGroup>
