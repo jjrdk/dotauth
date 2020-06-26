@@ -249,7 +249,6 @@ namespace SimpleAuth.Controllers
                 try
                 {
                     await _generateAndSendCode.Send(resourceOwner.Subject, cancellationToken).ConfigureAwait(false);
-                    //_openIdEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
                 catch (ClaimRequiredException)
