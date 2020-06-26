@@ -214,8 +214,10 @@ namespace SimpleAuth.Controllers
             {
                 return RedirectToAction("Index", "Authenticate");
             }
+
+            var externalSubject = authenticatedUser.GetSubject();
             var resourceOwner = await _resourceOwnerRepository.Get(
-                    new ExternalAccountLink { Issuer = authenticatedUser.Identity.AuthenticationType, Subject = authenticatedUser.GetSubject() }, cancellationToken)
+                    new ExternalAccountLink { Issuer = authenticatedUser.Identity.AuthenticationType, Subject = externalSubject }, cancellationToken)
                 .ConfigureAwait(false);
             // 2. Automatically create the resource owner.
 
@@ -252,7 +254,6 @@ namespace SimpleAuth.Controllers
                 try
                 {
                     await _generateAndSendCode.Send(resourceOwner.Subject, cancellationToken).ConfigureAwait(false);
-                    //_openIdEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
                 catch (ClaimRequiredException)
@@ -548,7 +549,8 @@ namespace SimpleAuth.Controllers
             // 5. Retrieve the claims & insert the resource owner if needed.
             //var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = authenticatedUser.Claims.ToArray();
-            var resourceOwner = await _resourceOwnerRepository.Get(new ExternalAccountLink { Issuer = authenticatedUser.Identity.AuthenticationType, Subject = authenticatedUser.GetSubject() }, cancellationToken)
+            var externalSubject = authenticatedUser.GetSubject();
+            var resourceOwner = await _resourceOwnerRepository.Get(new ExternalAccountLink { Issuer = authenticatedUser.Identity.AuthenticationType, Subject = externalSubject }, cancellationToken)
                 //authenticatedUser.GetSubject(), cancellationToken)
                 .ConfigureAwait(false);
             var sub = string.Empty;
