@@ -27,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using SimpleAuth.Repositories;
     using Newtonsoft.Json;
     using SimpleAuth.Filters;

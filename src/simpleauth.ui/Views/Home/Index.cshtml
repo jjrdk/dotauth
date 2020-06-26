@@ -18,7 +18,7 @@
                             <a href="@Url.Content("~/perm")" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
                         </span>
                         <span class="col m4 center-align">
-                            @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                            @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
                         </span>
                         <span class="col m4 right-align">
                             @Html.ActionLink("Authenticate Locally", "Index", "Authenticate", null, new { @class = "btn blue darken-3 waves-effect waves-light right" })

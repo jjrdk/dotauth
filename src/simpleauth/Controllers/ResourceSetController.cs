@@ -30,6 +30,7 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.ViewModels;
 
     /// <summary>
     /// Defines the resource set controller.
@@ -89,7 +90,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> GetResourceSets(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetResourceSets([FromQuery] string ui, CancellationToken cancellationToken)
         {
             var owner = User.GetSubject();
             if (string.IsNullOrWhiteSpace(owner))
@@ -97,7 +98,9 @@ namespace SimpleAuth.Controllers
                 return BadRequest();
             }
             var resourceSets = await _resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
-            return new OkObjectResult(resourceSets.Select(x => x.Id).ToArray());
+            var value = ui == "1" ? (object)resourceSets.Select(ResourceSetViewModel.FromResourceSet).ToArray() : resourceSets.Select(x => x.Id).ToArray();
+            
+            return new OkObjectResult(value);
         }
 
         /// <summary>
@@ -412,7 +415,11 @@ namespace SimpleAuth.Controllers
                     viewModel.Scopes?.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => x.Trim())
                         .ToArray(),
-                Claims = viewModel.Claims ?? Array.Empty<ClaimData>(),
+                Claims =
+                    viewModel.Claims.Where(
+                            x => !string.IsNullOrWhiteSpace(x.Type) && !string.IsNullOrWhiteSpace(x.Value))
+                        .ToArray()
+                    ?? Array.Empty<ClaimData>(),
                 ClientIdsAllowed =
                     viewModel.ClientIdsAllowed?.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => x.Trim())

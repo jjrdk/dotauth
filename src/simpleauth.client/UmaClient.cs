@@ -271,4 +271,46 @@ namespace SimpleAuth.Client
             return _umaConfiguration;
         }
     }
+    
+    /// <summary>
+    /// Defines the resource set view model.
+    /// </summary>
+    public class ResourceSetResponse
+    {
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public string Id { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the icon.
+        /// </summary>
+        public string Icon { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string Name { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Creates a <see cref="ResourceSetResponse"/> instance from a <see cref="ResourceSet"/> instance.
+        /// </summary>
+        /// <param name="resourceSet"></param>
+        /// <returns></returns>
+        public static ResourceSetResponse FromResourceSet(ResourceSet resourceSet)
+        {
+            return new ResourceSetResponse
+            {
+                Id = resourceSet.Id,
+                Icon = resourceSet.IconUri?.AbsoluteUri,
+                Description = resourceSet.Description,
+                Name = resourceSet.Name
+            };
+        }
+    }
 }

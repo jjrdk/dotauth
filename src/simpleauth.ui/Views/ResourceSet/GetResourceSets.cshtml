@@ -1,29 +1,96 @@
-﻿@model string[]
+﻿@model object
 @{
     ViewBag.Title = "Registered Resource Sets";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="row">
-    <div class="col s12 m6 offset-m3">
-        <div class="col s12">
-            <div class="card">
-                <div class="card-content">
-                    <h5>@ViewBag.Title</h5>
-                    <div class="row">
-                        <div class="col s12">
-                            <ul class="collection">
-                                @foreach (var id in Model)
+    <div class="col s12">
+        <div class="card">
+            <div class="card-content">
+                <h5>@ViewBag.Title</h5>
+                <div class="row">
+                    <div class="col l12 s12">
+                        <table class="bordered">
+                            <colgroup>
+                                @if (Model is SimpleAuth.ViewModels.ResourceSetViewModel[])
                                 {
-                                    <li>
-                                        <div class="col m4">@id</div>
-                                        <div class="col m4">@Html.ActionLink("Manage", "GetResourceSetPolicy", "ResourceSet", new { id = id })</div>
-                                    </li>
+                                    <col style="width: 16.6%;" />
+                                    <col style="width: 25%;" />
+                                    <col style="width: 50%;" />
+                                    <col style="width: 8.4%;" />
                                 }
-                            </ul>
-                        </div>
+                                else
+                                {
+                                    <col style="width: 12.5%;" />
+                                    <col style="width: 87.5%;" />
+                                }
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    @if (Model is SimpleAuth.ViewModels.ResourceSetViewModel[])
+                                    {
+                                        <th>Icon</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Edit</th>
+                                    }
+                                    else
+                                    {
+                                        <th>Edit</th>
+                                        <th>Name</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @switch (Model)
+                                {
+                                    case SimpleAuth.ViewModels.ResourceSetViewModel[] viewModels:
+                                        foreach (var vm in viewModels)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @if (string.IsNullOrWhiteSpace(vm.Icon))
+                                                    {
+                                                        <i class="material-icons prefix middle">content_copy</i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <img alt="icon" width="100" height="100" src="@vm.Icon" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <h6 class="inline">@vm.Name</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="inline">@vm.Description</h6>
+                                                </td>
+                                                <td>
+                                                    <a href="@Url.Action("GetResourceSetPolicy", "ResourceSet", new {id = vm.Id})" class="inline">
+                                                        <i class="valign-wrapper material-icons prefix middle">edit</i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                        break;
+                                    case string[] ids:
+                                        foreach (var id in ids)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <a href="@Url.Action("GetResourceSetPolicy", "ResourceSet", new {id = id})" class="inline">
+                                                        <i class="valign-wrapper material-icons prefix center">edit</i>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <h6 class="inline">@id</h6>
+                                                </td>
+                                            </tr>
+                                        }
+                                        break;
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-                <div class="card-action">
                 </div>
             </div>
         </div>
