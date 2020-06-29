@@ -22,7 +22,7 @@
         function addClaim(rule) {
             const claim = ruleClaims[rule];
             ruleClaims[rule] = claim + 1;
-            const container = document.getElementById('rule' + rule + 'claims');
+            const container = document.getElementById(`rule${rule}claims`);
             const html = `<div id="rule${rule}claim${claim}">
 <div class="input-field col s5">
 <label for="Rules_${rule}__Claims_${claim}__Type">Type</label>
@@ -49,6 +49,8 @@
                     <div class="row">
                         @for (var i = 0; i < Model.Rules.Length; i++)
                         {
+                            <h5>Access Rule @i</h5>
+                            <hr />
                             <div class="col s12 m12">
                                 <label>
                                     <input type="checkbox" asp-for="@Model.Rules[i].IsResourceOwnerConsentNeeded" class="filled-in blue-text text-darken-3" />
@@ -96,7 +98,7 @@
                 </div>
                 <div class="card-action">
                     <div class="row">
-                        <p class="small">
+                        <p>
                             By setting the authorization policy, you accept to share the resource with everyone who satisfies the policy conditions.
                         </p>
                     </div>
