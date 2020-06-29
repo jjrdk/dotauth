@@ -17,58 +17,60 @@
                     </div>
                     <div class="row col s12">
                         <table class="bordered">
-                            <col style="width:14%">
-                            <col style="width:20%">
-                            <col style="width:20%">
-                            <col style="width:16%">
-                            <col style="width:16%">
-                            <col style="width:14%">
+                            <colgroup>
+                                <col style="width: 14%">
+                                <col style="width: 20%">
+                                <col style="width: 20%">
+                                <col style="width: 16%">
+                                <col style="width: 16%">
+                                <col style="width: 14%">
+                            </colgroup>
                             <thead>
-                            <tr>
-                                <th>Ticket ID</th>
-                                <th>Requester</th>
-                                <th>Request</th>
-                                <th>Created</th>
-                                <th>Expires</th>
-                                <th></th>
-                            </tr>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Requester</th>
+                                    <th>Request</th>
+                                    <th>Created</th>
+                                    <th>Expires</th>
+                                    <th></th>
+                                </tr>
                             </thead>
                             <tbody>
-                            @for (var i = 0; i < Model.Length; i++)
-                            {
-                                <tr>
-                                    @using (Html.BeginForm("ApprovePermissionRequest", "Permissions", new {id = Model[i].Id}, FormMethod.Post))
-                                    {
-                                        <td>@Model[i].Id</td>
-                                        @if (Model[i].Requester == null)
+                                @for (var i = 0; i < Model.Length; i++)
+                                {
+                                    <tr>
+                                        @using (Html.BeginForm("ApprovePermissionRequest", "Permissions", new { id = Model[i].Id }, FormMethod.Post))
                                         {
-                                            <td>Unidentified</td>
-                                        }
-                                        else
-                                        {
+                                            <td>@Model[i].Id</td>
+                                            @if (Model[i].Requester == null)
+                                            {
+                                                <td>Unidentified</td>
+                                            }
+                                            else
+                                            {
+                                                <td>
+                                                    @foreach (var claim in Model[i].Requester)
+                                                    {
+                                                        <span>@claim.Type: @claim.Value</span><br />
+                                                    }
+                                                </td>
+                                            }
                                             <td>
-                                                @foreach (var claim in Model[i].Requester)
+                                                @for (var j = 0; j < Model[i].Lines.Length; j++)
                                                 {
-                                                    <span>@claim.Type: @claim.Value</span><br/>
+                                                    <span style="font-weight: bold">@Model[i].Lines[j].ResourceSetId: </span>
+                                                    <span>@string.Join(", ", Model[i].Lines[j].Scopes)</span>
+                                                    <br />
                                                 }
                                             </td>
+                                            <td>@Model[i].Created</td>
+                                            <td>@Model[i].Expires</td>
+                                            <td>
+                                                <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Approve</button>
+                                            </td>
                                         }
-                                        <td>
-                                            @for (var j = 0; j < Model[i].Lines.Length; j++)
-                                            {
-                                                <span style="font-weight: bold">@Model[i].Lines[j].ResourceSetId: </span>
-                                                <span>@string.Join(", ", Model[i].Lines[j].Scopes)</span>
-                                                <br/>
-                                            }
-                                        </td>
-                                        <td>@Model[i].Created</td>
-                                        <td>@Model[i].Expires</td>
-                                        <td>
-                                            <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Approve</button>
-                                        </td>
-                                    }
-                                </tr>
-                            }
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
