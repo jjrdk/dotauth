@@ -207,7 +207,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Get,
                 RequestUri = configuration.ResourceRegistrationEndpoint
             };
-            return await GetResult<string[]>(request, token, cancellationToken).ConfigureAwait(false);
+            return await GetResult<ResourceSetResponse[]>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
