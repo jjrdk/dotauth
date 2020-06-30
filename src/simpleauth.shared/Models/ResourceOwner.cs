@@ -23,6 +23,10 @@ namespace SimpleAuth.Shared.Models
     /// </summary>
     public class ResourceOwner
     {
+        public ResourceOwner()
+        {
+            var x = string.Join(", ", this.ExternalLogins?.Select(e => e.Issuer)??Array.Empty<string>());
+        }
         /// <summary>
         /// Get or sets the subject-identifier for the End-User at the issuer.
         /// </summary>
@@ -32,10 +36,7 @@ namespace SimpleAuth.Shared.Models
             set
             {
                 var claim = new Claim(OpenIdClaimTypes.Subject, value);
-                if (Claims == null)
-                {
-                    Claims = new[] { claim };
-                }
+                Claims ??= new[] {claim};
 
                 Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.Subject).Concat(new[] { claim }).ToArray();
             }

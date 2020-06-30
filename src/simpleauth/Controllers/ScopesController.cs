@@ -126,7 +126,7 @@ namespace SimpleAuth.Controllers
             var deleted = await _scopeRepository.Delete(scope, CancellationToken.None).ConfigureAwait(false);
 
             return deleted
-                ? (IActionResult) NoContent()
+                ? (IActionResult)NoContent()
                 : BadRequest(
                     new ErrorDetails
                     {
@@ -154,6 +154,24 @@ namespace SimpleAuth.Controllers
             return !await _scopeRepository.Insert(request, CancellationToken.None).ConfigureAwait(false)
                 ? new StatusCodeResult(StatusCodes.Status500InternalServerError)
                 : new NoContentResult();
+        }
+
+        [HttpPost("{name}")]
+        [Authorize(Policy = "manager")]
+        public async Task<IActionResult> Update(
+             string name,
+            [FromForm] Scope scope,
+            CancellationToken cancellationToken)
+        {
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            scope.Name = name;
+            return await _scopeRepository.Update(scope, cancellationToken).ConfigureAwait(false)
+                ? (IActionResult)RedirectToAction("GetAll", "Scopes")
+                : new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         /// <summary>

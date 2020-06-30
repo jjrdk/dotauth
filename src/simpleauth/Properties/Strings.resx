@@ -486,4 +486,7 @@
   <data name="LogCouldNotAuthenticate" xml:space="preserve">
     <value>Could not authenticate {0}</value>
   </data>
+  <data name="InvalidScope" xml:space="preserve">
+    <value>Invalid scope</value>
+  </data>
 </root>

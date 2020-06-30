@@ -17,53 +17,6 @@
             {
                 new Client
                 {
-                    ClientId = "api",
-                    ClientName = "api",
-                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "api"}},
-                    JsonWebKeys =
-                        new[]
-                        {
-                            "longsupersecretkey".CreateSignatureJwk(),
-                            "longsupersecretkey".CreateEncryptionJwk()
-                        }.ToJwks(),
-                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                    PolicyUri = new Uri("http://openid.net"),
-                    TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {"register_client"},
-                    GrantTypes =
-                        new[] {GrantTypes.ClientCredentials, GrantTypes.Implicit, GrantTypes.AuthorizationCode},
-                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.Code},
-                    ApplicationType = ApplicationTypes.Native,
-                    RedirectionUrls = new[] {new Uri("http://localhost:60000"),}
-                },
-                new Client
-                {
-                    ClientId = "mobileapp",
-                    ClientName = "Admin client",
-                    Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "Secret"}},
-                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                    //LogoUri = null,
-                    AllowedScopes = new[] {"openid", "profile", "role"},
-                    GrantTypes =
-                        new[]
-                        {
-                            GrantTypes.AuthorizationCode,
-                            GrantTypes.ClientCredentials,
-                            GrantTypes.Implicit,
-                            GrantTypes.Password,
-                            GrantTypes.RefreshToken,
-                            GrantTypes.UmaTicket,
-                            GrantTypes.ValidateBearer
-                        },
-                    JsonWebKeys =
-                        new[] {"longsupersecretkey".CreateSignatureJwk(), "longsupersecretkey".CreateEncryptionJwk()}
-                            .ToJwks(),
-                    ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
-                    IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
-                    ApplicationType = ApplicationTypes.Native
-                },
-                new Client
-                {
                     ClientId = "web",
                     ClientName = "web",
                     AllowedScopes = new[] {"openid", "role", "profile", "email", "manager", "uma_protection"},

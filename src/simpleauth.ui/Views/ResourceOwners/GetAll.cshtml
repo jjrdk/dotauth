@@ -1,0 +1,83 @@
+﻿@model SimpleAuth.Shared.Models.ResourceOwner[]
+@using System
+@using System.Linq
+@using SimpleAuth.Shared
+@using System.Security.Claims
+@using System.Text.Encodings.Web
+@{
+    ViewBag.Title = "Manage Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col s12">
+        <div class="card">
+            <div class="card-content">
+                <h5>@ViewBag.Title</h5>
+                <div class="row">
+                    <div class="col l12 s12">
+                        <table class="bordered">
+                            @*<colgroup>
+                                    <col style="width: 16.6%;" />
+                                    <col style="width: 25%;" />
+                                    <col style="width: 50%;" />
+                                    <col style="width: 8.4%;" />
+                                </colgroup>*@
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Subject</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                    <th>External Id Providers</th>
+                                    <th>Created</th>
+                                    <th>Last Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ro in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="@Url.Action("Get", "ResourceOwners", new {id = ro.Subject})" class="inline">
+                                                <i class="valign-wrapper material-icons prefix center">edit</i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span>@ro.Subject</span>
+                                        </td>
+                                        <td>
+                                            <span>@ro.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name || c.Type == OpenIdClaimTypes.Name)?.Value</span>
+                                        </td>
+                                        <td>
+                                            <span>@ro.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email || c.Type == OpenIdClaimTypes.Email)?.Value</span>
+                                        </td>
+                                        <td>
+                                            @if (ro.IsLocalAccount)
+                                            {
+                                                <span>Local</span>
+                                            }
+                                            else
+                                            {
+                                                <span>External</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span>@string.Join(", ", ro.ExternalLogins?.Select(e => e.Issuer) ?? Array.Empty<string>())</span>
+                                        </td>
+                                        <td>
+                                            <span>@ro.CreateDateTime</span>
+                                        </td>
+                                        <td>
+                                            <span>@ro.UpdateDateTime</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

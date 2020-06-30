@@ -97,7 +97,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize(Policy = "manager")]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             var resourceOwners = (await _resourceOwnerRepository.GetAll(cancellationToken).ConfigureAwait(false));
             return new OkObjectResult(resourceOwners);
@@ -136,6 +136,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [HttpPost("{0}/delete")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
         {
@@ -201,6 +202,61 @@ namespace SimpleAuth.Controllers
                 });
         }
 
+        [HttpPost("{id}/update")]
+        [Authorize(Policy = "manager")]
+        public async Task<IActionResult> Update(string id, UpdateResourceOwnerClaimsRequest request, CancellationToken cancellationToken)
+        {
+            if (request == null)
+            {
+                return BadRequest(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = Strings.ParameterInRequestBodyIsNotValid,
+                        Status = HttpStatusCode.BadRequest
+                    });
+            }
+
+            request.Subject = id;
+
+            var resourceOwner =
+                await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
+            if (resourceOwner == null)
+            {
+                return BadRequest(
+                    new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidParameterCode,
+                        Detail = Strings.TheRoDoesntExist
+                    });
+            }
+
+            var claims = request.Claims
+                .Where(x => x.Type != null && x.Value != null)
+                .Where(c => c.Type != OpenIdClaimTypes.Subject)
+                .Where(c => c.Type != OpenIdClaimTypes.UpdatedAt)
+                .Select(claim => new Claim(claim.Type, claim.Value))
+                .Concat(
+                    new[]
+                    {
+                        new Claim(OpenIdClaimTypes.Subject, request.Subject),
+                        new Claim(
+                            OpenIdClaimTypes.UpdatedAt,
+                            DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString())
+                    });
+
+            resourceOwner.Claims = claims.ToArray();
+
+            var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
+            if (!result)
+            {
+                return BadRequest(Strings.TheClaimsCannotBeUpdated);
+            }
+
+            return RedirectToAction("Get", "ResourceOwners", new { id = id });
+        }
+
         /// <summary>
         /// Updates the claims.
         /// </summary>
@@ -238,7 +294,6 @@ namespace SimpleAuth.Controllers
                        });
             }
 
-            //resourceOwner.UpdateDateTime = DateTimeOffset.UtcNow;
             var claims = request.Claims.Select(claim => new Claim(claim.Type, claim.Value)).ToList();
             var resourceOwnerClaims = resourceOwner.Claims
                 .Where(c => !claims.Exists(x => x.Type == c.Type))
@@ -305,7 +360,7 @@ namespace SimpleAuth.Controllers
         [HttpDelete("claims")]
         [Authorize]
         public async Task<IActionResult> DeleteMyClaims(
-            [FromQuery]string[] type,
+            [FromQuery] string[] type,
             CancellationToken cancellationToken)
         {
             var sub = User.GetSubject();

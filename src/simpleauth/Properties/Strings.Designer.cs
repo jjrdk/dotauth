@@ -295,6 +295,15 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid scope.
+        /// </summary>
+        internal static string InvalidScope {
+            get {
+                return ResourceManager.GetString("InvalidScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid user.
         /// </summary>
         internal static string InvalidUser {

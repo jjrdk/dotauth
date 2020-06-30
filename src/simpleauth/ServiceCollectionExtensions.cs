@@ -105,10 +105,14 @@ namespace SimpleAuth
                                 return false;
                             }
 
-                            var result = p.User?.Claims.Where(c => c.Type == ScopeType)
-                                .Any(c => c.HasClaimValue("manager"));
+                            var result =
+                                p.User?.Claims.Where(c => c.Type == ScopeType).Any(c => c.HasClaimValue("manager"))
+                                == true
+                                && p.User?.Claims.Where(c => c.Type == "role")
+                                    .Any(c => c.HasClaimValue("administrator"))
+                                == true;
 
-                            return result == true;
+                            return result;
                         });
                 });
 

@@ -104,7 +104,7 @@
             {
                 Claims = new[] {OpenIdClaimTypes.Role},
                 Description = Strings.ManageServerResources,
-                IsDisplayedInConsent = false,
+                IsDisplayedInConsent = true,
                 IsExposed = false,
                 Name = "manager",
                 Type = ScopeTypes.ProtectedApi
