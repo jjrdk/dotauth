@@ -23,7 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Moq" Version="4.14.4" />
+    <PackageReference Include="Moq" Version="4.14.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.0-preview.6.20312.15" />
   </ItemGroup>
 
