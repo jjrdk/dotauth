@@ -77,6 +77,7 @@
             options.Scope.Add("openid");
             options.Scope.Add("profile");
             options.Scope.Add("email");
+            options.Scope.Add("manager");
             options.Scope.Add("uma_protection");
         }
     }
