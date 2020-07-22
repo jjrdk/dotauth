@@ -1,0 +1,51 @@
+﻿@model SimpleAuth.Shared.Models.Client
+@{ ViewBag.Title = "Client Info";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col s12">
+        <div class="card">
+            <div class="card-content">
+                <h2>Client Info</h2>
+                <div class="row">
+                    <dl>
+                        <dt class="col s2">Client Name:</dt>
+                        <dd class="col s2">@Model.ClientName</dd>
+                        <dt class="col s2">Client Id:</dt>
+                        <dd class="col s2">@Model.ClientId</dd>
+                        @if (@Model.LogoUri != null)
+                        {
+                            <dt class="col s2">Logo Uri:</dt>
+                            <dd class="col s2">@Model.LogoUri.AbsoluteUri</dd>}
+                    </dl>
+                </div>
+                <div class="row">
+                    <div class="col s2"><h6>Secrets</h6></div>
+                </div>
+                <div class="row">
+                    @foreach (var secret in @Model.Secrets)
+                    {
+                        <div class="col s2"></div>
+                        <div class="col s2">@secret.Type</div>
+                        <div class="col s8">@secret.Value</div>}
+                </div>
+                <div class="row">
+                    <div class="col s2"><h6>Grant Types</h6></div>
+                </div>
+                <div class="row">
+                    @foreach (var grantType in @Model.GrantTypes)
+                    {
+                        <div class="col s2"></div>
+                        <div class="col s10">@grantType</div>}
+                </div>
+            </div>
+            <div class="card-action">
+                <div class="row">
+                    <div class="col s12">
+                        <a href="@Url.Action("Create", "Clients")" class="waves-effect waves-light btn blue darken-3 right">Create Client</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

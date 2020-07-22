@@ -1,0 +1,69 @@
+﻿@model SimpleAuth.Shared.Models.Client[]
+@{
+    ViewBag.Title = "Registered Clients";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col s12">
+        <div class="card">
+            <div class="card-content">
+                <h5>Registered Clients</h5>
+                <div class="row">
+                    <div class="col l12 s12">
+                        <table class="bordered">
+                            <colgroup>
+                                <col style="width: 16.6%;" />
+                                <col style="width: 25%;" />
+                                <col style="width: 50%;" />
+                                <col style="width: 8.4%;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Icon</th>
+                                    <th>Name</th>
+                                    <th>Grant Types</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var client in @Model)
+                                {
+                                <tr>
+                                    <td>
+                                        @if (client.LogoUri == null)
+                                        {
+                                            <i class="material-icons prefix middle">content_copy</i>
+                                        }
+                                        else
+                                        {
+                                            <img alt="icon" width="100" height="100" src="@client.LogoUri" />
+                                        }
+                                    </td>
+                                    <td>
+                                        <h6 class="inline">@client.ClientName</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="inline">@string.Join(", ", client.GrantTypes)</h6>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Get", "Clients", new {id = client.ClientId})" class="inline">
+                                            <i class="valign-wrapper material-icons prefix middle">visibility</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card-action">
+                <div class="row">
+                    <div class="col s12">
+                        <a href="@Url.Action("Create", "Clients")" class="waves-effect waves-light btn blue darken-3 right">Create Client</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

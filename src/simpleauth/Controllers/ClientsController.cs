@@ -15,6 +15,7 @@
 namespace SimpleAuth.Controllers
 {
     using System;
+    using System.Linq;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -27,11 +28,11 @@ namespace SimpleAuth.Controllers
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using SimpleAuth.Repositories;
     using Newtonsoft.Json;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
+    using SimpleAuth.ViewModels;
 
     /// <summary>
     /// Defines the client controller.
@@ -199,18 +200,38 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Adds the specified client.
         /// </summary>
-        /// <param name="client">The client.</param>
+        /// <param name="viewModel">The client.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "manager")]
-        public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
+        public async Task<IActionResult> Add(CreateClientViewModel viewModel, CancellationToken cancellationToken)
         {
+            var client = new Client
+            {
+                ClientName = viewModel.Name,
+                LogoUri = viewModel.LogoUri,
+                ApplicationType = viewModel.ApplicationType,
+                RedirectionUrls =
+                    viewModel.RedirectionUrls.Split(",;".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => new Uri(x))
+                        .ToArray(),
+                GrantTypes = viewModel.GrantTypes.ToArray()
+            };
+
             var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>);
             var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
             var result = await _clientRepository.Insert(toInsert, cancellationToken).ConfigureAwait(false);
 
             return result ? Ok(toInsert) : (IActionResult)BadRequest();
+        }
+
+        [HttpGet]
+        [Route("create")]
+        [Authorize(Policy = "manager")]
+        public async Task<IActionResult> Create()
+        {
+            return Ok(new CreateClientViewModel());
         }
 
         private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
