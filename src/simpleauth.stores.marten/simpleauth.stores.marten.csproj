@@ -13,12 +13,12 @@
   </PropertyGroup>
   <Import Project="..\..\shared.proj" />
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.6" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="marten" Version="3.12.2" />
+    <PackageReference Include="marten" Version="3.12.3" />
   </ItemGroup>
 </Project>
