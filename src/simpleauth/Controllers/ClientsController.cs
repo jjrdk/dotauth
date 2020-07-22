@@ -200,12 +200,30 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Adds the specified client.
         /// </summary>
-        /// <param name="viewModel">The client.</param>
+        /// <param name="client">The client.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "manager")]
-        public async Task<IActionResult> Add(CreateClientViewModel viewModel, CancellationToken cancellationToken)
+        public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
+        {
+            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>);
+            var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var result = await _clientRepository.Insert(toInsert, cancellationToken).ConfigureAwait(false);
+
+            return result ? Ok(toInsert) : (IActionResult)BadRequest();
+        }
+
+        /// <summary>
+        /// Adds the specified client.
+        /// </summary>
+        /// <param name="viewModel">The client.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("create")]
+        [Authorize(Policy = "manager")]
+        public async Task<IActionResult> Create(CreateClientViewModel viewModel, CancellationToken cancellationToken)
         {
             var client = new Client
             {
