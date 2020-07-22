@@ -243,10 +243,21 @@ Task("Docker-Build")
 .IsDependentOn("Pack")
 .Does(() => {
 
+	var winPublishSettings = new DotNetCorePublishSettings
+    {
+        PublishTrimmed = true,
+        Runtime = "win-x64",
+        SelfContained = true,
+        Configuration = configuration,
+        OutputDirectory = "./artifacts/publish/winx64/"
+    };
+
+    DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", winPublishSettings);
 	var publishSettings = new DotNetCorePublishSettings
     {
+        PublishTrimmed = true,
         Runtime = "linux-musl-x64",
-        SelfContained = false,
+        SelfContained = true,
         Configuration = configuration,
         OutputDirectory = "./artifacts/publish/inmemory/"
     };
@@ -265,7 +276,7 @@ Task("Docker-Build")
     DockerBuild(settings, "./");
 
 	publishSettings.OutputDirectory = "./artifacts/publish/postgres/";
-
+    
     DotNetCorePublish("./src/simpleauth.authserverpg/simpleauth.authserverpg.csproj", publishSettings);
     settings = new DockerImageBuildSettings {
         Compress = true,
@@ -278,9 +289,9 @@ Task("Docker-Build")
 		}
 	};
     DockerBuild(settings, "./");
-
+    
 	publishSettings.OutputDirectory = "./artifacts/publish/pgredis/";
-
+    
     DotNetCorePublish("./src/simpleauth.authserverpgredis/simpleauth.authserverpgredis.csproj", publishSettings);
     settings = new DockerImageBuildSettings {
         Compress = true,

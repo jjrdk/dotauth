@@ -13,13 +13,13 @@
   </PropertyGroup>
   <Import Project="..\..\shared.proj" />
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0-preview.6.20305.6" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0-preview.6.20305.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0-preview.7.20364.11" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0-preview.7.20364.11" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="marten" Version="3.12.2" />
+    <PackageReference Include="marten" Version="3.12.3" />
   </ItemGroup>
 </Project>

@@ -133,7 +133,6 @@
                 ClientUri = new Uri("http://clienturi.com"),
                 Contacts = new[] { "contact" },
                 DefaultAcrValues = "sms",
-                //DefaultMaxAge = 10,
                 GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
                 ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.IdToken, ResponseTypeNames.Token },
                 RequestUris = new[] { new Uri("https://localhost"), },
@@ -151,8 +150,6 @@
             Assert.Equal(ApplicationTypes.Web, newClient.Content.ApplicationType);
             Assert.Equal("client_name", newClient.Content.ClientName);
             Assert.Equal(new Uri("http://clienturi.com"), newClient.Content.ClientUri);
-            //Assert.Equal(new Uri("http://logouri.com"), newClient.Content.LogoUri);
-            //Assert.Equal(10, newClient.Content.DefaultMaxAge);
             Assert.Equal("sms", newClient.Content.DefaultAcrValues);
             Assert.Single(newClient.Content.Contacts);
             Assert.Single(newClient.Content.RedirectionUrls);

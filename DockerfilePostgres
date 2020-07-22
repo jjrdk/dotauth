@@ -1,6 +1,6 @@
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
-WORKDIR /app
+FROM mcr.microsoft.com/dotnet/nightly/runtime-deps:5.0-alpine
 ENV ACCEPT_EULA=Y
-COPY artifacts/publish/postgres/ .
-ENTRYPOINT ["dotnet", "simpleauth.authserverpg.dll"]
+COPY artifacts/publish/postgres/ app/
+WORKDIR /app
+ENTRYPOINT ["./simpleauth.authserverpg"]
