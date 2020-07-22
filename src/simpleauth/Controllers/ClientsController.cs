@@ -241,7 +241,7 @@ namespace SimpleAuth.Controllers
             var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
             var result = await _clientRepository.Insert(toInsert, cancellationToken).ConfigureAwait(false);
 
-            return result ? Ok(toInsert) : (IActionResult)BadRequest();
+            return result ? RedirectToAction("Get", "Clients", new { id = toInsert.ClientId }) : (IActionResult)BadRequest();
         }
 
         [HttpGet]
