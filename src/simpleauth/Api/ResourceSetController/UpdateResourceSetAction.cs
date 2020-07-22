@@ -44,7 +44,7 @@ namespace SimpleAuth.Api.ResourceSetController
             return await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false);
         }
 
-        private void CheckResourceSetParameter(ResourceSet resourceSet)
+        private static void CheckResourceSetParameter(ResourceSet resourceSet)
         {
             if (resourceSet == null)
             {

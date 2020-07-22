@@ -114,6 +114,36 @@
             client.Contacts = newClient.Contacts;
             client.DefaultAcrValues = newClient.DefaultAcrValues;
 
+            // If omitted then the default value is authorization code response type
+            client.ResponseTypes = newClient.ResponseTypes?.Any() != true ? new[] { ResponseTypeNames.Code } : newClient.ResponseTypes;
+            client.SectorIdentifierUri = newClient.SectorIdentifierUri;
+            client.TokenEndPointAuthMethod = newClient.TokenEndPointAuthMethod;
+            client.TokenEndPointAuthSigningAlg = newClient.TokenEndPointAuthSigningAlg;
+            client.TosUri = newClient.TosUri;
+            client.UserInfoEncryptedResponseAlg = newClient.UserInfoEncryptedResponseAlg;
+            client.UserInfoEncryptedResponseEnc = newClient.UserInfoEncryptedResponseEnc;
+
+            if (newClient.Secrets?.Length == 0
+                && client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.PrivateKeyJwt)
+            {
+                client.Secrets = new[]
+                {
+                    new ClientSecret
+                    {
+                        Type = ClientSecretTypes.SharedSecret,
+                        Value = Id.Create()
+                    }
+                };
+            }
+            else if (newClient.Secrets?.Any() == true)
+            {
+                client.Secrets = newClient.Secrets?.Select(
+                        secret => secret.Type == ClientSecretTypes.SharedSecret
+                            ? new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Id.Create() }
+                            : secret)
+                    .ToArray();
+            }
+
             // If omitted then the default value is authorization code grant type
             client.GrantTypes = newClient.GrantTypes == null || !newClient.GrantTypes.Any()
                 ? new[] { GrantTypes.AuthorizationCode }
@@ -143,15 +173,10 @@
             client.InitiateLoginUri = newClient.InitiateLoginUri;
 
             client.JsonWebKeys = newClient.JsonWebKeys ?? new JsonWebKeySet();
-            //client.JwksUri = newClient.JwksUri;
-            //client.LogoUri = newClient.LogoUri;
             client.PolicyUri = newClient.PolicyUri;
             client.PostLogoutRedirectUris = newClient.PostLogoutRedirectUris;
 
-            if (newClient.AllowedScopes == null)
-            {
-                newClient.AllowedScopes = Array.Empty<string>();
-            }
+            newClient.AllowedScopes ??= Array.Empty<string>();
 
             var scopes = await _scopeRepository.SearchByNames(CancellationToken.None, newClient.AllowedScopes)
                 .ConfigureAwait(false);
@@ -208,31 +233,6 @@
             client.RequestUris = newClient.RequestUris;
             client.RequireAuthTime = newClient.RequireAuthTime;
             client.RequirePkce = newClient.RequirePkce;
-
-            // If omitted then the default value is authorization code response type
-            client.ResponseTypes = newClient.ResponseTypes?.Any() != true ? new[] { ResponseTypeNames.Code } : newClient.ResponseTypes;
-            client.Secrets = newClient.Secrets;
-            client.SectorIdentifierUri = newClient.SectorIdentifierUri;
-            //client.SubjectType = newClient.SubjectType;
-
-            if (client.Secrets?.Length == 0
-                && client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.PrivateKeyJwt)
-            {
-                client.Secrets = new[]
-                {
-                    new ClientSecret
-                    {
-                        Type = ClientSecretTypes.SharedSecret,
-                        Value = Id.Create()
-                    }
-                };
-            }
-
-            client.TokenEndPointAuthMethod = newClient.TokenEndPointAuthMethod;
-            client.TokenEndPointAuthSigningAlg = newClient.TokenEndPointAuthSigningAlg;
-            client.TosUri = newClient.TosUri;
-            client.UserInfoEncryptedResponseAlg = newClient.UserInfoEncryptedResponseAlg;
-            client.UserInfoEncryptedResponseEnc = newClient.UserInfoEncryptedResponseEnc;
 
             client.UserInfoSignedResponseAlg = !string.IsNullOrWhiteSpace(newClient.UserInfoSignedResponseAlg)
                 ? newClient.UserInfoSignedResponseAlg

@@ -11,20 +11,45 @@
                     Simple Auth is an open source OpenId Connect, OAuth 2.0 and UMA 2.0 server.
                 </div>
             </div>
-            <div class="card-action">
-                <div class="row">
-                    <div class="col s12">
-                        <span class="col m4 left-align">
-                            <a href="@Url.Content("~/perm")" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
-                        </span>
-                        <span class="col m4 center-align">
-                            @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
-                        </span>
-                        <span class="col m4 right-align">
-                            @Html.ActionLink("Authenticate Locally", "Index", "Authenticate", null, new { @class = "btn blue darken-3 waves-effect waves-light right" })
-                        </span>
-                    </div>
-                </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s6 m3">
+        <div class="card">
+            <div class="card-image">
+                <img alt="Register Client" src="~/img/manage_resources.png" />
+            </div>
+            <div class="card-action center">
+                @Html.ActionLink("Register Client", "Add", "Clients", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
+            </div>
+        </div>
+    </div>
+    <div class="col s6 m3">
+        <div class="card">
+            <div class="card-image">
+                <img alt="Manage UMA Resources" src="~/img/manage_resources.png" />
+            </div>
+        </div>
+    </div>
+    <div class="col s6 m3">
+        <div class="card">
+            <div class="card-image">
+                <img alt="Manage Permission Requests" src="~/img/manage_permissions.png" />
+            </div>
+            <div class="card-action center">
+                <a href="@Url.Content("~/perm")" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 m3">
+        <div class="card">
+            <div class="card-image">
+                <img alt="Manage Consents" src="~/img/manage_consent.png" />
+            </div>
+            <div class="card-action center">
+                @Html.ActionLink("Manage Consents", "Consent", "User", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
             </div>
         </div>
     </div>

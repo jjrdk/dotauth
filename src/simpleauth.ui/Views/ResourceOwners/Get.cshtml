@@ -1,0 +1,90 @@
+﻿@model SimpleAuth.Shared.Models.ResourceOwner
+@{
+    ViewBag.Title = "Manage Resource Owner";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts{
+
+    <script type="text/javascript">
+        let claimCount = @Model.Claims.Length;
+
+        function deleteClaim(claim) {
+            const claimElm = document.getElementById(`claim${claim}`);
+            claimElm.style.display = 'none';
+            const inputElms = claimElm.getElementsByTagName('input');
+            console.log(inputElms);
+            for (let i = 0; i < inputElms.length; i++) {
+                inputElms[i].value = '';
+            }
+        }
+
+        function addClaim() {
+            const claim = claimCount;
+            claimCount++;
+            const container = document.getElementById('claims');
+            const html = `<div id="claim${claim}">
+<div class="input-field col s5">
+<label for="Claims_${claim}__Type" class="active">Type</label>
+<input type="text" id="Claims_${claim}__Type" name="Claims[${claim}].Type" value="">
+</div>
+<div class="input-field col s5">
+    <label for="Claims_${claim}__Value" class="active">Value</label>
+    <input type="text" id="Claims_${claim}__Value" name="Claims[${claim}].Value" value="">
+</div>
+<div class="input-field col s2">
+    <i class="material-icons prefix right-align hand" onclick="deleteClaim(${claim});">delete_forever</i>
+</div>
+</div>`;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+    </script>
+}
+<div class="row">
+    <div class="col s12">
+        <div class="card">
+            @using (Html.BeginForm("Update", "ResourceOwners", new { id = Model.Subject }, method: FormMethod.Post, antiforgery: true, new { }))
+            {
+                @Html.HiddenFor(x => x.Subject)
+                <div class="card-content">
+                    <div class="row">
+                        <div class="col s12">
+                            <h2>@Model.Subject</h2>
+                        </div>
+                        <div class="col m12 s12">
+                            <h4>Claims</h4>
+                            <hr />
+                            <div id="claims">
+                                @for (var i = 0; i < Model.Claims.Length; i++)
+                                {
+                                    <div id="@string.Concat("claim", @i)">
+                                        <div class="input-field col s5">
+                                            <label asp-for="@Model.Claims[i].Type"></label>
+                                            <input asp-for="@Model.Claims[i].Type" />
+                                        </div>
+                                        <div class="input-field col s5">
+                                            <label asp-for="@Model.Claims[i].Value"></label>
+                                            <input asp-for="@Model.Claims[i].Value" />
+                                        </div>
+                                        <div class="input-field col s2">
+                                            <i class="material-icons prefix right-align hand" onclick="deleteClaim(@i);">delete_forever</i>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col s12 m12">
+                                <button type="button" class="waves-effect waves-light btn blue darken-3" onclick="addClaim();">Add Claim</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        <div class="col s12">
+                            <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Save</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

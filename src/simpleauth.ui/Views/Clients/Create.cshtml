@@ -1,0 +1,68 @@
+﻿@model SimpleAuth.ViewModels.CreateClientViewModel
+@{
+    ViewBag.Title = "Register Client";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts {
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const elems = document.querySelectorAll('select');
+            M.FormSelect.init(elems);
+        });
+    </script>
+}
+<div class="row">
+    <div class="col s12">
+        <div class="card">
+            @using (Html.BeginForm("Add", "Clients", null, method: FormMethod.Post, antiforgery: true, new { }))
+            {
+                <div class="card-content">
+                    <div class="row">
+                        <div class="col s12">
+                            <h2>Create Client</h2>
+                            <div class="input-field col s12">
+                                <label asp-for="@Model.Name"></label>
+                                <input asp-for="@Model.Name" />
+                            </div>
+                            <div class="input-field col s12">
+                                <label asp-for="@Model.LogoUri"></label>
+                                <input asp-for="@Model.LogoUri" />
+                            </div>
+                            <div class="input-field col s12">
+                                <select asp-for="@Model.ApplicationType">
+                                    <option value="" disabled selected>Choose your option</option>
+                                    <option value="web">Web</option>
+                                    <option value="native">Native</option>
+                                </select>
+                                <label>Type of client</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <label asp-for="@Model.RedirectionUrls"></label>
+                                <input asp-for="@Model.RedirectionUrls" />
+                            </div>
+                            <div class="input-field col s12">
+                                <select multiple asp-for="@Model.GrantTypes">
+                                    <option value="" disabled selected>Choose grant types</option>
+                                    <option value="implicit">Implicit</option>
+                                    <option value="client_credentials">Client Credentials</option>
+                                    <option value="authorization_code">Authorization Code</option>
+                                    <option value="password">Password</option>
+                                    <option value="urn:ietf:params:oauth:grant-type:uma-ticket">UMA Ticket</option>
+                                    <option value="refresh_token">Refresh Token</option>
+                                </select>
+                                <label asp-for="@Model.GrantTypes"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        <div class="col s12">
+                            <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Create</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
