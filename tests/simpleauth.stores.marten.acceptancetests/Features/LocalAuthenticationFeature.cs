@@ -19,7 +19,7 @@
                 {
                     var request = new HttpRequestMessage(HttpMethod.Get, new Uri(BaseUrl + "/authenticate/logout"));
 
-                    result = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "then receives redirect to login page".x(
@@ -44,7 +44,7 @@
                             })
                     };
 
-                    result = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "then receives auth cookie".x(() => { Assert.Equal(HttpStatusCode.Redirect, result.StatusCode); });
@@ -68,7 +68,7 @@
                             })
                     };
 
-                    result = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
 
                     Assert.NotNull(result);
                 });

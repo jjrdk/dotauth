@@ -170,7 +170,7 @@
                         client.ClientId,
                         ticket.ResourceOwner,
                         authorizationResult.Principal.Claims,
-                        DateTimeOffset.UtcNow));
+                        DateTimeOffset.UtcNow)).ConfigureAwait(false);
                 return new GenericResponse<GrantedToken>
                 {
                     StatusCode = HttpStatusCode.InternalServerError,

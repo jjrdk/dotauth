@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Server.Tests
 {
+    using System;
     using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Shared;
@@ -49,7 +50,7 @@ namespace SimpleAuth.Server.Tests
 
         public Mock<ISmsClient> TwilioClient { get; }
 
-        public HttpClient Client { get; set; }
+        public Func<HttpClient> Client { get; set; }
 
         public HttpMessageHandler ClientHandler { get; set; }
     }

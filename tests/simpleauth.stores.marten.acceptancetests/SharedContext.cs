@@ -38,7 +38,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
         public JsonWebKey ModelEncryptionKey { get; }
         public JsonWebKey SignatureKey { get; }
         public JsonWebKey ModelSignatureKey { get; }
-        public HttpClient Client { get; set; }
+        public Func<HttpClient> Client { get; set; }
         public Func<HttpMessageHandler> Handler { get; set; }
     }
 }

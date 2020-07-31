@@ -48,7 +48,7 @@ namespace SimpleAuth.AcceptanceTests
                 RequestUri = new Uri($"{BaseUrl}/{path}")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
             Assert.Equal(statusCode, httpResult.StatusCode);
         }

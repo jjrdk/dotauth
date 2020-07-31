@@ -114,7 +114,7 @@ namespace SimpleAuth.Controllers
                 return null;
             }
 
-            var content = await Request.ReadFormAsync();
+            var content = await Request.ReadFormAsync().ConfigureAwait(false);
 
             return !content.TryGetValue(StandardAuthorizationResponseNames.AccessTokenName, out var result)
                 ? null

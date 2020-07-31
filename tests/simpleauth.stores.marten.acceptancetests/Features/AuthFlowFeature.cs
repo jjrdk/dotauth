@@ -49,7 +49,7 @@
             "And the server signing keys".x(
                 async () =>
                 {
-                    var keysJson = await _fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    var keysJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
                     _jwks = new JsonWebKeySet(keysJson);
 
                     Assert.NotEmpty(_jwks.Keys);

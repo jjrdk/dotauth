@@ -35,7 +35,7 @@
             "and the server's signing key".x(
                 async () =>
                 {
-                    var json = await _fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    var json = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
                     jwks = new JsonWebKeySet(json);
 
                     Assert.NotEmpty(jwks.Keys);

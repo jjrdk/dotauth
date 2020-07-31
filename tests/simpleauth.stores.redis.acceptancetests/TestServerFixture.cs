@@ -10,7 +10,7 @@
     public class TestServerFixture : IDisposable
     {
         public TestServer Server { get; }
-        public HttpClient Client { get; }
+        public Func<HttpClient> Client { get; }
         public SharedContext SharedCtx { get; }
 
         public TestServerFixture(string connectionString, params string[] urls)
@@ -29,7 +29,7 @@
                         })
                     .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
                     .Configure(startup.Configure));
-            Client = Server.CreateClient();
+            Client = () => Server.CreateClient();
             SharedCtx.Client = Client;
             SharedCtx.Handler = () => Server.CreateHandler();
         }
@@ -37,7 +37,7 @@
         public void Dispose()
         {
             Server.Dispose();
-            Client.Dispose();
+            Client?.Invoke()?.Dispose();
         }
     }
 }

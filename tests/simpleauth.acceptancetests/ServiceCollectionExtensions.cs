@@ -18,7 +18,7 @@
         /// <returns></returns>
         public static IServiceCollection AddUmaClient(this IServiceCollection serviceCollection, Uri umaAuthority)
         {
-            serviceCollection.AddSingleton(sp => new UmaClient(sp.GetRequiredService<HttpClient>(), umaAuthority));
+            serviceCollection.AddSingleton(sp => new UmaClient(sp.GetRequiredService<HttpClient>, umaAuthority));
             serviceCollection.AddTransient<IUmaPermissionClient, UmaClient>(sp => sp.GetRequiredService<UmaClient>());
 
             return serviceCollection;

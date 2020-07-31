@@ -30,7 +30,6 @@ namespace SimpleAuth.Client
     /// </summary>
     public class UmaClient : ClientBase, IUmaPermissionClient, IResourceClient, IIntrospectionClient
     {
-        private const string JsonMimeType = "application/json";
         private readonly Uri _configurationUri;
         private UmaConfiguration _umaConfiguration;
 
@@ -39,7 +38,7 @@ namespace SimpleAuth.Client
         /// </summary>
         /// <param name="client">The <see cref="HttpClient"/> to use for requests.</param>
         /// <param name="authorityUri">The <see cref="Uri"/> of the UMA authority.</param>
-        public UmaClient(HttpClient client, Uri authorityUri)
+        public UmaClient(Func<HttpClient> client, Uri authorityUri)
             : base(client)
         {
             Authority = authorityUri;

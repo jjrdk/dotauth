@@ -74,7 +74,7 @@ namespace SimpleAuth.Server.Tests
             };
             httpRequest.Headers.Authorization =
                 new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
             Assert.False(httpResult.IsSuccessStatusCode);
         }
@@ -142,7 +142,7 @@ namespace SimpleAuth.Server.Tests
             };
             httpRequest.Headers.Authorization =
                 new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
             Assert.False(httpResult.IsSuccessStatusCode);
         }

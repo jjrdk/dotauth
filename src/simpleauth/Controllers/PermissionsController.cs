@@ -91,7 +91,7 @@ namespace SimpleAuth.Controllers
         [Route("{id}/approve")]
         public async Task<IActionResult> ApprovePermissionRequest(string id, CancellationToken cancellationToken)
         {
-            var (success, claims) = await _ticketStore.ApproveAccess(id, cancellationToken);
+            var (success, claims) = await _ticketStore.ApproveAccess(id, cancellationToken).ConfigureAwait(false);
             if (success)
             {
                 await _eventPublisher.Publish(
@@ -152,7 +152,7 @@ namespace SimpleAuth.Controllers
             }
 
             var subject = User.GetSubject();
-            var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, permissionRequest.ResourceSetId);
+            var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, permissionRequest.ResourceSetId).ConfigureAwait(false);
             if (resourceSetOwner == null)
             {
                 return BuildError(
@@ -199,7 +199,7 @@ namespace SimpleAuth.Controllers
             }
             
             var ids = permissionRequests.Select(x => x.ResourceSetId).ToArray();
-            var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, ids);
+            var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, ids).ConfigureAwait(false);
             if (resourceSetOwner == null)
             {
                 return BuildError(

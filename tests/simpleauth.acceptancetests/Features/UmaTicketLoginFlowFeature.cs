@@ -119,7 +119,7 @@
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
-                    var response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
 
                     Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
                     var httpHeaderValueCollection = response.Headers.WwwAuthenticate;
@@ -154,7 +154,7 @@
                     request.Headers.Authorization = new AuthenticationHeaderValue(
                         umaToken.TokenType,
                         umaToken.AccessToken);
-                    var response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                     var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -233,7 +233,7 @@
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
-                    var response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
 
                     Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
                     var httpHeaderValueCollection = response.Headers.WwwAuthenticate;

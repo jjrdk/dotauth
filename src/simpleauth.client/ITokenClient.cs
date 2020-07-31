@@ -17,8 +17,9 @@
         /// Gets the token.
         /// </summary>
         /// <param name="tokenRequest">The token request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<GenericResponse<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest);
+        Task<GenericResponse<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sends the specified request URL.

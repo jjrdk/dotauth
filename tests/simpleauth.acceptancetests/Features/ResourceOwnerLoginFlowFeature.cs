@@ -124,7 +124,7 @@
                     };
                     userinfoRequest.Headers.Authorization =
                         new AuthenticationHeaderValue(result.TokenType, result.AccessToken);
-                    var userinfo = await _fixture.Client.SendAsync(userinfoRequest).ConfigureAwait(false);
+                    var userinfo = await _fixture.Client().SendAsync(userinfoRequest).ConfigureAwait(false);
 
                     Assert.True(userinfo.IsSuccessStatusCode);
                 });
@@ -186,7 +186,7 @@
                     request.Headers.Authorization = new AuthenticationHeaderValue(
                         JwtBearerDefaults.AuthenticationScheme,
                         tokenResponse.AccessToken);
-                    updateResponse = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    updateResponse = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "then update is successful".x(() => { Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode); });

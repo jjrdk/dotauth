@@ -73,7 +73,7 @@
         public async Task<string> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
         {
             using var session = _sessionFactory();
-            var resourceSets = await session.LoadManyAsync<OwnedResourceSet>(cancellationToken, ids);
+            var resourceSets = await session.LoadManyAsync<OwnedResourceSet>(cancellationToken, ids).ConfigureAwait(false);
             var owners = resourceSets.Select(x => x.Owner).Distinct();
 
             return owners.SingleOrDefault();
@@ -83,7 +83,7 @@
         public async Task<bool> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
-            var existing = await session.LoadAsync<OwnedResourceSet>(resourceSet.Id, cancellationToken);
+            var existing = await session.LoadAsync<OwnedResourceSet>(resourceSet.Id, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
                 return false;

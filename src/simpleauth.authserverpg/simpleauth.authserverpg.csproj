@@ -12,11 +12,11 @@
   <Import Project="..\..\shared.proj" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.0-preview.7.20365.19" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="5.0.0-preview.7.20365.19" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0-preview.7.20364.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0-preview.7.20365.19" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0-preview.7.20364.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.0-preview.6.20312.15" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="5.0.0-preview.6.20312.15" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0-preview.6.20305.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0-preview.6.20312.15" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0-preview.6.20305.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,10 +25,6 @@
     <ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
     <ProjectReference Include="..\simpleauth.ui\simpleauth.ui.csproj" />
     <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <TrimmerRootAssembly Include="System.Runtime" />
   </ItemGroup>
 
   <ItemGroup>

@@ -28,7 +28,7 @@
                     var authorizationRequest = new AuthorizationRequest {client_id = "client"};
                     var code = Uri.EscapeUriString(Protect(dataProtector, authorizationRequest));
                     var request = new HttpRequestMessage(HttpMethod.Get, BaseUrl + $"/authenticate/openid?code={code}");
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "then response has status code OK".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });

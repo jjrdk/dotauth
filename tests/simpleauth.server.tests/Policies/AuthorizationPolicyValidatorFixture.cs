@@ -70,7 +70,7 @@ namespace SimpleAuth.Server.Tests.Policies
         public async Task WhenResourceSetDoesNotExistThenReturnsNotAuthorized()
         {
             var handler = new JwtSecurityTokenHandler();
-            var jsonWebKey = await _inMemoryJwksRepository.GetDefaultSigningKey();
+            var jsonWebKey = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
             var token = handler.CreateEncodedJwt(
                 "test",
                 "test",

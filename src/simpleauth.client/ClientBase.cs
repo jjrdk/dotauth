@@ -14,13 +14,14 @@
     /// </summary>
     public abstract class ClientBase
     {
-        private readonly HttpClient _client;
+        protected const string JsonMimeType = "application/json";
+        private readonly Func<HttpClient> _client;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientBase"/> class.
         /// </summary>
         /// <param name="client"></param>
-        protected ClientBase(HttpClient client)
+        protected ClientBase(Func<HttpClient> client)
         {
             _client = client;
         }
@@ -41,8 +42,8 @@
             X509Certificate2 certificate = null)
         {
             request = PrepareRequest(request, token, certificate);
-            var result = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
             if (result.IsSuccessStatusCode)
             {
@@ -70,7 +71,7 @@
             X509Certificate2 certificate = null)
         {
             request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
             if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue(

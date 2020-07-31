@@ -112,10 +112,10 @@ namespace SimpleAuth.IntegrationTests
         {
             var client = new TokenClient(
                 TokenCredentials.FromClientCredentials("client", "secret"),
-                new HttpClient(),
+                ()=>new HttpClient(),
                 new Uri("http://localhost:8080/.well-known/openid-configuration"));
             await _fixture.GetUser().ConfigureAwait(false);
-            //for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var token = await client.GetToken(TokenRequest.FromPassword("user", "password", new[] { "read" }))
                     .ConfigureAwait(false);

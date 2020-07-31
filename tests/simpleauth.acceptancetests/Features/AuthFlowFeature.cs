@@ -27,7 +27,7 @@
             "And the server signing keys".x(
                 async () =>
                 {
-                    var keysJson = await _fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    var keysJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
                     var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(keysJson);
 
                     _jwks = keys;

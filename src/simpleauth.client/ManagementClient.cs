@@ -32,7 +32,7 @@ namespace SimpleAuth.Client
     {
         private readonly DiscoveryInformation _discoveryInformation;
 
-        private ManagementClient(HttpClient client, DiscoveryInformation discoveryInformation)
+        private ManagementClient(Func<HttpClient> client, DiscoveryInformation discoveryInformation)
         : base(client)
         {
             _discoveryInformation = discoveryInformation;
@@ -44,7 +44,7 @@ namespace SimpleAuth.Client
         /// <param name="client">The <see cref="HttpClient"/> to use.</param>
         /// <param name="discoveryDocumentationUri">The <see cref="Uri"/> to the discovery document.</param>
         /// <returns></returns>
-        public static async Task<ManagementClient> Create(HttpClient client, Uri discoveryDocumentationUri)
+        public static async Task<ManagementClient> Create(Func<HttpClient> client, Uri discoveryDocumentationUri)
         {
             if (!discoveryDocumentationUri.IsAbsoluteUri)
             {
@@ -239,6 +239,20 @@ namespace SimpleAuth.Client
                 Content = body
             };
             return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken);
+        }
+        
+
+        public async Task<GenericResponse<Client>> Register(Client client, string accessToken, CancellationToken cancellationToken = default)
+        {
+            var json = Serializer.Default.Serialize(client);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = new StringContent(json),
+                RequestUri = _discoveryInformation.RegistrationEndPoint
+            };
+
+            return await GetResult<Client>(request, accessToken, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

@@ -105,7 +105,7 @@
                     request.Headers.Authorization = new AuthenticationHeaderValue(
                         "Bearer",
                         _administratorToken.AccessToken);
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "Then is ok request".x(
@@ -161,7 +161,7 @@
                     request.Headers.Authorization = new AuthenticationHeaderValue(
                         "Bearer",
                         _administratorToken.AccessToken);
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "Then is ok request".x(
@@ -235,7 +235,7 @@
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "Then is ok request".x(
@@ -270,7 +270,7 @@
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=acceptance_test")
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "Then is ok request".x(
@@ -306,7 +306,7 @@
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "Then is ok request".x(
@@ -352,7 +352,7 @@
                     };
                     request.Headers.Authorization =
                         new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "Then is ok response".x(
@@ -382,7 +382,7 @@
                 };
                 request.Headers.Authorization =
                     new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
             "Then is also ok response".x(
@@ -412,7 +412,7 @@
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "Then is bad request".x(
@@ -435,7 +435,7 @@
                     RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
             "Then response is OK".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
@@ -470,7 +470,7 @@
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                    response = await _fixture.Client.SendAsync(request).ConfigureAwait(false);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "Then is ok request".x(

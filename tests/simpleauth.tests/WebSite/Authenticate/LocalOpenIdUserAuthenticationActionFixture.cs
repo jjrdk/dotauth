@@ -65,7 +65,7 @@
                        authorizationParameter,
                        null,
                        null,
-                       CancellationToken.None);
+                       CancellationToken.None).ConfigureAwait(false);
 
             Assert.NotNull(result.ErrorMessage);
         }

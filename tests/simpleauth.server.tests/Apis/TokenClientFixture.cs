@@ -59,7 +59,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -81,7 +81,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -104,7 +104,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -128,7 +128,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -154,7 +154,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -181,7 +181,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -209,7 +209,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -236,7 +236,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -258,7 +258,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -283,7 +283,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -309,7 +309,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -336,7 +336,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -358,7 +358,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -382,7 +382,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -407,7 +407,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -449,7 +449,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -472,7 +472,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -497,7 +497,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -524,7 +524,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -550,7 +550,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -578,7 +578,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 

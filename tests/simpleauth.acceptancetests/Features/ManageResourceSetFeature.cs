@@ -79,7 +79,7 @@
                     msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
 
-                    var policyResponse = await _fixture.Client.SendAsync(msg).ConfigureAwait(false);
+                    var policyResponse = await _fixture.Client().SendAsync(msg).ConfigureAwait(false);
 
                     Assert.True(policyResponse.IsSuccessStatusCode);
 
@@ -102,7 +102,7 @@
                     };
                     msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
 
-                    var policyResponse = await _fixture.Client.SendAsync(msg).ConfigureAwait(false);
+                    var policyResponse = await _fixture.Client().SendAsync(msg).ConfigureAwait(false);
 
                     Assert.True(policyResponse.IsSuccessStatusCode);
                 });

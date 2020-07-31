@@ -24,7 +24,7 @@
                 RequestUri = new System.Uri($"{BaseUrl}/check_session")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var html = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);

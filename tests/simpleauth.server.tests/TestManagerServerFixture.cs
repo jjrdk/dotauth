@@ -8,7 +8,7 @@
     public class TestManagerServerFixture : IDisposable
     {
         public TestServer Server { get; }
-        public HttpClient Client { get; }
+        public Func<HttpClient> Client { get; }
 
         public TestManagerServerFixture()
         {
@@ -18,13 +18,13 @@
                 .ConfigureServices(startup.ConfigureServices)
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeManagerStartup).Assembly.FullName)
                 .Configure(startup.Configure));
-            Client = Server.CreateClient();
+            Client = Server.CreateClient;
         }
 
         public void Dispose()
         {
             Server.Dispose();
-            Client.Dispose();
+            Client?.Invoke()?.Dispose();
         }
     }
 }

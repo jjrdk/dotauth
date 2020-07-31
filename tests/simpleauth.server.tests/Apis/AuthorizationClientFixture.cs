@@ -54,7 +54,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Scope_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var httpResult = await _server.Client.GetAsync(new Uri(BaseUrl + "/authorization")).ConfigureAwait(false);
+            var httpResult = await _server.Client().GetAsync(new Uri(BaseUrl + "/authorization")).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -65,7 +65,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_ClientId_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var httpResult = await _server.Client.GetAsync(new Uri(BaseUrl + "/authorization?scope=scope"))
+            var httpResult = await _server.Client().GetAsync(new Uri(BaseUrl + "/authorization?scope=scope"))
                 .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -77,7 +77,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_RedirectUri_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var httpResult = await _server.Client
+            var httpResult = await _server.Client()
                 .GetAsync(new Uri(BaseUrl + "/authorization?scope=scope&client_id=client"))
                 .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -91,7 +91,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_ResponseType_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
         {
             var redirect = Uri.EscapeUriString("https://redirect_uri");
-            var httpResult = await _server.Client
+            var httpResult = await _server.Client()
                 .GetAsync(new Uri(BaseUrl + $"/authorization?scope=scope&client_id=client&redirect_uri={redirect}"))
                 .ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -105,7 +105,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_Unsupported_ResponseType_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
             var redirect = Uri.EscapeUriString("https://redirect_uri");
-            var httpResult = await _server.Client.GetAsync(
+            var httpResult = await _server.Client().GetAsync(
                     new Uri(
                         BaseUrl
                         + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=invalid"))
@@ -121,7 +121,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_UnsupportedPrompt_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
             var redirect = Uri.EscapeUriString("https://redirect_uri");
-            var httpResult = await _server.Client.GetAsync(
+            var httpResult = await _server.Client().GetAsync(
                     new Uri(
                         BaseUrl
                         + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=invalid"))
@@ -137,7 +137,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task When_Not_Correct_Redirect_Uri_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
             var redirect = "redirect_uri";
-            var httpResult = await _server.Client.GetAsync(
+            var httpResult = await _server.Client().GetAsync(
                     new Uri(
                         BaseUrl
                         + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=none"))
@@ -152,7 +152,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Not_Correct_ClientId_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var httpResult = await _server.Client.GetAsync(
+            var httpResult = await _server.Client().GetAsync(
                     new Uri(
                         BaseUrl
                         + "/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
@@ -167,7 +167,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Not_Support_Redirect_Uri_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var httpResult = await _server.Client.GetAsync(
+            var httpResult = await _server.Client().GetAsync(
                     new Uri(
                         BaseUrl
                         + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
@@ -183,7 +183,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task
             When_ClientRequiresPkce_And_No_CodeChallenge_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var httpResult = await _server.Client.GetAsync(
+            var httpResult = await _server.Client().GetAsync(
                     new Uri(
                         BaseUrl
                         + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none"))
@@ -198,7 +198,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Use_Hybrid_And_Nonce_Parameter_Is_Not_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var httpResult = await _server.Client.GetAsync(
+            var httpResult = await _server.Client().GetAsync(
                     new Uri(
                         BaseUrl
                         + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none"))
@@ -213,7 +213,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Use_Hybrid_And_Pass_Invalid_Scope_To_Authorization_Then_Json_Is_Returned()
         {
-            var httpResult = await _server.Client.GetAsync(
+            var httpResult = await _server.Client().GetAsync(
                     new Uri(
                         BaseUrl
                         + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))
@@ -229,7 +229,7 @@ namespace SimpleAuth.Server.Tests.Apis
         public async Task
             When_Use_Hybrid_And_Dont_Pass_Not_Supported_ResponseTypes_To_Authorization_Then_Json_Is_Returned()
         {
-            var httpResult = await _server.Client.GetAsync(
+            var httpResult = await _server.Client().GetAsync(
                     new Uri(
                         BaseUrl
                         + "/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))

@@ -23,7 +23,7 @@ namespace SimpleAuth.Server.Tests
     public class TestUmaServerFixture : IDisposable
     {
         public TestServer Server { get; }
-        public HttpClient Client { get; }
+        public Func<HttpClient> Client { get; }
         public SharedUmaContext SharedUmaCtx { get; }
 
         public TestUmaServerFixture()
@@ -38,14 +38,18 @@ namespace SimpleAuth.Server.Tests
                 })
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).Assembly.FullName)
                 .Configure(startup.Configure));
-            Client = Server.CreateClient();
-            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            Client = () =>
+            {
+                var c = Server.CreateClient();
+                c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                return c;
+            };
         }
 
         public void Dispose()
         {
             Server.Dispose();
-            Client.Dispose();
+            Client?.Invoke()?.Dispose();
         }
     }
 }

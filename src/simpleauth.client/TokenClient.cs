@@ -39,7 +39,7 @@ namespace SimpleAuth.Client
         private readonly string _authorizationValue;
         private readonly X509Certificate2 _certificate;
         private readonly TokenCredentials _form;
-        private readonly HttpClient _client;
+        private readonly Func<HttpClient> _client;
         private DiscoveryInformation _discovery;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace SimpleAuth.Client
         /// <param name="credentials">The <see cref="TokenCredentials"/>.</param>
         /// <param name="client">The <see cref="HttpClient"/> for requests.</param>
         /// <param name="authority">The <see cref="Uri"/> of the discovery document.</param>
-        public TokenClient(TokenCredentials credentials, HttpClient client, Uri authority)
+        public TokenClient(TokenCredentials credentials, Func<HttpClient> client, Uri authority)
             : base(client)
         {
             if (!authority.IsAbsoluteUri)
@@ -70,7 +70,7 @@ namespace SimpleAuth.Client
         /// <param name="credentials">The <see cref="TokenCredentials"/>.</param>
         /// <param name="client">The <see cref="HttpClient"/> for requests.</param>
         /// <param name="discoveryDocumentation">The metadata information.</param>
-        public TokenClient(TokenCredentials credentials, HttpClient client, DiscoveryInformation discoveryDocumentation)
+        public TokenClient(TokenCredentials credentials, Func<HttpClient> client, DiscoveryInformation discoveryDocumentation)
             : base(client)
         {
             _form = credentials;
@@ -84,47 +84,24 @@ namespace SimpleAuth.Client
         /// Gets the token.
         /// </summary>
         /// <param name="tokenRequest">The token request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest)
+        public async Task<GenericResponse<GrantedTokenResponse>> GetToken(
+            TokenRequest tokenRequest,
+            CancellationToken cancellationToken = default)
         {
             var body = new FormUrlEncodedContent(_form.Concat(tokenRequest));
-            var discoveryInformation = await GetDiscoveryInformation().ConfigureAwait(false);
+            var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                Content = body,
+                Method = HttpMethod.Post, 
+                Content = body, 
                 RequestUri = discoveryInformation.TokenEndPoint
             };
-            request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (_certificate != null)
-            {
-                var bytes = _certificate.RawData;
-                var base64Encoded = Convert.ToBase64String(bytes);
-                request.Headers.Add("X-ARR-ClientCert", base64Encoded);
-            }
 
-            if (!string.IsNullOrWhiteSpace(_authorizationValue))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
-            }
-
-            var result = await _client.SendAsync(request).ConfigureAwait(false);
-            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            if (!result.IsSuccessStatusCode)
-            {
-                return new GenericResponse<GrantedTokenResponse>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    StatusCode = result.StatusCode
-                };
-            }
-
-            return new GenericResponse<GrantedTokenResponse>
-            {
-                StatusCode = result.StatusCode,
-                Content = Serializer.Default.Deserialize<GrantedTokenResponse>(content)
-            };
+            var result = await GetResult<GrantedTokenResponse>(request, null, cancellationToken, _certificate)
+                .ConfigureAwait(false);
+            return result;
         }
 
         /// <summary>
@@ -172,15 +149,15 @@ namespace SimpleAuth.Client
             var uriBuilder = new UriBuilder(discoveryInformation.AuthorizationEndPoint) { Query = request.ToRequest() };
             var requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = uriBuilder.Uri };
             requestMessage.Headers.Accept.Clear();
-            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
+            var response = await _client().SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
             return (int)response.StatusCode < 400
                 ? new GenericResponse<Uri> { StatusCode = response.StatusCode, Content = response.Headers.Location }
                 : new GenericResponse<Uri>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(
-                        await response.Content.ReadAsStringAsync().ConfigureAwait(false)),
+                        await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)),
                     StatusCode = response.StatusCode
                 };
         }
@@ -195,9 +172,9 @@ namespace SimpleAuth.Client
             var discoveryDoc = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = discoveryDoc.JwksUri };
             request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var keyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
+            var response = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var keyJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
             return JsonWebKeySet.Create(keyJson);
         }
@@ -222,14 +199,14 @@ namespace SimpleAuth.Client
                 Content = new StringContent(json),
                 RequestUri = requestUri
             };
-            req.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            req.Content.Headers.ContentType = new MediaTypeHeaderValue(JsonMimeType);
             if (!string.IsNullOrWhiteSpace(_authorizationValue))
             {
                 req.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
             }
 
-            var result = await _client.SendAsync(req, cancellationToken).ConfigureAwait(false);
-            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var result = await _client().SendAsync(req, cancellationToken).ConfigureAwait(false);
+            var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
                 return new GenericResponse<object>
@@ -272,8 +249,8 @@ namespace SimpleAuth.Client
                 request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
             }
 
-            var result = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var json = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
                 return new GenericResponse<object>

@@ -23,7 +23,7 @@ namespace SimpleAuth.Server.Tests
     public class TestOauthServerFixture : IDisposable
     {
         public TestServer Server { get; }
-        public HttpClient Client { get; }
+        public Func<HttpClient> Client { get; }
         public SharedContext SharedCtx { get; }
 
         public TestOauthServerFixture()
@@ -36,10 +36,14 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureServices(startup.ConfigureServices)
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).Assembly.FullName)
                 .Configure(startup.Configure));
-            Client = Server.CreateClient();
+            Client = ()=>
+            {
+                var c = Server.CreateClient();
+                c.DefaultRequestHeaders.Accept.Clear();
+                c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                return c;
+            };
             
-            Client.DefaultRequestHeaders.Accept.Clear();
-            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             SharedCtx.Client = Client;
             SharedCtx.ClientHandler = Server.CreateHandler();
         }
@@ -47,7 +51,7 @@ namespace SimpleAuth.Server.Tests
         public void Dispose()
         {
             Server.Dispose();
-            Client.Dispose();
+            Client?.Invoke()?.Dispose();
         }
     }
 }

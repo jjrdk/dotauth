@@ -48,7 +48,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -73,7 +73,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);

@@ -18,7 +18,7 @@
             "then can download json web key set".x(
                 async () =>
                 {
-                    jwksJson = await _fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    jwksJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
 
                     Assert.NotNull(jwksJson);
                 });
@@ -55,7 +55,7 @@
             "then can download json web key set".x(
                 async () =>
                 {
-                    var jwksJson = await _fixture.Client.GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    var jwksJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
 
                     Assert.NotNull(jwksJson);
 

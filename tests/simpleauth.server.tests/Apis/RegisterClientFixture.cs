@@ -19,6 +19,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using Shared.Models;
     using SimpleAuth.Shared.Errors;
     using System;
+    using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -62,7 +63,7 @@ namespace SimpleAuth.Server.Tests.Apis
             httpRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         }
@@ -98,7 +99,7 @@ namespace SimpleAuth.Server.Tests.Apis
             httpRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -138,7 +139,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 grantedToken.Content.TokenType,
                 grantedToken.Content.AccessToken);
 
-            var httpResult = await _server.SharedCtx.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.SharedCtx.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
             //Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
 
@@ -183,7 +184,7 @@ namespace SimpleAuth.Server.Tests.Apis
             httpRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -222,7 +223,7 @@ namespace SimpleAuth.Server.Tests.Apis
             httpRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
 
-            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
+            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
@@ -240,7 +241,10 @@ namespace SimpleAuth.Server.Tests.Apis
             var grantedToken = await tokenClient.GetToken(TokenRequest.FromScopes("manager"))
                 .ConfigureAwait(false);
 
-            var registrationClient = new RegistrationClient(new Uri(BaseUrl), _server.Client);
+            var registrationClient = await ManagementClient.Create(
+                    _server.Client,
+                    new Uri($"{BaseUrl}/.well-known/openid-configuration"))
+                .ConfigureAwait(false);
             var client = await registrationClient.Register(
                     new Client
                     {

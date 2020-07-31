@@ -31,9 +31,9 @@ namespace SimpleAuth.Shared
             new Dictionary<string, DiscoveryInformation>();
 
         private readonly Uri _discoveryDocumentationUri;
-        private readonly HttpClient _httpClient;
+        private readonly Func<HttpClient> _httpClient;
 
-        public GetDiscoveryOperation(Uri authority, HttpClient httpClient)
+        public GetDiscoveryOperation(Uri authority, Func<HttpClient> httpClient)
         {
             if (authority == null)
             {
@@ -64,8 +64,8 @@ namespace SimpleAuth.Shared
                 request.Headers.Accept.Clear();
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response =
-                    await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    await _httpClient().SendAsync(request, cancellationToken).ConfigureAwait(false);
+                var serializedContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent);
                 _cache.Add(key, doc);
                 return doc;
