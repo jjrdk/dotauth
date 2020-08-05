@@ -4,7 +4,6 @@
     using System.Linq;
     using System.Net;
     using System.Net.Http;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication.OAuth;
     using Microsoft.AspNetCore.Builder;
