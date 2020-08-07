@@ -195,7 +195,7 @@
             {
                 foreach (var redirectUri in newClient.RedirectionUrls)
                 {
-                    if (!Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
+                    if (!redirectUri.IsAbsoluteUri ||!Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                     {
                         throw new SimpleAuthException(
                             ErrorCodes.InvalidRedirectUri,
