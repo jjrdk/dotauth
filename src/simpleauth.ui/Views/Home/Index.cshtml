@@ -71,6 +71,9 @@
                     @Html.ActionLink("Manage Users", "GetAll", "ResourceOwners", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
                 </div>
             </div>
+            <div class="card-action center">
+                @Html.ActionLink("Register Client", "Add", "Clients", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
+            </div>
         </div>
         <div class="col s12 m4">
             <div class="card">

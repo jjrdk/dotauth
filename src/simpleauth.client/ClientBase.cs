@@ -8,7 +8,7 @@
     using System.Threading.Tasks;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
-    
+
     /// <summary>
     /// Defines the base client for interacting with an authorization server.
     /// </summary>
@@ -35,9 +35,31 @@
         /// <param name="certificate">The <see cref="X509Certificate2"/> to include in request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        protected async Task<GenericResponse<T>> GetResult<T>(
+        protected Task<GenericResponse<T>> GetResult<T>(
             HttpRequestMessage request,
             string token,
+            CancellationToken cancellationToken = default,
+            X509Certificate2 certificate = null)
+        {
+            return GetResult<T>(
+                request,
+                new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token),
+                cancellationToken,
+                certificate);
+        }
+
+        /// <summary>
+        /// Gets the result of the <see cref="HttpRequestMessage"/>.
+        /// </summary>
+        /// <typeparam name="T">The <see cref="Type"/> of data downloaded.</typeparam>
+        /// <param name="request">The download request.</param>
+        /// <param name="token">The authorization token for the request.</param>
+        /// <param name="certificate">The <see cref="X509Certificate2"/> to include in request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns></returns>
+        protected async Task<GenericResponse<T>> GetResult<T>(
+            HttpRequestMessage request,
+            AuthenticationHeaderValue token,
             CancellationToken cancellationToken = default,
             X509Certificate2 certificate = null)
         {
@@ -67,17 +89,12 @@
 
         private static HttpRequestMessage PrepareRequest(
             HttpRequestMessage request,
-            string authorizationHeaderValue,
+            AuthenticationHeaderValue authorizationHeaderValue,
             X509Certificate2 certificate = null)
         {
             request.Headers.Accept.Clear();
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
-            if (!string.IsNullOrWhiteSpace(authorizationHeaderValue))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue(
-                    JwtBearerConstants.BearerScheme,
-                    authorizationHeaderValue);
-            }
+            request.Headers.Authorization = authorizationHeaderValue;
 
             if (certificate != null)
             {

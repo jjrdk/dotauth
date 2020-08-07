@@ -19,7 +19,6 @@ namespace SimpleAuth.Server.Tests
     using Microsoft.Extensions.DependencyInjection;
     using SimpleAuth;
     using SimpleAuth.Repositories;
-    using System.Net.Http;
     using System.Reflection;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using SimpleAuth.UI;

@@ -248,7 +248,7 @@ namespace SimpleAuth.Client
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                Content = new StringContent(json),
+                Content = new StringContent(json, Encoding.UTF8, "application/json"),
                 RequestUri = _discoveryInformation.RegistrationEndPoint
             };
 

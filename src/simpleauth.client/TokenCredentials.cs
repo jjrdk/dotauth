@@ -17,6 +17,7 @@ namespace SimpleAuth.Client
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
@@ -28,7 +29,7 @@ namespace SimpleAuth.Client
     {
         private readonly Dictionary<string, string> _form;
 
-        private TokenCredentials(Dictionary<string, string> form, string authorizationValue = null, X509Certificate2 certificate = null)
+        private TokenCredentials(Dictionary<string, string> form, AuthenticationHeaderValue authorizationValue = null, X509Certificate2 certificate = null)
         {
             _form = form;
             AuthorizationValue = authorizationValue;
@@ -41,7 +42,7 @@ namespace SimpleAuth.Client
         /// <value>
         /// The authorization value.
         /// </value>
-        public string AuthorizationValue { get; }
+        public AuthenticationHeaderValue AuthorizationValue { get; }
 
         /// <summary>
         /// Gets the certificate.
@@ -98,7 +99,11 @@ namespace SimpleAuth.Client
                 { "client_secret", clientSecret }
             };
 
-            return new TokenCredentials(dict, Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret)));
+            return new TokenCredentials(
+                dict,
+                new AuthenticationHeaderValue(
+                    "Basic",
+                    Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret))));
         }
 
         /// <summary>

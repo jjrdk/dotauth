@@ -36,7 +36,7 @@ namespace SimpleAuth.Client
     public class TokenClient : ClientBase, ITokenClient
     {
         private readonly GetDiscoveryOperation _discoveryOperation;
-        private readonly string _authorizationValue;
+        private readonly AuthenticationHeaderValue _authorizationValue;
         private readonly X509Certificate2 _certificate;
         private readonly TokenCredentials _form;
         private readonly Func<HttpClient> _client;
@@ -94,12 +94,12 @@ namespace SimpleAuth.Client
             var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, 
-                Content = body, 
+                Method = HttpMethod.Post,
+                Content = body,
                 RequestUri = discoveryInformation.TokenEndPoint
             };
 
-            var result = await GetResult<GrantedTokenResponse>(request, null, cancellationToken, _certificate)
+            var result = await GetResult<GrantedTokenResponse>(request, _authorizationValue, cancellationToken, _certificate)
                 .ConfigureAwait(false);
             return result;
         }
@@ -200,10 +200,7 @@ namespace SimpleAuth.Client
                 RequestUri = requestUri
             };
             req.Content.Headers.ContentType = new MediaTypeHeaderValue(JsonMimeType);
-            if (!string.IsNullOrWhiteSpace(_authorizationValue))
-            {
-                req.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
-            }
+            req.Headers.Authorization = _authorizationValue;
 
             var result = await _client().SendAsync(req, cancellationToken).ConfigureAwait(false);
             var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
@@ -244,10 +241,7 @@ namespace SimpleAuth.Client
                 request.Headers.Add("X-ARR-ClientCert", base64Encoded);
             }
 
-            if (!string.IsNullOrWhiteSpace(_authorizationValue))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _authorizationValue);
-            }
+            request.Headers.Authorization = _authorizationValue;
 
             var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
             var json = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);

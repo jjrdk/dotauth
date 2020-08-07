@@ -104,7 +104,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, error.Title);
         }
 
         [Fact(Skip = "Run locally")]

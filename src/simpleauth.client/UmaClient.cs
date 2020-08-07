@@ -16,6 +16,7 @@ namespace SimpleAuth.Client
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -263,7 +264,7 @@ namespace SimpleAuth.Client
 
             var result = await GetResult<UmaConfiguration>(
                 new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = _configurationUri},
-                null,
+                (AuthenticationHeaderValue)null,
                 cancellationToken).ConfigureAwait(false);
             _umaConfiguration = result.Content;
 
