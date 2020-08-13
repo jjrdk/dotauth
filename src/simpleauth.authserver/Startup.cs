@@ -112,8 +112,8 @@ namespace SimpleAuth.AuthServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient()
-                .AddLogging(log => { log.AddConsole(); });
-            services.AddAuthentication(
+                .AddLogging(log => { log.AddConsole(); })
+                .AddAuthentication(
                     options =>
                     {
                         options.DefaultScheme = CookieNames.CookieName;
