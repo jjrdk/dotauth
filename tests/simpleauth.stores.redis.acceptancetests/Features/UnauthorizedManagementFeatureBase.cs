@@ -33,7 +33,7 @@
             "Given loaded configuration values".x(
                 () =>
                     {
-                        var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
+                        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
                         _connectionString = configuration["Db:ConnectionString"];
 
                         Assert.NotNull(_connectionString);

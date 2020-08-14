@@ -7,7 +7,7 @@
 
     <RootNamespace>SimpleAuth.AcceptanceTests</RootNamespace>
   </PropertyGroup>
-  <Import Project="..\..\shared.proj" />
+  <Import Project="../../shared.projinfo" />
   <ItemGroup>
     <None Include="..\mycert.pfx" Link="mycert.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

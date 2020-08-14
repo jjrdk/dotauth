@@ -30,7 +30,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
 
         public EndpointFixture()
         {
-            var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
 
             IdentityModelEventSource.ShowPII = true;
 

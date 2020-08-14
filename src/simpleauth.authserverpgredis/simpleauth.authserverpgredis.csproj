@@ -9,7 +9,7 @@
     <RootNamespace>SimpleAuth.AuthServerPgRedis</RootNamespace>
     <UserSecretsId>simpleauth-authserver</UserSecretsId>
   </PropertyGroup>
-  <Import Project="..\..\shared.proj" />
+  <Import Project="../../shared.projinfo" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.6" />

@@ -226,3 +226,5 @@ simpleauth.authserver.exe
 docker-compose.yml
 .vscode
 kubernetes_*.yml
+.dotnet
+.config

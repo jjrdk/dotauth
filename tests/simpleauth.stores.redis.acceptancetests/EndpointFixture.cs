@@ -21,7 +21,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
     using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Logging;
     using Xunit;
-    
+
     public class EndpointFixture : IDisposable
     {
         private const string BaseUrl = "http://localhost:5000";
@@ -30,7 +30,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
 
         public EndpointFixture()
         {
-            var configuration = new ConfigurationBuilder().AddUserSecrets<ServerStartup>().Build();
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
             IdentityModelEventSource.ShowPII = true;
 
