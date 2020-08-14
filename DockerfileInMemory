@@ -1,6 +1,5 @@
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/nightly/runtime-deps:5.0-alpine
-ENV ACCEPT_EULA=Y
 COPY artifacts/publish/inmemory/ app/
 WORKDIR /app
 COPY artifacts/publish/inmemory/ .
