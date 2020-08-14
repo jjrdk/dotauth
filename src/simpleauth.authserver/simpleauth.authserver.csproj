@@ -10,7 +10,7 @@
     <RootNamespace>SimpleAuth.AuthServer</RootNamespace>
     <UserSecretsId>simpleauth-authserver</UserSecretsId>
   </PropertyGroup>
-  <Import Project="..\..\shared.proj" />
+  <Import Project="../../shared.projinfo" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.0-preview.7.20365.19" />

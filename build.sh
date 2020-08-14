@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-export PATH="$PATH:~/.dotnet/tools"
-
-dotnet tool install -g Cake.Tool
-
-dotnet cake build.cake
+dotnet new tool-manifest
+dotnet tool install Cake.Tool
+dotnet tool restore
+dotnet cake

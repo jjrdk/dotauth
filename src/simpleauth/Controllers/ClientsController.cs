@@ -219,7 +219,7 @@ namespace SimpleAuth.Controllers
         /// </summary>
         /// <param name="viewModel">The client.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>The view response.</returns>
         [HttpPost]
         [Route("create")]
         [Authorize(Policy = "manager")]
@@ -244,6 +244,10 @@ namespace SimpleAuth.Controllers
             return result ? RedirectToAction("Get", "Clients", new { id = toInsert.ClientId }) : (IActionResult)BadRequest();
         }
 
+        /// <summary>
+        /// Creates a create view.
+        /// </summary>
+        /// <returns>The view response.</returns>
         [HttpGet]
         [Route("create")]
         [Authorize(Policy = "manager")]

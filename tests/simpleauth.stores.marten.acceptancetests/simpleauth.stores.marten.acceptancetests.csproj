@@ -4,9 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <RootNamespace>SimpleAuth.Stores.Marten.AcceptanceTests</RootNamespace>
-    <UserSecretsId>simpleauth-marten-acceptancetests</UserSecretsId>
   </PropertyGroup>
-  <Import Project="..\..\shared.proj" />
+  <Import Project="../../shared.projinfo" />
   <ItemGroup>
     <None Include="..\mycert.pfx" Link="mycert.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -14,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0-preview.7.20364.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0-preview.7.20365.19" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.0" />
     <PackageReference Include="xbehave" Version="2.4.1" />

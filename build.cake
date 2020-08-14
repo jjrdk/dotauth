@@ -45,7 +45,7 @@ Task("Version")
         configuration = Argument("configuration", "Debug");
     }
 
-    Information("Build configuration: " + configuration);    
+    Information("Build configuration: " + configuration);
 	Information("Branch: " + versionInfo.BranchName);
 	Information("Version: " + versionInfo.FullSemVer);
 	Information("Version: " + versionInfo.MajorMinorPatch);
@@ -57,8 +57,11 @@ Task("Clean")
 .IsDependentOn("Version")
     .Does(() =>
 {
+    Information("Clean bin folders");
     CleanDirectories(buildDir + "/src/**/bin/" + configuration);
     CleanDirectories(buildDir + "/tests/**/bin/" + configuration);
+
+    Information("Clean obj folders");
     CleanDirectories(buildDir + "/src/**/obj/" + configuration);
     CleanDirectories(buildDir + "/tests/**/obj/" + configuration);
 });
@@ -68,7 +71,6 @@ Task("Restore-NuGet-Packages")
     .Does(() =>
 {
     DotNetCoreRestore(buildDir + "/simpleauth.sln");
-    DotNetCoreBuildServerShutdown();
 });
 
 Task("Build")
@@ -82,7 +84,6 @@ Task("Build")
         .SetInformationalVersion(informationalVersion);
         //.SetFileVersion(versionInfo.SemVer + versionInfo.Sha);
     DotNetCoreMSBuild(buildDir + "/simpleauth.sln", buildSettings);
-    DotNetCoreBuildServerShutdown();
 });
 
 Task("Tests")
@@ -112,14 +113,12 @@ Task("Tests")
           DotNetCoreTest(
           project.FullPath,
           coreTestSettings);
-
-          DotNetCoreBuildServerShutdown();
     }
 });
 
 Task("Postgres")
     .IsDependentOn("Tests")
-    .Does(() => 
+    .Does(() =>
     {
         try
         {
@@ -131,7 +130,7 @@ Task("Postgres")
                 Files = new string[] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" }
             };
             DockerComposeUp(upsettings);
-            
+
             var project = new FilePath("./tests/simpleauth.stores.marten.acceptancetests/simpleauth.stores.marten.acceptancetests.csproj");
             Information("Testing: " + project.FullPath);
             var reportName = buildDir + "/artifacts/testreports/" + versionInfo.FullSemVer + "_" + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_') + ".xml";
@@ -141,8 +140,8 @@ Task("Postgres")
 
             var coreTestSettings = new DotNetCoreTestSettings()
               {
-		    	NoBuild = false,
-		    	NoRestore = false,
+		    	NoBuild = true,
+		    	NoRestore = true,
                 // Set configuration as passed by command line
                 Configuration = configuration,
                 ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
@@ -150,12 +149,10 @@ Task("Postgres")
 
             DotNetCoreTest(project.FullPath, coreTestSettings);
         }
-        finally 
+        finally
         {
-            DotNetCoreBuildServerShutdown();
-
             Information("Docker compose down");
-            
+
             var downsettings = new DockerComposeDownSettings
             {
                 Files = new string[] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" }
@@ -167,7 +164,7 @@ Task("Postgres")
 
 Task("Postgres_Redis")
     .IsDependentOn("Postgres")
-    .Does(() => 
+    .Does(() =>
     {
         try
         {
@@ -179,7 +176,7 @@ Task("Postgres_Redis")
                 Files = new string[] { "./tests/simpleauth.stores.redis.acceptancetests/docker-compose.yml" }
             };
             DockerComposeUp(upsettings);
-            
+
             var project = new FilePath("./tests/simpleauth.stores.redis.acceptancetests/simpleauth.stores.redis.acceptancetests.csproj");
             Information("Testing: " + project.FullPath);
             var reportName = buildDir + "/artifacts/testreports/" + versionInfo.FullSemVer + "_" + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_') + ".xml";
@@ -189,8 +186,8 @@ Task("Postgres_Redis")
 
             var coreTestSettings = new DotNetCoreTestSettings()
               {
-		    	NoBuild = false,
-		    	NoRestore = false,
+		    	NoBuild = true,
+		    	NoRestore = true,
                 // Set configuration as passed by command line
                 Configuration = configuration,
                 ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
@@ -198,12 +195,10 @@ Task("Postgres_Redis")
 
             DotNetCoreTest(project.FullPath, coreTestSettings);
         }
-        finally 
+        finally
         {
-            DotNetCoreBuildServerShutdown();
-
             Information("Docker compose down");
-            
+
             var downsettings = new DockerComposeDownSettings
             {
                 Files = new string[] { "./tests/simpleauth.stores.redis.acceptancetests/docker-compose.yml" }

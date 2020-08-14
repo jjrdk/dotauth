@@ -20,8 +20,13 @@
             IEnumerable<Client> clients = null,
             IEnumerable<Scope> scopes = null)
         {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentException("Connection string cannot be null or empty", nameof(connectionString));
+            }
+
             var builder = new NpgsqlConnectionStringBuilder(connectionString);
-            using var connection = new NpgsqlConnection(connectionString);
+            await using var connection = new NpgsqlConnection(connectionString);
             try
             {
                 await Semaphore.WaitAsync().ConfigureAwait(false);
@@ -62,7 +67,7 @@
         public static async Task Drop(string connectionString)
         {
             NpgsqlConnection.ClearAllPools();
-            using var connection = new NpgsqlConnection(connectionString);
+            await using var connection = new NpgsqlConnection(connectionString);
             await connection.OpenAsync().ConfigureAwait(false);
             var builder = new NpgsqlConnectionStringBuilder { ConnectionString = connectionString };
             var cmd = connection.CreateCommand();

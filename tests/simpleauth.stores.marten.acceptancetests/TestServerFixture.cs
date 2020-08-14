@@ -22,7 +22,7 @@
             Server = new TestServer(
                 new WebHostBuilder().UseUrls(urls)
                     .UseConfiguration(
-                        new ConfigurationBuilder().AddUserSecrets<ServerStartup>().AddEnvironmentVariables().Build())
+                        new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).AddEnvironmentVariables().Build())
                     .ConfigureServices(
                         services =>
                         {
