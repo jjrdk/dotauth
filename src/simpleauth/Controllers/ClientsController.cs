@@ -251,9 +251,9 @@ namespace SimpleAuth.Controllers
         [HttpGet]
         [Route("create")]
         [Authorize(Policy = "manager")]
-        public async Task<IActionResult> Create()
+        public Task<IActionResult> Create()
         {
-            return Ok(new CreateClientViewModel());
+            return Task.FromResult<IActionResult>(Ok(new CreateClientViewModel()));
         }
 
         private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
