@@ -30,6 +30,7 @@ Task("Version")
   .Description("Retrieves the current version from the git repository")
   .Does(() =>
   {
+
 	versionInfo = GitVersion(new GitVersionSettings {
 		UpdateAssemblyInfo = false
 	});
@@ -115,8 +116,99 @@ Task("Tests")
     }
 });
 
-Task("Pack")
+Task("Postgres")
     .IsDependentOn("Tests")
+    .Does(() =>
+    {
+        try
+        {
+            Information("Docker compose up");
+
+            var upsettings = new DockerComposeUpSettings
+            {
+                DetachedMode = true,
+                Files = new string[] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" }
+            };
+            DockerComposeUp(upsettings);
+
+            var project = new FilePath("./tests/simpleauth.stores.marten.acceptancetests/simpleauth.stores.marten.acceptancetests.csproj");
+            Information("Testing: " + project.FullPath);
+            var reportName = buildDir + "/artifacts/testreports/" + versionInfo.FullSemVer + "_" + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_') + ".xml";
+            reportName = System.IO.Path.GetFullPath(reportName);
+
+            Information(reportName);
+
+            var coreTestSettings = new DotNetCoreTestSettings()
+              {
+		    	NoBuild = true,
+		    	NoRestore = true,
+                // Set configuration as passed by command line
+                Configuration = configuration,
+                ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
+              };
+
+            DotNetCoreTest(project.FullPath, coreTestSettings);
+        }
+        finally
+        {
+            Information("Docker compose down");
+
+            var downsettings = new DockerComposeDownSettings
+            {
+                Files = new string[] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" }
+            };
+            DockerComposeDown(downsettings);
+        }
+    });
+
+
+Task("Postgres_Redis")
+    .IsDependentOn("Postgres")
+    .Does(() =>
+    {
+        try
+        {
+            Information("Docker compose up");
+
+            var upsettings = new DockerComposeUpSettings
+            {
+                DetachedMode = true,
+                Files = new string[] { "./tests/simpleauth.stores.redis.acceptancetests/docker-compose.yml" }
+            };
+            DockerComposeUp(upsettings);
+
+            var project = new FilePath("./tests/simpleauth.stores.redis.acceptancetests/simpleauth.stores.redis.acceptancetests.csproj");
+            Information("Testing: " + project.FullPath);
+            var reportName = buildDir + "/artifacts/testreports/" + versionInfo.FullSemVer + "_" + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_') + ".xml";
+            reportName = System.IO.Path.GetFullPath(reportName);
+
+            Information(reportName);
+
+            var coreTestSettings = new DotNetCoreTestSettings()
+              {
+		    	NoBuild = true,
+		    	NoRestore = true,
+                // Set configuration as passed by command line
+                Configuration = configuration,
+                ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
+              };
+
+            DotNetCoreTest(project.FullPath, coreTestSettings);
+        }
+        finally
+        {
+            Information("Docker compose down");
+
+            var downsettings = new DockerComposeDownSettings
+            {
+                Files = new string[] { "./tests/simpleauth.stores.redis.acceptancetests/docker-compose.yml" }
+            };
+            DockerComposeDown(downsettings);
+        }
+    });
+
+Task("Pack")
+    .IsDependentOn("Postgres_Redis")
     .Does(()=>
     {
         Information("Package version: " + buildVersion);
@@ -141,12 +233,69 @@ Task("Pack")
         DotNetCorePack("./src/simpleauth.sms.ui/simpleauth.sms.ui.csproj", packSettings);
     });
 
+// the rest of your build script
+Task("Docker-Build")
+.IsDependentOn("Pack")
+.Does(() => {
+
+	var publishSettings = new DotNetCorePublishSettings
+    {
+        Runtime = "linux-musl-x64",
+        SelfContained = false,
+        Configuration = configuration,
+        OutputDirectory = "./artifacts/publish/inmemory/"
+    };
+
+    DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", publishSettings);
+    var settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfileInMemory",
+        ForceRm = true,
+        Rm = true,
+		Tag = new[] {
+			"jjrdk/simpleauth:inmemory",
+			"jjrdk/simpleauth:" + buildVersion + "-inmemory"
+		}
+	};
+    DockerBuild(settings, "./");
+
+	publishSettings.OutputDirectory = "./artifacts/publish/postgres/";
+
+    DotNetCorePublish("./src/simpleauth.authserverpg/simpleauth.authserverpg.csproj", publishSettings);
+    settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfilePostgres",
+        ForceRm = true,
+        Rm = true,
+		Tag = new[] {
+			"jjrdk/simpleauth:postgres",
+			"jjrdk/simpleauth:" + buildVersion + "-postgres"
+		}
+	};
+    DockerBuild(settings, "./");
+
+	publishSettings.OutputDirectory = "./artifacts/publish/pgredis/";
+
+    DotNetCorePublish("./src/simpleauth.authserverpgredis/simpleauth.authserverpgredis.csproj", publishSettings);
+    settings = new DockerImageBuildSettings {
+        Compress = true,
+        File = "./DockerfilePgRedis",
+        ForceRm = true,
+        Rm = true,
+		Tag = new[] {
+			"jjrdk/simpleauth:pgredis",
+			"jjrdk/simpleauth:" + buildVersion + "-pgredis"
+		}
+	};
+    DockerBuild(settings, "./");
+});
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack");
+    .IsDependentOn("Docker-Build");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

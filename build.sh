@@ -3,4 +3,4 @@
 dotnet new tool-manifest
 dotnet tool install Cake.Tool
 dotnet tool restore
-dotnet cake
+dotnet cake full.cake

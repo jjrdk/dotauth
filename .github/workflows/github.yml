@@ -4,14 +4,14 @@ on: [push]
 
 jobs:
   build:
-
-    runs-on: ubuntu-18.04
-    
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.101
-    - name: Run build and test script
-      run: dotnet build ./simpleauth.sln --configuration Release
+      - name: Get the sources
+        uses: actions/checkout@v1
+      - name: Run the build script
+        uses: cake-build/cake-action@v1
+        with:
+          target: Default
