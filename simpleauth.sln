@@ -35,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		DockerfileInMemory = DockerfileInMemory
 		DockerfilePgRedis = DockerfilePgRedis
 		DockerfilePostgres = DockerfilePostgres
+		full.cake = full.cake
 		global.json = global.json
 		README.md = README.md
 		shared.projinfo = shared.projinfo
@@ -146,7 +147,7 @@ Global
 		{4EC6178C-DA40-4750-B5D6-7197394E19D3} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}
 		RESX_PrefixTranslations = False
+		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}
 	EndGlobalSection
 EndGlobal

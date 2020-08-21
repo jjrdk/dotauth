@@ -27,6 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
+	  <TrimmerRootAssembly Include="System.Runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
 
