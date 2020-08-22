@@ -8,7 +8,12 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
+        dotnet: [ '5.0.100-preview.7.20366.6' ]
     steps:
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
       - name: Get the sources
         uses: actions/checkout@v1
       - name: Run the build script
