@@ -1,4 +1,5 @@
-﻿@model SimpleAuth.Shared.Models.Ticket[]
+﻿@using System
+@model SimpleAuth.Shared.Models.Ticket[]
 @{
     ViewBag.Title = "Resource Set Policy";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -42,7 +43,7 @@
                                         @using (Html.BeginForm("ApprovePermissionRequest", "Permissions", new { id = Model[i].Id }, FormMethod.Post))
                                         {
                                             <td>@Model[i].Id</td>
-                                            @if (Model[i].Requester == null)
+                                            if (Model[i].Requester == null)
                                             {
                                                 <td>Unidentified</td>
                                             }

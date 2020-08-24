@@ -235,11 +235,11 @@ Task("Pack")
 
 // the rest of your build script
 Task("Docker-Build")
-.IsDependentOn("Pack")
+.IsDependentOn("Version")
 .Does(() => {
 	var winPublishSettings = new DotNetCorePublishSettings
     {
-        PublishTrimmed = true,
+        PublishTrimmed = false,
         Runtime = "win-x64",
         SelfContained = true,
         Configuration = configuration,
@@ -249,7 +249,7 @@ Task("Docker-Build")
     DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", winPublishSettings);
 	var publishSettings = new DotNetCorePublishSettings
     {
-        PublishTrimmed = true,
+        PublishTrimmed = false,
         Runtime = "linux-musl-x64",
         SelfContained = true,
         Configuration = configuration,
