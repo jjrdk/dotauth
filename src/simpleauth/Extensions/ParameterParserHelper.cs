@@ -27,7 +27,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="parameter">List of prompts separated by whitespace</param>
         /// <returns>List of prompts.</returns>
-        public static ICollection<string> ParsePrompts(this string parameter)
+        public static ICollection<string> ParsePrompts(this string? parameter)
         {
             if (string.IsNullOrWhiteSpace(parameter))
             {
@@ -38,7 +38,6 @@ namespace SimpleAuth.Extensions
 
             var prompts = parameter.Split(' ')
                 .Where(c => !string.IsNullOrWhiteSpace(c) && promptNames.Contains(c))
-                //.Select(c => (PromptParameter)Enum.Parse(typeof(PromptParameter), c))
                 .ToList();
             return prompts;
         }
@@ -48,7 +47,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="parameter">List of response types separated by whitespace</param>
         /// <returns>List of response types</returns>
-        public static string[] ParseResponseTypes(this string parameter)
+        public static string[] ParseResponseTypes(this string? parameter)
         {
             //var responseTypeNames = Enum.GetNames(typeof (string));
             if (string.IsNullOrWhiteSpace(parameter))
@@ -67,7 +66,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="parameter">Parameter to parse.</param>
         /// <returns>list of scopes or null</returns>
-        public static string[] ParseScopes(this string parameter)
+        public static string[] ParseScopes(this string? parameter)
         {
             return string.IsNullOrWhiteSpace(parameter)
                 ? Array.Empty<string>()

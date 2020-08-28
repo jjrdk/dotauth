@@ -39,8 +39,8 @@ namespace SimpleAuth.Api.Token.Actions
 
         public async Task<bool> Execute(
             RevokeTokenParameter revokeTokenParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -51,7 +51,7 @@ namespace SimpleAuth.Api.Token.Actions
             var client = authResult.Client;
             if (client == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage!);
             }
 
             // 2. Retrieve the granted token & check if it exists
@@ -79,10 +79,18 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 4. Invalid the granted token
-            return isAccessToken
-                ? await _tokenStore.RemoveAccessToken(grantedToken.AccessToken, cancellationToken).ConfigureAwait(false)
-                : await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken, cancellationToken)
+            if (isAccessToken)
+            {
+                return await _tokenStore.RemoveAccessToken(grantedToken.AccessToken, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (!isAccessToken && grantedToken.RefreshToken != null)
+            {
+                return await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken, cancellationToken)
                     .ConfigureAwait(false);
+            }
+
+            return false;
         }
     }
 }

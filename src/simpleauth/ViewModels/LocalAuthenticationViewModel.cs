@@ -11,7 +11,7 @@
         /// <value>
         /// The login.
         /// </value>
-        public string Login { get; set; }
+        public string? Login { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
@@ -19,11 +19,11 @@
         /// <value>
         /// The password.
         /// </value>
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         /// Gets or sets the optional return url.
         /// </summary>
-        public string ReturnUrl { get; set; }
+        public string? ReturnUrl { get; set; }
     }
 }

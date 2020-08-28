@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
@@ -34,7 +35,7 @@ namespace SimpleAuth.Shared
         /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
         public static bool TryGetUmaTickets(this ClaimsIdentity identity, out Permission[] tickets)
         {
-            Permission[] t = null;
+            Permission[] t = Array.Empty<Permission>();
             var result = identity?.Claims.TryGetUmaTickets(out t);
             tickets = t;
             return result == true;
@@ -49,11 +50,7 @@ namespace SimpleAuth.Shared
         /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
         public static bool TryGetUmaTickets(this IEnumerable<Claim> claims, out Permission[] tickets)
         {
-            tickets = null;
-            if (claims == null)
-            {
-                return false;
-            }
+            tickets = Array.Empty<Permission>();
 
             try
             {
@@ -61,9 +58,9 @@ namespace SimpleAuth.Shared
                     .SelectMany(
                         c => c.Value.StartsWith("[")
                             ? JsonConvert.DeserializeObject<Permission[]>(c.Value)
-                            : new[] {JsonConvert.DeserializeObject<Permission>(c.Value)})
+                            : new[] { JsonConvert.DeserializeObject<Permission>(c.Value) })
                     .ToArray();
-                return tickets?.Length > 0;
+                return tickets.Length > 0;
             }
             catch
             {
@@ -87,7 +84,7 @@ namespace SimpleAuth.Shared
         /// </summary>
         /// <param name="principal">The user principal</param>
         /// <returns>User's subject</returns>
-        public static string GetSubject(this ClaimsPrincipal principal)
+        public static string? GetSubject(this ClaimsPrincipal? principal)
         {
             var claim = principal?.FindFirst(OpenIdClaimTypes.Subject)
                 ?? principal?.FindFirst(ClaimTypes.NameIdentifier);
@@ -99,7 +96,7 @@ namespace SimpleAuth.Shared
         /// </summary>
         /// <param name="principal">The user principal.</param>
         /// <returns>the user's client.</returns>
-        public static string GetClientId(this ClaimsPrincipal principal)
+        public static string? GetClientId(this ClaimsPrincipal? principal)
         {
             if (principal?.Identity == null || !principal.Identity.IsAuthenticated)
             {
@@ -115,7 +112,7 @@ namespace SimpleAuth.Shared
         /// </summary>
         /// <param name="principal">The user principal.</param>
         /// <returns>The user's name.</returns>
-        public static string GetName(this ClaimsPrincipal principal)
+        public static string? GetName(this ClaimsPrincipal? principal)
         {
             return GetClaimValue(principal, OpenIdClaimTypes.Name)
                    ?? GetClaimValue(principal, StandardClaimNames.Subject)
@@ -128,13 +125,13 @@ namespace SimpleAuth.Shared
         /// </summary>
         /// <param name="principal">The user principal.</param>
         /// <returns>The user's name.</returns>
-        public static string GetEmail(this ClaimsPrincipal principal)
+        public static string? GetEmail(this ClaimsPrincipal? principal)
         {
             return GetClaimValue(principal, OpenIdClaimTypes.Email)
                    ?? GetClaimValue(principal, ClaimTypes.Email);
         }
 
-        private static string GetClaimValue(ClaimsPrincipal principal, string claimName)
+        private static string? GetClaimValue(ClaimsPrincipal? principal, string claimName)
         {
             var claim = principal?.FindFirst(claimName);
 

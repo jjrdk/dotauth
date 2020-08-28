@@ -7,6 +7,7 @@
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization;
     using System;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
@@ -41,19 +42,6 @@
         }
 
         [Fact]
-        public async Task When_Passing_Empty_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _getAuthorizationCodeOperation.Execute(
-                        new AuthorizationParameter(),
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
         public async Task When_The_Client_Grant_Type_Is_Not_Supported_Then_Exception_Is_Thrown()
         {
             const string clientId = "clientId";
@@ -64,22 +52,21 @@
                 RedirectUrl = new Uri(HttpsLocalhost),
                 ClientId = clientId,
                 Scope = scope,
-                Claims = null
+                Claims = new ClaimsParameter()
             };
-            //_clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
-            //    .Returns(false);
+
             var client = new Client
             {
-                GrantTypes = new[] {GrantTypes.ClientCredentials},
-                AllowedScopes = new[] {scope},
-                RedirectionUrls = new[] {new Uri(HttpsLocalhost),}
+                GrantTypes = new[] { GrantTypes.ClientCredentials },
+                AllowedScopes = new[] { scope },
+                RedirectionUrls = new[] { new Uri(HttpsLocalhost), }
             };
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getAuthorizationCodeOperation.Execute(
                         authorizationParameter,
-                        null,
+                        new ClaimsPrincipal(),
                         client,
-                        null,
+                        "",
                         CancellationToken.None))
                 .ConfigureAwait(false);
 
@@ -98,9 +85,9 @@
 
             var client = new Client
             {
-                ResponseTypes = new[] {ResponseTypeNames.Code},
-                AllowedScopes = new[] {scope},
-                RedirectionUrls = new[] {new Uri(HttpsLocalhost),}
+                ResponseTypes = new[] { ResponseTypeNames.Code },
+                AllowedScopes = new[] { scope },
+                RedirectionUrls = new[] { new Uri(HttpsLocalhost), }
             };
             var authorizationParameter = new AuthorizationParameter
             {
@@ -112,7 +99,7 @@
             };
 
             var result = await _getAuthorizationCodeOperation
-                .Execute(authorizationParameter, null, client, null, CancellationToken.None)
+                .Execute(authorizationParameter, new ClaimsPrincipal(), client, null, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.NotNull(result.RedirectInstruction);

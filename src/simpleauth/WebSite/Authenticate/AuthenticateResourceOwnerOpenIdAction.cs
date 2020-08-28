@@ -71,10 +71,9 @@ namespace SimpleAuth.WebSite.Authenticate
 
             // 1).
             if (resourceOwnerIsAuthenticated
-                && promptParameters != null
                 && !promptParameters.Contains(PromptParameters.Login))
             {
-                var subject = resourceOwnerPrincipal.GetSubject();
+                var subject = resourceOwnerPrincipal.GetSubject()!;
                 var claims = resourceOwnerPrincipal.Claims.ToArray();
                 return await _authenticateHelper.ProcessRedirection(
                         authorizationParameter,

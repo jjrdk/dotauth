@@ -26,6 +26,20 @@
             IntrospectionParameter introspectionParameter,
             CancellationToken cancellationToken)
         {
+            var introspectionParameterToken = introspectionParameter.Token;
+            if (string.IsNullOrWhiteSpace(introspectionParameterToken))
+            {
+                return new GenericResponse<UmaIntrospectionResponse>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Error = new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidToken,
+                        Detail = Strings.TheTokenDoesntExist
+                    }
+                };
+            }
             // Read this RFC for more information - https://docs.kantarainitiative.org/uma/wg/rec-oauth-uma-federated-authz-2.0.html#introspection-endpoint
 
             // 3. Retrieve the token type hint
@@ -39,10 +53,10 @@
             var grantedToken = tokenTypeHint switch
             {
                 CoreConstants.StandardTokenTypeHintNames.AccessToken => await _tokenStore
-                    .GetAccessToken(introspectionParameter.Token, cancellationToken)
+                    .GetAccessToken(introspectionParameterToken, cancellationToken)
                     .ConfigureAwait(false),
                 CoreConstants.StandardTokenTypeHintNames.RefreshToken => await _tokenStore
-                    .GetRefreshToken(introspectionParameter.Token, cancellationToken)
+                    .GetRefreshToken(introspectionParameterToken, cancellationToken)
                     .ConfigureAwait(false),
                 _ => null
             };
@@ -74,7 +88,7 @@
             if (grantedToken.UserInfoPayLoad != null)
             {
                 var subject =
-                    grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Subject);
+                    grantedToken.IdTokenPayLoad?.GetClaimValue(OpenIdClaimTypes.Subject);
                 if (!string.IsNullOrWhiteSpace(subject))
                 {
                     result.Subject = subject;

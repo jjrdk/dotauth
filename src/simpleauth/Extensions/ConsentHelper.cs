@@ -24,7 +24,7 @@ namespace SimpleAuth.Extensions
 
     internal static class ConsentHelper
     {
-        public static async Task<Consent> GetConfirmedConsents(
+        public static async Task<Consent?> GetConfirmedConsents(
             this IConsentRepository consentRepository,
             string subject,
             AuthorizationParameter authorizationParameter,
@@ -34,7 +34,7 @@ namespace SimpleAuth.Extensions
                 (await consentRepository.GetConsentsForGivenUser(subject, cancellationToken).ConfigureAwait(false))
                 ?.ToArray()
                 ?? Array.Empty<Consent>();
-            Consent confirmedConsent = null;
+            Consent? confirmedConsent = null;
             if (consents.Length > 0)
             {
                 var claimsParameter = authorizationParameter.Claims;
@@ -43,9 +43,8 @@ namespace SimpleAuth.Extensions
                     var expectedClaims = claimsParameter.GetClaimNames();
                     confirmedConsent = consents.FirstOrDefault(
                         c => c.ClientId == authorizationParameter.ClientId
-                             && c.Claims != null
-                             && c.Claims.Count > 0
-                             && expectedClaims.Count == c.Claims.Count
+                             && c.Claims.Length > 0
+                             && expectedClaims.Length == c.Claims.Length
                              && expectedClaims.All(cl => c.Claims.Contains(cl)));
                 }
                 else
@@ -53,7 +52,6 @@ namespace SimpleAuth.Extensions
                     var scopeNames = authorizationParameter.Scope.ParseScopes();
                     confirmedConsent = consents.FirstOrDefault(
                         c => c.ClientId == authorizationParameter.ClientId
-                             && c.GrantedScopes != null
                              && c.GrantedScopes.Length > 0
                              && scopeNames.Length == c.GrantedScopes.Length
                              && c.GrantedScopes.All(g => scopeNames.Contains(g)));

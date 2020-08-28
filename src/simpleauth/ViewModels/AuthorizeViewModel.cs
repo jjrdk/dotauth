@@ -5,7 +5,7 @@
     /// <summary>
     /// Defines the authorize view model.
     /// </summary>
-    /// <seealso cref="SimpleAuth.ViewModels.IdProviderAuthorizeViewModel" />
+    /// <seealso cref="IdProviderAuthorizeViewModel" />
     public class AuthorizeViewModel : IdProviderAuthorizeViewModel
     {
         /// <summary>

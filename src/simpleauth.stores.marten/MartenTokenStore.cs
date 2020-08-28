@@ -27,12 +27,12 @@
         }
 
         /// <inheritdoc />
-        public async Task<GrantedToken> GetToken(
+        public async Task<GrantedToken?> GetToken(
             string scopes,
             string clientId,
-            JwtPayload idTokenJwsPayload,
-            JwtPayload userInfoJwsPayload,
-            CancellationToken cancellationToken)
+            JwtPayload? idTokenJwsPayload = null,
+            JwtPayload? userInfoJwsPayload = null,
+            CancellationToken cancellationToken = default)
         {
             if (idTokenJwsPayload == null || userInfoJwsPayload == null)
             {
@@ -48,13 +48,13 @@
                          && x.UserInfoPayLoad != null)
                 .ToListAsync(token: cancellationToken)
                 .ConfigureAwait(false);
-            return options.FirstOrDefault(x =>
-                idTokenJwsPayload.All(x.IdTokenPayLoad.Contains) &&
-                userInfoJwsPayload.All(x.UserInfoPayLoad.Contains));
+            return options!.FirstOrDefault(x =>
+                idTokenJwsPayload.All(y => x.IdTokenPayLoad?.Contains(y) == true) &&
+                userInfoJwsPayload.All(y => x.UserInfoPayLoad?.Contains(y) == true));
         }
 
         /// <inheritdoc />
-        public async Task<GrantedToken> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)
+        public async Task<GrantedToken?> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var grantedToken = await session.Query<GrantedToken>()
@@ -64,7 +64,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<GrantedToken> GetAccessToken(string accessToken, CancellationToken cancellationToken)
+        public async Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var grantedToken = await session.Query<GrantedToken>()

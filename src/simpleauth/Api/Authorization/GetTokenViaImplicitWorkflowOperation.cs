@@ -81,12 +81,12 @@ namespace SimpleAuth.Api.Authorization
                     authorizationParameter.State);
             }
 
+            var claimsPrincipal = principal as ClaimsPrincipal;
             var result = await _processAuthorizationRequest
-                .Process(authorizationParameter, principal as ClaimsPrincipal, client, issuerName, cancellationToken)
+                .Process(authorizationParameter, claimsPrincipal, client, issuerName, cancellationToken)
                 .ConfigureAwait(false);
             if (result.Type == ActionResultType.RedirectToCallBackUrl)
             {
-                var claimsPrincipal = principal as ClaimsPrincipal;
                 await _generateAuthorizationResponse
                     .Generate(result, authorizationParameter, claimsPrincipal, client, issuerName, cancellationToken)
                     .ConfigureAwait(false);

@@ -18,25 +18,25 @@ namespace SimpleAuth.Parameters
 
     internal sealed class AuthorizationParameter
     {
-        public string ClientId { get; set; }
-        public string Scope { get; set; }
-        public string[] AmrValues { get; set; }
-        public string ResponseType { get; set; }
-        public Uri RedirectUrl { get; set; }
-        public string State { get; set; }
-        public string ResponseMode { get; set; }
-        public string Nonce { get; set; }
-        public string Prompt { get; set; }
+        public string? ClientId { get; set; }
+        public string? Scope { get; set; }
+        public string[] AmrValues { get; set; } = Array.Empty<string>();
+        public string? ResponseType { get; set; }
+        public Uri? RedirectUrl { get; set; }
+        public string? State { get; set; }
+        public string ResponseMode { get; set; } = null!;
+        public string? Nonce { get; set; }
+        public string? Prompt { get; set; }
         public double MaxAge { get; set; }
-        public string UiLocales { get; set; }
-        public string IdTokenHint { get; set; }
-        public string LoginHint { get; set; }
-        public string AcrValues { get; set; }
-        public ClaimsParameter Claims { get; set; }
-        public string CodeChallenge { get; set; }
-        public string CodeChallengeMethod { get; set; }
-        public string ProcessId { get; set; }
-        public string OriginUrl { get; set; }
-        public string SessionId { get; set; }
+        public string? UiLocales { get; set; }
+        public string? IdTokenHint { get; set; }
+        public string? LoginHint { get; set; }
+        public string? AcrValues { get; set; }
+        public ClaimsParameter? Claims { get; set; }
+        public string? CodeChallenge { get; set; }
+        public string? CodeChallengeMethod { get; set; }
+        public string? ProcessId { get; set; }
+        public string? OriginUrl { get; set; }
+        public string? SessionId { get; set; }
     }
 }

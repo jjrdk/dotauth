@@ -48,20 +48,6 @@ namespace SimpleAuth.Server.Tests.Policies
         }
 
         [Fact]
-        public async Task WhenPassingNullPolicyParameterThenIsNotAuthorized()
-        {
-            var result = await _authorizationPolicy.Execute(
-                    new TicketLineParameter("client_id"),
-                    "x",
-                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
-                    CancellationToken.None,
-                    null)
-                .ConfigureAwait(false);
-
-            Assert.Equal(AuthorizationPolicyResultKind.NotAuthorized, result.Result);
-        }
-
-        [Fact]
         public async Task When_Does_Not_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
         {
             var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };

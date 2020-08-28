@@ -35,9 +35,9 @@
         protected async Task<ClaimsPrincipal> SetUser()
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
-            var isAuthenticed = authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated;
+            var isAuthenticed = authenticatedUser.Identity != null && authenticatedUser.Identity.IsAuthenticated;
             ViewBag.IsAuthenticated = isAuthenticed;
-            ViewBag.Name = isAuthenticed ? authenticatedUser.GetName() : Strings.Unknown;
+            ViewBag.Name = isAuthenticed ? authenticatedUser.GetName()! : Strings.Unknown;
 
             return authenticatedUser;
         }

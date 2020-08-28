@@ -14,7 +14,7 @@
         /// <value>
         /// The subject.
         /// </value>
-        public string Subject { get; set; }
+        public string Subject { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the issuer.
@@ -22,7 +22,7 @@
         /// <value>
         /// The issuer.
         /// </value>
-        public string Issuer { get; set; }
+        public string Issuer { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the external claims.

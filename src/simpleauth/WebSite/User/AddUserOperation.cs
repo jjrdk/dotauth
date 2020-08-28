@@ -49,7 +49,7 @@ namespace SimpleAuth.WebSite.User
             _eventPublisher = eventPublisher;
         }
 
-        public async Task<(bool Success, string Subject)> Execute(
+        public async Task<(bool success, string? subject)> Execute(
             ResourceOwner resourceOwner, CancellationToken cancellationToken)
         {
             if (!resourceOwner.IsLocalAccount || string.IsNullOrWhiteSpace(resourceOwner.Subject))
@@ -59,7 +59,7 @@ namespace SimpleAuth.WebSite.User
                 resourceOwner.Subject = subject;
             }
 
-            // 1. Check the resource owner already exists.
+            // 1. Check if the resource owner already exists.
             if (await _resourceOwnerRepository.Get(resourceOwner.Subject, cancellationToken).ConfigureAwait(false) !=
                 null)
             {

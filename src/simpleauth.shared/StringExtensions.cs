@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ namespace SimpleAuth.Shared
         /// <param name="entry">The entry.</param>
         /// <param name="encoding">The encoding.</param>
         /// <returns></returns>
-        public static string ToSha256SimplifiedBase64(this string entry, Encoding encoding = null)
+        public static string ToSha256SimplifiedBase64(this string entry, Encoding? encoding = null)
         {
             var enc = encoding ?? Encoding.UTF8;
             using var sha256 = SHA256.Create();
@@ -70,10 +70,7 @@ namespace SimpleAuth.Shared
         /// <returns></returns>
         public static string ToBase64Simplified(this byte[] bytes)
         {
-            return Convert.ToBase64String(bytes)
-                .Split('=')[0]
-                .Replace('+', '-')
-                .Replace('/', '_');
+            return Convert.ToBase64String(bytes).Split('=')[0].Replace('+', '-').Replace('/', '_');
         }
 
         /// <summary>
@@ -86,7 +83,7 @@ namespace SimpleAuth.Shared
             var decodeBytes = base64EncodedData.Base64DecodeBytes();
             return Encoding.UTF8.GetString(decodeBytes);
         }
-        
+
         /// <summary>
         /// Base64 decode.
         /// </summary>
@@ -94,12 +91,8 @@ namespace SimpleAuth.Shared
         /// <returns></returns>
         public static byte[] Base64DecodeBytes(this string base64EncodedData)
         {
-            var s = base64EncodedData
-                .Trim()
-                .Replace(" ", "+")
-                .Replace('-', '+') 
-                .Replace('_', '/');
-            switch (s.Length%4)
+            var s = base64EncodedData.Trim().Replace(" ", "+").Replace('-', '+').Replace('_', '/');
+            switch (s.Length % 4)
             {
                 case 0:
                     return Convert.FromBase64String(s);

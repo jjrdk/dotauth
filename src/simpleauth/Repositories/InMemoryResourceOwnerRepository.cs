@@ -22,7 +22,7 @@
         /// Initializes a new instance of the <see cref="InMemoryResourceOwnerRepository"/> class.
         /// </summary>
         /// <param name="users">The users.</param>
-        public InMemoryResourceOwnerRepository(IReadOnlyCollection<ResourceOwner> users = null)
+        public InMemoryResourceOwnerRepository(IReadOnlyCollection<ResourceOwner>? users = null)
         {
             _users = users == null
                 ? new List<ResourceOwner>()
@@ -68,19 +68,14 @@
         }
 
         /// <inheritdoc />
-        public Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default)
+        public Task<ResourceOwner?> Get(string id, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentNullException(nameof(id), "The parameter login is missing");
-            }
-
             var user = _users.FirstOrDefault(u => u.Subject == id);
             return Task.FromResult(user);
         }
 
         /// <inheritdoc />
-        public Task<ResourceOwner> Get(ExternalAccountLink externalAccount, CancellationToken cancellationToken)
+        public Task<ResourceOwner?> Get(ExternalAccountLink externalAccount, CancellationToken cancellationToken)
         {
             if (externalAccount == null)
             {
@@ -95,7 +90,7 @@
         }
 
         /// <inheritdoc />
-        public Task<ResourceOwner> Get(string id, string password, CancellationToken cancellationToken)
+        public Task<ResourceOwner?> Get(string id, string password, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -112,7 +107,7 @@
         }
 
         /// <inheritdoc />
-        public Task<ResourceOwner> GetResourceOwnerByClaim(
+        public Task<ResourceOwner?> GetResourceOwnerByClaim(
             string key,
             string value,
             CancellationToken cancellationToken)
@@ -128,11 +123,6 @@
             }
 
             var user = _users.FirstOrDefault(u => u.Claims.Any(c => c.Type == key && c.Value == value));
-            if (user == null)
-            {
-                return Task.FromResult((ResourceOwner)null);
-            }
-
             return Task.FromResult(user);
         }
 
@@ -142,6 +132,11 @@
             if (resourceOwner == null)
             {
                 throw new ArgumentNullException(nameof(resourceOwner));
+            }
+
+            if (resourceOwner.Password == null)
+            {
+                return Task.FromResult(false);
             }
 
             resourceOwner.Password = resourceOwner.Password.ToSha256Hash();
@@ -163,7 +158,7 @@
             IEnumerable<ResourceOwner> result = _users;
             if (parameter.Subjects != null)
             {
-                result = result.Where(r => parameter.Subjects.Any(s => r.Subject.Contains(s)));
+                result = result.Where(r => parameter.Subjects.Any(s => r.Subject != null && r.Subject.Contains(s)));
             }
 
             var nbResult = result.Count();

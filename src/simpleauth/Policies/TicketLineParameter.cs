@@ -15,7 +15,7 @@
         /// <param name="clientId">The client identifier.</param>
         /// <param name="scopes">The scopes.</param>
         /// <param name="isAuthorizedByRo">if set to <c>true</c> [is authorized by resource owner].</param>
-        public TicketLineParameter(string clientId, IEnumerable<string> scopes = null, bool isAuthorizedByRo = false)
+        public TicketLineParameter(string clientId, IEnumerable<string>? scopes = null, bool isAuthorizedByRo = false)
         {
             ClientId = clientId;
             Scopes = scopes == null ? Array.Empty<string>() : scopes.ToArray();

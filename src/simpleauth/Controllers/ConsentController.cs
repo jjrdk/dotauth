@@ -55,7 +55,6 @@ namespace SimpleAuth.Controllers
         /// <param name="scopeRepository">The scope repository.</param>
         /// <param name="clientStore">The client store.</param>
         /// <param name="consentRepository">The consent repository.</param>
-        /// <param name="resourceOwnerStore">The resource owner store.</param>
         /// <param name="dataProtectionProvider">The data protection provider.</param>
         /// <param name="eventPublisher">The event publisher.</param>
         /// <param name="tokenStore">The token store.</param>
@@ -67,7 +66,6 @@ namespace SimpleAuth.Controllers
             IScopeRepository scopeRepository,
             IClientStore clientStore,
             IConsentRepository consentRepository,
-            IResourceOwnerStore resourceOwnerStore,
             IDataProtectionProvider dataProtectionProvider,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
@@ -95,7 +93,6 @@ namespace SimpleAuth.Controllers
                 consentRepository,
                 clientStore,
                 scopeRepository,
-                resourceOwnerStore,
                 jwksStore,
                 eventPublisher);
         }
@@ -159,7 +156,7 @@ namespace SimpleAuth.Controllers
             await _eventPublisher.Publish(
                     new ConsentAccepted(Id.Create(), subject, request.client_id, request.scope, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
-            return actionResult.CreateRedirectionFromActionResult(request, _logger);
+            return actionResult.CreateRedirectionFromActionResult(request, _logger)!;
         }
 
         /// <summary>

@@ -66,11 +66,11 @@ namespace SimpleAuth.Api.PermissionController
                 Requester = claims,
                 Created = DateTimeOffset.UtcNow,
                 Expires = DateTimeOffset.UtcNow.Add(_settings.TicketLifeTime),
-                Lines = addPermissionParameters.Select(
+                Lines = addPermissionParameters.Where(x => x.Scopes != null && x.ResourceSetId != null).Select(
                         addPermissionParameter => new TicketLine
                         {
-                            Scopes = addPermissionParameter.Scopes,
-                            ResourceSetId = addPermissionParameter.ResourceSetId
+                            Scopes = addPermissionParameter.Scopes!,
+                            ResourceSetId = addPermissionParameter.ResourceSetId!
                         })
                     .ToArray()
             };

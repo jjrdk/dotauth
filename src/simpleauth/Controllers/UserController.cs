@@ -81,20 +81,22 @@
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
-            var actualScheme = authenticatedUser.Identity.AuthenticationType;
-            var ro = await GetUserProfile(authenticatedUser.GetSubject(), cancellationToken).ConfigureAwait(false);
+            var subject = authenticatedUser.GetSubject();
+            var ro = subject == null ? null : await GetUserProfile(subject, cancellationToken).ConfigureAwait(false);
             if (ro == null)
             {
-                return BadRequest(new ErrorDetails
-                {
-                    Status = HttpStatusCode.BadRequest,
-                    Title = ErrorCodes.InternalError,
-                    Detail = Strings.TheRoDoesntExist
-                });
+                return BadRequest(
+                    new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InternalError,
+                        Detail = Strings.TheRoDoesntExist
+                    });
             }
+
             var authenticationSchemes =
-                (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false))
-                .Where(a => !string.IsNullOrWhiteSpace(a.DisplayName));
+                (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(
+                    a => !string.IsNullOrWhiteSpace(a.DisplayName));
             var viewModel = new ProfileViewModel(ro.Claims);
 
             foreach (var profile in ro.ExternalLogins)
@@ -103,8 +105,12 @@
                 viewModel.LinkedIdentityProviders.Add(record);
             }
 
+            var actualScheme = authenticatedUser?.Identity?.AuthenticationType;
+
             viewModel.UnlinkedIdentityProviders = authenticationSchemes
-                .Where(a => !a.DisplayName.StartsWith('_') && !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
+                .Where(
+                    a => !a.DisplayName.StartsWith('_')
+                         && !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
                 .Select(p => new IdentityProviderViewModel(p.Name))
                 .ToList();
             return Ok(viewModel);
@@ -171,11 +177,6 @@
             UpdateResourceOwnerCredentialsViewModel viewModel,
             CancellationToken cancellationToken)
         {
-            if (viewModel == null)
-            {
-                BadRequest();
-            }
-
             // 1. Validate the view model.
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             ViewBag.IsUpdated = false;
@@ -188,9 +189,9 @@
             // 2. CreateJwk a new user if he doesn't exist or update the credentials.
             //var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
             var subject = authenticatedUser.GetSubject();
-            await _resourceOwnerRepository.SetPassword(subject, viewModel.Password, cancellationToken)
-                .ConfigureAwait(false);
-            ViewBag.IsUpdated = true;
+            var updated = subject != null && await _resourceOwnerRepository.SetPassword(subject, viewModel.Password, cancellationToken)
+                     .ConfigureAwait(false);
+            ViewBag.IsUpdated = updated;
             return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
         }
 
@@ -385,11 +386,12 @@
             var resourceOwner =
                 await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
             UpdateResourceOwnerViewModel viewModel;
+            var subject = authenticatedUser.GetSubject()!;
             if (resourceOwner == null)
             {
                 viewModel = BuildViewModel(
                     resourceOwner.TwoFactorAuthentication,
-                    authenticatedUser.GetSubject(),
+                    subject,
                     authenticatedUser.Claims,
                     false);
                 return View("Edit", viewModel);
@@ -397,7 +399,7 @@
 
             viewModel = BuildViewModel(
                 resourceOwner.TwoFactorAuthentication,
-                authenticatedUser.GetSubject(),
+                subject,
                 resourceOwner.Claims,
                 true);
             viewModel.IsLocalAccount = true;
@@ -408,7 +410,7 @@
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var consents = await _consentRepository
-                .GetConsentsForGivenUser(authenticatedUser.GetSubject(), cancellationToken)
+                .GetConsentsForGivenUser(authenticatedUser.GetSubject()!, cancellationToken)
                 .ConfigureAwait(false);
             var result = new List<ConsentViewModel>();
             if (consents == null)
@@ -427,11 +429,11 @@
                 select new ConsentViewModel
                 {
                     Id = consent.Id,
-                    ClientDisplayName = consent.ClientName ?? string.Empty,
+                    ClientDisplayName = consent.ClientName,
                     AllowedScopeDescriptions = scopeNames?.Any() != true
                         ? new List<string>()
                         : scopeNames.Select(g => scopes[g].Description).ToList(),
-                    AllowedIndividualClaims = claims ?? new List<string>(),
+                    AllowedIndividualClaims = claims ?? Array.Empty<string>(),
                     //LogoUri = client?.LogoUri?.AbsoluteUri,
                     PolicyUri = consent.PolicyUri?.AbsoluteUri,
                     TosUri = consent.TosUri?.AbsoluteUri
@@ -475,7 +477,7 @@
         /// <param name="subject"></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        private async Task<ResourceOwner> GetUserProfile(string subject, CancellationToken cancellationToken)
+        private async Task<ResourceOwner?> GetUserProfile(string subject, CancellationToken cancellationToken)
         {
             return string.IsNullOrWhiteSpace(subject)
                 ? null

@@ -5,12 +5,11 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 
     internal static class ResourceOwnerAuthenticateHelper
     {
-        public static Task<ResourceOwner> Authenticate(
+        public static Task<ResourceOwner?> Authenticate(
             this IAuthenticateResourceOwnerService[] services,
             string login,
             string password,
@@ -19,7 +18,7 @@
         {
             var currentAmrs = services.Select(s => s.Amr).ToArray();
             var amr = currentAmrs.GetAmr(exceptedAmrValues);
-            var service = services.FirstOrDefault(s => s.Amr == amr);
+            var service = services.Single(s => s.Amr == amr);
             return service.AuthenticateResourceOwner(login, password, cancellationToken);
         }
 

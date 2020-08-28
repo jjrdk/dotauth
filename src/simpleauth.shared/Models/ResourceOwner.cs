@@ -15,6 +15,7 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
+    using System.Data;
     using System.Linq;
     using System.Security.Claims;
 
@@ -23,20 +24,19 @@ namespace SimpleAuth.Shared.Models
     /// </summary>
     public class ResourceOwner
     {
-        public ResourceOwner()
-        {
-            var x = string.Join(", ", this.ExternalLogins?.Select(e => e.Issuer)??Array.Empty<string>());
-        }
         /// <summary>
         /// Get or sets the subject-identifier for the End-User at the issuer.
         /// </summary>
-        public string Subject
+        public string? Subject
         {
-            get => Claims?.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value;
+            get => Claims.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value;
             set
             {
+                if (value == null)
+                {
+                    throw new NoNullAllowedException();
+                }
                 var claim = new Claim(OpenIdClaimTypes.Subject, value);
-                Claims ??= new[] {claim};
 
                 Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.Subject).Concat(new[] { claim }).ToArray();
             }
@@ -45,7 +45,7 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the password
         /// </summary>
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         /// Gets or sets the list of claims.
@@ -55,7 +55,7 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the two factor authentications
         /// </summary>
-        public string TwoFactorAuthentication { get; set; }
+        public string? TwoFactorAuthentication { get; set; }
 
         /// <summary>
         /// Gets or sets if the resource owner is local or external

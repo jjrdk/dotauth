@@ -15,7 +15,7 @@
         /// The type.
         /// </value>
         [DataMember(Name = "type")]
-        public string Type { get; set; }
+        public string Type { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the value.
@@ -24,6 +24,6 @@
         /// The value.
         /// </value>
         [DataMember(Name = "value")]
-        public string Value { get; set; }
+        public string Value { get; set; } = null!;
     }
 }

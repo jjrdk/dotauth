@@ -24,22 +24,22 @@ namespace SimpleAuth.ViewModels
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
-        public string Id { get; set; }
-        
+        public string? Id { get; set; }
+
         /// <summary>
         /// Gets or sets the icon.
         /// </summary>
-        public string Icon { get; set; }
-        
+        public string? Icon { get; set; }
+
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
-        
+        public string? Name { get; set; }
+
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Creates a <see cref="ResourceSetViewModel"/> instance from a <see cref="ResourceSet"/> instance.

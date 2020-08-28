@@ -25,27 +25,10 @@ namespace SimpleAuth.Shared
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleAuthException"/> class.
         /// </summary>
-        protected SimpleAuthException()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleAuthException"/> class.
-        /// </summary>
-        /// <param name="code">The code.</param>
-        /// <param name="message">The message.</param>
-        public SimpleAuthException(string code, string message) : base(message)
-        {
-            Code = code;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleAuthException"/> class.
-        /// </summary>
         /// <param name="code">The code.</param>
         /// <param name="message">The message.</param>
         /// <param name="innerException">The inner exception.</param>
-        public SimpleAuthException(string code, string message, Exception innerException) : base(message, innerException)
+        public SimpleAuthException(string code, string message, Exception? innerException = null) : base(message, innerException)
         {
             Code = code;
         }

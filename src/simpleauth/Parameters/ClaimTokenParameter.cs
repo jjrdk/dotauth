@@ -16,7 +16,7 @@ namespace SimpleAuth.Parameters
 {
     internal class ClaimTokenParameter
     {
-        public string Format { get; set; }
-        public string Token { get; set; }
+        public string? Format { get; set; }
+        public string? Token { get; set; }
     }
 }

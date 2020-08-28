@@ -32,11 +32,10 @@ namespace SimpleAuth.WebSite.User
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
+        public Task<ResourceOwner?> Execute(ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
         {
-            if (claimsPrincipal?.Identity == null
-                || !claimsPrincipal.Identity.IsAuthenticated
-                || !(claimsPrincipal.Identity is ClaimsIdentity))
+            var claimsIdentity = claimsPrincipal.Identity as ClaimsIdentity;
+            if (claimsIdentity?.IsAuthenticated != true)
             {
                 throw new SimpleAuthException(
                     ErrorCodes.UnhandledExceptionCode,

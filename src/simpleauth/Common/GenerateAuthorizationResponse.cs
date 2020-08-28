@@ -66,11 +66,8 @@ namespace SimpleAuth.Common
             string issuerName,
             CancellationToken cancellationToken)
         {
-            var newAccessTokenGranted = false;
             var allowedTokenScopes = string.Empty;
-            GrantedToken grantedToken = null;
-            var newAuthorizationCodeGranted = false;
-            AuthorizationCode authorizationCode = null;
+            GrantedToken? grantedToken = null;
             var responses = authorizationParameter.ResponseType.ParseResponseTypes();
             var idTokenPayload = await GenerateIdTokenPayload(
                     claimsPrincipal,
@@ -94,31 +91,29 @@ namespace SimpleAuth.Common
                         cancellationToken,
                         idTokenJwsPayload: userInformationPayload,
                         userInfoJwsPayload: idTokenPayload)
+                    .ConfigureAwait(false)
+                               ?? await client.GenerateToken(
+                        _jwksStore,
+                        allowedTokenScopes,
+                        issuerName,
+                        userInformationPayload,
+                        idTokenPayload,
+                        cancellationToken: cancellationToken,
+                        claimsPrincipal.Claims
+                            .Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                            .ToArray())
                     .ConfigureAwait(false);
-                if (grantedToken == null)
-                {
-                    grantedToken = await client.GenerateToken(
-                            _jwksStore,
-                            allowedTokenScopes,
-                            issuerName,
-                            userInformationPayload,
-                            idTokenPayload,
-                            cancellationToken: cancellationToken,
-                            claimsPrincipal.Claims
-                                .Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
-                                .ToArray())
-                        .ConfigureAwait(false);
-                    newAccessTokenGranted = true;
-                }
 
-                endpointResult.RedirectInstruction.AddParameter(
+                endpointResult.RedirectInstruction!.AddParameter(
                     StandardAuthorizationResponseNames.AccessTokenName,
                     grantedToken.AccessToken);
             }
 
+            AuthorizationCode? authorizationCode = null;
+            var authorizationParameterClientId = authorizationParameter.ClientId;
             if (responses.Contains(ResponseTypeNames.Code)) // 2. Generate an authorization code.
             {
-                var subject = claimsPrincipal.GetSubject();
+                var subject = claimsPrincipal.GetSubject()!;
                 var assignedConsent = await _consentRepository
                     .GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
                     .ConfigureAwait(false);
@@ -131,14 +126,13 @@ namespace SimpleAuth.Common
                         Code = Id.Create(),
                         RedirectUri = authorizationParameter.RedirectUrl,
                         CreateDateTime = DateTimeOffset.UtcNow,
-                        ClientId = authorizationParameter.ClientId,
+                        ClientId = authorizationParameterClientId,
                         Scopes = authorizationParameter.Scope,
                         IdTokenPayload = idTokenPayload,
                         UserInfoPayLoad = userInformationPayload
                     };
 
-                    newAuthorizationCodeGranted = true;
-                    endpointResult.RedirectInstruction.AddParameter(
+                    endpointResult.RedirectInstruction!.AddParameter(
                         StandardAuthorizationResponseNames.AuthorizationCodeName,
                         authorizationCode.Code);
                 }
@@ -150,7 +144,7 @@ namespace SimpleAuth.Common
                 grantedToken == null ? string.Empty : grantedToken.AccessToken,
                 client);
 
-            if (newAccessTokenGranted)
+            if (grantedToken != null)
             // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
             {
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
@@ -158,14 +152,14 @@ namespace SimpleAuth.Common
                         new TokenGranted(
                             Id.Create(),
                             claimsPrincipal.GetSubject(),
-                            authorizationParameter.ClientId,
+                            authorizationParameterClientId,
                             allowedTokenScopes,
                             authorizationParameter.ResponseType,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
 
-            if (newAuthorizationCodeGranted) // 4. Insert the authorization code into the caching.
+            if (authorizationCode != null) // 4. Insert the authorization code into the caching.
             {
                 if (client.RequirePkce)
                 {
@@ -178,7 +172,7 @@ namespace SimpleAuth.Common
                         new AuthorizationGranted(
                             Id.Create(),
                             claimsPrincipal.GetSubject(),
-                            authorizationParameter.ClientId,
+                            authorizationParameterClientId,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
@@ -186,30 +180,30 @@ namespace SimpleAuth.Common
             if (responses.Contains(ResponseTypeNames.IdToken))
             {
                 var idToken = await _clientStore.GenerateIdToken(
-                        authorizationParameter.ClientId,
+                        authorizationParameterClientId,
                         idTokenPayload,
                         _jwksStore,
                         cancellationToken)
                     .ConfigureAwait(false);
-                endpointResult.RedirectInstruction.AddParameter(
+                endpointResult.RedirectInstruction!.AddParameter(
                     StandardAuthorizationResponseNames.IdTokenName,
                     idToken);
             }
 
             if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
             {
-                endpointResult.RedirectInstruction.AddParameter(
+                endpointResult.RedirectInstruction!.AddParameter(
                     StandardAuthorizationResponseNames.StateName,
                     authorizationParameter.State);
             }
 
             var sessionState = GetSessionState(
-                authorizationParameter.ClientId,
+                authorizationParameterClientId,
                 authorizationParameter.OriginUrl,
                 authorizationParameter.SessionId);
             if (sessionState != null)
             {
-                endpointResult.RedirectInstruction.AddParameter(
+                endpointResult.RedirectInstruction!.AddParameter(
                     StandardAuthorizationResponseNames.SessionState,
                     sessionState);
             }
@@ -217,10 +211,10 @@ namespace SimpleAuth.Common
             if (authorizationParameter.ResponseMode == ResponseModes.FormPost)
             {
                 endpointResult.Type = ActionResultType.RedirectToAction;
-                endpointResult.RedirectInstruction.Action = SimpleAuthEndPoints.FormIndex;
+                endpointResult.RedirectInstruction!.Action = SimpleAuthEndPoints.FormIndex;
                 endpointResult.RedirectInstruction.AddParameter(
                     "redirect_uri",
-                    authorizationParameter.RedirectUrl.AbsoluteUri);
+                    authorizationParameter.RedirectUrl?.AbsoluteUri);
             }
 
             // Set the response mode
@@ -234,11 +228,11 @@ namespace SimpleAuth.Common
                     responseMode = CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
                 }
 
-                endpointResult.RedirectInstruction.ResponseMode = responseMode;
+                endpointResult.RedirectInstruction!.ResponseMode = responseMode;
             }
         }
 
-        private static string GetSessionState(string clientId, string originUrl, string sessionId)
+        private static string? GetSessionState(string? clientId, string? originUrl, string? sessionId)
         {
             if (string.IsNullOrWhiteSpace(clientId)
             || string.IsNullOrWhiteSpace(originUrl)

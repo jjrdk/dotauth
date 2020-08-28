@@ -30,7 +30,7 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the client identifier.
         /// </summary>
         [DataMember(Name = "client_id")]
-        public string ClientId { get; set; }
+        public string ClientId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the client secrets.
@@ -45,7 +45,7 @@ namespace SimpleAuth.Shared.Models
         /// The name of the client.
         /// </value>
         [DataMember(Name = "client_name")]
-        public string ClientName { get; set; }
+        public string ClientName { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the user claims to include in authorization token.
@@ -55,12 +55,12 @@ namespace SimpleAuth.Shared.Models
         /// </value>
         [DataMember(Name = "included_user_claims")]
         public Regex[] UserClaimsToIncludeInAuthToken { get; set; } = Array.Empty<Regex>();
-        
+
         /// <summary>
         /// Gets or sets the logo uri
         /// </summary>
         [DataMember(Name = "logo_uri")]
-        public Uri LogoUri { get; set; }
+        public Uri? LogoUri { get; set; }
 
         /// <summary>
         /// Gets or sets the token lifetime.
@@ -75,40 +75,40 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the home page of the client.
         /// </summary>
         [DataMember(Name = "client_uri")]
-        public Uri ClientUri { get; set; }
+        public Uri? ClientUri { get; set; }
 
         /// <summary>
         /// Gets or sets the URL that the RP provides to the End-User to read about the how the profile data will be used.
         /// </summary>
         [DataMember(Name = "policy_uri")]
-        public Uri PolicyUri { get; set; }
+        public Uri? PolicyUri { get; set; }
 
         /// <summary>
         /// Gets or sets the URL that the RP provides to the End-User to read about the RP's terms of service.
         /// </summary>
         [DataMember(Name = "tos_uri")]
-        public Uri TosUri { get; set; }
+        public Uri? TosUri { get; set; }
 
         /// <summary>
         /// Gets or sets the JWS alg algorithm for signing the ID token issued to this client.
         /// The default is RS256. The public key for validating the signature is provided by retrieving the JWK Set referenced by the JWKS_URI
         /// </summary>
         [DataMember(Name = "id_token_signed_response_alg")]
-        public string IdTokenSignedResponseAlg { get; set; }
+        public string? IdTokenSignedResponseAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the JWE alg algorithm. REQUIRED for encrypting the ID token issued to this client.
         /// The default is that no encryption is performed
         /// </summary>
         [DataMember(Name = "id_token_encrypted_response_alg")]
-        public string IdTokenEncryptedResponseAlg { get; set; }
+        public string? IdTokenEncryptedResponseAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the JWE enc algorithm. REQUIRED for encrypting the ID token issued to this client.
         /// If IdTokenEncryptedResponseAlg is specified then the value is A128CBC-HS256
         /// </summary>
         [DataMember(Name = "id_token_encrypted_response_enc")]
-        public string IdTokenEncryptedResponseEnc { get; set; }
+        public string? IdTokenEncryptedResponseEnc { get; set; }
 
         /// <summary>
         /// Gets or sets the client authentication method for the Token Endpoint.
@@ -177,7 +177,7 @@ namespace SimpleAuth.Shared.Models
         /// Get or set the sector identifier uri
         /// </summary>
         [DataMember(Name = "sector_identifier_uri")]
-        public Uri SectorIdentifierUri { get; set; }
+        public Uri? SectorIdentifierUri { get; set; }
 
         ///// <summary>
         ///// Gets or sets the subject type
@@ -189,37 +189,37 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the user info signed response algorithm
         /// </summary>
         [DataMember(Name = "userinfo_signed_response_alg")]
-        public string UserInfoSignedResponseAlg { get; set; }
+        public string? UserInfoSignedResponseAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the user info encrypted response algorithm
         /// </summary>
         [DataMember(Name = "userinfo_encrypted_response_alg")]
-        public string UserInfoEncryptedResponseAlg { get; set; }
+        public string? UserInfoEncryptedResponseAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the user info encrypted response enc
         /// </summary>
         [DataMember(Name = "userinfo_encrypted_response_enc")]
-        public string UserInfoEncryptedResponseEnc { get; set; }
+        public string? UserInfoEncryptedResponseEnc { get; set; }
 
         /// <summary>
         /// Gets or sets the request objects signing algorithm
         /// </summary>
         [DataMember(Name = "request_object_signing_alg")]
-        public string RequestObjectSigningAlg { get; set; }
+        public string? RequestObjectSigningAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the request object encryption algorithm
         /// </summary>
         [DataMember(Name = "request_object_encryption_alg")]
-        public string RequestObjectEncryptionAlg { get; set; }
+        public string? RequestObjectEncryptionAlg { get; set; }
 
         /// <summary>
         /// Gets or sets the request object encryption enc
         /// </summary>
         [DataMember(Name = "request_object_encryption_enc")]
-        public string RequestObjectEncryptionEnc { get; set; }
+        public string? RequestObjectEncryptionEnc { get; set; }
 
         /// <summary>
         /// Gets or sets the token endpoint authentication signing algorithm
@@ -243,13 +243,13 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the default acr values
         /// </summary>
         [DataMember(Name = "default_acr_values")]
-        public string DefaultAcrValues { get; set; }
+        public string? DefaultAcrValues { get; set; }
 
         /// <summary>
         /// Gets or sets the initiate login uri
         /// </summary>
         [DataMember(Name = "initiate_login_uri")]
-        public Uri InitiateLoginUri { get; set; }
+        public Uri? InitiateLoginUri { get; set; }
 
         /// <summary>
         /// Gets or sets the list of request uris

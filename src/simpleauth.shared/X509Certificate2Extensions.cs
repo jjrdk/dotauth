@@ -22,7 +22,7 @@
                 throw new ArgumentNullException(nameof(cert));
             }
             var subjectAlternativeName = cert.Extensions.Cast<X509Extension>()
-                .Where(n => n.Oid.Value == SubjectAlternateNameOID)
+                .Where(n => n.Oid!.Value == SubjectAlternateNameOID)
                 .Select(n => new AsnEncodedData(n.Oid, n.RawData))
                 .Select(n => n.Format(true))
                 .FirstOrDefault();

@@ -29,6 +29,6 @@ namespace SimpleAuth.Shared.Responses
         /// The policy identifier.
         /// </value>
         [DataMember(Name = "policy")]
-        public string PolicyId { get; set; }
+        public string PolicyId { get; set; } = null!;
     }
 }

@@ -64,8 +64,8 @@ namespace SimpleAuth.Api.Token.Actions
 
         public async Task<GenericResponse<GrantedToken>> Execute(
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -76,7 +76,7 @@ namespace SimpleAuth.Api.Token.Actions
             var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
                 .ConfigureAwait(false);
             var client = authResult.Client;
-            if (authResult.Client == null)
+            if (client == null)
             {
                 return new GenericResponse<GrantedToken>
                 {
@@ -85,13 +85,13 @@ namespace SimpleAuth.Api.Token.Actions
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidClient,
-                        Detail = authResult.ErrorMessage
+                        Detail = authResult.ErrorMessage!
                     }
                 };
             }
 
             // 2. Check the client.
-            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantTypes.Password))
+            if (!client.GrantTypes.Contains(GrantTypes.Password))
             {
                 return new GenericResponse<GrantedToken>
                 {
@@ -108,8 +108,7 @@ namespace SimpleAuth.Api.Token.Actions
                 };
             }
 
-            if (client.ResponseTypes == null
-                || !client.ResponseTypes.Contains(ResponseTypeNames.Token)
+            if (!client.ResponseTypes.Contains(ResponseTypeNames.Token)
                 || !client.ResponseTypes.Contains(ResponseTypeNames.IdToken))
             {
                 return new GenericResponse<GrantedToken>
@@ -129,8 +128,8 @@ namespace SimpleAuth.Api.Token.Actions
 
             // 3. Try to authenticate a resource owner
             var resourceOwner = await _resourceOwnerServices.Authenticate(
-                    resourceOwnerGrantTypeParameter.UserName,
-                    resourceOwnerGrantTypeParameter.Password,
+                    resourceOwnerGrantTypeParameter.UserName!,
+                    resourceOwnerGrantTypeParameter.Password!,
                     cancellationToken,
                     resourceOwnerGrantTypeParameter.AmrValues)
                 .ConfigureAwait(false);
@@ -211,7 +210,7 @@ namespace SimpleAuth.Api.Token.Actions
                     .ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)
                 {
-                    generatedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client?.TokenLifetime);
+                    generatedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client.TokenLifetime);
                     generatedToken.IdToken = await client.GenerateIdToken(
                             generatedToken.IdTokenPayLoad,
                             _jwksStore,

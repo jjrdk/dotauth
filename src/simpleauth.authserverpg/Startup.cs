@@ -95,7 +95,7 @@ namespace SimpleAuth.AuthServerPg
                             new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()));
                         return new DocumentStore(options);
                     })
-                .AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession())
+                .AddTransient(sp => sp.GetRequiredService<IDocumentStore>().LightweightSession())
                 .AddResponseCompression(
                     x =>
                     {

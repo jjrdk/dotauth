@@ -71,12 +71,10 @@ namespace SimpleAuth.Api.Token
                 clientStore,
                 eventPublisher,
                 tokenStore,
-                scopeRepository,
                 jwksStore);
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
                 eventPublisher,
                 tokenStore,
-                scopeRepository,
                 jwksStore,
                 resourceOwnerRepository,
                 clientStore);
@@ -89,8 +87,8 @@ namespace SimpleAuth.Api.Token
 
         public async Task<GenericResponse<GrantedToken>> GetTokenByResourceOwnerCredentialsGrantType(
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -152,8 +150,8 @@ namespace SimpleAuth.Api.Token
 
         public async Task<GenericResponse<GrantedToken>> GetTokenByAuthorizationCodeGrantType(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -168,8 +166,8 @@ namespace SimpleAuth.Api.Token
 
         public async Task<GenericResponse<GrantedToken>> GetTokenByRefreshTokenGrantType(
             RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -200,8 +198,8 @@ namespace SimpleAuth.Api.Token
 
         public async Task<GenericResponse<GrantedToken>> GetTokenByClientCredentialsGrantType(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -235,13 +233,13 @@ namespace SimpleAuth.Api.Token
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidClient,
-                        Detail = authResult.ErrorMessage
+                        Detail = authResult.ErrorMessage!
                     }
                 };
             }
 
             // 2. Check client
-            if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.ClientCredentials))
+            if (client.GrantTypes.All(x => x != GrantTypes.ClientCredentials))
             {
                 return new GenericResponse<GrantedToken>
                 {
@@ -258,7 +256,7 @@ namespace SimpleAuth.Api.Token
                 };
             }
 
-            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseTypeNames.Token))
+            if (!client.ResponseTypes.Contains(ResponseTypeNames.Token))
             {
                 return new GenericResponse<GrantedToken>
                 {
@@ -312,7 +310,7 @@ namespace SimpleAuth.Api.Token
                         issuerName,
                         new JwtPayload(client.Claims),
                         additionalClaims: client.Claims.Where(
-                                c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
+                                c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
                             .ToArray(),
                         cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
@@ -321,8 +319,8 @@ namespace SimpleAuth.Api.Token
                         new TokenGranted(
                             Id.Create(),
                             grantedToken?.UserInfoPayLoad?.Sub,
-                            grantedToken?.ClientId,
-                            grantedToken?.Scope,
+                            grantedToken!.ClientId,
+                            grantedToken.Scope,
                             GrantTypes.ClientCredentials,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
@@ -337,8 +335,8 @@ namespace SimpleAuth.Api.Token
 
         public async Task<bool> RevokeToken(
             RevokeTokenParameter revokeTokenParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -364,7 +362,7 @@ namespace SimpleAuth.Api.Token
             return result;
         }
 
-        private static GenericResponse<GrantedToken> Validate(AuthorizationCodeGrantTypeParameter parameter)
+        private static GenericResponse<GrantedToken>? Validate(AuthorizationCodeGrantTypeParameter parameter)
         {
             if (string.IsNullOrWhiteSpace(parameter.Code))
             {

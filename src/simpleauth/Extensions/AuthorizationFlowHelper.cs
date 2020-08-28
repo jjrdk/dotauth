@@ -23,7 +23,7 @@ namespace SimpleAuth.Extensions
 
     internal static class AuthorizationFlowHelper
     {
-        public static AuthorizationFlow GetAuthorizationFlow(this ICollection<string> responseTypes, string state)
+        public static AuthorizationFlow GetAuthorizationFlow(this ICollection<string> responseTypes, string? state)
         {
             if (responseTypes == null)
             {

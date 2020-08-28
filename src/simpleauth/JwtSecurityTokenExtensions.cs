@@ -2,14 +2,14 @@
 {
     internal static class JwtSecurityTokenExtensions
     {
-        public static bool IsJweToken(this string token)
+        public static bool IsJweToken(this string? token)
         {
-            return token.Split('.').Length == 5;
+            return token != null && token.Split('.').Length == 5;
         }
 
-        public static bool IsJwsToken(this string token)
+        public static bool IsJwsToken(this string? token)
         {
-            return token.Split('.').Length == 3;
+            return token != null && token.Split('.').Length == 3;
         }
     }
 }

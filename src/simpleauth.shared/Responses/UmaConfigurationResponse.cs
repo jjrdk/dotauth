@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared.Responses
 {
+    using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
@@ -30,7 +31,7 @@ namespace SimpleAuth.Shared.Responses
         /// The issuer.
         /// </value>
         [DataMember(Name = "issuer")]
-        public string Issuer { get; set; }
+        public string Issuer { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the registration endpoint.
@@ -39,7 +40,7 @@ namespace SimpleAuth.Shared.Responses
         /// The registration endpoint.
         /// </value>
         [DataMember(Name = "registration_endpoint")]
-        public string RegistrationEndpoint { get; set; }
+        public string RegistrationEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the token endpoint.
@@ -48,7 +49,7 @@ namespace SimpleAuth.Shared.Responses
         /// The token endpoint.
         /// </value>
         [DataMember(Name = "token_endpoint")]
-        public string TokenEndpoint { get; set; }
+        public string TokenEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the JWKS URI.
@@ -57,7 +58,7 @@ namespace SimpleAuth.Shared.Responses
         /// The JWKS URI.
         /// </value>
         [DataMember(Name = "jwks_uri")]
-        public string JwksUri { get; set; }
+        public string JwksUri { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the authorization endpoint.
@@ -66,7 +67,7 @@ namespace SimpleAuth.Shared.Responses
         /// The authorization endpoint.
         /// </value>
         [DataMember(Name = "authorization_endpoint")]
-        public string AuthorizationEndpoint { get; set; }
+        public string AuthorizationEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the claims interaction endpoint.
@@ -75,7 +76,7 @@ namespace SimpleAuth.Shared.Responses
         /// The claims interaction endpoint.
         /// </value>
         [DataMember(Name = "claims_interaction_endpoint")]
-        public string ClaimsInteractionEndpoint { get; set; }
+        public string ClaimsInteractionEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the introspection endpoint.
@@ -84,7 +85,7 @@ namespace SimpleAuth.Shared.Responses
         /// The introspection endpoint.
         /// </value>
         [DataMember(Name = "introspection_endpoint")]
-        public string IntrospectionEndpoint { get; set; }
+        public string IntrospectionEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the resource registration endpoint.
@@ -93,7 +94,7 @@ namespace SimpleAuth.Shared.Responses
         /// The resource registration endpoint.
         /// </value>
         [DataMember(Name = "resource_registration_endpoint")]
-        public string ResourceRegistrationEndpoint { get; set; }
+        public string ResourceRegistrationEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the permission endpoint.
@@ -102,7 +103,7 @@ namespace SimpleAuth.Shared.Responses
         /// The permission endpoint.
         /// </value>
         [DataMember(Name = "permission_endpoint")]
-        public string PermissionEndpoint { get; set; }
+        public string PermissionEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the revocation endpoint.
@@ -111,7 +112,7 @@ namespace SimpleAuth.Shared.Responses
         /// The revocation endpoint.
         /// </value>
         [DataMember(Name = "revocation_endpoint")]
-        public string RevocationEndpoint { get; set; }
+        public string RevocationEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the policies endpoint.
@@ -120,7 +121,7 @@ namespace SimpleAuth.Shared.Responses
         /// The policies endpoint.
         /// </value>
         [DataMember(Name = "policies_endpoint")]
-        public string PoliciesEndpoint { get; set; }
+        public string PoliciesEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the claim token profiles supported.
@@ -129,7 +130,7 @@ namespace SimpleAuth.Shared.Responses
         /// The claim token profiles supported.
         /// </value>
         [DataMember(Name = "claim_token_profiles_supported")]
-        public List<string> ClaimTokenProfilesSupported { get; set; }
+        public List<string> ClaimTokenProfilesSupported { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the uma profiles supported.
@@ -138,7 +139,7 @@ namespace SimpleAuth.Shared.Responses
         /// The uma profiles supported.
         /// </value>
         [DataMember(Name = "uma_profiles_supported")]
-        public List<string> UmaProfilesSupported { get; set; }
+        public List<string> UmaProfilesSupported { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the scopes supported.
@@ -147,7 +148,7 @@ namespace SimpleAuth.Shared.Responses
         /// The scopes supported.
         /// </value>
         [DataMember(Name = "scopes_supported")]
-        public List<string> ScopesSupported { get; set; }
+        public string[] ScopesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the response types supported.
@@ -156,7 +157,7 @@ namespace SimpleAuth.Shared.Responses
         /// The response types supported.
         /// </value>
         [DataMember(Name = "response_types_supported")]
-        public List<string> ResponseTypesSupported { get; set; }
+        public string[] ResponseTypesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the grant types supported.
@@ -165,7 +166,7 @@ namespace SimpleAuth.Shared.Responses
         /// The grant types supported.
         /// </value>
         [DataMember(Name = "grant_types_supported")]
-        public List<string> GrantTypesSupported { get; set; }
+        public string[] GrantTypesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the token endpoint authentication methods supported.
@@ -174,7 +175,7 @@ namespace SimpleAuth.Shared.Responses
         /// The token endpoint authentication methods supported.
         /// </value>
         [DataMember(Name = "token_endpoint_auth_methods_supported")]
-        public List<string> TokenEndpointAuthMethodsSupported { get; set; }
+        public string[] TokenEndpointAuthMethodsSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the token endpoint authentication signing alg values supported.
@@ -183,7 +184,7 @@ namespace SimpleAuth.Shared.Responses
         /// The token endpoint authentication signing alg values supported.
         /// </value>
         [DataMember(Name = "token_endpoint_auth_signing_alg_values_supported")]
-        public List<string> TokenEndpointAuthSigningAlgValuesSupported { get; set; }
+        public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the UI locales supported.
@@ -192,6 +193,6 @@ namespace SimpleAuth.Shared.Responses
         /// The UI locales supported.
         /// </value>
         [DataMember(Name = "ui_locales_supported")]
-        public List<string> UiLocalesSupported { get; set; }
+        public string[] UiLocalesSupported { get; set; } = Array.Empty<string>();
     }
 }

@@ -56,8 +56,8 @@
 
         public async Task<GenericResponse<GrantedToken>> GetTokenByTicketId(
             GetTokenViaTicketIdParameter parameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -90,12 +90,12 @@
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidClient,
-                        Detail = authResult.ErrorMessage
+                        Detail = authResult.ErrorMessage!
                     }
                 };
             }
 
-            if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.UmaTicket))
+            if (client.GrantTypes.All(x => x != GrantTypes.UmaTicket))
             {
                 return new GenericResponse<GrantedToken>
                 {
@@ -189,7 +189,7 @@
                         new UmaRequestSubmitted(
                             Id.Create(),
                             parameter.Ticket,
-                            parameter.ClientId,
+                            parameter.ClientId ?? string.Empty,
                             authorizationResult.Principal.Claims,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
@@ -209,7 +209,7 @@
                     new UmaRequestNotAuthorized(
                         Id.Create(),
                         parameter.Ticket,
-                        parameter.ClientId,
+                        parameter.ClientId ?? string.Empty,
                         authorizationResult.Principal.Claims,
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
@@ -230,7 +230,7 @@
             TicketLine[] ticketLines,
             string scope,
             string issuerName,
-            string idToken)
+            string? idToken)
         {
             // 1. Retrieve the expiration time of the granted token.
             var expiresIn = _configurationService.RptLifeTime;

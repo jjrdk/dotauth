@@ -24,19 +24,19 @@ namespace SimpleAuth.Extensions
         {
             {
                 SimpleAuthEndPoints.ConsentIndex,
-                new ActionInformation("Consent", "Index", null)
+                new ActionInformation("Consent", "Index")
             },
             {
                 SimpleAuthEndPoints.AuthenticateIndex,
-                new ActionInformation("Authenticate", "Index", null)
+                new ActionInformation("Authenticate", "Index")
             },
             {
                 SimpleAuthEndPoints.FormIndex,
-                new ActionInformation("Form", "Index", null)
+                new ActionInformation("Form", "Index")
             }
         };
 
-        public static ActionInformation GetActionInformation(this RedirectInstruction instruction)
+        public static ActionInformation? GetActionInformation(this RedirectInstruction instruction)
         {
             if (!MappingEnumToActionInformations.ContainsKey(instruction.Action))
             {
@@ -52,12 +52,10 @@ namespace SimpleAuth.Extensions
         public static RouteValueDictionary GetRouteValueDictionary(this RedirectInstruction instruction)
         {
             var result = new RouteValueDictionary();
-            if (instruction.Parameters != null)
+
+            foreach (var parameter in instruction.Parameters)
             {
-                foreach (var parameter in instruction.Parameters)
-                {
-                    result.Add(parameter.Name, parameter.Value);
-                }
+                result.Add(parameter.Name, parameter.Value);
             }
 
             return result;

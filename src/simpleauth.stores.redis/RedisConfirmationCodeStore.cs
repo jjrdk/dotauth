@@ -19,7 +19,7 @@
             _expiry = expiry == default ? TimeSpan.FromMinutes(30) : expiry;
         }
 
-        public async Task<ConfirmationCode> Get(string code, string subject, CancellationToken cancellationToken)
+        public async Task<ConfirmationCode?> Get(string code, string subject, CancellationToken cancellationToken)
         {
             var confirmationCode = await _database.StringGetAsync(code).ConfigureAwait(false);
             return confirmationCode.HasValue ? JsonConvert.DeserializeObject<ConfirmationCode>(confirmationCode) : null;

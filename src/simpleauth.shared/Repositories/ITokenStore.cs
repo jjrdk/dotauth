@@ -19,7 +19,12 @@
         /// <param name="userInfoJwsPayload"></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<GrantedToken> GetToken(string scopes, string clientId, JwtPayload idTokenJwsPayload, JwtPayload userInfoJwsPayload, CancellationToken cancellationToken = default);
+        Task<GrantedToken?> GetToken(
+            string scopes,
+            string clientId,
+            JwtPayload? idTokenJwsPayload = null,
+            JwtPayload? userInfoJwsPayload = null,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the refresh token.
@@ -27,7 +32,7 @@
         /// <param name="getRefreshToken">The get refresh token.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<GrantedToken> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken);
+        Task<GrantedToken?> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the access token.
@@ -35,7 +40,7 @@
         /// <param name="accessToken">The access token.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<GrantedToken> GetAccessToken(string accessToken, CancellationToken cancellationToken);
+        Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the token.

@@ -14,13 +14,13 @@
         /// Gets or sets a comma separated string with allowed client ids.
         /// </summary>
         [DataMember(Name = "client_ids_allowed")]
-        public string ClientIdsAllowed { get; set; }
+        public string? ClientIdsAllowed { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes.
         /// </summary>
         [DataMember(Name = "scopes")]
-        public string Scopes { get; set; }
+        public string? Scopes { get; set; }
 
         /// <summary>
         /// Gets or sets the claims.
@@ -41,6 +41,6 @@
         /// Gets or sets the open identifier provider.
         /// </summary>
         [DataMember(Name = "openid_provider")]
-        public string OpenIdProvider { get; set; }
+        public string? OpenIdProvider { get; set; }
     }
 }

@@ -96,10 +96,12 @@ namespace SimpleAuth.JwtToken
             CancellationToken cancellationToken = default,
             params Claim[] additionalClaims)
         {
-            var (expirationInSeconds, issuedAtTime) = GetExpirationAndIssuedTime(client?.TokenLifetime);
+            var (expirationInSeconds, issuedAtTime) = GetExpirationAndIssuedTime(client.TokenLifetime);
 
-            var key = await _jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken).ConfigureAwait(false)
-                      ?? await _jwksStore.GetDefaultSigningKey(cancellationToken).ConfigureAwait(false);
+            var key = string.IsNullOrWhiteSpace(client.IdTokenSignedResponseAlg)
+                ? await _jwksStore.GetDefaultSigningKey(cancellationToken).ConfigureAwait(false)
+                : await _jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken)
+                    .ConfigureAwait(false);
 
             var jwtHeader = new JwtHeader(key);
             var payload = new JwtPayload(
@@ -316,8 +318,7 @@ namespace SimpleAuth.JwtToken
                 {
                     var resourceOwnerClaim =
                         resourceOwnerClaims.FirstOrDefault(c => c.Type == resourceOwnerClaimParameter.Name);
-                    var resourceOwnerClaimValue = resourceOwnerClaim == null ? string.Empty : resourceOwnerClaim.Value;
-                    var isClaimValid = ValidateClaimValue(resourceOwnerClaimValue, resourceOwnerClaimParameter);
+                    var isClaimValid = ValidateClaimValue(resourceOwnerClaim?.Value, resourceOwnerClaimParameter);
                     if (!isClaimValid)
                     {
                         throw new SimpleAuthExceptionWithState(
@@ -326,7 +327,7 @@ namespace SimpleAuth.JwtToken
                             state);
                     }
 
-                    jwsPayload.Add(resourceOwnerClaim.Type, resourceOwnerClaim.Value);
+                    jwsPayload.Add(resourceOwnerClaim!.Type, resourceOwnerClaim.Value);
                 }
             }
         }
@@ -528,7 +529,7 @@ namespace SimpleAuth.JwtToken
             }
         }
 
-        private static bool ValidateClaimValue(object claimValue, ClaimParameter claimParameter)
+        private static bool ValidateClaimValue(object? claimValue, ClaimParameter claimParameter)
         {
             if (claimParameter.EssentialParameterExist
                 && (claimValue == null || string.IsNullOrWhiteSpace(claimValue.ToString()))
@@ -537,7 +538,7 @@ namespace SimpleAuth.JwtToken
                 return false;
             }
 
-            if (claimParameter.ValueParameterExist && claimValue.ToString() != claimParameter.Value)
+            if (claimParameter.ValueParameterExist && claimValue!.ToString() != claimParameter.Value)
             {
                 return false;
             }
@@ -547,7 +548,7 @@ namespace SimpleAuth.JwtToken
                    || !claimParameter.Values.Contains(claimValue);
         }
 
-        private static bool ValidateClaimValues(string[] claimValues, ClaimParameter claimParameter)
+        private static bool ValidateClaimValues(string[]? claimValues, ClaimParameter claimParameter)
         {
             if (claimParameter.EssentialParameterExist
                 && (claimValues == null || claimValues.Any())
@@ -642,7 +643,7 @@ namespace SimpleAuth.JwtToken
     internal class ClaimEqualityComparer : IEqualityComparer<Claim>
     {
         /// <inheritdoc />
-        public bool Equals(Claim x, Claim y)
+        public bool Equals(Claim? x, Claim? y)
         {
             if (x == null)
             {

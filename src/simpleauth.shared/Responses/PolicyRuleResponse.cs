@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Responses
 {
+    using System;
     using System.Runtime.Serialization;
     using SimpleAuth.Shared.Models;
 
@@ -16,7 +17,7 @@
         /// The client ids allowed.
         /// </value>
         [DataMember(Name = "clients")]
-        public string[] ClientIdsAllowed { get; set; }
+        public string[] ClientIdsAllowed { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the scopes.
@@ -25,7 +26,7 @@
         /// The scopes.
         /// </value>
         [DataMember(Name = "scopes")]
-        public string[] Scopes { get; set; }
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the claims.
@@ -34,7 +35,7 @@
         /// The claims.
         /// </value>
         [DataMember(Name = "claims")]
-        public ClaimData[] Claims { get; set; }
+        public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is resource owner consent needed.
@@ -52,7 +53,7 @@
         /// The script.
         /// </value>
         [DataMember(Name = "script")]
-        public string Script { get; set; }
+        public string? Script { get; set; }
 
         /// <summary>
         /// Gets or sets the open identifier provider.
@@ -61,6 +62,6 @@
         /// The open identifier provider.
         /// </value>
         [DataMember(Name = "provider")]
-        public string OpenIdProvider { get; set; }
+        public string? OpenIdProvider { get; set; }
     }
 }

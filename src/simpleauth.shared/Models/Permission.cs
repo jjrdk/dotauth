@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -12,14 +13,14 @@
         /// Gets or sets the permitted resource set id.
         /// </summary>
         [DataMember(Name = "resource_set_id")]
-        public string ResourceSetId { get; set; }
+        public string ResourceSetId { get; set; } = null!;
 
         /// <summary>
         /// <para>Gets or sets an array referencing one or more URIs of scopes to which access was granted for this resource set.</para>
         /// <para>Each scope MUST correspond to a scope that was registered by this resource server for the referenced resource set.</para>
         /// </summary>
         [DataMember(Name = "scopes")]
-        public string[] Scopes { get; set; }
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// <para>Gets or sets an integer timestamp, measured in the number of seconds since January 1 1970 UTC,

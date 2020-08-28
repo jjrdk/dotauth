@@ -14,7 +14,6 @@
 
 namespace SimpleAuth
 {
-    using Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
@@ -36,7 +35,7 @@ namespace SimpleAuth
             TimeSpan authorizationCodeValidity = default,
             TimeSpan rptLifetime = default,
             TimeSpan ticketLifetime = default,
-            string[] claimsIncludedInUserCreation = null)
+            string[]? claimsIncludedInUserCreation = null)
         {
             RptLifeTime = rptLifetime == default ? TimeSpan.FromMinutes(30) : rptLifetime;
             TicketLifeTime = ticketLifetime == default ? TimeSpan.FromMinutes(30) : ticketLifetime;
@@ -52,7 +51,7 @@ namespace SimpleAuth
         /// <value>
         /// The on resource owner created.
         /// </value>
-        public Action<ResourceOwner> OnResourceOwnerCreated { get; set; }
+        public Action<ResourceOwner>? OnResourceOwnerCreated { get; set; }
 
         /// <summary>
         /// Gets or sets the users.
@@ -60,7 +59,7 @@ namespace SimpleAuth
         /// <value>
         /// The users.
         /// </value>
-        public Func<IServiceProvider, IResourceOwnerRepository> Users { get; set; }
+        public Func<IServiceProvider, IResourceOwnerRepository>? Users { get; set; }
 
         /// <summary>
         /// Gets or sets the clients.
@@ -68,7 +67,7 @@ namespace SimpleAuth
         /// <value>
         /// The clients.
         /// </value>
-        public Func<IServiceProvider, IClientRepository> Clients { get; set; }
+        public Func<IServiceProvider, IClientRepository>? Clients { get; set; }
 
         /// <summary>
         /// Gets or sets the json web keys.
@@ -76,7 +75,7 @@ namespace SimpleAuth
         /// <value>
         /// The json web keys.
         /// </value>
-        public Func<IServiceProvider, IJwksRepository> JsonWebKeys { get; set; }
+        public Func<IServiceProvider, IJwksRepository>? JsonWebKeys { get; set; }
 
         /// <summary>
         /// Gets or sets the consents.
@@ -84,7 +83,7 @@ namespace SimpleAuth
         /// <value>
         /// The consents.
         /// </value>
-        public Func<IServiceProvider, IConsentRepository> Consents { get; set; }
+        public Func<IServiceProvider, IConsentRepository>? Consents { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes.
@@ -92,7 +91,7 @@ namespace SimpleAuth
         /// <value>
         /// The scopes.
         /// </value>
-        public Func<IServiceProvider, IScopeRepository> Scopes { get; set; }
+        public Func<IServiceProvider, IScopeRepository>? Scopes { get; set; }
 
         /// <summary>
         /// Gets or sets the resource sets.
@@ -100,7 +99,7 @@ namespace SimpleAuth
         /// <value>
         /// The resource sets.
         /// </value>
-        public Func<IServiceProvider, IResourceSetRepository> ResourceSets { get; set; }
+        public Func<IServiceProvider, IResourceSetRepository>? ResourceSets { get; set; }
 
         /// <summary>
         /// Gets or sets the tickets.
@@ -108,7 +107,7 @@ namespace SimpleAuth
         /// <value>
         /// The tickets.
         /// </value>
-        public Func<IServiceProvider, ITicketStore> Tickets { get; set; }
+        public Func<IServiceProvider, ITicketStore>? Tickets { get; set; }
 
         /// <summary>
         /// Gets or sets the tokens.
@@ -116,7 +115,7 @@ namespace SimpleAuth
         /// <value>
         /// The tokens.
         /// </value>
-        public Func<IServiceProvider, ITokenStore> Tokens { get; set; }
+        public Func<IServiceProvider, ITokenStore>? Tokens { get; set; }
 
         /// <summary>
         /// Gets or sets the account filters.
@@ -124,7 +123,7 @@ namespace SimpleAuth
         /// <value>
         /// The account filters.
         /// </value>
-        public Func<IServiceProvider, IFilterStore> AccountFilters { get; set; }
+        public Func<IServiceProvider, IFilterStore>? AccountFilters { get; set; }
 
         /// <summary>
         /// Gets or sets the authorization codes.
@@ -132,7 +131,7 @@ namespace SimpleAuth
         /// <value>
         /// The authorization codes.
         /// </value>
-        public Func<IServiceProvider, IAuthorizationCodeStore> AuthorizationCodes { get; set; }
+        public Func<IServiceProvider, IAuthorizationCodeStore>? AuthorizationCodes { get; set; }
 
         /// <summary>
         /// Gets or sets the confirmation codes.
@@ -140,7 +139,7 @@ namespace SimpleAuth
         /// <value>
         /// The confirmation codes.
         /// </value>
-        public Func<IServiceProvider, IConfirmationCodeStore> ConfirmationCodes { get; set; }
+        public Func<IServiceProvider, IConfirmationCodeStore>? ConfirmationCodes { get; set; }
 
         /// <summary>
         /// Gets or sets the event publisher.
@@ -148,7 +147,7 @@ namespace SimpleAuth
         /// <value>
         /// The event publisher.
         /// </value>
-        public Func<IServiceProvider, IEventPublisher> EventPublisher { get; set; }
+        public Func<IServiceProvider, IEventPublisher>? EventPublisher { get; set; }
 
         /// <summary>
         /// Gets or sets the subject builder.
@@ -156,7 +155,7 @@ namespace SimpleAuth
         /// <value>
         /// The subject builder.
         /// </value>
-        public Func<IServiceProvider, ISubjectBuilder> SubjectBuilder { get; set; }
+        public Func<IServiceProvider, ISubjectBuilder>? SubjectBuilder { get; set; }
 
         /// <summary>
         /// Gets or sets the authorization code validity period.

@@ -9,7 +9,7 @@
     {
         Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticket,
-            string claimTokenFormat,
+            string? claimTokenFormat,
             ClaimsPrincipal requester,
             CancellationToken cancellationToken,
             params PolicyRule[] policy);

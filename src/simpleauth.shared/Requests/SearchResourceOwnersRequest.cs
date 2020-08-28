@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Requests
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -15,7 +16,7 @@
         /// The subjects.
         /// </value>
         [DataMember(Name = "subjects")]
-        public string[] Subjects { get; set; }
+        public string[]? Subjects { get; set; }
 
         /// <summary>
         /// Gets or sets the start index.

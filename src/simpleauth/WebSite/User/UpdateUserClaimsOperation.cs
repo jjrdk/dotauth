@@ -51,10 +51,10 @@ namespace SimpleAuth.WebSite.User
             resourceOwner.Claims =
                 resourceOwner.Claims.Add(claims.Where(x => !string.IsNullOrWhiteSpace(x.Value)).ToArray());
 
-            Claim updatedClaim;
-            if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(
+            Claim? updatedClaim;
+            if ((updatedClaim = resourceOwner.Claims.FirstOrDefault(
                      c => c.Type == OpenIdClaimTypes.UpdatedAt))
-                 != null))
+                 != null)
             {
                 resourceOwner.Claims.Remove(updatedClaim);
             }

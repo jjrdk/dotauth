@@ -51,7 +51,7 @@
 
         public Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
         {
-            var signingKey = _privateKeySet.GetEncryptionKeys().FirstOrDefault();
+            var signingKey = _privateKeySet.GetEncryptionKeys().First();
 
             return Task.FromResult(signingKey);
         }

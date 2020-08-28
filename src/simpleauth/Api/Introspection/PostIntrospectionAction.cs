@@ -81,7 +81,7 @@ namespace SimpleAuth.Api.Introspection
             if (grantedToken.UserInfoPayLoad != null)
             {
                 var subject =
-                    grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Subject);
+                    grantedToken.IdTokenPayLoad?.GetClaimValue(OpenIdClaimTypes.Subject);
                 if (!string.IsNullOrWhiteSpace(subject))
                 {
                     result.Subject = subject;

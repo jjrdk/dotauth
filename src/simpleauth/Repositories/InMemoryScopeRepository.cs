@@ -125,7 +125,7 @@
         /// </summary>
         /// <param name="scopes">The scopes.</param>
         /// <param name="includeDefaultScopes">Include default scope definitions during instantiation.</param>
-        public InMemoryScopeRepository(IReadOnlyCollection<Scope> scopes = null, bool includeDefaultScopes = true)
+        public InMemoryScopeRepository(IReadOnlyCollection<Scope>? scopes = null, bool includeDefaultScopes = true)
         {
             _scopes = scopes == null || scopes.Count == 0
                 ? _defaultScopes
@@ -160,13 +160,8 @@
         }
 
         /// <inheritdoc />
-        public Task<Scope> Get(string name, CancellationToken cancellationToken = default)
+        public Task<Scope?> Get(string name, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
             var scope = _scopes.FirstOrDefault(s => s.Name == name);
 
             return Task.FromResult(scope);
@@ -175,11 +170,6 @@
         /// <inheritdoc />
         public Task<bool> Insert(Scope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                return Task.FromResult(false);
-            }
-
             if (_scopes.Any(x => x.Name == scope.Name))
             {
                 return Task.FromResult(false);
@@ -194,11 +184,6 @@
             SearchScopesRequest parameter,
             CancellationToken cancellationToken = default)
         {
-            if (parameter == null)
-            {
-                return null;
-            }
-
             IEnumerable<Scope> result = _scopes;
             if (parameter.ScopeNames != null && parameter.ScopeNames.Any())
             {
@@ -247,11 +232,6 @@
         /// <inheritdoc />
         public Task<bool> Update(Scope scope, CancellationToken cancellationToken = default)
         {
-            if (scope == null)
-            {
-                return Task.FromResult(false);
-            }
-
             var sc = _scopes.FirstOrDefault(s => s.Name == scope.Name);
             if (sc == null)
             {

@@ -106,7 +106,7 @@
                     });
             }
 
-            AuthenticationHeaderValue authenticationHeaderValue = null;
+            AuthenticationHeaderValue? authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
             {
                 AuthenticationHeaderValue.TryParse(authorizationHeader[0], out authenticationHeaderValue);
@@ -129,8 +129,8 @@
         private async Task<GenericResponse<GrantedToken>> GetGrantedToken(
             TokenRequest tokenRequest,
             CancellationToken cancellationToken,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName)
         {
             switch (tokenRequest.grant_type)
@@ -182,7 +182,7 @@
                             cancellationToken)
                         .ConfigureAwait(false);
                 case GrantTypes.ValidateBearer:
-                    return null;
+                    //return null;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -200,7 +200,7 @@
             CancellationToken cancellationToken)
         {
             // 1. Fetch the authorization header
-            AuthenticationHeaderValue authenticationHeaderValue = null;
+            AuthenticationHeaderValue? authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader.First();

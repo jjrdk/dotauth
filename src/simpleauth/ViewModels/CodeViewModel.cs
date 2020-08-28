@@ -40,7 +40,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The code.
         /// </value>
-        public string Code { get; set; }
+        public string? Code { get; set; }
 
         /// <summary>
         /// Gets or sets the authentication request code.
@@ -48,7 +48,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The authentication request code.
         /// </value>
-        public string AuthRequestCode { get; set; }
+        public string? AuthRequestCode { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the claim.
@@ -56,7 +56,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The name of the claim.
         /// </value>
-        public string ClaimName { get; set; }
+        public string? ClaimName { get; set; }
 
         /// <summary>
         /// Gets or sets the claim value.
@@ -64,7 +64,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The claim value.
         /// </value>
-        public string ClaimValue { get; set; }
+        public string? ClaimValue { get; set; }
 
         /// <summary>
         /// Gets or sets the action.
@@ -72,7 +72,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The action.
         /// </value>
-        public string Action { get; set; }
+        public string? Action { get; set; }
 
         /// <summary>
         /// Validates the specified model state.

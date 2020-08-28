@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using SimpleAuth.Shared.Models;
 
@@ -15,7 +16,8 @@
         /// <value>
         /// The content.
         /// </value>
-        public T Content { get; set; }
+        [AllowNull]
+        public T Content { get; set; } = default;
 
         /// <summary>
         /// Gets or sets the HTTP status.
@@ -39,6 +41,6 @@
         /// <value>
         /// The error.
         /// </value>
-        public ErrorDetails Error { get; set; }
+        public ErrorDetails? Error { get; set; }
     }
 }

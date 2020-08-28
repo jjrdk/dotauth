@@ -34,6 +34,6 @@
         /// The content.
         /// </value>
         [DataMember(Name = "content")]
-        public T[] Content { get; set; }
+        public T[] Content { get; set; } = default!;
     }
 }

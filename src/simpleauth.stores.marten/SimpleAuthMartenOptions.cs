@@ -3,6 +3,7 @@
     using global::Marten;
     using Newtonsoft.Json;
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Security.Claims;
     using System.Text;
@@ -22,7 +23,7 @@
         public SimpleAuthMartenOptions(
             string connectionString,
             IMartenLogger logger,
-            string searchPath = null,
+            string searchPath = "",
             AutoCreate autoCreate = AutoCreate.CreateOrUpdate)
         {
             Serializer<CustomJsonSerializer>();
@@ -39,8 +40,13 @@
 
         private class ClaimConverter : JsonConverter<Claim>
         {
-            public override void WriteJson(JsonWriter writer, Claim value, JsonSerializer serializer)
+            public override void WriteJson(JsonWriter writer, Claim? value, JsonSerializer serializer)
             {
+                if (value == null)
+                {
+                    return;
+                }
+
                 var info = new ClaimInfo(value.Type, value.Value);
                 serializer.Serialize(writer, info);
             }
@@ -48,7 +54,7 @@
             public override Claim ReadJson(
                 JsonReader reader,
                 Type objectType,
-                Claim existingValue,
+                Claim? existingValue,
                 bool hasExistingValue,
                 JsonSerializer serializer)
             {
@@ -94,10 +100,8 @@
             public string ToJson(object document)
             {
                 var sb = new StringBuilder();
-                using (var writer = new StringWriter(sb))
-                {
-                    _innerSerializer.Serialize(writer, document, document.GetType());
-                }
+                using var writer = new StringWriter(sb);
+                _innerSerializer.Serialize(writer, document, document.GetType());
 
                 return sb.ToString();
             }
@@ -105,13 +109,13 @@
             public T FromJson<T>(TextReader reader)
             {
                 using var jsonReader = new JsonTextReader(reader);
-                return _innerSerializer.Deserialize<T>(jsonReader);
+                return _innerSerializer.Deserialize<T>(jsonReader)!;
             }
 
             public object FromJson(Type type, TextReader reader)
             {
                 using var jsonReader = new JsonTextReader(reader);
-                return _innerSerializer.Deserialize(jsonReader, type);
+                return _innerSerializer.Deserialize(jsonReader, type)!;
             }
 
             public string ToCleanJson(object document)
@@ -120,8 +124,11 @@
             }
 
             public EnumStorage EnumStorage { get; } = EnumStorage.AsString;
+
             public Casing Casing { get; } = Casing.CamelCase;
+
             public CollectionStorage CollectionStorage { get; } = CollectionStorage.AsArray;
+
             public NonPublicMembersStorage NonPublicMembersStorage { get; } = NonPublicMembersStorage.Default;
         }
     }

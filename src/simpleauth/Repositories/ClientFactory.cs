@@ -137,7 +137,7 @@
             }
             else if (newClient.Secrets?.Any() == true)
             {
-                client.Secrets = newClient.Secrets?.Select(
+                client.Secrets = newClient.Secrets.Select(
                         secret => secret.Type == ClientSecretTypes.SharedSecret
                             ? new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Id.Create() }
                             : secret)
@@ -145,7 +145,7 @@
             }
 
             // If omitted then the default value is authorization code grant type
-            client.GrantTypes = newClient.GrantTypes == null || !newClient.GrantTypes.Any()
+            client.GrantTypes = newClient.GrantTypes.Length == 0
                 ? new[] { GrantTypes.AuthorizationCode }
                 : newClient.GrantTypes;
 
@@ -195,7 +195,7 @@
             {
                 foreach (var redirectUri in newClient.RedirectionUrls)
                 {
-                    if (!redirectUri.IsAbsoluteUri ||!Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
+                    if (!redirectUri.IsAbsoluteUri || !Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                     {
                         throw new SimpleAuthException(
                             ErrorCodes.InvalidRedirectUri,
@@ -291,7 +291,7 @@
             }
         }
 
-        private static void ValidateNotMandatoryUri(Uri uri, string newClientName, bool checkSchemeIsHttps = false)
+        private static void ValidateNotMandatoryUri(Uri? uri, string newClientName, bool checkSchemeIsHttps = false)
         {
             if (uri == null)
             {

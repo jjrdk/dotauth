@@ -29,6 +29,6 @@ namespace SimpleAuth.Shared.Responses
         /// The identifier.
         /// </value>
         [DataMember(Name = "_id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = null!;
     }
 }

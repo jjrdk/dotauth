@@ -59,18 +59,18 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceSet> Get(string owner, string id, CancellationToken cancellationToken)
+        public async Task<ResourceSet?> Get(string owner, string id, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var resourceSet = await session.LoadAsync<OwnedResourceSet>(id, cancellationToken).ConfigureAwait(false);
 
-            return resourceSet != null && resourceSet.Owner == owner
+            return resourceSet?.Owner == owner
                 ? resourceSet.AsResourceSet()
                 : null;
         }
 
         /// <inheritdoc />
-        public async Task<string> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
+        public async Task<string?> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
         {
             using var session = _sessionFactory();
             var resourceSets = await session.LoadManyAsync<OwnedResourceSet>(cancellationToken, ids).ConfigureAwait(false);

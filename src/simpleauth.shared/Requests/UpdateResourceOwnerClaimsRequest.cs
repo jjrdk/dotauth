@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Requests
 {
+    using System;
     using System.Runtime.Serialization;
     using SimpleAuth.Shared.Models;
 
@@ -16,7 +17,7 @@
         /// The login.
         /// </value>
         [DataMember(Name = "sub")]
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the claims.
@@ -25,6 +26,6 @@
         /// The claims.
         /// </value>
         [DataMember(Name = "claims")]
-        public ClaimData[] Claims { get; set; }
+        public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
     }
 }

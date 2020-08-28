@@ -48,7 +48,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="id">The identifier.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<ResourceSet> Get(string owner, string id, CancellationToken cancellationToken = default);
+        Task<ResourceSet?> Get(string owner, string id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the specified ids.
@@ -64,7 +64,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <param name="ids">The ids.</param>
         /// <returns>The owner subject if all resources have the same owner, otherwise <c>null</c>.</returns>
-        Task<string> GetOwner(CancellationToken cancellationToken = default, params string[] ids);
+        Task<string?> GetOwner(CancellationToken cancellationToken = default, params string[] ids);
 
         /// <summary>
         /// Updates the specified resource set.

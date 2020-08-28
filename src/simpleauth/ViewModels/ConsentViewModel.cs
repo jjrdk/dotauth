@@ -27,7 +27,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The identifier.
         /// </value>
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the display name of the client.
@@ -35,7 +35,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The display name of the client.
         /// </value>
-        public string ClientDisplayName { get; set; }
+        public string? ClientDisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets the allowed scope descriptions.
@@ -43,7 +43,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The allowed scope descriptions.
         /// </value>
-        public ICollection<string> AllowedScopeDescriptions { get; set; }
+        public ICollection<string> AllowedScopeDescriptions { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets the allowed individual claims.
@@ -51,7 +51,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The allowed individual claims.
         /// </value>
-        public ICollection<string> AllowedIndividualClaims { get; set; }
+        public ICollection<string> AllowedIndividualClaims { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets the logo URI.
@@ -59,7 +59,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The logo URI.
         /// </value>
-        public string LogoUri { get; set; }
+        public string? LogoUri { get; set; }
 
         /// <summary>
         /// Gets or sets the policy URI.
@@ -67,7 +67,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The policy URI.
         /// </value>
-        public string PolicyUri { get; set; }
+        public string? PolicyUri { get; set; }
 
         /// <summary>
         /// Gets or sets the Terms of Service URI.
@@ -75,7 +75,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The tos URI.
         /// </value>
-        public string TosUri { get; set; }
+        public string? TosUri { get; set; }
 
         /// <summary>
         /// Gets or sets the code.
@@ -83,6 +83,6 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The code.
         /// </value>
-        public string Code { get; set; }
+        public string? Code { get; set; }
     }
 }

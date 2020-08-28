@@ -71,10 +71,10 @@ namespace SimpleAuth.Extensions
                 };
             }
 
-            return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));
+            return responseTypes.All(rt => client.ResponseTypes.Contains(rt));
         }
 
-        public static bool CheckPkce(this Client client, string codeVerifier, AuthorizationCode code)
+        public static bool CheckPkce(this Client client, string? codeVerifier, AuthorizationCode code)
         {
             if (!client.RequirePkce)
             {
@@ -84,6 +84,11 @@ namespace SimpleAuth.Extensions
             if (code.CodeChallengeMethod == CodeChallengeMethods.Plain)
             {
                 return codeVerifier == code.CodeChallenge;
+            }
+
+            if (codeVerifier == null)
+            {
+                return false;
             }
 
             var codeChallenge = codeVerifier.ToSha256SimplifiedBase64(Encoding.ASCII);

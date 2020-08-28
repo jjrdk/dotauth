@@ -24,7 +24,7 @@ namespace SimpleAuth
 
     internal static class ClientExtensions
     {
-        public static async Task<TokenValidationParameters> CreateValidationParameters(this Client client, IJwksStore jwksStore, string audience = null, string issuer = null, CancellationToken cancellationToken = default)
+        public static async Task<TokenValidationParameters> CreateValidationParameters(this Client client, IJwksStore jwksStore, string? audience = null, string? issuer = null, CancellationToken cancellationToken = default)
         {
             var signingKeys = await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
             var encryptionKeys = client.JsonWebKeys.GetEncryptionKeys().ToArray();

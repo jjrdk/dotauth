@@ -32,7 +32,7 @@ namespace SimpleAuth.Client
     public class UmaClient : ClientBase, IUmaPermissionClient, IResourceClient, IIntrospectionClient
     {
         private readonly Uri _configurationUri;
-        private UmaConfiguration _umaConfiguration;
+        private UmaConfiguration? _umaConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UmaClient"/> class.
@@ -100,7 +100,7 @@ namespace SimpleAuth.Client
                 : Serializer.Default.Serialize(requests[0]);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var httpRequest =
-                new HttpRequestMessage {Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url)};
+                new HttpRequestMessage { Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url) };
             return await GetResult<TicketResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
         }
 
@@ -187,7 +187,7 @@ namespace SimpleAuth.Client
             var resourceSetUrl = configuration.ResourceRegistrationEndpoint.AbsoluteUri;
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl)};
+            var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
             return await GetResult<object>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
@@ -231,14 +231,14 @@ namespace SimpleAuth.Client
 
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
-            var request = new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl)};
+            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl) };
             return await GetResult<ResourceSet>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
         public async Task<GenericResponse<PagedResult<ResourceSet>>> SearchResources(
             SearchResourceSet parameter,
-            string token,
+            string? token = null,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -251,7 +251,7 @@ namespace SimpleAuth.Client
 
             var serializedPostPermission = Serializer.Default.Serialize(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
-            var request = new HttpRequestMessage {Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body};
+            var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
             return await GetResult<PagedResult<ResourceSet>>(request, token, cancellationToken).ConfigureAwait(false);
         }
 
@@ -263,10 +263,15 @@ namespace SimpleAuth.Client
             }
 
             var result = await GetResult<UmaConfiguration>(
-                new HttpRequestMessage {Method = HttpMethod.Get, RequestUri = _configurationUri},
-                (AuthenticationHeaderValue)null,
+                new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _configurationUri },
+                (AuthenticationHeaderValue?)null,
                 cancellationToken).ConfigureAwait(false);
-            _umaConfiguration = result.Content;
+            if (result.HasError)
+            {
+                throw new Exception(result.Error?.Detail);
+            }
+
+            _umaConfiguration = result.Content!;
 
             return _umaConfiguration;
         }

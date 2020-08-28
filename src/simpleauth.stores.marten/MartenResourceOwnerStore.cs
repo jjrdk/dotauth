@@ -30,7 +30,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceOwner> GetResourceOwnerByClaim(
+        public async Task<ResourceOwner?> GetResourceOwnerByClaim(
             string key,
             string value,
             CancellationToken cancellationToken)
@@ -44,7 +44,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default)
+        public async Task<ResourceOwner?> Get(string id, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
             var ro = await session.LoadAsync<ResourceOwner>(id, cancellationToken).ConfigureAwait(false);
@@ -53,7 +53,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceOwner> Get(ExternalAccountLink externalAccount, CancellationToken cancellationToken)
+        public async Task<ResourceOwner?> Get(ExternalAccountLink externalAccount, CancellationToken cancellationToken)
         {
             if (externalAccount == null)
             {
@@ -76,7 +76,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<ResourceOwner> Get(string id, string password, CancellationToken cancellationToken)
+        public async Task<ResourceOwner?> Get(string id, string password, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var hashed = password.ToSha256Hash();
@@ -101,7 +101,7 @@
         public async Task<bool> Insert(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
-            resourceOwner.Password = resourceOwner.Password.ToSha256Hash();
+            resourceOwner.Password = resourceOwner.Password?.ToSha256Hash();
             session.Store(resourceOwner);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;

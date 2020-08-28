@@ -11,12 +11,12 @@
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
-        public string Id { get; set; }
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the JWK.
         /// </summary>
-        public JsonWebKey Jwk { get; set; }
+        public JsonWebKey Jwk { get; set; } = null!;
 
         /// <summary>
         /// Create a container instance from a key.

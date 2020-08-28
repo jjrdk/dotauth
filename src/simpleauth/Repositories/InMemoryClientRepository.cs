@@ -33,7 +33,7 @@
             IHttpClientFactory httpClient,
             IScopeStore scopeStore,
             ILogger<InMemoryClientRepository> logger,
-            IReadOnlyCollection<Client> clients = null)
+            IReadOnlyCollection<Client>? clients = null)
         {
             _logger = logger;
             _clientFactory = new ClientFactory(httpClient, scopeStore, JsonConvert.DeserializeObject<Uri[]>);
@@ -67,7 +67,7 @@
         }
 
         /// <inheritdoc />
-        public Task<Client> GetById(string clientId, CancellationToken cancellationToken = default)
+        public Task<Client?> GetById(string clientId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -75,7 +75,7 @@
             }
 
             var res = _clients.FirstOrDefault(c => c.ClientId == clientId);
-            return res == null ? Task.FromResult<Client>(null) : Task.FromResult(res);
+            return res == null ? Task.FromResult<Client?>(null) : Task.FromResult<Client?>(res);
         }
 
         /// <inheritdoc />

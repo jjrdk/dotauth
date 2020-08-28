@@ -17,7 +17,6 @@ namespace SimpleAuth.WebSite.Authenticate
     using SimpleAuth.Extensions;
     using SimpleAuth.Parameters;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Globalization;
@@ -72,12 +71,15 @@ namespace SimpleAuth.WebSite.Authenticate
             string issuerName,
             CancellationToken cancellationToken)
         {
-            var resourceOwner = await _resourceOwnerServices.Authenticate(
-                    localAuthenticationParameter.UserName,
-                    localAuthenticationParameter.Password,
-                    cancellationToken,
-                    authorizationParameter.AmrValues)
-                .ConfigureAwait(false);
+            var resourceOwner =
+                (localAuthenticationParameter.UserName == null || localAuthenticationParameter.Password == null)
+                    ? null
+                    : await _resourceOwnerServices.Authenticate(
+                            localAuthenticationParameter.UserName,
+                            localAuthenticationParameter.Password,
+                            cancellationToken,
+                            authorizationParameter.AmrValues)
+                        .ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 return new LocalOpenIdAuthenticationResult
@@ -91,7 +93,7 @@ namespace SimpleAuth.WebSite.Authenticate
                 new Claim(
                     ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
-                    ClaimValueTypes.Integer) 
+                    ClaimValueTypes.Integer)
             }.Add(resourceOwner.Claims);
 
             return new LocalOpenIdAuthenticationResult
@@ -100,7 +102,7 @@ namespace SimpleAuth.WebSite.Authenticate
                     await _authenticateHelper.ProcessRedirection(
                             authorizationParameter,
                             code,
-                            resourceOwner.Subject,
+                            resourceOwner.Subject!,
                             claims,
                             issuerName,
                             cancellationToken)

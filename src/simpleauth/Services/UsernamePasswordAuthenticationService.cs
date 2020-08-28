@@ -20,7 +20,6 @@ namespace SimpleAuth.Services
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
 
     internal class UsernamePasswordAuthenticationService : IAuthenticateResourceOwnerService
     {
@@ -37,7 +36,7 @@ namespace SimpleAuth.Services
 
         public string Amr => "pwd";
 
-        public async Task<ResourceOwner> AuthenticateResourceOwner(
+        public async Task<ResourceOwner?> AuthenticateResourceOwner(
             string login,
             string password,
             CancellationToken cancellationToken = default)

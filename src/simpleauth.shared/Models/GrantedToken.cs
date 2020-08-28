@@ -28,7 +28,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier.
         /// </value>
-        public string Id { get; set; }
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the access token.
@@ -36,7 +36,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The access token.
         /// </value>
-        public string AccessToken { get; set; }
+        public string AccessToken { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the identifier token.
@@ -44,7 +44,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier token.
         /// </value>
-        public string IdToken { get; set; }
+        public string? IdToken { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the token.
@@ -52,7 +52,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The type of the token.
         /// </value>
-        public string TokenType { get; set; }
+        public string TokenType { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the refresh token.
@@ -60,7 +60,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The refresh token.
         /// </value>
-        public string RefreshToken { get; set; }
+        public string? RefreshToken { get; set; }
 
         /// <summary>
         /// Gets or sets the expires in.
@@ -76,7 +76,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The scope.
         /// </value>
-        public string Scope { get; set; }
+        public string Scope { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the create date time.
@@ -92,7 +92,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The client identifier.
         /// </value>
-        public string ClientId { get; set; }
+        public string ClientId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the user information pay load.
@@ -100,7 +100,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The user information pay load.
         /// </value>
-        public JwtPayload UserInfoPayLoad { get; set; }
+        public JwtPayload? UserInfoPayLoad { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier token pay load.
@@ -108,7 +108,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier token pay load.
         /// </value>
-        public JwtPayload IdTokenPayLoad { get; set; }
+        public JwtPayload? IdTokenPayLoad { get; set; }
 
         /// <summary>
         /// Gets or sets the parent token identifier.
@@ -116,6 +116,6 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The parent token identifier.
         /// </value>
-        public string ParentTokenId { get; set; }
+        public string? ParentTokenId { get; set; }
     }
 }

@@ -7,6 +7,7 @@
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
+    using SimpleAuth.Properties;
 
     /// <summary>
     /// Defines the JWK extension methods.
@@ -39,13 +40,13 @@
         /// <returns></returns>
         public static JsonWebKey CreateJwk(this X509Certificate2 certificate, string use, params string[] keyOperations)
         {
-            JsonWebKey jwk = null;
+            JsonWebKey? jwk = null;
             if (certificate.HasPrivateKey)
             {
-                var keyAlg = certificate.SignatureAlgorithm.FriendlyName;
+                var keyAlg = certificate.SignatureAlgorithm.FriendlyName ?? string.Empty;
                 if (keyAlg.Contains("RSA"))
                 {
-                    var rsa = (RSA)certificate.PrivateKey;
+                    var rsa = (RSA)certificate.PrivateKey!;
                     var parameters = rsa.ExportParameters(true);
                     jwk = new JsonWebKey
                     {
@@ -57,14 +58,14 @@
                         D = parameters.D == null ? null : Convert.ToBase64String(parameters.D),
                         DP = parameters.DP == null ? null : Convert.ToBase64String(parameters.DP),
                         DQ = parameters.DQ == null ? null : Convert.ToBase64String(parameters.DQ),
-                        QI = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.InverseQ),
-                        P = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.P),
-                        Q = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.Q)
+                        QI = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.InverseQ!),
+                        P = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.P!),
+                        Q = parameters.Modulus == null ? null : Convert.ToBase64String(parameters.Q!)
                     };
                 }
                 else if (keyAlg.Contains("ecdsa"))
                 {
-                    var ecdsa = certificate.GetECDsaPrivateKey();
+                    var ecdsa = certificate.GetECDsaPrivateKey()!;
                     var parameters = ecdsa.ExportParameters(true);
                     jwk = new JsonWebKey
                     {
@@ -79,10 +80,7 @@
                 }
             }
 
-            if (jwk == null)
-            {
-                jwk = JsonWebKeyConverter.ConvertFromX509SecurityKey(new X509SecurityKey(certificate));
-            }
+            jwk ??= JsonWebKeyConverter.ConvertFromX509SecurityKey(new X509SecurityKey(certificate));
 
             jwk.Use = use;
             jwk.X5t = certificate.Thumbprint;
@@ -106,7 +104,7 @@
         {
             if (key.Length < 16)
             {
-                throw new ArgumentException("Key must be at least 16 characters.", nameof(key));
+                throw new ArgumentException(Strings.Key16char, nameof(key));
             }
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
@@ -115,12 +113,9 @@
             jwk.Kty = JsonWebAlgorithmsKeyTypes.Octet;
             jwk.Use = use;
             jwk.Kid = securityKey.KeyId ?? Id.Create();
-            if (keyOperations != null)
+            foreach (var keyOperation in keyOperations)
             {
-                foreach (var keyOperation in keyOperations)
-                {
-                    jwk.KeyOps.Add(keyOperation);
-                }
+                jwk.KeyOps.Add(keyOperation);
             }
 
             return jwk;

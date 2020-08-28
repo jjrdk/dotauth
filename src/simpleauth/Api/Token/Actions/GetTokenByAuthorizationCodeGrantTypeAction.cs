@@ -27,6 +27,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
+    using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
@@ -38,8 +39,8 @@ namespace SimpleAuth.Api.Token.Actions
     {
         private class ValidationResult
         {
-            public AuthorizationCode AuthCode { get; set; }
-            public Client Client { get; set; }
+            public AuthorizationCode AuthCode { get; set; } = null!;
+            public Client Client { get; set; } = null!;
         }
 
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
@@ -48,7 +49,6 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly IEventPublisher _eventPublisher;
         private readonly ITokenStore _tokenStore;
         private readonly IJwksStore _jwksStore;
-        private readonly JwtGenerator _jwtGenerator;
 
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IAuthorizationCodeStore authorizationCodeStore,
@@ -56,7 +56,6 @@ namespace SimpleAuth.Api.Token.Actions
             IClientStore clientStore,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
-            IScopeRepository scopeRepository,
             IJwksStore jwksStore)
         {
             _authorizationCodeStore = authorizationCodeStore;
@@ -65,13 +64,12 @@ namespace SimpleAuth.Api.Token.Actions
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
             _jwksStore = jwksStore;
-            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
         }
 
         public async Task<GenericResponse<GrantedToken>> Execute(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -88,7 +86,7 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 1. Invalidate the authorization code by removing it !
-            await _authorizationCodeStore.Remove(result.AuthCode.Code, cancellationToken).ConfigureAwait(false);
+            await _authorizationCodeStore.Remove(result!.AuthCode.Code, cancellationToken).ConfigureAwait(false);
             var grantedToken = await _tokenStore.GetValidGrantedToken(
                     _jwksStore,
                     result.AuthCode.Scopes,
@@ -107,8 +105,8 @@ namespace SimpleAuth.Api.Token.Actions
                         result.AuthCode.IdTokenPayload,
                         cancellationToken,
                         result.AuthCode.IdTokenPayload?.Claims.Where(
-                                c => result.Client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
-                            .ToArray())
+                                c => result.Client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                            .ToArray() ?? Array.Empty<Claim>())
                     .ConfigureAwait(false);
                 await _eventPublisher.Publish(
                         new TokenGranted(
@@ -120,17 +118,17 @@ namespace SimpleAuth.Api.Token.Actions
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 // Fill-in the id-token
-                if (grantedToken.IdTokenPayLoad != null)
+                if (grantedToken?.IdTokenPayLoad != null)
                 {
-                    grantedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client?.TokenLifetime);
-                    grantedToken.IdToken = await result.Client.GenerateIdToken(
+                    grantedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client.TokenLifetime);
+                    grantedToken.IdToken = await result!.Client.GenerateIdToken(
                             grantedToken.IdTokenPayLoad,
                             _jwksStore,
                             cancellationToken)
                         .ConfigureAwait(false);
                 }
 
-                await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
+                await _tokenStore.AddToken(grantedToken!, cancellationToken).ConfigureAwait(false);
             }
 
             return new GenericResponse<GrantedToken> { StatusCode = HttpStatusCode.OK, Content = grantedToken };
@@ -145,13 +143,28 @@ namespace SimpleAuth.Api.Token.Actions
         /// <param name="issuerName"></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        private async Task<(ValidationResult, GenericResponse<GrantedToken>)> ValidateParameter(
+        private async Task<(ValidationResult?, GenericResponse<GrantedToken>?)> ValidateParameter(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
+            if (authorizationCodeGrantTypeParameter.Code == null)
+            {
+                return (null,
+                    new GenericResponse<GrantedToken>
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        Error = new ErrorDetails
+                        {
+                            Status = HttpStatusCode.BadRequest,
+                            Title = ErrorCodes.InvalidGrant,
+                            Detail = Strings.TheAuthorizationCodeIsNotCorrect
+                        }
+                    });
+            }
+
             // 1. Authenticate the client
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
                 authorizationCodeGrantTypeParameter,
@@ -169,13 +182,13 @@ namespace SimpleAuth.Api.Token.Actions
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidClient,
-                            Detail = authResult.ErrorMessage
+                            Detail = authResult.ErrorMessage!
                         }
                     });
             }
 
             // 2. Check the client
-            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantTypes.AuthorizationCode))
+            if (!client.GrantTypes.Contains(GrantTypes.AuthorizationCode))
             {
                 return (null,
                     new GenericResponse<GrantedToken>
@@ -193,7 +206,7 @@ namespace SimpleAuth.Api.Token.Actions
                     });
             }
 
-            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseTypeNames.Code))
+            if (!client.ResponseTypes.Contains(ResponseTypeNames.Code))
             {
                 return (null,
                     new GenericResponse<GrantedToken>

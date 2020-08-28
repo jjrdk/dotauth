@@ -15,6 +15,7 @@
 namespace SimpleAuth.Client
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Security.Claims;
@@ -23,7 +24,6 @@ namespace SimpleAuth.Client
 
     internal sealed class Serializer
     {
-        private static Serializer _inner;
         private readonly JsonSerializer _serializer;
 
         private Serializer()
@@ -38,7 +38,7 @@ namespace SimpleAuth.Client
             _serializer.Converters.Add(new ClaimConverter());
         }
 
-        public static Serializer Default => _inner ??= new Serializer();
+        public static Serializer Default { get; } = new Serializer();
 
         public string Serialize<T>(T item)
         {
@@ -48,7 +48,7 @@ namespace SimpleAuth.Client
             return writer.GetStringBuilder().ToString();
         }
 
-        public T Deserialize<T>(string json)
+        public T? Deserialize<T>(string json) where T : class
         {
             using var reader = new StringReader(json);
             using var jsonReader = new JsonTextReader(reader);
@@ -57,8 +57,12 @@ namespace SimpleAuth.Client
 
         private class ClaimConverter : JsonConverter<Claim>
         {
-            public override void WriteJson(JsonWriter writer, Claim value, JsonSerializer serializer)
+            public override void WriteJson(JsonWriter writer, [AllowNull] Claim value, JsonSerializer serializer)
             {
+                if (value == null)
+                {
+                    return;
+                }
                 writer.WriteStartObject();
                 writer.WritePropertyName(value.Type);
                 writer.WriteValue(value.Value);
@@ -68,24 +72,28 @@ namespace SimpleAuth.Client
             public override Claim ReadJson(
                 JsonReader reader,
                 Type objectType,
-                Claim existingValue,
+                [AllowNull] Claim existingValue,
                 bool hasExistingValue,
                 JsonSerializer serializer)
             {
                 var obj = serializer.Deserialize<JObject>(reader);
+                if (obj == null)
+                {
+                    throw new Exception("Failed to read json");
+                }
                 var properties = obj.Properties().ToArray();
                 if (properties.Length == 1)
                 {
                     var type = obj.Properties().First().Name;
                     var value = obj[type];
-                    return new Claim(type, value.ToObject<string>());
+                    return new Claim(type!, value?.ToObject<string>() ?? string.Empty);
                 }
 
                 return new Claim(
-                    obj["type"].ToObject<string>(),
-                    obj["value"].ToObject<string>(),
-                    obj["valueType"].ToObject<string>(),
-                    obj["issuer"].ToObject<string>());
+                    obj["type"]!.ToObject<string>()!,
+                    obj["value"]!.ToObject<string>()!,
+                    obj["valueType"]!.ToObject<string>(),
+                    obj["issuer"]!.ToObject<string>());
             }
         }
     }

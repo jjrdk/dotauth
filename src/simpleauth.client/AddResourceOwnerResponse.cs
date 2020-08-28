@@ -8,6 +8,6 @@
         /// <summary>
         /// Gets or sets the subject.
         /// </summary>
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
     }
 }

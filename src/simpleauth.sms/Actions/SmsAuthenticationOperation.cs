@@ -61,11 +61,12 @@
             await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);
             //}
 
-            return await _resourceOwnerRepository.GetResourceOwnerByClaim(
+            var result = await _resourceOwnerRepository.GetResourceOwnerByClaim(
                     OpenIdClaimTypes.PhoneNumber,
                     phoneNumber,
                     cancellationToken)
                 .ConfigureAwait(false);
+            return result!;
         }
     }
 }

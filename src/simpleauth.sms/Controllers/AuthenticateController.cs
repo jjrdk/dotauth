@@ -29,7 +29,9 @@
     using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
     using SimpleAuth.Services;
+    using SimpleAuth.Sms.Properties;
     using SimpleAuth.WebSite.User;
 
     /// <summary>
@@ -180,9 +182,9 @@
                 throw new ArgumentNullException(nameof(localAuthenticationViewModel));
             }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && !string.IsNullOrWhiteSpace(localAuthenticationViewModel.PhoneNumber))
             {
-                ResourceOwner resourceOwner = null;
+                ResourceOwner? resourceOwner = null;
                 try
                 {
                     resourceOwner = await _smsAuthenticationOperation
@@ -192,7 +194,13 @@
                 catch (Exception ex)
                 {
                     var se = ex as SimpleAuthException;
-                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
+                    await _eventPublisher.Publish(
+                            new SimpleAuthError(
+                                Id.Create(),
+                                se?.Code ?? ex.Message,
+                                ex.Message,
+                                string.Empty,
+                                DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
                     ModelState.AddModelError("message_error", ex.Message);
                 }
@@ -212,7 +220,13 @@
                     catch (Exception ex)
                     {
                         var se = ex as SimpleAuthException;
-                        await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
+                        await _eventPublisher.Publish(
+                                new SimpleAuthError(
+                                    Id.Create(),
+                                    se?.Code ?? ex.Message,
+                                    ex.Message,
+                                    string.Empty,
+                                    DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "SMS account is not valid");
                     }
@@ -278,7 +292,8 @@
                 return RedirectToAction("Index", "User", new { Area = "pwd" });
             }
 
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.PasswordLessCookieName)
+            var authenticatedUser = await _authenticationService
+                .GetAuthenticatedUser(this, CookieNames.PasswordLessCookieName)
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
@@ -288,18 +303,19 @@
             }
 
             var authenticatedUserClaims = authenticatedUser.Claims.ToArray();
-            var subject = authenticatedUserClaims
-                .First(c => c.Type == OpenIdClaimTypes.Subject)
-                .Value;
+            var subject = authenticatedUserClaims.First(c => c.Type == OpenIdClaimTypes.Subject).Value;
             var phoneNumber = authenticatedUserClaims.First(c => c.Type == OpenIdClaimTypes.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
-                var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken).ConfigureAwait(false);
+                var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken)
+                    .ConfigureAwait(false);
                 return Ok(confirmCodeViewModel);
             }
 
             // Check the confirmation code.
-            if (!await _validateConfirmationCode.Execute(confirmCodeViewModel.ConfirmationCode, subject, cancellationToken).ConfigureAwait(false))
+            if (!await _validateConfirmationCode
+                .Execute(confirmCodeViewModel.ConfirmationCode, subject, cancellationToken)
+                .ConfigureAwait(false))
             {
                 ModelState.AddModelError("message_error", "Confirmation code is not valid");
                 return Ok(confirmCodeViewModel);
@@ -310,13 +326,15 @@
                     CookieNames.PasswordLessCookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
-            var resourceOwner = await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
+            var resourceOwner =
+                await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
             if (!string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Execute TWO Factor authentication
             {
                 try
                 {
                     await SetTwoFactorCookie(authenticatedUserClaims).ConfigureAwait(false);
-                    await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken).ConfigureAwait(false);
+                    await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken)
+                        .ConfigureAwait(false);
                     return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
                 catch (ClaimRequiredException)
@@ -333,7 +351,7 @@
             if (!string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)) // Execute OPENID workflow
             {
                 var request = DataProtector.Unprotect<AuthorizationRequest>(confirmCodeViewModel.Code);
-                await SetLocalCookie(authenticatedUserClaims, request.session_id).ConfigureAwait(false);
+                await SetLocalCookie(authenticatedUserClaims, request.session_id!).ConfigureAwait(false);
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
                 var actionResult = await _authenticateHelper.ProcessRedirection(
                         request.ToParameter(),
@@ -346,7 +364,7 @@
                 var result = actionResult.CreateRedirectionFromActionResult(request, _logger);
                 if (result != null)
                 {
-                    await LogAuthenticateUser(resourceOwner.Subject, actionResult.Amr).ConfigureAwait(false);
+                    await LogAuthenticateUser(resourceOwner.Subject!, actionResult.Amr!).ConfigureAwait(false);
                     return result;
                 }
             }
@@ -396,18 +414,33 @@
             // 2. Retrieve the default language
             if (ModelState.IsValid)
             {
-                ResourceOwner resourceOwner = null;
-                try
+                ResourceOwner? resourceOwner = null;
+
+                if (string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
                 {
-                    resourceOwner = await _smsAuthenticationOperation.Execute(viewModel.PhoneNumber, cancellationToken)
-                        .ConfigureAwait(false);
+                    ModelState.AddModelError("message_error", SmsStrings.MissingPhoneNumber);
                 }
-                catch (Exception ex)
+                else
                 {
-                    var se = ex as SimpleAuthException;
-                    await _eventPublisher.Publish(new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
-                        .ConfigureAwait(false);
-                    ModelState.AddModelError("message_error", ex.Message);
+                    try
+                    {
+                        resourceOwner = await _smsAuthenticationOperation
+                            .Execute(viewModel.PhoneNumber, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        var se = ex as SimpleAuthException;
+                        await _eventPublisher.Publish(
+                                new SimpleAuthError(
+                                    Id.Create(),
+                                    se?.Code ?? ex.Message,
+                                    ex.Message,
+                                    string.Empty,
+                                    DateTimeOffset.UtcNow))
+                            .ConfigureAwait(false);
+                        ModelState.AddModelError("message_error", ex.Message);
+                    }
                 }
 
                 if (resourceOwner != null)
@@ -426,7 +459,12 @@
                     {
                         var se = ex as SimpleAuthException;
                         await _eventPublisher.Publish(
-                                new SimpleAuthError(Id.Create(), se?.Code, ex.Message, string.Empty, DateTimeOffset.UtcNow))
+                                new SimpleAuthError(
+                                    Id.Create(),
+                                    se?.Code ?? ex.Message,
+                                    ex.Message,
+                                    string.Empty,
+                                    DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
                         ModelState.AddModelError("message_error", "SMS account is not valid");
                     }
@@ -446,7 +484,11 @@
                     HttpContext,
                     CookieNames.PasswordLessCookieName,
                     principal,
-                    new AuthenticationProperties { ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20), IsPersistent = false })
+                    new AuthenticationProperties
+                    {
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20),
+                        IsPersistent = false
+                    })
                 .ConfigureAwait(false);
         }
     }

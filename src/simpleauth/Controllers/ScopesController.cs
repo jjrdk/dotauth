@@ -90,9 +90,10 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpGet("{id}")]
         [Authorize(Policy = "manager")]
-        public async Task<ActionResult<Scope>> Get(string id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
         {
-            return await _scopeRepository.Get(id, cancellationToken).ConfigureAwait(false);
+            var scope = await _scopeRepository.Get(id, cancellationToken).ConfigureAwait(false);
+            return scope == null ? (IActionResult)BadRequest() : Ok(scope);
         }
 
         /// <summary>

@@ -22,26 +22,26 @@ namespace SimpleAuth.ViewModels
         /// <summary>
         /// Gets or sets the id token.
         /// </summary>
-        public string IdToken { get; set; }
+        public string? IdToken { get; set; }
 
         /// <summary>
         /// Gets or sets the access token.
         /// </summary>
-        public string AccessToken { get; set; }
+        public string? AccessToken { get; set; }
 
         /// <summary>
         /// Gets or sets the authorization code.
         /// </summary>
-        public string AuthorizationCode { get; set; }
+        public string? AuthorizationCode { get; set; }
 
         /// <summary>
         /// Gets or sets the state.
         /// </summary>
-        public string State { get; set; }
+        public string? State { get; set; }
 
         /// <summary>
         /// Gets or sets the redirect uri.
         /// </summary>
-        public string RedirectUri { get; set; }
+        public string? RedirectUri { get; set; }
     }
 }

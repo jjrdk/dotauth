@@ -40,17 +40,6 @@
         }
 
         [Fact]
-        public async Task When_Pass_No_Login_To_Add_ResourceOwner_Then_Error_Is_Returned()
-        {
-            var result = await _resourceOwnerClient.AddResourceOwner(new AddResourceOwnerRequest(), "token")
-                .ConfigureAwait(false);
-
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal($"Value cannot be null. (Parameter 'value')", result.Error.Detail);
-        }
-
-        [Fact]
         public async Task When_Pass_No_Password_To_Add_ResourceOwner_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient
@@ -82,8 +71,8 @@
                 .ConfigureAwait(false);
 
             Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal("The parameter login is missing (Parameter 'id')", result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
+            Assert.Equal(Strings.LoginParameterMissing, result.Error.Detail);
         }
 
         [Fact]
@@ -106,8 +95,8 @@
                 .UpdateResourceOwnerPassword(new UpdateResourceOwnerPasswordRequest(), "token")
                 .ConfigureAwait(false);
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal($"The parameter login is missing (Parameter 'id')", result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
+            Assert.Equal(Strings.LoginParameterMissing, result.Error.Detail);
         }
 
         [Fact]
@@ -119,7 +108,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal(Strings.TheRoDoesntExist, result.Error.Detail);
+            Assert.Equal(Strings.PasswordParameterMissing, result.Error.Detail);
         }
 
         [Fact]
@@ -170,7 +159,7 @@
         [Fact]
         public async Task When_Update_Password_Then_ResourceOwner_Is_Updated()
         {
-            var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
+            _ = await _resourceOwnerClient.UpdateResourceOwnerPassword(
                     new UpdateResourceOwnerPasswordRequest { Subject = "administrator", Password = "pass" },
                     "token")
                 .ConfigureAwait(false);

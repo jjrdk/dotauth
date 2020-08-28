@@ -29,7 +29,6 @@
                     new DefaultSubjectBuilder(),
                     new InMemoryResourceOwnerRepository(),
                     new InMemoryTokenStore(),
-                    inMemoryScopeRepository,
                     new InMemoryJwksRepository(),
                     new InMemoryClientRepository(
                         new Mock<IHttpClientFactory>().Object,

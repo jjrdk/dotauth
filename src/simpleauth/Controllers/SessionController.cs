@@ -58,10 +58,10 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet(CoreConstants.EndPoints.EndSession)]
-        public async Task<IActionResult> RevokeSessionCallback([FromQuery]RevokeSessionRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> RevokeSessionCallback([FromQuery] RevokeSessionRequest? request, CancellationToken cancellationToken)
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
-            if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
+            if (authenticatedUser == null || authenticatedUser.Identity?.IsAuthenticated != true)
             {
                 return Ok(new { Authenticated = false });
             }

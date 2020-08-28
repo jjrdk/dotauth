@@ -489,4 +489,13 @@
   <data name="InvalidScope" xml:space="preserve">
     <value>Invalid scope</value>
   </data>
+  <data name="Key16char" xml:space="preserve">
+    <value>Key must be at least 16 characters.</value>
+  </data>
+  <data name="LoginParameterMissing" xml:space="preserve">
+    <value>The parameter login is missing</value>
+  </data>
+  <data name="PasswordParameterMissing" xml:space="preserve">
+    <value>The parameter password is missing</value>
+  </data>
 </root>

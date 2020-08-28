@@ -28,7 +28,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<AuthorizationCode> Get(string code, CancellationToken cancellationToken)
+        public async Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken)
         {
             var authCode = await _database.StringGetAsync(code).ConfigureAwait(false);
             return authCode.HasValue ? JsonConvert.DeserializeObject<AuthorizationCode>(authCode) : null;

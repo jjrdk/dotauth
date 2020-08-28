@@ -25,11 +25,11 @@ namespace SimpleAuth.Client
     /// Defines the token credentials.
     /// </summary>
     /// <seealso cref="System.Collections.Generic.IEnumerable{KeyValuePair}" />
-    public class TokenCredentials : IEnumerable<KeyValuePair<string, string>>
+    public class TokenCredentials : IEnumerable<KeyValuePair<string?, string?>>
     {
         private readonly Dictionary<string, string> _form;
 
-        private TokenCredentials(Dictionary<string, string> form, AuthenticationHeaderValue authorizationValue = null, X509Certificate2 certificate = null)
+        private TokenCredentials(Dictionary<string, string> form, AuthenticationHeaderValue? authorizationValue = null, X509Certificate2? certificate = null)
         {
             _form = form;
             AuthorizationValue = authorizationValue;
@@ -42,7 +42,7 @@ namespace SimpleAuth.Client
         /// <value>
         /// The authorization value.
         /// </value>
-        public AuthenticationHeaderValue AuthorizationValue { get; }
+        public AuthenticationHeaderValue? AuthorizationValue { get; }
 
         /// <summary>
         /// Gets the certificate.
@@ -50,7 +50,7 @@ namespace SimpleAuth.Client
         /// <value>
         /// The certificate.
         /// </value>
-        public X509Certificate2 Certificate { get; }
+        public X509Certificate2? Certificate { get; }
 
         /// <summary>
         /// Creates the credentials from the certificate.
@@ -125,7 +125,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
         {
             return _form.GetEnumerator();
         }

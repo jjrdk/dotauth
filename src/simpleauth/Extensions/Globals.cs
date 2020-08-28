@@ -11,6 +11,6 @@ namespace SimpleAuth.Extensions
         /// <value>
         /// The name of the application.
         /// </value>
-        public static string ApplicationName { get; set; }
+        public static string ApplicationName { get; set; } = "SimpleAuth";
     }
 }

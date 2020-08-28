@@ -53,7 +53,7 @@
             };
             IReadOnlyCollection<Consent> consents = new List<Consent>
             {
-                new Consent {Claims = new List<string> {claimName}, ClientId = clientId}
+                new Consent {Claims = new [] {claimName}, ClientId = clientId}
             };
 
             _consentRepositoryFake

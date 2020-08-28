@@ -37,5 +37,6 @@ namespace SimpleAuth.Shared.Errors
         public const string InvalidUri = "invalid_uri";
         public const string InvalidClientMetaData = "invalid_client_metadata";
         public const string InternalError = "internal_error";
+        public const string ClaimRequired = "claim_required";
     }
 }

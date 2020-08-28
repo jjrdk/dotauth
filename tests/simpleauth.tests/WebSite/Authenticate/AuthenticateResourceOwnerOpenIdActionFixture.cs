@@ -117,7 +117,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
         {
             const string code = "code";
             const string subject = "subject";
-            var authorizationParameter = new AuthorizationParameter();
+            var authorizationParameter = new AuthorizationParameter { ClientId = "abc" };
             var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "authServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

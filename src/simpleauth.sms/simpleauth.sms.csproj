@@ -1,39 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <Description>SimpleAuth SMS Authentication Library</Description>
-    <Title>SimpleAuth SMS Authentication</Title>
-    <TargetFramework>net5.0</TargetFramework>
-    <AssemblyName>simpleauth.sms</AssemblyName>
-    <PackageId>simpleauth.sms</PackageId>
-    <RootNamespace>SimpleAuth.Sms</RootNamespace>
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Description>SimpleAuth SMS Authentication Library</Description>
+        <Title>SimpleAuth SMS Authentication</Title>
+        <TargetFramework>net5.0</TargetFramework>
+        <AssemblyName>simpleauth.sms</AssemblyName>
+        <PackageId>simpleauth.sms</PackageId>
+        <RootNamespace>SimpleAuth.Sms</RootNamespace>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+    </PropertyGroup>
 
-  <Import Project="../../shared.projinfo" />
+    <Import Project="../../shared.projinfo" />
 
-  <ItemGroup>
-    <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.5.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\SmsStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>SmsStrings.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\SmsStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SmsStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.5.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Properties\SmsStrings.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>SmsStrings.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Properties\SmsStrings.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>SmsStrings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
 </Project>

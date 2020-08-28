@@ -22,7 +22,6 @@
         private readonly Mock<IConsentRepository> _consentRepositoryFake;
         private readonly Mock<IClientStore> _clientRepositoryFake;
         private readonly Mock<IScopeRepository> _scopeRepositoryFake;
-        private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryFake;
         private readonly ConfirmConsentAction _confirmConsentAction;
 
         public ConfirmConsentFixture()
@@ -30,14 +29,12 @@
             _consentRepositoryFake = new Mock<IConsentRepository>();
             _clientRepositoryFake = new Mock<IClientStore>();
             _scopeRepositoryFake = new Mock<IScopeRepository>();
-            _resourceOwnerRepositoryFake = new Mock<IResourceOwnerRepository>();
             _confirmConsentAction = new ConfirmConsentAction(
                 new Mock<IAuthorizationCodeStore>().Object,
                 new Mock<ITokenStore>().Object,
                 _consentRepositoryFake.Object,
                 _clientRepositoryFake.Object,
                 _scopeRepositoryFake.Object,
-                _resourceOwnerRepositoryFake.Object,
                 new InMemoryJwksRepository(),
                 new NoOpPublisher());
         }
@@ -66,20 +63,22 @@
             const string state = "state";
             var authorizationParameter = new AuthorizationParameter
             {
-                Claims = null, Scope = "profile", ResponseMode = ResponseModes.None, State = state
+                Claims = null,
+                Scope = "profile",
+                ResponseMode = ResponseModes.None,
+                State = state
             };
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Client {ClientId = "clientId"};
-            var resourceOwner = new ResourceOwner {Subject = subject};
+            var client = new Client { ClientId = "clientId" };
+            var resourceOwner = new ResourceOwner { Subject = subject };
 
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
             _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Array.Empty<Client>());
-            _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(resourceOwner);
+
             _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(Array.Empty<Scope>());
             var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
@@ -112,11 +111,10 @@
                 },
                 Scope = "profile"
             };
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Client {ClientId = clientId};
-            var resourceOwner = new ResourceOwner {Subject = subject};
+            var client = new Client { ClientId = clientId };
 
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
@@ -124,8 +122,7 @@
                 .ReturnsAsync(Array.Empty<Client>());
             _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(Array.Empty<Scope>());
-            _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(resourceOwner);
+
             Consent insertedConsent = null;
             _consentRepositoryFake.Setup(co => co.Insert(It.IsAny<Consent>(), It.IsAny<CancellationToken>()))
                 .Callback<Consent, CancellationToken>((consent, token) => insertedConsent = consent)
@@ -145,21 +142,21 @@
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter
             {
-                ResponseType = "code", Claims = null, Scope = "profile", ResponseMode = ResponseModes.None
+                ResponseType = "code",
+                Claims = null,
+                Scope = "profile",
+                ResponseMode = ResponseModes.None
             };
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Client {ClientId = "clientId"};
-            var resourceOwner = new ResourceOwner {Subject = subject};
+            var client = new Client { ClientId = "clientId" };
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
             _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Array.Empty<Client>());
             _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(Array.Empty<Scope>());
-            _resourceOwnerRepositoryFake.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(resourceOwner);
 
             var result = await _confirmConsentAction
                 .Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)

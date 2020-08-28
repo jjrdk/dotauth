@@ -20,7 +20,7 @@ namespace SimpleAuth.Authenticate
 
     internal static class ClientSecretBasicAuthentication
     {
-        public static Client AuthenticateClient(this AuthenticateInstruction instruction, Client client)
+        public static Client? AuthenticateClient(this AuthenticateInstruction instruction, Client client)
         {
             var clientSecrets = client.Secrets?.Where(s => s.Type == ClientSecretTypes.SharedSecret).ToArray();
             if (clientSecrets == null || clientSecrets.Length == 0)

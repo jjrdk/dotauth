@@ -61,7 +61,7 @@ namespace SimpleAuth.MiddleWare
                             await _publisher.Publish(new SimpleAuthError(Id.Create(),
                                 serverException.Code,
                                 serverException.Message,
-                                state,
+                                state ?? string.Empty,
                                 DateTimeOffset.UtcNow)).ConfigureAwait(false);
 
                             _logger.LogError(serverException.StackTrace);
@@ -114,7 +114,7 @@ namespace SimpleAuth.MiddleWare
                 .ConfigureAwait(false);
         }
 
-        private static void SetRedirection(HttpContext context, Exception exception, string code = null, string title = null)
+        private static void SetRedirection(HttpContext context, Exception exception, string? code = null, string? title = null)
         {
             context.Request.Path = "/error";
             context.Request.QueryString = new QueryString()

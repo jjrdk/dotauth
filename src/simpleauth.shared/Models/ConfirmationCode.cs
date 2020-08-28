@@ -13,7 +13,7 @@
         /// <value>
         /// The value.
         /// </value>
-        public string Value { get; set; }
+        public string Value { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the subject.
@@ -21,7 +21,7 @@
         /// <value>
         /// The subject.
         /// </value>
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the issue at.

@@ -5,7 +5,7 @@
 
     internal static class JwtPayloadExtensions
     {
-        public static string GetClaimValue(this JwtPayload payload, string claimType)
+        public static string? GetClaimValue(this JwtPayload payload, string claimType)
         {
             return payload.Claims.FirstOrDefault(c => c.Type == claimType)?.Value;
         }

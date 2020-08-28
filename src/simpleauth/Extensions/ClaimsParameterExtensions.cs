@@ -26,10 +26,10 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public static List<string> GetClaimNames(this ClaimsParameter parameter)
+        public static string[] GetClaimNames(this ClaimsParameter? parameter)
         {
             var result = new List<string>();
-            if (parameter.IdToken != null)
+            if (parameter?.IdToken != null)
             {
                 foreach (var claimParameter in parameter.IdToken)
                 {
@@ -39,7 +39,7 @@ namespace SimpleAuth.Extensions
                     }
                 }
             }
-            if (parameter.UserInfo != null)
+            if (parameter?.UserInfo != null)
             {
                 foreach (var claimParameter in parameter.UserInfo)
                 {
@@ -50,7 +50,7 @@ namespace SimpleAuth.Extensions
                 }
             }
 
-            return result;
+            return result.ToArray();
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public static bool IsAnyUserInfoClaimParameter(this ClaimsParameter parameter)
+        public static bool IsAnyUserInfoClaimParameter(this ClaimsParameter? parameter)
         {
             return parameter?.UserInfo != null && parameter.UserInfo.Any();
         }
@@ -68,7 +68,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public static bool IsAnyIdentityTokenClaimParameter(this ClaimsParameter parameter)
+        public static bool IsAnyIdentityTokenClaimParameter(this ClaimsParameter? parameter)
         {
             return parameter?.IdToken != null && parameter.IdToken.Any();
         }

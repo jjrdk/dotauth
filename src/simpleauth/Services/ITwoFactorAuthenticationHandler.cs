@@ -20,7 +20,7 @@
         /// </summary>
         /// <param name="twoFactorAuthType">Type of the two factor authentication.</param>
         /// <returns></returns>
-        ITwoFactorAuthenticationService Get(string twoFactorAuthType);
+        ITwoFactorAuthenticationService? Get(string twoFactorAuthType);
 
         /// <summary>
         /// Sends the code.

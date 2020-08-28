@@ -24,9 +24,9 @@ namespace SimpleAuth
     internal static class AuthenticationHeaderValueExtensions
     {
         public static AuthenticateInstruction GetAuthenticateInstruction(
-            this AuthenticationHeaderValue authenticationHeaderValue,
-            GrantTypeParameter grantTypeParameter,
-            X509Certificate2 certificate = null)
+            this AuthenticationHeaderValue? authenticationHeaderValue,
+            GrantTypeParameter? grantTypeParameter,
+            X509Certificate2? certificate = null)
         {
             var result = grantTypeParameter == null
                 ? new AuthenticateInstruction { Certificate = certificate }
@@ -45,7 +45,7 @@ namespace SimpleAuth
             if (!string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter) && string.Equals(authenticationHeaderValue.Scheme, "Basic", StringComparison.OrdinalIgnoreCase))
             {
                 var parameters = GetParameters(authenticationHeaderValue.Parameter);
-                if (parameters != null && parameters.Length == 2)
+                if (parameters.Length == 2)
                 {
                     result.ClientIdFromAuthorizationHeader = parameters[0];
                     result.ClientSecretFromAuthorizationHeader = parameters[1];

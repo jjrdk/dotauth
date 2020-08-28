@@ -313,6 +313,15 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Key must be at least 16 characters..
+        /// </summary>
+        internal static string Key16char {
+            get {
+                return ResourceManager.GetString("Key16char", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} authenticated.
         /// </summary>
         internal static string LogAuthenticated {
@@ -327,6 +336,15 @@ namespace SimpleAuth.Properties {
         internal static string LogCouldNotAuthenticate {
             get {
                 return ResourceManager.GetString("LogCouldNotAuthenticate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameter login is missing.
+        /// </summary>
+        internal static string LoginParameterMissing {
+            get {
+                return ResourceManager.GetString("LoginParameterMissing", resourceCulture);
             }
         }
         
@@ -417,6 +435,15 @@ namespace SimpleAuth.Properties {
         internal static string ParameterIsNotCorrect {
             get {
                 return ResourceManager.GetString("ParameterIsNotCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameter password is missing.
+        /// </summary>
+        internal static string PasswordParameterMissing {
+            get {
+                return ResourceManager.GetString("PasswordParameterMissing", resourceCulture);
             }
         }
         

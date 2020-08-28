@@ -27,7 +27,7 @@ namespace SimpleAuth.Extensions
         /// <param name="controllerName">Name of the controller.</param>
         /// <param name="actionName">Name of the action.</param>
         /// <param name="area">The area.</param>
-        public ActionInformation(string controllerName, string actionName, string area)
+        public ActionInformation(string controllerName, string actionName, string? area = null)
         {
             ControllerName = controllerName;
             ActionName = actionName;
@@ -56,7 +56,7 @@ namespace SimpleAuth.Extensions
         /// <value>
         /// The area.
         /// </value>
-        public string Area { get; }
+        public string? Area { get; }
 
         /// <summary>
         /// Gets or sets the route value dictionary.
@@ -64,6 +64,6 @@ namespace SimpleAuth.Extensions
         /// <value>
         /// The route value dictionary.
         /// </value>
-        public RouteValueDictionary RouteValueDictionary { get; set; }
+        public RouteValueDictionary RouteValueDictionary { get; set; } = new RouteValueDictionary();
     }
 }

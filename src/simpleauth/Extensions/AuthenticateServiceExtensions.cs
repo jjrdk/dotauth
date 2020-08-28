@@ -24,7 +24,7 @@
         /// controller
         /// or
         /// </exception>
-        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this IAuthenticationService authenticateService, ControllerBase controller, string scheme = null)
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this IAuthenticationService authenticateService, ControllerBase controller, string? scheme = null)
         {
             var authResult = await authenticateService.AuthenticateAsync(controller.HttpContext, scheme).ConfigureAwait(false);
             return authResult?.Principal ?? new ClaimsPrincipal(new ClaimsIdentity());

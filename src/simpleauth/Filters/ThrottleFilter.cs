@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Defines the throttling filter attribute.
@@ -18,7 +19,7 @@
         /// <inheritdoc />
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            return new ThrottleFilterAttribute((IRequestThrottle)serviceProvider.GetService(typeof(IRequestThrottle)));
+            return new ThrottleFilterAttribute(serviceProvider.GetRequiredService<IRequestThrottle>());
         }
 
         private class ThrottleFilterAttribute : IAsyncResourceFilter

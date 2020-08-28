@@ -60,7 +60,7 @@ namespace SimpleAuth.Authenticate
             // It's a JWE token then return the client_id from the HTTP body
             if (isJweToken)
             {
-                return instruction.ClientIdFromHttpRequestBody;
+                return instruction.ClientIdFromHttpRequestBody ?? string.Empty;
             }
 
             // It's a JWS token then return the client_id from the token.
@@ -92,11 +92,10 @@ namespace SimpleAuth.Authenticate
 
             try
             {
-                var validationParameters = await client.CreateValidationParameters(_jwksStore, expectedIssuer, clientId).ConfigureAwait(false);
-                _handler.ValidateToken(
-                    instruction.ClientAssertion,
-                    validationParameters,
-                    out var securityToken);
+                var validationParameters = await client!
+                    .CreateValidationParameters(_jwksStore, expectedIssuer, clientId, cancellationToken)
+                    .ConfigureAwait(false);
+                _handler.ValidateToken(instruction.ClientAssertion, validationParameters, out var securityToken);
                 var payload = (securityToken as JwtSecurityToken)?.Payload;
                 return payload == null
                     ? new AuthenticationResult(null, Strings.TheSignatureIsNotCorrect)
@@ -126,8 +125,16 @@ namespace SimpleAuth.Authenticate
 
             var jwe = instruction.ClientAssertion;
             var clientId = instruction.ClientIdFromHttpRequestBody;
+            if (clientId == null)
+            {
+                return new AuthenticationResult(null, Strings.TheJwsPayloadCannotBeExtracted);
+            }
             var client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
-            var validationParameters = await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false);
+            if (client == null)
+            {
+                return new AuthenticationResult(null, Strings.TheJwsPayloadCannotBeExtracted);
+            }
+            var validationParameters = await client.CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
             _handler.ValidateToken(jwe, validationParameters, out var securityToken);
             var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 

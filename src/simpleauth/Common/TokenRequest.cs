@@ -27,7 +27,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The type of the grant.
         /// </value>
-        public string grant_type { get; set; }
+        public string? grant_type { get; set; }
 
         /// <summary>
         /// Gets or sets the username.
@@ -35,7 +35,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The username.
         /// </value>
-        public string username { get; set; }
+        public string? username { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
@@ -43,7 +43,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The password.
         /// </value>
-        public string password { get; set; }
+        public string? password { get; set; }
 
         /// <summary>
         /// Gets or sets the scope.
@@ -51,7 +51,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The scope.
         /// </value>
-        public string scope { get; set; }
+        public string? scope { get; set; }
 
         /// <summary>
         /// Gets or sets the code.
@@ -59,7 +59,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The code.
         /// </value>
-        public string code { get; set; }
+        public string? code { get; set; }
 
         /// <summary>
         /// Gets or sets the redirect URI.
@@ -67,7 +67,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The redirect URI.
         /// </value>
-        public Uri redirect_uri { get; set; }
+        public Uri? redirect_uri { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token.
@@ -75,7 +75,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The refresh token.
         /// </value>
-        public string refresh_token { get; set; }
+        public string? refresh_token { get; set; }
 
         /// <summary>
         /// Gets or sets the code verifier.
@@ -83,7 +83,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The code verifier.
         /// </value>
-        public string code_verifier { get; set; }
+        public string? code_verifier { get; set; }
 
         /// <summary>
         /// Gets or sets the amr values.
@@ -91,7 +91,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The amr values.
         /// </value>
-        public string amr_values { get; set; }
+        public string? amr_values { get; set; }
 
         /// <summary>
         /// Gets or sets the client identifier.
@@ -99,7 +99,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The client identifier.
         /// </value>
-        public string client_id { get; set; }
+        public string? client_id { get; set; }
 
         /// <summary>
         /// Gets or sets the client secret.
@@ -107,7 +107,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The client secret.
         /// </value>
-        public string client_secret { get; set; }
+        public string? client_secret { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the client assertion.
@@ -115,7 +115,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The type of the client assertion.
         /// </value>
-        public string client_assertion_type { get; set; }
+        public string? client_assertion_type { get; set; }
 
         /// <summary>
         /// Gets or sets the client assertion.
@@ -123,7 +123,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The client assertion.
         /// </value>
-        public string client_assertion { get; set; }
+        public string? client_assertion { get; set; }
 
         /// <summary>
         /// Gets or sets the ticket.
@@ -131,7 +131,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The ticket.
         /// </value>
-        public string ticket { get; set; }
+        public string? ticket { get; set; }
 
         /// <summary>
         /// Gets or sets the claim token.
@@ -139,7 +139,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The claim token.
         /// </value>
-        public string claim_token { get; set; }
+        public string? claim_token { get; set; }
 
         /// <summary>
         /// Gets or sets the claim token format.
@@ -147,7 +147,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The claim token format.
         /// </value>
-        public string claim_token_format { get; set; }
+        public string? claim_token_format { get; set; }
 
         /// <summary>
         /// Gets or sets the PCT.
@@ -155,7 +155,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The PCT.
         /// </value>
-        public string pct { get; set; }
+        public string? pct { get; set; }
 
         /// <summary>
         /// Gets or sets the RPT.
@@ -163,6 +163,6 @@ namespace SimpleAuth.Common
         /// <value>
         /// The RPT.
         /// </value>
-        public string rpt { get; set; }
+        public string? rpt { get; set; }
     }
 }

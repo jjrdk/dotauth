@@ -37,13 +37,14 @@
         /// <returns></returns>
         protected Task<GenericResponse<T>> GetResult<T>(
             HttpRequestMessage request,
-            string token,
+            string? token,
             CancellationToken cancellationToken = default,
-            X509Certificate2 certificate = null)
+            X509Certificate2? certificate = null)
+            where T : class
         {
             return GetResult<T>(
                 request,
-                new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token),
+                token == null ? null : new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token),
                 cancellationToken,
                 certificate);
         }
@@ -59,9 +60,10 @@
         /// <returns></returns>
         protected async Task<GenericResponse<T>> GetResult<T>(
             HttpRequestMessage request,
-            AuthenticationHeaderValue token,
+            AuthenticationHeaderValue? token,
             CancellationToken cancellationToken = default,
-            X509Certificate2 certificate = null)
+            X509Certificate2? certificate = null)
+            where T : class
         {
             request = PrepareRequest(request, token, certificate);
             var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -89,8 +91,8 @@
 
         private static HttpRequestMessage PrepareRequest(
             HttpRequestMessage request,
-            AuthenticationHeaderValue authorizationHeaderValue,
-            X509Certificate2 certificate = null)
+            AuthenticationHeaderValue? authorizationHeaderValue,
+            X509Certificate2? certificate = null)
         {
             request.Headers.Accept.Clear();
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));

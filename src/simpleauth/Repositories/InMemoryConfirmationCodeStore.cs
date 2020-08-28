@@ -28,7 +28,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<ConfirmationCode> Get(string code, string subject, CancellationToken cancellationToken)
+        public Task<ConfirmationCode?> Get(string code, string subject, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(code))
             {

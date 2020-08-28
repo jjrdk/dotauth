@@ -68,7 +68,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
+        public async Task<Ticket?> Get(string ticketId, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);

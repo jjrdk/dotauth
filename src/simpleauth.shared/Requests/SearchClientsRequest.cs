@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Requests
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -15,7 +16,7 @@
         /// The client names.
         /// </value>
         [DataMember(Name = "client_names")]
-        public string[] ClientNames { get; set; }
+        public string[] ClientNames { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the client ids.
@@ -24,7 +25,7 @@
         /// The client ids.
         /// </value>
         [DataMember(Name = "client_ids")]
-        public string[] ClientIds { get; set; }
+        public string[] ClientIds { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the client types.
@@ -33,7 +34,7 @@
         /// The client types.
         /// </value>
         [DataMember(Name = "client_types")]
-        public string[] ClientTypes { get; set; }
+        public string[] ClientTypes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the start index.

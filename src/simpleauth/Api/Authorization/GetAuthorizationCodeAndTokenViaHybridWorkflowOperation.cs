@@ -24,7 +24,6 @@ namespace SimpleAuth.Api.Authorization
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using System.Security.Claims;
-    using System.Security.Principal;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Events;
@@ -57,7 +56,7 @@ namespace SimpleAuth.Api.Authorization
 
         public async Task<EndpointResult> Execute(
             AuthorizationParameter authorizationParameter,
-            IPrincipal principal,
+            ClaimsPrincipal principal,
             Client client,
             string issuerName,
             CancellationToken cancellationToken)
@@ -71,10 +70,8 @@ namespace SimpleAuth.Api.Authorization
                     authorizationParameter.State);
             }
 
-            var claimsPrincipal = principal as ClaimsPrincipal;
-
             var result = await _processAuthorizationRequest
-                .Process(authorizationParameter, claimsPrincipal, client, issuerName, cancellationToken)
+                .Process(authorizationParameter, principal, client, issuerName, cancellationToken)
                 .ConfigureAwait(false);
             if (!client.CheckGrantTypes(GrantTypes.Implicit, GrantTypes.AuthorizationCode))
             {
@@ -88,16 +85,8 @@ namespace SimpleAuth.Api.Authorization
 
             if (result.Type == ActionResultType.RedirectToCallBackUrl)
             {
-                if (claimsPrincipal == null)
-                {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidRequest,
-                        Strings.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated,
-                        authorizationParameter.State);
-                }
-
                 await _generateAuthorizationResponse
-                    .Generate(result, authorizationParameter, claimsPrincipal, client, issuerName, CancellationToken.None)
+                    .Generate(result, authorizationParameter, principal, client, issuerName, CancellationToken.None)
                     .ConfigureAwait(false);
             }
 

@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Repositories
 {
-    using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
@@ -13,17 +12,17 @@
     {
         private readonly List<GrantedToken> _tokens = new List<GrantedToken>();
 
-        public Task<GrantedToken> GetToken(
+        public Task<GrantedToken?> GetToken(
             string scopes,
             string clientId,
-            JwtPayload idTokenJwsPayload,
-            JwtPayload userInfoJwsPayload,
+            JwtPayload? idTokenJwsPayload,
+            JwtPayload? userInfoJwsPayload,
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (_tokens == null || !_tokens.Any())
+            if (_tokens.Count == 0)
             {
-                return Task.FromResult((GrantedToken)null);
+                return Task.FromResult<GrantedToken?>(null);
             }
 
             var grantedTokens = _tokens
@@ -31,7 +30,7 @@
                 .OrderByDescending(g => g.CreateDateTime);
             if (!_tokens.Any())
             {
-                return Task.FromResult((GrantedToken)null);
+                return Task.FromResult<GrantedToken?>(null);
             }
 
             foreach (var grantedToken in grantedTokens)
@@ -62,31 +61,21 @@
                     }
                 }
 
-                return Task.FromResult(grantedToken);
+                return Task.FromResult<GrantedToken?>(grantedToken);
             }
 
-            return Task.FromResult((GrantedToken)null);
+            return Task.FromResult<GrantedToken?>(null);
         }
 
-        public Task<GrantedToken> GetRefreshToken(string refreshToken, CancellationToken cancellationToken)
+        public Task<GrantedToken?> GetRefreshToken(string refreshToken, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(refreshToken))
-            {
-                throw new ArgumentNullException(nameof(refreshToken));
-            }
-
             var grantedToken = _tokens.FirstOrDefault(x => x.RefreshToken == refreshToken);
 
             return Task.FromResult(grantedToken);
         }
 
-        public Task<GrantedToken> GetAccessToken(string accessToken, CancellationToken cancellationToken)
+        public Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                throw new ArgumentNullException(nameof(accessToken));
-            }
-
             var grantedToken = _tokens.FirstOrDefault(x => x.AccessToken == accessToken);
 
             return Task.FromResult(grantedToken);
@@ -94,33 +83,18 @@
 
         public Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
         {
-            if (grantedToken == null)
-            {
-                throw new ArgumentNullException(nameof(grantedToken));
-            }
-
             _tokens.Add(grantedToken);
             return Task.FromResult(true);
         }
 
         public Task<bool> RemoveRefreshToken(string refreshToken, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(refreshToken))
-            {
-                throw new ArgumentNullException(nameof(refreshToken));
-            }
-
             var removed = _tokens.RemoveAll(x => x.RefreshToken == refreshToken);
             return Task.FromResult(removed > 0);
         }
 
         public Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                throw new ArgumentNullException(nameof(accessToken));
-            }
-
             var removed = _tokens.RemoveAll(x => x.AccessToken == accessToken);
             return Task.FromResult(removed > 0);
         }

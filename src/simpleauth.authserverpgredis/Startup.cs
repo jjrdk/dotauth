@@ -76,8 +76,7 @@ namespace SimpleAuth.AuthServerPgRedis
                 Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _options.TicketLifeTime),
                 Tokens =
                     sp => new RedisTokenStore(
-                        sp.GetRequiredService<IDatabaseAsync>(),
-                        sp.GetRequiredService<IJwksStore>()),
+                        sp.GetRequiredService<IDatabaseAsync>()),
                 ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
                 EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
                 ClaimsIncludedInUserCreation = new[]

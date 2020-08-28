@@ -77,14 +77,14 @@ namespace SimpleAuth.Extensions
             }
         }
 
-        public static async Task<GrantedToken> GetValidGrantedToken(
+        public static async Task<GrantedToken?> GetValidGrantedToken(
             this ITokenStore tokenStore,
             IJwksStore jwksStore,
             string scopes,
             string clientId,
             CancellationToken cancellationToken = default,
-            JwtPayload idTokenJwsPayload = null,
-            JwtPayload userInfoJwsPayload = null)
+            JwtPayload? idTokenJwsPayload = null,
+            JwtPayload? userInfoJwsPayload = null)
         {
             var token = await tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload, cancellationToken)
                 .ConfigureAwait(false);

@@ -24,7 +24,7 @@
             return uri.Uri.AbsoluteUri.TrimEnd('/');
         }
 
-        public static X509Certificate2 GetCertificate(this HttpRequest request)
+        public static X509Certificate2? GetCertificate(this HttpRequest request)
         {
             const string headerName = "X-ARR-ClientCert";
             if (!request.Headers.TryGetValue(headerName, out var header))

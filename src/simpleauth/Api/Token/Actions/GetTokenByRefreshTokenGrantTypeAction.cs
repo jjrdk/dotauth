@@ -40,14 +40,12 @@ namespace SimpleAuth.Api.Token.Actions
         private readonly ITokenStore _tokenStore;
         private readonly IJwksStore _jwksRepository;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly JwtGenerator _jwtGenerator;
         private readonly IClientStore _clientStore;
         private readonly AuthenticateClient _authenticateClient;
 
         public GetTokenByRefreshTokenGrantTypeAction(
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
-            IScopeRepository scopeRepository,
             IJwksStore jwksRepository,
             IResourceOwnerRepository resourceOwnerRepository,
             IClientStore clientStore)
@@ -56,15 +54,14 @@ namespace SimpleAuth.Api.Token.Actions
             _tokenStore = tokenStore;
             _jwksRepository = jwksRepository;
             _resourceOwnerRepository = resourceOwnerRepository;
-            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksRepository);
             _clientStore = clientStore;
             _authenticateClient = new AuthenticateClient(clientStore, jwksRepository);
         }
 
         public async Task<GenericResponse<GrantedToken>> Execute(
             RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue,
-            X509Certificate2 certificate,
+            AuthenticationHeaderValue? authenticationHeaderValue,
+            X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -75,7 +72,7 @@ namespace SimpleAuth.Api.Token.Actions
             var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
                 .ConfigureAwait(false);
             var client = authResult.Client;
-            if (authResult.Client == null)
+            if (client == null)
             {
                 return new GenericResponse<GrantedToken>
                 {
@@ -84,13 +81,13 @@ namespace SimpleAuth.Api.Token.Actions
                     {
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidClient,
-                        Detail = authResult.ErrorMessage
+                        Detail = authResult.ErrorMessage!
                     }
                 };
             }
 
             // 2. Check client
-            if (client.GrantTypes == null || client.GrantTypes.All(x => x != GrantTypes.RefreshToken))
+            if (client.GrantTypes.All(x => x != GrantTypes.RefreshToken))
             {
                 return new GenericResponse<GrantedToken>
                 {
@@ -110,7 +107,7 @@ namespace SimpleAuth.Api.Token.Actions
             // 3. Validate parameters
             var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter, cancellationToken)
                 .ConfigureAwait(false);
-            if (grantedToken.ClientId != client.ClientId)
+            if (grantedToken?.ClientId != client.ClientId)
             {
                 return new GenericResponse<GrantedToken>
                 {
@@ -130,8 +127,9 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
                 additionalClaims = resourceOwner?.Claims
-                    .Where(c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
-                    .ToArray();
+                                       .Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                                       .ToArray()
+                                   ?? Array.Empty<Claim>();
             }
 
             // 4. Generate a new access token & insert it
@@ -149,7 +147,9 @@ namespace SimpleAuth.Api.Token.Actions
             // 5. Fill-in the id token
             if (generatedToken.IdTokenPayLoad != null)
             {
-                generatedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, authResult.Client?.TokenLifetime);
+                generatedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(
+                    generatedToken.IdTokenPayLoad,
+                    authResult.Client?.TokenLifetime);
                 generatedToken.IdToken = await _clientStore.GenerateIdToken(
                         generatedToken.ClientId,
                         generatedToken.IdTokenPayLoad,
@@ -171,17 +171,14 @@ namespace SimpleAuth.Api.Token.Actions
             return new GenericResponse<GrantedToken> { StatusCode = HttpStatusCode.OK, Content = generatedToken };
         }
 
-        private async Task<GrantedToken> ValidateParameter(
+        private async Task<GrantedToken?> ValidateParameter(
             RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
             CancellationToken cancellationToken)
         {
-            var grantedToken = await _tokenStore
-                .GetRefreshToken(refreshTokenGrantTypeParameter.RefreshToken, cancellationToken)
-                .ConfigureAwait(false);
-            if (grantedToken == null)
-            {
-                throw new SimpleAuthException(ErrorCodes.InvalidGrant, Strings.TheRefreshTokenIsNotValid);
-            }
+            var grantedToken = refreshTokenGrantTypeParameter.RefreshToken == null
+                ? null
+                : await _tokenStore.GetRefreshToken(refreshTokenGrantTypeParameter.RefreshToken, cancellationToken)
+                    .ConfigureAwait(false);
 
             return grantedToken;
         }

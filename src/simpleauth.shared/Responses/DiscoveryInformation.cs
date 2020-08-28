@@ -28,7 +28,7 @@ namespace SimpleAuth.Shared.Responses
         /// Gets or sets the authorization end point.
         /// </summary>
         [DataMember(Name = "authorization_endpoint")]
-        public Uri AuthorizationEndPoint { get; set; }
+        public Uri AuthorizationEndPoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the check session end point.
@@ -37,13 +37,13 @@ namespace SimpleAuth.Shared.Responses
         /// The check session end point.
         /// </value>
         [DataMember(Name = "check_session_iframe")]
-        public Uri CheckSessionEndPoint { get; set; }
+        public Uri CheckSessionEndPoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the list of the Claim Types supported.
         /// </summary>
         [DataMember(Name = "claim_types_supported")]
-        public string[] ClaimTypesSupported { get; set; }
+        public string[] ClaimTypesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets boolean specifying whether the OP supports use of the claims parameter.
@@ -55,7 +55,7 @@ namespace SimpleAuth.Shared.Responses
         /// Gets or sets a list of the Claim Names of the Claims.
         /// </summary>
         [DataMember(Name = "claims_supported")]
-        public string[] ClaimsSupported { get; set; }
+        public string[] ClaimsSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the end session end point.
@@ -64,31 +64,31 @@ namespace SimpleAuth.Shared.Responses
         /// The end session end point.
         /// </value>
         [DataMember(Name = "end_session_endpoint")]
-        public Uri EndSessionEndPoint { get; set; }
+        public Uri EndSessionEndPoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the grant-types supported : authorization_code, implicit
         /// </summary>
         [DataMember(Name = "grant_types_supported")]
-        public string[] GrantTypesSupported { get; set; }
+        public string[] GrantTypesSupported { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the list of the JWS signing algorithms (alg values) supported.
         /// </summary>
         [DataMember(Name = "id_token_signing_alg_values_supported")]
-        public string[] IdTokenSigningAlgValuesSupported { get; set; }
+        public string[] IdTokenSigningAlgValuesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the issuer.
         /// </summary>
         [DataMember(Name = "issuer")]
-        public Uri Issuer { get; set; }
+        public Uri Issuer { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the JSON Web Key Set document.
         /// </summary>
         [DataMember(Name = "jwks_uri")]
-        public Uri JwksUri { get; set; }
+        public Uri JwksUri { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets boolean specifying whether the OP supports use of the request parameter.
@@ -112,13 +112,13 @@ namespace SimpleAuth.Shared.Responses
         /// Gets or sets the response modes supported : query, fragment
         /// </summary>
         [DataMember(Name = "response_modes_supported")]
-        public string[] ResponseModesSupported { get; set; }
+        public string[] ResponseModesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the response types supported : code, id_token &amp; token id_token
         /// </summary>
         [DataMember(Name = "response_types_supported")]
-        public string[] ResponseTypesSupported { get; set; }
+        public string[] ResponseTypesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the revocation end point.
@@ -127,7 +127,7 @@ namespace SimpleAuth.Shared.Responses
         /// The revocation end point.
         /// </value>
         [DataMember(Name = "revocation_endpoint")]
-        public Uri RevocationEndPoint { get; set; }
+        public Uri RevocationEndPoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the introspection end point.
@@ -136,49 +136,49 @@ namespace SimpleAuth.Shared.Responses
         /// The introspection end point.
         /// </value>
         [DataMember(Name = "introspection_endpoint")]
-        public Uri IntrospectionEndpoint { get; set; }
+        public Uri IntrospectionEndpoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the list of supported scopes.
         /// </summary>
         [DataMember(Name = "scopes_supported")]
-        public string[] ScopesSupported { get; set; }
+        public string[] ScopesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the subject types supported : pairwise &amp; public.
         /// </summary>
         [DataMember(Name = "subject_types_supported")]
-        public string[] SubjectTypesSupported { get; set; }
+        public string[] SubjectTypesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the token endpoint.
         /// </summary>
         [DataMember(Name = "token_endpoint")]
-        public Uri TokenEndPoint { get; set; }
+        public Uri TokenEndPoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the list of Client Authentication methods supported by the TokenEndpoint : client_secret_post, client_secret_basic etc ...
         /// </summary>
         [DataMember(Name = "token_endpoint_auth_methods_supported")]
-        public string[] TokenEndpointAuthMethodSupported { get; set; }
+        public string[] TokenEndpointAuthMethodSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the user-info endpoint.
         /// </summary>
         [DataMember(Name = "userinfo_endpoint")]
-        public Uri UserInfoEndPoint { get; set; }
+        public Uri UserInfoEndPoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the version of the discovery document
         /// </summary>
         [DataMember(Name = "version")]
-        public string Version { get; set; }
+        public string Version { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the Registration End Point.
         /// </summary>
         [DataMember(Name = "registration_endpoint")]
-        public Uri RegistrationEndPoint { get; set; }
+        public Uri RegistrationEndPoint { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the acr values supported.
@@ -233,12 +233,12 @@ namespace SimpleAuth.Shared.Responses
         /// <summary>
         /// Gets or sets a list of display parameter values.
         /// </summary>
-        public string[] DisplayValuesSupported { get; set; }
+        public string[] DisplayValuesSupported { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the service documentation.
         /// </summary>
-        public string ServiceDocumentation { get; set; }
+        public string ServiceDocumentation { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the languages &amp; scripts supported for values in Claims being returned.
@@ -253,12 +253,12 @@ namespace SimpleAuth.Shared.Responses
         /// <summary>
         /// Gets or sets the OP policy.
         /// </summary>
-        public Uri OpPolicyUri { get; set; }
+        public Uri? OpPolicyUri { get; set; }
 
         /// <summary>
         /// Gets or sets the TOS uri.
         /// </summary>
-        public Uri OpTosUri { get; set; }
+        public Uri? OpTosUri { get; set; }
 
         /// <summary>
         /// Gets or sets the JWS endpoint.
@@ -267,7 +267,7 @@ namespace SimpleAuth.Shared.Responses
         /// The JWS.
         /// </value>
         [DataMember(Name = "jws")]
-        public Uri Jws { get; set; }
+        public Uri Jws { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the jwe endpoint.
@@ -276,7 +276,7 @@ namespace SimpleAuth.Shared.Responses
         /// The jwe.
         /// </value>
         [DataMember(Name = "jwe")]
-        public Uri Jwe { get; set; }
+        public Uri Jwe { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the clients endpoint.
@@ -285,7 +285,7 @@ namespace SimpleAuth.Shared.Responses
         /// The clients.
         /// </value>
         [DataMember(Name = "clients")]
-        public Uri Clients { get; set; }
+        public Uri Clients { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the scopes endpoint.
@@ -294,7 +294,7 @@ namespace SimpleAuth.Shared.Responses
         /// The scopes.
         /// </value>
         [DataMember(Name = "scopes")]
-        public Uri Scopes { get; set; }
+        public Uri Scopes { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the resource owners endpoint.
@@ -303,7 +303,7 @@ namespace SimpleAuth.Shared.Responses
         /// The resource owners.
         /// </value>
         [DataMember(Name = "resource_owners")]
-        public Uri ResourceOwners { get; set; }
+        public Uri ResourceOwners { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the manage endpoint.
@@ -312,7 +312,7 @@ namespace SimpleAuth.Shared.Responses
         /// The manage.
         /// </value>
         [DataMember(Name = "manage")]
-        public Uri Manage { get; set; }
+        public Uri Manage { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the claims endpoint.
@@ -321,6 +321,6 @@ namespace SimpleAuth.Shared.Responses
         /// The claims.
         /// </value>
         [DataMember(Name = "claims")]
-        public Uri Claims { get; set; }
+        public Uri Claims { get; set; } = null!;
     }
 }

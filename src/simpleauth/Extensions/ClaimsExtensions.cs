@@ -24,7 +24,7 @@
 
         public static IEnumerable<string> ToOpenIdClaimType(this IEnumerable<string> claimTypes)
         {
-            return claimTypes?.SelectMany(claim =>
+            return claimTypes.SelectMany(claim =>
                 MappingToOpenidClaims.ContainsKey(claim)
                     ? new[] {MappingToOpenidClaims[claim], claim}
                     : new[] {claim});
@@ -32,7 +32,7 @@
 
         public static Claim[] ToOpenidClaims(this IEnumerable<Claim> claims)
         {
-            return claims?.Select(claim =>
+            return claims.Select(claim =>
                     MappingToOpenidClaims.ContainsKey(claim.Type)
                         ? new Claim(MappingToOpenidClaims[claim.Type], claim.Value)
                         : claim)

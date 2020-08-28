@@ -1,17 +1,14 @@
 ﻿namespace SimpleAuth.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Abstractions;
     using Microsoft.AspNetCore.Mvc.Formatters;
     using Microsoft.AspNetCore.Mvc.ModelBinding;
-    using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -45,7 +42,7 @@
 
             var httpContext = context.HttpContext;
             var viewEngine = httpContext.RequestServices.GetRequiredService<IRazorViewEngine>();
-            
+
             httpContext.Items.TryGetValue("ModelState", out var modelState);
             httpContext.Items.TryGetValue("RouteData", out var routeData);
             httpContext.Items.TryGetValue("ActionDescriptor", out var actionDescriptor);
@@ -56,7 +53,7 @@
                 modelState as ModelStateDictionary ?? new ModelStateDictionary());
             if (!actionContext.RouteData.Values.TryGetValue("view", out var viewObject) || !(viewObject is string viewName))
             {
-                viewName = actionContext.RouteData.Values["action"].ToString();
+                viewName = actionContext.RouteData?.Values["action"]?.ToString() ?? string.Empty;
             }
 
             var result = viewEngine.FindView(actionContext, viewName, false);
@@ -82,7 +79,7 @@
             {
                 if (!actionContext.RouteData.Values.TryGetValue("view", out var viewObject) || !(viewObject is string viewName))
                 {
-                    viewName = actionContext.RouteData.Values["action"].ToString();
+                    viewName = actionContext.RouteData?.Values["action"]?.ToString() ?? string.Empty;
                 }
 
                 var viewEngineResult = viewEngine.FindView(actionContext, viewName, isMainPage: false);

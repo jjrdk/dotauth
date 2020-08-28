@@ -5,7 +5,6 @@
     using SimpleAuth.Exceptions;
     using SimpleAuth.Parameters;
     using SimpleAuth.Results;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;
@@ -52,7 +51,10 @@
             string issuerName,
             CancellationToken cancellationToken)
         {
-            var client = await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken).ConfigureAwait(false);
+            var client = authorizationParameter.ClientId == null
+                ? null
+                : await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken)
+                    .ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(Strings.TheClientDoesntExist);
@@ -61,11 +63,10 @@
             // Redirect to the consent page if the prompt parameter contains "consent"
             EndpointResult result;
             var prompts = authorizationParameter.Prompt.ParsePrompts();
-            if (prompts != null &&
-                prompts.Contains(PromptParameters.Consent))
+            if (prompts.Contains(PromptParameters.Consent))
             {
                 result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction.Action = SimpleAuthEndPoints.ConsentIndex;
+                result.RedirectInstruction!.Action = SimpleAuthEndPoints.ConsentIndex;
                 result.RedirectInstruction.AddParameter("code", code);
                 return result;
             }
@@ -90,18 +91,18 @@
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
-                result.RedirectInstruction.ResponseMode = responseMode;
+                result.RedirectInstruction!.ResponseMode = responseMode;
                 return result;
             }
 
             // If there's no consent & there's no consent prompt then redirect to the consent screen.
             result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
-            result.RedirectInstruction.Action = SimpleAuthEndPoints.ConsentIndex;
+            result.RedirectInstruction!.Action = SimpleAuthEndPoints.ConsentIndex;
             result.RedirectInstruction.AddParameter("code", code);
             return result;
         }
 
-        private static AuthorizationFlow GetAuthorizationFlow(string state, params string[] responseTypes)
+        private static AuthorizationFlow GetAuthorizationFlow(string? state, params string[] responseTypes)
         {
             if (responseTypes == null)
             {

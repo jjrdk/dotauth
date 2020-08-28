@@ -34,7 +34,7 @@ namespace SimpleAuth.Extensions
             var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
             foreach (var (key, value) in dic)
             {
-                query[key] = value.ToString();
+                query[key] = value!.ToString();
             }
 
             uriBuilder.Query = ConcatQueryStrings(query);
@@ -53,7 +53,7 @@ namespace SimpleAuth.Extensions
             var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
             foreach (var (key, value) in dic)
             {
-                query[key] = value.ToString();
+                query[key] = value!.ToString();
             }
 
             uriBuilder.Fragment = ConcatQueryStrings(query);

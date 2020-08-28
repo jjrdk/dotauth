@@ -28,7 +28,7 @@ namespace SimpleAuth.Exceptions
         /// <param name="code">The code.</param>
         /// <param name="message">The message.</param>
         /// <param name="state">The state.</param>
-        public SimpleAuthExceptionWithState(string code, string message, string state) : base(code, message)
+        public SimpleAuthExceptionWithState(string code, string message, string? state) : base(code, message)
         {
             State = state;
         }
@@ -39,6 +39,6 @@ namespace SimpleAuth.Exceptions
         /// <value>
         /// The state.
         /// </value>
-        public string State { get; }
+        public string? State { get; }
     }
 }

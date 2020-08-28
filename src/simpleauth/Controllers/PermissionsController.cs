@@ -151,7 +151,6 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var subject = User.GetSubject();
             var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, permissionRequest.ResourceSetId).ConfigureAwait(false);
             if (resourceSetOwner == null)
             {
@@ -167,10 +166,10 @@ namespace SimpleAuth.Controllers
             await _eventPublisher.Publish(
                     new UmaTicketCreated(
                         Id.Create(),
-                        User.GetClientId(),
+                        User.GetClientId()!,
                         ticketId,
                         resourceSetOwner,
-                        subject,
+                        User.GetSubject()!,
                         requesterClaims,
                         DateTimeOffset.UtcNow,
                         permissionRequest))
@@ -197,8 +196,10 @@ namespace SimpleAuth.Controllers
                     Strings.NoParameterInBodyRequest,
                     HttpStatusCode.BadRequest);
             }
-            
-            var ids = permissionRequests.Select(x => x.ResourceSetId).ToArray();
+
+            var ids = permissionRequests.Where(x => !string.IsNullOrWhiteSpace(x.ResourceSetId))
+                .Select(x => x.ResourceSetId!)
+                .ToArray();
             var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, ids).ConfigureAwait(false);
             if (resourceSetOwner == null)
             {
@@ -208,17 +209,16 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var subject = User.GetSubject();
             var (ticketId, requesterClaims) = await _requestPermission
                 .Execute(resourceSetOwner, cancellationToken, permissionRequests)
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
                     new UmaTicketCreated(
                         Id.Create(),
-                        User.GetClientId(),
+                        User.GetClientId()!,
                         ticketId,
                         resourceSetOwner,
-                        subject,
+                        User.GetSubject()!,
                         requesterClaims,
                         DateTimeOffset.UtcNow,
                         permissionRequests))

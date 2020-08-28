@@ -19,6 +19,6 @@ namespace SimpleAuth.Parameters
         /// <summary>
         /// Gets or sets the scope
         /// </summary>
-        public string Scope { get; set; }
+        public string? Scope { get; set; }
     }
 }

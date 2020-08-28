@@ -30,7 +30,7 @@ namespace SimpleAuth.Results
         /// <value>
         /// The redirect instruction.
         /// </value>
-        public RedirectInstruction RedirectInstruction { get; set; }
+        public RedirectInstruction? RedirectInstruction { get; set; }
 
         /// <summary>
         /// Gets or sets the process identifier.
@@ -38,7 +38,7 @@ namespace SimpleAuth.Results
         /// <value>
         /// The process identifier.
         /// </value>
-        public string ProcessId { get; set; }
+        public string? ProcessId { get; set; }
 
         /// <summary>
         /// Gets or sets the amr.
@@ -46,7 +46,7 @@ namespace SimpleAuth.Results
         /// <value>
         /// The amr.
         /// </value>
-        public string Amr { get; set; }
+        public string? Amr { get; set; }
 
         /// <summary>
         /// Creates an empty action resultKind with redirection

@@ -16,7 +16,10 @@
         /// <param name="value">The value.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<ResourceOwner> GetResourceOwnerByClaim(string key, string value, CancellationToken cancellationToken = default);
+        Task<ResourceOwner?> GetResourceOwnerByClaim(
+            string key,
+            string value,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the specified identifier.
@@ -24,7 +27,7 @@
         /// <param name="id">The identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<ResourceOwner> Get(string id, CancellationToken cancellationToken = default);
+        Task<ResourceOwner?> Get(string id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the specified external account.
@@ -32,7 +35,7 @@
         /// <param name="externalAccount">The external account.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<ResourceOwner> Get(ExternalAccountLink externalAccount, CancellationToken cancellationToken = default);
+        Task<ResourceOwner?> Get(ExternalAccountLink externalAccount, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the specified identifier.
@@ -41,6 +44,6 @@
         /// <param name="password">The password.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<ResourceOwner> Get(string id, string password, CancellationToken cancellationToken = default);
+        Task<ResourceOwner?> Get(string id, string password, CancellationToken cancellationToken = default);
     }
 }

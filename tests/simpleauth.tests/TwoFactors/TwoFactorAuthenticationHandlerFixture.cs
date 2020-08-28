@@ -16,8 +16,8 @@ namespace SimpleAuth.Tests.TwoFactors
 {
     using System;
     using System.Threading.Tasks;
+    using Moq;
     using Services;
-    using SimpleAuth.Shared;
     using Xunit;
 
     public class TwoFactorAuthenticationHandlerFixture
@@ -26,7 +26,7 @@ namespace SimpleAuth.Tests.TwoFactors
 
         public TwoFactorAuthenticationHandlerFixture()
         {
-            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(null);
+            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(new[] { new Mock<ITwoFactorAuthenticationService>().Object, });
         }
 
         [Fact]

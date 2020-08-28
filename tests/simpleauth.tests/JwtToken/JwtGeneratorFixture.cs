@@ -66,15 +66,7 @@ namespace SimpleAuth.Tests.JwtToken
         }
 
         [Fact]
-        public async Task WhenPassingEmptyClientThenThrows()
-        {
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                    () => _jwtGenerator.GenerateAccessToken(new Client(), null, null, default, null))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task WhenSignatureParametersAreConfigedThenCanGenerateAccessToken()
+        public async Task WhenSignatureParametersAreConfiguredThenCanGenerateAccessToken()
         {
             const string clientId = "client_id";
             var scopes = new List<string> {"openid", "role"};

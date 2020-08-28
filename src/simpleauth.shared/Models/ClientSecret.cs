@@ -24,6 +24,6 @@
         /// The value.
         /// </value>
         [DataMember(Name = "value")]
-        public string Value { get; set; }
+        public string Value { get; set; } = null!;
     }
 }

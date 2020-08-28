@@ -56,8 +56,7 @@
                 Tickets =
                     sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _martenOptions.TicketLifeTime),
                 Tokens = sp => new RedisTokenStore(
-                    sp.GetRequiredService<IDatabaseAsync>(),
-                    sp.GetRequiredService<IJwksStore>())
+                    sp.GetRequiredService<IDatabaseAsync>())
             };
             _context = context;
             _connectionString = connectionString;

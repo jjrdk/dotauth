@@ -26,9 +26,11 @@ namespace SimpleAuth.Controllers
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Net.Http.Headers;
     using Shared.Events.Logging;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Events;
@@ -60,17 +62,15 @@ namespace SimpleAuth.Controllers
         /// <param name="subjectBuilder"></param>
         /// <param name="resourceOwnerRepository">The resource owner repository.</param>
         /// <param name="tokenStore">The token cache</param>
+        /// <param name="jwksRepository"></param>
         /// <param name="clientRepository"></param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
-        /// <param name="scopeRepository"></param>
-        /// <param name="jwksRepository"></param>
         public ResourceOwnersController(
             RuntimeSettings settings,
             ISubjectBuilder subjectBuilder,
             IResourceOwnerRepository resourceOwnerRepository,
             ITokenStore tokenStore,
-            IScopeRepository scopeRepository,
             IJwksStore jwksRepository,
             IClientRepository clientRepository,
             IEnumerable<AccountFilter> accountFilters,
@@ -79,7 +79,6 @@ namespace SimpleAuth.Controllers
             _refreshOperation = new GetTokenByRefreshTokenGrantTypeAction(
                 eventPublisher,
                 tokenStore,
-                scopeRepository,
                 jwksRepository,
                 resourceOwnerRepository,
                 clientRepository);
@@ -184,11 +183,15 @@ namespace SimpleAuth.Controllers
             if (await _resourceOwnerRepository.Delete(sub, cancellationToken).ConfigureAwait(false)
                 && await _tokenStore.RemoveAccessToken(accessToken, cancellationToken).ConfigureAwait(false))
             {
-                await _eventPublisher.Publish(new ResourceOwnerDeleted(
-                        Id.Create(),
-                        resourceOwner.Subject,
-                        resourceOwner.Claims.Select(x => new ClaimData { Type = x.Type, Value = x.Value }).ToArray(),
-                        DateTimeOffset.UtcNow))
+                await _eventPublisher.Publish(
+                        new ResourceOwnerDeleted(
+                            Id.Create(),
+                            sub,
+                            resourceOwner?.Claims == null
+                                ? Array.Empty<ClaimData>()
+                                : resourceOwner.Claims.Select(x => new ClaimData { Type = x.Type, Value = x.Value })
+                                    .ToArray(),
+                            DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 return Ok();
             }
@@ -204,7 +207,7 @@ namespace SimpleAuth.Controllers
 
         [HttpPost("{id}/update")]
         [Authorize(Policy = "manager")]
-        public async Task<IActionResult> Update(string id, UpdateResourceOwnerClaimsRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(string id, UpdateResourceOwnerClaimsRequest? request, CancellationToken cancellationToken)
         {
             if (request == null)
             {
@@ -233,7 +236,6 @@ namespace SimpleAuth.Controllers
             }
 
             var claims = request.Claims
-                .Where(x => x.Type != null && x.Value != null)
                 .Where(c => c.Type != OpenIdClaimTypes.Subject)
                 .Where(c => c.Type != OpenIdClaimTypes.UpdatedAt)
                 .Select(claim => new Claim(claim.Type, claim.Value))
@@ -267,16 +269,16 @@ namespace SimpleAuth.Controllers
         [HttpPut("claims")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> UpdateClaims(
-            [FromBody] UpdateResourceOwnerClaimsRequest request,
+            [FromBody] UpdateResourceOwnerClaimsRequest? request,
             CancellationToken cancellationToken)
         {
-            if (request == null)
+            if (request?.Subject == null)
             {
                 return BadRequest(
                     new ErrorDetails
                     {
-                        Title = ErrorCodes.InvalidRequest,
-                        Detail = Strings.ParameterInRequestBodyIsNotValid,
+                        Title = ErrorCodes.InvalidParameterCode,
+                        Detail = Strings.LoginParameterMissing,
                         Status = HttpStatusCode.BadRequest
                     });
             }
@@ -326,7 +328,7 @@ namespace SimpleAuth.Controllers
         [HttpPost("claims")]
         [Authorize]
         public async Task<IActionResult> UpdateMyClaims(
-            [FromBody] UpdateResourceOwnerClaimsRequest request,
+            [FromBody] UpdateResourceOwnerClaimsRequest? request,
             CancellationToken cancellationToken)
         {
             if (request == null)
@@ -342,7 +344,7 @@ namespace SimpleAuth.Controllers
             }
 
             var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
-            var previousClaims = resourceOwner.Claims
+            var previousClaims = resourceOwner!.Claims
                 .Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }).ToArray();
             var newTypes = request.Claims.Select(x => x.Type).ToArray();
             resourceOwner.Claims = resourceOwner.Claims.Where(x => newTypes.All(n => n != x.Type))
@@ -365,8 +367,13 @@ namespace SimpleAuth.Controllers
         {
             var sub = User.GetSubject();
 
+            if (sub == null)
+            {
+                return BadRequest(Strings.InvalidUser);
+            }
+
             var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
-            var previousClaims = resourceOwner.Claims
+            var previousClaims = resourceOwner!.Claims
                 .Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }).ToArray();
             var toDelete = type.Where(t => User.HasClaim(x => x.Type == t)).ToArray();
             resourceOwner.Claims = resourceOwner.Claims
@@ -380,19 +387,24 @@ namespace SimpleAuth.Controllers
             ResourceOwner resourceOwner, ClaimData[] previousClaims)
         {
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
-            var value = Request.Headers[HttpRequestHeader.Authorization.ToString()].FirstOrDefault();
-
-            if (value == null)
+            if (!AuthenticationHeaderValue.TryParse(Request.Headers[HeaderNames.Authorization], out var value))
             {
                 return BadRequest();
             }
 
-            var accessToken = value.Split(' ').Last();
+            var accessToken = value.Parameter!;
 
             var existingToken = await _tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
-
+            if (existingToken == null)
+            {
+                return BadRequest();
+            }
             var client = await _clientRepository.GetById(existingToken.ClientId, cancellationToken)
                 .ConfigureAwait(false);
+            if (client == null)
+            {
+                return BadRequest();
+            }
             var refreshedResponse = await _refreshOperation.Execute(
                     new RefreshTokenGrantTypeParameter
                     {
@@ -417,15 +429,15 @@ namespace SimpleAuth.Controllers
             await _tokenStore.RemoveAccessToken(refreshedToken.AccessToken, cancellationToken).ConfigureAwait(false);
             await _tokenStore.AddToken(refreshedToken, cancellationToken).ConfigureAwait(false);
 
-            await _eventPublisher.Publish(new ClaimsUpdated(Id.Create(), resourceOwner.Subject,
-                previousClaims,
-                resourceOwner.Claims
-                    .Select(claim => new ClaimData
-                    {
-                        Type = claim.Type,
-                        Value = claim.Value
-                    }).ToArray(),
-                DateTimeOffset.UtcNow)).ConfigureAwait(false);
+            await _eventPublisher.Publish(
+                    new ClaimsUpdated(
+                        Id.Create(),
+                        resourceOwner.Subject!,
+                        previousClaims,
+                        resourceOwner.Claims.Select(claim => new ClaimData {Type = claim.Type, Value = claim.Value})
+                            .ToArray(),
+                        DateTimeOffset.UtcNow))
+                .ConfigureAwait(false);
 
             return result
                 ? new JsonResult(new GrantedTokenResponse
@@ -450,12 +462,27 @@ namespace SimpleAuth.Controllers
         [HttpPut("password")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> UpdatePassword(
-            [FromBody] UpdateResourceOwnerPasswordRequest request,
+            [FromBody] UpdateResourceOwnerPasswordRequest? request,
             CancellationToken cancellationToken)
         {
-            if (request == null)
+            if (request?.Subject == null)
             {
-                return BadRequest(Strings.ParameterInRequestBodyIsNotValid);
+                return BadRequest(new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidParameterCode,
+                    Detail = Strings.LoginParameterMissing
+                });
+            }
+
+            if (request?.Password == null)
+            {
+                return BadRequest(new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidParameterCode,
+                    Detail = Strings.PasswordParameterMissing
+                });
             }
 
             var resourceOwner =
@@ -493,14 +520,9 @@ namespace SimpleAuth.Controllers
             [FromBody] AddResourceOwnerRequest addResourceOwnerRequest,
             CancellationToken cancellationToken)
         {
-            if (addResourceOwnerRequest == null)
-            {
-                return BadRequest(Strings.ParameterInRequestBodyIsNotValid);
-            }
-
             var resourceOwner = new ResourceOwner
             {
-                Subject = addResourceOwnerRequest.Subject,
+                Subject = addResourceOwnerRequest.Subject ?? string.Empty,
                 Password = addResourceOwnerRequest.Password,
                 IsLocalAccount = true,
             };

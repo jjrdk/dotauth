@@ -73,7 +73,7 @@
                 }
 
                 _tickets[ticketId].IsAuthorizedByRo = true;
-                return (true, _tickets[ticketId].Requester?.ToArray());
+                return (true, _tickets[ticketId].Requester.ToArray());
             }
             finally
             {
@@ -82,7 +82,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
+        public async Task<Ticket?> Get(string ticketId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(ticketId))
             {

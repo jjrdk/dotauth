@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared.Requests
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -29,7 +30,7 @@ namespace SimpleAuth.Shared.Requests
         /// The resource set identifier.
         /// </value>
         [DataMember(Name = "resource_set_id")]
-        public string ResourceSetId { get; set; }
+        public string? ResourceSetId { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes.
@@ -38,12 +39,12 @@ namespace SimpleAuth.Shared.Requests
         /// The scopes.
         /// </value>
         [DataMember(Name = "scopes")]
-        public string[] Scopes { get; set; }
+        public string[]? Scopes { get; set; }
 
         /// <summary>
         /// Gets or sets the id token of the ticket requester.
         /// </summary>
         [DataMember(Name = "id_token")]
-        public string IdToken { get; set; }
+        public string? IdToken { get; set; }
     }
 }

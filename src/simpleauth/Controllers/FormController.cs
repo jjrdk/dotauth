@@ -30,7 +30,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         public ActionResult Index()
         {
-            var queryStringValue = Request.QueryString.Value;
+            var queryStringValue = Request.QueryString.Value ?? string.Empty;
             var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(queryStringValue);
             var viewModel = new FormViewModel();
             if (queryString.ContainsKey(StandardAuthorizationResponseNames.AccessTokenName))

@@ -57,7 +57,7 @@
         /// <value>
         /// The picture.
         /// </value>
-        public string Picture { get; }
+        public string? Picture { get; }
 
         /// <summary>
         /// Gets or sets the linked identity providers.
@@ -65,7 +65,7 @@
         /// <value>
         /// The linked identity providers.
         /// </value>
-        public ICollection<IdentityProviderViewModel> LinkedIdentityProviders { get; set; }
+        public ICollection<IdentityProviderViewModel> LinkedIdentityProviders { get; }
 
         /// <summary>
         /// Gets or sets the unlinked identity providers.

@@ -29,7 +29,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<Client> GetById(string clientId, CancellationToken cancellationToken = default)
+        public async Task<Client?> GetById(string clientId, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
             var client = await session.LoadAsync<Client>(clientId, cancellationToken).ConfigureAwait(false);

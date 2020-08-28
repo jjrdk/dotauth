@@ -31,6 +31,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using Xunit;
 
     public class TokenClientFixture
@@ -413,7 +414,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_grant", error.Title);
-            Assert.Equal("the refresh token is not valid", error.Detail);
+            Assert.Equal(Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, error.Detail);
         }
 
         [Fact]

@@ -35,12 +35,12 @@ namespace SimpleAuth.Client
     /// </summary>
     public class TokenClient : ClientBase, ITokenClient
     {
-        private readonly GetDiscoveryOperation _discoveryOperation;
-        private readonly AuthenticationHeaderValue _authorizationValue;
-        private readonly X509Certificate2 _certificate;
+        private readonly GetDiscoveryOperation? _discoveryOperation;
+        private readonly AuthenticationHeaderValue? _authorizationValue;
+        private readonly X509Certificate2? _certificate;
         private readonly TokenCredentials _form;
         private readonly Func<HttpClient> _client;
-        private DiscoveryInformation _discovery;
+        private DiscoveryInformation? _discovery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenClient"/> class.
@@ -259,7 +259,7 @@ namespace SimpleAuth.Client
 
         private async Task<DiscoveryInformation> GetDiscoveryInformation(CancellationToken cancellationToken = default)
         {
-            return _discovery ??= await _discoveryOperation.Execute(cancellationToken)
+            return _discovery ??= await _discoveryOperation!.Execute(cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -293,7 +293,7 @@ namespace SimpleAuth.Client
             {
                 request.Method = HttpMethod.Post;
                 request.Content =
-                    new FormUrlEncodedContent(new Dictionary<string, string> { { "access_token", accessToken } });
+                    new FormUrlEncodedContent(new[] { new KeyValuePair<string?, string?>("access_token", accessToken) });
             }
             else
             {

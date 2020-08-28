@@ -30,13 +30,13 @@ namespace SimpleAuth.Shared.Models
         /// The name.
         /// </value>
         [DataMember(Name = "name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the icon uri.
         /// </summary>
         [DataMember(Name = "icon_uri")]
-        public Uri IconUri { get; set; }
+        public Uri? IconUri { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
@@ -45,7 +45,7 @@ namespace SimpleAuth.Shared.Models
         /// The description.
         /// </value>
         [DataMember(Name = "description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is displayed in consent.
@@ -72,7 +72,7 @@ namespace SimpleAuth.Shared.Models
         /// The type.
         /// </value>
         [DataMember(Name = "type")]
-        public string Type { get; set; }
+        public string Type { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the claims.

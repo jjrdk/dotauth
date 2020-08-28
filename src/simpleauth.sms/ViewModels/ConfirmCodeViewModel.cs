@@ -11,7 +11,7 @@
         /// <value>
         /// The code.
         /// </value>
-        public string Code { get; set; }
+        public string? Code { get; set; }
 
         /// <summary>
         /// Gets or sets the confirmation code.
@@ -19,7 +19,7 @@
         /// <value>
         /// The confirmation code.
         /// </value>
-        public string ConfirmationCode { get; set; }
+        public string? ConfirmationCode { get; set; }
 
         /// <summary>
         /// Gets or sets the action.
@@ -27,6 +27,6 @@
         /// <value>
         /// The action.
         /// </value>
-        public string Action { get; set; }
+        public string? Action { get; set; }
     }
 }

@@ -6,7 +6,7 @@
     /// <summary>
     /// Defines the SMS OpenID local authentication view model.
     /// </summary>
-    /// <seealso cref="SimpleAuth.ViewModels.AuthorizeOpenIdViewModel" />
+    /// <seealso cref="AuthorizeOpenIdViewModel" />
     public class SmsOpenIdLocalAuthenticationViewModel : AuthorizeOpenIdViewModel
     {
         /// <summary>
@@ -16,6 +16,6 @@
         /// The phone number.
         /// </value>
         [Required]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
     }
 }

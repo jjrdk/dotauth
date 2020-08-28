@@ -50,10 +50,10 @@ namespace SimpleAuth.Api.Authorization
             ClaimsPrincipal claimsPrincipal,
             Client client,
             string issuerName,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
-            Consent confirmedConsent = null;
+            Consent? confirmedConsent = null;
             if (endUserIsAuthenticated)
             {
                 confirmedConsent =
@@ -61,9 +61,9 @@ namespace SimpleAuth.Api.Authorization
                         .ConfigureAwait(false);
             }
 
-            EndpointResult result = null;
+            EndpointResult? result = null;
             var prompts = authorizationParameter.Prompt.ParsePrompts();
-            if (prompts == null || !prompts.Any())
+            if (prompts.Count == 0)
             {
                 prompts = new List<string>();
                 if (!endUserIsAuthenticated)
@@ -138,7 +138,7 @@ namespace SimpleAuth.Api.Authorization
                     if (maxAge < currentDateTimeUtc - authenticationDateTime)
                     {
                         result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
-                        result.RedirectInstruction.Action = SimpleAuthEndPoints.AuthenticateIndex;
+                        result.RedirectInstruction!.Action = SimpleAuthEndPoints.AuthenticateIndex;
                     }
                 }
             }
@@ -185,7 +185,7 @@ namespace SimpleAuth.Api.Authorization
 
                 var client = await _clientStore.GetById(authorizationParameter.ClientId, cancellationToken)
                     .ConfigureAwait(false);
-                var validationParameters = await client
+                var validationParameters = client == null ? null : await client
                     .CreateValidationParameters(_jwksStore, issuerName, cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
                 handler.ValidateToken(token, validationParameters, out var securityToken);
@@ -220,7 +220,7 @@ namespace SimpleAuth.Api.Authorization
             ICollection<string> prompts,
             ClaimsPrincipal principal,
             AuthorizationParameter authorizationParameter,
-            Consent confirmedConsent)
+            Consent? confirmedConsent)
         {
             if (prompts == null || !prompts.Any())
             {
@@ -262,7 +262,7 @@ namespace SimpleAuth.Api.Authorization
             if (prompts.Contains(PromptParameters.Login))
             {
                 var result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction.Action = SimpleAuthEndPoints.AuthenticateIndex;
+                result.RedirectInstruction!.Action = SimpleAuthEndPoints.AuthenticateIndex;
                 return result;
             }
 
@@ -271,11 +271,11 @@ namespace SimpleAuth.Api.Authorization
                 var result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
                 if (!endUserIsAuthenticated)
                 {
-                    result.RedirectInstruction.Action = SimpleAuthEndPoints.AuthenticateIndex;
+                    result.RedirectInstruction!.Action = SimpleAuthEndPoints.AuthenticateIndex;
                     return result;
                 }
 
-                result.RedirectInstruction.Action = SimpleAuthEndPoints.ConsentIndex;
+                result.RedirectInstruction!.Action = SimpleAuthEndPoints.ConsentIndex;
                 return result;
             }
 
@@ -285,19 +285,23 @@ namespace SimpleAuth.Api.Authorization
                 authorizationParameter.State);
         }
 
-        private async Task<Consent> GetResourceOwnerConsent(
+        private async Task<Consent?> GetResourceOwnerConsent(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
             CancellationToken cancellationToken)
         {
             var subject = claimsPrincipal.GetSubject();
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                return null;
+            }
             return await _consentRepository.GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
         }
 
         private static bool IsAuthenticated(ClaimsPrincipal principal)
         {
-            return principal?.Identity?.IsAuthenticated ?? false;
+            return principal.Identity?.IsAuthenticated ?? false;
         }
     }
 }

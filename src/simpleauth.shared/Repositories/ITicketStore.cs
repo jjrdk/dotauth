@@ -41,7 +41,7 @@
         /// <param name="ticketId">The ticket identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<Ticket> Get(string ticketId, CancellationToken cancellationToken = default);
+        Task<Ticket?> Get(string ticketId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all tickets for the owner.

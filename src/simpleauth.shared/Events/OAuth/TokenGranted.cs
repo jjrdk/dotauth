@@ -19,7 +19,7 @@ namespace SimpleAuth.Shared.Events.OAuth
     /// <summary>
     /// Defines the toke granted event.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Event" />
+    /// <seealso cref="Event" />
     public class TokenGranted : Event
     {
         /// <summary>
@@ -31,7 +31,7 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// <param name="scopes">The granted scopes</param>
         /// <param name="grantType">The used grant type.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public TokenGranted(string id, string subject, string clientId, string scopes, string grantType, DateTimeOffset timestamp)
+        public TokenGranted(string id, string? subject, string clientId, string scopes, string grantType, DateTimeOffset timestamp)
         : base(id, timestamp)
         {
             Subject = subject;
@@ -43,7 +43,7 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// <summary>
         /// The subject of the token.
         /// </summary>
-        public string Subject { get; }
+        public string? Subject { get; }
 
         /// <summary>
         /// The authorized client.

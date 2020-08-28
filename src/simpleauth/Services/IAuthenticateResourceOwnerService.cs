@@ -30,7 +30,7 @@ namespace SimpleAuth.Services
         /// <param name="password">The password.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<ResourceOwner> AuthenticateResourceOwner(
+        Task<ResourceOwner?> AuthenticateResourceOwner(
             string login,
             string password,
             CancellationToken cancellationToken = default);

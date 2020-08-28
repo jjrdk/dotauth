@@ -93,7 +93,7 @@
         /// <returns></returns>
         Task<GenericResponse<PagedResult<ResourceSet>>> SearchResources(
             SearchResourceSet parameter,
-            string token = null,
+            string? token = null,
             CancellationToken cancellationToken = default);
     }
 }

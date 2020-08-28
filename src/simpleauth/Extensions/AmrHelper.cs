@@ -7,7 +7,7 @@
 
     internal static class AmrHelper
     {
-        public static string GetAmr(this string[] currentAmrs, string[] exceptedAmrs = null)
+        public static string GetAmr(this string[] currentAmrs, string[]? exceptedAmrs = null)
         {
             if (currentAmrs == null || currentAmrs.Length == 0)
             {

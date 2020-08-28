@@ -176,8 +176,8 @@
             try
             {
                 var resourceOwner = await _resourceOwnerServices.Authenticate(
-                        authorizeViewModel.Login,
-                        authorizeViewModel.Password,
+                        authorizeViewModel!.Login!,
+                        authorizeViewModel!.Password!,
                         cancellationToken)
                     .ConfigureAwait(false);
                 if (resourceOwner == null)
@@ -332,7 +332,7 @@
                         await _eventPublisher.Publish(
                                 new SimpleAuthError(
                                     Id.Create(),
-                                    se?.Code,
+                                    se?.Code ?? ex.Message,
                                     ex.Message,
                                     string.Empty,
                                     DateTimeOffset.UtcNow))
@@ -345,13 +345,13 @@
                 else
                 {
                     // 6. Authenticate the user by adding a cookie
-                    await SetLocalCookie(actionResult.Claims, request.session_id).ConfigureAwait(false);
+                    await SetLocalCookie(actionResult.Claims, request.session_id!).ConfigureAwait(false);
 
                     // 7. Redirect the user agent
                     var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request, _logger);
                     if (result != null)
                     {
-                        await LogAuthenticateUser(subject, actionResult.EndpointResult?.Amr).ConfigureAwait(false);
+                        await LogAuthenticateUser(subject, actionResult!.EndpointResult.Amr!).ConfigureAwait(false);
                         return result;
                     }
                 }

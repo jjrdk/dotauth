@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.WebSite.Consent.Actions
 {
+    using System;
     using Api.Authorization;
     using Common;
     using Exceptions;
@@ -86,7 +87,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             }
 
             EndpointResult endpointResult;
-            var subject = claimsPrincipal.GetSubject();
+            var subject = claimsPrincipal.GetSubject()!;
             var assignedConsent = await _consentRepository.GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
             // If there's already a consent then redirect to the callback
@@ -109,12 +110,12 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
-                endpointResult.RedirectInstruction.ResponseMode = responseMode;
+                endpointResult.RedirectInstruction!.ResponseMode = responseMode;
                 return new DisplayContentResult { EndpointResult = endpointResult };
             }
 
-            ICollection<string> allowedClaims = null;
-            ICollection<Scope> allowedScopes = null;
+            ICollection<string> allowedClaims = Array.Empty<string>();
+            ICollection<Scope> allowedScopes = Array.Empty<Scope>();
             var claimsParameter = authorizationParameter.Claims;
             if (claimsParameter.IsAnyIdentityTokenClaimParameter() || claimsParameter.IsAnyUserInfoClaimParameter())
             {
@@ -122,7 +123,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
             }
             else
             {
-                allowedScopes = (await GetScopes(authorizationParameter.Scope, cancellationToken).ConfigureAwait(false))
+                allowedScopes = (await GetScopes(authorizationParameter.Scope!, cancellationToken).ConfigureAwait(false))
                     .Where(s => s.IsDisplayedInConsent)
                     .ToList();
             }

@@ -27,7 +27,7 @@ namespace SimpleAuth.Extensions
 
     internal static class ClientHelper
     {
-        public static async Task<string> GenerateIdToken(
+        public static async Task<string?> GenerateIdToken(
             this IClientStore clientStore, string clientId, JwtPayload jwsPayload, IJwksStore jwksStore,
             CancellationToken cancellationToken)
         {
@@ -39,10 +39,10 @@ namespace SimpleAuth.Extensions
 
         public static async Task<List<SigningCredentials>> GetSigningCredentials(this Client client, IJwksStore jwksStore, CancellationToken cancellationToken = default)
         {
-            var signingKeys = client.JsonWebKeys?.Keys.Where(key => key.Use == JsonWebKeyUseNames.Sig)
+            var signingKeys = client.JsonWebKeys.Keys.Where(key => key.Use == JsonWebKeyUseNames.Sig)
                 .Select(key => new SigningCredentials(key, key.Alg))
                 .ToList();
-            if (signingKeys?.Count == 0)
+            if (signingKeys.Count == 0)
             {
                 var keys = await (client.IdTokenSignedResponseAlg == null
                     ? jwksStore.GetDefaultSigningKey(cancellationToken)

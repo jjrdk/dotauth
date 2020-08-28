@@ -23,7 +23,7 @@ namespace SimpleAuth.Extensions
 
     internal static class ControllerExtensions
     {
-        public static string GetOriginUrl(this ControllerBase controller)
+        public static string? GetOriginUrl(this ControllerBase controller)
         {
             if (!controller.Request.Headers.ContainsKey("Referer"))
             {
@@ -35,7 +35,7 @@ namespace SimpleAuth.Extensions
             return $"{uri.Scheme}://{uri.Authority}";
         }
 
-        public static ActionResult CreateRedirectionFromActionResult(
+        public static ActionResult? CreateRedirectionFromActionResult(
             this EndpointResult endpointResult,
             AuthorizationRequest authorizationRequest,
             ILogger logger)
@@ -44,9 +44,9 @@ namespace SimpleAuth.Extensions
             {
                 var parameters = endpointResult.GetRedirectionParameters();
                 var redirectUrl = CreateRedirectHttp(
-                    authorizationRequest.redirect_uri,
+                    authorizationRequest.redirect_uri!,
                     parameters,
-                    endpointResult.RedirectInstruction.ResponseMode).ToString();
+                    endpointResult.RedirectInstruction!.ResponseMode!).ToString();
                 logger.LogInformation($"Redirection uri: {redirectUrl}");
 
                 return new RedirectResult(redirectUrl);

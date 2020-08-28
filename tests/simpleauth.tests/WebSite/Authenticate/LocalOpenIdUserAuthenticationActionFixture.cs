@@ -32,16 +32,17 @@
         }
 
         [Fact]
-        public async Task When_Passing_Empty_Parameter_Then_Exceptions_Are_Thrown()
+        public async Task WhenPassingEmptyParameterThenErrorIsReturned()
         {
-            await Assert.ThrowsAsync<NullReferenceException>(
-                    () => _localUserAuthenticationAction.Execute(
+            var result = await _localUserAuthenticationAction.Execute(
                         new LocalAuthenticationParameter(),
                         null,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
+
+            Assert.NotNull(result.ErrorMessage);
         }
 
         [Fact]
@@ -61,11 +62,12 @@
             var authorizationParameter = new AuthorizationParameter();
 
             var result = await _localUserAuthenticationAction.Execute(
-                       localAuthenticationParameter,
-                       authorizationParameter,
-                       null,
-                       null,
-                       CancellationToken.None).ConfigureAwait(false);
+                    localAuthenticationParameter,
+                    authorizationParameter,
+                    null,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false);
 
             Assert.NotNull(result.ErrorMessage);
         }
@@ -74,8 +76,8 @@
         public async Task When_Resource_Owner_Credentials_Are_Correct_Then_Event_Is_Logged_And_Claims_Are_Returned()
         {
             const string subject = "subject";
-            var localAuthenticationParameter = new LocalAuthenticationParameter();
-            var authorizationParameter = new AuthorizationParameter();
+            var localAuthenticationParameter = new LocalAuthenticationParameter { Password = "abc", UserName = subject };
+            var authorizationParameter = new AuthorizationParameter{ClientId = "client"};
             var resourceOwner = new ResourceOwner { Subject = subject };
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
             authenticateService.SetupGet(x => x.Amr).Returns("pwd");
@@ -100,8 +102,7 @@
             Assert.NotNull(result.Claims);
             Assert.Contains(
                 result.Claims,
-                r => r.Type == ClaimTypes.AuthenticationInstant
-                     || r.Type == OpenIdClaimTypes.Subject);
+                r => r.Type == ClaimTypes.AuthenticationInstant || r.Type == OpenIdClaimTypes.Subject);
         }
 
         private void InitializeFakeObjects(params IAuthenticateResourceOwnerService[] services)

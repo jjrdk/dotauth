@@ -23,7 +23,7 @@
 
         public string Amr => SmsConstants.Amr;
 
-        public async Task<ResourceOwner> AuthenticateResourceOwner(
+        public async Task<ResourceOwner?> AuthenticateResourceOwner(
             string login,
             string password,
             CancellationToken cancellationToken)
@@ -57,7 +57,7 @@
                 .ConfigureAwait(false);
             if (resourceOwner != null)
             {
-                await _confirmationCodeStore.Remove(password, resourceOwner.Subject, cancellationToken)
+                await _confirmationCodeStore.Remove(password, resourceOwner.Subject!, cancellationToken)
                     .ConfigureAwait(false);
             }
 

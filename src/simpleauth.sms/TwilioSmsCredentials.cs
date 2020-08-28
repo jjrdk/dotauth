@@ -11,7 +11,7 @@
         /// <value>
         /// The account sid.
         /// </value>
-        public string AccountSid { get; set; } = string.Empty;
+        public string AccountSid { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the authentication token.
@@ -19,7 +19,7 @@
         /// <value>
         /// The authentication token.
         /// </value>
-        public string AuthToken { get; set; } = string.Empty;
+        public string AuthToken { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets from number.
@@ -27,6 +27,6 @@
         /// <value>
         /// From number.
         /// </value>
-        public string FromNumber { get; set; }
+        public string FromNumber { get; set; } = null!;
     }
 }

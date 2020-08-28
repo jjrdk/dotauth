@@ -32,7 +32,7 @@ namespace SimpleAuth.Api.Discovery
 
         public DiscoveryActions(IScopeRepository scopeRepository)
         {
-            _version = GetType().Assembly.GetName().Version.ToString(4);
+            _version = GetType().Assembly.GetName().Version?.ToString(4)!;
             _scopeRepository = scopeRepository;
         }
 

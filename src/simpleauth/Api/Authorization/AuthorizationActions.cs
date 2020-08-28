@@ -17,13 +17,12 @@ namespace SimpleAuth.Api.Authorization
     using Exceptions;
     using Parameters;
     using Results;
-    using Shared;
     using Shared.Events.OAuth;
     using Shared.Repositories;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Principal;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Events;
@@ -89,7 +88,7 @@ namespace SimpleAuth.Api.Authorization
 
         public async Task<EndpointResult> GetAuthorization(
             AuthorizationParameter parameter,
-            IPrincipal claimsPrincipal,
+            ClaimsPrincipal claimsPrincipal,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -97,7 +96,7 @@ namespace SimpleAuth.Api.Authorization
 
             var client = await _authorizationCodeGrantTypeParameterValidator.Validate(parameter, cancellationToken)
                 .ConfigureAwait(false);
-            EndpointResult endpointResult = null;
+            EndpointResult? endpointResult = null;
 
             if (client.RequirePkce
                 && (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null))
@@ -134,9 +133,9 @@ namespace SimpleAuth.Api.Authorization
             }
 
             await _eventPublisher.Publish(
-                    new AuthorizationGranted(Id.Create(), claimsPrincipal?.Identity.Name, client.ClientId, DateTimeOffset.UtcNow))
+                    new AuthorizationGranted(Id.Create(), claimsPrincipal.Identity?.Name, client.ClientId, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
-            endpointResult.ProcessId = processId;
+            endpointResult!.ProcessId = processId;
             endpointResult.Amr = _resourceOwnerServices.GetAmrs().ToArray().GetAmr(parameter.AmrValues.ToArray());
             return endpointResult;
         }

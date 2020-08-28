@@ -23,7 +23,7 @@
             string id,
             string ticketId,
             string clientId,
-            IEnumerable<Claim> requester,
+            IEnumerable<Claim>? requester,
             DateTimeOffset timestamp)
             : base(id, timestamp)
         {

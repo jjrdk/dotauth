@@ -54,7 +54,7 @@ namespace SimpleAuth.Authenticate
             string issuerName,
             CancellationToken cancellationToken)
         {
-            Client client = null;
+            Client? client = null;
             // First we try to fetch the client_id
             // The different client authentication mechanisms are described here : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
             var clientId = TryGettingClientId(instruction);
@@ -88,7 +88,7 @@ namespace SimpleAuth.Authenticate
 
                     break;
                 case TokenEndPointAuthenticationMethods.ClientSecretJwt:
-                    if (client.Secrets == null || client.Secrets.All(s => s.Type != ClientSecretTypes.SharedSecret))
+                    if (client.Secrets.All(s => s.Type != ClientSecretTypes.SharedSecret))
                     {
                         errorMessage = string.Format(
                             Strings.TheClientDoesntContainASharedSecret,
@@ -120,7 +120,7 @@ namespace SimpleAuth.Authenticate
         /// </summary>
         /// <param name="instruction">Authentication instruction</param>
         /// <returns>Client id</returns>
-        private string TryGettingClientId(AuthenticateInstruction instruction)
+        private string? TryGettingClientId(AuthenticateInstruction instruction)
         {
             var clientId = _clientAssertionAuthentication.GetClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))

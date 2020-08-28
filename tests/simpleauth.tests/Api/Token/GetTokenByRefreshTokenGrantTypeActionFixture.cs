@@ -49,7 +49,6 @@ namespace SimpleAuth.Tests.Api.Token
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
                 new Mock<IEventPublisher>().Object,
                 _tokenStoreStub.Object,
-                new Mock<IScopeRepository>().Object,
                 new InMemoryJwksRepository(),
                 new InMemoryResourceOwnerRepository(),
                 _clientStore.Object);
@@ -132,16 +131,15 @@ namespace SimpleAuth.Tests.Api.Token
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             var authenticationHeader = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _getTokenByRefreshTokenGrantTypeAction.Execute(
+            var response = await _getTokenByRefreshTokenGrantTypeAction.Execute(
                         parameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidGrant, ex.Code);
-            Assert.Equal(Strings.TheRefreshTokenIsNotValid, ex.Message);
+            Assert.Equal(ErrorCodes.InvalidGrant, response.Error.Title);
+            Assert.Equal(Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, response.Error.Detail);
         }
 
         [Fact]
@@ -175,7 +173,7 @@ namespace SimpleAuth.Tests.Api.Token
         [Fact]
         public async Task When_Requesting_Token_Then_New_One_Is_Generated()
         {
-            var parameter = new RefreshTokenGrantTypeParameter();
+            var parameter = new RefreshTokenGrantTypeParameter { ClientId = "id", RefreshToken = "abc" };
             var grantedToken = new GrantedToken { IdTokenPayLoad = new JwtPayload(), ClientId = "id", Scope = "scope" };
             var client = new Client
             {

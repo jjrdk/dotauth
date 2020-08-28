@@ -53,27 +53,12 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Passing_Empty_Request_Then_Error_Is_Returned()
-        {
-            InitializeFakeObjects();
-
-            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
-                        null,
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None)
-                .ConfigureAwait(false);
-
-            Assert.True(result.HasError);
-        }
-
-        [Fact]
         public async Task When_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
             {
+                Code = "abc",
                 ClientAssertion = "clientAssertion",
                 ClientAssertionType = "clientAssertionType",
                 ClientId = "clientId",
@@ -101,6 +86,7 @@ namespace SimpleAuth.Tests.Api.Token
             var clientSecret = "clientSecret";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
             {
+                Code = "abc",
                 ClientAssertion = "clientAssertion",
                 ClientAssertionType = "clientAssertionType",
                 ClientId = clientId,
@@ -140,6 +126,7 @@ namespace SimpleAuth.Tests.Api.Token
             var clientSecret = "clientSecret";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
             {
+                Code = "abc",
                 ClientAssertion = "clientAssertion",
                 ClientAssertionType = "clientAssertionType",
                 ClientId = clientId,
@@ -220,6 +207,7 @@ namespace SimpleAuth.Tests.Api.Token
             var clientSecret = "clientSecret";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
             {
+                Code = "xyz",
                 CodeVerifier = "abc",
                 ClientAssertion = "clientAssertion",
                 ClientAssertionType = "clientAssertionType",
@@ -262,6 +250,7 @@ namespace SimpleAuth.Tests.Api.Token
             var clientId = "notCorrectClientId";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
             {
+                Code = "abc",
                 ClientAssertion = "clientAssertion",
                 ClientAssertionType = "clientAssertionType",
                 ClientId = clientId,
@@ -307,6 +296,7 @@ namespace SimpleAuth.Tests.Api.Token
             var clientSecret = "clientSecret";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
             {
+                Code = "abc",
                 ClientAssertion = "clientAssertion",
                 ClientAssertionType = "clientAssertionType",
                 ClientId = clientId,
@@ -352,6 +342,7 @@ namespace SimpleAuth.Tests.Api.Token
             var clientSecret = "clientSecret";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
             {
+                Code = "abc",
                 ClientAssertion = "clientAssertion",
                 ClientAssertionType = "clientAssertionType",
                 ClientSecret = clientSecret,
@@ -398,6 +389,7 @@ namespace SimpleAuth.Tests.Api.Token
             var clientSecret = "clientSecret";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
             {
+                Code = "abc",
                 ClientAssertion = "clientAssertion",
                 ClientAssertionType = "clientAssertionType",
                 ClientSecret = clientSecret,
@@ -530,6 +522,7 @@ namespace SimpleAuth.Tests.Api.Token
             var clientSecret = "clientSecret";
             var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
             {
+                Code = "abc",
                 ClientAssertion = "clientAssertion",
                 ClientAssertionType = "clientAssertionType",
                 ClientSecret = clientSecret,
@@ -604,7 +597,6 @@ namespace SimpleAuth.Tests.Api.Token
                 _clientStore.Object,
                 _eventPublisher.Object,
                 _tokenStoreFake.Object,
-                new Mock<IScopeRepository>().Object,
                 _inMemoryJwksRepository);
         }
     }

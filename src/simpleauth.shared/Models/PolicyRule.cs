@@ -66,7 +66,7 @@ namespace SimpleAuth.Shared.Models
         /// The script.
         /// </value>
         [DataMember(Name = "script")]
-        public string Script { get; set; }
+        public string? Script { get; set; }
 
         /// <summary>
         /// Gets or sets the open identifier provider.
@@ -75,6 +75,6 @@ namespace SimpleAuth.Shared.Models
         /// The open identifier provider.
         /// </value>
         [DataMember(Name = "provider")]
-        public string OpenIdProvider { get; set; }
+        public string? OpenIdProvider { get; set; }
     }
 }

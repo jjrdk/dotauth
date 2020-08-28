@@ -24,7 +24,7 @@
         /// <param name="name">The name.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<Scope> Get(string name, CancellationToken cancellationToken);
+        Task<Scope?> Get(string name, CancellationToken cancellationToken);
 
         /// <summary>
         /// Searches the by names.

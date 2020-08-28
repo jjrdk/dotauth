@@ -82,12 +82,12 @@ namespace SimpleAuth
                     policy.RequireAssertion(
                         p =>
                         {
-                            if (p.User?.Identity?.IsAuthenticated != true)
+                            if (p.User.Identity?.IsAuthenticated != true)
                             {
                                 return false;
                             }
 
-                            var claimScopes = p.User?.Claims.FirstOrDefault(c => c.Type == ScopeType);
+                            var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == ScopeType);
                             return claimScopes != null && claimScopes.Value.Split(' ').Any(s => s == "uma_protection");
                         });
                 });
@@ -100,12 +100,12 @@ namespace SimpleAuth
                     policy.RequireAssertion(
                         p =>
                         {
-                            if (p.User?.Identity?.IsAuthenticated != true)
+                            if (p.User.Identity?.IsAuthenticated != true)
                             {
                                 return false;
                             }
 
-                            var result = p.User?.Claims.Where(c => c.Type == ScopeType)
+                            var result = p.User.Claims.Where(c => c.Type == ScopeType)
                                              .Any(c => c.HasClaimValue("manager"))
                                 //         == true
                                 //&& p.User?.Claims.Where(c => c.Type == "role")
@@ -146,8 +146,8 @@ namespace SimpleAuth
             this IServiceCollection services,
             Action<SimpleAuthOptions> configuration,
             string[] authPolicies,
-            Action<MvcOptions> mvcConfig = null,
-            IRequestThrottle requestThrottle = null)
+            Action<MvcOptions>? mvcConfig = null,
+            IRequestThrottle? requestThrottle = null)
         {
             var options = new SimpleAuthOptions();
             configuration(options);
@@ -170,8 +170,8 @@ namespace SimpleAuth
             this IServiceCollection services,
             SimpleAuthOptions options,
             string[] authPolicies,
-            Action<MvcOptions> mvcConfig = null,
-            IRequestThrottle requestThrottle = null,
+            Action<MvcOptions>? mvcConfig = null,
+            IRequestThrottle? requestThrottle = null,
             params Type[] assemblyTypes)
         {
             return AddSimpleAuth(
@@ -180,7 +180,7 @@ namespace SimpleAuth
                 authPolicies,
                 mvcConfig,
                 requestThrottle,
-                assemblyTypes.Select(type => (type.Namespace, type.Assembly)).ToArray());
+                assemblyTypes.Select(type => (type.Namespace ?? string.Empty, type.Assembly)).ToArray());
         }
 
         /// <summary>
@@ -198,8 +198,8 @@ namespace SimpleAuth
             this IServiceCollection services,
             SimpleAuthOptions options,
             string[] authPolicies,
-            Action<MvcOptions> mvcConfig = null,
-            IRequestThrottle requestThrottle = null,
+            Action<MvcOptions>? mvcConfig = null,
+            IRequestThrottle? requestThrottle = null,
             params (string defaultNamespace, Assembly assembly)[] assemblies)
         {
             if (options == null)
@@ -247,10 +247,10 @@ namespace SimpleAuth
                             .AddApplicationPart(a.assembly);
                     })
                 .AddNewtonsoftJson();
-            Globals.ApplicationName = options.ApplicationName ?? "SimpleAuth";
+            Globals.ApplicationName = options.ApplicationName;
             var runtimeConfig = GetRuntimeConfig(options);
             services.AddAuthentication();
-            var policies = authPolicies?.Length > 0 ? authPolicies : new[] { CookieNames.CookieName };
+            var policies = authPolicies.Length > 0 ? authPolicies : new[] { CookieNames.CookieName };
             services.AddAuthorization(opts => { opts.AddAuthPolicies(policies); });
 
             var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
@@ -261,20 +261,20 @@ namespace SimpleAuth
                 .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
                 .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
                 .AddSingleton(sp => options.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
-                .AddSingleton<IJwksStore>(sp => sp.GetService<IJwksRepository>())
+                .AddSingleton<IJwksStore>(sp => sp.GetRequiredService<IJwksRepository>())
                 .AddSingleton(
                     sp => options.Clients?.Invoke(sp)
                           ?? new InMemoryClientRepository(
-                              sp.GetService<IHttpClientFactory>(),
-                              sp.GetService<IScopeStore>(),
-                              sp.GetService<ILogger<InMemoryClientRepository>>()))
-                .AddSingleton<IClientStore>(sp => sp.GetService<IClientRepository>())
+                              sp.GetRequiredService<IHttpClientFactory>(),
+                              sp.GetRequiredService<IScopeStore>(),
+                              sp.GetRequiredService<ILogger<InMemoryClientRepository>>()))
+                .AddSingleton<IClientStore>(sp => sp.GetRequiredService<IClientRepository>())
                 .AddSingleton(sp => options.Consents?.Invoke(sp) ?? new InMemoryConsentRepository())
-                .AddSingleton<IConsentStore>(sp => sp.GetService<IConsentRepository>())
+                .AddSingleton<IConsentStore>(sp => sp.GetRequiredService<IConsentRepository>())
                 .AddSingleton(sp => options.Users?.Invoke(sp) ?? new InMemoryResourceOwnerRepository())
-                .AddSingleton<IResourceOwnerStore>(sp => sp.GetService<IResourceOwnerRepository>())
+                .AddSingleton<IResourceOwnerStore>(sp => sp.GetRequiredService<IResourceOwnerRepository>())
                 .AddSingleton(sp => options.Scopes?.Invoke(sp) ?? new InMemoryScopeRepository())
-                .AddSingleton<IScopeStore>(sp => sp.GetService<IScopeRepository>())
+                .AddSingleton<IScopeStore>(sp => sp.GetRequiredService<IScopeRepository>())
                 .AddSingleton(sp => options.ResourceSets?.Invoke(sp) ?? new InMemoryResourceSetRepository())
                 .AddSingleton(sp => options.Tickets?.Invoke(sp) ?? new InMemoryTicketStore())
                 .AddSingleton(sp => options.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
@@ -297,12 +297,12 @@ namespace SimpleAuth
         /// <returns></returns>
         public static IApplicationBuilder UseSimpleAuthMvc(
             this IApplicationBuilder app,
-            Action<ForwardedHeadersOptions> forwardedHeaderConfiguration = null,
+            Action<ForwardedHeadersOptions>? forwardedHeaderConfiguration = null,
             params Type[] applicationTypes)
         {
             return app.UseSimpleAuthMvc(
                 forwardedHeaderConfiguration,
-                applicationTypes.Select(type => (type.Namespace, type.Assembly)).ToArray());
+                applicationTypes.Select(type => (type.Namespace ?? string.Empty, type.Assembly)).ToArray());
         }
 
         /// <summary>
@@ -314,7 +314,7 @@ namespace SimpleAuth
         /// <returns></returns>
         public static IApplicationBuilder UseSimpleAuthMvc(
             this IApplicationBuilder app,
-            Action<ForwardedHeadersOptions> forwardedHeaderConfiguration = null,
+            Action<ForwardedHeadersOptions>? forwardedHeaderConfiguration = null,
             params (string defaultNamespace, Assembly assembly)[] assemblies)
         {
             var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();

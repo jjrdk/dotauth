@@ -5,7 +5,7 @@
 
     internal class ClaimParameter
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
 
@@ -13,7 +13,7 @@
 
         public string Value => GetString(CoreConstants.StandardClaimParameterValueNames.ValueName);
 
-        public string[] Values => GetArray(CoreConstants.StandardClaimParameterValueNames.ValuesName);
+        public string[]? Values => GetArray(CoreConstants.StandardClaimParameterValueNames.ValuesName);
 
         public bool EssentialParameterExist => Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.EssentialName);
 
@@ -41,10 +41,10 @@
                 return string.Empty;
             }
 
-            return keyPair.Value.ToString();
+            return keyPair.Value.ToString()!;
         }
 
-        private string[] GetArray(string name)
+        private string[]? GetArray(string name)
         {
             var keyPair = Parameters.FirstOrDefault(p => p.Key == name);
             if (keyPair.Equals(default(KeyValuePair<string, object>))
@@ -60,7 +60,7 @@
             }
 
             var result = (object[])value;
-            return result.Select(r => r.ToString()).ToArray();
+            return result.Select(r => r.ToString()!).ToArray();
         }
     }
 }

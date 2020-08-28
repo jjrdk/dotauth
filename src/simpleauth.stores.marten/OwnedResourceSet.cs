@@ -12,7 +12,7 @@
         /// Gets or sets the resource set owner.
         /// </summary>
         [DataMember(Name = "owner")]
-        public string Owner { get; set; }
+        public string Owner { get; set; } = null!;
 
         /// <summary>
         /// Returns the resource set base.

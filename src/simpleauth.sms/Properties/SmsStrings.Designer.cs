@@ -61,6 +61,15 @@ namespace SimpleAuth.Sms.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The phone number is missing.
+        /// </summary>
+        internal static string MissingPhoneNumber {
+            get {
+                return ResourceManager.GetString("MissingPhoneNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The confirmation code cannot be saved.
         /// </summary>
         internal static string TheConfirmationCodeCannotBeSaved {

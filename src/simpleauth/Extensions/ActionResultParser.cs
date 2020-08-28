@@ -19,7 +19,7 @@ namespace SimpleAuth.Extensions
 
     internal static class ActionResultParser
     {
-        public static ActionInformation GetControllerAndActionFromRedirectionActionResult(
+        public static ActionInformation? GetControllerAndActionFromRedirectionActionResult(
             this EndpointResult endpointResult)
         {
             if (endpointResult.Type != ActionResultType.RedirectToAction || endpointResult.RedirectInstruction == null)
@@ -36,7 +36,7 @@ namespace SimpleAuth.Extensions
                 && endpointResult.Type != ActionResultType.RedirectToCallBackUrl
                 || endpointResult.RedirectInstruction == null)
             {
-                return null;
+                return new RouteValueDictionary();
             }
 
             return endpointResult.RedirectInstruction.GetRouteValueDictionary();

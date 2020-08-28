@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared.Responses
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -25,6 +26,6 @@ namespace SimpleAuth.Shared.Responses
         /// Gets or sets a list of scopes
         /// </summary>
         [DataMember(Name = "scope")]
-        public string[] Scope { get; set; }
+        public string[] Scope { get; set; } = Array.Empty<string>();
     }
 }

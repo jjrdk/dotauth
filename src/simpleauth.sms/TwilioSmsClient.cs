@@ -39,7 +39,7 @@
         /// or
         /// message
         /// </exception>
-        public async Task<(bool, string)> SendMessage(string toPhoneNumber, string message)
+        public async Task<(bool, string?)> SendMessage(string toPhoneNumber, string message)
         {
             if (string.IsNullOrWhiteSpace(toPhoneNumber))
             {
@@ -51,11 +51,11 @@
                 throw new ArgumentException(nameof(message));
             }
 
-            var keyValues = new List<KeyValuePair<string, string>>
+            var keyValues = new []
             {
-                new KeyValuePair<string, string>("To", toPhoneNumber),
-                new KeyValuePair<string, string>("From", _credentials.FromNumber),
-                new KeyValuePair<string, string>("Body", message)
+                new KeyValuePair<string?, string?>("To", toPhoneNumber),
+                new KeyValuePair<string?, string?>("From", _credentials.FromNumber),
+                new KeyValuePair<string?, string?>("Body", message)
             };
             var content = new FormUrlEncodedContent(keyValues);
             var postUrl = string.Format(CultureInfo.InvariantCulture, TwilioSmsEndpointFormat, _credentials.AccountSid);

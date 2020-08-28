@@ -29,7 +29,7 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// <param name="subject">The authorized subject.</param>
         /// <param name="clientId">The authorized client.</param>
         /// <param name="timestamp">The timestamp.</param>
-        public AuthorizationGranted(string id, string subject, string clientId, DateTimeOffset timestamp)
+        public AuthorizationGranted(string id, string? subject, string clientId, DateTimeOffset timestamp)
         : base(id, timestamp)
         {
             Subject = subject;
@@ -39,7 +39,7 @@ namespace SimpleAuth.Shared.Events.OAuth
         /// <summary>
         /// The authorized subject.
         /// </summary>
-        public string Subject { get; }
+        public string? Subject { get; }
 
         /// <summary>
         /// The authorized client.

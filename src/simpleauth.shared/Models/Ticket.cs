@@ -28,12 +28,12 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier.
         /// </value>
-        public string Id { get; set; }
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the owner of the resource that the ticket relates to.
         /// </summary>
-        public string ResourceOwner { get; set; }
+        public string ResourceOwner { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is authorized by ro.
@@ -65,11 +65,11 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The lines.
         /// </value>
-        public TicketLine[] Lines { get; set; }
+        public TicketLine[] Lines { get; set; } = Array.Empty<TicketLine>();
 
         /// <summary>
         /// Gets or sets the claims associated with the requester.
         /// </summary>
-        public Claim[] Requester { get; set; }
+        public Claim[] Requester { get; set; } = Array.Empty<Claim>();
     }
 }

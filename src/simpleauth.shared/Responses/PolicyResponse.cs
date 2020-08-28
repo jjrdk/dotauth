@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Shared.Responses
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -29,7 +30,7 @@ namespace SimpleAuth.Shared.Responses
         /// The identifier.
         /// </value>
         [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the rules.
@@ -38,6 +39,6 @@ namespace SimpleAuth.Shared.Responses
         /// The rules.
         /// </value>
         [DataMember(Name = "rules")]
-        public PolicyRuleResponse[] Rules { get; set; }
+        public PolicyRuleResponse[] Rules { get; set; } = Array.Empty<PolicyRuleResponse>();
     }
 }

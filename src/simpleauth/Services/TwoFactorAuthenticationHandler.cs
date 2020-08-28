@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Services
 {
-    using Shared;
     using Shared.Models;
     using System;
     using System.Collections.Generic;
@@ -27,19 +26,17 @@ namespace SimpleAuth.Services
 
         public TwoFactorAuthenticationHandler(IEnumerable<ITwoFactorAuthenticationService> twoFactorServices)
         {
-            _twoFactorServices = twoFactorServices == null
-                ? Array.Empty<ITwoFactorAuthenticationService>()
-                : twoFactorServices.ToArray();
+            _twoFactorServices = twoFactorServices.ToArray();
         }
 
-        public ITwoFactorAuthenticationService Get(string twoFactorAuthType)
+        public ITwoFactorAuthenticationService? Get(string twoFactorAuthType)
         {
             if (string.IsNullOrWhiteSpace(twoFactorAuthType))
             {
                 throw new ArgumentNullException(nameof(twoFactorAuthType));
             }
 
-            return _twoFactorServices?.FirstOrDefault(s => s.Name == twoFactorAuthType);
+            return _twoFactorServices.FirstOrDefault(s => s.Name == twoFactorAuthType);
         }
 
         public IEnumerable<ITwoFactorAuthenticationService> GetAll()

@@ -36,8 +36,8 @@ namespace SimpleAuth.Extensions
             string scope,
             string issuerName,
             CancellationToken cancellationToken,
-            JwtPayload userInformationPayload = null,
-            JwtPayload idTokenPayload = null,
+            JwtPayload? userInformationPayload = null,
+            JwtPayload? idTokenPayload = null,
             params Claim[] additionalClaims)
         {
             if (string.IsNullOrWhiteSpace(clientId))
@@ -68,8 +68,8 @@ namespace SimpleAuth.Extensions
             IJwksStore jwksStore,
             string scope,
             string issuerName,
-            JwtPayload userInformationPayload = null,
-            JwtPayload idTokenPayload = null,
+            JwtPayload? userInformationPayload = null,
+            JwtPayload? idTokenPayload = null,
             CancellationToken cancellationToken = default,
             params Claim[] additionalClaims)
         {
@@ -79,8 +79,8 @@ namespace SimpleAuth.Extensions
                     {
                         new Claim(StandardClaimNames.Scopes, string.Join(' ', scope)),
                         new Claim(StandardClaimNames.Azp, client.ClientId),
-                    }.Concat(client.Claims ?? Array.Empty<Claim>())
-                    .Concat(additionalClaims ?? Array.Empty<Claim>())
+                    }.Concat(client.Claims)
+                    .Concat(additionalClaims)
                     .GroupBy(x => x.Type)
                     .Select(x => new Claim(x.Key, string.Join(" ", x.Select(y => y.Value))));
 

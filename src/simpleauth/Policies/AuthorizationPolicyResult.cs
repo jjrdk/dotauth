@@ -28,7 +28,7 @@ namespace SimpleAuth.Policies
         /// <param name="result"></param>
         /// <param name="principal">The requesting principal.</param>
         /// <param name="errorDetails"></param>
-        public AuthorizationPolicyResult(AuthorizationPolicyResultKind result, ClaimsPrincipal principal, object errorDetails = null)
+        public AuthorizationPolicyResult(AuthorizationPolicyResultKind result, ClaimsPrincipal principal, object? errorDetails = null)
         {
             Result = result;
             Principal = principal;
@@ -54,6 +54,6 @@ namespace SimpleAuth.Policies
         /// <value>
         /// The error details.
         /// </value>
-        public object ErrorDetails { get; }
+        public object? ErrorDetails { get; }
     }
 }

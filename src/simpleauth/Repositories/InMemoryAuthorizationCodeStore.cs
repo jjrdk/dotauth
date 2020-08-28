@@ -9,18 +9,18 @@
 
     internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
     {
-        private static Dictionary<string, AuthorizationCode> _mappingStringToAuthCodes;
+        private static readonly Dictionary<string, AuthorizationCode> MappingStringToAuthCodes;
 
-        public InMemoryAuthorizationCodeStore()
+        static InMemoryAuthorizationCodeStore()
         {
-            _mappingStringToAuthCodes = new Dictionary<string, AuthorizationCode>();
+            MappingStringToAuthCodes = new Dictionary<string, AuthorizationCode>();
         }
 
-        public Task<AuthorizationCode> Get(string code, CancellationToken cancellationToken)
+        public Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken)
         {
-            return !_mappingStringToAuthCodes.ContainsKey(code)
-                ? Task.FromResult((AuthorizationCode) null)
-                : Task.FromResult(_mappingStringToAuthCodes[code]);
+            return !MappingStringToAuthCodes.ContainsKey(code)
+                ? Task.FromResult<AuthorizationCode?>(null)
+                : Task.FromResult<AuthorizationCode?>(MappingStringToAuthCodes[code]);
         }
 
         public Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken)
@@ -30,12 +30,12 @@
                 throw new ArgumentNullException(nameof(authorizationCode));
             }
 
-            if (_mappingStringToAuthCodes.ContainsKey(authorizationCode.Code))
+            if (MappingStringToAuthCodes.ContainsKey(authorizationCode.Code))
             {
                 return Task.FromResult(false);
             }
 
-            _mappingStringToAuthCodes.Add(authorizationCode.Code, authorizationCode);
+            MappingStringToAuthCodes.Add(authorizationCode.Code, authorizationCode);
             return Task.FromResult(true);
         }
 
@@ -46,12 +46,12 @@
                 throw new ArgumentNullException(nameof(authorizationCode));
             }
 
-            if (!_mappingStringToAuthCodes.ContainsKey(authorizationCode))
+            if (!MappingStringToAuthCodes.ContainsKey(authorizationCode))
             {
                 return Task.FromResult(false);
             }
 
-            _mappingStringToAuthCodes.Remove(authorizationCode);
+            MappingStringToAuthCodes.Remove(authorizationCode);
             return Task.FromResult(true);
         }
     }

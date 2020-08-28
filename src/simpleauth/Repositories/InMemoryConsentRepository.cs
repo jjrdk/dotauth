@@ -11,7 +11,7 @@
     /// <summary>
     /// Defines the in-memory consent repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IConsentRepository" />
+    /// <seealso cref="IConsentRepository" />
     internal sealed class InMemoryConsentRepository : IConsentRepository
     {
         private readonly ICollection<Consent> _consents;
@@ -20,7 +20,7 @@
         /// Initializes a new instance of the <see cref="InMemoryConsentRepository"/> class.
         /// </summary>
         /// <param name="consents">The consents.</param>
-        public InMemoryConsentRepository(IReadOnlyCollection<Consent> consents = null)
+        public InMemoryConsentRepository(IReadOnlyCollection<Consent>? consents = null)
         {
             _consents = consents == null ? new List<Consent>() : consents.ToList();
         }
@@ -48,11 +48,6 @@
             string subject,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                throw new ArgumentNullException(nameof(subject));
-            }
-
             return Task.FromResult<IReadOnlyCollection<Consent>>(
                 _consents.Where(c => c.Subject == subject).ToList());
         }

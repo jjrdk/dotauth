@@ -29,23 +29,23 @@ namespace SimpleAuth.Policies
     {
         public Task<AuthorizationPolicyResult> Execute(
             TicketLineParameter ticketLineParameter,
-            string claimTokenFormat,
+            string? claimTokenFormat,
             ClaimsPrincipal requester,
             CancellationToken cancellationToken,
             params PolicyRule[] authorizationPolicy)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (authorizationPolicy == null || authorizationPolicy.Length == 0)
+            if (authorizationPolicy.Length == 0)
             {
                 return Task.FromResult(new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester));
             }
 
             if (claimTokenFormat != UmaConstants.IdTokenType)
             {
-                return GetNeedInfoResult(authorizationPolicy[0].Claims, requester, authorizationPolicy[0].OpenIdProvider);
+                return GetNeedInfoResult(authorizationPolicy[0].Claims, requester, authorizationPolicy[0].OpenIdProvider ?? string.Empty);
             }
 
-            AuthorizationPolicyResult result = null;
+            AuthorizationPolicyResult? result = null;
             foreach (var rule in authorizationPolicy)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -61,7 +61,7 @@ namespace SimpleAuth.Policies
                 }
             }
 
-            return Task.FromResult(result);
+            return Task.FromResult(result!);
         }
 
         private AuthorizationPolicyResult ExecuteAuthorizationPolicyRule(

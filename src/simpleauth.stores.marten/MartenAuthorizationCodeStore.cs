@@ -25,7 +25,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<AuthorizationCode> Get(string code, CancellationToken cancellationToken)
+        public async Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var authorizationCode = await session.LoadAsync<AuthorizationCode>(code, cancellationToken)

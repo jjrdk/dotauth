@@ -23,7 +23,7 @@ namespace SimpleAuth.Client
     /// Defines the token request.
     /// </summary>
     /// <seealso cref="System.Collections.Generic.IEnumerable{KeyValuePair}" />
-    public class TokenRequest : IEnumerable<KeyValuePair<string, string>>
+    public class TokenRequest : IEnumerable<KeyValuePair<string?, string?>>
     {
         private readonly Dictionary<string, string> _form;
 
@@ -44,7 +44,7 @@ namespace SimpleAuth.Client
         /// or
         /// redirectUrl
         /// </exception>
-        public static TokenRequest FromAuthorizationCode(string code, string redirectUrl, string codeVerifier = null)
+        public static TokenRequest FromAuthorizationCode(string code, string redirectUrl, string? codeVerifier = null)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -213,7 +213,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
         {
             return _form.GetEnumerator();
         }

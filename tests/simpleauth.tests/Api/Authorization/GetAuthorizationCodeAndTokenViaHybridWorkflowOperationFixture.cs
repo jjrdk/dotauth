@@ -10,6 +10,7 @@
     using SimpleAuth.Api.Authorization;
     using SimpleAuth.Shared.Errors;
     using System;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
@@ -65,7 +66,7 @@
         [Fact]
         public async Task When_Nonce_Parameter_Is_Not_Set_Then_Exception_Is_Thrown()
         {
-            var authorizationParameter = new AuthorizationParameter {State = "state"};
+            var authorizationParameter = new AuthorizationParameter { State = "state" };
 
             var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
@@ -97,11 +98,11 @@
                 ResponseType = ResponseTypeNames.Code,
             };
 
-            var client = new Client {RedirectionUrls = new[] {redirectUrl}, AllowedScopes = new[] {"openid"},};
+            var client = new Client { RedirectionUrls = new[] { redirectUrl }, AllowedScopes = new[] { "openid" }, };
             var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
                     () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
                         authorizationParameter,
-                        null,
+                        new ClaimsPrincipal(),
                         client,
                         null,
                         CancellationToken.None))

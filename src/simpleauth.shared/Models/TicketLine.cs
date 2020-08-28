@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -15,7 +16,7 @@
         /// The scopes.
         /// </value>
         [DataMember(Name = "scopes")]
-        public string[] Scopes { get; set; }
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the resource set identifier.
@@ -24,6 +25,6 @@
         /// The resource set identifier.
         /// </value>
         [DataMember(Name = "resource_id")]
-        public string ResourceSetId { get; set; }
+        public string ResourceSetId { get; set; } = null!;
     }
 }

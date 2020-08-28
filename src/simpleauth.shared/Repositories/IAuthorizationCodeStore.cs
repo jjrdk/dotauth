@@ -15,7 +15,7 @@
         /// <param name="code">The code.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<AuthorizationCode> Get(string code, CancellationToken cancellationToken);
+        Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the authorization code.

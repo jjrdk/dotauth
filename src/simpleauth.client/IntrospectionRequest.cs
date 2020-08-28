@@ -22,7 +22,7 @@ namespace SimpleAuth.Client
     /// Defines the introspection request.
     /// </summary>
     /// <seealso cref="IEnumerable{KeyValuePair}" />
-    public class IntrospectionRequest : IEnumerable<KeyValuePair<string, string>>
+    public class IntrospectionRequest : IEnumerable<KeyValuePair<string?, string?>>
     {
         private readonly Dictionary<string, string> _form;
 
@@ -58,7 +58,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
         {
             return _form.GetEnumerator();
         }

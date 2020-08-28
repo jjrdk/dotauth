@@ -18,22 +18,15 @@ namespace SimpleAuth.Results
 
     internal class RedirectInstruction
     {
-        public RedirectInstruction()
-        {
-            Parameters = new List<Parameter>();
-        }
+        public IList<Parameter> Parameters { get; } = new List<Parameter>();
 
-        public IList<Parameter> Parameters { get; }
         public SimpleAuthEndPoints Action { get; set; }
-        public string ResponseMode { get; set; }
 
-        public void AddParameter(string name, string value)
+        public string? ResponseMode { get; set; }
+
+        public void AddParameter(string name, string? value)
         {
-            var record = new Parameter
-            {
-                Name = name,
-                Value = value
-            };
+            var record = new Parameter(name, value ?? string.Empty);
 
             Parameters.Add(record);
         }

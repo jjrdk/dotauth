@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Responses
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -15,7 +16,7 @@
         /// The content.
         /// </value>
         [DataMember(Name = "content")]
-        public PolicyResponse[] Content { get; set; }
+        public PolicyResponse[] Content { get; set; } = Array.Empty<PolicyResponse>();
 
         /// <summary>
         /// Gets or sets the total results.

@@ -102,7 +102,7 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] AuthorizationRequest authorizationRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult?> Get([FromQuery] AuthorizationRequest authorizationRequest, CancellationToken cancellationToken)
         {
             var originUrl = this.GetOriginUrl();
             var sessionId = GetSessionId();
@@ -122,13 +122,13 @@ namespace SimpleAuth.Controllers
             {
                 case ActionResultType.RedirectToCallBackUrl:
                     {
-                        return authorizationRequest.redirect_uri.CreateRedirectHttpTokenResponse(
+                        return authorizationRequest.redirect_uri!.CreateRedirectHttpTokenResponse(
                             actionResult.GetRedirectionParameters(),
-                            actionResult.RedirectInstruction.ResponseMode);
+                            actionResult.RedirectInstruction!.ResponseMode!);
                     }
                 case ActionResultType.RedirectToAction:
                     {
-                        if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex
+                        if (actionResult.RedirectInstruction!.Action == SimpleAuthEndPoints.AuthenticateIndex
                             || actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex)
                         {
                             // Force the resource owner to be re-authenticated
@@ -164,18 +164,22 @@ namespace SimpleAuth.Controllers
 
         private string GetSessionId()
         {
-            return !Request.Cookies.ContainsKey(CoreConstants.SessionId)
-                ? Id.Create()
-                : Request.Cookies[CoreConstants.SessionId];
+            return Request.Cookies.TryGetValue(CoreConstants.SessionId, out var sessionId) && sessionId != null
+                ? sessionId
+                : Id.Create();
         }
 
-        private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(
+        private async Task<AuthorizationRequest?> GetAuthorizationRequestFromJwt(
             string token,
             string clientId,
             CancellationToken cancellationToken)
         {
             var client = await _clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
-            var validationParameters = await client.CreateValidationParameters(_jwksStore).ConfigureAwait(false);
+            if (client == null)
+            {
+                return null;
+            }
+            var validationParameters = await client.CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
             _handler.ValidateToken(token, validationParameters, out var securityToken);
 
             return (securityToken as JwtSecurityToken)?.Payload?.ToAuthorizationRequest();
@@ -252,7 +256,7 @@ namespace SimpleAuth.Controllers
                             authorizationRequest.state);
                     }
 
-                    var token = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var token = await httpResult.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                     var result = await GetAuthorizationRequestFromJwt(
                             token,
                             authorizationRequest.client_id,

@@ -51,7 +51,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<Scope> Get(string name, CancellationToken cancellationToken = default)
+        public async Task<Scope?> Get(string name, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(name))
             {

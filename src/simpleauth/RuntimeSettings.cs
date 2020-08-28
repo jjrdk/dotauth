@@ -19,9 +19,9 @@
         /// <param name="ticketLifeTime">The ticket life time.</param>
         /// <param name="redirectToLogin">Flag to determine whether to redirect home screen to login screen.</param>
         public RuntimeSettings(
-            Action<ResourceOwner> onResourceOwnerCreated = null,
+            Action<ResourceOwner>? onResourceOwnerCreated = null,
             TimeSpan authorizationCodeValidityPeriod = default,
-            string[] claimsIncludedInUserCreation = null,
+            string[]? claimsIncludedInUserCreation = null,
             TimeSpan rptLifeTime = default,
             TimeSpan patLifeTime = default,
             TimeSpan ticketLifeTime = default,

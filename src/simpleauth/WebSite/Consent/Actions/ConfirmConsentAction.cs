@@ -39,7 +39,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
         private readonly IConsentRepository _consentRepository;
         private readonly IClientStore _clientRepository;
         private readonly IScopeRepository _scopeRepository;
-        private readonly IResourceOwnerStore _resourceOwnerRepository;
         private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IEventPublisher _eventPublisher;
 
@@ -49,14 +48,12 @@ namespace SimpleAuth.WebSite.Consent.Actions
             IConsentRepository consentRepository,
             IClientStore clientRepository,
             IScopeRepository scopeRepository,
-            IResourceOwnerStore resourceOwnerRepository,
             IJwksStore jwksStore,
             IEventPublisher eventPublisher)
         {
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
             _scopeRepository = scopeRepository;
-            _resourceOwnerRepository = resourceOwnerRepository;
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 authorizationCodeStore,
                 tokenStore,
@@ -96,7 +93,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                         authorizationParameter.ClientId));
             }
 
-            var subject = claimsPrincipal.GetSubject();
+            var subject = claimsPrincipal.GetSubject()!;
             var assignedConsent = await _consentRepository
                 .GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
@@ -154,7 +151,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     cancellationToken)
                 .ConfigureAwait(false);
 
-            // If redirect to the callback and the responde mode has not been set.
+            // If redirect to the callback and the response mode has not been set.
             if (result.Type == ActionResultType.RedirectToCallBackUrl)
             {
                 var responseMode = authorizationParameter.ResponseMode;
@@ -165,7 +162,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
-                result.RedirectInstruction.ResponseMode = responseMode;
+                result.RedirectInstruction!.ResponseMode = responseMode;
             }
 
             return result;
@@ -178,14 +175,14 @@ namespace SimpleAuth.WebSite.Consent.Actions
             return scopes.Select(x => x.Name).ToArray();
         }
 
-        private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string state)
+        private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string? state)
         {
             if (responseTypes == null)
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
                     Strings.TheAuthorizationFlowIsNotSupported,
-                    state);
+                    state ?? string.Empty);
             }
 
             var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys.SingleOrDefault(
@@ -195,7 +192,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
                     Strings.TheAuthorizationFlowIsNotSupported,
-                    state);
+                    state ?? string.Empty);
             }
 
             return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];

@@ -25,7 +25,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<ConfirmationCode> Get(string code, string subject, CancellationToken cancellationToken)
+        public async Task<ConfirmationCode?> Get(string code, string subject, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var authorizationCode =

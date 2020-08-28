@@ -99,7 +99,7 @@ namespace SimpleAuth.Controllers
             }
             var resourceSets = await _resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
             var value = ui == "1" ? (object)resourceSets.Select(ResourceSetViewModel.FromResourceSet).ToArray() : resourceSets.Select(x => x.Id).ToArray();
-            
+
             return new OkObjectResult(value);
         }
 

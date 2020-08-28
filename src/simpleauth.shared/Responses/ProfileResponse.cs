@@ -17,7 +17,7 @@
         /// The user identifier.
         /// </value>
         [DataMember(Name = "user_id")]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the issuer.
@@ -26,7 +26,7 @@
         /// The issuer.
         /// </value>
         [DataMember(Name = "issuer")]
-        public string Issuer { get; set; }
+        public string Issuer { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the create date time.

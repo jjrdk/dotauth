@@ -61,7 +61,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<Ticket> Get(string ticketId, CancellationToken cancellationToken)
+        public async Task<Ticket?> Get(string ticketId, CancellationToken cancellationToken)
         {
             var ticket = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
             return ticket.HasValue

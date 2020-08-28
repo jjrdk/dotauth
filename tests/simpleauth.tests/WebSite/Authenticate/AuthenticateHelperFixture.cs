@@ -74,7 +74,7 @@
             const string subject = "subject";
             const string code = "code";
 
-            var authorizationParameter = new AuthorizationParameter();
+            var authorizationParameter = new AuthorizationParameter { ClientId = "abc" };
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Client());
             //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
@@ -137,7 +137,7 @@
             const string subject = "subject";
             const string code = "code";
 
-            var authorizationParameter = new AuthorizationParameter();
+            var authorizationParameter = new AuthorizationParameter { ClientId = "abc" };
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Client());
 

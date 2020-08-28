@@ -21,7 +21,7 @@
         /// Initializes a new instance of the <see cref="InMemoryResourceSetRepository"/> class.
         /// </summary>
         /// <param name="resources">The resources.</param>
-        public InMemoryResourceSetRepository(IEnumerable<(string owner, ResourceSet resource)> resources = null)
+        public InMemoryResourceSetRepository(IEnumerable<(string owner, ResourceSet resource)>? resources = null)
         {
             _resources = resources?.Select(x => new OwnedResourceSet(x.owner, x.resource)).ToList() ?? new List<OwnedResourceSet>();
         }
@@ -45,7 +45,7 @@
         }
 
         /// <inheritdoc />
-        public Task<ResourceSet> Get(string owner, string id, CancellationToken cancellationToken)
+        public Task<ResourceSet?> Get(string owner, string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -71,7 +71,7 @@
         }
 
         /// <inheritdoc />
-        public Task<string> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
+        public Task<string?> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
         {
             var owners = _resources.Where(r => ids.Contains(r.Resource.Id)).Select(x => x.Owner).Distinct();
 
@@ -108,19 +108,21 @@
             }
 
             var result = _resources.Select(x => x.Resource);
-            if (parameter.Ids != null && parameter.Ids.Any())
+            if (parameter.Ids.Any())
             {
                 result = result.Where(r => parameter.Ids.Contains(r.Id));
             }
 
-            if (parameter.Names != null && parameter.Names.Any())
+            if (parameter.Names.Any())
             {
-                result = result.Where(r => parameter.Names.Any(n => r.Name.Contains(n)));
+                result = result.Where(
+                    r => parameter.Names.Any(n => !string.IsNullOrWhiteSpace(r.Name) && r.Name.Contains(n)));
             }
 
-            if (parameter.Types != null && parameter.Types.Any())
+            if (parameter.Types.Any())
             {
-                result = result.Where(r => parameter.Types.Any(t => r.Type.Contains(t)));
+                result = result.Where(
+                    r => parameter.Types.Any(t => !string.IsNullOrWhiteSpace(r.Type) && r.Type.Contains(t)));
             }
 
             var sortedResult = result.OrderBy(c => c.Id).ToArray();

@@ -15,7 +15,6 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Defines the consent content.
@@ -28,7 +27,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier.
         /// </value>
-        public string Id { get; set; }
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the client id.
@@ -36,7 +35,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The client id.
         /// </value>
-        public string ClientId { get; set; }
+        public string ClientId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the client name.
@@ -44,17 +43,17 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The client name.
         /// </value>
-        public string ClientName { get; set; }
+        public string ClientName { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the policy <see cref="Uri"/>.
         /// </summary>
-        public Uri PolicyUri { get; set; }
+        public Uri? PolicyUri { get; set; }
 
         /// <summary>
         /// Gets or sets the terms of service <see cref="Uri"/>.
         /// </summary>
-        public Uri TosUri { get; set; }
+        public Uri? TosUri { get; set; }
 
         /// <summary>
         /// Gets or sets the resource owner's subject.
@@ -62,7 +61,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The resource owner's subject.
         /// </value>
-        public string Subject { get; set; }
+        public string Subject { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the granted scopes.
@@ -78,6 +77,6 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The claims.
         /// </value>
-        public List<string> Claims { get; set; }
+        public string[] Claims { get; set; } = Array.Empty<string>();
     }
 }

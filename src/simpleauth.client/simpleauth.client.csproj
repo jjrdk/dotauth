@@ -1,41 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Description>SimpleAuth Client</Description>
-    <Title>SimpleAuth Client</Title>
-    <TargetFrameworks>net5.0</TargetFrameworks>
-    <AssemblyName>simpleauth.client</AssemblyName>
-    <PackageId>simpleauth.client</PackageId>
-    <RootNamespace>SimpleAuth.Client</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Description>SimpleAuth Client</Description>
+		<Title>SimpleAuth Client</Title>
+		<TargetFrameworks>net5.0</TargetFrameworks>
+		<AssemblyName>simpleauth.client</AssemblyName>
+		<PackageId>simpleauth.client</PackageId>
+		<RootNamespace>SimpleAuth.Client</RootNamespace>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+	</PropertyGroup>
 
-  <Import Project="../../shared.projinfo" />
+	<Import Project="../../shared.projinfo" />
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\ClientStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ClientStrings.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\ClientStrings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ClientStrings.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\ClientStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ClientStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\ClientStrings.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>ClientStrings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
 </Project>

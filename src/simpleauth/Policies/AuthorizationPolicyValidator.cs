@@ -15,7 +15,6 @@
 namespace SimpleAuth.Policies
 {
     using Parameters;
-    using Shared;
     using Shared.Events.Uma;
     using Shared.Models;
     using Shared.Responses;
@@ -67,7 +66,7 @@ namespace SimpleAuth.Policies
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
             }
 
-            AuthorizationPolicyResult validationResult = null;
+            AuthorizationPolicyResult? validationResult = null;
 
             foreach (var ticketLine in validTicket.Lines)
             {
@@ -115,13 +114,13 @@ namespace SimpleAuth.Policies
                 }
             }
 
-            return validationResult;
+            return validationResult!;
         }
 
         private async Task<AuthorizationPolicyResult> Validate(
             TicketLineParameter ticketLineParameter,
             ResourceSet resource,
-            string claimTokenFormat,
+            string? claimTokenFormat,
             ClaimsPrincipal requester,
             CancellationToken cancellationToken)
         {
@@ -130,7 +129,7 @@ namespace SimpleAuth.Policies
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted, requester);
             }
 
-            AuthorizationPolicyResult result = null;
+            AuthorizationPolicyResult? result = null;
             foreach (var authorizationPolicy in resource.AuthorizationPolicies)
             {
                 result = await _authorizationPolicy.Execute(
@@ -146,7 +145,7 @@ namespace SimpleAuth.Policies
                 }
             }
 
-            return result;
+            return result!;
         }
     }
 }
