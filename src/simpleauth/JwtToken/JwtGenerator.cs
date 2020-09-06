@@ -342,7 +342,7 @@ namespace SimpleAuth.JwtToken
         {
             var nonce = authorizationParameter.Nonce;
             var state = authorizationParameter.State;
-            var clientId = authorizationParameter.ClientId;
+            var clientId = authorizationParameter.ClientId!;
             var maxAge = authorizationParameter.MaxAge;
             var amrValues = authorizationParameter.AmrValues;
             var cl = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);

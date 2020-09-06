@@ -20,7 +20,9 @@
         }
 
         public bool IsValid { get; }
-        public string ErrorMessage { get; }
+
+        public string? ErrorMessage { get; }
+
         public ICollection<string> Scopes { get; }
     }
 }

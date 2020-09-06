@@ -32,6 +32,7 @@ namespace SimpleAuth.Api.Token
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
@@ -56,7 +57,8 @@ namespace SimpleAuth.Api.Token
             IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IEventPublisher eventPublisher,
-            ITokenStore tokenStore)
+            ITokenStore tokenStore,
+            ILogger logger)
         {
             _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 clientStore,
@@ -79,7 +81,7 @@ namespace SimpleAuth.Api.Token
                 resourceOwnerRepository,
                 clientStore);
             _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
-            _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore, jwksStore);
+            _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore, jwksStore, logger);
             _jwksStore = jwksStore;
             _eventPublisher = eventPublisher;
             _tokenStore = tokenStore;
@@ -333,7 +335,7 @@ namespace SimpleAuth.Api.Token
             };
         }
 
-        public async Task<bool> RevokeToken(
+        public async Task<(bool success, ErrorDetails? error)> RevokeToken(
             RevokeTokenParameter revokeTokenParameter,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,
@@ -355,10 +357,13 @@ namespace SimpleAuth.Api.Token
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
+            if (result.success)
+            {
+                await _eventPublisher
+                    .Publish(new TokenRevoked(Id.Create(), revokeTokenParameter.Token, DateTimeOffset.UtcNow))
+                    .ConfigureAwait(false);
+            }
 
-            await _eventPublisher
-                .Publish(new TokenRevoked(Id.Create(), revokeTokenParameter.Token, DateTimeOffset.UtcNow))
-                .ConfigureAwait(false);
             return result;
         }
 

@@ -3,6 +3,7 @@
     using Client;
     using System;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using Xunit;
 
     public class UserInfoClientFixture
@@ -27,7 +28,7 @@
 
             Assert.True(getUserInfoResult.HasError);
             Assert.Equal("invalid_token", getUserInfoResult.Error.Title);
-            Assert.Equal("the token is not valid", getUserInfoResult.Error.Detail);
+            Assert.Equal(Strings.TheTokenIsNotValid, getUserInfoResult.Error.Detail);
         }
 
         [Fact]

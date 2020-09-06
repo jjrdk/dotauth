@@ -68,9 +68,11 @@ namespace SimpleAuth.Shared
         /// </summary>
         /// <param name="bytes">The bytes to encode.</param>
         /// <returns></returns>
-        public static string ToBase64Simplified(this byte[] bytes)
+        public static string ToBase64Simplified(this byte[]? bytes)
         {
-            return Convert.ToBase64String(bytes).Split('=')[0].Replace('+', '-').Replace('/', '_');
+            return bytes == null
+                ? string.Empty
+                : Convert.ToBase64String(bytes).Split('=')[0].Replace('+', '-').Replace('/', '_');
         }
 
         /// <summary>

@@ -147,7 +147,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    string.Format(Strings.TheParameterNeedsToBeSpecified, "scopes"),
+                    string.Format(Strings.MissingParameter, "scopes"),
                     HttpStatusCode.BadRequest);
             }
 

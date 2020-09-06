@@ -73,8 +73,8 @@
                         Alg = keyAlg,
                         D = parameters.D == null ? null : Convert.ToBase64String(parameters.D),
                         Crv = parameters.Curve.Hash.ToString(),
-                        X = parameters.Q.X.ToBase64Simplified(),
-                        Y = parameters.Q.Y.ToBase64Simplified()
+                        X = parameters.Q.X?.ToBase64Simplified(),
+                        Y = parameters.Q.Y?.ToBase64Simplified()
                         //Q = parameters.Q == null ? null:Convert.ToBase64String(parameters.Q),
                     };
                 }

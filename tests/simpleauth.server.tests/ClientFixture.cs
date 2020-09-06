@@ -59,7 +59,7 @@
 
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
-            Assert.Equal("the parameter redirect_uris is missing", result.Error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "redirect_uris"), result.Error.Detail);
         }
 
         [Fact]

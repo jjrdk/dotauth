@@ -247,7 +247,7 @@
     <value>at least one response_type parameter is not supported</value>
   </data>
   <data name="ClientIsNotValid" xml:space="preserve">
-    <value>the client id parameter {0} doesn't exist or is not valid</value>
+    <value>The client id parameter {0} doesn't exist or is not valid</value>
   </data>
   <data name="DuplicateScopeValues" xml:space="preserve">
     <value>duplicate scopes {0} have been passed in parameter</value>
@@ -256,7 +256,7 @@
     <value>Internal error</value>
   </data>
   <data name="MissingParameter" xml:space="preserve">
-    <value>the parameter {0} is missing</value>
+    <value>The parameter {0} is missing</value>
   </data>
   <data name="NoActiveAmr" xml:space="preserve">
     <value>no active AMR</value>
@@ -268,7 +268,7 @@
     <value>one or more sector uri is not a redirect_uri</value>
   </data>
   <data name="ParameterIsNotCorrect" xml:space="preserve">
-    <value>the parameter {0} is not correct</value>
+    <value>The parameter {0} is not correct</value>
   </data>
   <data name="PermissionRequested" xml:space="preserve">
     <value>Permission request has been submitted.</value>
@@ -277,7 +277,7 @@
     <value>prompt parameter should have only none value</value>
   </data>
   <data name="RedirectUrlIsNotValid" xml:space="preserve">
-    <value>the redirect url {0} doesn't exist or is not valid</value>
+    <value>The redirect url {0} doesn't exist or is not valid</value>
   </data>
   <data name="RequestIsNotValid" xml:space="preserve">
     <value>The request is not valid</value>
@@ -286,136 +286,133 @@
     <value>resource owner credentials are not valid</value>
   </data>
   <data name="ScopesAreNotAllowedOrInvalid" xml:space="preserve">
-    <value>the scopes {0} are not allowed or invalid</value>
+    <value>The scopes {0} are not allowed or invalid</value>
   </data>
   <data name="TheAmrDoesntExist" xml:space="preserve">
-    <value>the amr {0} doesn't exist</value>
+    <value>The amr {0} doesn't exist</value>
   </data>
   <data name="TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId" xml:space="preserve">
-    <value>the authorization code has not been issued for the given client id {0}</value>
+    <value>The authorization code has not been issued for the given client id {0}</value>
   </data>
   <data name="TheAuthorizationCodeIsNotCorrect" xml:space="preserve">
-    <value>the authorization code is not correct</value>
+    <value>The authorization code is not correct</value>
   </data>
   <data name="TheAuthorizationCodeIsObsolete" xml:space="preserve">
-    <value>the authorization code is obsolete</value>
+    <value>The authorization code is obsolete</value>
   </data>
   <data name="TheAuthorizationFlowIsNotSupported" xml:space="preserve">
-    <value>the authorization flow is not supported</value>
+    <value>The authorization flow is not supported</value>
   </data>
   <data name="TheAuthorizationPolicyIsNotSatisfied" xml:space="preserve">
-    <value>the authorization policy is not satisfied</value>
+    <value>The authorization policy is not satisfied</value>
   </data>
   <data name="TheAuthorizationRequestCannotBeProcessedBecauseThereIsNotValidPrompt" xml:space="preserve">
-    <value>the authorization request cannot be processed because there is not valid prompt</value>
+    <value>The authorization request cannot be processed because there is not valid prompt</value>
   </data>
   <data name="TheClaimIsNotValid" xml:space="preserve">
-    <value>the claim {0} is not valid</value>
+    <value>The claim {0} is not valid</value>
   </data>
   <data name="TheClaimsCannotBeUpdated" xml:space="preserve">
-    <value>the claims cannot be updated</value>
+    <value>The claims cannot be updated</value>
   </data>
   <data name="TheClientAssertionIsNotAJweToken" xml:space="preserve">
-    <value>the client assertion is not a JWE token</value>
+    <value>The client assertion is not a JWE token</value>
   </data>
   <data name="TheClientAssertionIsNotAJwsToken" xml:space="preserve">
-    <value>the client assertion is not a JWS token</value>
+    <value>The client assertion is not a JWS token</value>
   </data>
   <data name="TheClientCannotBeAuthenticatedWithSecretBasic" xml:space="preserve">
-    <value>the client cannot be authenticated with secret basic</value>
+    <value>The client cannot be authenticated with secret basic</value>
   </data>
   <data name="TheClientCannotBeAuthenticatedWithSecretPost" xml:space="preserve">
-    <value>the client cannot be authenticated with secret post</value>
+    <value>The client cannot be authenticated with secret post</value>
   </data>
   <data name="TheClientCannotBeAuthenticatedWithTls" xml:space="preserve">
-    <value>the client cannot be authenticated with TLS</value>
+    <value>The client cannot be authenticated with TLS</value>
   </data>
   <data name="TheClientDoesntContainASharedSecret" xml:space="preserve">
-    <value>the client {0} doesn't have a shared secret</value>
+    <value>The client {0} doesn't have a shared secret</value>
   </data>
   <data name="TheClientDoesntExist" xml:space="preserve">
-    <value>the client doesn't exist</value>
+    <value>The client doesn't exist</value>
   </data>
   <data name="TheClientDoesntSupportTheGrantType" xml:space="preserve">
-    <value>the client {0} doesn't support the grant type {1}</value>
+    <value>The client {0} doesn't support the grant type {1}</value>
   </data>
   <data name="TheClientDoesntSupportTheResponseType" xml:space="preserve">
-    <value>the client '{0}' doesn't support the response type: '{1}'</value>
+    <value>The client '{0}' doesn't support the response type: '{1}'</value>
   </data>
   <data name="TheClientRequiresPkce" xml:space="preserve">
-    <value>the client {0} requires PKCE</value>
+    <value>The client {0} requires PKCE</value>
   </data>
   <data name="TheCodeVerifierIsNotCorrect" xml:space="preserve">
-    <value>the code verifier is not correct</value>
+    <value>The code verifier is not correct</value>
   </data>
   <data name="TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken" xml:space="preserve">
-    <value>the current authenticated user doesn't match with the identity token</value>
+    <value>The current authenticated user doesn't match with the identity token</value>
   </data>
   <data name="TheIdentityTokenDoesntContainSimpleAuthAsAudience" xml:space="preserve">
     <value>The identity token does not contain SimpleAuth in the audience</value>
   </data>
   <data name="TheIdTokenHintParameterIsNotAValidToken" xml:space="preserve">
-    <value>the id_token_hint parameter is not a valid token</value>
+    <value>The id_token_hint parameter is not a valid token</value>
   </data>
   <data name="TheJwsPayloadCannotBeExtracted" xml:space="preserve">
-    <value>the jws payload cannot be extracted</value>
+    <value>The jws payload cannot be extracted</value>
   </data>
   <data name="TheParameterIsTokenEncryptedResponseAlgMustBeSpecified" xml:space="preserve">
-    <value>the parameter id_token_encrypted_response_alg must be specified</value>
-  </data>
-  <data name="TheParameterNeedsToBeSpecified" xml:space="preserve">
-    <value>the parameter {0} needs to be specified</value>
+    <value>The parameter id_token_encrypted_response_alg must be specified</value>
   </data>
   <data name="TheParameterRequestObjectEncryptionAlgMustBeSpecified" xml:space="preserve">
-    <value>the parameter request_object_encryption_alg must be specified</value>
+    <value>The parameter request_object_encryption_alg must be specified</value>
   </data>
   <data name="TheParameterUserInfoEncryptedResponseAlgMustBeSpecified" xml:space="preserve">
-    <value>the parameter userinfo_encrypted_response_alg must be specified</value>
+    <value>The parameter userinfo_encrypted_response_alg must be specified</value>
   </data>
   <data name="ThePasswordCannotBeUpdated" xml:space="preserve">
-    <value>the password cannot be updated</value>
+    <value>The password cannot be updated</value>
   </data>
   <data name="ThePromptParameterIsNotSupported" xml:space="preserve">
-    <value>the prompt parameter {0} is not supported</value>
+    <value>The prompt parameter {0} is not supported</value>
   </data>
   <data name="TheRedirectionUriIsNotWellFormed" xml:space="preserve">
     <value>Based on the RFC-3986 the redirection-uri is not well formed</value>
   </data>
   <data name="TheRedirectionUrlIsNotTheSame" xml:space="preserve">
-    <value>the redirection url is not the same than the one passed in the authorization request</value>
+    <value>The redirection url is not the same than the one passed in the authorization request</value>
   </data>
   <data name="TheRedirectUrlCannotContainsFragment" xml:space="preserve">
     <value>The redirect_uri {0} cannot contain fragment</value>
   </data>
   <data name="TheRedirectUrlIsNotValid" xml:space="preserve">
-    <value>the redirect_uri {0} is not well formed</value>
+    <value>The redirect_uri {0} is not well formed</value>
   </data>
   <data name="TheRefreshTokenCanBeUsedOnlyByTheSameIssuer" xml:space="preserve">
-    <value>the refresh token can be used only by the same issuer</value>
+    <value>The refresh token can be used only by the same issuer</value>
   </data>
   <data name="TheRefreshTokenIsNotValid" xml:space="preserve">
-    <value>the refresh token is not valid</value>
+    <value>The refresh token is not valid</value>
   </data>
   <data name="TheRequestCannotBeExtractedFromTheCookie" xml:space="preserve">
-    <value>the request cannot be extracted from the cookie</value>
+    <value>The request cannot be extracted from the cookie</value>
   </data>
   <data name="TheRequestDownloadedFromRequestUriIsNotValid" xml:space="preserve">
-    <value>the request downloaded from request URI is not valid</value>
+    <value>The request downloaded from request URI is not valid</value>
   </data>
   <data name="TheRequestParameterIsNotCorrect" xml:space="preserve">
-    <value>the request parameter is not correct</value>
+    <value>The request parameter is not correct</value>
   </data>
   <data name="TheRequestUriParameterIsNotWellFormed" xml:space="preserve">
-    <value>the request_uri parameter is not well formed</value>
+    <value>The request_uri parameter is not well formed</value>
   </data>
   <data name="TheResourceOwnerCannotBeRemoved" xml:space="preserve">
-    <value>the resource owner cannot be removed</value>
+    <value>The resource owner cannot be removed</value>
   </data>
   <data name="TheResourceSetDoesntExist" xml:space="preserve">
     <value>resource set {0} doesn't exist</value>
   </data>
   <data name="TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated" xml:space="preserve">
-    <value>the response cannot be generated because the resource owner needs to be authenticated</value>
+    <value>The response cannot be generated because the resource owner needs to be authenticated</value>
   </data>
   <data name="TheRoDoesntExist" xml:space="preserve">
     <value>The resource owner doesn't exist</value>
@@ -424,46 +421,46 @@
     <value>one or more scopes are not valid</value>
   </data>
   <data name="TheScopeDoesntExist" xml:space="preserve">
-    <value>the scope '{0}' doesn't exist</value>
+    <value>The scope '{0}' doesn't exist</value>
   </data>
   <data name="TheScopesNeedToBeSpecified" xml:space="preserve">
-    <value>the scope(s) need(s) to be specified</value>
+    <value>The scope(s) need(s) to be specified</value>
   </data>
   <data name="TheSectorIdentifierUrisCannotBeRetrieved" xml:space="preserve">
-    <value>the sector identifier uris cannot be retrieved</value>
+    <value>The sector identifier uris cannot be retrieved</value>
   </data>
   <data name="TheSignatureIsNotCorrect" xml:space="preserve">
-    <value>the signature is not correct</value>
+    <value>The signature is not correct</value>
   </data>
   <data name="TheSubjectCannotBeRetrieved" xml:space="preserve">
-    <value>the subject cannot be retrieved</value>
+    <value>The subject cannot be retrieved</value>
   </data>
   <data name="TheTicketCannotBeInserted" xml:space="preserve">
-    <value>the ticket cannot be inserted</value>
+    <value>The ticket cannot be inserted</value>
   </data>
   <data name="TheTicketDoesntExist" xml:space="preserve">
-    <value>the ticket {0} doesn't exist</value>
+    <value>The ticket {0} doesn't exist</value>
   </data>
   <data name="TheTicketIsExpired" xml:space="preserve">
-    <value>the ticket is expired</value>
+    <value>The ticket is expired</value>
   </data>
   <data name="TheTokenDoesntExist" xml:space="preserve">
-    <value>the token doesn't exist</value>
+    <value>The token doesn't exist</value>
   </data>
   <data name="TheTokenHasNotBeenIssuedForTheGivenClientId" xml:space="preserve">
-    <value>the token has not been issued for the given client id '{0}'</value>
+    <value>The token has not been issued for the given client id '{0}'</value>
   </data>
   <data name="TheTokenIsExpired" xml:space="preserve">
-    <value>the token is expired</value>
+    <value>The token is expired</value>
   </data>
   <data name="TheTokenIsNotValid" xml:space="preserve">
-    <value>the token is not valid</value>
+    <value>The token is not valid</value>
   </data>
   <data name="TheUserNeedsToBeAuthenticated" xml:space="preserve">
-    <value>the user needs to be authenticated</value>
+    <value>The user needs to be authenticated</value>
   </data>
   <data name="TheUserNeedsToGiveHisConsent" xml:space="preserve">
-    <value>the user needs to give his consent</value>
+    <value>The user needs to give his consent</value>
   </data>
   <data name="TwoFactorAuthenticationCannotBePerformed" xml:space="preserve">
     <value>two factor authentication cannot be performed</value>
@@ -492,10 +489,7 @@
   <data name="Key16char" xml:space="preserve">
     <value>Key must be at least 16 characters.</value>
   </data>
-  <data name="LoginParameterMissing" xml:space="preserve">
-    <value>The parameter login is missing</value>
-  </data>
-  <data name="PasswordParameterMissing" xml:space="preserve">
-    <value>The parameter password is missing</value>
+  <data name="CouldNotRevokeToken" xml:space="preserve">
+    <value>Could not revoke token</value>
   </data>
 </root>

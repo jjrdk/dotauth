@@ -119,6 +119,14 @@ namespace SimpleAuth.Common
                     .ConfigureAwait(false);
                 if (assignedConsent != null)
                 {
+
+                    if (authorizationParameterClientId == null
+                        || authorizationParameter.RedirectUrl == null
+                        || authorizationParameter.Scope == null)
+                    {
+                        throw new ArgumentException("Missing values", nameof(authorizationParameter));
+                    }
+
                     // Insert a temporary authorization code
                     // It will be used later to retrieve tha id_token or an access token.
                     authorizationCode = new AuthorizationCode
@@ -147,6 +155,12 @@ namespace SimpleAuth.Common
             if (grantedToken != null)
             // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
             {
+                if (authorizationParameterClientId == null
+                    || authorizationParameter.ResponseType == null)
+                {
+                    throw new ArgumentException("Missing values", nameof(authorizationParameter));
+                }
+
                 await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
                 await _eventPublisher.Publish(
                         new TokenGranted(
@@ -163,8 +177,8 @@ namespace SimpleAuth.Common
             {
                 if (client.RequirePkce)
                 {
-                    authorizationCode.CodeChallenge = authorizationParameter.CodeChallenge;
-                    authorizationCode.CodeChallengeMethod = authorizationParameter.CodeChallengeMethod;
+                    authorizationCode.CodeChallenge = authorizationParameter.CodeChallenge ?? string.Empty;
+                    authorizationCode.CodeChallengeMethod = authorizationParameter.CodeChallengeMethod ?? string.Empty;
                 }
 
                 await _authorizationCodeStore.Add(authorizationCode, cancellationToken).ConfigureAwait(false);
@@ -172,7 +186,7 @@ namespace SimpleAuth.Common
                         new AuthorizationGranted(
                             Id.Create(),
                             claimsPrincipal.GetSubject(),
-                            authorizationParameterClientId,
+                            authorizationParameterClientId!,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
             }
@@ -180,7 +194,7 @@ namespace SimpleAuth.Common
             if (responses.Contains(ResponseTypeNames.IdToken))
             {
                 var idToken = await _clientStore.GenerateIdToken(
-                        authorizationParameterClientId,
+                        authorizationParameterClientId!,
                         idTokenPayload,
                         _jwksStore,
                         cancellationToken)

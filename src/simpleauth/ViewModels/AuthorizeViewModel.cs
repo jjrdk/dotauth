@@ -15,7 +15,7 @@
         /// The name of the user.
         /// </value>
         [Required(ErrorMessage = "the user name is required")]
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
@@ -24,12 +24,12 @@
         /// The password.
         /// </value>
         [Required(ErrorMessage = "the password is required")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         /// Gets or sets the redirect url.
         /// </summary>
-        public string ReturnUrl { get; set; }
+        public string? ReturnUrl { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is checked.

@@ -71,7 +71,7 @@
                         Status = HttpStatusCode.BadRequest,
                         Title = ErrorCodes.InvalidRequest,
                         Detail = string.Format(
-                            Strings.TheParameterNeedsToBeSpecified,
+                            Strings.MissingParameter,
                             UmaConstants.RptClaims.Ticket)
                     }
                 };

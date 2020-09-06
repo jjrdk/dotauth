@@ -21,6 +21,8 @@ namespace SimpleAuth.Tests.Api.Token
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using SimpleAuth.Controllers;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
@@ -40,43 +42,21 @@ namespace SimpleAuth.Tests.Api.Token
             _revokeTokenAction = new RevokeTokenAction(
                 _clientStore.Object,
                 _grantedTokenRepositoryStub.Object,
-                new InMemoryJwksRepository());
+                new InMemoryJwksRepository(),
+                new Mock<ILogger<TokenController>>().Object);
         }
 
         [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
-        {
-            await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _revokeTokenAction.Execute(null, null, null, null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task When_Passing_Empty_Parameter_Then_Thrown()
-        {
-            await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _revokeTokenAction.Execute(
-                        new RevokeTokenParameter(),
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
+        public async Task WhenClientDoesNotExistThenErrorIsReturned()
         {
             var parameter = new RevokeTokenParameter { Token = "access_token" };
 
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Client)null);
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _revokeTokenAction.Execute(parameter, null, null, null, CancellationToken.None))
+            var (_, error) = await _revokeTokenAction.Execute(parameter, null, null, null, CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidClient, error.Title);
         }
 
         [Fact]

@@ -13,6 +13,8 @@ namespace SimpleAuth.Tests.Api.Token
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using SimpleAuth.Controllers;
     using SimpleAuth.Events;
     using SimpleAuth.Repositories;
     using SimpleAuth.Services;
@@ -57,7 +59,8 @@ namespace SimpleAuth.Tests.Api.Token
                 new InMemoryResourceOwnerRepository(),
                 new IAuthenticateResourceOwnerService[0],
                 eventPublisher.Object,
-                new Mock<ITokenStore>().Object);
+                new Mock<ITokenStore>().Object,
+                new Mock<ILogger<TokenController>>().Object);
         }
 
         [Fact]

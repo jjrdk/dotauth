@@ -247,6 +247,7 @@ namespace SimpleAuth.Tests.Common
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "test"), }, "fake"));
             var authorizationParameter = new AuthorizationParameter
             {
+                RedirectUrl = new Uri("http://localhost"),
                 ResponseType = ResponseTypeNames.Code,
                 ClientId = clientId,
                 Scope = scope

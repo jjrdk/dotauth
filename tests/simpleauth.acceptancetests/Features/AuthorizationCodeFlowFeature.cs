@@ -4,6 +4,7 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using System;
+    using SimpleAuth.Shared.Errors;
     using Xbehave;
     using Xunit;
 
@@ -66,7 +67,7 @@
                         .ConfigureAwait(false);
                 });
 
-            "then has expected error message".x(() => { Assert.Equal("invalid_scope", result.Error.Title); });
+            "then has expected error message".x(() => { Assert.Equal(ErrorCodes.InvalidScope, result.Error.Title); });
         }
 
         [Scenario(DisplayName = "Redirect uri does not match client registration")]
@@ -94,7 +95,7 @@
                         .ConfigureAwait(false);
                 });
 
-            "then has expected error message".x(() => { Assert.Equal("invalid_request", result.Error.Title); });
+            "then has expected error message".x(() => { Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title); });
         }
     }
 }

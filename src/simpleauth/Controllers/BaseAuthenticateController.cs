@@ -404,7 +404,7 @@ namespace SimpleAuth.Controllers
                         cancellationToken)
                     .ConfigureAwait(false);
                 await LogAuthenticateUser(subject, actionResult.Amr).ConfigureAwait(false);
-                var result = actionResult.CreateRedirectionFromActionResult(request, _logger);
+                var result = actionResult.CreateRedirectionFromActionResult(request, _logger)!;
                 return result;
             }
 

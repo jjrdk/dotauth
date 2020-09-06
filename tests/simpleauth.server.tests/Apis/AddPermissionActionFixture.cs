@@ -49,7 +49,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
                 string.Format(
-                    Strings.TheParameterNeedsToBeSpecified,
+                    Strings.MissingParameter,
                     UmaConstants.AddPermissionNames.ResourceSetId),
                 exception.Message);
         }
@@ -65,7 +65,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
             Assert.Equal(
-                string.Format(Strings.TheParameterNeedsToBeSpecified, UmaConstants.AddPermissionNames.Scopes),
+                string.Format(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes),
                 exception.Message);
         }
 
@@ -91,7 +91,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var addPermissionParameter = new PermissionRequest
             {
                 ResourceSetId = resourceSetId,
-                Scopes = new[] { "invalid_scope" }
+                Scopes = new[] { ErrorCodes.InvalidScope }
             };
             var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
             InitializeFakeObjects(resources);
@@ -118,17 +118,19 @@ namespace SimpleAuth.Server.Tests.Apis
             const string resourceSetId = "resource_set_id";
             var addPermissionParameter = new PermissionRequest
             {
-                ResourceSetId = resourceSetId, Scopes = new[] {"scope"}, IdToken = idtoken
+                ResourceSetId = resourceSetId,
+                Scopes = new[] { "scope" },
+                IdToken = idtoken
             };
             var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
             InitializeFakeObjects(resources);
             _ticketStoreStub.Setup(r => r.Add(It.IsAny<Ticket>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            var result = await _requestPermissionHandler
+            var (_, requesterClaims) = await _requestPermissionHandler
                 .Execute("tester", CancellationToken.None, addPermissionParameter)
                 .ConfigureAwait(false);
 
-            Assert.NotEmpty(result.requesterClaims);
+            Assert.NotEmpty(requesterClaims);
         }
 
         private void InitializeFakeObjects(params ResourceSet[] resourceSets)

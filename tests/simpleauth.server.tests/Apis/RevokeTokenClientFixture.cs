@@ -24,6 +24,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Models;
     using Xunit;
 
@@ -55,7 +56,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("the parameter token is missing", error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "token"), error.Detail);
         }
 
         [Fact]
@@ -79,7 +80,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("the parameter token is missing", error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "token"), error.Detail);
         }
 
         [Fact]
@@ -94,7 +95,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.True(ex.HasError);
             Assert.Equal("invalid_client", ex.Error.Title);
-            Assert.Equal("the client doesn't exist", ex.Error.Detail);
+            Assert.Equal(Strings.TheClientDoesntExist, ex.Error.Detail);
         }
 
         [Fact]
@@ -109,7 +110,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.True(ex.HasError);
             Assert.Equal("invalid_token", ex.Error.Title);
-            Assert.Equal("the token doesn't exist", ex.Error.Detail);
+            Assert.Equal(Strings.TheTokenDoesntExist, ex.Error.Detail);
         }
 
         [Fact]
@@ -132,7 +133,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.True(ex.HasError);
             Assert.Equal("invalid_token", ex.Error.Title);
-            Assert.Equal("the token has not been issued for the given client id 'client'", ex.Error.Detail);
+            Assert.Equal("The token has not been issued for the given client id 'client'", ex.Error.Detail);
         }
 
         [Fact]

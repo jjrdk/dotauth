@@ -151,7 +151,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client id parameter {0} doesn&apos;t exist or is not valid.
+        ///   Looks up a localized string similar to The client id parameter {0} doesn&apos;t exist or is not valid.
         /// </summary>
         internal static string ClientIsNotValid {
             get {
@@ -165,6 +165,15 @@ namespace SimpleAuth.Properties {
         internal static string CouldNotDeleteClient {
             get {
                 return ResourceManager.GetString("CouldNotDeleteClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not revoke token.
+        /// </summary>
+        internal static string CouldNotRevokeToken {
+            get {
+                return ResourceManager.GetString("CouldNotRevokeToken", resourceCulture);
             }
         }
         
@@ -340,15 +349,6 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The parameter login is missing.
-        /// </summary>
-        internal static string LoginParameterMissing {
-            get {
-                return ResourceManager.GetString("LoginParameterMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Manage server resources..
         /// </summary>
         internal static string ManageServerResources {
@@ -367,7 +367,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the parameter {0} is missing.
+        ///   Looks up a localized string similar to The parameter {0} is missing.
         /// </summary>
         internal static string MissingParameter {
             get {
@@ -430,20 +430,11 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the parameter {0} is not correct.
+        ///   Looks up a localized string similar to The parameter {0} is not correct.
         /// </summary>
         internal static string ParameterIsNotCorrect {
             get {
                 return ResourceManager.GetString("ParameterIsNotCorrect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The parameter password is missing.
-        /// </summary>
-        internal static string PasswordParameterMissing {
-            get {
-                return ResourceManager.GetString("PasswordParameterMissing", resourceCulture);
             }
         }
         
@@ -466,7 +457,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the redirect url {0} doesn&apos;t exist or is not valid.
+        ///   Looks up a localized string similar to The redirect url {0} doesn&apos;t exist or is not valid.
         /// </summary>
         internal static string RedirectUrlIsNotValid {
             get {
@@ -529,7 +520,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the scopes {0} are not allowed or invalid.
+        ///   Looks up a localized string similar to The scopes {0} are not allowed or invalid.
         /// </summary>
         internal static string ScopesAreNotAllowedOrInvalid {
             get {
@@ -538,7 +529,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the amr {0} doesn&apos;t exist.
+        ///   Looks up a localized string similar to The amr {0} doesn&apos;t exist.
         /// </summary>
         internal static string TheAmrDoesntExist {
             get {
@@ -547,7 +538,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the authorization code has not been issued for the given client id {0}.
+        ///   Looks up a localized string similar to The authorization code has not been issued for the given client id {0}.
         /// </summary>
         internal static string TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId {
             get {
@@ -556,7 +547,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the authorization code is not correct.
+        ///   Looks up a localized string similar to The authorization code is not correct.
         /// </summary>
         internal static string TheAuthorizationCodeIsNotCorrect {
             get {
@@ -565,7 +556,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the authorization code is obsolete.
+        ///   Looks up a localized string similar to The authorization code is obsolete.
         /// </summary>
         internal static string TheAuthorizationCodeIsObsolete {
             get {
@@ -574,7 +565,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the authorization flow is not supported.
+        ///   Looks up a localized string similar to The authorization flow is not supported.
         /// </summary>
         internal static string TheAuthorizationFlowIsNotSupported {
             get {
@@ -583,7 +574,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the authorization policy is not satisfied.
+        ///   Looks up a localized string similar to The authorization policy is not satisfied.
         /// </summary>
         internal static string TheAuthorizationPolicyIsNotSatisfied {
             get {
@@ -592,7 +583,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the authorization request cannot be processed because there is not valid prompt.
+        ///   Looks up a localized string similar to The authorization request cannot be processed because there is not valid prompt.
         /// </summary>
         internal static string TheAuthorizationRequestCannotBeProcessedBecauseThereIsNotValidPrompt {
             get {
@@ -601,7 +592,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the claim {0} is not valid.
+        ///   Looks up a localized string similar to The claim {0} is not valid.
         /// </summary>
         internal static string TheClaimIsNotValid {
             get {
@@ -619,7 +610,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the claims cannot be updated.
+        ///   Looks up a localized string similar to The claims cannot be updated.
         /// </summary>
         internal static string TheClaimsCannotBeUpdated {
             get {
@@ -628,7 +619,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client assertion is not a JWE token.
+        ///   Looks up a localized string similar to The client assertion is not a JWE token.
         /// </summary>
         internal static string TheClientAssertionIsNotAJweToken {
             get {
@@ -637,7 +628,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client assertion is not a JWS token.
+        ///   Looks up a localized string similar to The client assertion is not a JWS token.
         /// </summary>
         internal static string TheClientAssertionIsNotAJwsToken {
             get {
@@ -646,7 +637,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client cannot be authenticated with secret basic.
+        ///   Looks up a localized string similar to The client cannot be authenticated with secret basic.
         /// </summary>
         internal static string TheClientCannotBeAuthenticatedWithSecretBasic {
             get {
@@ -655,7 +646,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client cannot be authenticated with secret post.
+        ///   Looks up a localized string similar to The client cannot be authenticated with secret post.
         /// </summary>
         internal static string TheClientCannotBeAuthenticatedWithSecretPost {
             get {
@@ -664,7 +655,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client cannot be authenticated with TLS.
+        ///   Looks up a localized string similar to The client cannot be authenticated with TLS.
         /// </summary>
         internal static string TheClientCannotBeAuthenticatedWithTls {
             get {
@@ -673,7 +664,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client {0} doesn&apos;t have a shared secret.
+        ///   Looks up a localized string similar to The client {0} doesn&apos;t have a shared secret.
         /// </summary>
         internal static string TheClientDoesntContainASharedSecret {
             get {
@@ -682,7 +673,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client doesn&apos;t exist.
+        ///   Looks up a localized string similar to The client doesn&apos;t exist.
         /// </summary>
         internal static string TheClientDoesntExist {
             get {
@@ -691,7 +682,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client {0} doesn&apos;t support the grant type {1}.
+        ///   Looks up a localized string similar to The client {0} doesn&apos;t support the grant type {1}.
         /// </summary>
         internal static string TheClientDoesntSupportTheGrantType {
             get {
@@ -700,7 +691,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client &apos;{0}&apos; doesn&apos;t support the response type: &apos;{1}&apos;.
+        ///   Looks up a localized string similar to The client &apos;{0}&apos; doesn&apos;t support the response type: &apos;{1}&apos;.
         /// </summary>
         internal static string TheClientDoesntSupportTheResponseType {
             get {
@@ -718,7 +709,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the client {0} requires PKCE.
+        ///   Looks up a localized string similar to The client {0} requires PKCE.
         /// </summary>
         internal static string TheClientRequiresPkce {
             get {
@@ -727,7 +718,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the code verifier is not correct.
+        ///   Looks up a localized string similar to The code verifier is not correct.
         /// </summary>
         internal static string TheCodeVerifierIsNotCorrect {
             get {
@@ -763,7 +754,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the current authenticated user doesn&apos;t match with the identity token.
+        ///   Looks up a localized string similar to The current authenticated user doesn&apos;t match with the identity token.
         /// </summary>
         internal static string TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken {
             get {
@@ -799,7 +790,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the id_token_hint parameter is not a valid token.
+        ///   Looks up a localized string similar to The id_token_hint parameter is not a valid token.
         /// </summary>
         internal static string TheIdTokenHintParameterIsNotAValidToken {
             get {
@@ -808,7 +799,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the jws payload cannot be extracted.
+        ///   Looks up a localized string similar to The jws payload cannot be extracted.
         /// </summary>
         internal static string TheJwsPayloadCannotBeExtracted {
             get {
@@ -817,7 +808,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the parameter id_token_encrypted_response_alg must be specified.
+        ///   Looks up a localized string similar to The parameter id_token_encrypted_response_alg must be specified.
         /// </summary>
         internal static string TheParameterIsTokenEncryptedResponseAlgMustBeSpecified {
             get {
@@ -826,16 +817,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the parameter {0} needs to be specified.
-        /// </summary>
-        internal static string TheParameterNeedsToBeSpecified {
-            get {
-                return ResourceManager.GetString("TheParameterNeedsToBeSpecified", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to the parameter request_object_encryption_alg must be specified.
+        ///   Looks up a localized string similar to The parameter request_object_encryption_alg must be specified.
         /// </summary>
         internal static string TheParameterRequestObjectEncryptionAlgMustBeSpecified {
             get {
@@ -844,7 +826,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the parameter userinfo_encrypted_response_alg must be specified.
+        ///   Looks up a localized string similar to The parameter userinfo_encrypted_response_alg must be specified.
         /// </summary>
         internal static string TheParameterUserInfoEncryptedResponseAlgMustBeSpecified {
             get {
@@ -853,7 +835,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the password cannot be updated.
+        ///   Looks up a localized string similar to The password cannot be updated.
         /// </summary>
         internal static string ThePasswordCannotBeUpdated {
             get {
@@ -862,7 +844,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the prompt parameter {0} is not supported.
+        ///   Looks up a localized string similar to The prompt parameter {0} is not supported.
         /// </summary>
         internal static string ThePromptParameterIsNotSupported {
             get {
@@ -880,7 +862,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the redirection url is not the same than the one passed in the authorization request.
+        ///   Looks up a localized string similar to The redirection url is not the same than the one passed in the authorization request.
         /// </summary>
         internal static string TheRedirectionUrlIsNotTheSame {
             get {
@@ -898,7 +880,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the redirect_uri {0} is not well formed.
+        ///   Looks up a localized string similar to The redirect_uri {0} is not well formed.
         /// </summary>
         internal static string TheRedirectUrlIsNotValid {
             get {
@@ -907,7 +889,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the refresh token can be used only by the same issuer.
+        ///   Looks up a localized string similar to The refresh token can be used only by the same issuer.
         /// </summary>
         internal static string TheRefreshTokenCanBeUsedOnlyByTheSameIssuer {
             get {
@@ -916,7 +898,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the refresh token is not valid.
+        ///   Looks up a localized string similar to The refresh token is not valid.
         /// </summary>
         internal static string TheRefreshTokenIsNotValid {
             get {
@@ -925,7 +907,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the request cannot be extracted from the cookie.
+        ///   Looks up a localized string similar to The request cannot be extracted from the cookie.
         /// </summary>
         internal static string TheRequestCannotBeExtractedFromTheCookie {
             get {
@@ -934,7 +916,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the request downloaded from request URI is not valid.
+        ///   Looks up a localized string similar to The request downloaded from request URI is not valid.
         /// </summary>
         internal static string TheRequestDownloadedFromRequestUriIsNotValid {
             get {
@@ -943,7 +925,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the request parameter is not correct.
+        ///   Looks up a localized string similar to The request parameter is not correct.
         /// </summary>
         internal static string TheRequestParameterIsNotCorrect {
             get {
@@ -952,7 +934,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the request_uri parameter is not well formed.
+        ///   Looks up a localized string similar to The request_uri parameter is not well formed.
         /// </summary>
         internal static string TheRequestUriParameterIsNotWellFormed {
             get {
@@ -961,7 +943,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the resource owner cannot be removed.
+        ///   Looks up a localized string similar to The resource owner cannot be removed.
         /// </summary>
         internal static string TheResourceOwnerCannotBeRemoved {
             get {
@@ -988,7 +970,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the response cannot be generated because the resource owner needs to be authenticated.
+        ///   Looks up a localized string similar to The response cannot be generated because the resource owner needs to be authenticated.
         /// </summary>
         internal static string TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated {
             get {
@@ -1015,7 +997,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the scope &apos;{0}&apos; doesn&apos;t exist.
+        ///   Looks up a localized string similar to The scope &apos;{0}&apos; doesn&apos;t exist.
         /// </summary>
         internal static string TheScopeDoesntExist {
             get {
@@ -1024,7 +1006,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the scope(s) need(s) to be specified.
+        ///   Looks up a localized string similar to The scope(s) need(s) to be specified.
         /// </summary>
         internal static string TheScopesNeedToBeSpecified {
             get {
@@ -1033,7 +1015,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the sector identifier uris cannot be retrieved.
+        ///   Looks up a localized string similar to The sector identifier uris cannot be retrieved.
         /// </summary>
         internal static string TheSectorIdentifierUrisCannotBeRetrieved {
             get {
@@ -1042,7 +1024,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the signature is not correct.
+        ///   Looks up a localized string similar to The signature is not correct.
         /// </summary>
         internal static string TheSignatureIsNotCorrect {
             get {
@@ -1051,7 +1033,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the subject cannot be retrieved.
+        ///   Looks up a localized string similar to The subject cannot be retrieved.
         /// </summary>
         internal static string TheSubjectCannotBeRetrieved {
             get {
@@ -1060,7 +1042,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the ticket cannot be inserted.
+        ///   Looks up a localized string similar to The ticket cannot be inserted.
         /// </summary>
         internal static string TheTicketCannotBeInserted {
             get {
@@ -1069,7 +1051,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the ticket {0} doesn&apos;t exist.
+        ///   Looks up a localized string similar to The ticket {0} doesn&apos;t exist.
         /// </summary>
         internal static string TheTicketDoesntExist {
             get {
@@ -1078,7 +1060,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the ticket is expired.
+        ///   Looks up a localized string similar to The ticket is expired.
         /// </summary>
         internal static string TheTicketIsExpired {
             get {
@@ -1087,7 +1069,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the token doesn&apos;t exist.
+        ///   Looks up a localized string similar to The token doesn&apos;t exist.
         /// </summary>
         internal static string TheTokenDoesntExist {
             get {
@@ -1096,7 +1078,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the token has not been issued for the given client id &apos;{0}&apos;.
+        ///   Looks up a localized string similar to The token has not been issued for the given client id &apos;{0}&apos;.
         /// </summary>
         internal static string TheTokenHasNotBeenIssuedForTheGivenClientId {
             get {
@@ -1105,7 +1087,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the token is expired.
+        ///   Looks up a localized string similar to The token is expired.
         /// </summary>
         internal static string TheTokenIsExpired {
             get {
@@ -1114,7 +1096,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the token is not valid.
+        ///   Looks up a localized string similar to The token is not valid.
         /// </summary>
         internal static string TheTokenIsNotValid {
             get {
@@ -1132,7 +1114,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the user needs to be authenticated.
+        ///   Looks up a localized string similar to The user needs to be authenticated.
         /// </summary>
         internal static string TheUserNeedsToBeAuthenticated {
             get {
@@ -1141,7 +1123,7 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to the user needs to give his consent.
+        ///   Looks up a localized string similar to The user needs to give his consent.
         /// </summary>
         internal static string TheUserNeedsToGiveHisConsent {
             get {

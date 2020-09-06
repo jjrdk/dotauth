@@ -81,7 +81,7 @@ namespace SimpleAuth.Api.Authorization
                     authorizationParameter.State);
             }
 
-            var claimsPrincipal = principal as ClaimsPrincipal;
+            var claimsPrincipal = (ClaimsPrincipal)principal;
             var result = await _processAuthorizationRequest
                 .Process(authorizationParameter, claimsPrincipal, client, issuerName, cancellationToken)
                 .ConfigureAwait(false);

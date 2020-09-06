@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.WebSite.Authenticate
 {
+    using System;
     using System.Security.Claims;
     using SimpleAuth.Results;
 
@@ -14,7 +15,7 @@
         /// <value>
         /// The endpoint resultKind.
         /// </value>
-        public EndpointResult EndpointResult { get; set; }
+        public EndpointResult? EndpointResult { get; set; }
 
         /// <summary>
         /// Gets or sets the claims.
@@ -22,7 +23,7 @@
         /// <value>
         /// The claims.
         /// </value>
-        public Claim[] Claims { get; set; }
+        public Claim[] Claims { get; set; } = Array.Empty<Claim>();
 
         /// <summary>
         /// Gets or sets the two factor.
@@ -35,6 +36,6 @@
         /// <summary>
         /// Gets or sets an error message for the authentication.
         /// </summary>
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 }

@@ -33,7 +33,7 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The title.
         /// </value>
-        public string Title { get; set; }
+        public string Title { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the message.
@@ -41,6 +41,6 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The message.
         /// </value>
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
     }
 }

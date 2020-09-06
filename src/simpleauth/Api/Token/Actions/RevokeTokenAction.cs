@@ -16,34 +16,50 @@ using SimpleAuth.Shared.Repositories;
 
 namespace SimpleAuth.Api.Token.Actions
 {
+    using System.Net;
     using Authenticate;
     using Parameters;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
 
     internal class RevokeTokenAction
     {
         private readonly AuthenticateClient _authenticateClient;
         private readonly ITokenStore _tokenStore;
+        private readonly ILogger _logger;
 
-        public RevokeTokenAction(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore)
+        public RevokeTokenAction(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore, ILogger logger)
         {
             _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
             _tokenStore = tokenStore;
+            _logger = logger;
         }
 
-        public async Task<bool> Execute(
+        public async Task<(bool success, ErrorDetails? error)> Execute(
             RevokeTokenParameter revokeTokenParameter,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
+            var refreshToken = revokeTokenParameter.Token;
+            if (refreshToken == null)
+            {
+                _logger.LogError(Strings.TheRefreshTokenIsNotValid);
+                return (false, new ErrorDetails
+                {
+                    Detail = Strings.TheRefreshTokenIsNotValid,
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidToken
+                });
+            }
             // 1. Check the client credentials
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(revokeTokenParameter, certificate);
             var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
@@ -51,16 +67,23 @@ namespace SimpleAuth.Api.Token.Actions
             var client = authResult.Client;
             if (client == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, authResult.ErrorMessage!);
+                _logger.LogError(authResult.ErrorMessage);
+                return (false, new ErrorDetails
+                {
+                    Detail = authResult.ErrorMessage!,
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidClient
+                });
             }
 
             // 2. Retrieve the granted token & check if it exists
-            var grantedToken = await _tokenStore.GetAccessToken(revokeTokenParameter.Token, cancellationToken)
+
+            var grantedToken = await _tokenStore.GetAccessToken(refreshToken, cancellationToken)
                 .ConfigureAwait(false);
             var isAccessToken = true;
             if (grantedToken == null)
             {
-                grantedToken = await _tokenStore.GetRefreshToken(revokeTokenParameter.Token, cancellationToken)
+                grantedToken = await _tokenStore.GetRefreshToken(refreshToken, cancellationToken)
                     .ConfigureAwait(false);
                 isAccessToken = false;
             }
@@ -78,19 +101,28 @@ namespace SimpleAuth.Api.Token.Actions
                     string.Format(Strings.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
             }
 
+            var success = false;
             // 4. Invalid the granted token
             if (isAccessToken)
             {
-                return await _tokenStore.RemoveAccessToken(grantedToken.AccessToken, cancellationToken).ConfigureAwait(false);
+                success = await _tokenStore.RemoveAccessToken(grantedToken.AccessToken, cancellationToken).ConfigureAwait(false);
             }
 
             if (!isAccessToken && grantedToken.RefreshToken != null)
             {
-                return await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken, cancellationToken)
+                success = await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken, cancellationToken)
                     .ConfigureAwait(false);
             }
 
-            return false;
+            return success
+                ? (true, null)
+                : (false,
+                    new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.RevokeFailed,
+                        Detail = Strings.CouldNotRevokeToken
+                    });
         }
     }
 }

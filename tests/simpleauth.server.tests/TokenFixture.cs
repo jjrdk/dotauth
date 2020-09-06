@@ -8,6 +8,8 @@
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
+    using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xunit;
@@ -37,8 +39,8 @@
             var token = await tokenClient.GetToken(TokenRequest.FromTicketId("ticket_id", "")).ConfigureAwait(false);
 
             Assert.True(token.HasError);
-            Assert.Equal("invalid_grant", token.Error.Title);
-            Assert.Equal("the ticket ticket_id doesn't exist", token.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidGrant, token.Error.Title);
+            Assert.Equal(string.Format(Strings.TheTicketDoesntExist, "ticket_id"), token.Error.Detail);
         }
 
         [Fact]
@@ -64,7 +66,7 @@
             var securityToken = new JwtSecurityToken(
                 "http://server.example.com",
                 "s6BhdRkqt3",
-                new[] {new Claim("sub", "248289761001")},
+                new[] { new Claim("sub", "248289761001") },
                 null,
                 DateTime.UtcNow.AddYears(1),
                 new SigningCredentials(set.GetSignKeys().First(), SecurityAlgorithms.HmacSha256));
@@ -81,7 +83,7 @@
             var resourceSet = new ResourceSet
             {
                 Name = "name",
-                Scopes = new[] {"read", "write", "execute"},
+                Scopes = new[] { "read", "write", "execute" },
                 AuthorizationPolicies = new[]
                 {
                     new PolicyRule
@@ -98,7 +100,8 @@
                     "header",
                     requests: new PermissionRequest // Add permission & retrieve a ticket id.
                     {
-                        ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}
+                        ResourceSetId = resource.Content.Id,
+                        Scopes = new[] { "read" }
                     })
                 .ConfigureAwait(false);
 

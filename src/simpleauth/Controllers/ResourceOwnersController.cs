@@ -278,7 +278,7 @@ namespace SimpleAuth.Controllers
                     new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidParameterCode,
-                        Detail = Strings.LoginParameterMissing,
+                        Detail = string.Format(Strings.MissingParameter, "login"),
                         Status = HttpStatusCode.BadRequest
                     });
             }
@@ -434,7 +434,7 @@ namespace SimpleAuth.Controllers
                         Id.Create(),
                         resourceOwner.Subject!,
                         previousClaims,
-                        resourceOwner.Claims.Select(claim => new ClaimData {Type = claim.Type, Value = claim.Value})
+                        resourceOwner.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value })
                             .ToArray(),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
@@ -471,7 +471,7 @@ namespace SimpleAuth.Controllers
                 {
                     Status = HttpStatusCode.BadRequest,
                     Title = ErrorCodes.InvalidParameterCode,
-                    Detail = Strings.LoginParameterMissing
+                    Detail = string.Format(Strings.MissingParameter, "login")
                 });
             }
 
@@ -481,7 +481,7 @@ namespace SimpleAuth.Controllers
                 {
                     Status = HttpStatusCode.BadRequest,
                     Title = ErrorCodes.InvalidParameterCode,
-                    Detail = Strings.PasswordParameterMissing
+                    Detail = string.Format(Strings.MissingParameter, "password")
                 });
             }
 

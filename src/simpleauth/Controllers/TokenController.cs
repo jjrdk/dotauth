@@ -16,6 +16,7 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
@@ -48,6 +49,7 @@
         /// <param name="jwksStore"></param>
         /// <param name="resourceSetRepository">The resource set repository.</param>
         /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="logger">The logger.</param>
         public TokenController(
             RuntimeSettings settings,
             IAuthorizationCodeStore authorizationCodeStore,
@@ -59,7 +61,8 @@
             ITicketStore ticketStore,
             IJwksStore jwksStore,
             IResourceSetRepository resourceSetRepository,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger<TokenController> logger)
         {
             _tokenActions = new TokenActions(
                 settings,
@@ -70,7 +73,8 @@
                 resourceOwnerRepository,
                 authenticateResourceOwnerServices,
                 eventPublisher,
-                tokenStore);
+                tokenStore,
+                logger);
             _umaTokenActions = new UmaTokenActions(
                 ticketStore,
                 settings,
@@ -182,7 +186,7 @@
                             cancellationToken)
                         .ConfigureAwait(false);
                 case GrantTypes.ValidateBearer:
-                    //return null;
+                //return null;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -215,14 +219,14 @@
 
             // 2. Revoke the token
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var result = await _tokenActions.RevokeToken(
+            var (success, error) = await _tokenActions.RevokeToken(
                     revocationRequest.ToParameter(),
                     authenticationHeaderValue,
                     Request.GetCertificate(),
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            return result ? new OkResult() : StatusCode((int)HttpStatusCode.BadRequest);
+            return success ? new OkResult() : (IActionResult)BadRequest(error);
         }
     }
 }

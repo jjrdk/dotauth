@@ -57,7 +57,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -66,7 +68,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("the parameter grant_type is missing", error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "grant_type"), error.Detail);
         }
 
         [Fact]
@@ -79,7 +81,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -88,7 +92,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("the parameter username is missing", error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "username"), error.Detail);
         }
 
         [Fact]
@@ -102,7 +106,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -111,7 +117,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("the parameter password is missing", error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "password"), error.Detail);
         }
 
         [Fact]
@@ -126,7 +132,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -135,7 +143,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("the parameter scope is missing", error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "scope"), error.Detail);
         }
 
         [Fact]
@@ -152,7 +160,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -161,7 +171,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Title);
-            Assert.Equal("the client doesn't exist", error.Detail);
+            Assert.Equal(Strings.TheClientDoesntExist, error.Detail);
         }
 
         [Fact]
@@ -179,7 +189,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -188,7 +200,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Title);
-            Assert.Equal("the client cannot be authenticated with secret basic", error.Detail);
+            Assert.Equal("The client cannot be authenticated with secret basic", error.Detail);
         }
 
         [Fact]
@@ -207,7 +219,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -234,7 +248,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -242,8 +258,8 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_scope", error.Title);
-            Assert.Equal("the scopes invalid are not allowed or invalid", error.Detail);
+            Assert.Equal(ErrorCodes.InvalidScope, error.Title);
+            Assert.Equal(string.Format(Strings.ScopesAreNotAllowedOrInvalid, "invalid"), error.Detail);
         }
 
         [Fact]
@@ -256,7 +272,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -265,7 +283,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("the parameter scope is missing", error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "scope"), error.Detail);
         }
 
         [Fact]
@@ -274,14 +292,16 @@ namespace SimpleAuth.Server.Tests.Apis
             var request = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("scope", "invalid_scope"),
+                new KeyValuePair<string, string>("scope", ErrorCodes.InvalidScope),
                 new KeyValuePair<string, string>("client_id", "client"),
                 new KeyValuePair<string, string>("client_secret", "client")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -289,8 +309,8 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_grant", error.Title);
-            Assert.Equal("the client client doesn't support the grant type client_credentials", error.Detail);
+            Assert.Equal(ErrorCodes.InvalidGrant, error.Title);
+            Assert.Equal(string.Format(Strings.TheClientDoesntSupportTheGrantType, "client", "client_credentials"), error.Detail);
         }
 
         [Fact]
@@ -300,14 +320,16 @@ namespace SimpleAuth.Server.Tests.Apis
             var request = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("scope", "invalid_scope"),
+                new KeyValuePair<string, string>("scope", ErrorCodes.InvalidScope),
                 new KeyValuePair<string, string>("client_id", "clientWithWrongResponseType"),
                 new KeyValuePair<string, string>("client_secret", "clientWithWrongResponseType")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -317,7 +339,7 @@ namespace SimpleAuth.Server.Tests.Apis
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Title);
             Assert.Equal(
-                "the client 'clientWithWrongResponseType' doesn't support the response type: 'token'",
+                "The client 'clientWithWrongResponseType' doesn't support the response type: 'token'",
                 error.Detail);
         }
 
@@ -334,7 +356,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -342,8 +366,8 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_scope", error.Title);
-            Assert.Equal("the scopes invalid are not allowed or invalid", error.Detail);
+            Assert.Equal(ErrorCodes.InvalidScope, error.Title);
+            Assert.Equal(string.Format(Strings.ScopesAreNotAllowedOrInvalid, "invalid"), error.Detail);
         }
 
         [Fact]
@@ -356,7 +380,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -365,7 +391,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("the parameter refresh_token is missing", error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "refresh_token"), error.Detail);
         }
 
         [Fact]
@@ -380,7 +406,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -389,7 +417,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Title);
-            Assert.Equal("the client doesn't exist", error.Detail);
+            Assert.Equal(Strings.TheClientDoesntExist, error.Detail);
         }
 
         [Fact]
@@ -405,7 +433,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -413,7 +443,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_grant", error.Title);
+            Assert.Equal(ErrorCodes.InvalidGrant, error.Title);
             Assert.Equal(Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, error.Detail);
         }
 
@@ -433,8 +463,8 @@ namespace SimpleAuth.Server.Tests.Apis
                 .ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.BadRequest, refreshToken.StatusCode);
-            Assert.Equal("invalid_grant", refreshToken.Error.Title);
-            Assert.Equal("the refresh token can be used only by the same issuer", refreshToken.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidGrant, refreshToken.Error.Title);
+            Assert.Equal("The refresh token can be used only by the same issuer", refreshToken.Error.Detail);
         }
 
         [Fact]
@@ -447,7 +477,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -456,7 +488,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("the parameter code is missing", error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "code"), error.Detail);
         }
 
         [Fact]
@@ -470,7 +502,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -495,7 +529,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -504,7 +540,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Title);
-            Assert.Equal("the client doesn't exist", error.Detail);
+            Assert.Equal(Strings.TheClientDoesntExist, error.Detail);
         }
 
         [Fact]
@@ -522,7 +558,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -531,7 +569,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal(ErrorCodes.InvalidGrant, error.Title);
-            Assert.Equal("the client client doesn't support the grant type authorization_code", error.Detail);
+            Assert.Equal("The client client doesn't support the grant type authorization_code", error.Detail);
         }
 
         [Fact]
@@ -548,7 +586,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -556,9 +596,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_response", error.Title);
+            Assert.Equal(ErrorCodes.InvalidResponse, error.Title);
             Assert.Equal(
-                "the client 'incomplete_authcode_client' doesn't support the response type: 'code'",
+                "The client 'incomplete_authcode_client' doesn't support the response type: 'code'",
                 error.Detail);
         }
 
@@ -576,7 +616,9 @@ namespace SimpleAuth.Server.Tests.Apis
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{BaseUrl}/token")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -584,8 +626,8 @@ namespace SimpleAuth.Server.Tests.Apis
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            Assert.Equal("invalid_grant", error.Title);
-            Assert.Equal("the authorization code is not correct", error.Detail);
+            Assert.Equal(ErrorCodes.InvalidGrant, error.Title);
+            Assert.Equal(Strings.TheAuthorizationCodeIsNotCorrect, error.Detail);
         }
 
         // TH : CONTINUE TO WRITE UTS
@@ -611,7 +653,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl));
             var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
 
             Assert.False(result.HasError);
@@ -625,7 +667,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 TokenCredentials.FromClientCredentials("client", "client"),
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl));
-            var result = await tokenClient.GetToken(TokenRequest.FromPassword("superuser", "password", new[] {"role"}))
+            var result = await tokenClient.GetToken(TokenRequest.FromPassword("superuser", "password", new[] { "role" }))
                 .ConfigureAwait(false);
 
             Assert.False(result.HasError);
@@ -645,7 +687,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"openid"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "openid" }))
                 .ConfigureAwait(false);
 
             Assert.False(result.HasError);
@@ -660,7 +702,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl));
             var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
 
             Assert.False(result.HasError);
@@ -676,7 +718,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
             // TODO: Look into this
 

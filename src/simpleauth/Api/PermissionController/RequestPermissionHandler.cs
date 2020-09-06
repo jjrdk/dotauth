@@ -96,7 +96,7 @@ namespace SimpleAuth.Api.PermissionController
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidRequest,
                         string.Format(
-                            Strings.TheParameterNeedsToBeSpecified,
+                            Strings.MissingParameter,
                             UmaConstants.AddPermissionNames.ResourceSetId));
                 }
 
@@ -105,7 +105,7 @@ namespace SimpleAuth.Api.PermissionController
                     throw new SimpleAuthException(
                         ErrorCodes.InvalidRequest,
                         string.Format(
-                            Strings.TheParameterNeedsToBeSpecified,
+                            Strings.MissingParameter,
                             UmaConstants.AddPermissionNames.Scopes));
                 }
 

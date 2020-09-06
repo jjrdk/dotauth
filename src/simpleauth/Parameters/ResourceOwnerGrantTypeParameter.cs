@@ -14,6 +14,8 @@
 
 namespace SimpleAuth.Parameters
 {
+    using System;
+
     internal sealed class ResourceOwnerGrantTypeParameter : GrantTypeParameter
     {
         public string? Scope { get; set; }
@@ -22,6 +24,6 @@ namespace SimpleAuth.Parameters
 
         public string? Password { get; set; }
 
-        public string[] AmrValues { get; set; }
+        public string[] AmrValues { get; set; } = Array.Empty<string>();
     }
 }

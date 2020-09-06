@@ -284,15 +284,15 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    string.Format(Strings.TheParameterNeedsToBeSpecified, "name"),
+                    string.Format(Strings.MissingParameter, "name"),
                     HttpStatusCode.BadRequest);
             }
 
-            if (resourceSet.Scopes == null || !resourceSet.Scopes.Any())
+            if (resourceSet.Scopes.Length == 0)
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    string.Format(Strings.TheParameterNeedsToBeSpecified, "scopes"),
+                    string.Format(Strings.MissingParameter, "scopes"),
                     HttpStatusCode.BadRequest);
             }
 

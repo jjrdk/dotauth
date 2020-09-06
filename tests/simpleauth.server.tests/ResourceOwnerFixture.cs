@@ -72,7 +72,7 @@
 
             Assert.True(result.HasError);
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal(Strings.LoginParameterMissing, result.Error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "login"), result.Error.Detail);
         }
 
         [Fact]
@@ -96,7 +96,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal(Strings.LoginParameterMissing, result.Error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "login"), result.Error.Detail);
         }
 
         [Fact]
@@ -108,7 +108,7 @@
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal(Strings.PasswordParameterMissing, result.Error.Detail);
+            Assert.Equal(string.Format(Strings.MissingParameter, "password"), result.Error.Detail);
         }
 
         [Fact]

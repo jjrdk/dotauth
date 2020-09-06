@@ -62,7 +62,7 @@ namespace SimpleAuth.Server.Tests
             Assert.True(ticket.HasError);
             Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
             Assert.Equal(
-                string.Format(Strings.TheParameterNeedsToBeSpecified, "scopes"),
+                string.Format(Strings.MissingParameter, "scopes"),
                 ticket.Error.Detail);
         }
 
@@ -96,7 +96,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(ticket.HasError);
-            Assert.Equal("invalid_scope", ticket.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidScope, ticket.Error.Title);
             Assert.Equal("one or more scopes are not valid", ticket.Error.Detail);
         }
 

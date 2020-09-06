@@ -11,7 +11,7 @@
         /// <value>
         /// The authentication scheme.
         /// </value>
-        public string AuthenticationScheme { get; set; }
+        public string? AuthenticationScheme { get; set; }
 
         /// <summary>
         /// Gets or sets the display name.
@@ -19,6 +19,6 @@
         /// <value>
         /// The display name.
         /// </value>
-        public string DisplayName { get; set; }
+        public string? DisplayName { get; set; }
     }
 }
