@@ -28,7 +28,6 @@ namespace SimpleAuth.Tests.Validators
         [Fact]
         public void When_Client_Does_Not_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
         {
-            Assert.Empty(((Client)null).GetRedirectionUrls(null, null));
             Assert.Empty(new Client().GetRedirectionUrls(null));
             Assert.Empty(new Client().GetRedirectionUrls(new Uri("https://url")));
             Assert.Empty(new Client().GetRedirectionUrls(new Uri("https://url")));
@@ -43,14 +42,6 @@ namespace SimpleAuth.Tests.Validators
             var result = client.GetRedirectionUrls(url);
 
             Assert.Equal(url, result.First());
-        }
-
-        [Fact]
-        public void When_Passing_Null_Parameter_To_ValidateGrantType_Then_False_Is_Returned()
-        {
-            var result = ((Client)null).CheckGrantTypes(GrantTypes.AuthorizationCode);
-
-            Assert.False(result);
         }
 
         [Fact]
@@ -75,23 +66,10 @@ namespace SimpleAuth.Tests.Validators
         }
 
         [Fact]
-        public void When_Passing_Null_Client_Then_False_Is_Returned()
-        {
-            Assert.False(((Client)null).CheckGrantTypes(null, null));
-        }
-
-        [Fact]
-        public void When_Passing_Null_GrantTypes_Then_True_Is_Returned()
-        {
-            Assert.True(new Client().CheckGrantTypes(null));
-        }
-
-        [Fact]
         public void When_Checking_Client_Grant_Types_Then_True_Is_Returned()
         {
             var client = new Client { GrantTypes = new[] { GrantTypes.Implicit, GrantTypes.Password } };
-
-
+            
             Assert.True(client.CheckGrantTypes(GrantTypes.Implicit, GrantTypes.Password));
             Assert.True(client.CheckGrantTypes(GrantTypes.Implicit));
         }

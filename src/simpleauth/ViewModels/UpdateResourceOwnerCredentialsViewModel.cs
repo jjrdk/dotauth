@@ -17,7 +17,7 @@
         /// <value>
         /// The login.
         /// </value>
-        public string Login { get; set; }
+        public string? Login { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
@@ -25,7 +25,7 @@
         /// <value>
         /// The password.
         /// </value>
-        [Required] public string Password { get; set; }
+        [Required] public string? Password { get; set; }
 
         /// <summary>
         /// Gets or sets the repeat password.
@@ -33,7 +33,7 @@
         /// <value>
         /// The repeat password.
         /// </value>
-        [Required] public string RepeatPassword { get; set; }
+        [Required] public string? RepeatPassword { get; set; }
 
         /// <summary>
         /// Validates the specified model state.

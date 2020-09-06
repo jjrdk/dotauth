@@ -38,7 +38,9 @@ namespace SimpleAuth.Api.Authorization
         private readonly IJwksStore _jwksStore;
 
         public ProcessAuthorizationRequest(
-            IClientStore clientStore, IConsentRepository consentRepository, IJwksStore jwksStore)
+            IClientStore clientStore,
+            IConsentRepository consentRepository,
+            IJwksStore jwksStore)
         {
             _clientStore = clientStore;
             _consentRepository = consentRepository;
@@ -76,8 +78,8 @@ namespace SimpleAuth.Api.Authorization
                 }
             }
 
-            var redirectionUrls = client.GetRedirectionUrls(authorizationParameter.RedirectUrl);
-            if (!redirectionUrls.Any())
+            if (authorizationParameter.RedirectUrl == null
+                || client.GetRedirectionUrls(authorizationParameter.RedirectUrl).Length == 0)
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidRequest,
@@ -90,7 +92,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 throw new SimpleAuthExceptionWithState(
                     ErrorCodes.InvalidScope,
-                    scopeValidationResult.ErrorMessage,
+                    scopeValidationResult.ErrorMessage!,
                     authorizationParameter.State);
             }
 
@@ -183,11 +185,17 @@ namespace SimpleAuth.Api.Authorization
                         authorizationParameter.State);
                 }
 
-                var client = await _clientStore.GetById(authorizationParameter.ClientId, cancellationToken)
-                    .ConfigureAwait(false);
-                var validationParameters = client == null ? null : await client
-                    .CreateValidationParameters(_jwksStore, issuerName, cancellationToken: cancellationToken)
-                    .ConfigureAwait(false);
+                var client = authorizationParameter.ClientId == null
+                    ? null
+                    : await _clientStore.GetById(authorizationParameter.ClientId, cancellationToken)
+                        .ConfigureAwait(false);
+                var validationParameters = client == null
+                    ? null
+                    : await client.CreateValidationParameters(
+                            _jwksStore,
+                            issuerName,
+                            cancellationToken: cancellationToken)
+                        .ConfigureAwait(false);
                 handler.ValidateToken(token, validationParameters, out var securityToken);
                 var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 
@@ -201,7 +209,7 @@ namespace SimpleAuth.Api.Authorization
 
                 var currentSubject = string.Empty;
                 var expectedSubject = jwsPayload.GetClaimValue(OpenIdClaimTypes.Subject);
-                if (claimsPrincipal != null && claimsPrincipal.IsAuthenticated())
+                if (claimsPrincipal.IsAuthenticated())
                 {
                     currentSubject = claimsPrincipal.GetSubject();
                 }
@@ -295,6 +303,7 @@ namespace SimpleAuth.Api.Authorization
             {
                 return null;
             }
+
             return await _consentRepository.GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
         }

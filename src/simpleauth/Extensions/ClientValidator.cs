@@ -25,27 +25,14 @@ namespace SimpleAuth.Extensions
     {
         public static Uri[] GetRedirectionUrls(this Client client, params Uri[] urls)
         {
-            if (urls == null || client?.RedirectionUrls == null || !client.RedirectionUrls.Any())
-            {
-                return Array.Empty<Uri>();
-            }
-
-            return client.RedirectionUrls.Where(urls.Contains).ToArray();
+            return client.RedirectionUrls.Length == 0
+                ? Array.Empty<Uri>()
+                : client.RedirectionUrls.Where(urls.Contains).ToArray();
         }
 
         public static bool CheckGrantTypes(this Client client, params string[] grantTypes)
         {
-            if (client == null)
-            {
-                return false;
-            }
-
-            if (grantTypes == null)
-            {
-                return true;
-            }
-
-            if (client.GrantTypes == null || !client.GrantTypes.Any())
+            if (client.GrantTypes.Length == 0)
             {
                 client.GrantTypes = new[]
                 {
@@ -58,12 +45,7 @@ namespace SimpleAuth.Extensions
 
         public static bool CheckResponseTypes(this Client client, params string[] responseTypes)
         {
-            if (client == null)
-            {
-                return false;
-            }
-
-            if (client.ResponseTypes == null || !client.ResponseTypes.Any())
+            if (client.ResponseTypes.Length == 0)
             {
                 client.ResponseTypes = new[]
                 {

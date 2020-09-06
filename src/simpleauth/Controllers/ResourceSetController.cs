@@ -97,8 +97,11 @@ namespace SimpleAuth.Controllers
             {
                 return BadRequest();
             }
+
             var resourceSets = await _resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
-            var value = ui == "1" ? (object)resourceSets.Select(ResourceSetViewModel.FromResourceSet).ToArray() : resourceSets.Select(x => x.Id).ToArray();
+            var value = ui == "1"
+                ? (object)resourceSets.Select(ResourceSetViewModel.FromResourceSet).ToArray()
+                : resourceSets.Select(x => x.Id).ToArray();
 
             return new OkObjectResult(value);
         }
@@ -172,7 +175,8 @@ namespace SimpleAuth.Controllers
                 return BadRequest();
             }
 
-            return new OkObjectResult(new EditPolicyResponse { Id = id, Rules = result.AuthorizationPolicies.Select(ToViewModel).ToArray() });
+            return new OkObjectResult(
+                new EditPolicyResponse { Id = id, Rules = result.AuthorizationPolicies.Select(ToViewModel).ToArray() });
         }
 
         /// <summary>
@@ -196,7 +200,12 @@ namespace SimpleAuth.Controllers
                         Status = HttpStatusCode.BadRequest
                     });
             }
-            var result = await SetResourceSetPolicy(viewModel.Id, viewModel.Rules.Select(ToModel).ToArray(), cancellationToken).ConfigureAwait(false);
+
+            var result = await SetResourceSetPolicy(
+                    viewModel.Id,
+                    viewModel.Rules.Select(ToModel).ToArray(),
+                    cancellationToken)
+                .ConfigureAwait(false);
 
             return result is OkResult ? Ok(new object()) : result;
         }
@@ -209,7 +218,10 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
         [HttpPut("{id}/policy")]
         [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> SetResourceSetPolicy(string id, PolicyRule[] rules, CancellationToken cancellationToken)
+        public async Task<IActionResult> SetResourceSetPolicy(
+            string id,
+            PolicyRule[] rules,
+            CancellationToken cancellationToken)
         {
             var subject = User.GetSubject();
             if (string.IsNullOrWhiteSpace(subject))
@@ -231,10 +243,7 @@ namespace SimpleAuth.Controllers
             var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
             if (result == null)
             {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.InvalidResource,
-                    HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidRequest, Strings.InvalidResource, HttpStatusCode.BadRequest);
             }
 
             result.AuthorizationPolicies = rules;
@@ -274,10 +283,7 @@ namespace SimpleAuth.Controllers
 
             if (resourceSet.IconUri != null && !resourceSet.IconUri.IsAbsoluteUri)
             {
-                return BuildError(
-                    ErrorCodes.InvalidUri,
-                    Strings.TheUrlIsNotWellFormed,
-                    HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidUri, Strings.TheUrlIsNotWellFormed, HttpStatusCode.BadRequest);
             }
 
             if (string.IsNullOrWhiteSpace(resourceSet.Name))
@@ -335,10 +341,7 @@ namespace SimpleAuth.Controllers
 
             if (resourceSet.IconUri != null && !resourceSet.IconUri.IsAbsoluteUri)
             {
-                return BuildError(
-                    ErrorCodes.InvalidUri,
-                    Strings.TheUrlIsNotWellFormed,
-                    HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidUri, Strings.TheUrlIsNotWellFormed, HttpStatusCode.BadRequest);
             }
 
             var resourceSetUpdated =
@@ -412,18 +415,21 @@ namespace SimpleAuth.Controllers
             return new PolicyRule
             {
                 Scopes =
-                    viewModel.Scopes?.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(x => x.Trim())
-                        .ToArray(),
+                    viewModel.Scopes == null
+                        ? Array.Empty<string>()
+                        : viewModel.Scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim()!)
+                            .ToArray(),
                 Claims =
                     viewModel.Claims.Where(
                             x => !string.IsNullOrWhiteSpace(x.Type) && !string.IsNullOrWhiteSpace(x.Value))
-                        .ToArray()
-                    ?? Array.Empty<ClaimData>(),
-                ClientIdsAllowed =
-                    viewModel.ClientIdsAllowed?.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(x => x.Trim())
                         .ToArray(),
+                ClientIdsAllowed =
+                    viewModel.ClientIdsAllowed == null
+                        ? Array.Empty<string>()
+                        : viewModel.ClientIdsAllowed.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim()!)
+                            .ToArray(),
                 IsResourceOwnerConsentNeeded = viewModel.IsResourceOwnerConsentNeeded,
                 OpenIdProvider = viewModel.OpenIdProvider
             };

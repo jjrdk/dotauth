@@ -20,10 +20,10 @@ namespace SimpleAuth.Extensions
 
     internal static class ScopeValidator
     {
-        public static ScopeValidationResult Check(this string scope, Client client)
+        public static ScopeValidationResult Check(this string? scope, Client client)
         {
             var scopes = scope.ParseScopes();
-            if (!scopes.Any())
+            if (scopes.Length == 0)
             {
                 return new ScopeValidationResult(Strings.TheScopesNeedToBeSpecified);
             }

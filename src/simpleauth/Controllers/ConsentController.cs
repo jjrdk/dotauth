@@ -152,9 +152,11 @@ namespace SimpleAuth.Controllers
             var actionResult = await _confirmConsent
                 .Execute(parameter, authenticatedUser, issuerName, cancellationToken)
                 .ConfigureAwait(false);
+
             var subject = authenticatedUser.GetSubject();
+
             await _eventPublisher.Publish(
-                    new ConsentAccepted(Id.Create(), subject, request.client_id, request.scope, DateTimeOffset.UtcNow))
+                    new ConsentAccepted(Id.Create(), subject!, request.client_id!, request.scope!, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return actionResult.CreateRedirectionFromActionResult(request, _logger)!;
         }

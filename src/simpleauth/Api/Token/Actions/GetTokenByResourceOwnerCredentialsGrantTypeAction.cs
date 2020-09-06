@@ -161,7 +161,7 @@ namespace SimpleAuth.Api.Token.Actions
                         {
                             Status = HttpStatusCode.BadRequest,
                             Title = ErrorCodes.InvalidScope,
-                            Detail = scopeValidation.ErrorMessage
+                            Detail = scopeValidation.ErrorMessage!
                         }
                     };
                 }
