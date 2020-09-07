@@ -10,7 +10,6 @@
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
         <Nullable>enable</Nullable>
-        <WarningsAsErrors>nullable</WarningsAsErrors>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
@@ -23,7 +22,7 @@
         <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.5.0" />
+        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.5.0.9" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Properties\SmsStrings.Designer.cs">

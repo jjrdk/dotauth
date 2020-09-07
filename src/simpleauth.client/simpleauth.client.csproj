@@ -8,7 +8,6 @@
 		<PackageId>simpleauth.client</PackageId>
 		<RootNamespace>SimpleAuth.Client</RootNamespace>
 		<Nullable>enable</Nullable>
-        <WarningsAsErrors>nullable</WarningsAsErrors>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
