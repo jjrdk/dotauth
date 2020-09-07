@@ -107,10 +107,17 @@ namespace SimpleAuth.Controllers
         public async Task<IActionResult> Index(string code, CancellationToken cancellationToken)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var client = await _clientStore.GetById(request.client_id, cancellationToken).ConfigureAwait(false);
+            if (request.client_id == null)
+            {
+                return BadRequest();
+            }
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var actionResult = await _displayConsent.Execute(request.ToParameter(), authenticatedUser, issuerName, cancellationToken)
+            var actionResult = await _displayConsent.Execute(
+                    request.ToParameter(),
+                    authenticatedUser,
+                    issuerName,
+                    cancellationToken)
                 .ConfigureAwait(false);
 
             var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request, _logger);
@@ -119,14 +126,19 @@ namespace SimpleAuth.Controllers
                 return result;
             }
 
+            var client = await _clientStore.GetById(request.client_id, cancellationToken).ConfigureAwait(false);
+            if (client == null)
+            {
+                return BadRequest();
+            }
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.ClientName,
                 AllowedScopeDescriptions =
-                    actionResult.Scopes == null
+                    actionResult?.Scopes == null
                         ? new List<string>()
                         : actionResult.Scopes.Select(s => s.Description).ToList(),
-                AllowedIndividualClaims = actionResult.AllowedClaims ?? new List<string>(),
+                AllowedIndividualClaims = actionResult?.AllowedClaims ?? new List<string>(),
                 LogoUri = client.LogoUri?.AbsoluteUri,
                 PolicyUri = client.PolicyUri?.AbsoluteUri,
                 TosUri = client.TosUri?.AbsoluteUri,
@@ -156,7 +168,12 @@ namespace SimpleAuth.Controllers
             var subject = authenticatedUser.GetSubject();
 
             await _eventPublisher.Publish(
-                    new ConsentAccepted(Id.Create(), subject!, request.client_id!, request.scope!, DateTimeOffset.UtcNow))
+                    new ConsentAccepted(
+                        Id.Create(),
+                        subject!,
+                        request.client_id!,
+                        request.scope!,
+                        DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return actionResult.CreateRedirectionFromActionResult(request, _logger)!;
         }
@@ -171,11 +188,16 @@ namespace SimpleAuth.Controllers
         public async Task<IActionResult> Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
+            if (request?.redirect_uri == null)
+            {
+                return BadRequest();
+            }
+
             await _eventPublisher.Publish(
                     new ConsentRejected(
                         Id.Create(),
-                        request.client_id,
-                        request.scope.Trim().Split(' '),
+                        request.client_id ?? string.Empty,
+                        request.scope == null ? Array.Empty<string>() : request.scope.Trim().Split(' '),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return Redirect(request.redirect_uri.AbsoluteUri);

@@ -56,13 +56,13 @@ namespace SimpleAuth.Controllers
         /// <exception cref="ArgumentNullException">request</exception>
         [HttpPost(".search")]
         [Authorize(Policy = "manager")]
-        public async Task<ActionResult<PagedResult<Scope>>> Search(
-            [FromBody] SearchScopesRequest request,
+        public async Task<IActionResult> Search(
+            [FromBody] SearchScopesRequest? request,
             CancellationToken cancellationToken)
         {
             if (request == null)
             {
-                BadRequest();
+                return BadRequest();
             }
 
             var result = await _scopeRepository.Search(request, cancellationToken).ConfigureAwait(false);

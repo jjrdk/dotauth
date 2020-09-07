@@ -87,7 +87,7 @@ namespace SimpleAuth.Controllers
         [HttpPost(".search")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Search(
-            [FromBody] SearchClientsRequest request,
+            [FromBody] SearchClientsRequest? request,
             CancellationToken cancellationToken)
         {
             if (request == null)
@@ -163,7 +163,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPut]
         [Authorize(Policy = "manager")]
-        public async Task<IActionResult> Put([FromBody] Client client, CancellationToken cancellationToken)
+        public async Task<IActionResult> Put([FromBody] Client? client, CancellationToken cancellationToken)
         {
             if (client == null)
             {
@@ -225,11 +225,15 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Create(CreateClientViewModel viewModel, CancellationToken cancellationToken)
         {
+            if (viewModel.Name == null || viewModel.RedirectionUrls == null)
+            {
+                return BadRequest();
+            }
             var client = new Client
             {
                 ClientName = viewModel.Name,
                 LogoUri = viewModel.LogoUri,
-                ApplicationType = viewModel.ApplicationType,
+                ApplicationType = viewModel.ApplicationType ?? ApplicationTypes.Web,
                 RedirectionUrls =
                     viewModel.RedirectionUrls.Split(",;".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => new Uri(x))

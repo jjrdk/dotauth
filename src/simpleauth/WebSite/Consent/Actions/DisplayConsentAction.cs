@@ -64,7 +64,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
 
         /// <summary>
         /// Fetch the scopes and client name from the ClientRepository and the parameter
-        /// Those informations are used to create the consent screen.
+        /// Those information are used to create the consent screen.
         /// </summary>
         /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="claimsPrincipal"></param>
@@ -77,7 +77,10 @@ namespace SimpleAuth.WebSite.Consent.Actions
             string issuerName,
             CancellationToken cancellationToken)
         {
-            var client = await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken).ConfigureAwait(false);
+            var client = authorizationParameter.ClientId == null
+                ? null
+                : await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken)
+                    .ConfigureAwait(false);
             if (client == null)
             {
                 throw new SimpleAuthExceptionWithState(
@@ -88,7 +91,8 @@ namespace SimpleAuth.WebSite.Consent.Actions
 
             EndpointResult endpointResult;
             var subject = claimsPrincipal.GetSubject()!;
-            var assignedConsent = await _consentRepository.GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
+            var assignedConsent = await _consentRepository
+                .GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
             // If there's already a consent then redirect to the callback
             if (assignedConsent != null)
@@ -111,7 +115,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 }
 
                 endpointResult.RedirectInstruction!.ResponseMode = responseMode;
-                return new DisplayContentResult { EndpointResult = endpointResult };
+                return new DisplayContentResult(endpointResult);
             }
 
             ICollection<string> allowedClaims = Array.Empty<string>();
@@ -123,28 +127,25 @@ namespace SimpleAuth.WebSite.Consent.Actions
             }
             else
             {
-                allowedScopes = (await GetScopes(authorizationParameter.Scope!, cancellationToken).ConfigureAwait(false))
+                allowedScopes =
+                    (await GetScopes(authorizationParameter.Scope!, cancellationToken).ConfigureAwait(false))
                     .Where(s => s.IsDisplayedInConsent)
                     .ToList();
             }
 
             endpointResult = EndpointResult.CreateAnEmptyActionResultWithOutput();
-            return new DisplayContentResult
-            {
-                AllowedClaims = allowedClaims,
-                Scopes = allowedScopes,
-                EndpointResult = endpointResult,
-                Client = client
-            };
+            return new DisplayContentResult(client, allowedScopes, allowedClaims, endpointResult);
         }
 
-        private async Task<IEnumerable<Scope>> GetScopes(string concatenateListOfScopes, CancellationToken cancellationToken)
+        private async Task<IEnumerable<Scope>> GetScopes(
+            string concatenateListOfScopes,
+            CancellationToken cancellationToken)
         {
             var scopeNames = concatenateListOfScopes.Split(' ');
             return await _scopeRepository.SearchByNames(cancellationToken, scopeNames).ConfigureAwait(false);
         }
 
-        private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string state)
+        private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string? state)
         {
             if (responseTypes == null)
             {

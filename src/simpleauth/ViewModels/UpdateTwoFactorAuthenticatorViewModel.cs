@@ -11,6 +11,6 @@
         /// <value>
         /// The type of the selected two factor authentication.
         /// </value>
-        public string SelectedTwoFactorAuthType { get; set; }
+        public string? SelectedTwoFactorAuthType { get; set; }
     }
 }

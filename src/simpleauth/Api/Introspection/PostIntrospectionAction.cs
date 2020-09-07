@@ -47,16 +47,18 @@ namespace SimpleAuth.Api.Introspection
             }
 
             // 4. Trying to fetch the information about the access_token  || refresh_token
+            var introspectionParameterToken = introspectionParameter.Token;
             var grantedToken = tokenTypeHint switch
-            {
-                CoreConstants.StandardTokenTypeHintNames.AccessToken => await _tokenStore
-                    .GetAccessToken(introspectionParameter.Token, cancellationToken)
-                    .ConfigureAwait(false),
-                CoreConstants.StandardTokenTypeHintNames.RefreshToken => await _tokenStore
-                    .GetRefreshToken(introspectionParameter.Token, cancellationToken)
-                    .ConfigureAwait(false),
-                _ => null
-            };
+                {
+                    _ when introspectionParameterToken == null => null,
+                    CoreConstants.StandardTokenTypeHintNames.AccessToken => await _tokenStore
+                        .GetAccessToken(introspectionParameterToken, cancellationToken)
+                        .ConfigureAwait(false),
+                    CoreConstants.StandardTokenTypeHintNames.RefreshToken => await _tokenStore
+                        .GetRefreshToken(introspectionParameterToken, cancellationToken)
+                        .ConfigureAwait(false),
+                    _ => null
+                };
 
             // 5. Return an error if there's no granted token
             if (grantedToken == null)

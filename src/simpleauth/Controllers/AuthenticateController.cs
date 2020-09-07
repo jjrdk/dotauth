@@ -348,10 +348,11 @@
                     await SetLocalCookie(actionResult.Claims, request.session_id!).ConfigureAwait(false);
 
                     // 7. Redirect the user agent
-                    var result = actionResult.EndpointResult.CreateRedirectionFromActionResult(request, _logger);
+                    var endpointResult = actionResult.EndpointResult!;
+                    var result = endpointResult.CreateRedirectionFromActionResult(request, _logger);
                     if (result != null)
                     {
-                        await LogAuthenticateUser(subject, actionResult!.EndpointResult.Amr!).ConfigureAwait(false);
+                        await LogAuthenticateUser(subject, endpointResult.Amr!).ConfigureAwait(false);
                         return result;
                     }
                 }

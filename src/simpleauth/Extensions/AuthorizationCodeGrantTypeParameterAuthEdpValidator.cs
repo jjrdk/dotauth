@@ -117,7 +117,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="responseType"></param>
         /// <param name="state"></param>
-        private void ValidateResponseTypeParameter(string responseType, string state)
+        private void ValidateResponseTypeParameter(string responseType, string? state)
         {
             if (string.IsNullOrWhiteSpace(responseType))
             {
@@ -141,7 +141,7 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="prompt"></param>
         /// <param name="state"></param>
-        private void ValidatePromptParameter(string prompt, string state)
+        private void ValidatePromptParameter(string? prompt, string? state)
         {
             if (string.IsNullOrWhiteSpace(prompt))
             {

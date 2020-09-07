@@ -4,6 +4,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using SimpleAuth.Properties;
 
     /// <summary>
     /// Defines the update resource owner credentials view model.
@@ -45,6 +46,11 @@
             if (modelState == null)
             {
                 throw new ArgumentNullException(nameof(modelState));
+            }
+
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                modelState.AddModelError(nameof(Password), string.Format(Strings.MissingParameter, nameof(Password)));
             }
 
             if (Password != RepeatPassword)

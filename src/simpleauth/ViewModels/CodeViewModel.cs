@@ -81,19 +81,30 @@ namespace SimpleAuth.ViewModels
         /// <exception cref="ArgumentNullException">modelState</exception>
         public void Validate(ModelStateDictionary modelState)
         {
-            if (Action == ResendAction)
+            if (string.IsNullOrWhiteSpace(ClaimName))
             {
-                if (string.IsNullOrWhiteSpace(ClaimValue))
-                {
-                    modelState.AddModelError("ClaimValue", Strings.TheClaimMustBeSpecified);
-                }
+                modelState.AddModelError(nameof(ClaimName), Strings.TheClaimMustBeSpecified);
             }
 
-            if (Action == SubmitAction)
+            switch (Action)
             {
-                if (string.IsNullOrWhiteSpace(Code))
+                case ResendAction:
                 {
-                    modelState.AddModelError("Code", Strings.TheConfirmationCodeMustBeSpecified);
+                    if (string.IsNullOrWhiteSpace(ClaimValue))
+                    {
+                        modelState.AddModelError(nameof(ClaimValue), Strings.TheClaimMustBeSpecified);
+                    }
+
+                    break;
+                }
+                case SubmitAction:
+                {
+                    if (string.IsNullOrWhiteSpace(Code))
+                    {
+                        modelState.AddModelError(nameof(Code), Strings.TheConfirmationCodeMustBeSpecified);
+                    }
+
+                    break;
                 }
             }
         }

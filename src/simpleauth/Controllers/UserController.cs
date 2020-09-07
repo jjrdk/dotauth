@@ -109,7 +109,8 @@
 
             viewModel.UnlinkedIdentityProviders = authenticationSchemes
                 .Where(
-                    a => !a.DisplayName.StartsWith('_')
+                    a => a.DisplayName != null
+                         && !a.DisplayName.StartsWith('_')
                          && !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
                 .Select(p => new IdentityProviderViewModel(p.Name))
                 .ToList();
@@ -137,7 +138,7 @@
         [HttpPost]
         public async Task<IActionResult> Consent(string id, CancellationToken cancellationToken)
         {
-            var removed = await _consentRepository.Delete(new Consent { Id = id }, cancellationToken)
+            var removed = await _consentRepository.Delete(new Consent {Id = id}, cancellationToken)
                 .ConfigureAwait(false);
             if (!removed)
             {
@@ -189,8 +190,9 @@
             // 2. CreateJwk a new user if he doesn't exist or update the credentials.
             //var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
             var subject = authenticatedUser.GetSubject();
-            var updated = subject != null && await _resourceOwnerRepository.SetPassword(subject, viewModel.Password, cancellationToken)
-                     .ConfigureAwait(false);
+            var updated = subject != null
+                          && await _resourceOwnerRepository.SetPassword(subject, viewModel.Password!, cancellationToken)
+                              .ConfigureAwait(false);
             ViewBag.IsUpdated = updated;
             return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
         }
@@ -205,20 +207,21 @@
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateTwoFactor(
-            UpdateTwoFactorAuthenticatorViewModel viewModel,
+            UpdateTwoFactorAuthenticatorViewModel? viewModel,
             CancellationToken cancellationToken)
         {
-            if (viewModel == null)
+            var viewModelSelectedTwoFactorAuthType = viewModel?.SelectedTwoFactorAuthType;
+            if (viewModelSelectedTwoFactorAuthType == null)
             {
-                BadRequest();
+                return BadRequest();
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             ViewBag.IsUpdated = false;
             ViewBag.IsCreated = false;
             await _updateUserTwoFactorAuthenticatorOperation.Execute(
-                    authenticatedUser.GetSubject(),
-                    viewModel.SelectedTwoFactorAuthType,
+                    authenticatedUser.GetSubject()!,
+                    viewModelSelectedTwoFactorAuthType,
                     cancellationToken)
                 .ConfigureAwait(false);
             ViewBag.IsUpdated = true;
@@ -242,7 +245,7 @@
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties { RedirectUri = redirectUrl })
+                    new AuthenticationProperties {RedirectUri = redirectUrl})
                 .ConfigureAwait(false);
         }
 
@@ -268,7 +271,7 @@
                 var externalClaims = await _authenticationService
                     .GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
                     .ConfigureAwait(false);
-                await InnerLinkProfile(authenticatedUser.GetSubject(), externalClaims, cancellationToken)
+                await InnerLinkProfile(authenticatedUser.GetSubject()!, externalClaims, cancellationToken)
                     .ConfigureAwait(false);
                 await _authenticationService.SignOutAsync(
                         HttpContext,
@@ -305,7 +308,7 @@
             }
 
             await SetUser().ConfigureAwait(false);
-            var authenticationType = ((ClaimsIdentity)externalClaims.Identity).AuthenticationType;
+            var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType!;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
             return Ok(viewModel);
         }
@@ -329,7 +332,7 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             try
             {
-                await InnerLinkProfile(authenticatedUser.GetSubject(), externalClaims, cancellationToken)
+                await InnerLinkProfile(authenticatedUser.GetSubject()!, externalClaims, cancellationToken)
                     .ConfigureAwait(false);
                 return RedirectToAction("Index", "User");
             }
@@ -354,26 +357,26 @@
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                BadRequest();
+                return BadRequest();
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             try
             {
                 await UnlinkProfile(
-                        authenticatedUser.GetSubject(),
+                        authenticatedUser.GetSubject()!,
                         id,
-                        authenticatedUser.Identity.AuthenticationType,
+                        authenticatedUser.Identity!.AuthenticationType!,
                         cancellationToken)
                     .ConfigureAwait(false);
             }
             catch (SimpleAuthException ex)
             {
-                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message });
+                return RedirectToAction("Index", "Error", new {code = ex.Code, message = ex.Message});
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message });
+                return RedirectToAction("Index", "Error", new {code = ErrorCodes.InternalError, message = ex.Message});
             }
 
             return await Index(cancellationToken).ConfigureAwait(false);
@@ -389,20 +392,15 @@
             var subject = authenticatedUser.GetSubject()!;
             if (resourceOwner == null)
             {
-                viewModel = BuildViewModel(
-                    resourceOwner.TwoFactorAuthentication,
-                    subject,
-                    authenticatedUser.Claims,
-                    false);
+                viewModel = BuildViewModel(string.Empty, subject, authenticatedUser.Claims, false);
                 return View("Edit", viewModel);
             }
 
             viewModel = BuildViewModel(
-                resourceOwner.TwoFactorAuthentication,
+                resourceOwner.TwoFactorAuthentication ?? string.Empty,
                 subject,
                 resourceOwner.Claims,
                 true);
-            viewModel.IsLocalAccount = true;
             return View("Edit", viewModel);
         }
 
@@ -462,11 +460,13 @@
                 }
             }
 
-            var result = new UpdateResourceOwnerViewModel(subject, editableClaims, notEditableClaims, isLocalAccount)
-            {
-                SelectedTwoFactorAuthType = twoFactorAuthType,
-                TwoFactorAuthTypes = _twoFactorAuthenticationHandler.GetAll().Select(s => s.Name).ToList()
-            };
+            var result = new UpdateResourceOwnerViewModel(
+                subject,
+                editableClaims,
+                notEditableClaims,
+                isLocalAccount,
+                twoFactorAuthType,
+                _twoFactorAuthenticationHandler.GetAll().Select(s => s.Name).ToList());
             return result;
         }
 
@@ -494,9 +494,7 @@
                 await _resourceOwnerRepository.Get(localSubject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    Strings.TheRoDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.InternalError, Strings.TheRoDoesntExist);
             }
 
             var unlink = resourceOwner.ExternalLogins.Where(
@@ -522,12 +520,10 @@
                 await _resourceOwnerRepository.Get(localSubject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InternalError,
-                    Strings.TheRoDoesntExist);
+                throw new SimpleAuthException(ErrorCodes.InternalError, Strings.TheRoDoesntExist);
             }
 
-            var issuer = externalPrincipal.Identity.AuthenticationType;
+            var issuer = externalPrincipal.Identity!.AuthenticationType;
             var externalSubject = externalPrincipal.GetSubject();
             if (resourceOwner.ExternalLogins.Any(x => x.Subject == externalSubject && x.Issuer == issuer))
             {
@@ -543,8 +539,8 @@
                     {
                         new ExternalAccountLink
                         {
-                            Issuer = issuer,
-                            Subject = externalSubject,
+                            Issuer = issuer!,
+                            Subject = externalSubject!,
                             ExternalClaims = externalPrincipal.Claims.ToArray()
                         }
                     })

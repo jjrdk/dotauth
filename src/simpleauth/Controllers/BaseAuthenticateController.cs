@@ -54,10 +54,12 @@ namespace SimpleAuth.Controllers
         private readonly ValidateConfirmationCodeAction _validateConfirmationCode;
         private readonly AuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenId;
         private readonly AuthenticateHelper _authenticateHelper;
+
         /// <summary>
         /// The data protector
         /// </summary>
         protected readonly IDataProtector DataProtector;
+
         private readonly IUrlHelper _urlHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
@@ -141,7 +143,12 @@ namespace SimpleAuth.Controllers
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
             _authenticationSchemeProvider = authenticationSchemeProvider;
-            _addUser = new AddUserOperation(runtimeSettings, resourceOwnerRepository, accountFilters, subjectBuilder, eventPublisher);
+            _addUser = new AddUserOperation(
+                runtimeSettings,
+                resourceOwnerRepository,
+                accountFilters,
+                subjectBuilder,
+                eventPublisher);
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
             _updateUserClaimsOperation = new UpdateUserClaimsOperation(resourceOwnerRepository);
             _runtimeSettings = runtimeSettings;
@@ -185,7 +192,7 @@ namespace SimpleAuth.Controllers
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties() { RedirectUri = redirectUrl })
+                    new AuthenticationProperties() {RedirectUri = redirectUrl})
                 .ConfigureAwait(false);
         }
 
@@ -217,7 +224,11 @@ namespace SimpleAuth.Controllers
 
             var externalSubject = authenticatedUser.GetSubject()!;
             var resourceOwner = await _resourceOwnerRepository.Get(
-                    new ExternalAccountLink { Issuer = authenticatedUser.Identity!.AuthenticationType!, Subject = externalSubject }, cancellationToken)
+                    new ExternalAccountLink
+                    {
+                        Issuer = authenticatedUser.Identity!.AuthenticationType!, Subject = externalSubject
+                    },
+                    cancellationToken)
                 .ConfigureAwait(false);
             // 2. Automatically create the resource owner.
 
@@ -228,17 +239,17 @@ namespace SimpleAuth.Controllers
             }
             else
             {
-                var (subject, statusCode, s) = await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
+                var (subject, statusCode, s) =
+                    await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(subject))
                 {
-                    return RedirectToAction("Index", "Error", new { code = statusCode!.Value, message = s });
+                    return RedirectToAction("Index", "Error", new {code = statusCode!.Value, message = s});
                 }
 
                 var nameIdentifier = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
                 claims.Remove(nameIdentifier);
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, subject));
-                resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken)
-                    .ConfigureAwait(false);
+                resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
             }
 
             await _authenticationService.SignOutAsync(
@@ -253,7 +264,7 @@ namespace SimpleAuth.Controllers
                 await SetTwoFactorCookie(claims.ToArray()).ConfigureAwait(false);
                 try
                 {
-                    await _generateAndSendCode.Send(resourceOwner.Subject, cancellationToken).ConfigureAwait(false);
+                    await _generateAndSendCode.Send(resourceOwner.Subject!, cancellationToken).ConfigureAwait(false);
                     return RedirectToAction("SendCode");
                 }
                 catch (ClaimRequiredException)
@@ -298,9 +309,16 @@ namespace SimpleAuth.Controllers
             // 2. Return translated view.
             var resourceOwner =
                 await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
-            var service = _twoFactorAuthenticationHandler.Get(resourceOwner.TwoFactorAuthentication);
-            var viewModel = new CodeViewModel { AuthRequestCode = code, ClaimName = service.RequiredClaim };
-            var claim = resourceOwner.Claims.FirstOrDefault(c => c.Type == service.RequiredClaim);
+            var service = resourceOwner?.TwoFactorAuthentication == null
+                ? null
+                : _twoFactorAuthenticationHandler.Get(resourceOwner.TwoFactorAuthentication);
+            if (service == null)
+            {
+                return BadRequest();
+            }
+
+            var viewModel = new CodeViewModel {AuthRequestCode = code, ClaimName = service.RequiredClaim};
+            var claim = resourceOwner?.Claims.FirstOrDefault(c => c.Type == service.RequiredClaim);
             if (claim != null)
             {
                 viewModel.ClaimValue = claim.Value;
@@ -349,25 +367,25 @@ namespace SimpleAuth.Controllers
             var subject = authenticatedUser.GetSubject()!;
             if (codeViewModel.Action == CodeViewModel.ResendAction)
             {
-                var resourceOwner = await _getUserOperation.Execute(authenticatedUser, cancellationToken)
-                    .ConfigureAwait(false);
+                var resourceOwner = (await _getUserOperation.Execute(authenticatedUser, cancellationToken)
+                    .ConfigureAwait(false))!;
                 var claim = resourceOwner.Claims.FirstOrDefault(c => c.Type == codeViewModel.ClaimName);
                 if (claim != null)
                 {
                     resourceOwner.Claims.Remove(claim);
                 }
 
-                resourceOwner.Claims = resourceOwner.Claims.Add(new Claim(codeViewModel.ClaimName, codeViewModel.ClaimValue));
+                resourceOwner.Claims =
+                    resourceOwner.Claims.Add(new Claim(codeViewModel.ClaimName!, codeViewModel.ClaimValue!));
                 var claimsLst = resourceOwner.Claims.Select(c => new Claim(c.Type, c.Value));
-                await _updateUserClaimsOperation.Execute(subject, claimsLst, cancellationToken)
-                    .ConfigureAwait(false);
-                await _generateAndSendCode.Send(subject, cancellationToken)
-                    .ConfigureAwait(false);
+                await _updateUserClaimsOperation.Execute(subject, claimsLst, cancellationToken).ConfigureAwait(false);
+                await _generateAndSendCode.Send(subject, cancellationToken).ConfigureAwait(false);
                 return Ok(codeViewModel);
             }
 
             // 3. Validate the confirmation code
-            if (!await _validateConfirmationCode.Execute(codeViewModel.Code, subject, cancellationToken).ConfigureAwait(false))
+            if (!await _validateConfirmationCode.Execute(codeViewModel.Code!, subject, cancellationToken)
+                .ConfigureAwait(false))
             {
                 ModelState.AddModelError("Code", "confirmation code is not valid");
                 return Ok(codeViewModel);
@@ -375,7 +393,8 @@ namespace SimpleAuth.Controllers
 
             // 4. Remove the code
             if (string.IsNullOrWhiteSpace(codeViewModel.Code)
-                || !await _confirmationCodeStore.Remove(codeViewModel.Code, subject, cancellationToken).ConfigureAwait(false))
+                || !await _confirmationCodeStore.Remove(codeViewModel.Code, subject, cancellationToken)
+                    .ConfigureAwait(false))
             {
                 ModelState.AddModelError("Code", "an error occured while trying to remove the code");
                 return Ok(codeViewModel);
@@ -393,6 +412,11 @@ namespace SimpleAuth.Controllers
             if (!string.IsNullOrWhiteSpace(codeViewModel.AuthRequestCode))
             {
                 var request = DataProtector.Unprotect<AuthorizationRequest>(codeViewModel.AuthRequestCode);
+                if (request.session_id == null)
+                {
+                    return BadRequest();
+                }
+
                 await SetLocalCookie(authenticatedUserClaims, request.session_id).ConfigureAwait(false);
                 var issuerName = Request.GetAbsoluteUriWithVirtualPath();
                 var actionResult = await _authenticateHelper.ProcessRedirection(
@@ -426,7 +450,7 @@ namespace SimpleAuth.Controllers
         {
             if (string.IsNullOrWhiteSpace(code))
             {
-                var vm = new AuthorizeOpenIdViewModel { Code = code };
+                var vm = new AuthorizeOpenIdViewModel {Code = code};
 
                 await SetIdProviders(vm).ConfigureAwait(false);
                 return Ok(vm);
@@ -445,11 +469,11 @@ namespace SimpleAuth.Controllers
             var result = actionResult.CreateRedirectionFromActionResult(request, _logger);
             if (result != null)
             {
-                await LogAuthenticateUser(authenticatedUser.GetSubject(), actionResult.Amr).ConfigureAwait(false);
+                await LogAuthenticateUser(authenticatedUser.GetSubject()!, actionResult.Amr).ConfigureAwait(false);
                 return result;
             }
 
-            var viewModel = new AuthorizeOpenIdViewModel { Code = code };
+            var viewModel = new AuthorizeOpenIdViewModel {Code = code};
 
             await SetIdProviders(viewModel).ConfigureAwait(false);
             return Ok(viewModel);
@@ -473,18 +497,21 @@ namespace SimpleAuth.Controllers
             // 1. Persist the request code into a cookie & fix the space problems
             var cookieValue = Id.Create();
             var cookieName = string.Format(ExternalAuthenticateCookieName, cookieValue);
-            Response.Cookies.Append(cookieName, code, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMinutes(5) });
+            Response.Cookies.Append(
+                cookieName,
+                code,
+                new CookieOptions {Expires = DateTimeOffset.UtcNow.AddMinutes(5)});
 
             // 2. Redirect the User agent
             var redirectUrl = _urlHelper.Action(
                 "LoginCallbackOpenId",
                 "Authenticate",
-                new { code = cookieValue },
+                new {code = cookieValue},
                 Request.Scheme);
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties { RedirectUri = redirectUrl })
+                    new AuthenticationProperties {RedirectUri = redirectUrl})
                 .ConfigureAwait(false);
         }
 
@@ -523,7 +550,7 @@ namespace SimpleAuth.Controllers
             Response.Cookies.Append(
                 cookieName,
                 string.Empty,
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddDays(-1) });
+                new CookieOptions {Expires = DateTimeOffset.UtcNow.AddDays(-1)});
 
             // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
@@ -537,12 +564,9 @@ namespace SimpleAuth.Controllers
             var authenticatedUser = await _authenticationService
                 .GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
                 .ConfigureAwait(false);
-            if (authenticatedUser?.Identity?.IsAuthenticated != true
-                || !(authenticatedUser.Identity is ClaimsIdentity))
+            if (authenticatedUser?.Identity?.IsAuthenticated != true || !(authenticatedUser.Identity is ClaimsIdentity))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    Strings.TheUserNeedsToBeAuthenticated);
+                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, Strings.TheUserNeedsToBeAuthenticated);
             }
 
             // 5. Retrieve the claims & insert the resource owner if needed.
@@ -552,18 +576,18 @@ namespace SimpleAuth.Controllers
             var resourceOwner = await _resourceOwnerRepository.Get(
                     new ExternalAccountLink
                     {
-                        Issuer = authenticatedUser.Identity!.AuthenticationType!,
-                        Subject = externalSubject!
+                        Issuer = authenticatedUser.Identity!.AuthenticationType!, Subject = externalSubject!
                     },
                     cancellationToken)
                 .ConfigureAwait(false);
             var sub = string.Empty;
             if (resourceOwner == null)
             {
-                var (s, statusCode, error1) = await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
+                var (s, statusCode, error1) =
+                    await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(s))
                 {
-                    return RedirectToAction("Index", "Error", new { code = statusCode!.Value, message = error1 });
+                    return RedirectToAction("Index", "Error", new {code = statusCode!.Value, message = error1});
                 }
 
                 sub = s;
@@ -585,8 +609,9 @@ namespace SimpleAuth.Controllers
             {
                 await SetTwoFactorCookie(claims).ConfigureAwait(false);
                 await _generateAndSendCode.Send(resourceOwner.Subject!, cancellationToken).ConfigureAwait(false);
-                return RedirectToAction("SendCode", new { code = request });
+                return RedirectToAction("SendCode", new {code = request});
             }
+
             var subject = resourceOwner!.Subject!;
             // 6. Try to authenticate the resource owner & returns the claims.
             var authorizationRequest = DataProtector.Unprotect<AuthorizationRequest>(request);
@@ -614,7 +639,7 @@ namespace SimpleAuth.Controllers
                 return actionResult.CreateRedirectionFromActionResult(authorizationRequest, _logger)!;
             }
 
-            return RedirectToAction("OpenId", "Authenticate", new { code });
+            return RedirectToAction("OpenId", "Authenticate", new {code});
         }
 
         /// <summary>
@@ -624,14 +649,12 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         protected async Task SetIdProviders(IdProviderAuthorizeViewModel authorizeViewModel)
         {
-            var schemes =
-                (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(
-                    p => !string.IsNullOrWhiteSpace(p.DisplayName) && !p.DisplayName.StartsWith('_'));
+            var schemes = (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(
+                p => !string.IsNullOrWhiteSpace(p.DisplayName) && !p.DisplayName.StartsWith('_'));
             var idProviders = schemes.Select(
                     scheme => new IdProviderViewModel
                     {
-                        AuthenticationScheme = scheme.Name,
-                        DisplayName = scheme.DisplayName
+                        AuthenticationScheme = scheme.Name, DisplayName = scheme.DisplayName
                     })
                 .ToArray();
 
@@ -644,9 +667,10 @@ namespace SimpleAuth.Controllers
         /// <param name="resourceOwner">The resource owner.</param>
         /// <param name="amr">The amr.</param>
         /// <returns></returns>
-        internal async Task LogAuthenticateUser(string resourceOwner, string amr)
+        internal async Task LogAuthenticateUser(string resourceOwner, string? amr)
         {
-            await _eventPublisher.Publish(new ResourceOwnerAuthenticated(Id.Create(), resourceOwner, amr, DateTimeOffset.UtcNow))
+            await _eventPublisher
+                .Publish(new ResourceOwnerAuthenticated(Id.Create(), resourceOwner, amr, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
         }
 
@@ -664,7 +688,7 @@ namespace SimpleAuth.Controllers
             Response.Cookies.Append(
                 CoreConstants.SessionId,
                 sessionId,
-                new CookieOptions { HttpOnly = false, Expires = expires, SameSite = SameSiteMode.None });
+                new CookieOptions {HttpOnly = false, Expires = expires, SameSite = SameSiteMode.None});
             var identity = new ClaimsIdentity(claims, CookieNames.CookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(
@@ -673,10 +697,7 @@ namespace SimpleAuth.Controllers
                     principal,
                     new AuthenticationProperties
                     {
-                        IssuedUtc = now,
-                        ExpiresUtc = expires,
-                        AllowRefresh = false,
-                        IsPersistent = false
+                        IssuedUtc = now, ExpiresUtc = expires, AllowRefresh = false, IsPersistent = false
                     })
                 .ConfigureAwait(false);
         }
@@ -694,7 +715,10 @@ namespace SimpleAuth.Controllers
                     HttpContext,
                     CookieNames.TwoFactorCookieName,
                     principal,
-                    new AuthenticationProperties { ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5), IsPersistent = false })
+                    new AuthenticationProperties
+                        {
+                            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5), IsPersistent = false
+                        })
                 .ConfigureAwait(false);
         }
 
@@ -704,12 +728,13 @@ namespace SimpleAuth.Controllers
         /// <param name="authenticatedUser"></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        private async Task<(string? subject, int? statusCode, string error)> AddExternalUser(
+        private async Task<(string? subject, int? statusCode, string? error)> AddExternalUser(
             ClaimsPrincipal authenticatedUser,
             CancellationToken cancellationToken)
         {
             var externalClaims = authenticatedUser.Claims.ToArray();
-            var userClaims = _runtimeSettings.ClaimsIncludedInUserCreation.Except(externalClaims.Select(x => x.Type).ToOpenIdClaimType())
+            var userClaims = _runtimeSettings.ClaimsIncludedInUserCreation
+                .Except(externalClaims.Select(x => x.Type).ToOpenIdClaimType())
                 .Select(x => new Claim(x, string.Empty))
                 .Concat(externalClaims.Select(x => new Claim(x.Type, x.Value, x.ValueType, x.Issuer)))
                 .ToOpenidClaims()
@@ -726,7 +751,8 @@ namespace SimpleAuth.Controllers
                             Subject = authenticatedUser.GetSubject()!,
                             Issuer = authenticatedUser.Identity!.AuthenticationType!,
                             ExternalClaims = authenticatedUser.Claims
-                                .Select(x => new Claim(x.Type, x.Value, x.ValueType, x.Issuer)).ToArray()
+                                .Select(x => new Claim(x.Type, x.Value, x.ValueType, x.Issuer))
+                                .ToArray()
                         }
                     },
                 Password = Id.Create().ToSha256Hash(),
@@ -738,7 +764,7 @@ namespace SimpleAuth.Controllers
             var (success, subject) = await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);
             if (!success)
             {
-                return (null, (int)HttpStatusCode.Conflict, Strings.FailedToAddUser);
+                return (null, (int) HttpStatusCode.Conflict, Strings.FailedToAddUser);
             }
 
             record.Password = string.Empty;

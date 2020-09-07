@@ -83,8 +83,10 @@ namespace SimpleAuth.WebSite.Consent.Actions
             string issuerName,
             CancellationToken cancellationToken)
         {
-            var client = await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken)
-                .ConfigureAwait(false);
+            var client = authorizationParameter.ClientId == null
+                ? null
+                : await _clientRepository.GetById(authorizationParameter.ClientId, cancellationToken)
+                    .ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(
@@ -122,8 +124,10 @@ namespace SimpleAuth.WebSite.Consent.Actions
                         ClientId = client.ClientId,
                         ClientName = client.ClientName,
                         GrantedScopes =
-                            (await GetScopes(authorizationParameter.Scope, cancellationToken).ConfigureAwait(false))
-                            .ToArray(),
+                            authorizationParameter.Scope == null
+                                ? Array.Empty<string>()
+                                : (await GetScopes(authorizationParameter.Scope, cancellationToken)
+                                    .ConfigureAwait(false)).ToArray(),
                         Subject = subject,
                     };
                 }
@@ -135,7 +139,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                         new ConsentAccepted(
                             Id.Create(),
                             subject,
-                            authorizationParameter.ClientId,
+                            client.ClientId,
                             assignedConsent.GrantedScopes,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);

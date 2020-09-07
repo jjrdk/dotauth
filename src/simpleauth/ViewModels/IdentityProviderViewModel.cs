@@ -33,7 +33,7 @@
         /// <value>
         /// The display name.
         /// </value>
-        public string DisplayName { get; set; }
+        public string DisplayName { get; }
 
         /// <summary>
         /// Gets or sets the external subject.
@@ -41,6 +41,6 @@
         /// <value>
         /// The external subject.
         /// </value>
-        public string ExternalSubject { get; set; }
+        public string? ExternalSubject { get; }
     }
 }

@@ -63,6 +63,7 @@
             const string state = "state";
             var authorizationParameter = new AuthorizationParameter
             {
+                ClientId = "clientId",
                 Claims = null,
                 Scope = "profile",
                 ResponseMode = ResponseModes.None,
@@ -101,6 +102,7 @@
             const string clientId = "clientId";
             var authorizationParameter = new AuthorizationParameter
             {
+                ClientId = clientId,
                 ResponseType = "code",
                 Claims = new ClaimsParameter
                 {
@@ -142,6 +144,7 @@
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter
             {
+                ClientId = "clientId",
                 ResponseType = "code",
                 Claims = null,
                 Scope = "profile",

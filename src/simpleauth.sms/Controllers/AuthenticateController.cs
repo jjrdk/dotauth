@@ -156,7 +156,7 @@
                 return Ok(viewModel);
             }
 
-            return RedirectToAction("Index", "User", new { area = "pwd" });
+            return RedirectToAction("Index", "User", new {area = "pwd"});
         }
 
         /// <summary>
@@ -174,7 +174,7 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new { Area = "pwd" });
+                return RedirectToAction("Index", "User", new {Area = "pwd"});
             }
 
             if (localAuthenticationViewModel == null)
@@ -251,7 +251,7 @@
             var user = await SetUser().ConfigureAwait(false);
             if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new { Area = "pwd" });
+                return RedirectToAction("Index", "User", new {Area = "pwd"});
             }
 
             var authenticatedUser = await _authenticationService
@@ -264,7 +264,7 @@
                     "SMS authentication cannot be performed");
             }
 
-            return Ok(new ConfirmCodeViewModel { Code = code });
+            return Ok(new ConfirmCodeViewModel {Code = code});
         }
 
         /// <summary>
@@ -289,7 +289,7 @@
             var user = await SetUser().ConfigureAwait(false);
             if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new { Area = "pwd" });
+                return RedirectToAction("Index", "User", new {Area = "pwd"});
             }
 
             var authenticatedUser = await _authenticationService
@@ -307,15 +307,16 @@
             var phoneNumber = authenticatedUserClaims.First(c => c.Type == OpenIdClaimTypes.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
-                var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken)
+                _ = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken)
                     .ConfigureAwait(false);
                 return Ok(confirmCodeViewModel);
             }
 
             // Check the confirmation code.
-            if (!await _validateConfirmationCode
-                .Execute(confirmCodeViewModel.ConfirmationCode, subject, cancellationToken)
-                .ConfigureAwait(false))
+            if (confirmCodeViewModel.ConfirmationCode == null
+                || !await _validateConfirmationCode
+                    .Execute(confirmCodeViewModel.ConfirmationCode, subject, cancellationToken)
+                    .ConfigureAwait(false))
             {
                 ModelState.AddModelError("message_error", "Confirmation code is not valid");
                 return Ok(confirmCodeViewModel);
@@ -328,18 +329,18 @@
                 .ConfigureAwait(false);
             var resourceOwner =
                 await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
-            if (!string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Execute TWO Factor authentication
+            if (!string.IsNullOrWhiteSpace(resourceOwner?.TwoFactorAuthentication)) // Execute TWO Factor authentication
             {
                 try
                 {
                     await SetTwoFactorCookie(authenticatedUserClaims).ConfigureAwait(false);
                     await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken)
                         .ConfigureAwait(false);
-                    return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
+                    return RedirectToAction("SendCode", new {code = confirmCodeViewModel.Code});
                 }
                 catch (ClaimRequiredException)
                 {
-                    return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
+                    return RedirectToAction("SendCode", new {code = confirmCodeViewModel.Code});
                 }
                 catch (Exception)
                 {
@@ -364,7 +365,7 @@
                 var result = actionResult.CreateRedirectionFromActionResult(request, _logger);
                 if (result != null)
                 {
-                    await LogAuthenticateUser(resourceOwner.Subject!, actionResult.Amr!).ConfigureAwait(false);
+                    await LogAuthenticateUser(resourceOwner!.Subject!, actionResult.Amr!).ConfigureAwait(false);
                     return result;
                 }
             }
@@ -380,7 +381,7 @@
                 await _confirmationCodeStore.Remove(modelCode, subject, cancellationToken).ConfigureAwait(false);
             }
 
-            return RedirectToAction("Index", "User", new { Area = "pwd" });
+            return RedirectToAction("Index", "User", new {Area = "pwd"});
         }
 
         /// <summary>
@@ -453,7 +454,7 @@
                     await SetPasswordLessCookie(resourceOwner.Claims).ConfigureAwait(false);
                     try
                     {
-                        return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
+                        return RedirectToAction("ConfirmCode", new {code = viewModel.Code});
                     }
                     catch (Exception ex)
                     {
@@ -485,10 +486,9 @@
                     CookieNames.PasswordLessCookieName,
                     principal,
                     new AuthenticationProperties
-                    {
-                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20),
-                        IsPersistent = false
-                    })
+                        {
+                            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20), IsPersistent = false
+                        })
                 .ConfigureAwait(false);
         }
     }

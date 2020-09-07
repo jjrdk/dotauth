@@ -7,7 +7,7 @@
     /// Defines the update resource owner view model.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class UpdateResourceOwnerViewModel
+    internal class UpdateResourceOwnerViewModel
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateResourceOwnerViewModel"/> class.
@@ -16,16 +16,22 @@
         /// <param name="editableClaims">The editable claims.</param>
         /// <param name="notEditableClaims">The not editable claims.</param>
         /// <param name="isLocalAccount">if set to <c>true</c> [is local account].</param>
-        public UpdateResourceOwnerViewModel(string login, Dictionary<string, string> editableClaims, Dictionary<string, string> notEditableClaims, bool isLocalAccount)
+        /// <param name="selectedTwoFactorAuthType"></param>
+        /// <param name="twoFactorAuthTypes"></param>
+        public UpdateResourceOwnerViewModel(
+            string login,
+            Dictionary<string, string> editableClaims,
+            Dictionary<string, string> notEditableClaims,
+            bool isLocalAccount,
+            string selectedTwoFactorAuthType,
+            ICollection<string> twoFactorAuthTypes)
         {
             IsLocalAccount = isLocalAccount;
-            Credentials = new UpdateResourceOwnerCredentialsViewModel
-            {
-                Login = login
-            };
+            SelectedTwoFactorAuthType = selectedTwoFactorAuthType;
+            Credentials = new UpdateResourceOwnerCredentialsViewModel {Login = login};
             EditableClaims = editableClaims;
             NotEditableClaims = notEditableClaims;
-            TwoFactorAuthTypes = new List<string>();
+            TwoFactorAuthTypes = twoFactorAuthTypes;
         }
 
         /// <summary>
@@ -34,7 +40,7 @@
         /// <value>
         ///   <c>true</c> if this instance is local account; otherwise, <c>false</c>.
         /// </value>
-        public bool IsLocalAccount { get; set; }
+        public bool IsLocalAccount { get; }
 
         /// <summary>
         /// Gets or sets the credentials.
@@ -42,7 +48,7 @@
         /// <value>
         /// The credentials.
         /// </value>
-        public UpdateResourceOwnerCredentialsViewModel Credentials { get; set; }
+        public UpdateResourceOwnerCredentialsViewModel Credentials { get; }
 
         /// <summary>
         /// Gets or sets the editable claims.
@@ -50,7 +56,7 @@
         /// <value>
         /// The editable claims.
         /// </value>
-        public Dictionary<string, string> EditableClaims { get; set; }
+        public Dictionary<string, string> EditableClaims { get; }
 
         /// <summary>
         /// Gets or sets the not editable claims.
@@ -58,7 +64,7 @@
         /// <value>
         /// The not editable claims.
         /// </value>
-        public Dictionary<string, string> NotEditableClaims { get; set; }
+        public Dictionary<string, string> NotEditableClaims { get; }
 
         /// <summary>
         /// Gets or sets the type of the selected two factor authentication.
@@ -66,7 +72,7 @@
         /// <value>
         /// The type of the selected two factor authentication.
         /// </value>
-        public string SelectedTwoFactorAuthType { get; set; }
+        public string SelectedTwoFactorAuthType { get; }
 
         /// <summary>
         /// Gets or sets the two factor authentication types.
@@ -74,6 +80,6 @@
         /// <value>
         /// The two factor authentication types.
         /// </value>
-        public ICollection<string> TwoFactorAuthTypes { get; set; }
+        public ICollection<string> TwoFactorAuthTypes { get; }
     }
 }

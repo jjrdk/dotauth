@@ -75,7 +75,7 @@ namespace SimpleAuth.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPermissionRequests(CancellationToken cancellationToken)
         {
-            var owner = User.GetSubject();
+            var owner = User.GetSubject()!;
             var tickets = await _ticketStore.GetAll(owner, cancellationToken).ConfigureAwait(false);
 
             return Ok(tickets.Where(x => x.IsAuthorizedByRo == false).ToArray());
@@ -98,8 +98,8 @@ namespace SimpleAuth.Controllers
                         new UmaRequestApproved(
                             Id.Create(),
                             id,
-                            User.GetClientId(),
-                            User.GetSubject(),
+                            User.GetClientId()!,
+                            User.GetSubject()!,
                             claims,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);

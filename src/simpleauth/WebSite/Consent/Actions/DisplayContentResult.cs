@@ -6,9 +6,29 @@
 
     internal class DisplayContentResult
     {
-        public Client Client { get; set; }
-        public ICollection<Scope> Scopes { get; set; }
-        public ICollection<string> AllowedClaims { get; set; }
-        public EndpointResult EndpointResult { get; set; }
+        public DisplayContentResult(EndpointResult endpointResult)
+        {
+            EndpointResult = endpointResult;
+        }
+
+        public DisplayContentResult(
+            Client client,
+            ICollection<Scope> scopes,
+            ICollection<string> allowedClaims,
+            EndpointResult endpointResult)
+        : this(endpointResult)
+        {
+            Client = client;
+            Scopes = scopes;
+            AllowedClaims = allowedClaims;
+        }
+
+        public Client? Client { get; }
+
+        public ICollection<Scope> Scopes { get; } = new List<Scope>();
+
+        public ICollection<string> AllowedClaims { get; } = new List<string>();
+
+        public EndpointResult EndpointResult { get; }
     }
 }

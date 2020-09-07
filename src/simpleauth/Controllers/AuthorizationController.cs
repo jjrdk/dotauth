@@ -187,7 +187,7 @@ namespace SimpleAuth.Controllers
 
         private static string GetRedirectionUrl(
             Microsoft.AspNetCore.Http.HttpRequest request,
-            string amr,
+            string? amr,
             SimpleAuthEndPoints simpleAuthEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();

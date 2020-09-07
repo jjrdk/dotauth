@@ -26,6 +26,6 @@ namespace SimpleAuth.ViewModels
         /// <value>
         /// The code.
         /// </value>
-        public string Code { get; set; }
+        public string? Code { get; set; }
     }
 }
