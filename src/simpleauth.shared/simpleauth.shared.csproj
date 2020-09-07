@@ -7,6 +7,7 @@
 		<PackageId>simpleauth.shared</PackageId>
 		<RootNamespace>SimpleAuth.Shared</RootNamespace>
 		<Nullable>enable</Nullable>
+        <WarningsAsErrors>nullable</WarningsAsErrors>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>

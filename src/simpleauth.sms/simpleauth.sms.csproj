@@ -10,6 +10,7 @@
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
         <Nullable>enable</Nullable>
+        <WarningsAsErrors>nullable</WarningsAsErrors>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">

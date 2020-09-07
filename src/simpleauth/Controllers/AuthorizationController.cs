@@ -225,11 +225,13 @@ namespace SimpleAuth.Controllers
         {
             if (!string.IsNullOrWhiteSpace(authorizationRequest.request))
             {
-                var result = await GetAuthorizationRequestFromJwt(
-                        authorizationRequest.request,
-                        authorizationRequest.client_id,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+                var result = authorizationRequest.client_id == null
+                    ? null
+                    : await GetAuthorizationRequestFromJwt(
+                            authorizationRequest.request,
+                            authorizationRequest.client_id,
+                            cancellationToken)
+                        .ConfigureAwait(false);
                 if (result == null)
                 {
                     throw new SimpleAuthExceptionWithState(
@@ -257,11 +259,10 @@ namespace SimpleAuth.Controllers
                     }
 
                     var token = await httpResult.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                    var result = await GetAuthorizationRequestFromJwt(
-                            token,
-                            authorizationRequest.client_id,
-                            cancellationToken)
-                        .ConfigureAwait(false);
+                    var result = authorizationRequest.client_id == null
+                        ? null
+                        : await GetAuthorizationRequestFromJwt(token, authorizationRequest.client_id, cancellationToken)
+                            .ConfigureAwait(false);
                     if (result == null)
                     {
                         throw new SimpleAuthExceptionWithState(
