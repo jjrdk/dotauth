@@ -235,7 +235,7 @@ Task("Pack")
 
 // the rest of your build script
 Task("Docker-Build")
-.IsDependentOn("Postgres_Redis")
+.IsDependentOn("Pack")
 .Does(() => {
 	var winPublishSettings = new DotNetCorePublishSettings
     {
