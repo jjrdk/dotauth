@@ -53,7 +53,7 @@ namespace SimpleAuth.AuthServerPgRedis
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            bool.TryParse(_configuration["REDIRECT"], out var redirect);
+            _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
             _options = new SimpleAuthOptions
             {
                 RedirectToLogin = redirect,
@@ -128,7 +128,7 @@ namespace SimpleAuth.AuthServerPgRedis
                             new BrotliCompressionProvider(
                                 new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
-                .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); })
+                .AddLogging(log => { log.AddSimpleConsole(o => { o.IncludeScopes = true; }); })
                 .AddAuthentication(
                     options =>
                     {

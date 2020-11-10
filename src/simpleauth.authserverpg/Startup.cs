@@ -30,6 +30,7 @@ namespace SimpleAuth.AuthServerPg
     using Baseline;
     using Marten;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.Extensions.Logging.Console;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Extensions;
     using SimpleAuth.Sms;
@@ -47,7 +48,7 @@ namespace SimpleAuth.AuthServerPg
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            bool.TryParse(_configuration["SERVER:REDIRECT"], out var redirect);
+            _ = bool.TryParse(_configuration["SERVER:REDIRECT"], out var redirect);
             _options = new SimpleAuthOptions
             {
                 RedirectToLogin = redirect,
@@ -102,12 +103,12 @@ namespace SimpleAuth.AuthServerPg
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
-                .AddLogging(log => { log.AddConsole(o => { o.IncludeScopes = true; }); })
+                .AddLogging(log => { log.AddSimpleConsole(o => o.IncludeScopes = true); })
                 .AddAuthentication(
                     options =>
                     {
@@ -160,8 +161,8 @@ namespace SimpleAuth.AuthServerPg
             {
                 services.AddSimpleAuth(
                         _options,
-                        new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
-                        assemblyTypes: new[] {GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi)})
+                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                        assemblyTypes: new[] { GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi) })
                     .AddSmsAuthentication(
                         new AwsSmsClient(
                             new BasicAWSCredentials(
@@ -174,8 +175,8 @@ namespace SimpleAuth.AuthServerPg
             {
                 services.AddSimpleAuth(
                     _options,
-                    new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
-                    assemblyTypes: new[] {GetType(), typeof(IDefaultUi)});
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                    assemblyTypes: new[] { GetType(), typeof(IDefaultUi) });
             }
         }
 
