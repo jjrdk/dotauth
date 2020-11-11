@@ -35,7 +35,6 @@ namespace SimpleAuth.AuthServerPgRedis
 
     using SimpleAuth;
     using SimpleAuth.Extensions;
-    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms;
     using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;

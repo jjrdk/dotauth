@@ -205,6 +205,13 @@ namespace SimpleAuth.Controllers
                 });
         }
 
+        /// <summary>
+        /// Updates the <see cref="ResourceOwner"/> with the passed claims.
+        /// </summary>
+        /// <param name="id">The id of the resource owner.</param>
+        /// <param name="request">The update request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
+        /// <returns>An <see cref="IActionResult"/> instance.</returns>
         [HttpPost("{id}/update")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Update(string id, UpdateResourceOwnerClaimsRequest? request, CancellationToken cancellationToken)

@@ -14,6 +14,9 @@
     /// </summary>
     public abstract class ClientBase
     {
+        /// <summary>
+        /// The mime type for json requests.
+        /// </summary>
         protected const string JsonMimeType = "application/json";
         private readonly Func<HttpClient> _client;
 

@@ -5,6 +5,11 @@
     /// </summary>
     public class Parameter
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Parameter"/> class.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
         public Parameter(string name, string value)
         {
             Name = name;

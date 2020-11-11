@@ -157,6 +157,13 @@ namespace SimpleAuth.Controllers
                 : new NoContentResult();
         }
 
+        /// <summary>
+        /// Updates the scope with the passed details.
+        /// </summary>
+        /// <param name="name">The name of the scope to update.</param>
+        /// <param name="scope">The new scope definition.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns></returns>
         [HttpPost("{name}")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Update(

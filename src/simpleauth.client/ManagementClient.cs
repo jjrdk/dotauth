@@ -240,8 +240,14 @@ namespace SimpleAuth.Client
             };
             return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken);
         }
-        
 
+        /// <summary>
+        /// Registers a client with the passed details.
+        /// </summary>
+        /// <param name="client">The client definition to register.</param>
+        /// <param name="accessToken">The access token for the request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the asynchronous request.</param>
+        /// <returns>A response with success or error details.</returns>
         public async Task<GenericResponse<Client>> Register(Client client, string accessToken, CancellationToken cancellationToken = default)
         {
             var json = Serializer.Default.Serialize(client);
