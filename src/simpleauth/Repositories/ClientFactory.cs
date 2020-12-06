@@ -278,7 +278,7 @@
                 var client = _httpClient.CreateClient();
                 var response = client.GetAsync(sectorIdentifierUri, cancellationToken).Result;
                 response.EnsureSuccessStatusCode();
-                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var result = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 return _urlReader(result);
                 //result.DeserializeWithJavascript<List<string>>().Select(x => new Uri(x)).ToList();
             }

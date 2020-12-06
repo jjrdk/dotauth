@@ -67,7 +67,6 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
                 Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "test"}}
             };
 
-            var jsonParameter = JsonConvert.SerializeObject(parameter);
             var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None).ConfigureAwait(false);
 
             Assert.False(result);
@@ -104,7 +103,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
                 new Mock<IHttpClientFactory>().Object,
                 new InMemoryScopeRepository(),
                 new Mock<ILogger<InMemoryClientRepository>>().Object,
-                clients ?? new Client[0]);
+                clients ?? Array.Empty<Client>());
             _scopeRepositoryStub = new Mock<IScopeRepository>();
         }
     }

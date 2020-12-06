@@ -21,6 +21,7 @@ namespace SimpleAuth.Client
     using System.Threading.Tasks;
     using SimpleAuth.Client.Properties;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
@@ -75,7 +76,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
             };
-            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -104,7 +105,7 @@ namespace SimpleAuth.Client
                 Content = body
             };
 
-            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -124,7 +125,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Delete,
                 RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
             };
-            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -153,7 +154,7 @@ namespace SimpleAuth.Client
                         Encoding.UTF8,
                         "application/json")
             };
-            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -167,7 +168,7 @@ namespace SimpleAuth.Client
             CancellationToken cancellationToken = default)
         {
             var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryInformation.Clients };
-            return GetResult<Client[]>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<Client[]>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -190,7 +191,7 @@ namespace SimpleAuth.Client
                 RequestUri = new Uri(_discoveryInformation.Clients + "/.search"),
                 Content = body
             };
-            return GetResult<PagedResponse<Client>>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<PagedResponse<Client>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -199,6 +200,7 @@ namespace SimpleAuth.Client
         /// <param name="id">The scope id.</param>
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <exception cref="ArgumentException">If id is empty or whitespace.</exception>
         /// <returns></returns>
         public Task<GenericResponse<Scope>> GetScope(
             string id,
@@ -207,7 +209,7 @@ namespace SimpleAuth.Client
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentException(nameof(id));
+                throw new ArgumentException(ErrorMessages.InvalidScopeId, nameof(id));
             }
 
             var request = new HttpRequestMessage
@@ -215,7 +217,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Get,
                 RequestUri = new Uri($"{_discoveryInformation.Scopes}/{id}")
             };
-            return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -238,7 +240,7 @@ namespace SimpleAuth.Client
                 RequestUri = _discoveryInformation.Scopes,
                 Content = body
             };
-            return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -258,7 +260,7 @@ namespace SimpleAuth.Client
                 RequestUri = _discoveryInformation.RegistrationEndPoint
             };
 
-            return await GetResult<Client>(request, accessToken, cancellationToken).ConfigureAwait(false);
+            return await GetResult<Client>(request, accessToken, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -287,7 +289,7 @@ namespace SimpleAuth.Client
                     Encoding.UTF8,
                     "application/json")
             };
-            return GetResult<AddResourceOwnerResponse>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<AddResourceOwnerResponse>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -307,7 +309,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Get,
                 RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
             };
-            return GetResult<ResourceOwner>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<ResourceOwner>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -327,7 +329,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Delete,
                 RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
             };
-            return GetResult<object>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -355,7 +357,7 @@ namespace SimpleAuth.Client
                 RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/password"),
                 Content = body
             };
-            return GetResult<object>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -383,7 +385,7 @@ namespace SimpleAuth.Client
                 RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/claims"),
                 Content = body
             };
-            return GetResult<object>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -401,7 +403,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Get,
                 RequestUri = _discoveryInformation.ResourceOwners
             };
-            return GetResult<ResourceOwner[]>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<ResourceOwner[]>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -425,7 +427,7 @@ namespace SimpleAuth.Client
                 Content = body
             };
 
-            return GetResult<PagedResponse<ResourceOwner>>(request, authorizationHeaderValue, cancellationToken);
+            return GetResult<PagedResponse<ResourceOwner>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
     }
 }

@@ -32,7 +32,7 @@
                 await Semaphore.WaitAsync().ConfigureAwait(false);
 
                     await connection.OpenAsync().ConfigureAwait(false);
-                    var schema = $"test_{DateTimeOffset.UtcNow.Ticks.ToString()}";
+                    var schema = $"test_{DateTimeOffset.UtcNow.Ticks}";
                     var cmd = connection.CreateCommand();
                     cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION simpleauth; ";
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);

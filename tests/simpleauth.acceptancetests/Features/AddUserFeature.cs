@@ -38,7 +38,7 @@
                     _addUserOperation = new AddUserOperation(
                         _runtimeSettings,
                         _resourceOwnerRepository.Object,
-                        new IAccountFilter[0],
+                        System.Array.Empty<IAccountFilter>(),
                         _subjectBuilder,
                         _eventPublisher.Object);
                 });

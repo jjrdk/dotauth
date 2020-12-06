@@ -92,7 +92,7 @@ namespace SimpleAuth.Tests.Api.Authorization
                 new Mock<IConsentRepository>().Object,
                 new InMemoryJwksRepository(), 
                 _eventPublisherStub.Object,
-                new IAuthenticateResourceOwnerService[0]);
+                Array.Empty<IAuthenticateResourceOwnerService>());
         }
     }
 }

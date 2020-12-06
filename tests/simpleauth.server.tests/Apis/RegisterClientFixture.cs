@@ -263,6 +263,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             _server?.Dispose();
         }
     }

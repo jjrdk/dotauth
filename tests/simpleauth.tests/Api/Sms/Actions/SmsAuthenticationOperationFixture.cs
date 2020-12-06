@@ -29,7 +29,7 @@
                 generateAndSendSmsCodeOperationStub.Object,
                 resourceOwnerRepositoryStub.Object,
                 subjectBuilderStub.Object,
-                new IAccountFilter[0],
+                Array.Empty<IAccountFilter>(),
                 new Mock<IEventPublisher>().Object);
         }
 

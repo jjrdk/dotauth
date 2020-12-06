@@ -244,6 +244,7 @@ namespace SimpleAuth.Server.Tests
         /// <inheritdoc />
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             _server?.Dispose();
         }
     }

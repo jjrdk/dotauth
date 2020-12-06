@@ -41,15 +41,15 @@
         protected Task<GenericResponse<T>> GetResult<T>(
             HttpRequestMessage request,
             string? token,
-            CancellationToken cancellationToken = default,
-            X509Certificate2? certificate = null)
+            X509Certificate2? certificate = null,
+            CancellationToken cancellationToken = default)
             where T : class
         {
             return GetResult<T>(
                 request,
                 token == null ? null : new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, token),
-                cancellationToken,
-                certificate);
+                certificate,
+                cancellationToken);
         }
 
         /// <summary>
@@ -64,8 +64,8 @@
         protected async Task<GenericResponse<T>> GetResult<T>(
             HttpRequestMessage request,
             AuthenticationHeaderValue? token,
-            CancellationToken cancellationToken = default,
-            X509Certificate2? certificate = null)
+            X509Certificate2? certificate = null,
+            CancellationToken cancellationToken = default)
             where T : class
         {
             request = PrepareRequest(request, token, certificate);

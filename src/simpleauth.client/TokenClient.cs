@@ -99,7 +99,7 @@ namespace SimpleAuth.Client
                 RequestUri = discoveryInformation.TokenEndPoint
             };
 
-            var result = await GetResult<GrantedTokenResponse>(request, _authorizationValue, cancellationToken, _certificate)
+            var result = await GetResult<GrantedTokenResponse>(request, _authorizationValue, _certificate, cancellationToken)
                 .ConfigureAwait(false);
             return result;
         }
@@ -125,7 +125,7 @@ namespace SimpleAuth.Client
             return await GetResult<OauthIntrospectionResponse>(
                     request,
                     introspectionRequest.PatToken,
-                    cancellationToken)
+                    cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -300,7 +300,7 @@ namespace SimpleAuth.Client
                 request.Method = HttpMethod.Get;
             }
 
-            return await GetResult<JwtPayload>(request, inBody ? null : accessToken, cancellationToken, _certificate)
+            return await GetResult<JwtPayload>(request, inBody ? null : accessToken, _certificate, cancellationToken)
                 .ConfigureAwait(false);
         }
     }

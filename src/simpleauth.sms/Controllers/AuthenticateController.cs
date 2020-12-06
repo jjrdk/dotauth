@@ -407,7 +407,7 @@
 
             if (string.IsNullOrWhiteSpace(viewModel.Code))
             {
-                throw new ArgumentNullException(nameof(viewModel.Code));
+                throw new ArgumentNullException(nameof(viewModel.Code), ErrorMessages.InvalidCode);
             }
 
             await SetUser().ConfigureAwait(false);

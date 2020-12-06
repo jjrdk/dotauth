@@ -61,6 +61,33 @@ namespace SimpleAuth.Shared.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid code..
+        /// </summary>
+        internal static string InvalidCode {
+            get {
+                return ResourceManager.GetString("InvalidCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid resource set id.
+        /// </summary>
+        internal static string InvalidResourcesetId {
+            get {
+                return ResourceManager.GetString("InvalidResourcesetId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid scope id..
+        /// </summary>
+        internal static string InvalidScopeId {
+            get {
+                return ResourceManager.GetString("InvalidScopeId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The claim &apos;{0}&apos; doesn&apos;t exist.
         /// </summary>
         internal static string TheClaimDoesntExist {

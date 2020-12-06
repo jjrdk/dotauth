@@ -42,7 +42,7 @@ namespace SimpleAuth.Tests.Api.Registration
                 new TestHttpClientFactory(),
                 new InMemoryScopeRepository(new[] { new Scope { Name = "scope" } }),
                 new Mock<ILogger<InMemoryClientRepository>>().Object,
-                new Client[0]);
+                Array.Empty<Client>());
         }
 
         [Fact]

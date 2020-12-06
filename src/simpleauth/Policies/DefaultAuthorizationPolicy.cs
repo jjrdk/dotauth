@@ -64,7 +64,7 @@ namespace SimpleAuth.Policies
             return Task.FromResult(result!);
         }
 
-        private AuthorizationPolicyResult ExecuteAuthorizationPolicyRule(
+        private static AuthorizationPolicyResult ExecuteAuthorizationPolicyRule(
             TicketLineParameter ticketLineParameter,
             PolicyRule authorizationPolicy,
             ClaimsPrincipal requester,
@@ -129,11 +129,11 @@ namespace SimpleAuth.Policies
                 }));
         }
 
-        private AuthorizationPolicyResult CheckClaims(
+        private static AuthorizationPolicyResult CheckClaims(
             PolicyRule authorizationPolicy,
             ClaimsPrincipal requester)
         {
-            if (authorizationPolicy.Claims == null || !authorizationPolicy.Claims.Any())
+            if (!authorizationPolicy.Claims.Any())
             {
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
             }

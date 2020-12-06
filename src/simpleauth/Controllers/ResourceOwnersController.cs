@@ -357,7 +357,7 @@ namespace SimpleAuth.Controllers
             resourceOwner.Claims = resourceOwner.Claims.Where(x => newTypes.All(n => n != x.Type))
                 .Concat(request.Claims.Select(x => new Claim(x.Type, x.Value)))
                 .ToArray();
-            return await UpdateMyResourceOwner(cancellationToken, resourceOwner, previousClaims).ConfigureAwait(false);
+            return await UpdateMyResourceOwner(resourceOwner, previousClaims, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -387,11 +387,11 @@ namespace SimpleAuth.Controllers
                 .Where(x => !toDelete.Contains(x.Type))
                 .ToArray();
 
-            return await UpdateMyResourceOwner(cancellationToken, resourceOwner, previousClaims).ConfigureAwait(false);
+            return await UpdateMyResourceOwner(resourceOwner, previousClaims, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<IActionResult> UpdateMyResourceOwner(CancellationToken cancellationToken,
-            ResourceOwner resourceOwner, ClaimData[] previousClaims)
+        private async Task<IActionResult> UpdateMyResourceOwner(
+            ResourceOwner resourceOwner, ClaimData[] previousClaims, CancellationToken cancellationToken)
         {
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (!AuthenticationHeaderValue.TryParse(Request.Headers[HeaderNames.Authorization], out var value))

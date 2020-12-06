@@ -38,7 +38,7 @@ namespace SimpleAuth.Server.Tests
             app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
         }
 
-        private void RegisterServices(IServiceCollection serviceCollection)
+        private static void RegisterServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddHttpClient();
             serviceCollection.AddSimpleAuth(

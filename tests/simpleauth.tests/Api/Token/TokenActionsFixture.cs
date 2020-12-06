@@ -57,7 +57,7 @@ namespace SimpleAuth.Tests.Api.Token
                 new Mock<IScopeRepository>().Object,
                 new InMemoryJwksRepository(),
                 new InMemoryResourceOwnerRepository(),
-                new IAuthenticateResourceOwnerService[0],
+                Array.Empty<IAuthenticateResourceOwnerService>(),
                 eventPublisher.Object,
                 new Mock<ITokenStore>().Object,
                 new Mock<ILogger<TokenController>>().Object);

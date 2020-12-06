@@ -22,13 +22,13 @@
             IEnumerable<Scope> scopes = null)
         {
             var builder = new NpgsqlConnectionStringBuilder(connectionString);
-            using var connection = new NpgsqlConnection(connectionString);
+            await using var connection = new NpgsqlConnection(connectionString);
             try
             {
                 await Semaphore.WaitAsync().ConfigureAwait(false);
 
                 await connection.OpenAsync().ConfigureAwait(false);
-                var schema = $"test_{DateTime.UtcNow.Ticks.ToString()}";
+                var schema = $"test_{DateTime.UtcNow.Ticks}";
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION simpleauth; ";
                 await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);

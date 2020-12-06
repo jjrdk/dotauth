@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-   <data name="TheClaimDoesntExist" xml:space="preserve">
+  <data name="TheClaimDoesntExist" xml:space="preserve">
     <value>The claim '{0}' doesn't exist</value>
   </data>
   <data name="TheFilterEqualsIsWrong" xml:space="preserve">
@@ -128,5 +128,14 @@
   </data>
   <data name="TheFilterRegexIsWrong" xml:space="preserve">
     <value>The filter claims['{0}'] match regular expression {1} is wrong</value>
+  </data>
+  <data name="InvalidResourcesetId" xml:space="preserve">
+    <value>Invalid resource set id</value>
+  </data>
+  <data name="InvalidScopeId" xml:space="preserve">
+    <value>Invalid scope id.</value>
+  </data>
+  <data name="InvalidCode" xml:space="preserve">
+      <value>Invalid code.</value>
   </data>
 </root>

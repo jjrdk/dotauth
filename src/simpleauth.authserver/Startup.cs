@@ -46,7 +46,7 @@ namespace SimpleAuth.AuthServer
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            bool.TryParse(_configuration["REDIRECT"], out var redirect);
+            _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
             _options = new SimpleAuthOptions
             {
                 RedirectToLogin = redirect,
@@ -191,7 +191,7 @@ namespace SimpleAuth.AuthServer
             }
         }
 
-        public void Configure(IApplicationBuilder app)
+        public static void Configure(IApplicationBuilder app)
         {
             app.UseResponseCompression()
                 .UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));

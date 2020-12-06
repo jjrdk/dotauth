@@ -36,6 +36,7 @@
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             Server.Dispose();
             Client?.Invoke()?.Dispose();
         }

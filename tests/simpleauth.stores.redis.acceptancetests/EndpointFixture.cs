@@ -68,6 +68,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             _server?.Dispose();
             DbInitializer.Drop(_connectionString).Wait();
         }

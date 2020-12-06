@@ -22,6 +22,7 @@ namespace SimpleAuth.Client
     using System.Threading.Tasks;
     using SimpleAuth.Client.Properties;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
@@ -67,7 +68,7 @@ namespace SimpleAuth.Client
                 RequestUri = discoveryInformation.IntrospectionEndpoint
             };
 
-            return await GetResult<UmaIntrospectionResponse>(request, introspectionRequest.PatToken, cancellationToken)
+            return await GetResult<UmaIntrospectionResponse>(request, introspectionRequest.PatToken, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -101,7 +102,7 @@ namespace SimpleAuth.Client
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var httpRequest =
                 new HttpRequestMessage { Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url) };
-            return await GetResult<TicketResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
+            return await GetResult<TicketResponse>(httpRequest, token, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -135,7 +136,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Put,
                 RequestUri = configuration.ResourceRegistrationEndpoint
             };
-            return await GetResult<UpdateResourceSetResponse>(httpRequest, token, cancellationToken)
+            return await GetResult<UpdateResourceSetResponse>(httpRequest, token, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -164,7 +165,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Post,
                 RequestUri = umaConfiguration.ResourceRegistrationEndpoint
             };
-            return await GetResult<AddResourceSetResponse>(httpRequest, token, cancellationToken).ConfigureAwait(false);
+            return await GetResult<AddResourceSetResponse>(httpRequest, token, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -188,7 +189,7 @@ namespace SimpleAuth.Client
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
             var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
-            return await GetResult<object>(request, token, cancellationToken).ConfigureAwait(false);
+            return await GetResult<object>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -207,7 +208,7 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Get,
                 RequestUri = configuration.ResourceRegistrationEndpoint
             };
-            return await GetResult<string[]>(request, token, cancellationToken).ConfigureAwait(false);
+            return await GetResult<string[]>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -218,7 +219,7 @@ namespace SimpleAuth.Client
         {
             if (string.IsNullOrWhiteSpace(resourceSetId))
             {
-                throw new ArgumentException(nameof(resourceSetId));
+                throw new ArgumentException(ErrorMessages.InvalidResourcesetId, nameof(resourceSetId));
             }
 
             if (string.IsNullOrWhiteSpace(token))
@@ -232,7 +233,7 @@ namespace SimpleAuth.Client
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
             var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl) };
-            return await GetResult<ResourceSet>(request, token, cancellationToken).ConfigureAwait(false);
+            return await GetResult<ResourceSet>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -252,7 +253,7 @@ namespace SimpleAuth.Client
             var serializedPostPermission = Serializer.Default.Serialize(parameter);
             var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
             var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
-            return await GetResult<PagedResult<ResourceSet>>(request, token, cancellationToken).ConfigureAwait(false);
+            return await GetResult<PagedResult<ResourceSet>>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<UmaConfiguration> GetUmaConfiguration(CancellationToken cancellationToken)
@@ -265,7 +266,7 @@ namespace SimpleAuth.Client
             var result = await GetResult<UmaConfiguration>(
                 new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _configurationUri },
                 (AuthenticationHeaderValue?)null,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken: cancellationToken).ConfigureAwait(false);
             if (result.HasError)
             {
                 throw new Exception(result.Error?.Detail);

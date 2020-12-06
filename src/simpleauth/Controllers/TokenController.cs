@@ -113,16 +113,16 @@
             AuthenticationHeaderValue? authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
             {
-                AuthenticationHeaderValue.TryParse(authorizationHeader[0], out authenticationHeaderValue);
+                _ = AuthenticationHeaderValue.TryParse(authorizationHeader[0], out authenticationHeaderValue);
             }
 
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var result = await GetGrantedToken(
                     tokenRequest,
-                    cancellationToken,
                     authenticationHeaderValue,
                     certificate,
-                    issuerName)
+                    issuerName,
+                    cancellationToken)
                 .ConfigureAwait(false);
 
             return result.StatusCode == HttpStatusCode.OK
@@ -132,10 +132,10 @@
 
         private async Task<GenericResponse<GrantedToken>> GetGrantedToken(
             TokenRequest tokenRequest,
-            CancellationToken cancellationToken,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,
-            string issuerName)
+            string issuerName,
+            CancellationToken cancellationToken)
         {
             switch (tokenRequest.grant_type)
             {
@@ -188,7 +188,7 @@
                 case GrantTypes.ValidateBearer:
                 //return null;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(tokenRequest));
             }
         }
 

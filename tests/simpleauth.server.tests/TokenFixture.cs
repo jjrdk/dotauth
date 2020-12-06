@@ -120,6 +120,7 @@
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             _server?.Dispose();
         }
     }

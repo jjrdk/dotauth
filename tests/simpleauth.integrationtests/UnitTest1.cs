@@ -94,6 +94,7 @@ namespace SimpleAuth.IntegrationTests
         /// <inheritdoc />
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             _store.Dispose();
         }
     }
@@ -112,7 +113,7 @@ namespace SimpleAuth.IntegrationTests
         {
             var client = new TokenClient(
                 TokenCredentials.FromClientCredentials("client", "secret"),
-                ()=>new HttpClient(),
+                () => new HttpClient(),
                 new Uri("http://localhost:8080/.well-known/openid-configuration"));
             await _fixture.GetUser().ConfigureAwait(false);
             for (int i = 0; i < 100; i++)

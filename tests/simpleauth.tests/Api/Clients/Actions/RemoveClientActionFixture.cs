@@ -35,7 +35,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
                 new Mock<IHttpClientFactory>().Object,
                 new InMemoryScopeRepository(),
                 new Mock<ILogger<InMemoryClientRepository>>().Object,
-                new Client[0]);
+                Array.Empty<Client>());
         }
 
         [Fact]
