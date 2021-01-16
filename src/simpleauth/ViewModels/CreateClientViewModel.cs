@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the create client view model.

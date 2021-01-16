@@ -12,7 +12,6 @@
     using Microsoft.Extensions.Logging;
     using Npgsql;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.UI;
     using StackExchange.Redis;
@@ -107,7 +106,9 @@
                     });
         }
 
-        public static void Configure(IApplicationBuilder app)
+#pragma warning disable CA1822 // Mark members as static
+        public void Configure(IApplicationBuilder app)
+#pragma warning restore CA1822 // Mark members as static
         {
             var lifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
             lifetime.ApplicationStopping.Register(

@@ -3,7 +3,6 @@
     using Microsoft.IdentityModel.Tokens;
     using Shared;
     using Shared.Models;
-    using SimpleAuth;
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;

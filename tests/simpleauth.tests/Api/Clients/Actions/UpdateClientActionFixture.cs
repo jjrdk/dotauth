@@ -16,7 +16,6 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
 {
     using Helpers;
     using Moq;
-    using Newtonsoft.Json;
     using Repositories;
     using Shared.Models;
     using Shared.Repositories;

@@ -3,7 +3,6 @@
     using System;
     using Microsoft.Extensions.DependencyInjection;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared;
     using SimpleAuth.Sms.Services;
 
     /// <summary>

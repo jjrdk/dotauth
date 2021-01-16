@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using SimpleAuth.Extensions;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared;
     using Xunit;
 
     public class ResourceOwnerAuthenticateHelperFixture

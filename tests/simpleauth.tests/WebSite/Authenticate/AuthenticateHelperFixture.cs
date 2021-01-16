@@ -13,7 +13,6 @@
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Shared.Events;
     using Xunit;
 
     public sealed class AuthenticateHelperFixture

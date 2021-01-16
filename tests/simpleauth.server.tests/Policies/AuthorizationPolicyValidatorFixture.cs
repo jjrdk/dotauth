@@ -25,7 +25,6 @@ namespace SimpleAuth.Server.Tests.Policies
     using SimpleAuth.Parameters;
     using SimpleAuth.Policies;
     using SimpleAuth.Repositories;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;

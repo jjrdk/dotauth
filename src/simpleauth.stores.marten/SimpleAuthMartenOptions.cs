@@ -3,7 +3,6 @@
     using global::Marten;
     using Newtonsoft.Json;
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Security.Claims;
     using System.Text;

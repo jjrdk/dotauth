@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Shared.Requests
 {
-    using System;
     using System.Runtime.Serialization;
 
     /// <summary>

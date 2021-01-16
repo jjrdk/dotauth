@@ -19,7 +19,6 @@ namespace SimpleAuth.Server.Tests.Apis
     using Shared.Models;
     using SimpleAuth.Shared.Errors;
     using System;
-    using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;

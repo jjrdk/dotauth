@@ -10,7 +10,6 @@
     using System;
     using System.Net.Http;
     using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;

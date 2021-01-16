@@ -30,7 +30,7 @@ namespace SimpleAuth.AuthServerPg
     using Baseline;
     using Marten;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.Extensions.Logging.Console;
+    using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Extensions;
     using SimpleAuth.Sms;
@@ -108,7 +108,15 @@ namespace SimpleAuth.AuthServerPg
                             new BrotliCompressionProvider(
                                 new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
-                .AddLogging(log => { log.AddSimpleConsole(o => o.IncludeScopes = true); })
+                .AddLogging(log =>
+                {
+                    log.AddJsonConsole(
+                        o =>
+                        {
+                            o.IncludeScopes = true;
+                            o.UseUtcTimestamp = true;
+                        });
+                })
                 .AddAuthentication(
                     options =>
                     {
@@ -134,7 +142,9 @@ namespace SimpleAuth.AuthServerPg
                         var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
                         cfg.RequireHttpsMetadata = !allowHttp;
                     });
-            services.ConfigureOptions<ConfigureOAuthOptions>();
+            services.ConfigureOptions<ConfigureOAuthOptions>()
+                .AddHealthChecks()
+                .AddNpgSql(_configuration["DB:CONNECTIONSTRING"], failureStatus: HealthStatus.Unhealthy);
 
             if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
             {
@@ -192,9 +202,12 @@ namespace SimpleAuth.AuthServerPg
             }
 
             app.UseResponseCompression()
-                .UseSimpleAuthMvc(
-                    x => { x.KnownProxies.AddRange(knownProxies); },
-                    applicationTypes: typeof(IDefaultUi));
+                .UseSimpleAuthMvc(x => { x.KnownProxies.AddRange(knownProxies); }, applicationTypes: typeof(IDefaultUi))
+                .UseEndpoints(
+                    endpoint =>
+                    {
+                        endpoint.MapHealthChecks("/health").RequireAuthorization();
+                    });
         }
     }
 }

@@ -29,7 +29,6 @@
     using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
-    using SimpleAuth.Properties;
     using SimpleAuth.Services;
     using SimpleAuth.Sms.Properties;
     using SimpleAuth.WebSite.User;
