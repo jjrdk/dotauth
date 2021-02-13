@@ -220,6 +220,11 @@ namespace SimpleAuth.AuthServerPgRedis
                     .ToArray();
             }
 
+            var pathBase = _configuration["PATHBASE"];
+            if (!string.IsNullOrWhiteSpace(pathBase))
+            {
+                app = app.UsePathBase(pathBase);
+            }
             app.UseResponseCompression()
                 .UseSimpleAuthMvc(
                     x => { x.KnownProxies.AddRange(knownProxies); },

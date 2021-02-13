@@ -38,6 +38,23 @@ namespace SimpleAuth.AuthServerPg
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.UI;
 
+    internal static class ConfigurationValues
+    {
+        public const string GoogleClientSecret = "GOOGLE:CLIENTSECRET";
+        public const string GoogleScopes = "GOOGLE:SCOPES";
+        public const string AmazonAccessKey = "AMAZON:ACCESSKEY";
+        public const string AmazonSecretKey = "AMAZON:SECRETKEY";
+        public const string KnownProxies = "KNOWN_PROXIES";
+        public const string PathBase = "PATHBASE";
+        public const string GoogleClientId = "GOOGLE:CLIENTID";
+        public const string AllowHttp = "SERVER:ALLOWHTTP";
+        public const string ServerRedirect = "SERVER:REDIRECT";
+        public const string ServerName = "SERVER:NAME";
+        public const string ConnectionString = "DB:CONNECTIONSTRING";
+        public const string OauthAuthority = "OAUTH:AUTHORITY";
+        public const string OauthValidIssuers = "OAUTH:VALIDISSUERS";
+    }
+
     public class Startup
     {
         private const string SimpleAuthScheme = "simpleauth";
@@ -48,11 +65,11 @@ namespace SimpleAuth.AuthServerPg
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            _ = bool.TryParse(_configuration["SERVER:REDIRECT"], out var redirect);
+            _ = bool.TryParse(_configuration[ConfigurationValues.ServerRedirect], out var redirect);
             _options = new SimpleAuthOptions
             {
                 RedirectToLogin = redirect,
-                ApplicationName = _configuration["SERVER:NAME"] ?? "SimpleAuth",
+                ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "SimpleAuth",
                 Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
                 Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
                 Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
@@ -92,8 +109,8 @@ namespace SimpleAuth.AuthServerPg
                     provider =>
                     {
                         var options = new SimpleAuthMartenOptions(
-                            _configuration["DB:CONNECTIONSTRING"],
-                            new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()));
+                            _configuration[ConfigurationValues.ConnectionString],
+                            new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()));
                         return new DocumentStore(options);
                     })
                 .AddTransient(sp => sp.GetRequiredService<IDocumentStore>().LightweightSession())
@@ -108,15 +125,16 @@ namespace SimpleAuth.AuthServerPg
                             new BrotliCompressionProvider(
                                 new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
-                .AddLogging(log =>
-                {
-                    log.AddJsonConsole(
-                        o =>
-                        {
-                            o.IncludeScopes = true;
-                            o.UseUtcTimestamp = true;
-                        });
-                })
+                .AddLogging(
+                    log =>
+                    {
+                        log.AddJsonConsole(
+                            o =>
+                            {
+                                o.IncludeScopes = true;
+                                o.UseUtcTimestamp = true;
+                            });
+                    })
                 .AddAuthentication(
                     options =>
                     {
@@ -129,24 +147,24 @@ namespace SimpleAuth.AuthServerPg
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.Authority = _configuration["OAUTH:AUTHORITY"];
+                        cfg.Authority = _configuration[ConfigurationValues.OauthAuthority];
                         cfg.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            ValidIssuers = _configuration["OAUTH:VALIDISSUERS"]
+                            ValidIssuers = _configuration[ConfigurationValues.OauthValidIssuers]
                                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim())
                                 .ToArray()
                         };
 
-                        var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
+                        var allowHttp = bool.TryParse(_configuration[ConfigurationValues.AllowHttp], out var ah) && ah;
                         cfg.RequireHttpsMetadata = !allowHttp;
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>()
                 .AddHealthChecks()
-                .AddNpgSql(_configuration["DB:CONNECTIONSTRING"], failureStatus: HealthStatus.Unhealthy);
+                .AddNpgSql(_configuration[ConfigurationValues.ConnectionString], failureStatus: HealthStatus.Unhealthy);
 
-            if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
+            if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientId]))
             {
                 services.AddAuthentication(CookieNames.ExternalCookieName)
                     .AddCookie(CookieNames.ExternalCookieName)
@@ -154,10 +172,10 @@ namespace SimpleAuth.AuthServerPg
                         opts =>
                         {
                             opts.AccessType = "offline";
-                            opts.ClientId = _configuration["GOOGLE:CLIENTID"];
-                            opts.ClientSecret = _configuration["GOOGLE:CLIENTSECRET"];
+                            opts.ClientId = _configuration[ConfigurationValues.GoogleClientId];
+                            opts.ClientSecret = _configuration[ConfigurationValues.GoogleClientSecret];
                             opts.SignInScheme = CookieNames.ExternalCookieName;
-                            var scopes = _configuration["GOOGLE:SCOPES"] ?? DefaultGoogleScopes;
+                            var scopes = _configuration[ConfigurationValues.GoogleScopes] ?? DefaultGoogleScopes;
                             foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim()))
                             {
@@ -166,8 +184,8 @@ namespace SimpleAuth.AuthServerPg
                         });
             }
 
-            if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
-                && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
+            if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonAccessKey])
+                && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonSecretKey]))
             {
                 services.AddSimpleAuth(
                         _options,
@@ -176,8 +194,8 @@ namespace SimpleAuth.AuthServerPg
                     .AddSmsAuthentication(
                         new AwsSmsClient(
                             new BasicAWSCredentials(
-                                _configuration["AMAZON:ACCESSKEY"],
-                                _configuration["AMAZON:SECRETKEY"]),
+                                _configuration[ConfigurationValues.AmazonAccessKey],
+                                _configuration[ConfigurationValues.AmazonSecretKey]),
                             RegionEndpoint.EUNorth1,
                             Globals.ApplicationName));
             }
@@ -193,21 +211,23 @@ namespace SimpleAuth.AuthServerPg
         public void Configure(IApplicationBuilder app)
         {
             var knownProxies = Array.Empty<IPAddress>();
-            if (!string.IsNullOrWhiteSpace(_configuration["KNOWN_PROXIES"]))
+            if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.KnownProxies]))
             {
-                knownProxies = _configuration["KNOWN_PROXIES"]
+                knownProxies = _configuration[ConfigurationValues.KnownProxies]
                     .Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(IPAddress.Parse)
                     .ToArray();
             }
 
+            var pathBase = _configuration[ConfigurationValues.PathBase];
+            if (!string.IsNullOrWhiteSpace(pathBase))
+            {
+                app = app.UsePathBase(pathBase);
+            }
+
             app.UseResponseCompression()
                 .UseSimpleAuthMvc(x => { x.KnownProxies.AddRange(knownProxies); }, applicationTypes: typeof(IDefaultUi))
-                .UseEndpoints(
-                    endpoint =>
-                    {
-                        endpoint.MapHealthChecks("/health").RequireAuthorization();
-                    });
+                .UseEndpoints(endpoint => { endpoint.MapHealthChecks("/health").RequireAuthorization(); });
         }
     }
 }

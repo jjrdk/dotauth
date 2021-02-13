@@ -191,8 +191,13 @@ namespace SimpleAuth.AuthServer
             }
         }
 
-        public static void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app)
         {
+            var pathBase = _configuration["PATHBASE"];
+            if (!string.IsNullOrWhiteSpace(pathBase))
+            {
+                app = app.UsePathBase(pathBase);
+            }
             app.UseResponseCompression()
                 .UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
         }
