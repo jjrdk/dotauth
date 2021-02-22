@@ -18,14 +18,17 @@
     /// <seealso cref="SimpleAuth.Shared.Repositories.IResourceOwnerRepository" />
     public class MartenResourceOwnerStore : IResourceOwnerRepository
     {
+        private readonly string _salt;
         private readonly Func<IDocumentSession> _sessionFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MartenResourceOwnerStore"/> class.
         /// </summary>
+        /// <param name="salt">The hashing salt</param>
         /// <param name="sessionFactory">The session factory.</param>
-        public MartenResourceOwnerStore(Func<IDocumentSession> sessionFactory)
+        public MartenResourceOwnerStore(string salt, Func<IDocumentSession> sessionFactory)
         {
+            _salt = salt;
             _sessionFactory = sessionFactory;
         }
 
@@ -79,7 +82,7 @@
         public async Task<ResourceOwner?> Get(string id, string password, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
-            var hashed = password.ToSha256Hash();
+            var hashed = password.ToSha256Hash(_salt);
             var ro = await session.Query<ResourceOwner>()
                 .FirstOrDefaultAsync(x => x.Subject == id && x.Password == hashed, cancellationToken)
                 .ConfigureAwait(false);
@@ -101,7 +104,7 @@
         public async Task<bool> Insert(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFactory();
-            resourceOwner.Password = resourceOwner.Password?.ToSha256Hash();
+            resourceOwner.Password = resourceOwner.Password?.ToSha256Hash(_salt);
             session.Store(resourceOwner);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -141,7 +144,7 @@
                 return false;
             }
 
-            user.Password = password.ToSha256Hash();
+            user.Password = password.ToSha256Hash(_salt);
             session.Update(user);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;

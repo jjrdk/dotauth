@@ -56,7 +56,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
             InitializeFakeObjects();
 
             var result = await _resourceOwnerRepositoryStub
-                .Update(new ResourceOwner {Subject = "blah"}, CancellationToken.None)
+                .Update(new ResourceOwner { Subject = "blah" }, CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.False(result);
@@ -64,7 +64,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
 
         private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
         {
-            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(new List<ResourceOwner>(resourceOwners));
+            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(string.Empty, new List<ResourceOwner>(resourceOwners));
         }
     }
 }

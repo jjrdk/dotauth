@@ -49,7 +49,7 @@
             return new List<Scope> { };
         }
 
-        public static List<ResourceOwner> GetUsers()
+        public static List<ResourceOwner> GetUsers(string salt)
         {
             return new List<ResourceOwner>
             {
@@ -62,27 +62,13 @@
                         new Claim("role", "administrator"),
                         new Claim("role", "uma_admin"),
                         new Claim(OpenIdClaimTypes.Name, "Anne Admin"),
-                        new Claim(OpenIdClaimTypes.Email, "admin@server.com"), 
-                        new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString) 
+                        new Claim(OpenIdClaimTypes.Email, "admin@server.com"),
+                        new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString)
                     },
-                    Password = "password".ToSha256Hash(),
+                    Password = "password".ToSha256Hash(salt),
                     IsLocalAccount = true,
                     CreateDateTime = DateTimeOffset.UtcNow,
-                },
-                new ResourceOwner
-                {
-                    Subject = "user",
-                    Claims = new[]
-                    {
-                        new Claim(StandardClaimNames.Subject, "user"),
-                        new Claim(OpenIdClaimTypes.Name, "Anne User"),
-                        new Claim(OpenIdClaimTypes.Email, "user@server.com"), 
-                        new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString) 
-                    },
-                    Password = "password".ToSha256Hash(),
-                    IsLocalAccount = true,
-                    CreateDateTime = DateTimeOffset.UtcNow,
-                },
+                }
             };
         }
     }

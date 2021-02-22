@@ -36,14 +36,14 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureServices(startup.ConfigureServices)
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).Assembly.FullName)
                 .Configure(startup.Configure));
-            Client = ()=>
+            Client = () =>
             {
                 var c = Server.CreateClient();
                 c.DefaultRequestHeaders.Accept.Clear();
                 c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 return c;
             };
-            
+
             SharedCtx.Client = Client;
             SharedCtx.ClientHandler = Server.CreateHandler();
         }

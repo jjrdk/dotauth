@@ -28,11 +28,12 @@ namespace SimpleAuth.Shared
         /// Converts to sha256hash.
         /// </summary>
         /// <param name="entry">The entry.</param>
-        /// <returns></returns>
-        public static string ToSha256Hash(this string entry)
+        /// <param name="salt">The hash salt.</param>
+        /// <returns>The salted hashed value as a hex string.</returns>
+        public static string ToSha256Hash(this string entry, string salt)
         {
             using var sha256 = SHA256.Create();
-            var entryBytes = Encoding.UTF8.GetBytes(entry);
+            var entryBytes = Encoding.UTF8.GetBytes(entry + salt);
             var hash = sha256.ComputeHash(entryBytes);
             return BitConverter.ToString(hash).Replace("-", string.Empty);
         }

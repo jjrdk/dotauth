@@ -56,25 +56,26 @@ namespace SimpleAuth.Server.Tests
 
             services.AddAuthentication(
                     opts =>
-                        {
-                            opts.DefaultAuthenticateScheme = DefaultSchema;
-                            opts.DefaultChallengeScheme = DefaultSchema;
-                        })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, cfg => { })
-                .AddFakeCustomAuth(o => { });
+                    {
+                        opts.DefaultAuthenticateScheme = DefaultSchema;
+                        opts.DefaultChallengeScheme = DefaultSchema;
+                    })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { })
+                .AddFakeCustomAuth(_ => { });
 
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
                 .AddSimpleAuth(
                     options =>
-                        {
-                            options.Clients = sp => new InMemoryClientRepository(
-                                sp.GetRequiredService<IHttpClientFactory>(),
-                                sp.GetService<IScopeStore>(),
-                                new Mock<ILogger<InMemoryClientRepository>>().Object,
-                                DefaultStores.Clients(_context));
-                            options.Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents());
-                            options.Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users());
-                        },
+                    {
+                        options.AdministratorRoleDefinition = default;
+                        options.Clients = sp => new InMemoryClientRepository(
+                            sp.GetRequiredService<IHttpClientFactory>(),
+                            sp.GetService<IScopeStore>(),
+                            new Mock<ILogger<InMemoryClientRepository>>().Object,
+                            DefaultStores.Clients(_context));
+                        options.Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents());
+                        options.Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users());
+                    },
                     new[] { JwtBearerDefaults.AuthenticationScheme })
                 .AddSmsAuthentication(_context.TwilioClient.Object)
                 .AddLogging()
@@ -82,10 +83,10 @@ namespace SimpleAuth.Server.Tests
                 .AddSingleton(_context.ConfirmationCodeStore.Object)
                 .AddSingleton(
                     sp =>
-                        {
-                            var server = sp.GetRequiredService<IServer>() as TestServer;
-                            return server.CreateClient();
-                        });
+                    {
+                        var server = sp.GetRequiredService<IServer>() as TestServer;
+                        return server.CreateClient();
+                    });
             services.ConfigureOptions<JwtBearerPostConfigureOptions>();
         }
 

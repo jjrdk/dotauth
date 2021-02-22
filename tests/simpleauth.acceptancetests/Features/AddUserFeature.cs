@@ -31,7 +31,7 @@
                         .ReturnsAsync(true);
                 });
 
-            "And runtime settings".x(() => { _runtimeSettings = new RuntimeSettings(r => { _userModified = true; }); });
+            "And runtime settings".x(() => { _runtimeSettings = new RuntimeSettings(string.Empty, r => { _userModified = true; }); });
 
             "And an AddUserOperation".x(() =>
                 {

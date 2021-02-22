@@ -88,20 +88,20 @@ namespace SimpleAuth.Server.Tests.Stores
                         new Claim(OpenIdClaimTypes.Role, "administrator"),
                         new Claim(OpenIdClaimTypes.Address, "{ country : 'france' }")
                     },
-                    Password = "password".ToSha256Hash(),
+                    Password = "password".ToSha256Hash(string.Empty),
                     IsLocalAccount = true
                 },
                 new ResourceOwner
                 {
                     Subject = "user",
-                    Password = "password".ToSha256Hash(),
+                    Password = "password".ToSha256Hash(string.Empty),
                     Claims = new[] {new Claim(OpenIdClaimTypes.Subject, "user")},
                     IsLocalAccount = true
                 },
                 new ResourceOwner
                 {
                     Subject = "superuser",
-                    Password = "password".ToSha256Hash(),
+                    Password = "password".ToSha256Hash(string.Empty),
                     Claims = new[]
                     {
                         new Claim(OpenIdClaimTypes.Subject, "superuser"),

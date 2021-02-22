@@ -53,11 +53,13 @@ namespace SimpleAuth.AuthServerPgRedis
         {
             _configuration = configuration;
             _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
+            var salt = _configuration["SALT"] ?? string.Empty;
             _options = new SimpleAuthOptions
             {
+                Salt = salt,
                 RedirectToLogin = redirect,
                 ApplicationName = _configuration["SERVER:NAME"] ?? "SimpleAuth",
-                Users = sp => new MartenResourceOwnerStore(sp.GetRequiredService<IDocumentSession>),
+                Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
                 Clients =
                     sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
                 Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),

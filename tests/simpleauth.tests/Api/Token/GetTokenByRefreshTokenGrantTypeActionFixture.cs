@@ -50,7 +50,7 @@ namespace SimpleAuth.Tests.Api.Token
                 new Mock<IEventPublisher>().Object,
                 _tokenStoreStub.Object,
                 new InMemoryJwksRepository(),
-                new InMemoryResourceOwnerRepository(),
+                new InMemoryResourceOwnerRepository(string.Empty),
                 _clientStore.Object);
         }
 

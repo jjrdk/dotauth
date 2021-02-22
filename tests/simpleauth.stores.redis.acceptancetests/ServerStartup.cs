@@ -16,13 +16,6 @@
     using SimpleAuth.UI;
     using StackExchange.Redis;
 
-    internal class TestDelegatingHandler : DelegatingHandler
-    {
-        public TestDelegatingHandler(HttpMessageHandler innerHandler) : base(innerHandler)
-        {
-        }
-    }
-
     internal class ServerStartup
     {
         private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -35,6 +28,7 @@
         {
             _martenOptions = new SimpleAuthOptions
             {
+                AdministratorRoleDefinition = default,
                 AuthorizationCodes =
                     sp => new RedisAuthorizationCodeStore(
                         sp.GetRequiredService<IDatabaseAsync>(),
@@ -51,7 +45,7 @@
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
                 Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
-                Users = sp => new MartenResourceOwnerStore(sp.GetService<Func<IDocumentSession>>()),
+                Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetService<Func<IDocumentSession>>()),
                 Tickets =
                     sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _martenOptions.TicketLifeTime),
                 Tokens = sp => new RedisTokenStore(

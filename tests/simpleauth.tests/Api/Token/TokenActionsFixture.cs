@@ -51,12 +51,12 @@ namespace SimpleAuth.Tests.Api.Token
                     });
 
             _tokenActions = new TokenActions(
-                new RuntimeSettings(),
+                new RuntimeSettings(string.Empty),
                 new Mock<IAuthorizationCodeStore>().Object,
                 mock.Object,
                 new Mock<IScopeRepository>().Object,
                 new InMemoryJwksRepository(),
-                new InMemoryResourceOwnerRepository(),
+                new InMemoryResourceOwnerRepository(string.Empty),
                 Array.Empty<IAuthenticateResourceOwnerService>(),
                 eventPublisher.Object,
                 new Mock<ITokenStore>().Object,

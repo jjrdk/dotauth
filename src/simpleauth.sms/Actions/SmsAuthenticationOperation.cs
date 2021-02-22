@@ -11,6 +11,7 @@
 
     internal sealed class SmsAuthenticationOperation
     {
+        private readonly string _salt;
         private readonly GenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly AddUserOperation _addUser;
@@ -25,6 +26,7 @@
             IAccountFilter[] accountFilters,
             IEventPublisher eventPublisher)
         {
+            _salt = settings.Salt;
             _generateAndSendSmsCodeOperation = new GenerateAndSendSmsCodeOperation(
                 smsClient,
                 confirmationCodeStore);
@@ -55,7 +57,7 @@
                 new Claim(OpenIdClaimTypes.PhoneNumberVerified, "false")
             };
             var id = await _subjectBuilder.BuildSubject(claims, cancellationToken).ConfigureAwait(false);
-            var record = new ResourceOwner { Subject = id, Password = Id.Create().ToSha256Hash(), Claims = claims };
+            var record = new ResourceOwner { Subject = id, Password = Id.Create().ToSha256Hash(_salt), Claims = claims };
 
             // 3.2 Add user.
             await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);

@@ -166,7 +166,7 @@
             var resourceOwner =
                 await _resourceOwnerClient.GetResourceOwner("administrator", "token").ConfigureAwait(false);
 
-            Assert.Equal("pass".ToSha256Hash(), resourceOwner.Content.Password);
+            Assert.Equal("pass".ToSha256Hash(string.Empty), resourceOwner.Content.Password);
         }
 
         [Fact]

@@ -34,6 +34,7 @@ Note that some environment variables use double underscore ```__```. This is to 
 
 |Environment Variable|Type|Description|
 |---|---|---|
+|SALT|string|Defines a hashing salt to be used. Default value is ```string.Empty```.|
 |SERVER__NAME|string|Defines a custom name to display as the application name in UI headers. Default value is ```SimpleAuth```|
 |SERVER__REDIRECT|bool|When set to ```true``` then requests for ```/``` or ```/home``` are redirected to ```/authenticate```. This effectively hides the default home page.|
 |SERVER__ALLOWSELFSIGNEDCERT|bool|When set to ```true``` then allows self signed certificates and certificates whose root certificate is not trusted. The certificate must still be issued to a valid host.|

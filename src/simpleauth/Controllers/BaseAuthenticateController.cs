@@ -755,7 +755,7 @@ namespace SimpleAuth.Controllers
                                 .ToArray()
                         }
                     },
-                Password = Id.Create().ToSha256Hash(),
+                Password = Id.Create().ToSha256Hash(string.Empty),
                 IsLocalAccount = false,
                 Claims = userClaims,
                 TwoFactorAuthentication = null

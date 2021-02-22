@@ -18,6 +18,7 @@ namespace SimpleAuth
     using SimpleAuth.Shared.Repositories;
     using System;
     using SimpleAuth.Events;
+    using SimpleAuth.Shared;
 
     /// <summary>
     /// Defines the SimpleAuth configuration options.
@@ -27,16 +28,19 @@ namespace SimpleAuth
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleAuthOptions"/> class.
         /// </summary>
+        /// <param name="salt">The hashing salt.</param>
         /// <param name="authorizationCodeValidity">The authorization code validity.</param>
         /// <param name="rptLifetime">The RPT lifetime.</param>
         /// <param name="ticketLifetime">The ticket lifetime.</param>
         /// <param name="claimsIncludedInUserCreation">The claims included in user creation.</param>
         public SimpleAuthOptions(
+            string? salt = default,
             TimeSpan authorizationCodeValidity = default,
             TimeSpan rptLifetime = default,
             TimeSpan ticketLifetime = default,
             string[]? claimsIncludedInUserCreation = null)
         {
+            Salt = salt ?? string.Empty;
             RptLifeTime = rptLifetime == default ? TimeSpan.FromMinutes(30) : rptLifetime;
             TicketLifeTime = ticketLifetime == default ? TimeSpan.FromMinutes(30) : ticketLifetime;
             AuthorizationCodeValidityPeriod = authorizationCodeValidity == default
@@ -44,6 +48,16 @@ namespace SimpleAuth
                 : authorizationCodeValidity;
             ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
         }
+
+        /// <summary>
+        /// Gets or sets the administrator role definition for access management
+        /// </summary>
+        public (string roleName, string roleClaim) AdministratorRoleDefinition { get; set; } = (OpenIdClaimTypes.Role, "administrator");
+
+        /// <summary>
+        /// Gets or sets the hashing salt.
+        /// </summary>
+        public string Salt { get; set; }
 
         /// <summary>
         /// Gets or sets the delegate to run when resource owner created.

@@ -75,13 +75,13 @@ namespace SimpleAuth.AcceptanceTests
                         new Claim("acceptance_test", "test"),
                         new Claim("some_other_claim", "test"),
                     },
-                    Password = "password".ToSha256Hash(),
+                    Password = "password".ToSha256Hash(string.Empty),
                     IsLocalAccount = true
                 },
                 new ResourceOwner
                 {
                     Subject = "user",
-                    Password = "password".ToSha256Hash(),
+                    Password = "password".ToSha256Hash(string.Empty),
                     Claims = new[]
                     {
                         new Claim(OpenIdClaimTypes.Subject, "user"),
@@ -93,7 +93,7 @@ namespace SimpleAuth.AcceptanceTests
                 new ResourceOwner
                 {
                     Subject = "superuser",
-                    Password = "password".ToSha256Hash(),
+                    Password = "password".ToSha256Hash(string.Empty),
                     Claims = new[]
                     {
                         new Claim(OpenIdClaimTypes.Subject, "superuser"),

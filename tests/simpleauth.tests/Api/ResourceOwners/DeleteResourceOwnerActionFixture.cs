@@ -51,7 +51,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
 
         private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
         {
-            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(resourceOwners);
+            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(string.Empty, resourceOwners);
         }
     }
 }

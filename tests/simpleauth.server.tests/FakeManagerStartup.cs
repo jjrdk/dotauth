@@ -44,7 +44,7 @@ namespace SimpleAuth.Server.Tests
             serviceCollection.AddSimpleAuth(
                 new SimpleAuthOptions
                 {
-                    Users = sp => new InMemoryResourceOwnerRepository(DefaultStorage.GetUsers()),
+                    Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStorage.GetUsers()),
                 },
                 new[] {JwtBearerDefaults.AuthenticationScheme},
                 assemblyTypes: typeof(IDefaultUi));

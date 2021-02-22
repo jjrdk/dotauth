@@ -12,13 +12,6 @@
     using SimpleAuth.Repositories;
     using SimpleAuth.UI;
 
-    internal class TestDelegatingHandler : DelegatingHandler
-    {
-        public TestDelegatingHandler(HttpMessageHandler innerHandler) : base(innerHandler)
-        {
-        }
-    }
-
     public class ServerStartup
     {
         private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -31,6 +24,7 @@
         {
             _martenOptions = new SimpleAuthOptions
             {
+                AdministratorRoleDefinition = default,
                 Clients = sp => new MartenClientStore(sp.GetService<Func<IDocumentSession>>()),
                 JsonWebKeys = sp =>
                 {
@@ -39,7 +33,7 @@
                 },
                 Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
                 Consents = sp => new MartenConsentRepository(sp.GetService<Func<IDocumentSession>>()),
-                Users = sp => new MartenResourceOwnerStore(sp.GetService<Func<IDocumentSession>>())
+                Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetService<Func<IDocumentSession>>())
             };
             _context = context;
             _connectionString = connectionString;

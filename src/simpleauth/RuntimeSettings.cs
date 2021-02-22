@@ -11,6 +11,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeSettings"/> class.
         /// </summary>
+        /// <param name="salt">The hashing salt.</param>
         /// <param name="onResourceOwnerCreated"></param>
         /// <param name="authorizationCodeValidityPeriod">The authorization code validity period.</param>
         /// <param name="claimsIncludedInUserCreation">The claims included in user creation.</param>
@@ -19,6 +20,7 @@
         /// <param name="ticketLifeTime">The ticket life time.</param>
         /// <param name="redirectToLogin">Flag to determine whether to redirect home screen to login screen.</param>
         public RuntimeSettings(
+            string salt = "",
             Action<ResourceOwner>? onResourceOwnerCreated = null,
             TimeSpan authorizationCodeValidityPeriod = default,
             string[]? claimsIncludedInUserCreation = null,
@@ -27,6 +29,7 @@
             TimeSpan ticketLifeTime = default,
             bool redirectToLogin = false)
         {
+            Salt = salt;
             PatLifeTime = patLifeTime;
             RedirectToLogin = redirectToLogin;
             OnResourceOwnerCreated = onResourceOwnerCreated ?? (r => { });
@@ -64,6 +67,11 @@
         /// Gets the RPT lifetime.
         /// </summary>
         public TimeSpan RptLifeTime { get; }
+
+        /// <summary>
+        /// Gets the hashing salt.
+        /// </summary>
+        public string Salt { get; }
 
         /// <summary>
         /// Gets the PAT lifetime.

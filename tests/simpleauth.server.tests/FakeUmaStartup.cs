@@ -28,6 +28,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Repositories;
     using SimpleAuth.Server.Tests.MiddleWares;
     using SimpleAuth.Server.Tests.Stores;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.UI;
 
@@ -54,7 +55,7 @@ namespace SimpleAuth.Server.Tests
             services.AddAuthorization(
                 opts =>
                 {
-                    opts.AddAuthPolicies(DefaultSchema)
+                    opts.AddAuthPolicies((OpenIdClaimTypes.Role, "administrator"), DefaultSchema)
                         .AddPolicy(
                             "UmaProtection",
                             policy =>
@@ -81,8 +82,8 @@ namespace SimpleAuth.Server.Tests
                         sp.GetService<IScopeStore>(),
                         new Mock<ILogger<InMemoryClientRepository>>().Object,
                         OAuthStores.GetClients()),
-                    Scopes = sp => new InMemoryScopeRepository(OAuthStores.GetScopes()),
-                    ResourceSets = sp => new InMemoryResourceSetRepository(UmaStores.GetResources())
+                    Scopes = _ => new InMemoryScopeRepository(OAuthStores.GetScopes()),
+                    ResourceSets = _ => new InMemoryResourceSetRepository(UmaStores.GetResources())
                 },
                 new[] { DefaultSchema },
                 assemblyTypes: typeof(IDefaultUi));

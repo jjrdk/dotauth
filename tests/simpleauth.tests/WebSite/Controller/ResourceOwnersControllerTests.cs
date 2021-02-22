@@ -25,9 +25,9 @@
             {
                 var inMemoryScopeRepository = new InMemoryScopeRepository();
                 _controller = new ResourceOwnersController(
-                    new RuntimeSettings(),
+                    new RuntimeSettings(string.Empty),
                     new DefaultSubjectBuilder(),
-                    new InMemoryResourceOwnerRepository(),
+                    new InMemoryResourceOwnerRepository(string.Empty),
                     new InMemoryTokenStore(),
                     new InMemoryJwksRepository(),
                     new InMemoryClientRepository(
@@ -45,7 +45,7 @@
                 {
                     HttpContext = new DefaultHttpContext
                     {
-                        User = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("sub", "me"),}))
+                        User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "me"), }))
                     }
                 };
 

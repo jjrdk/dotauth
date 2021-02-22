@@ -42,6 +42,7 @@
                     });
             _options = new SimpleAuthOptions
             {
+                AdministratorRoleDefinition = default,
                 JsonWebKeys = sp =>
                 {
                     var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
@@ -56,7 +57,7 @@
                         DefaultStores.Clients(context)),
                 Scopes = sp => new InMemoryScopeRepository(DefaultStores.Scopes()),
                 Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
-                Users = sp => new InMemoryResourceOwnerRepository(DefaultStores.Users()),
+                Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users()),
                 ClaimsIncludedInUserCreation = new[] { "acceptance_test" },
             };
             _context = context;
@@ -102,13 +103,6 @@
         public void Configure(IApplicationBuilder app)
         {
             app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
-        }
-    }
-
-    internal class TestDelegatingHandler : DelegatingHandler
-    {
-        public TestDelegatingHandler(HttpMessageHandler innerHandler) : base(innerHandler)
-        {
         }
     }
 }

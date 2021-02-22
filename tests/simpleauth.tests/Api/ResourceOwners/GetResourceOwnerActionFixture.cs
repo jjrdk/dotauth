@@ -49,7 +49,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
 
         private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
         {
-            _resourceOwnerRepository = new InMemoryResourceOwnerRepository(resourceOwners);
+            _resourceOwnerRepository = new InMemoryResourceOwnerRepository(string.Empty, resourceOwners);
         }
     }
 }

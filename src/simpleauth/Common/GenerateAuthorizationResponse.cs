@@ -256,8 +256,8 @@ namespace SimpleAuth.Common
             }
 
             var salt = Id.Create();
-            var s = $"{clientId}{originUrl}{sessionId}{salt}";
-            var hex = s.ToSha256Hash();
+            var s = $"{clientId}{originUrl}{sessionId}";
+            var hex = s.ToSha256Hash(salt);
 
             return string.Concat(hex.Base64Encode(), "==.", salt);
         }

@@ -47,11 +47,13 @@ namespace SimpleAuth.AuthServer
         {
             _configuration = configuration;
             _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
+            var salt = _configuration["SALT"] ?? string.Empty;
             _options = new SimpleAuthOptions
             {
+                Salt = salt,
                 RedirectToLogin = redirect,
                 ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
-                Users = sp => new InMemoryResourceOwnerRepository(DefaultConfiguration.GetUsers()),
+                Users = sp => new InMemoryResourceOwnerRepository(salt, DefaultConfiguration.GetUsers(salt)),
                 Tickets = sp => new InMemoryTicketStore(),
                 Clients =
                     sp => new InMemoryClientRepository(

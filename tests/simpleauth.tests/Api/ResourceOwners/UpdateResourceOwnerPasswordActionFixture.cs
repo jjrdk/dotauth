@@ -15,7 +15,7 @@
 
         public UpdateResourceOwnerPasswordActionFixture()
         {
-            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(new List<ResourceOwner>());
+            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(string.Empty, new List<ResourceOwner>());
         }
 
         [Fact]

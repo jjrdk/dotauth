@@ -54,11 +54,13 @@ namespace SimpleAuth
         /// Adds the authentication policies.
         /// </summary>
         /// <param name="options">The options.</param>
+        /// <param name="administratorRoleDefinition"></param>
         /// <param name="authenticationSchemes">The authentication schemes.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">options</exception>
         public static AuthorizationOptions AddAuthPolicies(
             this AuthorizationOptions options,
+            (string roleName, string roleClaim) administratorRoleDefinition,
             params string[] authenticationSchemes)
         {
             if (options == null)
@@ -105,14 +107,17 @@ namespace SimpleAuth
                                 return false;
                             }
 
-                            var result = p.User.Claims.Where(c => c.Type == ScopeType)
-                                             .Any(c => c.HasClaimValue("manager"))
-                                //         == true
-                                //&& p.User?.Claims.Where(c => c.Type == "role")
-                                //    .Any(c => c.HasClaimValue("administrator"))
-                                == true;
+                            var result =
+                                p.User.Claims.Where(c => c.Type == ScopeType).Any(c => c.HasClaimValue("manager"));
+                            if (administratorRoleDefinition == default)
+                            {
+                                return result;
+                            }
 
-                            return result;
+                            var (roleName, roleClaim) = administratorRoleDefinition;
+                            return result
+                                      && p.User.Claims.Where(c => c.Type == roleName)
+                                          .Any(c => c.HasClaimValue(roleClaim));
                         });
                 });
 
@@ -251,7 +256,7 @@ namespace SimpleAuth
             var runtimeConfig = GetRuntimeConfig(options);
             services.AddAuthentication();
             var policies = authPolicies.Length > 0 ? authPolicies : new[] { CookieNames.CookieName };
-            services.AddAuthorization(opts => { opts.AddAuthPolicies(policies); });
+            services.AddAuthorization(opts => { opts.AddAuthPolicies(options.AdministratorRoleDefinition, policies); });
 
             var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
                 .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
@@ -271,7 +276,7 @@ namespace SimpleAuth
                 .AddSingleton<IClientStore>(sp => sp.GetRequiredService<IClientRepository>())
                 .AddSingleton(sp => options.Consents?.Invoke(sp) ?? new InMemoryConsentRepository())
                 .AddSingleton<IConsentStore>(sp => sp.GetRequiredService<IConsentRepository>())
-                .AddSingleton(sp => options.Users?.Invoke(sp) ?? new InMemoryResourceOwnerRepository())
+                .AddSingleton(sp => options.Users?.Invoke(sp) ?? new InMemoryResourceOwnerRepository(options.Salt))
                 .AddSingleton<IResourceOwnerStore>(sp => sp.GetRequiredService<IResourceOwnerRepository>())
                 .AddSingleton(sp => options.Scopes?.Invoke(sp) ?? new InMemoryScopeRepository())
                 .AddSingleton<IScopeStore>(sp => sp.GetRequiredService<IScopeRepository>())
@@ -362,6 +367,7 @@ namespace SimpleAuth
         private static RuntimeSettings GetRuntimeConfig(SimpleAuthOptions options)
         {
             return new RuntimeSettings(
+                options.Salt,
                 onResourceOwnerCreated: options.OnResourceOwnerCreated,
                 authorizationCodeValidityPeriod: options.AuthorizationCodeValidityPeriod,
                 claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,

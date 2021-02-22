@@ -13,17 +13,20 @@
     /// <summary>
     /// Defines the in-memory resource owner repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IResourceOwnerRepository" />
+    /// <seealso cref="IResourceOwnerRepository" />
     internal sealed class InMemoryResourceOwnerRepository : IResourceOwnerRepository
     {
+        private readonly string _salt;
         private readonly List<ResourceOwner> _users;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryResourceOwnerRepository"/> class.
         /// </summary>
+        /// <param name="salt">The salt.</param>
         /// <param name="users">The users.</param>
-        public InMemoryResourceOwnerRepository(IReadOnlyCollection<ResourceOwner>? users = null)
+        public InMemoryResourceOwnerRepository(string salt, IReadOnlyCollection<ResourceOwner>? users = null)
         {
+            _salt = salt;
             _users = users == null
                 ? new List<ResourceOwner>()
                 : users.ToList();
@@ -38,7 +41,7 @@
                 return Task.FromResult(false);
             }
 
-            user.Password = password.ToSha256Hash();
+            user.Password = password.ToSha256Hash(_salt);
             return Task.FromResult(true);
         }
 
@@ -102,7 +105,7 @@
                 throw new ArgumentNullException(nameof(password));
             }
 
-            var user = _users.FirstOrDefault(u => u.Subject == id && u.Password == password.ToSha256Hash());
+            var user = _users.FirstOrDefault(u => u.Subject == id && u.Password == password.ToSha256Hash(_salt));
             return Task.FromResult(user);
         }
 
@@ -139,7 +142,7 @@
                 return Task.FromResult(false);
             }
 
-            resourceOwner.Password = resourceOwner.Password.ToSha256Hash();
+            resourceOwner.Password = resourceOwner.Password.ToSha256Hash(_salt);
             resourceOwner.CreateDateTime = DateTimeOffset.UtcNow;
             _users.Add(resourceOwner);
             return Task.FromResult(true);
