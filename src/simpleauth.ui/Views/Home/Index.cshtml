@@ -17,17 +17,7 @@
 </div>
 
 <div class="row">
-    <div class="col s6 m3">
-        <div class="card">
-            <div class="card-image">
-                <img alt="Register Client" src="~/img/manage_resources.png" />
-            </div>
-            <div class="card-action center">
-                @Html.ActionLink("Register Client", "Add", "Clients", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
-            </div>
-        </div>
-    </div>
-    <div class="col s6 m3">
+    <div class="col s6 m4">
         <div class="card">
             <div class="card-image">
                 <img alt="Manage UMA Resources" src="~/img/manage_resources.png" />
@@ -37,7 +27,7 @@
             </div>
         </div>
     </div>
-    <div class="col s6 m3">
+    <div class="col s6 m4">
         <div class="card">
             <div class="card-image">
                 <img alt="Manage Permission Requests" src="~/img/manage_permissions.png" />
@@ -47,7 +37,7 @@
             </div>
         </div>
     </div>
-    <div class="col s6 m3">
+    <div class="col s6 m4">
         <div class="card">
             <div class="card-image">
                 <img alt="Manage Consents" src="~/img/manage_consent.png" />
@@ -62,26 +52,35 @@
 @if (User.Claims.Any(c => c.Type == "role" && c.Value.Contains("administrator")))
 {
     <div class="row">
-        <div class="col s12 m4 offset-m2">
+        <div class="col s6 m4">
             <div class="card">
                 <div class="card-image">
-                    <img alt="Manage Users" src="~/img/manage_users.png" />
+                    <img alt="Register Client" src="~/img/manage_resources.png" />
                 </div>
                 <div class="card-action center">
-                    @Html.ActionLink("Manage Users", "GetAll", "ResourceOwners", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                    @Html.ActionLink("Register Client", "Add", "Clients", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
                 </div>
             </div>
         </div>
-        <div class="col s12 m4">
+        <div class="col s6 m4">
             <div class="card">
                 <div class="card-image">
-                    <img alt="Manage Scopes" src="~/img/manage_scopes.png" />
+                    <img alt="Manage Users" src="~/img/manage_users.png"/>
                 </div>
                 <div class="card-action center">
-                    @Html.ActionLink("Manage Scopes", "GetAll", "Scopes", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                    @Html.ActionLink("Manage Users", "GetAll", "ResourceOwners", null, new {@class = "btn blue darken-3 waves-effect waves-light"})
+                </div>
+            </div>
+        </div>
+        <div class="col s6 m4">
+            <div class="card">
+                <div class="card-image">
+                    <img alt="Manage Scopes" src="~/img/manage_scopes.png"/>
+                </div>
+                <div class="card-action center">
+                    @Html.ActionLink("Manage Scopes", "GetAll", "Scopes", null, new {@class = "btn blue darken-3 waves-effect waves-light"})
                 </div>
             </div>
         </div>
     </div>
-
 }
