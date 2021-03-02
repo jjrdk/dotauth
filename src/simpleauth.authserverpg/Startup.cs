@@ -105,10 +105,10 @@ namespace SimpleAuth.AuthServerPg
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
                     })
                 .AddLogging(
                     log =>
@@ -127,7 +127,7 @@ namespace SimpleAuth.AuthServerPg
                         options.DefaultChallengeScheme = SimpleAuthScheme;
                     })
                 .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-                .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, options => { })
+                .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, _ => { })
                 .AddJwtBearer(
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
@@ -174,8 +174,8 @@ namespace SimpleAuth.AuthServerPg
             {
                 services.AddSimpleAuth(
                         _options,
-                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
-                        assemblyTypes: new[] { GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi) })
+                        new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
+                        assemblyTypes: new[] {GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi)})
                     .AddSmsAuthentication(
                         new AwsSmsClient(
                             new BasicAWSCredentials(
@@ -188,8 +188,8 @@ namespace SimpleAuth.AuthServerPg
             {
                 services.AddSimpleAuth(
                     _options,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
-                    assemblyTypes: new[] { GetType(), typeof(IDefaultUi) });
+                    new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
+                    assemblyTypes: new[] {GetType(), typeof(IDefaultUi)});
             }
         }
 
