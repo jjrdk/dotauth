@@ -14,24 +14,30 @@
 
 namespace SimpleAuth.Services
 {
+    using System;
     using Shared.Models;
     using Shared.Repositories;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using SimpleAuth.Events;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Events.Logging;
 
     internal class UsernamePasswordAuthenticationService : IAuthenticateResourceOwnerService
     {
         private readonly IResourceOwnerStore _resourceOwnerRepository;
         private readonly ILogger<IAuthenticateResourceOwnerService> _logger;
+        private readonly IEventPublisher _eventPublisher;
 
         public UsernamePasswordAuthenticationService(
             IResourceOwnerStore resourceOwnerRepository,
-            ILogger<IAuthenticateResourceOwnerService> logger)
+            ILogger<IAuthenticateResourceOwnerService> logger,
+            IEventPublisher eventPublisher)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _logger = logger;
+            _eventPublisher = eventPublisher;
         }
 
         public string Amr => "pwd";
@@ -49,7 +55,10 @@ namespace SimpleAuth.Services
             }
             else
             {
-                _logger.LogDebug(Strings.LogAuthenticated, resourceOwner.Subject);
+                await _eventPublisher.Publish(
+                        new ResourceOwnerAuthenticated(Id.Create(), resourceOwner.Subject!, DateTimeOffset.UtcNow))
+                    .ConfigureAwait(false);
+                _logger.LogInformation(Strings.LogAuthenticated, resourceOwner.Subject);
             }
 
             return resourceOwner;

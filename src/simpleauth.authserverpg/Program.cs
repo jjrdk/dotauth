@@ -28,8 +28,6 @@ namespace SimpleAuth.AuthServerPg
 #if DEBUG
             IdentityModelEventSource.ShowPII = true;
 #endif
-            Trace.Listeners.Clear();
-            Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
             await new WebHostBuilder().UseKestrel(
                     o =>
                     {
@@ -37,8 +35,6 @@ namespace SimpleAuth.AuthServerPg
                         o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
                     })
                 .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
-                //.PreferHostingUrls(true)
-                //.UseUrls("http://*:8080")
                 .UseStartup<Startup>()
                 .Build()
                 .RunAsync()

@@ -12,10 +12,10 @@
 	<Import Project="../../shared.projinfo" />
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.4" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
 	</ItemGroup>
 
@@ -25,7 +25,6 @@
 		<ProjectReference Include="..\simpleauth.stores.redis\simpleauth.stores.redis.csproj" />
 		<ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
 		<ProjectReference Include="..\simpleauth.ui\simpleauth.ui.csproj" />
-		<ProjectReference Include="..\simpleauth\simpleauth.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

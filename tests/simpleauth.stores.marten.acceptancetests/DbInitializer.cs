@@ -11,7 +11,7 @@
 
     public static class DbInitializer
     {
-        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim Semaphore = new(1);
 
         public static async Task<string> Init(
             string connectionString,
