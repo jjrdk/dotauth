@@ -3,19 +3,26 @@ name: CI
 on: [push]
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest]
-        dotnet: [ '5.0.x' ]
-    steps:
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ matrix.dotnet }}
-      - name: Get the sources
-        uses: actions/checkout@v1
-      - name: Run the build script
-        run: .\build.ps1 --target Tests
-        shell: powershell
+  build-windows:
+   runs-on: windows-latest
+   steps:
+     - name: Setup .NET Core
+       uses: actions/setup-dotnet@v1
+       with:
+         dotnet-version: 5.0.x
+     - name: Get the sources
+       uses: actions/checkout@v1
+     - name: Run the build script
+       run: .\build.ps1 --target Build
+       shell: powershell
+  # build-linux:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Setup .NET Core
+  #       uses: actions/setup-dotnet@v1
+  #       with:
+  #         dotnet-version: 5.0.x
+  #     - name: Get the sources
+  #       uses: actions/checkout@v1
+  #     - name: Run the build script
+  #       run: ./build.sh --target Build
