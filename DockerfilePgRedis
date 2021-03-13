@@ -3,6 +3,8 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:5.0-alpine
 ENV ACCEPT_EULA=Y
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 ENV DOTNET_NOLOGO=true
+RUN addgroup -S simpleauthgroup && adduser -S simpleauthuser -G simpleauthgroup
+USER simpleauthuser
 COPY artifacts/publish/pgredis/ app/
 WORKDIR /app
 ENTRYPOINT ["./simpleauth.authserverpgredis"]
