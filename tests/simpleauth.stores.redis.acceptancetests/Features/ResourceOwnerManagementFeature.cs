@@ -3,9 +3,16 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ResourceOwnerManagementFeature : AuthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public ResourceOwnerManagementFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+
         [Scenario]
         public void SuccessAddResourceOwner()
         {

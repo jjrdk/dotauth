@@ -5,9 +5,16 @@
     using SimpleAuth.Shared.Models;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ClientManagementFeature : AuthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public ClientManagementFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+
         [Scenario]
         public void SuccessfulClientListing()
         {

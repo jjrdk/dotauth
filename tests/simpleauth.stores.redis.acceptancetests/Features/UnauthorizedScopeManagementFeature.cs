@@ -5,9 +5,16 @@
     using SimpleAuth.Shared.Models;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class UnauthorizedScopeManagementFeature : UnauthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public UnauthorizedScopeManagementFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+
         [Scenario]
         public void RejectedScopeLoad()
         {

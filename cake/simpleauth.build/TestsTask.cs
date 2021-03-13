@@ -1,4 +1,4 @@
-namespace simpleauth.build
+namespace SimpleAuth.Build
 {
     using Cake.Common.IO;
     using Cake.Common.Tools.DotNetCore;
@@ -15,6 +15,9 @@ namespace simpleauth.build
         /// <inheritdoc />
         public override void Run(BuildContext context)
         {
+            context.Log.Information("Ensuring test report output");
+            context.EnsureDirectoryExists(context.Environment.WorkingDirectory.Combine("artifacts").Combine("testreports"));
+
             var projects = context.GetFiles("./tests/**/*.tests.csproj");
             projects.Add(new FilePath("./tests/simpleauth.acceptancetests/simpleauth.acceptancetests.csproj"));
 

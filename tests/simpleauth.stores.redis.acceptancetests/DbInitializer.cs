@@ -9,12 +9,14 @@
     using Npgsql;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Stores.Marten;
+    using Xunit.Abstractions;
 
     public static class DbInitializer
     {
         private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1);
 
         public static async Task<string> Init(
+            ITestOutputHelper output,
             string connectionString,
             IEnumerable<Consent> consents = null,
             IEnumerable<ResourceOwner> users = null,
@@ -26,8 +28,20 @@
             try
             {
                 await Semaphore.WaitAsync().ConfigureAwait(false);
-
-                await connection.OpenAsync().ConfigureAwait(false);
+                for (var i = 1; i <= 10; i++)
+                {
+                    try
+                    {
+                        await connection.OpenAsync().ConfigureAwait(false);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        output.WriteLine($"Failed to open connection {i} times");
+                        output.WriteLine(e.Message);
+                        await Task.Delay(TimeSpan.FromMilliseconds(i * 250)).ConfigureAwait(false);
+                    }
+                }
                 var schema = $"test_{DateTime.UtcNow.Ticks}";
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION simpleauth; ";

@@ -5,9 +5,16 @@
     using SimpleAuth.Shared.Models;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ClientManagementFeature : AuthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public ClientManagementFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+
         [Scenario]
         public void SuccessfulClientListing()
         {
@@ -37,11 +44,11 @@
                         ClientId = "test_client",
                         ClientName = "Test Client",
                         Secrets =
-                            new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
-                        AllowedScopes = new[] {"api"},
-                        RedirectionUrls = new[] {new Uri("http://localhost/callback"),},
+                            new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
+                        AllowedScopes = new[] { "api" },
+                        RedirectionUrls = new[] { new Uri("http://localhost/callback"), },
                         ApplicationType = ApplicationTypes.Native,
-                        GrantTypes = new[] {GrantTypes.ClientCredentials},
+                        GrantTypes = new[] { GrantTypes.ClientCredentials },
                         JsonWebKeys = TestKeys.SuperSecretKey.CreateSignatureJwk().ToSet()
                     };
                     var response = await _managerClient.AddClient(client, _grantedToken.AccessToken).ConfigureAwait(false);

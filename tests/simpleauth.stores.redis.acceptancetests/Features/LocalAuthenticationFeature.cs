@@ -6,9 +6,16 @@
     using System.Net.Http;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class LocalAuthenticationFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public LocalAuthenticationFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+   
         [Scenario(DisplayName = "Successful logout")]
         public void SuccessfulLogout()
         {
@@ -75,5 +82,5 @@
 
             "then receives auth cookie".x(() => { Assert.Equal(HttpStatusCode.OK, result.StatusCode); });
         }
-    }
+ }
 }

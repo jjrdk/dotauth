@@ -9,9 +9,16 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class LocalAuthenticationOpenIdFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public LocalAuthenticationOpenIdFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+
         [Scenario(DisplayName = "Invalid open id code")]
         public void InvalidOpenIdCode()
         {
@@ -25,7 +32,7 @@
             "When posting code to openid authentication".x(
                 async () =>
                 {
-                    var authorizationRequest = new AuthorizationRequest {client_id = "client"};
+                    var authorizationRequest = new AuthorizationRequest { client_id = "client" };
                     var code = Uri.EscapeUriString(Protect(dataProtector, authorizationRequest));
                     var request = new HttpRequestMessage(HttpMethod.Get, BaseUrl + $"/authenticate/openid?code={code}");
                     response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);

@@ -10,12 +10,13 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class AddPermissionFeature : AuthorizedManagementFeatureBase
     {
         private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
 
-        public AddPermissionFeature()
+        public AddPermissionFeature(ITestOutputHelper output) : base(output)
         {
             IdentityModelEventSource.ShowPII = true;
         }

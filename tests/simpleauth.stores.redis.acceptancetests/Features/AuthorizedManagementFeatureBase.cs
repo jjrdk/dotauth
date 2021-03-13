@@ -2,10 +2,12 @@
 {
     using System;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Logging;
     using SimpleAuth.Client;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public abstract class AuthorizedManagementFeatureBase
     {
@@ -16,6 +18,13 @@
         protected ManagementClient _managerClient = null;
         protected TokenClient _tokenClient = null;
         protected GrantedTokenResponse _grantedToken = null;
+        private ITestOutputHelper _output;
+
+        public AuthorizedManagementFeatureBase(ITestOutputHelper output)
+        {
+            _output = output;
+            IdentityModelEventSource.ShowPII = true;
+        }
 
         [Background]
         public void Background()
@@ -33,6 +42,7 @@
                     async () =>
                     {
                         _connectionString = await DbInitializer.Init(
+                                _output,
                                 _connectionString,
                                 DefaultStores.Consents(),
                                 DefaultStores.Users(),

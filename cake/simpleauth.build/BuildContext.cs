@@ -1,4 +1,4 @@
-namespace simpleauth.build
+namespace SimpleAuth.Build
 {
     using System.Linq;
     using Cake.Core;

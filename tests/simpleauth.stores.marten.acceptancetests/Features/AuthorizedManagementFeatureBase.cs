@@ -6,9 +6,11 @@
     using System;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public abstract class AuthorizedManagementFeatureBase
     {
+        private readonly ITestOutputHelper _output;
         protected const string BaseUrl = "http://localhost";
         private static readonly Uri WellKnownUmaConfiguration = new Uri(BaseUrl + "/.well-known/openid-configuration");
         private string _connectionString = null;
@@ -16,6 +18,11 @@
         protected ManagementClient _managerClient = null;
         protected TokenClient _tokenClient = null;
         protected GrantedTokenResponse _grantedToken = null;
+
+        public AuthorizedManagementFeatureBase(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         [Background]
         public void Background()
@@ -33,6 +40,7 @@
                     async () =>
                     {
                         _connectionString = await DbInitializer.Init(
+                                _output,
                                 _connectionString,
                                 DefaultStores.Consents(),
                                 DefaultStores.Users(),

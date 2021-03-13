@@ -1,4 +1,4 @@
-namespace simpleauth.build
+namespace SimpleAuth.Build
 {
     using Cake.Common.Tools.GitVersion;
     using Cake.Core.Diagnostics;
@@ -24,13 +24,13 @@ namespace simpleauth.build
                 context.BuildConfiguration = "Release";
             }
 
-            context.InformationalVersion = versionInfo.MajorMinorPatch + "." + versionInfo.CommitsSinceVersionSourcePadded;
-            context.Log.Information("Build configuration: " + context.Configuration);
+            context.InformationalVersion = versionInfo.MajorMinorPatch + "." + (versionInfo.CommitsSinceVersionSource ?? 0);
+            context.Log.Information("Build configuration: " + context.BuildConfiguration);
             context.Log.Information("Branch: " + versionInfo.BranchName);
             context.Log.Information("Version: " + versionInfo.FullSemVer);
             context.Log.Information("Version: " + versionInfo.MajorMinorPatch);
             context.Log.Information("Build version: " + context.BuildVersion);
-            context.Log.Information("CommitsSinceVersionSourcePadded: " + versionInfo.CommitsSinceVersionSourcePadded);
+            context.Log.Information("CommitsSinceVersionSource: " + versionInfo.CommitsSinceVersionSource);
         }
     }
 }

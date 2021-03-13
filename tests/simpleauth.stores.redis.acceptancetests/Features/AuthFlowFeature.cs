@@ -5,17 +5,20 @@
     using Microsoft.IdentityModel.Tokens;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public abstract class AuthFlowFeature
     {
+        private readonly ITestOutputHelper _output;
         protected const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
         protected const string BaseUrl = "http://localhost:5000";
         protected TestServerFixture _fixture = null;
         protected JsonWebKeySet _jwks = null;
         protected string _connectionString = null;
 
-        public AuthFlowFeature()
+        public AuthFlowFeature(ITestOutputHelper output)
         {
+            _output = output;
             IdentityModelEventSource.ShowPII = true;
         }
 
@@ -34,6 +37,7 @@
                     async () =>
                     {
                         _connectionString = await DbInitializer.Init(
+                                _output,
                                _connectionString,
                                DefaultStores.Consents(),
                                DefaultStores.Users(),

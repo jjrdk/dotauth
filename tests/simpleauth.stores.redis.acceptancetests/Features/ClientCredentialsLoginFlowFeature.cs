@@ -13,9 +13,16 @@
     using Xbehave;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ClientCredentialsLoginFlowFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public ClientCredentialsLoginFlowFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+   
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulClientCredentialsAuthentication()
         {
@@ -131,5 +138,5 @@
 
             "then does not have token".x(() => { Assert.Null(result.Content); });
         }
-    }
+ }
 }

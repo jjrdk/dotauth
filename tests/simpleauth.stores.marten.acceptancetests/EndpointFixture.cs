@@ -33,11 +33,13 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
         public EndpointFixture(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
+            _outputHelper.WriteLine("Created endpoint fixture");
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
 
             IdentityModelEventSource.ShowPII = true;
 
             _connectionString = DbInitializer.Init(
+                    outputHelper,
                     configuration["Db:ConnectionString"],
                     DefaultStores.Consents(),
                     DefaultStores.Users(),

@@ -13,6 +13,7 @@
     using Xbehave;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     // In order to secure access to a resource
     // As a resource owner
@@ -23,6 +24,12 @@
     // I want to log in using resource owner flow
     public class ResourceOwnerLoginFlowFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public ResourceOwnerLoginFlowFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulResourceOwnerAuthentication()
         {
@@ -51,11 +58,11 @@
                     {
                         var tokenHandler = new JwtSecurityTokenHandler();
                         var validationParameters = new TokenValidationParameters
-                                                       {
-                                                           IssuerSigningKeys = _jwks.GetSigningKeys(),
-                                                           ValidAudience = "client",
-                                                           ValidIssuer = "https://localhost"
-                                                       };
+                        {
+                            IssuerSigningKeys = _jwks.GetSigningKeys(),
+                            ValidAudience = "client",
+                            ValidIssuer = "https://localhost"
+                        };
                         tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
                         Assert.NotEmpty(((JwtSecurityToken)token).Claims);
@@ -66,14 +73,14 @@
                     {
                         var tokenHandler = new JwtSecurityTokenHandler();
                         var validationParameters = new TokenValidationParameters
-                                                       {
-                                                           IssuerSigningKey = TestKeys.SecretKey.CreateJwk(
+                        {
+                            IssuerSigningKey = TestKeys.SecretKey.CreateJwk(
                                                                JsonWebKeyUseNames.Sig,
                                                                KeyOperations.Sign,
                                                                KeyOperations.Verify),
-                                                           ValidAudience = "client",
-                                                           ValidIssuer = "https://localhost"
-                                                       };
+                            ValidAudience = "client",
+                            ValidIssuer = "https://localhost"
+                        };
                         tokenHandler.ValidateToken(result.IdToken, validationParameters, out _);
                     });
         }

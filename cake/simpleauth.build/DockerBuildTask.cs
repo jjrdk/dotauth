@@ -1,4 +1,4 @@
-namespace simpleauth.build
+namespace SimpleAuth.Build
 {
     using Cake.Common.Tools.DotNetCore;
     using Cake.Common.Tools.DotNetCore.Publish;

@@ -21,6 +21,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
     using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Logging;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class EndpointFixture : IDisposable
     {
@@ -28,13 +29,14 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
         private readonly TestServerFixture _server;
         private readonly string _connectionString;
 
-        public EndpointFixture()
+        public EndpointFixture(ITestOutputHelper output)
         {
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
             IdentityModelEventSource.ShowPII = true;
 
             _connectionString = DbInitializer.Init(
+                    output,
                     configuration["Db:ConnectionString"],
                     DefaultStores.Consents(),
                     DefaultStores.Users(),

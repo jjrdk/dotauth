@@ -8,12 +8,14 @@
     using global::Marten;
     using Npgsql;
     using SimpleAuth.Shared.Models;
+    using Xunit.Abstractions;
 
     public static class DbInitializer
     {
         private static readonly SemaphoreSlim Semaphore = new(1);
 
         public static async Task<string> Init(
+            ITestOutputHelper output,
             string connectionString,
             IEnumerable<Consent> consents = null,
             IEnumerable<ResourceOwner> users = null,
@@ -30,15 +32,18 @@
             try
             {
                 await Semaphore.WaitAsync().ConfigureAwait(false);
-                for (int i = 1; i <= 10; i++)
+                for (var i = 1; i <= 10; i++)
                 {
                     try
                     {
                         await connection.OpenAsync().ConfigureAwait(false);
+                        break;
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(i)).ConfigureAwait(false);
+                        output.WriteLine($"Failed to open connection {i} times");
+                        output.WriteLine(e.Message);
+                        await Task.Delay(TimeSpan.FromMilliseconds(i * 250)).ConfigureAwait(false);
                     }
                 }
                 var schema = $"test_{DateTimeOffset.UtcNow.Ticks}";

@@ -13,12 +13,13 @@
     using Xbehave;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     public class AddPermissionFeature : AuthorizedManagementFeatureBase
     {
         private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
 
-        public AddPermissionFeature()
+        public AddPermissionFeature(ITestOutputHelper output) : base(output)
         {
             IdentityModelEventSource.ShowPII = true;
         }
@@ -60,7 +61,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                            new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -71,7 +72,7 @@
                 {
                     var response = await client.RequestPermission(
                             grantedToken.AccessToken,
-                            requests: new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                            requests: new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
                         .ConfigureAwait(false);
 
                     Assert.False(response.HasError);
@@ -112,7 +113,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
+                            new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -126,8 +127,8 @@
                     var response = await client.RequestPermission(
                             grantedToken.AccessToken,
                             CancellationToken.None,
-                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"write"}},
-                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
+                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
                         .ConfigureAwait(false);
 
                     Assert.False(response.HasError);

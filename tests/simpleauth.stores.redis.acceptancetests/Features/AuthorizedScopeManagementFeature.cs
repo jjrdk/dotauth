@@ -3,9 +3,16 @@
     using SimpleAuth.Shared.Models;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class AuthorizedScopeManagementFeature : AuthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public AuthorizedScopeManagementFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+
         [Scenario]
         public void SuccessScopeLoad()
         {

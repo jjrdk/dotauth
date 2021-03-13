@@ -10,22 +10,23 @@
     using Xbehave;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     public abstract class UnauthorizedManagementFeatureBase
     {
+        private readonly ITestOutputHelper _output;
         private const string BaseUrl = "http://localhost";
-
         private static readonly Uri WellKnownUmaConfiguration = new Uri(BaseUrl + "/.well-known/openid-configuration");
-
         protected TestServerFixture _fixture = null;
-
         protected ManagementClient _managerClient = null;
-
         protected TokenClient _tokenClient = null;
-
         protected GrantedTokenResponse _grantedToken = null;
-
         protected string _connectionString = null;
+
+        public UnauthorizedManagementFeatureBase(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         [Background]
         public void Background()
@@ -41,15 +42,16 @@
 
             "Given a configured database".x(
                     async () =>
-                        {
-                            _connectionString = await DbInitializer.Init(
-                                                        _connectionString,
-                                                        DefaultStores.Consents(),
-                                                        DefaultStores.Users(),
-                                                        DefaultStores.Clients(SharedContext.Instance),
-                                                        DefaultStores.Scopes())
-                                                    .ConfigureAwait(false);
-                        })
+                    {
+                        _connectionString = await DbInitializer.Init(
+                                _output,
+                                _connectionString,
+                                DefaultStores.Consents(),
+                                DefaultStores.Users(),
+                                DefaultStores.Clients(SharedContext.Instance),
+                                DefaultStores.Scopes())
+                            .ConfigureAwait(false);
+                    })
                 .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
 
             "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))

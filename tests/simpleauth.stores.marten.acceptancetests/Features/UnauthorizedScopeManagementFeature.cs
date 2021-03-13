@@ -5,9 +5,16 @@
     using SimpleAuth.Shared.Models;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class UnauthorizedScopeManagementFeature : UnauthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public UnauthorizedScopeManagementFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+   
         [Scenario]
         public void RejectedScopeLoad()
         {
@@ -32,9 +39,9 @@
                 async () =>
                 {
                     scope = await _managerClient.AddScope(
-                        new Scope { Name = "test", Claims = new[] { "openid" } },
-                        _grantedToken.AccessToken)
-                    .ConfigureAwait(false);
+                            new Scope { Name = "test", Claims = new[] { "openid" } },
+                            _grantedToken.AccessToken)
+                        .ConfigureAwait(false);
                 });
 
             "then error is returned".x(() => { Assert.Equal(HttpStatusCode.Forbidden, scope.StatusCode); });

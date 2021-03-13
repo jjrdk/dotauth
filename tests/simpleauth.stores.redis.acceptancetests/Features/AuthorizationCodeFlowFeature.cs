@@ -7,9 +7,16 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class AuthorizationCodeFlowFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public AuthorizationCodeFlowFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+   
         [Scenario]
         public void SuccessfulAuthorizationCodeGrant()
         {
@@ -97,5 +104,5 @@
 
             "then has expected error message".x(() => { Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title); });
         }
-    }
+ }
 }

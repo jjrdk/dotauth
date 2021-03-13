@@ -1,7 +1,8 @@
-namespace simpleauth.build
+namespace SimpleAuth.Build
 {
     using Cake.Common.IO;
     using Cake.Core.Diagnostics;
+    using Cake.Core.IO;
     using Cake.Frosting;
 
     [TaskName("Clean")]
@@ -11,12 +12,12 @@ namespace simpleauth.build
         public override void Run(BuildContext context)
         {
             context.Log.Information("Clean bin folders");
-            context.CleanDirectories( "/src/**/bin/" + context.BuildConfiguration);
-            context.CleanDirectories( "/tests/**/bin/" + context.BuildConfiguration);
+            context.CleanDirectories(new GlobPattern("/src/**/bin/" + context.BuildConfiguration));
+            context.CleanDirectories(new GlobPattern("/tests/**/bin/" + context.BuildConfiguration));
 
             context.Log.Information("Clean obj folders");
-            context.CleanDirectories( "/src/**/obj/" + context.BuildConfiguration);
-            context.CleanDirectories( "/tests/**/obj/" + context.BuildConfiguration);
+            context.CleanDirectories("/src/**/obj/" + context.BuildConfiguration);
+            context.CleanDirectories("/tests/**/obj/" + context.BuildConfiguration);
         }
     }
 }

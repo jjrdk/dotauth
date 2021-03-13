@@ -1,5 +1,6 @@
-namespace simpleauth.build
+namespace SimpleAuth.Build
 {
+    using Cake.Common.IO;
     using Cake.Common.Tools.DotNetCore;
     using Cake.Common.Tools.DotNetCore.Test;
     using Cake.Core;
@@ -18,6 +19,8 @@ namespace simpleauth.build
             try
             {
                 context.Log.Information("Docker compose up");
+                context.Log.Information("Ensuring test report output");
+                context.EnsureDirectoryExists(context.Environment.WorkingDirectory.Combine("artifacts").Combine("testreports"));
 
                 var upsettings = new DockerComposeUpSettings
                 {

@@ -39,6 +39,7 @@
                     async () =>
                     {
                         _connectionString = await DbInitializer.Init(
+                                _outputHelper,
                                _connectionString,
                                DefaultStores.Consents(),
                                DefaultStores.Users(),

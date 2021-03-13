@@ -7,9 +7,16 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class JwksFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public JwksFeature(ITestOutputHelper output)
+            : base(output)
+        {
+        }
+  
         [Scenario]
         public void SuccessfulPermissionCreation()
         {
@@ -77,5 +84,5 @@
                     Assert.NotNull(securityToken);
                 });
         }
-    }
+  }
 }

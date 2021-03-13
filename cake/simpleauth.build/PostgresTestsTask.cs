@@ -1,5 +1,6 @@
-namespace simpleauth.build
+namespace SimpleAuth.Build
 {
+    using Cake.Common.IO;
     using Cake.Common.Tools.DotNetCore;
     using Cake.Common.Tools.DotNetCore.Test;
     using Cake.Core;
@@ -15,14 +16,18 @@ namespace simpleauth.build
         /// <inheritdoc />
         public override void Run(BuildContext context)
         {
+            var dockerComposeFiles = new [] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" };
             try
             {
                 context.Log.Information("Docker compose up");
+                context.Log.Information("Ensuring test report output");
+
+                context.EnsureDirectoryExists(context.Environment.WorkingDirectory.Combine("artifacts").Combine("testreports"));
 
                 var upsettings = new DockerComposeUpSettings
                 {
                     DetachedMode = true,
-                    Files = new string[] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" }
+                    Files = dockerComposeFiles
                 };
                 context.DockerComposeUp(upsettings);
 
@@ -55,7 +60,7 @@ namespace simpleauth.build
 
                 var downsettings = new DockerComposeDownSettings
                 {
-                    Files = new string[] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" }
+                    Files = dockerComposeFiles
                 };
                 context.DockerComposeDown(downsettings);
             }
