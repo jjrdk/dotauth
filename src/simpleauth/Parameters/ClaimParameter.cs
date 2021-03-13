@@ -7,7 +7,7 @@
     {
         public string Name { get; init; } = null!;
 
-        public Dictionary<string, object> Parameters { get; init; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Parameters { get; init; } = new();
 
         public bool Essential => GetBoolean(CoreConstants.StandardClaimParameterValueNames.EssentialName);
 

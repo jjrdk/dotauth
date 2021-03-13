@@ -31,6 +31,9 @@ namespace SimpleAuth.Shared.Requests
         [DataMember(Name = "resource_set_id")]
         public string? ResourceSetId { get; init; }
 
+        /// <summary>
+        /// Gets or sets the requested scopes.
+        /// </summary>
         [DataMember(Name = "scopes")]
         public string[]? Scopes { get; init; }
 

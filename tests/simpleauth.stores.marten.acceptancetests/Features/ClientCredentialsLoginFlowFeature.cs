@@ -9,9 +9,14 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ClientCredentialsLoginFlowFeature : AuthFlowFeature
     {
+        public ClientCredentialsLoginFlowFeature(ITestOutputHelper outputHelper) : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulClientCredentialsAuthentication()
         {

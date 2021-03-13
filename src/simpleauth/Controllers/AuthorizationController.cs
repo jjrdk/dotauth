@@ -50,7 +50,7 @@ namespace SimpleAuth.Controllers
         private readonly AuthorizationActions _authorizationActions;
         private readonly IDataProtector _dataProtector;
         private readonly IAuthenticationService _authenticationService;
-        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
+        private readonly JwtSecurityTokenHandler _handler = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationController"/> class.

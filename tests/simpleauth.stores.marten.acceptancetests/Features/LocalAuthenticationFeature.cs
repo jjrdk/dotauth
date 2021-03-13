@@ -6,9 +6,14 @@
     using System.Net.Http;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class LocalAuthenticationFeature : AuthFlowFeature
     {
+        public LocalAuthenticationFeature(ITestOutputHelper outputHelper) : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Successful logout")]
         public void SuccessfulLogout()
         {

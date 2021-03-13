@@ -366,7 +366,7 @@ namespace SimpleAuth
 
         private static RuntimeSettings GetRuntimeConfig(SimpleAuthOptions options)
         {
-            return new RuntimeSettings(
+            return new(
                 options.Salt,
                 onResourceOwnerCreated: options.OnResourceOwnerCreated,
                 authorizationCodeValidityPeriod: options.AuthorizationCodeValidityPeriod,

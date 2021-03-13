@@ -7,9 +7,14 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class AuthorizationCodeFlowFeature : AuthFlowFeature
     {
+        public AuthorizationCodeFlowFeature(ITestOutputHelper outputHelper) : base(outputHelper)
+        {
+        }
+
         [Scenario]
         public void SuccessfulAuthorizationCodeGrant()
         {
@@ -27,8 +32,8 @@
                 {
                     var response = await client.GetAuthorization(
                             new AuthorizationRequest(
-                                new[] {"api1"},
-                                new[] {ResponseTypeNames.Code},
+                                new[] { "api1" },
+                                new[] { ResponseTypeNames.Code },
                                 "authcode_client",
                                 new Uri("http://localhost:5000/callback"),
                                 "abc"))
@@ -59,8 +64,8 @@
                 {
                     result = await client.GetAuthorization(
                             new AuthorizationRequest(
-                                new[] {"cheese"},
-                                new[] {ResponseTypeNames.Code},
+                                new[] { "cheese" },
+                                new[] { ResponseTypeNames.Code },
                                 "authcode_client",
                                 new Uri("http://localhost:5000/callback"),
                                 "abc"))
@@ -87,8 +92,8 @@
                 {
                     result = await client.GetAuthorization(
                             new AuthorizationRequest(
-                                new[] {"api1"},
-                                new[] {ResponseTypeNames.Code},
+                                new[] { "api1" },
+                                new[] { ResponseTypeNames.Code },
                                 "authcode_client",
                                 new Uri("http://localhost:1000/callback"),
                                 "abc"))

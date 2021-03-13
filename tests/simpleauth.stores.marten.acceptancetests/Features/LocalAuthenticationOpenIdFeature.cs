@@ -9,9 +9,14 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class LocalAuthenticationOpenIdFeature : AuthFlowFeature
     {
+        public LocalAuthenticationOpenIdFeature(ITestOutputHelper outputHelper) : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Invalid open id code")]
         public void InvalidOpenIdCode()
         {

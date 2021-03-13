@@ -215,7 +215,7 @@ namespace SimpleAuth
         }
 
         internal static readonly Dictionary<string[], AuthorizationFlow> MappingResponseTypesToAuthorizationFlows =
-            new Dictionary<string[], AuthorizationFlow>
+            new()
             {
                 {
                     new[]
@@ -266,7 +266,7 @@ namespace SimpleAuth
                 }
             };
 
-        internal static readonly Dictionary<AuthorizationFlow, string> MappingAuthorizationFlowAndResponseModes = new Dictionary<AuthorizationFlow, string>
+        internal static readonly Dictionary<AuthorizationFlow, string> MappingAuthorizationFlowAndResponseModes = new()
         {
             {
                 AuthorizationFlow.AuthorizationCodeFlow, ResponseModes.Query

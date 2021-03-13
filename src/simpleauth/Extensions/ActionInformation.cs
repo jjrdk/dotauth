@@ -64,6 +64,6 @@ namespace SimpleAuth.Extensions
         /// <value>
         /// The route value dictionary.
         /// </value>
-        public RouteValueDictionary RouteValueDictionary { get; set; } = new RouteValueDictionary();
+        public RouteValueDictionary RouteValueDictionary { get; set; } = new();
     }
 }

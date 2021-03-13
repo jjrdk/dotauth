@@ -41,7 +41,7 @@ namespace SimpleAuth.JwtToken
         private readonly IClientStore _clientRepository;
 
         private readonly Dictionary<string, Func<string, string>> _mappingJwsAlgToHashingFunctions =
-            new Dictionary<string, Func<string, string>>
+            new()
             {
                 {SecurityAlgorithms.EcdsaSha256, HashWithSha256},
                 {SecurityAlgorithms.EcdsaSha384, HashWithSha384},

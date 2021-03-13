@@ -403,7 +403,7 @@ namespace SimpleAuth.Controllers
 
         private static PolicyRuleViewModel ToViewModel(PolicyRule rule)
         {
-            return new PolicyRuleViewModel
+            return new()
             {
                 Claims = rule.Claims,
                 ClientIdsAllowed = string.Join(", ", rule.ClientIdsAllowed),
@@ -415,7 +415,7 @@ namespace SimpleAuth.Controllers
 
         private static PolicyRule ToModel(PolicyRuleViewModel viewModel)
         {
-            return new PolicyRule
+            return new()
             {
                 Scopes =
                     viewModel.Scopes == null

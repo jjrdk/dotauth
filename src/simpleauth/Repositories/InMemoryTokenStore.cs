@@ -10,7 +10,7 @@
 
     internal sealed class InMemoryTokenStore : ITokenStore, ICleanable
     {
-        private readonly List<GrantedToken> _tokens = new List<GrantedToken>();
+        private readonly List<GrantedToken> _tokens = new();
 
         public Task<GrantedToken?> GetToken(
             string scopes,

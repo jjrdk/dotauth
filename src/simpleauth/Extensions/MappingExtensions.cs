@@ -30,7 +30,7 @@ namespace SimpleAuth.Extensions
     {
         public static GrantedTokenResponse ToDto(this GrantedToken grantedToken)
         {
-            return new GrantedTokenResponse
+            return new()
             {
                 AccessToken = grantedToken.AccessToken,
                 IdToken = grantedToken.IdToken,
@@ -43,7 +43,7 @@ namespace SimpleAuth.Extensions
 
         public static ResourceOwnerGrantTypeParameter ToResourceOwnerGrantTypeParameter(this TokenRequest request)
         {
-            return new ResourceOwnerGrantTypeParameter
+            return new()
             {
                 UserName = request.username,
                 Password = request.password,
@@ -58,7 +58,7 @@ namespace SimpleAuth.Extensions
 
         public static AuthorizationCodeGrantTypeParameter ToAuthorizationCodeGrantTypeParameter(this TokenRequest request)
         {
-            return new AuthorizationCodeGrantTypeParameter
+            return new()
             {
                 ClientId = request.client_id,
                 ClientSecret = request.client_secret,
@@ -72,7 +72,7 @@ namespace SimpleAuth.Extensions
 
         public static RefreshTokenGrantTypeParameter ToRefreshTokenGrantTypeParameter(this TokenRequest request)
         {
-            return new RefreshTokenGrantTypeParameter
+            return new()
             {
                 RefreshToken = request.refresh_token,
                 ClientAssertion = request.client_assertion,
@@ -84,7 +84,7 @@ namespace SimpleAuth.Extensions
 
         public static ClientCredentialsGrantTypeParameter ToClientCredentialsGrantTypeParameter(this TokenRequest request)
         {
-            return new ClientCredentialsGrantTypeParameter
+            return new()
             {
                 ClientAssertion = request.client_assertion,
                 ClientAssertionType = request.client_assertion_type,
@@ -96,7 +96,7 @@ namespace SimpleAuth.Extensions
 
         public static GetTokenViaTicketIdParameter ToTokenIdGrantTypeParameter(this TokenRequest request)
         {
-            return new GetTokenViaTicketIdParameter
+            return new()
             {
                 ClaimToken = new ClaimTokenParameter
                 {
@@ -115,7 +115,7 @@ namespace SimpleAuth.Extensions
 
         public static IntrospectionParameter ToParameter(this IntrospectionRequest viewModel)
         {
-            return new IntrospectionParameter
+            return new()
             {
                 ClientAssertion = viewModel.client_assertion,
                 ClientAssertionType = viewModel.client_assertion_type,
@@ -128,7 +128,7 @@ namespace SimpleAuth.Extensions
 
         public static RevokeTokenParameter ToParameter(this RevocationRequest revocationRequest)
         {
-            return new RevokeTokenParameter
+            return new()
             {
                 ClientAssertion = revocationRequest.client_assertion,
                 ClientAssertionType = revocationRequest.client_assertion_type,

@@ -2,7 +2,9 @@
 {
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
+    using Newtonsoft.Json;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public class InMemoryJwksRepositoryFixture

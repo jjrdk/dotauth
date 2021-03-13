@@ -30,13 +30,22 @@
             try
             {
                 await Semaphore.WaitAsync().ConfigureAwait(false);
-
-                    await connection.OpenAsync().ConfigureAwait(false);
-                    var schema = $"test_{DateTimeOffset.UtcNow.Ticks}";
-                    var cmd = connection.CreateCommand();
-                    cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION simpleauth; ";
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                    builder.SearchPath = schema;
+                for (int i = 1; i <= 10; i++)
+                {
+                    try
+                    {
+                        await connection.OpenAsync().ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(i)).ConfigureAwait(false);
+                    }
+                }
+                var schema = $"test_{DateTimeOffset.UtcNow.Ticks}";
+                var cmd = connection.CreateCommand();
+                cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION simpleauth; ";
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                builder.SearchPath = schema;
 
                 await Seed(builder.ConnectionString, schema, consents, users, clients, scopes).ConfigureAwait(false);
                 return builder.ConnectionString;

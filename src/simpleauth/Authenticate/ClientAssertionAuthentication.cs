@@ -25,7 +25,7 @@ namespace SimpleAuth.Authenticate
 
     internal class ClientAssertionAuthentication
     {
-        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
+        private readonly JwtSecurityTokenHandler _handler = new();
         private readonly IClientStore _clientRepository;
         private readonly IJwksStore _jwksStore;
 

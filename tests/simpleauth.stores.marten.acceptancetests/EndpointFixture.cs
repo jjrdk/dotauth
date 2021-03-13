@@ -21,15 +21,18 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
     using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class EndpointFixture : IDisposable
     {
+        protected readonly ITestOutputHelper _outputHelper;
         private const string BaseUrl = "http://localhost:5000";
         private readonly TestServerFixture _server;
         private readonly string _connectionString;
 
-        public EndpointFixture()
+        public EndpointFixture(ITestOutputHelper outputHelper)
         {
+            _outputHelper = outputHelper;
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
 
             IdentityModelEventSource.ShowPII = true;
@@ -41,7 +44,8 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
                     DefaultStores.Clients(SharedContext.Instance),
                     DefaultStores.Scopes())
                 .Result;
-
+            _outputHelper.WriteLine("Created connection string");
+            _outputHelper.WriteLine(_connectionString);
             _server = new TestServerFixture(_connectionString, BaseUrl);
         }
 
@@ -70,6 +74,8 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
         {
             GC.SuppressFinalize(this);
             _server?.Dispose();
+            _outputHelper.WriteLine("Dropping db with connection string");
+            _outputHelper.WriteLine(_connectionString);
             DbInitializer.Drop(_connectionString).Wait();
         }
     }

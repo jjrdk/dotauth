@@ -48,7 +48,7 @@ namespace SimpleAuth.ViewModels
         /// <returns></returns>
         public static ResourceSetViewModel FromResourceSet(ResourceSet resourceSet)
         {
-            return new ResourceSetViewModel
+            return new()
             {
                 Id = resourceSet.Id,
                 Icon = resourceSet.IconUri?.AbsoluteUri,

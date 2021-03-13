@@ -54,7 +54,7 @@ namespace SimpleAuth.Results
         /// <returns>Empty action resultKind with redirection</returns>
         public static EndpointResult CreateAnEmptyActionResultWithRedirection(SimpleAuthEndPoints action, params Parameter[] parameters)
         {
-            return new EndpointResult
+            return new()
             {
                 RedirectInstruction = new RedirectInstruction { Action = action, Parameters = parameters },
                 Type = ActionResultType.RedirectToAction
@@ -67,7 +67,7 @@ namespace SimpleAuth.Results
         /// <returns>Empty action resultKind with output</returns>
         public static EndpointResult CreateAnEmptyActionResultWithOutput()
         {
-            return new EndpointResult
+            return new()
             {
                 RedirectInstruction = null,
                 Type = ActionResultType.Output
@@ -80,7 +80,7 @@ namespace SimpleAuth.Results
         /// <returns>Empty action resultKind with no effect</returns>
         public static EndpointResult CreateAnEmptyActionResultWithNoEffect()
         {
-            return new EndpointResult
+            return new()
             {
                 Type = ActionResultType.None
             };
@@ -92,7 +92,7 @@ namespace SimpleAuth.Results
         /// <returns>Empty action with redirection to callbackurl</returns>
         public static EndpointResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl()
         {
-            return new EndpointResult
+            return new()
             {
                 Type = ActionResultType.RedirectToCallBackUrl,
                 RedirectInstruction = new RedirectInstruction()

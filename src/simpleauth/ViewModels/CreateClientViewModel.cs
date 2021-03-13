@@ -33,6 +33,6 @@
         /// <summary>
         /// Gets or sets the grant types.
         /// </summary>
-        public List<string> GrantTypes { get; set; } = new List<string>();
+        public List<string> GrantTypes { get; set; } = new();
     }
 }

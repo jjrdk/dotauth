@@ -20,7 +20,7 @@ namespace SimpleAuth.Extensions
 
     internal static class RedirectInstructionParser
     {
-        private static readonly Dictionary<SimpleAuthEndPoints, ActionInformation> MappingEnumToActionInformations = new Dictionary<SimpleAuthEndPoints, ActionInformation>
+        private static readonly Dictionary<SimpleAuthEndPoints, ActionInformation> MappingEnumToActionInformations = new()
         {
             {
                 SimpleAuthEndPoints.ConsentIndex,

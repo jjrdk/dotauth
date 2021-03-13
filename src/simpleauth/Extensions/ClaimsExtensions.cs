@@ -7,7 +7,7 @@
 
     internal static class ClaimsExtensions
     {
-        private static readonly Dictionary<string, string> MappingToOpenidClaims = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> MappingToOpenidClaims = new()
         {
             { ClaimTypes.NameIdentifier, OpenIdClaimTypes.Subject },
             { ClaimTypes.DateOfBirth, OpenIdClaimTypes.BirthDate },
