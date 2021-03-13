@@ -7,7 +7,7 @@
     /// Defines the client search request.
     /// </summary>
     [DataContract]
-    public class SearchClientsRequest
+    public record SearchClientsRequest
     {
         /// <summary>
         /// Gets or sets the client names.
@@ -16,7 +16,7 @@
         /// The client names.
         /// </value>
         [DataMember(Name = "client_names")]
-        public string[] ClientNames { get; set; } = Array.Empty<string>();
+        public string[] ClientNames { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the client ids.
@@ -25,7 +25,7 @@
         /// The client ids.
         /// </value>
         [DataMember(Name = "client_ids")]
-        public string[] ClientIds { get; set; } = Array.Empty<string>();
+        public string[] ClientIds { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the client types.
@@ -34,7 +34,7 @@
         /// The client types.
         /// </value>
         [DataMember(Name = "client_types")]
-        public string[] ClientTypes { get; set; } = Array.Empty<string>();
+        public string[] ClientTypes { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the start index.
@@ -43,7 +43,7 @@
         /// The start index.
         /// </value>
         [DataMember(Name = "start_index")]
-        public int StartIndex { get; set; }
+        public int StartIndex { get; init; }
 
         /// <summary>
         /// Gets or sets the nb results.
@@ -52,7 +52,7 @@
         /// The nb results.
         /// </value>
         [DataMember(Name = "count")]
-        public int NbResults { get; set; }
+        public int NbResults { get; init; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="SearchClientsRequest"/> is descending.
@@ -61,6 +61,6 @@
         ///   <c>true</c> if descending; otherwise, <c>false</c>.
         /// </value>
         [DataMember(Name = "order")]
-        public bool Descending { get; set; }
+        public bool Descending { get; init; }
     }
 }

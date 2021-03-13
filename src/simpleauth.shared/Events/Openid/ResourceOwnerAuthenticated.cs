@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Events.Openid
     /// Defines the resource owner authenticated event
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class ResourceOwnerAuthenticated : Event
+    public record ResourceOwnerAuthenticated : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceOwnerAuthenticated"/> class.

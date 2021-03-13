@@ -2,12 +2,13 @@
 {
     using System;
     using System.Security.Claims;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the UMA ticket created event.
     /// </summary>
-    public class UmaTicketCreated : Event
+    public record UmaTicketCreated : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UmaTicketCreated"/> class.
@@ -26,7 +27,7 @@
             string ticketId,
             string resourceOwner,
             string requester,
-            Claim[] requesterClaims,
+            ClaimData[] requesterClaims,
             DateTimeOffset timestamp,
             params PermissionRequest[] requests)
             : base(id, timestamp)
@@ -62,7 +63,7 @@
         /// <summary>
         /// Gets the claims identifying the requester.
         /// </summary>
-        public Claim[] RequesterClaims { get; }
+        public ClaimData[] RequesterClaims { get; }
 
         /// <summary>
         /// Gets the permission request.

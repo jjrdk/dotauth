@@ -20,12 +20,12 @@ namespace SimpleAuth.Shared.Responses
     /// <summary>
     /// Defines the OAuth introspection response.
     /// </summary>
-    public class OauthIntrospectionResponse : IntrospectionResponse
+    public record OauthIntrospectionResponse : IntrospectionResponse
     {
         /// <summary>
         /// Gets or sets a list of scopes
         /// </summary>
         [DataMember(Name = "scope")]
-        public string[] Scope { get; set; } = Array.Empty<string>();
+        public string[] Scope { get; init; } = Array.Empty<string>();
     }
 }

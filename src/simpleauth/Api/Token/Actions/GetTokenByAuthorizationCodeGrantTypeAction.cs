@@ -120,12 +120,16 @@ namespace SimpleAuth.Api.Token.Actions
                 // Fill-in the id-token
                 if (grantedToken?.IdTokenPayLoad != null)
                 {
-                    grantedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client.TokenLifetime);
-                    grantedToken.IdToken = await result!.Client.GenerateIdToken(
-                            grantedToken.IdTokenPayLoad,
-                            _jwksStore,
-                            cancellationToken)
-                        .ConfigureAwait(false);
+                    grantedToken = grantedToken with
+                    {
+                        IdTokenPayLoad =
+                        JwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, result.Client.TokenLifetime),
+                        IdToken = await result!.Client.GenerateIdToken(
+                                grantedToken.IdTokenPayLoad,
+                                _jwksStore,
+                                cancellationToken)
+                            .ConfigureAwait(false)
+                    };
                 }
 
                 await _tokenStore.AddToken(grantedToken!, cancellationToken).ConfigureAwait(false);

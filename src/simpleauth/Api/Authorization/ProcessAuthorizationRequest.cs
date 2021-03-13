@@ -139,8 +139,7 @@ namespace SimpleAuth.Api.Authorization
                     var authenticationDateTime = long.Parse(authenticationDateTimeClaim.Value);
                     if (maxAge < currentDateTimeUtc - authenticationDateTime)
                     {
-                        result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
-                        result.RedirectInstruction!.Action = SimpleAuthEndPoints.AuthenticateIndex;
+                        result = EndpointResult.CreateAnEmptyActionResultWithRedirection(SimpleAuthEndPoints.AuthenticateIndex);
                     }
                 }
             }
@@ -260,8 +259,7 @@ namespace SimpleAuth.Api.Authorization
                         authorizationParameter.State);
                 }
 
-                var result = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                return result;
+                return EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
             }
 
             // Redirects to the authentication screen
@@ -269,22 +267,14 @@ namespace SimpleAuth.Api.Authorization
             // The user is not authenticated AND the prompt authorizationParameter is different from "none"
             if (prompts.Contains(PromptParameters.Login))
             {
-                var result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction!.Action = SimpleAuthEndPoints.AuthenticateIndex;
+                var result = EndpointResult.CreateAnEmptyActionResultWithRedirection(SimpleAuthEndPoints.AuthenticateIndex);
                 return result;
             }
 
             if (prompts.Contains(PromptParameters.Consent))
             {
-                var result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
-                if (!endUserIsAuthenticated)
-                {
-                    result.RedirectInstruction!.Action = SimpleAuthEndPoints.AuthenticateIndex;
-                    return result;
-                }
-
-                result.RedirectInstruction!.Action = SimpleAuthEndPoints.ConsentIndex;
-                return result;
+                return EndpointResult.CreateAnEmptyActionResultWithRedirection(
+                    endUserIsAuthenticated ? SimpleAuthEndPoints.ConsentIndex : SimpleAuthEndPoints.AuthenticateIndex);
             }
 
             throw new SimpleAuthExceptionWithState(

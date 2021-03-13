@@ -16,6 +16,7 @@ namespace SimpleAuth.Extensions
 {
     using System.Linq;
     using SimpleAuth.Properties;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.Models;
 
     internal static class ScopeValidator

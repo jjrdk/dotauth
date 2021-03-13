@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Events.Openid
     /// Defines the consent rejected event.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class ConsentRejected : Event
+    public record ConsentRejected : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsentRejected"/> class.

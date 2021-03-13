@@ -6,7 +6,7 @@
     /// Defines the request for resource owner searches.
     /// </summary>
     [DataContract]
-    public class SearchResourceOwnersRequest
+    public record SearchResourceOwnersRequest
     {
         /// <summary>
         /// Gets or sets the subjects.
@@ -15,7 +15,7 @@
         /// The subjects.
         /// </value>
         [DataMember(Name = "subjects")]
-        public string[]? Subjects { get; set; }
+        public string[]? Subjects { get; init; }
 
         /// <summary>
         /// Gets or sets the start index.
@@ -24,7 +24,7 @@
         /// The start index.
         /// </value>
         [DataMember(Name = "start_index")]
-        public int StartIndex { get; set; }
+        public int StartIndex { get; init; }
 
         /// <summary>
         /// Gets or sets the nb results.
@@ -33,7 +33,7 @@
         /// The nb results.
         /// </value>
         [DataMember(Name = "count")]
-        public int NbResults { get; set; }
+        public int NbResults { get; init; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="SearchResourceOwnersRequest"/> is descending.
@@ -42,6 +42,6 @@
         ///   <c>true</c> if descending; otherwise, <c>false</c>.
         /// </value>
         [DataMember(Name = "order")]
-        public bool Descending { get; set; }
+        public bool Descending { get; init; }
     }
 }

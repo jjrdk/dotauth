@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Responses
     /// Defines the add permission response.
     /// </summary>
     [DataContract]
-    public class TicketResponse
+    public record TicketResponse
     {
         /// <summary>
         /// Gets or sets the ticket identifier.
@@ -29,6 +29,6 @@ namespace SimpleAuth.Shared.Responses
         /// The ticket identifier.
         /// </value>
         [DataMember(Name = "ticket_id")]
-        public string TicketId { get; set; } = null!;
+        public string TicketId { get; init; } = null!;
     }
 }

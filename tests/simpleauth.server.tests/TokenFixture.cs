@@ -94,7 +94,7 @@
                 }
             };
             var resource = await _umaClient.AddResource(resourceSet, result.Content.AccessToken).ConfigureAwait(false);
-            resourceSet.Id = resource.Content.Id;
+            resourceSet = resourceSet with { Id = resource.Content.Id };
             await _umaClient.UpdateResource(resourceSet, result.Content.AccessToken).ConfigureAwait(false);
             var ticket = await _umaClient.RequestPermission(
                     "header",

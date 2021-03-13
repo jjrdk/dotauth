@@ -6,7 +6,7 @@
     /// Defines the resource owner authenticated event.
     /// </summary>
     /// <seealso cref="Event" />
-    public class ResourceOwnerAuthenticated : Event
+    public record ResourceOwnerAuthenticated : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceOwnerAdded"/> class.

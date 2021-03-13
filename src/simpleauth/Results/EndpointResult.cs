@@ -17,12 +17,12 @@ namespace SimpleAuth.Results
     /// <summary>
     /// Represents an endpoint resultKind value.
     /// </summary>
-    internal class EndpointResult
+    internal record EndpointResult
     {
         /// <summary>
         /// Gets or sets the type of action resultKind.
         /// </summary>
-        public ActionResultType Type { get; set; }
+        public ActionResultType Type { get; init; }
 
         /// <summary>
         /// Gets or sets the redirect instruction.
@@ -30,7 +30,7 @@ namespace SimpleAuth.Results
         /// <value>
         /// The redirect instruction.
         /// </value>
-        public RedirectInstruction? RedirectInstruction { get; set; }
+        public RedirectInstruction? RedirectInstruction { get; init; }
 
         /// <summary>
         /// Gets or sets the process identifier.
@@ -38,7 +38,7 @@ namespace SimpleAuth.Results
         /// <value>
         /// The process identifier.
         /// </value>
-        public string? ProcessId { get; set; }
+        public string? ProcessId { get; init; }
 
         /// <summary>
         /// Gets or sets the amr.
@@ -46,17 +46,17 @@ namespace SimpleAuth.Results
         /// <value>
         /// The amr.
         /// </value>
-        public string? Amr { get; set; }
+        public string? Amr { get; init; }
 
         /// <summary>
         /// Creates an empty action resultKind with redirection
         /// </summary>
         /// <returns>Empty action resultKind with redirection</returns>
-        public static EndpointResult CreateAnEmptyActionResultWithRedirection()
+        public static EndpointResult CreateAnEmptyActionResultWithRedirection(SimpleAuthEndPoints action, params Parameter[] parameters)
         {
             return new EndpointResult
             {
-                RedirectInstruction = new RedirectInstruction(),
+                RedirectInstruction = new RedirectInstruction { Action = action, Parameters = parameters },
                 Type = ActionResultType.RedirectToAction
             };
         }

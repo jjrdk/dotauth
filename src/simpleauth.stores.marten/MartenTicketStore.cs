@@ -37,7 +37,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<(bool success, Claim[] requester)> ApproveAccess(
+        public async Task<(bool success, ClaimData[] requester)> ApproveAccess(
             string ticketId,
             CancellationToken cancellationToken = default)
         {
@@ -45,12 +45,12 @@
             var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
             if (ticket == null)
             {
-                return (false, Array.Empty<Claim>());
+                return (false, Array.Empty<ClaimData>());
             }
 
             if (!ticket.IsAuthorizedByRo)
             {
-                ticket.IsAuthorizedByRo = true;
+                ticket = ticket with { IsAuthorizedByRo = true };
                 session.Store(ticket);
                 await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }

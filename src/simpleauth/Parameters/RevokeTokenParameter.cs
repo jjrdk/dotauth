@@ -14,10 +14,10 @@
 
 namespace SimpleAuth.Parameters
 {
-    internal class RevokeTokenParameter : GrantTypeParameter
+    internal record RevokeTokenParameter : GrantTypeParameter
     {
-        public string? Token { get; set; }
+        public string? Token { get; init; }
 
-        public string? TokenTypeHint { get; set; }
+        public string? TokenTypeHint { get; init; }
     }
 }

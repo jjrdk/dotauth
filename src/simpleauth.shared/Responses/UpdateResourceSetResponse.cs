@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Responses
     /// Contains the response for resource set updates.
     /// </summary>
     [DataContract]
-    public class UpdateResourceSetResponse
+    public record UpdateResourceSetResponse
     {
         /// <summary>
         /// Gets or sets the identifier.
@@ -29,6 +29,6 @@ namespace SimpleAuth.Shared.Responses
         /// The identifier.
         /// </value>
         [DataMember(Name = "_id")]
-        public string Id { get; set; } = null!;
+        public string Id { get; init; } = null!;
     }
 }

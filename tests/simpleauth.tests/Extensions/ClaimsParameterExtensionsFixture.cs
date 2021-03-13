@@ -24,7 +24,7 @@
             const string notStandardClaimName = "not_standard";
             var claimsParameter = new ClaimsParameter
             {
-                UserInfo = new List<ClaimParameter>
+                UserInfo = new[]
                 {
                     new ClaimParameter {Name = OpenIdClaimTypes.Subject},
                     new ClaimParameter {Name = notStandardClaimName}

@@ -4,6 +4,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the account filter interface.

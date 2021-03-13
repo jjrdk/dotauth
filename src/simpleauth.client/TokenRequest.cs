@@ -23,7 +23,7 @@ namespace SimpleAuth.Client
     /// Defines the token request.
     /// </summary>
     /// <seealso cref="System.Collections.Generic.IEnumerable{KeyValuePair}" />
-    public class TokenRequest : IEnumerable<KeyValuePair<string?, string?>>
+    public record TokenRequest : IEnumerable<KeyValuePair<string?, string?>>
     {
         private readonly Dictionary<string, string> _form;
 

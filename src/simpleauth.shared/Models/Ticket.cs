@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Models
     /// <summary>
     /// Defines the ticket content.
     /// </summary>
-    public class Ticket
+    public record Ticket
     {
         /// <summary>
         /// Gets or sets the identifier.
@@ -28,12 +28,12 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier.
         /// </value>
-        public string Id { get; set; } = null!;
+        public string Id { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the owner of the resource that the ticket relates to.
         /// </summary>
-        public string ResourceOwner { get; set; } = null!;
+        public string ResourceOwner { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is authorized by ro.
@@ -41,7 +41,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         ///   <c>true</c> if this instance is authorized by ro; otherwise, <c>false</c>.
         /// </value>
-        public bool IsAuthorizedByRo { get; set; }
+        public bool IsAuthorizedByRo { get; init; }
 
         /// <summary>
         /// Gets or sets the expiration date time.
@@ -49,7 +49,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The expiration date time.
         /// </value>
-        public DateTimeOffset Expires { get; set; }
+        public DateTimeOffset Expires { get; init; }
 
         /// <summary>
         /// Gets or sets the create date time.
@@ -57,7 +57,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The create date time.
         /// </value>
-        public DateTimeOffset Created { get; set; }
+        public DateTimeOffset Created { get; init; }
 
         /// <summary>
         /// Gets or sets the lines.
@@ -65,11 +65,11 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The lines.
         /// </value>
-        public TicketLine[] Lines { get; set; } = Array.Empty<TicketLine>();
+        public TicketLine[] Lines { get; init; } = Array.Empty<TicketLine>();
 
         /// <summary>
         /// Gets or sets the claims associated with the requester.
         /// </summary>
-        public Claim[] Requester { get; set; } = Array.Empty<Claim>();
+        public ClaimData[] Requester { get; init; } = Array.Empty<ClaimData>();
     }
 }

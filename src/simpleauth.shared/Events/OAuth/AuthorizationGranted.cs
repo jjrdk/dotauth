@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Events.OAuth
     /// Defines the authorization granted event.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class AuthorizationGranted : Event
+    public record AuthorizationGranted : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationGranted"/> class.

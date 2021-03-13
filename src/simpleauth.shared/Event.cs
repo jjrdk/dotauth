@@ -19,7 +19,7 @@ namespace SimpleAuth.Shared
     /// <summary>
     /// Defines the abstract event type.
     /// </summary>
-    public abstract class Event
+    public abstract record Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Event"/> class.

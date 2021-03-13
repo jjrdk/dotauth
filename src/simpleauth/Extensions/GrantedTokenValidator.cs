@@ -20,6 +20,7 @@ namespace SimpleAuth.Extensions
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Properties;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;

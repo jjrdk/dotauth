@@ -91,15 +91,15 @@ namespace SimpleAuth.Policies
                                     Id.Create(),
                                     validTicket.Id,
                                     client.ClientId,
-                                    requester.Claims,
+                                    requester.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                                     DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
 
                         return validationResult;
                     case AuthorizationPolicyResultKind.Authorized:
                         break;
-                    // case AuthorizationPolicyResultKind.NotAuthorized:
-                    // case AuthorizationPolicyResultKind.NeedInfo:
+                    case AuthorizationPolicyResultKind.NotAuthorized:
+                    case AuthorizationPolicyResultKind.NeedInfo:
                     default:
                         {
                             await _eventPublisher.Publish(

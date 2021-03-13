@@ -8,7 +8,7 @@
     /// Defines the update policy response.
     /// </summary>
     [DataContract]
-    public class PolicyRuleResponse
+    public record PolicyRuleResponse
     {
         /// <summary>
         /// Gets or sets the client ids allowed.
@@ -17,7 +17,7 @@
         /// The client ids allowed.
         /// </value>
         [DataMember(Name = "clients")]
-        public string[] ClientIdsAllowed { get; set; } = Array.Empty<string>();
+        public string[] ClientIdsAllowed { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the scopes.
@@ -26,7 +26,7 @@
         /// The scopes.
         /// </value>
         [DataMember(Name = "scopes")]
-        public string[] Scopes { get; set; } = Array.Empty<string>();
+        public string[] Scopes { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the claims.
@@ -35,7 +35,7 @@
         /// The claims.
         /// </value>
         [DataMember(Name = "claims")]
-        public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
+        public ClaimData[] Claims { get; init; } = Array.Empty<ClaimData>();
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is resource owner consent needed.
@@ -44,7 +44,7 @@
         ///   <c>true</c> if this instance is resource owner consent needed; otherwise, <c>false</c>.
         /// </value>
         [DataMember(Name = "consent_needed")]
-        public bool IsResourceOwnerConsentNeeded { get; set; }
+        public bool IsResourceOwnerConsentNeeded { get; init; }
 
         /// <summary>
         /// Gets or sets the script.
@@ -53,7 +53,7 @@
         /// The script.
         /// </value>
         [DataMember(Name = "script")]
-        public string? Script { get; set; }
+        public string? Script { get; init; }
 
         /// <summary>
         /// Gets or sets the open identifier provider.
@@ -62,6 +62,6 @@
         /// The open identifier provider.
         /// </value>
         [DataMember(Name = "provider")]
-        public string? OpenIdProvider { get; set; }
+        public string? OpenIdProvider { get; init; }
     }
 }

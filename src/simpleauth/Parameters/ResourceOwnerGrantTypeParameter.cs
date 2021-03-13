@@ -16,14 +16,14 @@ namespace SimpleAuth.Parameters
 {
     using System;
 
-    internal sealed class ResourceOwnerGrantTypeParameter : GrantTypeParameter
+    internal sealed record ResourceOwnerGrantTypeParameter : GrantTypeParameter
     {
-        public string? Scope { get; set; }
+        public string? Scope { get; init; }
 
-        public string? UserName { get; set; }
+        public string? UserName { get; init; }
 
-        public string? Password { get; set; }
+        public string? Password { get; init; }
 
-        public string[] AmrValues { get; set; } = Array.Empty<string>();
+        public string[] AmrValues { get; init; } = Array.Empty<string>();
     }
 }

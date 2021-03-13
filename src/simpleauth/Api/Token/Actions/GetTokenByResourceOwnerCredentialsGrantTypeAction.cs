@@ -184,7 +184,7 @@ namespace SimpleAuth.Api.Token.Actions
             var idPayload = await _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
                 authorizationParameter,
-                new List<ClaimParameter>(),
+                Array.Empty<ClaimParameter>(),
                 issuerName,
                 cancellationToken).ConfigureAwait(false);
             var generatedToken = await _tokenStore.GetValidGrantedToken(
@@ -210,12 +210,15 @@ namespace SimpleAuth.Api.Token.Actions
                     .ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)
                 {
-                    generatedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client.TokenLifetime);
-                    generatedToken.IdToken = await client.GenerateIdToken(
+                    generatedToken = generatedToken with
+                    {
+                        IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client.TokenLifetime),
+                        IdToken = await client.GenerateIdToken(
                             generatedToken.IdTokenPayLoad,
                             _jwksStore,
                             cancellationToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false)
+                    };
                 }
 
                 await _tokenStore.AddToken(generatedToken, cancellationToken).ConfigureAwait(false);

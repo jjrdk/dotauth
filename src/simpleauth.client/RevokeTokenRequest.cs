@@ -23,7 +23,7 @@ namespace SimpleAuth.Client
     /// Defines the revoke token request.
     /// </summary>
     /// <seealso cref="IEnumerable{KeyValuePair}" />
-    public class RevokeTokenRequest : IEnumerable<KeyValuePair<string?, string?>>
+    public record RevokeTokenRequest : IEnumerable<KeyValuePair<string?, string?>>
     {
         private readonly Dictionary<string, string> _form;
 

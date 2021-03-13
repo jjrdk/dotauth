@@ -2,13 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the authorization request submitted event.
     /// </summary>
     /// <seealso cref="Event" />
-    public class AuthorizationRequestSubmitted : UmaTicketEvent
+    public record AuthorizationRequestSubmitted : UmaTicketEvent
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRequestSubmitted"/> class.
@@ -18,7 +18,7 @@
         /// <param name="requester"></param>
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="clientId"></param>
-        public AuthorizationRequestSubmitted(string id, string ticketId, string clientId, IEnumerable<Claim> requester, DateTimeOffset timestamp)
+        public AuthorizationRequestSubmitted(string id, string ticketId, string clientId, IEnumerable<ClaimData> requester, DateTimeOffset timestamp)
             : base(id, ticketId, clientId, requester, timestamp)
         {
         }

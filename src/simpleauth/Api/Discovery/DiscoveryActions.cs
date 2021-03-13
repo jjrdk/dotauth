@@ -38,7 +38,6 @@ namespace SimpleAuth.Api.Discovery
 
         public async Task<DiscoveryInformation> CreateDiscoveryInformation(string issuer, CancellationToken cancellationToken)
         {
-            var result = new DiscoveryInformation();
             issuer = issuer.TrimEnd('/');
             // Returns only the exposed scopes
             var scopes = await _scopeRepository.GetAll(cancellationToken).ConfigureAwait(false);
@@ -48,43 +47,45 @@ namespace SimpleAuth.Api.Discovery
 
             var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported.SupportedAuthorizationFlows);
 
-            result.ClaimsParameterSupported = true;
-            result.RequestParameterSupported = true;
-            result.RequestUriParameterSupported = true;
-            result.RequireRequestUriRegistration = true;
-            result.ClaimsSupported = Array.Empty<string>();
-            result.ScopesSupported = scopeSupportedNames;
-            result.ResponseTypesSupported = responseTypesSupported;
-            result.ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes.ToArray();
-            result.GrantTypesSupported = GrantTypes.All;
-            result.SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray();
-            result.TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods;
-            result.IdTokenSigningAlgValuesSupported = new[] { SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256 };
-            result.IdTokenEncryptionEncValuesSupported = Array.Empty<string>();
-            result.ClaimsLocalesSupported = new[] { "en" };
-            result.UiLocalesSupported = new[] { "en" };
-            result.Version = _version;
+            var result = new DiscoveryInformation
+            {
+                ClaimsParameterSupported = true,
+                RequestParameterSupported = true,
+                RequestUriParameterSupported = true,
+                RequireRequestUriRegistration = true,
+                ClaimsSupported = Array.Empty<string>(),
+                ScopesSupported = scopeSupportedNames,
+                ResponseTypesSupported = responseTypesSupported,
+                ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes.ToArray(),
+                GrantTypesSupported = GrantTypes.All,
+                SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray(),
+                TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods,
+                IdTokenSigningAlgValuesSupported = new[] {SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256},
+                IdTokenEncryptionEncValuesSupported = Array.Empty<string>(),
+                ClaimsLocalesSupported = new[] {"en"},
+                UiLocalesSupported = new[] {"en"},
+                Version = _version,
 
-            // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
+                // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
 
-            result.Issuer = new Uri(issuer);
-            result.AuthorizationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Authorization);
-            result.TokenEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Token);
-            result.UserInfoEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.UserInfo);
-            result.JwksUri = new Uri(issuer + "/" + CoreConstants.EndPoints.Jwks);
-            result.RegistrationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Clients);
-            result.RevocationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Revocation);
-            result.IntrospectionEndpoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Introspection);
-            result.Jws = new Uri(issuer + "/" + CoreConstants.EndPoints.Jws);
-            result.Jwe = new Uri(issuer + "/" + CoreConstants.EndPoints.Jwe);
-            result.Clients = new Uri(issuer + "/" + CoreConstants.EndPoints.Clients);
-            result.Scopes = new Uri(issuer + "/" + CoreConstants.EndPoints.Scopes);
-            result.ResourceOwners = new Uri(issuer + "/" + CoreConstants.EndPoints.ResourceOwners);
-            result.Manage = new Uri(issuer + "/" + CoreConstants.EndPoints.Manage);
-            result.Claims = new Uri(issuer + "/" + CoreConstants.EndPoints.Claims);
-            result.CheckSessionEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.CheckSession);
-            result.EndSessionEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.EndSession);
-
+                Issuer = new Uri(issuer),
+                AuthorizationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Authorization),
+                TokenEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Token),
+                UserInfoEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.UserInfo),
+                JwksUri = new Uri(issuer + "/" + CoreConstants.EndPoints.Jwks),
+                RegistrationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Clients),
+                RevocationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Revocation),
+                IntrospectionEndpoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Introspection),
+                Jws = new Uri(issuer + "/" + CoreConstants.EndPoints.Jws),
+                Jwe = new Uri(issuer + "/" + CoreConstants.EndPoints.Jwe),
+                Clients = new Uri(issuer + "/" + CoreConstants.EndPoints.Clients),
+                Scopes = new Uri(issuer + "/" + CoreConstants.EndPoints.Scopes),
+                ResourceOwners = new Uri(issuer + "/" + CoreConstants.EndPoints.ResourceOwners),
+                Manage = new Uri(issuer + "/" + CoreConstants.EndPoints.Manage),
+                Claims = new Uri(issuer + "/" + CoreConstants.EndPoints.Claims),
+                CheckSessionEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.CheckSession),
+                EndSessionEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.EndSession),
+            };
             return result;
         }
 

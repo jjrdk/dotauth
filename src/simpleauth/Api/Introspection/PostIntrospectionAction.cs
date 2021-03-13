@@ -49,16 +49,16 @@ namespace SimpleAuth.Api.Introspection
             // 4. Trying to fetch the information about the access_token  || refresh_token
             var introspectionParameterToken = introspectionParameter.Token;
             var grantedToken = tokenTypeHint switch
-                {
-                    _ when introspectionParameterToken == null => null,
-                    CoreConstants.StandardTokenTypeHintNames.AccessToken => await _tokenStore
-                        .GetAccessToken(introspectionParameterToken, cancellationToken)
-                        .ConfigureAwait(false),
-                    CoreConstants.StandardTokenTypeHintNames.RefreshToken => await _tokenStore
-                        .GetRefreshToken(introspectionParameterToken, cancellationToken)
-                        .ConfigureAwait(false),
-                    _ => null
-                };
+            {
+                _ when introspectionParameterToken == null => null,
+                CoreConstants.StandardTokenTypeHintNames.AccessToken => await _tokenStore
+                    .GetAccessToken(introspectionParameterToken, cancellationToken)
+                    .ConfigureAwait(false),
+                CoreConstants.StandardTokenTypeHintNames.RefreshToken => await _tokenStore
+                    .GetRefreshToken(introspectionParameterToken, cancellationToken)
+                    .ConfigureAwait(false),
+                _ => null
+            };
 
             // 5. Return an error if there's no granted token
             if (grantedToken == null)
@@ -86,7 +86,7 @@ namespace SimpleAuth.Api.Introspection
                     grantedToken.IdTokenPayLoad?.GetClaimValue(OpenIdClaimTypes.Subject);
                 if (!string.IsNullOrWhiteSpace(subject))
                 {
-                    result.Subject = subject;
+                    result = result with { Subject = subject };
                 }
             }
 
@@ -99,23 +99,26 @@ namespace SimpleAuth.Api.Introspection
                 var userName =
                     grantedToken.IdTokenPayLoad.GetClaimValue(OpenIdClaimTypes.Name);
 
-                result.Audience = string.Join(" ", audiencesArr);
-                result.IssuedAt = grantedToken.IdTokenPayLoad.Iat ?? 0;
-                result.Issuer = grantedToken.IdTokenPayLoad.Iss;
+                result = result with
+                {
+                    Audience = string.Join(" ", audiencesArr),
+                    IssuedAt = grantedToken.IdTokenPayLoad.Iat ?? 0,
+                    Issuer = grantedToken.IdTokenPayLoad.Iss
+                };
                 if (!string.IsNullOrWhiteSpace(subject))
                 {
-                    result.Subject = subject;
+                    result = result with { Subject = subject };
                 }
 
                 if (!string.IsNullOrWhiteSpace(userName))
                 {
-                    result.UserName = userName;
+                    result = result with { UserName = userName };
                 }
             }
 
             // 8. Based on the expiration date disable OR enable the introspection resultKind
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
-            result.Active = DateTimeOffset.UtcNow < expirationDateTime;
+            result = result with { Active = DateTimeOffset.UtcNow < expirationDateTime };
 
             return new GenericResponse<OauthIntrospectionResponse>
             {

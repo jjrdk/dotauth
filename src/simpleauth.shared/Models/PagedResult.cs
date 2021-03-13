@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -16,7 +17,7 @@
         /// The total results.
         /// </value>
         [DataMember(Name = "count")]
-        public long TotalResults { get; set; }
+        public long TotalResults { get; init; }
 
         /// <summary>
         /// Gets or sets the start index.
@@ -25,7 +26,7 @@
         /// The start index.
         /// </value>
         [DataMember(Name = "start_index")]
-        public int StartIndex { get; set; }
+        public int StartIndex { get; init; }
 
         /// <summary>
         /// Gets or sets the content.
@@ -34,6 +35,6 @@
         /// The content.
         /// </value>
         [DataMember(Name = "content")]
-        public T[] Content { get; set; } = default!;
+        public T[] Content { get; init; } = Array.Empty<T>();
     }
 }

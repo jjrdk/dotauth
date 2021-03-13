@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Responses
     /// Defines the update scope response.
     /// </summary>
     [DataContract]
-    public class UpdateScopeResponse
+    public record UpdateScopeResponse
     {
         /// <summary>
         /// Gets or sets the identifier.
@@ -29,6 +29,6 @@ namespace SimpleAuth.Shared.Responses
         /// The identifier.
         /// </value>
         [DataMember(Name = "id")]
-        public string Id { get; set; } = null!;
+        public string Id { get; init; } = null!;
     }
 }

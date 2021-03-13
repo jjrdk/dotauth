@@ -6,13 +6,13 @@
     /// <summary>
     /// Defines the owned resource set.
     /// </summary>
-    public class OwnedResourceSet : ResourceSet
+    public record OwnedResourceSet : ResourceSet
     {
         /// <summary>
         /// Gets or sets the resource set owner.
         /// </summary>
         [DataMember(Name = "owner")]
-        public string Owner { get; set; } = null!;
+        public string Owner { get; init; } = null!;
 
         /// <summary>
         /// Returns the resource set base.

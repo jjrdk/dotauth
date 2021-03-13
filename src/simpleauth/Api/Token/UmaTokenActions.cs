@@ -169,7 +169,7 @@
                         ticket.Id,
                         client.ClientId,
                         ticket.ResourceOwner,
-                        authorizationResult.Principal.Claims,
+                        authorizationResult.Principal.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow)).ConfigureAwait(false);
                 return new GenericResponse<GrantedToken>
                 {
@@ -190,7 +190,7 @@
                             Id.Create(),
                             parameter.Ticket,
                             parameter.ClientId ?? string.Empty,
-                            authorizationResult.Principal.Claims,
+                            authorizationResult.Principal.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 return new GenericResponse<GrantedToken>
@@ -210,7 +210,7 @@
                         Id.Create(),
                         parameter.Ticket,
                         parameter.ClientId ?? string.Empty,
-                        authorizationResult.Principal.Claims,
+                        authorizationResult.Principal.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return new GenericResponse<GrantedToken>

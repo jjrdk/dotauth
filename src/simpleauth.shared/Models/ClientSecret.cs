@@ -6,7 +6,7 @@
     /// Defines the client secret.
     /// </summary>
     [DataContract]
-    public class ClientSecret
+    public record ClientSecret
     {
         /// <summary>
         /// Gets or sets the type.
@@ -15,7 +15,7 @@
         /// The type.
         /// </value>
         [DataMember(Name = "type")]
-        public ClientSecretTypes Type { get; set; }
+        public ClientSecretTypes Type { get; init; }
 
         /// <summary>
         /// Gets or sets the value.
@@ -24,6 +24,6 @@
         /// The value.
         /// </value>
         [DataMember(Name = "value")]
-        public string Value { get; set; } = null!;
+        public string Value { get; init; } = null!;
     }
 }

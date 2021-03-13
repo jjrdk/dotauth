@@ -83,14 +83,14 @@ namespace SimpleAuth.Api.Authorization
 
             if (result.Type == ActionResultType.RedirectToCallBackUrl)
             {
-                await _generateAuthorizationResponse.Generate(
-                        result,
-                        authorizationParameter,
-                        principal,
-                        client,
-                        issuerName,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                result = await _generateAuthorizationResponse.Generate(
+                             result,
+                             authorizationParameter,
+                             principal,
+                             client,
+                             issuerName,
+                             CancellationToken.None)
+                         .ConfigureAwait(false);
             }
 
             return result;

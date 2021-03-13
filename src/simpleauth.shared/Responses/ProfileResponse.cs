@@ -8,7 +8,7 @@
     /// Defines the profile response.
     /// </summary>
     [DataContract]
-    public class ProfileResponse
+    public record ProfileResponse
     {
         /// <summary>
         /// Gets or sets the user identifier.
@@ -17,7 +17,7 @@
         /// The user identifier.
         /// </value>
         [DataMember(Name = "user_id")]
-        public string UserId { get; set; } = null!;
+        public string UserId { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the issuer.
@@ -26,7 +26,7 @@
         /// The issuer.
         /// </value>
         [DataMember(Name = "issuer")]
-        public string Issuer { get; set; } = null!;
+        public string Issuer { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the create date time.
@@ -35,7 +35,7 @@
         /// The create date time.
         /// </value>
         [DataMember(Name = "create_datetime")]
-        public DateTimeOffset CreateDateTime { get; set; }
+        public DateTimeOffset CreateDateTime { get; init; }
 
         /// <summary>
         /// Gets or sets the update time.
@@ -44,6 +44,6 @@
         /// The update time.
         /// </value>
         [DataMember(Name = "update_datetime")]
-        public DateTimeOffset UpdateTime { get; set; }
+        public DateTimeOffset UpdateTime { get; init; }
     }
 }

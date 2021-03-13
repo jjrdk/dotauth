@@ -58,7 +58,7 @@ namespace SimpleAuth.Common
             _jwksStore = jwksStore;
         }
 
-        public async Task Generate(
+        public async Task<EndpointResult> Generate(
             EndpointResult endpointResult,
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,
@@ -85,28 +85,31 @@ namespace SimpleAuth.Common
                 allowedTokenScopes = string.Join(' ', authorizationParameter.Scope.ParseScopes());
 
                 grantedToken = await _tokenStore.GetValidGrantedToken(
-                        _jwksStore,
-                        string.Join(' ', allowedTokenScopes),
-                        client.ClientId,
-                        cancellationToken,
-                        idTokenJwsPayload: userInformationPayload,
-                        userInfoJwsPayload: idTokenPayload)
-                    .ConfigureAwait(false)
+                                       _jwksStore,
+                                       string.Join(' ', allowedTokenScopes),
+                                       client.ClientId,
+                                       cancellationToken,
+                                       idTokenJwsPayload: userInformationPayload,
+                                       userInfoJwsPayload: idTokenPayload)
+                                   .ConfigureAwait(false)
                                ?? await client.GenerateToken(
-                        _jwksStore,
-                        allowedTokenScopes,
-                        issuerName,
-                        userInformationPayload,
-                        idTokenPayload,
-                        cancellationToken: cancellationToken,
-                        claimsPrincipal.Claims
-                            .Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
-                            .ToArray())
-                    .ConfigureAwait(false);
+                                       _jwksStore,
+                                       allowedTokenScopes,
+                                       issuerName,
+                                       userInformationPayload,
+                                       idTokenPayload,
+                                       cancellationToken: cancellationToken,
+                                       claimsPrincipal.Claims.Where(
+                                               c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                                           .ToArray())
+                                   .ConfigureAwait(false);
 
-                endpointResult.RedirectInstruction!.AddParameter(
-                    StandardAuthorizationResponseNames.AccessTokenName,
-                    grantedToken.AccessToken);
+                endpointResult = endpointResult with
+                {
+                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
+                        StandardAuthorizationResponseNames.AccessTokenName,
+                        grantedToken.AccessToken)
+                };
             }
 
             AuthorizationCode? authorizationCode = null;
@@ -140,9 +143,12 @@ namespace SimpleAuth.Common
                         UserInfoPayLoad = userInformationPayload
                     };
 
-                    endpointResult.RedirectInstruction!.AddParameter(
+                    endpointResult = endpointResult with
+                    {
+                        RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
                         StandardAuthorizationResponseNames.AuthorizationCodeName,
-                        authorizationCode.Code);
+                        authorizationCode.Code)
+                    };
                 }
             }
 
@@ -177,8 +183,11 @@ namespace SimpleAuth.Common
             {
                 if (client.RequirePkce)
                 {
-                    authorizationCode.CodeChallenge = authorizationParameter.CodeChallenge ?? string.Empty;
-                    authorizationCode.CodeChallengeMethod = authorizationParameter.CodeChallengeMethod ?? string.Empty;
+                    authorizationCode = authorizationCode with
+                    {
+                        CodeChallenge = authorizationParameter.CodeChallenge ?? string.Empty,
+                        CodeChallengeMethod = authorizationParameter.CodeChallengeMethod ?? string.Empty
+                    };
                 }
 
                 await _authorizationCodeStore.Add(authorizationCode, cancellationToken).ConfigureAwait(false);
@@ -199,16 +208,22 @@ namespace SimpleAuth.Common
                         _jwksStore,
                         cancellationToken)
                     .ConfigureAwait(false);
-                endpointResult.RedirectInstruction!.AddParameter(
-                    StandardAuthorizationResponseNames.IdTokenName,
-                    idToken);
+                endpointResult = endpointResult with
+                {
+                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
+                        StandardAuthorizationResponseNames.IdTokenName,
+                        idToken)
+                };
             }
 
             if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
             {
-                endpointResult.RedirectInstruction!.AddParameter(
-                    StandardAuthorizationResponseNames.StateName,
-                    authorizationParameter.State);
+                endpointResult = endpointResult with
+                {
+                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
+                        StandardAuthorizationResponseNames.StateName,
+                        authorizationParameter.State)
+                };
             }
 
             var sessionState = GetSessionState(
@@ -217,18 +232,26 @@ namespace SimpleAuth.Common
                 authorizationParameter.SessionId);
             if (sessionState != null)
             {
-                endpointResult.RedirectInstruction!.AddParameter(
+                endpointResult = endpointResult with
+                {
+                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
                     StandardAuthorizationResponseNames.SessionState,
-                    sessionState);
+                    sessionState)
+                };
             }
 
             if (authorizationParameter.ResponseMode == ResponseModes.FormPost)
             {
-                endpointResult.Type = ActionResultType.RedirectToAction;
-                endpointResult.RedirectInstruction!.Action = SimpleAuthEndPoints.FormIndex;
-                endpointResult.RedirectInstruction.AddParameter(
-                    "redirect_uri",
-                    authorizationParameter.RedirectUrl?.AbsoluteUri);
+                endpointResult = endpointResult with
+                {
+                    Type = ActionResultType.RedirectToAction,
+                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
+                            "redirect_uri",
+                            authorizationParameter.RedirectUrl?.AbsoluteUri) with
+                    {
+                        Action = SimpleAuthEndPoints.FormIndex
+                    }
+                };
             }
 
             // Set the response mode
@@ -242,8 +265,10 @@ namespace SimpleAuth.Common
                     responseMode = CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
                 }
 
-                endpointResult.RedirectInstruction!.ResponseMode = responseMode;
+                endpointResult = endpointResult with { RedirectInstruction = endpointResult.RedirectInstruction! with { ResponseMode = responseMode } };
             }
+
+            return endpointResult;
         }
 
         private static string? GetSessionState(string? clientId, string? originUrl, string? sessionId)

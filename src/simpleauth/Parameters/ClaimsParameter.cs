@@ -1,11 +1,11 @@
 ﻿namespace SimpleAuth.Parameters
 {
-    using System.Collections.Generic;
+    using System;
 
-    internal class ClaimsParameter
+    internal record ClaimsParameter
     {
-        public List<ClaimParameter> UserInfo { get; set; } = new List<ClaimParameter>();
+        public ClaimParameter[] UserInfo { get; init; } = Array.Empty<ClaimParameter>();
 
-        public List<ClaimParameter> IdToken { get; set; } = new List<ClaimParameter>();
+        public ClaimParameter[] IdToken { get; init; } = Array.Empty<ClaimParameter>();
     }
 }

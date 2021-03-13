@@ -97,9 +97,8 @@ namespace SimpleAuth.WebSite.Consent.Actions
             // If there's already a consent then redirect to the callback
             if (assignedConsent != null)
             {
-                endpointResult = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                await _generateAuthorizationResponse.Generate(
-                        endpointResult,
+                endpointResult = await _generateAuthorizationResponse.Generate(
+                        EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl(),
                         authorizationParameter,
                         claimsPrincipal,
                         client,
@@ -114,7 +113,7 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
-                endpointResult.RedirectInstruction!.ResponseMode = responseMode;
+                endpointResult = endpointResult with {RedirectInstruction = endpointResult.RedirectInstruction! with {ResponseMode = responseMode}};
                 return new DisplayContentResult(endpointResult);
             }
 

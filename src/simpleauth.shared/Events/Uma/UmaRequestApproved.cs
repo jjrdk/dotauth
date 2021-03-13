@@ -2,15 +2,16 @@
 {
     using System;
     using System.Security.Claims;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the UMA request approved event.
     /// </summary>
     /// <seealso cref="UmaTicketEvent" />
-    public class UmaRequestApproved : UmaTicketEvent
+    public record UmaRequestApproved : UmaTicketEvent
     {
         /// <inheritdoc />
-        public UmaRequestApproved(string id, string ticketid, string clientId, string approverSubject, Claim[] requesterClaims, DateTimeOffset timestamp)
+        public UmaRequestApproved(string id, string ticketid, string clientId, string approverSubject, ClaimData[] requesterClaims, DateTimeOffset timestamp)
             : base(id, ticketid, clientId, null, timestamp)
         {
             ApproverSubject = approverSubject;
@@ -25,6 +26,6 @@
         /// <summary>
         /// Gets the requester's id claims (if any).
         /// </summary>
-        public Claim[] RequesterClaims { get; }
+        public ClaimData[] RequesterClaims { get; }
     }
 }

@@ -178,7 +178,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<PagedResponse<Client>>> SearchClients(
+        public Task<GenericResponse<PagedResult<Client>>> SearchClients(
             SearchClientsRequest searchClientParameter,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -191,7 +191,7 @@ namespace SimpleAuth.Client
                 RequestUri = new Uri(_discoveryInformation.Clients + "/.search"),
                 Content = body
             };
-            return GetResult<PagedResponse<Client>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+            return GetResult<PagedResult<Client>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -413,7 +413,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<PagedResponse<ResourceOwner>>> SearchResourceOwners(
+        public Task<GenericResponse<PagedResult<ResourceOwner>>> SearchResourceOwners(
             SearchResourceOwnersRequest searchResourceOwnersRequest,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -427,7 +427,7 @@ namespace SimpleAuth.Client
                 Content = body
             };
 
-            return GetResult<PagedResponse<ResourceOwner>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+            return GetResult<PagedResult<ResourceOwner>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
         }
     }
 }

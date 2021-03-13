@@ -14,11 +14,11 @@
 
 namespace SimpleAuth.Parameters
 {
-    internal class ClientCredentialsGrantTypeParameter : GrantTypeParameter
+    internal record ClientCredentialsGrantTypeParameter : GrantTypeParameter
     {
         /// <summary>
         /// Gets or sets the scope
         /// </summary>
-        public string? Scope { get; set; }
+        public string? Scope { get; init; }
     }
 }

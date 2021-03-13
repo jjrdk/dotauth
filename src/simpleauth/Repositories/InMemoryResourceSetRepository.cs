@@ -154,11 +154,17 @@
                 return Task.FromResult(false);
             }
 
-            rec.Resource.AuthorizationPolicies = resourceSet.AuthorizationPolicies;
-            rec.Resource.IconUri = resourceSet.IconUri;
-            rec.Resource.Name = resourceSet.Name;
-            rec.Resource.Scopes = resourceSet.Scopes;
-            rec.Resource.Type = resourceSet.Type;
+            _resources.Remove(rec);
+            var res = rec.Resource with
+            {
+                AuthorizationPolicies = resourceSet.AuthorizationPolicies,
+                IconUri = resourceSet.IconUri,
+                Name = resourceSet.Name,
+                Scopes = resourceSet.Scopes,
+                Type = resourceSet.Type
+            };
+            rec = new OwnedResourceSet(rec.Owner, res);
+            _resources.Add(rec);
             return Task.FromResult(true);
         }
 

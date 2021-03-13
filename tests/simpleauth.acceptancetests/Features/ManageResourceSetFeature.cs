@@ -92,7 +92,7 @@
             "And can update resource policies".x(
                 async () =>
                 {
-                    policyRules.Rules[0].IsResourceOwnerConsentNeeded = false;
+                    policyRules.Rules[0] = policyRules.Rules[0] with { IsResourceOwnerConsentNeeded = false };
 
                     var msg = new HttpRequestMessage
                     {

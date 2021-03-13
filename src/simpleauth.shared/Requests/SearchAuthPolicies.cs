@@ -7,7 +7,7 @@
     /// Defines the search auth policy query.
     /// </summary>
     [DataContract]
-    public class SearchAuthPolicies
+    public record SearchAuthPolicies
     {
         /// <summary>
         /// Gets or sets the ids.
@@ -16,7 +16,7 @@
         /// The ids.
         /// </value>
         [DataMember(Name = "ids")]
-        public string[] Ids { get; set; } = Array.Empty<string>();
+        public string[] Ids { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the start index.
@@ -25,7 +25,7 @@
         /// The start index.
         /// </value>
         [DataMember(Name = "start_index")]
-        public int StartIndex { get; set; }
+        public int StartIndex { get; init; }
 
         /// <summary>
         /// Gets or sets the total results.
@@ -34,6 +34,6 @@
         /// The total results.
         /// </value>
         [DataMember(Name = "count")]
-        public int TotalResults { get; set; }
+        public int TotalResults { get; init; }
     }
 }

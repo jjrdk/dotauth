@@ -16,27 +16,27 @@ namespace SimpleAuth.Parameters
 {
     using System;
 
-    internal sealed class AuthorizationParameter
+    internal sealed record AuthorizationParameter
     {
-        public string? ClientId { get; set; }
-        public string? Scope { get; set; }
-        public string[] AmrValues { get; set; } = Array.Empty<string>();
-        public string? ResponseType { get; set; }
-        public Uri? RedirectUrl { get; set; }
-        public string? State { get; set; }
-        public string ResponseMode { get; set; } = null!;
-        public string? Nonce { get; set; }
-        public string? Prompt { get; set; }
-        public double MaxAge { get; set; }
-        public string? UiLocales { get; set; }
-        public string? IdTokenHint { get; set; }
-        public string? LoginHint { get; set; }
-        public string? AcrValues { get; set; }
-        public ClaimsParameter? Claims { get; set; }
-        public string? CodeChallenge { get; set; }
-        public string? CodeChallengeMethod { get; set; }
-        public string? ProcessId { get; set; }
-        public string? OriginUrl { get; set; }
-        public string? SessionId { get; set; }
+        public string? ClientId { get; init; }
+        public string? Scope { get; init; }
+        public string[] AmrValues { get; init; } = Array.Empty<string>();
+        public string? ResponseType { get; init; }
+        public Uri? RedirectUrl { get; init; }
+        public string? State { get; init; }
+        public string ResponseMode { get; init; } = null!;
+        public string? Nonce { get; init; }
+        public string? Prompt { get; init; }
+        public double MaxAge { get; init; }
+        public string? UiLocales { get; init; }
+        public string? IdTokenHint { get; init; }
+        public string? LoginHint { get; init; }
+        public string? AcrValues { get; init; }
+        public ClaimsParameter? Claims { get; init; }
+        public string? CodeChallenge { get; init; }
+        public string? CodeChallengeMethod { get; init; }
+        public string? ProcessId { get; init; }
+        public string? OriginUrl { get; init; }
+        public string? SessionId { get; init; }
     }
 }

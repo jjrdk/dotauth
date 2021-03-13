@@ -163,36 +163,46 @@ namespace SimpleAuth.Extensions
 
             if (!string.IsNullOrWhiteSpace(request.aggregate_id))
             {
-                result.ProcessId = request.aggregate_id;
+                result = result with { ProcessId = request.aggregate_id };
             }
 
             if (!string.IsNullOrWhiteSpace(request.claims))
             {
-                var claimsParameter = new ClaimsParameter();
-                result.Claims = claimsParameter;
+                result = result with { Claims = new ClaimsParameter() };
 
                 var obj = JObject.Parse(request.claims);
                 var idToken = obj.GetValue(CoreConstants.StandardClaimParameterNames.IdTokenName);
                 var userInfo = obj.GetValue(CoreConstants.StandardClaimParameterNames.UserInfoName);
                 if (idToken != null)
                 {
-                    claimsParameter.IdToken = new List<ClaimParameter>();
-                    FillInClaimsParameter(idToken, claimsParameter.IdToken);
+                    result = result with
+                    {
+                        Claims = result.Claims with
+                        {
+                            IdToken = FillInClaimsParameter(idToken, result.Claims.IdToken)
+                        }
+                    };
                 }
 
                 if (userInfo != null)
                 {
-                    claimsParameter.UserInfo = new List<ClaimParameter>();
-                    FillInClaimsParameter(userInfo, claimsParameter.UserInfo);
+                    result = result with
+                    {
+                        Claims = result.Claims with
+                        {
+                            UserInfo = FillInClaimsParameter(userInfo, result.Claims.UserInfo)
+                        }
+                    };
                 }
-
-                result.Claims = claimsParameter;
             }
 
             if (!string.IsNullOrWhiteSpace(request.code_challenge) && request.code_challenge_method != null)
             {
-                result.CodeChallenge = request.code_challenge;
-                result.CodeChallengeMethod = request.code_challenge_method;
+                result = result with
+                {
+                    CodeChallenge = request.code_challenge,
+                    CodeChallengeMethod = request.code_challenge_method
+                };
             }
 
             return result;
@@ -246,28 +256,31 @@ namespace SimpleAuth.Extensions
             };
         }
 
-        private static void FillInClaimsParameter(
+        private static ClaimParameter[] FillInClaimsParameter(
             JToken token,
-            ICollection<ClaimParameter> claimParameters)
+            IEnumerable<ClaimParameter> claimParameters)
         {
-            foreach (var child in token.Children())
-            {
-                var record = new ClaimParameter
-                {
-                    Name = ((JProperty)child).Name,
-                    Parameters = new Dictionary<string, object>()
-                };
-                claimParameters.Add(record);
+            var children = token.Children()
+                .Select(
+                    child =>
+                    {
+                        var record = new ClaimParameter
+                        {
+                            Name = ((JProperty)child).Name,
+                            Parameters = new Dictionary<string, object>()
+                        };
 
-                var subChild = child.Children().FirstOrDefault();
-                if (subChild == null)
-                {
-                    continue;
-                }
+                        var subChild = child.Children().FirstOrDefault();
+                        if (subChild != null)
+                        {
+                            var parameters =
+                                JsonConvert.DeserializeObject<Dictionary<string, object>>(subChild.ToString());
+                            record = record with { Parameters = parameters };
+                        }
 
-                var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(subChild.ToString());
-                record.Parameters = parameters;
-            }
+                        return record;
+                    });
+            return claimParameters.Concat(children).ToArray();
         }
     }
 }

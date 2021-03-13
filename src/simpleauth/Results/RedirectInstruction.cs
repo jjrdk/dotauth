@@ -14,21 +14,23 @@
 
 namespace SimpleAuth.Results
 {
-    using System.Collections.Generic;
+    using System;
 
-    internal class RedirectInstruction
+    internal record RedirectInstruction
     {
-        public IList<Parameter> Parameters { get; } = new List<Parameter>();
+        public Parameter[] Parameters { get; init; } = Array.Empty<Parameter>();
 
-        public SimpleAuthEndPoints Action { get; set; }
+        public SimpleAuthEndPoints Action { get; init; }
 
-        public string? ResponseMode { get; set; }
+        public string? ResponseMode { get; init; }
 
-        public void AddParameter(string name, string? value)
+        public RedirectInstruction AddParameter(string name, string? value)
         {
             var record = new Parameter(name, value ?? string.Empty);
-
-            Parameters.Add(record);
+            var newRecords = new Parameter[Parameters.Length + 1];
+            Parameters.CopyTo(newRecords, 0);
+            newRecords[^1] = record;
+            return this with { Parameters = newRecords };
         }
     }
 }

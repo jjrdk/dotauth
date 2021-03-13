@@ -7,7 +7,7 @@
     /// Defines the failure message event.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class FilterValidationFailure : Event
+    public record FilterValidationFailure : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FilterValidationFailure"/> class.

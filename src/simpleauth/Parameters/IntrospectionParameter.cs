@@ -14,18 +14,18 @@
 
 namespace SimpleAuth.Parameters
 {
-    internal class IntrospectionParameter
+    internal record IntrospectionParameter
     {
-        public string? Token { get; set; }
+        public string? Token { get; init; }
 
-        public string? TokenTypeHint { get; set; }
+        public string? TokenTypeHint { get; init; }
 
-        public string? ClientId { get; set; }
+        public string? ClientId { get; init; }
 
-        public string? ClientSecret { get; set; }
+        public string? ClientSecret { get; init; }
 
-        public string? ClientAssertion { get; set; }
+        public string? ClientAssertion { get; init; }
 
-        public string? ClientAssertionType { get; set; }
+        public string? ClientAssertionType { get; init; }
     }
 }

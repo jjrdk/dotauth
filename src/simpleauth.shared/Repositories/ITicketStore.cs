@@ -25,7 +25,9 @@
         /// <param name="ticketId">The ticket to approve.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<(bool success, Claim[] requester)> ApproveAccess(string ticketId, CancellationToken cancellationToken = default);
+        Task<(bool success, ClaimData[] requester)> ApproveAccess(
+            string ticketId,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes the specified ticket identifier.

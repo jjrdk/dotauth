@@ -123,17 +123,17 @@ namespace SimpleAuth.Tests.Common
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-            await _generateAuthorizationResponse.Generate(
-                    actionResult,
-                    authorizationParameter,
-                    claimsPrincipal,
-                    client,
-                    null,
-                    CancellationToken.None)
-                .ConfigureAwait(false);
+            actionResult = await _generateAuthorizationResponse.Generate(
+                        actionResult,
+                        authorizationParameter,
+                        claimsPrincipal,
+                        client,
+                        null,
+                        CancellationToken.None)
+                    .ConfigureAwait(false);
 
             Assert.Contains(
-                actionResult.RedirectInstruction.Parameters,
+                actionResult.RedirectInstruction!.Parameters,
                 p => p.Name == StandardAuthorizationResponseNames.IdTokenName);
         }
 
@@ -161,19 +161,17 @@ namespace SimpleAuth.Tests.Common
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256
             };
 
-            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
-
-            await _generateAuthorizationResponse.Generate(
-                    actionResult,
-                    authorizationParameter,
-                    claimsPrincipal,
-                    client,
-                    "issuer",
-                    CancellationToken.None)
-                .ConfigureAwait(false);
+            var actionResult = await _generateAuthorizationResponse.Generate(
+                    new EndpointResult { RedirectInstruction = new RedirectInstruction() },
+                        authorizationParameter,
+                        claimsPrincipal,
+                        client,
+                        "issuer",
+                        CancellationToken.None)
+                    .ConfigureAwait(false);
 
             Assert.Contains(
-                actionResult.RedirectInstruction.Parameters,
+                actionResult.RedirectInstruction!.Parameters,
                 p => p.Name == StandardAuthorizationResponseNames.AccessTokenName);
             _tokenStore.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
             _eventPublisher.Verify(e => e.Publish(It.IsAny<TokenGranted>()));
@@ -212,7 +210,6 @@ namespace SimpleAuth.Tests.Common
                 CreateDateTime = issuedAt,
                 ExpiresIn = expiresIn
             };
-            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
 
             _tokenStore.Setup(
                     x => x.GetToken(
@@ -223,8 +220,8 @@ namespace SimpleAuth.Tests.Common
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(grantedToken);
 
-            await _generateAuthorizationResponse.Generate(
-                    actionResult,
+            var actionResult = await _generateAuthorizationResponse.Generate(
+                    new EndpointResult { RedirectInstruction = new RedirectInstruction() },
                     authorizationParameter,
                     claimsPrincipal,
                     new Client { ClientId = clientId },
@@ -234,7 +231,9 @@ namespace SimpleAuth.Tests.Common
 
             Assert.Equal(
                 grantedToken.AccessToken,
-                actionResult.RedirectInstruction.Parameters.First(x => x.Name == StandardAuthorizationResponseNames.AccessTokenName).Value);
+                actionResult.RedirectInstruction!.Parameters
+                    .First(x => x.Name == StandardAuthorizationResponseNames.AccessTokenName)
+                    .Value);
         }
 
         [Fact]
@@ -258,13 +257,12 @@ namespace SimpleAuth.Tests.Common
                 GrantedScopes = new[] { scope },
                 ClientId = clientId
             };
-            var actionResult = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
 
             _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { consent });
 
-            await _generateAuthorizationResponse.Generate(
-                    actionResult,
+            var actionResult = await _generateAuthorizationResponse.Generate(
+                    new EndpointResult { RedirectInstruction = new RedirectInstruction() },
                     authorizationParameter,
                     claimsPrincipal,
                     new Client(),
@@ -273,7 +271,7 @@ namespace SimpleAuth.Tests.Common
                 .ConfigureAwait(false);
 
             Assert.Contains(
-                actionResult.RedirectInstruction.Parameters,
+                actionResult.RedirectInstruction!.Parameters,
                 p => p.Name == StandardAuthorizationResponseNames.AuthorizationCodeName);
             _authorizationCodeRepositoryFake.Verify(a => a.Add(It.IsAny<AuthorizationCode>(), It.IsAny<CancellationToken>()));
             _eventPublisher.Verify(s => s.Publish(It.IsAny<AuthorizationGranted>()));
@@ -296,14 +294,12 @@ namespace SimpleAuth.Tests.Common
                 ResponseMode = ResponseModes.None
             };
 
-            var actionResult = new EndpointResult
-            {
-                RedirectInstruction = new RedirectInstruction(),
-                Type = ActionResultType.RedirectToCallBackUrl
-            };
-
-            await _generateAuthorizationResponse.Generate(
-                    actionResult,
+            var actionResult = await _generateAuthorizationResponse.Generate(
+                    new EndpointResult
+                    {
+                        RedirectInstruction = new RedirectInstruction(),
+                        Type = ActionResultType.RedirectToCallBackUrl
+                    },
                     authorizationParameter,
                     claimsPrincipal,
                     new Client(),
@@ -311,7 +307,7 @@ namespace SimpleAuth.Tests.Common
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(ResponseModes.Fragment, actionResult.RedirectInstruction.ResponseMode);
+            Assert.Equal(ResponseModes.Fragment, actionResult.RedirectInstruction!.ResponseMode);
         }
     }
 }

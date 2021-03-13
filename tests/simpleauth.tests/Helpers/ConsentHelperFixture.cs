@@ -47,7 +47,7 @@
             {
                 Claims = new ClaimsParameter
                 {
-                    UserInfo = new List<ClaimParameter> { new ClaimParameter { Name = claimName } }
+                    UserInfo = new[] { new ClaimParameter { Name = claimName } }
                 },
                 ClientId = clientId
             };

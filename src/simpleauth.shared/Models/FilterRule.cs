@@ -3,7 +3,7 @@
     /// <summary>
     /// Defines the filter rule content.
     /// </summary>
-    public sealed class FilterRule
+    public sealed record FilterRule
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FilterRule"/> class.

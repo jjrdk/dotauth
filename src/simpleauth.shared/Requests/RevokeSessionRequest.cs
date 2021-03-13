@@ -7,7 +7,7 @@
     /// Defines the revoke session request.
     /// </summary>
     [DataContract]
-    public class RevokeSessionRequest
+    public record RevokeSessionRequest
     {
         /// <summary>
         /// Gets or sets the identifier token hint.
@@ -17,7 +17,7 @@
         /// </value>
         [DataMember(Name = "id_token_hint")]
 #pragma warning disable IDE1006 // Naming Styles
-        public string? id_token_hint { get; set; }
+        public string? id_token_hint { get; init; }
 
         /// <summary>
         /// Gets or sets the post logout redirect URI.
@@ -26,7 +26,7 @@
         /// The post logout redirect URI.
         /// </value>
         [DataMember(Name = "post_logout_redirect_uri")]
-        public Uri? post_logout_redirect_uri { get; set; }
+        public Uri? post_logout_redirect_uri { get; init; }
 
         /// <summary>
         /// Gets or sets the state.
@@ -35,7 +35,7 @@
         /// The state.
         /// </value>
         [DataMember(Name = "state")]
-        public string? state { get; set; }
+        public string? state { get; init; }
 #pragma warning restore IDE1006 // Naming Styles
     }
 }

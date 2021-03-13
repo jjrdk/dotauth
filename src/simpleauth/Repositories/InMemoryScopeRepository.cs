@@ -19,7 +19,7 @@
     {
         private readonly ICollection<Scope> _scopes;
 
-        private readonly List<Scope> _defaultScopes = new List<Scope>
+        private readonly List<Scope> _defaultScopes = new()
         {
             new Scope
             {
@@ -61,7 +61,7 @@
                 IsExposed = true,
                 IsDisplayedInConsent = true,
                 Description = Strings.AccessToEmailAddresses,
-                Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
+                Claims = new[] { OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified },
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope
@@ -70,7 +70,7 @@
                 IsExposed = true,
                 IsDisplayedInConsent = true,
                 Description = Strings.AccessToAddressInformation,
-                Claims = new[] {OpenIdClaimTypes.Address},
+                Claims = new[] { OpenIdClaimTypes.Address },
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope
@@ -79,7 +79,7 @@
                 IsExposed = true,
                 IsDisplayedInConsent = true,
                 Description = Strings.AccessToPhoneInformation,
-                Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
+                Claims = new[] { OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified },
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope
@@ -88,12 +88,12 @@
                 IsExposed = true,
                 IsDisplayedInConsent = true,
                 Description = Strings.AccessToRoles,
-                Claims = new[] {OpenIdClaimTypes.Role},
+                Claims = new[] { OpenIdClaimTypes.Role },
                 Type = ScopeTypes.ResourceOwner
             },
             new Scope
             {
-                Claims = new[] {OpenIdClaimTypes.Role},
+                Claims = new[] { OpenIdClaimTypes.Role },
                 Name = "register_client",
                 IsExposed = false,
                 IsDisplayedInConsent = false,
@@ -102,7 +102,7 @@
             },
             new Scope
             {
-                Claims = new[] {OpenIdClaimTypes.Role},
+                Claims = new[] { OpenIdClaimTypes.Role },
                 Description = Strings.ManageServerResources,
                 IsDisplayedInConsent = true,
                 IsExposed = false,
@@ -111,7 +111,7 @@
             },
             new Scope
             {
-                Claims = new[] {OpenIdClaimTypes.Subject},
+                Claims = new[] { OpenIdClaimTypes.Subject },
                 Description = Strings.ManageUma,
                 IsDisplayedInConsent = true,
                 IsExposed = true,
@@ -238,11 +238,16 @@
                 return Task.FromResult(false);
             }
 
-            sc.Claims = scope.Claims;
-            sc.Description = scope.Description;
-            sc.IsDisplayedInConsent = scope.IsDisplayedInConsent;
-            sc.IsExposed = scope.IsExposed;
-            sc.Type = scope.Type;
+            _scopes.Remove(sc);
+            sc = sc with
+            {
+                Claims = scope.Claims,
+                Description = scope.Description,
+                IsDisplayedInConsent = scope.IsDisplayedInConsent,
+                IsExposed = scope.IsExposed,
+                Type = scope.Type
+            };
+            _scopes.Add(sc);
             return Task.FromResult(true);
         }
     }

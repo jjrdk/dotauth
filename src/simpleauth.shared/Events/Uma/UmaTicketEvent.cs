@@ -3,13 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the UMA request not authorized event.
     /// </summary>
     /// <seealso cref="Event" />
-    public abstract class UmaTicketEvent : Event
+    public abstract record UmaTicketEvent : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UmaRequestNotAuthorized"/> class.
@@ -23,16 +23,15 @@
             string id,
             string ticketId,
             string clientId,
-            IEnumerable<Claim>? requester,
+            IEnumerable<ClaimData>? requester,
             DateTimeOffset timestamp)
             : base(id, timestamp)
         {
             TicketId = ticketId;
             ClientId = clientId;
             Requester = requester == null
-                ? Array.Empty<Claim>()
-                : requester.Select(claim => new Claim(claim.Type, claim.Value, claim.ValueType, claim.Issuer))
-                    .ToArray();
+                ? Array.Empty<ClaimData>()
+                : requester.ToArray();
         }
 
         /// <summary>
@@ -54,6 +53,6 @@
         /// <summary>
         /// Gets the ticket requester.
         /// </summary>
-        public Claim[] Requester { get; }
+        public ClaimData[] Requester { get; }
     }
 }

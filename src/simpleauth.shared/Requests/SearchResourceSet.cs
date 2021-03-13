@@ -7,7 +7,7 @@
     /// Defines the search resource set request.
     /// </summary>
     [DataContract]
-    public class SearchResourceSet
+    public record SearchResourceSet
     {
         /// <summary>
         /// Gets or sets the ids.
@@ -16,7 +16,7 @@
         /// The ids.
         /// </value>
         [DataMember(Name = "ids")]
-        public string[] Ids { get; set; } = Array.Empty<string>();
+        public string[] Ids { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the names.
@@ -25,7 +25,7 @@
         /// The names.
         /// </value>
         [DataMember(Name = "names")]
-        public string[] Names { get; set; } = Array.Empty<string>();
+        public string[] Names { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the types.
@@ -34,7 +34,7 @@
         /// The types.
         /// </value>
         [DataMember(Name = "types")]
-        public string[] Types { get; set; } = Array.Empty<string>();
+        public string[] Types { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the start index.
@@ -43,7 +43,7 @@
         /// The start index.
         /// </value>
         [DataMember(Name = "start_index")]
-        public int StartIndex { get; set; }
+        public int StartIndex { get; init; }
 
         /// <summary>
         /// Gets or sets the total results.
@@ -52,6 +52,6 @@
         /// The total results.
         /// </value>
         [DataMember(Name = "count")]
-        public int TotalResults { get; set; }
+        public int TotalResults { get; init; }
     }
 }

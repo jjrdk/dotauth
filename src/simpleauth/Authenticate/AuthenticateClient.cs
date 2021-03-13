@@ -103,7 +103,7 @@ namespace SimpleAuth.Authenticate
                         .AuthenticateClientWithPrivateKeyJwt(instruction, issuerName, cancellationToken)
                         .ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.TlsClientAuth:
-                    client = ClientTlsAuthentication.AuthenticateClient(instruction, client);
+                    client = AuthenticateTlsClient(instruction, client);
                     if (client == null)
                     {
                         errorMessage = Strings.TheClientCannotBeAuthenticatedWithTls;
@@ -113,6 +113,21 @@ namespace SimpleAuth.Authenticate
             }
 
             return new AuthenticationResult(client, errorMessage);
+        }
+
+        private static Client? AuthenticateTlsClient(AuthenticateInstruction instruction, Client client)
+        {
+            var thumbPrint = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.X509Thumbprint);
+            var name = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.X509Name);
+            if (thumbPrint == null || name == null || instruction.Certificate == null)
+            {
+                return null;
+            }
+
+            var certificate = instruction.Certificate;
+            var isSameThumbPrint = thumbPrint.Value == certificate.Thumbprint;
+            var isSameName = name.Value == certificate.SubjectName.Name;
+            return isSameName && isSameThumbPrint ? client : null;
         }
 
         /// <summary>

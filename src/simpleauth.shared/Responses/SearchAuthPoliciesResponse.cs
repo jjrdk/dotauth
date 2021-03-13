@@ -7,7 +7,7 @@
     /// Defines the search auth policies response.
     /// </summary>
     [DataContract]
-    public class SearchAuthPoliciesResponse
+    public record SearchAuthPoliciesResponse
     {
         /// <summary>
         /// Gets or sets the content.
@@ -16,7 +16,7 @@
         /// The content.
         /// </value>
         [DataMember(Name = "content")]
-        public PolicyResponse[] Content { get; set; } = Array.Empty<PolicyResponse>();
+        public PolicyResponse[] Content { get; init; } = Array.Empty<PolicyResponse>();
 
         /// <summary>
         /// Gets or sets the total results.
@@ -25,7 +25,7 @@
         /// The total results.
         /// </value>
         [DataMember(Name = "count")]
-        public long TotalResults { get; set; }
+        public long TotalResults { get; init; }
 
         /// <summary>
         /// Gets or sets the start index.
@@ -34,6 +34,6 @@
         /// The start index.
         /// </value>
         [DataMember(Name = "start_index")]
-        public int StartIndex { get; set; }
+        public int StartIndex { get; init; }
     }
 }

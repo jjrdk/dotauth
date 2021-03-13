@@ -6,7 +6,7 @@
     /// Defines the granted token response.
     /// </summary>
     [DataContract]
-    public class GrantedTokenResponse
+    public record GrantedTokenResponse
     {
         /// <summary>
         /// Gets or sets the access token.
@@ -15,7 +15,7 @@
         /// The access token.
         /// </value>
         [DataMember(Name = "access_token")]
-        public string AccessToken { get; set; } = null!;
+        public string AccessToken { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the identifier token.
@@ -24,7 +24,7 @@
         /// The identifier token.
         /// </value>
         [DataMember(Name = "id_token")]
-        public string? IdToken { get; set; }
+        public string? IdToken { get; init; }
 
         /// <summary>
         /// Gets or sets the type of the token.
@@ -33,7 +33,7 @@
         /// The type of the token.
         /// </value>
         [DataMember(Name = "token_type")]
-        public string TokenType { get; set; } = null!;
+        public string TokenType { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the expires in.
@@ -42,7 +42,7 @@
         /// The expires in.
         /// </value>
         [DataMember(Name = "expires_in")]
-        public int ExpiresIn { get; set; }
+        public int ExpiresIn { get; init; }
 
         /// <summary>
         /// Gets or sets the refresh token.
@@ -51,7 +51,7 @@
         /// The refresh token.
         /// </value>
         [DataMember(Name = "refresh_token")]
-        public string? RefreshToken { get; set; }
+        public string? RefreshToken { get; init; }
 
         /// <summary>
         /// Gets or sets the scope.
@@ -60,6 +60,6 @@
         /// The scope.
         /// </value>
         [DataMember(Name = "scope")]
-        public string Scope { get; set; } = null!;
+        public string Scope { get; init; } = null!;
     }
 }

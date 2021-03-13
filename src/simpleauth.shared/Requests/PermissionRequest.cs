@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Requests
     /// Defines the add permission request.
     /// </summary>
     [DataContract]
-    public class PermissionRequest
+    public record PermissionRequest
     {
         /// <summary>
         /// Gets or sets the resource set identifier.
@@ -29,21 +29,15 @@ namespace SimpleAuth.Shared.Requests
         /// The resource set identifier.
         /// </value>
         [DataMember(Name = "resource_set_id")]
-        public string? ResourceSetId { get; set; }
+        public string? ResourceSetId { get; init; }
 
-        /// <summary>
-        /// Gets or sets the scopes.
-        /// </summary>
-        /// <value>
-        /// The scopes.
-        /// </value>
         [DataMember(Name = "scopes")]
-        public string[]? Scopes { get; set; }
+        public string[]? Scopes { get; init; }
 
         /// <summary>
         /// Gets or sets the id token of the ticket requester.
         /// </summary>
         [DataMember(Name = "id_token")]
-        public string? IdToken { get; set; }
+        public string? IdToken { get; init; }
     }
 }

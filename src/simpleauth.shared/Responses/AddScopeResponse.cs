@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Responses
     /// Defines the add scope response.
     /// </summary>
     [DataContract]
-    public class AddScopeResponse
+    public record AddScopeResponse
     {
         /// <summary>
         /// Gets or sets the identifier.
@@ -29,6 +29,6 @@ namespace SimpleAuth.Shared.Responses
         /// The identifier.
         /// </value>
         [DataMember(Name = "id")]
-        public string Id { get; set; } = null!;
+        public string Id { get; init; } = null!;
     }
 }

@@ -7,7 +7,7 @@
     /// Defines the resource owner added event.
     /// </summary>
     /// <seealso cref="Event" />
-    public class ResourceOwnerDeleted : Event
+    public record ResourceOwnerDeleted : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceOwnerAdded"/> class.

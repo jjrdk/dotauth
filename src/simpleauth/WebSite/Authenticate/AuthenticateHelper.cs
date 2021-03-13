@@ -65,23 +65,27 @@
             var prompts = authorizationParameter.Prompt.ParsePrompts();
             if (prompts.Contains(PromptParameters.Consent))
             {
-                result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction!.Action = SimpleAuthEndPoints.ConsentIndex;
-                result.RedirectInstruction.AddParameter("code", code);
-                return result;
+                return EndpointResult.CreateAnEmptyActionResultWithRedirection(
+                    SimpleAuthEndPoints.ConsentIndex,
+                    new Parameter("code", code));
             }
 
-            var assignedConsent = await _consentRepository.GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
+            var assignedConsent = await _consentRepository
+                .GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
 
             // If there's already one consent then redirect to the callback
             if (assignedConsent != null)
             {
-                result = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                await _generateAuthorizationResponse
-                    .Generate(result, authorizationParameter, claimsPrincipal, client, issuerName, cancellationToken)
+                result = await _generateAuthorizationResponse.Generate(
+                        EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl(),
+                        authorizationParameter,
+                        claimsPrincipal,
+                        client,
+                        issuerName,
+                        cancellationToken)
                     .ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseModes.None)
@@ -91,15 +95,16 @@
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
-                result.RedirectInstruction!.ResponseMode = responseMode;
-                return result;
+                return result with
+                {
+                    RedirectInstruction = result.RedirectInstruction! with {ResponseMode = responseMode}
+                };
             }
 
             // If there's no consent & there's no consent prompt then redirect to the consent screen.
-            result = EndpointResult.CreateAnEmptyActionResultWithRedirection();
-            result.RedirectInstruction!.Action = SimpleAuthEndPoints.ConsentIndex;
-            result.RedirectInstruction.AddParameter("code", code);
-            return result;
+            return EndpointResult.CreateAnEmptyActionResultWithRedirection(
+                SimpleAuthEndPoints.ConsentIndex,
+                new Parameter("code", code));
         }
 
         private static AuthorizationFlow GetAuthorizationFlow(string? state, params string[] responseTypes)

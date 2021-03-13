@@ -20,51 +20,51 @@ namespace SimpleAuth.Shared.Models
     /// <summary>
     /// Defines the authorization code.
     /// </summary>
-    public class AuthorizationCode
+    public record AuthorizationCode
     {
         /// <summary>
         /// Gets or sets the authorization code.
         /// </summary>
-        public string Code { get; set; } = null!;
+        public string Code { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the redirection uri.
         /// </summary>
-        public Uri RedirectUri { get; set; } = null!;
+        public Uri RedirectUri { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the creation date time.
         /// </summary>
-        public DateTimeOffset CreateDateTime { get; set; }
+        public DateTimeOffset CreateDateTime { get; init; }
 
         /// <summary>
         /// Gets or sets the client id.
         /// </summary>
-        public string ClientId { get; set; } = null!;
+        public string ClientId { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the id token payload.
         /// </summary>
-        public JwtPayload? IdTokenPayload { get; set; }
+        public JwtPayload? IdTokenPayload { get; init; }
 
         /// <summary>
         /// Gets or sets the user information payload.
         /// </summary>
-        public JwtPayload? UserInfoPayLoad { get; set; }
+        public JwtPayload? UserInfoPayLoad { get; init; }
 
         /// <summary>
         /// Gets or sets the concatenated list of scopes.
         /// </summary>
-        public string Scopes { get; set; } = null!;
+        public string Scopes { get; init; } = null!;
 
         /// <summary>
         /// Code challenge.
         /// </summary>
-        public string CodeChallenge { get; set; } = null!;
+        public string CodeChallenge { get; init; } = null!;
 
         /// <summary>
         /// Code challenge method.
         /// </summary>
-        public string CodeChallengeMethod { get; set; } = null!;
+        public string CodeChallengeMethod { get; init; } = null!;
     }
 }

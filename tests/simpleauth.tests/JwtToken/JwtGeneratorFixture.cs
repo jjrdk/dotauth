@@ -235,7 +235,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
-            this._scopeRepositoryStub.Setup(sr => sr.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
+            _scopeRepositoryStub.Setup(sr => sr.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(
                     new[]
                         {
@@ -313,7 +313,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var authorizationParameter = new AuthorizationParameter {State = state};
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {
@@ -360,7 +360,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var authorizationParameter = new AuthorizationParameter {State = state};
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {
@@ -407,7 +407,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var authorizationParameter = new AuthorizationParameter {State = state};
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {
@@ -451,7 +451,7 @@ namespace SimpleAuth.Tests.JwtToken
 
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {
@@ -488,7 +488,7 @@ namespace SimpleAuth.Tests.JwtToken
             const string subject = "john.doe@email.com";
             const string nonce = "nonce";
             var currentDateTimeOffset = (double) DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
-            var claims = new List<Claim>
+            var claims = new []
             {
                 new Claim(
                     ClaimTypes.AuthenticationInstant,
@@ -499,7 +499,7 @@ namespace SimpleAuth.Tests.JwtToken
             var authorizationParameter = new AuthorizationParameter {Nonce = nonce};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {
@@ -531,6 +531,14 @@ namespace SimpleAuth.Tests.JwtToken
                 new ClaimParameter
                 {
                     Name = OpenIdClaimTypes.Role,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
+                    }
+                },
+                new ClaimParameter
+                {
+                    Name = OpenIdClaimTypes.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
@@ -623,7 +631,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {
@@ -664,7 +672,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {
@@ -703,7 +711,7 @@ namespace SimpleAuth.Tests.JwtToken
             var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {
@@ -745,7 +753,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {
@@ -795,7 +803,7 @@ namespace SimpleAuth.Tests.JwtToken
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new List<ClaimParameter>
+            var claimsParameter = new []
             {
                 new ClaimParameter
                 {

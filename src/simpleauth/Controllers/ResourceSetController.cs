@@ -62,7 +62,7 @@ namespace SimpleAuth.Controllers
         [HttpPost(".search")]
         [Authorize("UmaProtection")]
         public async Task<ActionResult<PagedResult<ResourceSet>>> SearchResourceSets(
-            [FromBody] SearchResourceSet searchResourceSet,
+            [FromBody] SearchResourceSet? searchResourceSet,
             CancellationToken cancellationToken)
         {
             if (searchResourceSet == null)
@@ -246,7 +246,7 @@ namespace SimpleAuth.Controllers
                 return BuildError(ErrorCodes.InvalidRequest, Strings.InvalidResource, HttpStatusCode.BadRequest);
             }
 
-            result.AuthorizationPolicies = rules;
+            result = result with { AuthorizationPolicies = rules };
             var updated = await _resourceSetRepository.Update(result, cancellationToken).ConfigureAwait(false);
 
             return updated ? Ok() : (IActionResult)Problem();
@@ -302,8 +302,11 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            resourceSet.Id = Id.Create();
-            resourceSet.AuthorizationPolicies = new[] { new PolicyRule { IsResourceOwnerConsentNeeded = true } };
+            resourceSet = resourceSet with
+            {
+                Id = Id.Create(),
+                AuthorizationPolicies = new[] {new PolicyRule {IsResourceOwnerConsentNeeded = true}}
+            };
             if (!await _resourceSetRepository.Add(subject, resourceSet, cancellationToken).ConfigureAwait(false))
             {
                 return Problem();

@@ -1,10 +1,10 @@
 ﻿namespace SimpleAuth.Parameters
 {
-    internal class GetTokenViaTicketIdParameter : GrantTypeParameter
+    internal record GetTokenViaTicketIdParameter : GrantTypeParameter
     {
-        public string? Ticket { get; set; }
-        public ClaimTokenParameter ClaimToken { get; set; } = null!;
-        public string? Pct { get; set; }
-        public string? Rpt { get; set; }
+        public string? Ticket { get; init; }
+        public ClaimTokenParameter ClaimToken { get; init; } = null!;
+        public string? Pct { get; init; }
+        public string? Rpt { get; init; }
     }
 }

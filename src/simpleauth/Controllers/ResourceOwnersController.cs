@@ -227,7 +227,7 @@ namespace SimpleAuth.Controllers
                     });
             }
 
-            request.Subject = id;
+            request = request with { Subject = id };
 
             var resourceOwner =
                 await _resourceOwnerRepository.Get(request.Subject, cancellationToken).ConfigureAwait(false);
@@ -263,7 +263,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest(Strings.TheClaimsCannotBeUpdated);
             }
 
-            return RedirectToAction("Get", "ResourceOwners", new { id = id });
+            return RedirectToAction("Get", "ResourceOwners", new { id });
         }
 
         /// <summary>
@@ -430,8 +430,11 @@ namespace SimpleAuth.Controllers
             }
 
             var refreshedToken = refreshedResponse.Content;
-            refreshedToken.ParentTokenId = existingToken.ParentTokenId;
-            refreshedToken.RefreshToken = existingToken.RefreshToken;
+            refreshedToken = refreshedToken with
+            {
+                ParentTokenId = existingToken.ParentTokenId,
+                RefreshToken = existingToken.RefreshToken
+            };
             await _tokenStore.RemoveAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
             await _tokenStore.RemoveAccessToken(refreshedToken.AccessToken, cancellationToken).ConfigureAwait(false);
             await _tokenStore.AddToken(refreshedToken, cancellationToken).ConfigureAwait(false);
@@ -482,7 +485,7 @@ namespace SimpleAuth.Controllers
                 });
             }
 
-            if (request?.Password == null)
+            if (request.Password == null)
             {
                 return BadRequest(new ErrorDetails
                 {
@@ -537,7 +540,7 @@ namespace SimpleAuth.Controllers
                 await _addUserOperation.Execute(resourceOwner, cancellationToken).ConfigureAwait(false);
             if (success)
             {
-                return Ok(new { subject = subject });
+                return Ok(new { subject });
             }
 
             return BadRequest(
@@ -558,7 +561,7 @@ namespace SimpleAuth.Controllers
         [HttpPost(".search")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Search(
-            [FromBody] SearchResourceOwnersRequest searchResourceOwnersRequest,
+            [FromBody] SearchResourceOwnersRequest? searchResourceOwnersRequest,
             CancellationToken cancellationToken)
         {
             searchResourceOwnersRequest ??= new SearchResourceOwnersRequest { Descending = true, NbResults = 50, StartIndex = 0 };

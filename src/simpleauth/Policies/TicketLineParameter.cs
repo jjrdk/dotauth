@@ -7,7 +7,7 @@
     /// <summary>
     /// Defines the ticket line parameter content.
     /// </summary>
-    public class TicketLineParameter
+    public record TicketLineParameter
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TicketLineParameter"/> class.
@@ -28,7 +28,7 @@
         /// <value>
         /// The client identifier.
         /// </value>
-        public string ClientId { get; set; }
+        public string ClientId { get; }
 
         /// <summary>
         /// Gets or sets the scopes.
@@ -36,7 +36,7 @@
         /// <value>
         /// The scopes.
         /// </value>
-        public string[] Scopes { get; set; }
+        public string[] Scopes { get; init; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is authorized by ro.
@@ -44,6 +44,6 @@
         /// <value>
         ///   <c>true</c> if this instance is authorized by ro; otherwise, <c>false</c>.
         /// </value>
-        public bool IsAuthorizedByRo { get; set; }
+        public bool IsAuthorizedByRo { get; init; }
     }
 }

@@ -7,7 +7,7 @@
     /// Defines the error event.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class SimpleAuthError : Event
+    public record SimpleAuthError : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleAuthError"/> class.

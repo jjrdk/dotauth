@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Events.OAuth
     /// Defines the toke granted event.
     /// </summary>
     /// <seealso cref="Event" />
-    public class TokenGranted : Event
+    public record TokenGranted : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenGranted"/> class.

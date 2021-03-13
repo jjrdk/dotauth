@@ -7,7 +7,7 @@
     /// Defines the external user created event.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class ExternalUserCreated : Event
+    public record ExternalUserCreated : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExternalUserCreated"/> class.

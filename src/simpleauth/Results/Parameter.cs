@@ -3,7 +3,7 @@
     /// <summary>
     /// Redirection instruction parameter.
     /// </summary>
-    public class Parameter
+    public record Parameter
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Parameter"/> class.

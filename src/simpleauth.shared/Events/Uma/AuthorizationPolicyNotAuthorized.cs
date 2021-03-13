@@ -6,7 +6,7 @@
     /// Defines the authorization policy not authorized event.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class AuthorizationPolicyNotAuthorized : Event
+    public record AuthorizationPolicyNotAuthorized : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationPolicyNotAuthorized"/> class.

@@ -6,7 +6,7 @@
     /// Defines the link profile request.
     /// </summary>
     [DataContract]
-    public sealed class LinkProfileRequest
+    public sealed record LinkProfileRequest
     {
         /// <summary>
         /// Gets or sets the user identifier.
@@ -15,7 +15,7 @@
         /// The user identifier.
         /// </value>
         [DataMember(Name = "user_id")]
-        public string UserId { get; set; } = null!;
+        public string UserId { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the issuer.
@@ -24,7 +24,7 @@
         /// The issuer.
         /// </value>
         [DataMember(Name = "issuer")]
-        public string Issuer { get; set; } = null!;
+        public string Issuer { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="LinkProfileRequest"/> is force.
@@ -33,6 +33,6 @@
         ///   <c>true</c> if force; otherwise, <c>false</c>.
         /// </value>
         [DataMember(Name = "force")]
-        public bool Force { get; set; }
+        public bool Force { get; init; }
     }
 }

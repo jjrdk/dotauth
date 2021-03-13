@@ -6,7 +6,7 @@
     /// <summary>
     /// Defines the claims updated event.
     /// </summary>
-    public class ClaimsUpdated : Event
+    public record ClaimsUpdated : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ClaimsUpdated"/> class.

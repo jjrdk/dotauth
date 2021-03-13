@@ -106,7 +106,7 @@
                 ResponseType = "code",
                 Claims = new ClaimsParameter
                 {
-                    UserInfo = new List<ClaimParameter>
+                    UserInfo = new[]
                     {
                         new ClaimParameter {Name = OpenIdClaimTypes.Subject}
                     }

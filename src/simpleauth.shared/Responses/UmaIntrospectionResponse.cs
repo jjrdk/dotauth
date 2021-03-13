@@ -3,7 +3,7 @@
     /// <summary>
     /// Defines the UMA introspection response.
     /// </summary>
-    public class UmaIntrospectionResponse : IntrospectionResponse
+    public record UmaIntrospectionResponse : IntrospectionResponse
     {
     }
 }

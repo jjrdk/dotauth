@@ -3,11 +3,11 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    internal class ClaimParameter
+    internal record ClaimParameter
     {
-        public string Name { get; set; } = null!;
+        public string Name { get; init; } = null!;
 
-        public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Parameters { get; init; } = new Dictionary<string, object>();
 
         public bool Essential => GetBoolean(CoreConstants.StandardClaimParameterValueNames.EssentialName);
 

@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Shared.Models;
@@ -15,7 +14,7 @@
     /// <seealso cref="ITicketStore" />
     internal sealed class InMemoryTicketStore : ITicketStore
     {
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new(1);
         private readonly Dictionary<string, Ticket> _tickets;
 
         /// <summary>
@@ -60,7 +59,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<(bool success, Claim[] requester)> ApproveAccess(
+        public async Task<(bool success, ClaimData[] requester)> ApproveAccess(
             string ticketId,
             CancellationToken cancellationToken = default)
         {
@@ -69,10 +68,10 @@
                 await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                 if (!_tickets.ContainsKey(ticketId))
                 {
-                    return (false, Array.Empty<Claim>());
+                    return (false, Array.Empty<ClaimData>());
                 }
 
-                _tickets[ticketId].IsAuthorizedByRo = true;
+                _tickets[ticketId] = _tickets[ticketId] with { IsAuthorizedByRo = true };
                 return (true, _tickets[ticketId].Requester.ToArray());
             }
             finally

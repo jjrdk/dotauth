@@ -176,9 +176,9 @@ namespace SimpleAuth.Controllers
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            scope.Name = name;
+            scope = scope with { Name = name };
             return await _scopeRepository.Update(scope, cancellationToken).ConfigureAwait(false)
-                ? (IActionResult)RedirectToAction("GetAll", "Scopes")
+                ? RedirectToAction("GetAll", "Scopes")
                 : new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 

@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Responses
     /// Defines the add policy response.
     /// </summary>
     [DataContract]
-    public class AddPolicyResponse
+    public record AddPolicyResponse
     {
         /// <summary>
         /// Gets or sets the policy identifier.
@@ -29,6 +29,6 @@ namespace SimpleAuth.Shared.Responses
         /// The policy identifier.
         /// </value>
         [DataMember(Name = "policy")]
-        public string PolicyId { get; set; } = null!;
+        public string PolicyId { get; init; } = null!;
     }
 }

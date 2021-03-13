@@ -6,7 +6,7 @@
     /// Defines the posted claim.
     /// </summary>
     [DataContract]
-    public class ClaimData
+    public record ClaimData
     {
         /// <summary>
         /// Gets or sets the type.
@@ -15,7 +15,7 @@
         /// The type.
         /// </value>
         [DataMember(Name = "type")]
-        public string Type { get; set; } = null!;
+        public string Type { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the value.
@@ -24,6 +24,6 @@
         /// The value.
         /// </value>
         [DataMember(Name = "value")]
-        public string Value { get; set; } = null!;
+        public string Value { get; init; } = null!;
     }
 }

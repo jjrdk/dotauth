@@ -145,15 +145,14 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     .ConfigureAwait(false);
             }
 
-            var result = EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-            await _generateAuthorizationResponse.Generate(
-                    result,
-                    authorizationParameter,
-                    claimsPrincipal,
-                    client,
-                    issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false);
+            var result = await _generateAuthorizationResponse.Generate(
+                      EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl(),
+                         authorizationParameter,
+                         claimsPrincipal,
+                         client,
+                         issuerName,
+                         cancellationToken)
+                     .ConfigureAwait(false);
 
             // If redirect to the callback and the response mode has not been set.
             if (result.Type == ActionResultType.RedirectToCallBackUrl)
@@ -166,7 +165,10 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
-                result.RedirectInstruction!.ResponseMode = responseMode;
+                result = result with
+                {
+                    RedirectInstruction = result.RedirectInstruction! with { ResponseMode = responseMode }
+                };
             }
 
             return result;

@@ -134,41 +134,50 @@ namespace SimpleAuth.Api.Token.Actions
 
             // 4. Generate a new access token & insert it
             var generatedToken = await _clientStore.GenerateToken(
-                    _jwksRepository,
-                    grantedToken.ClientId,
-                    grantedToken.Scope,
-                    issuerName,
-                    cancellationToken,
-                    userInformationPayload: grantedToken.UserInfoPayLoad,
-                    idTokenPayload: grantedToken.IdTokenPayLoad,
-                    additionalClaims)
-                .ConfigureAwait(false);
-            generatedToken.ParentTokenId = grantedToken.Id;
+                        _jwksRepository,
+                        grantedToken.ClientId,
+                        grantedToken.Scope,
+                        issuerName,
+                        cancellationToken,
+                        userInformationPayload: grantedToken.UserInfoPayLoad,
+                        idTokenPayload: grantedToken.IdTokenPayLoad,
+                        additionalClaims)
+                    .ConfigureAwait(false) with
+            {
+                ParentTokenId = grantedToken.Id
+            };
             // 5. Fill-in the id token
             if (generatedToken.IdTokenPayLoad != null)
             {
-                generatedToken.IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(
+                generatedToken = generatedToken with
+                {
+                    IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(
                     generatedToken.IdTokenPayLoad,
-                    authResult.Client?.TokenLifetime);
-                generatedToken.IdToken = await _clientStore.GenerateIdToken(
+                    authResult.Client?.TokenLifetime),
+                    IdToken = await _clientStore.GenerateIdToken(
                         generatedToken.ClientId,
                         generatedToken.IdTokenPayLoad,
                         _jwksRepository,
                         cancellationToken)
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(false)
+                };
             }
 
             await _tokenStore.AddToken(generatedToken, cancellationToken).ConfigureAwait(false);
             await _eventPublisher.Publish(
-                    new TokenGranted(
-                        Id.Create(),
-                        generatedToken.UserInfoPayLoad?.Sub,
-                        generatedToken.ClientId,
-                        generatedToken.Scope,
-                        GrantTypes.RefreshToken,
-                        DateTimeOffset.UtcNow))
-                .ConfigureAwait(false);
-            return new GenericResponse<GrantedToken> { StatusCode = HttpStatusCode.OK, Content = generatedToken };
+                        new TokenGranted(
+                            Id.Create(),
+                            generatedToken.UserInfoPayLoad?.Sub,
+                            generatedToken.ClientId,
+                            generatedToken.Scope,
+                            GrantTypes.RefreshToken,
+                            DateTimeOffset.UtcNow))
+                    .ConfigureAwait(false);
+            return new GenericResponse<GrantedToken>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = generatedToken
+            };
         }
 
         private async Task<GrantedToken?> ValidateParameter(

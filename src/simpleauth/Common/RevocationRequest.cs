@@ -17,7 +17,7 @@ namespace SimpleAuth.Common
     /// <summary>
     /// Defines the revocation request.
     /// </summary>
-    public class RevocationRequest
+    public record RevocationRequest
     {
 #pragma warning disable IDE1006 // Naming Styles
         /// <summary>
@@ -26,7 +26,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The token.
         /// </value>
-        public string? token { get; set; }
+        public string? token { get; init; }
 
         /// <summary>
         /// Gets or sets the token type hint.
@@ -34,7 +34,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The token type hint.
         /// </value>
-        public string? token_type_hint { get; set; }
+        public string? token_type_hint { get; init; }
 
         /// <summary>
         /// Gets or sets the client identifier.
@@ -42,7 +42,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The client identifier.
         /// </value>
-        public string? client_id { get; set; }
+        public string? client_id { get; init; }
 
         /// <summary>
         /// Gets or sets the client secret.
@@ -50,7 +50,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The client secret.
         /// </value>
-        public string? client_secret { get; set; }
+        public string? client_secret { get; init; }
 
         /// <summary>
         /// Gets or sets the type of the client assertion.
@@ -58,7 +58,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The type of the client assertion.
         /// </value>
-        public string? client_assertion_type { get; set; }
+        public string? client_assertion_type { get; init; }
 
         /// <summary>
         /// Gets or sets the client assertion.
@@ -66,7 +66,7 @@ namespace SimpleAuth.Common
         /// <value>
         /// The client assertion.
         /// </value>
-        public string? client_assertion { get; set; }
+        public string? client_assertion { get; init; }
 #pragma warning restore IDE1006 // Naming Styles
     }
 }

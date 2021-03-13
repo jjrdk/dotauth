@@ -21,7 +21,7 @@ namespace SimpleAuth.Shared.Events.Openid
     /// Defines the consent accepted event.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class ConsentAccepted : Event
+    public record ConsentAccepted : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsentAccepted"/> class.

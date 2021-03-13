@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth.Extensions
+﻿namespace SimpleAuth.Results
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    internal class ScopeValidationResult
+    internal record ScopeValidationResult
     {
         public ScopeValidationResult(IEnumerable<string> scopes)
         {
@@ -23,6 +23,6 @@
 
         public string? ErrorMessage { get; }
 
-        public ICollection<string> Scopes { get; }
+        public string[] Scopes { get; }
     }
 }

@@ -140,28 +140,27 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            var result = new JwtPayload();
-            await FillInIdentityTokenClaims(
-                    result,
-                    authorizationParameter,
-                    new List<ClaimParameter>(),
-                    claimsPrincipal,
-                    issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false);
-            await FillInResourceOwnerClaimsFromScopes(
-                    result,
-                    authorizationParameter,
-                    claimsPrincipal,
-                    cancellationToken)
-                .ConfigureAwait(false);
+            var result = await FillInIdentityTokenClaims(
+                   new JwtPayload(),
+                   authorizationParameter,
+                   Array.Empty<ClaimParameter>(),
+                   claimsPrincipal,
+                   issuerName,
+                   cancellationToken)
+               .ConfigureAwait(false);
+            result = await FillInResourceOwnerClaimsFromScopes(
+                       result,
+                       authorizationParameter,
+                       claimsPrincipal,
+                       cancellationToken)
+                   .ConfigureAwait(false);
             return result;
         }
 
         public async Task<JwtPayload> GenerateFilteredIdTokenPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
-            List<ClaimParameter> claimParameters,
+            ClaimParameter[] claimParameters,
             string issuerName,
             CancellationToken cancellationToken)
         {
@@ -170,20 +169,19 @@ namespace SimpleAuth.JwtToken
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            var result = new JwtPayload();
-            await FillInIdentityTokenClaims(
-                    result,
+            var result = await FillInIdentityTokenClaims(
+                    new JwtPayload(),
                     authorizationParameter,
                     claimParameters,
                     claimsPrincipal,
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            FillInResourceOwnerClaimsByClaimsParameter(
-                result,
-                claimParameters,
-                claimsPrincipal,
-                authorizationParameter);
+            result = FillInResourceOwnerClaimsByClaimsParameter(
+                    result,
+                    claimParameters,
+                    claimsPrincipal,
+                    authorizationParameter);
             return result;
         }
 
@@ -208,7 +206,7 @@ namespace SimpleAuth.JwtToken
         }
 
         public static JwtPayload GenerateFilteredUserInfoPayload(
-            List<ClaimParameter> claimParameters,
+            ClaimParameter[] claimParameters,
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
@@ -257,7 +255,7 @@ namespace SimpleAuth.JwtToken
             }
         }
 
-        private async Task FillInResourceOwnerClaimsFromScopes(
+        private async Task<JwtPayload> FillInResourceOwnerClaimsFromScopes(
             JwtPayload jwsPayload,
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,
@@ -276,11 +274,13 @@ namespace SimpleAuth.JwtToken
                     jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
                 }
             }
+
+            return jwsPayload;
         }
 
-        private static void FillInResourceOwnerClaimsByClaimsParameter(
+        private static JwtPayload FillInResourceOwnerClaimsByClaimsParameter(
             JwtPayload jwsPayload,
-            List<ClaimParameter> claimParameters,
+            ClaimParameter[] claimParameters,
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
@@ -304,7 +304,7 @@ namespace SimpleAuth.JwtToken
             // 2. Fill-In all the other resource owner claims
             if (!claimParameters.Any())
             {
-                return;
+                return jwsPayload;
             }
 
             var resourceOwnerClaimParameters = claimParameters
@@ -330,12 +330,14 @@ namespace SimpleAuth.JwtToken
                     jwsPayload.Add(resourceOwnerClaim!.Type, resourceOwnerClaim.Value);
                 }
             }
+
+            return jwsPayload;
         }
 
-        private async Task FillInIdentityTokenClaims(
+        private async Task<JwtPayload> FillInIdentityTokenClaims(
             JwtPayload jwsPayload,
             AuthorizationParameter authorizationParameter,
-            List<ClaimParameter> claimParameters,
+            ClaimParameter[] claimParameters,
             ClaimsPrincipal claimsPrincipal,
             string issuerName,
             CancellationToken cancellationToken)
@@ -527,6 +529,8 @@ namespace SimpleAuth.JwtToken
             {
                 jwsPayload.Add(StandardClaimNames.Azp, azp);
             }
+
+            return jwsPayload;
         }
 
         private static bool ValidateClaimValue(object? claimValue, ClaimParameter claimParameter)
@@ -574,7 +578,7 @@ namespace SimpleAuth.JwtToken
             params string[] scopes)
         {
             var returnedScopes = await _scopeRepository.SearchByNames(cancellationToken, scopes).ConfigureAwait(false);
-            var claims = returnedScopes.SelectMany(x => GetClaims(claimsPrincipal, x.Claims.ToArray())).ToList();
+            var claims = returnedScopes.SelectMany(x => GetClaims(claimsPrincipal, x.Claims.ToArray()));
             return claims.Distinct(new ClaimEqualityComparer()).ToList();
         }
 

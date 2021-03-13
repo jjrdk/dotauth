@@ -16,21 +16,21 @@ namespace SimpleAuth.Parameters
 {
     using System;
 
-    internal class AuthorizationCodeGrantTypeParameter : GrantTypeParameter
+    internal record AuthorizationCodeGrantTypeParameter : GrantTypeParameter
     {
         /// <summary>
         /// Gets or sets the authorization code.
         /// </summary>
-        public string? Code { get; set; }
+        public string? Code { get; init; }
 
         /// <summary>
         /// Gets or sets the redirection url.
         /// </summary>
-        public Uri? RedirectUri { get; set; }
+        public Uri? RedirectUri { get; init; }
 
         /// <summary>
         /// Gets or sets the code verifier.
         /// </summary>
-        public string? CodeVerifier { get; set; }
+        public string? CodeVerifier { get; init; }
     }
 }

@@ -19,7 +19,6 @@ namespace SimpleAuth.Api.PermissionController
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
@@ -43,7 +42,7 @@ namespace SimpleAuth.Api.PermissionController
             _settings = settings;
         }
 
-        public async Task<(string ticketId, Claim[] requesterClaims)> Execute(
+        public async Task<(string ticketId, ClaimData[] requesterClaims)> Execute(
             string owner,
             CancellationToken cancellationToken,
             params PermissionRequest[] addPermissionParameters)
@@ -57,6 +56,7 @@ namespace SimpleAuth.Api.PermissionController
                 .Select(x => handler.ReadJwtToken(x))
                 .SelectMany(x => x.Claims)
                 .Where(claim => OpenIdClaimTypes.All.Contains(claim.Type))
+                .Select(x => new ClaimData { Type = x.Type, Value = x.Value })
                 .ToArray();
 
             var ticket = new Ticket

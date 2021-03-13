@@ -6,7 +6,7 @@
     /// Defines the confirmation code request.
     /// </summary>
     [DataContract]
-    public class ConfirmationCodeRequest
+    public record ConfirmationCodeRequest
     {
         /// <summary>
         /// Gets or sets the phone number.
@@ -15,6 +15,6 @@
         /// The phone number.
         /// </value>
         [DataMember(Name = "phone_number")]
-        public string? PhoneNumber { get; set; }
+        public string? PhoneNumber { get; init; }
     }
 }

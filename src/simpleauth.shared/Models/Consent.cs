@@ -19,7 +19,7 @@ namespace SimpleAuth.Shared.Models
     /// <summary>
     /// Defines the consent content.
     /// </summary>
-    public class Consent
+    public record Consent
     {
         /// <summary>
         /// Gets or sets the identifier.
@@ -27,7 +27,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier.
         /// </value>
-        public string Id { get; set; } = null!;
+        public string Id { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the client id.
@@ -35,7 +35,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The client id.
         /// </value>
-        public string ClientId { get; set; } = null!;
+        public string ClientId { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the client name.
@@ -43,17 +43,17 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The client name.
         /// </value>
-        public string ClientName { get; set; } = null!;
+        public string ClientName { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the policy <see cref="Uri"/>.
         /// </summary>
-        public Uri? PolicyUri { get; set; }
+        public Uri? PolicyUri { get; init; }
 
         /// <summary>
         /// Gets or sets the terms of service <see cref="Uri"/>.
         /// </summary>
-        public Uri? TosUri { get; set; }
+        public Uri? TosUri { get; init; }
 
         /// <summary>
         /// Gets or sets the resource owner's subject.
@@ -61,7 +61,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The resource owner's subject.
         /// </value>
-        public string Subject { get; set; } = null!;
+        public string Subject { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the granted scopes.
@@ -69,7 +69,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The granted scopes.
         /// </value>
-        public string[] GrantedScopes { get; set; } = Array.Empty<string>();
+        public string[] GrantedScopes { get; init; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the claims.
@@ -77,6 +77,6 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The claims.
         /// </value>
-        public string[] Claims { get; set; } = Array.Empty<string>();
+        public string[] Claims { get; init; } = Array.Empty<string>();
     }
 }

@@ -6,7 +6,7 @@
     /// Defines the add resource owner request.
     /// </summary>
     [DataContract]
-    public class AddResourceOwnerRequest
+    public record AddResourceOwnerRequest
     {
         /// <summary>
         /// Gets or sets the subject.
@@ -15,7 +15,7 @@
         /// The subject.
         /// </value>
         [DataMember(Name = "sub")]
-        public string? Subject { get; set; }
+        public string? Subject { get; init; }
 
         /// <summary>
         /// Gets or sets the password.
@@ -24,6 +24,6 @@
         /// The password.
         /// </value>
         [DataMember(Name = "password")]
-        public string? Password { get; set; }
+        public string? Password { get; init; }
     }
 }

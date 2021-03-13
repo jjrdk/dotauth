@@ -20,7 +20,7 @@ namespace SimpleAuth.Shared.Events.OAuth
     /// Defines the token revoked event.
     /// </summary>
     /// <seealso cref="SimpleAuth.Shared.Event" />
-    public class TokenRevoked : Event
+    public record TokenRevoked : Event
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenRevoked"/> class.
