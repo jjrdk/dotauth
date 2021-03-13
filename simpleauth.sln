@@ -28,14 +28,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{14B4BA03-B799-4947-B948-81C3C21EF73B}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		build.cake = build.cake
 		build.ps1 = build.ps1
 		build.sh = build.sh
-		cakebuild.ps1 = cakebuild.ps1
 		DockerfileInMemory = DockerfileInMemory
 		DockerfilePgRedis = DockerfilePgRedis
 		DockerfilePostgres = DockerfilePostgres
-		full.cake = full.cake
+		.github\workflows\github.yml = .github\workflows\github.yml
 		global.json = global.json
 		README.md = README.md
 		shared.projinfo = shared.projinfo
@@ -56,6 +54,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.ui", "src\simpleauth.ui\simpleauth.ui.csproj", "{240705F8-254F-4749-A61D-0AFF512B7C27}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.sms.ui", "src\simpleauth.sms.ui\simpleauth.sms.ui.csproj", "{F6F67CDE-62BF-4833-8A2A-CD2BE981B546}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{6E546AD0-8248-45A6-AA58-F4FED3C7396F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simpleauth.build", "cake\simpleauth.build\simpleauth.build.csproj", "{29F320F7-C227-410E-8788-AC8451F67AEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,6 +133,10 @@ Global
 		{F6F67CDE-62BF-4833-8A2A-CD2BE981B546}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6F67CDE-62BF-4833-8A2A-CD2BE981B546}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6F67CDE-62BF-4833-8A2A-CD2BE981B546}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29F320F7-C227-410E-8788-AC8451F67AEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29F320F7-C227-410E-8788-AC8451F67AEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29F320F7-C227-410E-8788-AC8451F67AEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29F320F7-C227-410E-8788-AC8451F67AEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -145,9 +151,10 @@ Global
 		{FD6C01E0-2D69-4E99-9BCE-D22D2FFE81C3} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{CC911812-F5B2-4CA0-BCED-A4E5BDCDF8B2} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{4EC6178C-DA40-4750-B5D6-7197394E19D3} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
+		{29F320F7-C227-410E-8788-AC8451F67AEA} = {6E546AD0-8248-45A6-AA58-F4FED3C7396F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}
 		RESX_PrefixTranslations = False
+		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}
 	EndGlobalSection
 EndGlobal

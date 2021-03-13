@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        dotnet: [ '5.0.100' ]
+        dotnet: [ '5.0.x' ]
     steps:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -17,6 +17,5 @@ jobs:
       - name: Get the sources
         uses: actions/checkout@v1
       - name: Run the build script
-        uses: cake-build/cake-action@v1
-        with:
-          target: Default
+        run: .\build.ps1 --target Tests
+        shell: powershell
