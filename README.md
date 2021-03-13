@@ -1,5 +1,7 @@
 # Simple Auth
 
+![GitHub CI](https://github.com/jjrdk/simpleauth/actions/workflows/github.yml/badge.svg)
+
 ## Description
 
 A minimalist take on the [SimpleIdentityServer](https://github.com/thabart/SimpleIdentityServer) project.
