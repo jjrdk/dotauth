@@ -24,6 +24,8 @@ namespace SimpleAuth.Build
             context.DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", publishSettings);
             var settings = new DockerImageBuildSettings
             {
+                NoCache = true,
+                Pull = true,
                 Compress = true,
                 File = "./DockerfileInMemory",
                 ForceRm = true,

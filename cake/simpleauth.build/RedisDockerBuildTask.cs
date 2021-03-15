@@ -26,6 +26,8 @@ namespace SimpleAuth.Build
                 publishSettings);
             var settings = new DockerImageBuildSettings
             {
+                NoCache = true,
+                Pull = true,
                 Compress = true,
                 File = "./DockerfilePgRedis",
                 ForceRm = true,

@@ -24,6 +24,8 @@ namespace SimpleAuth.Build
             context.DotNetCorePublish("./src/simpleauth.authserverpg/simpleauth.authserverpg.csproj", publishSettings);
             var settings = new DockerImageBuildSettings
             {
+                NoCache = true,
+                Pull = true,
                 Compress = true,
                 File = "./DockerfilePostgres",
                 ForceRm = true,
