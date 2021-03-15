@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <Version>4.6.2</Version>
-    <Authors>Thierry Habert, Jacob Reimers</Authors>
+    <Version>4.6.3</Version>
+    <Authors>Thierry Habart, Jacob Reimers</Authors>
     <Company>Reimers.dk</Company>
     <Product>SimpleAuth</Product>
     <PackageDescription>SimpleAuth provides support for OpenID, OAuth and UMA support for ASP.NET Core</PackageDescription>
