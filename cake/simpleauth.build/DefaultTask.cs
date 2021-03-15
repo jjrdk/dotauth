@@ -3,7 +3,7 @@ namespace SimpleAuth.Build
     using Cake.Frosting;
 
     [TaskName("Default")]
-    [IsDependentOn(typeof(DockerBuildTask))]
+    [IsDependentOn(typeof(RedisDockerBuildTask))]
     public class DefaultTask : FrostingTask
     {
     }
