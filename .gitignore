@@ -228,3 +228,4 @@ docker-compose.yml
 kubernetes_*.yml
 .dotnet
 .config
+.idea
