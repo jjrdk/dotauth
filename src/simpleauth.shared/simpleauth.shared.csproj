@@ -20,8 +20,8 @@
 	<Import Project="../../shared.projinfo" />
 
 	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.9.0" />
 	</ItemGroup>
 
 	<ItemGroup>
