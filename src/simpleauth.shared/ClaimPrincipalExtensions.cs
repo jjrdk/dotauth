@@ -57,8 +57,8 @@ namespace SimpleAuth.Shared
                 tickets = claims.Where(c => c.Type == "permissions")
                     .SelectMany(
                         c => c.Value.StartsWith("[")
-                            ? JsonConvert.DeserializeObject<Permission[]>(c.Value)
-                            : new[] { JsonConvert.DeserializeObject<Permission>(c.Value) })
+                            ? JsonConvert.DeserializeObject<Permission[]>(c.Value)!
+                            : new[] { JsonConvert.DeserializeObject<Permission>(c.Value)! })
                     .ToArray();
                 return tickets.Length > 0;
             }

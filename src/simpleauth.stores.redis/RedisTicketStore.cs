@@ -46,7 +46,7 @@
                 return (false, Array.Empty<ClaimData>());
             }
 
-            var ticket = JsonConvert.DeserializeObject<Ticket>(value) with { IsAuthorizedByRo = true };
+            var ticket = JsonConvert.DeserializeObject<Ticket>(value)! with { IsAuthorizedByRo = true };
             var result = await _database.StringSetAsync(ticket.Id, JsonConvert.SerializeObject(ticket), _expiry).ConfigureAwait(false);
 
             return (result, result ? ticket.Requester : Array.Empty<ClaimData>());

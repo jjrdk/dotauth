@@ -73,15 +73,13 @@ namespace SimpleAuth.Policies
             cancellationToken.ThrowIfCancellationRequested();
 
             // 1. Check can access to the scope
-            if (ticketLineParameter.Scopes.Any(s => authorizationPolicy.Scopes?.Contains(s) != true))
+            if (ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
             {
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
             }
 
             // 2. Check clients are correct
-            var clientAuthorizationResult = authorizationPolicy.ClientIdsAllowed == null
-                || authorizationPolicy.ClientIdsAllowed.Length == 0
-                || authorizationPolicy.ClientIdsAllowed?.Contains(ticketLineParameter.ClientId) == true;
+            var clientAuthorizationResult = authorizationPolicy.ClientIdsAllowed.Contains(ticketLineParameter.ClientId);
             if (!clientAuthorizationResult)
             {
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
@@ -94,16 +92,10 @@ namespace SimpleAuth.Policies
             }
 
             // 3. Check claims are correct
-            var claimAuthorizationResult = CheckClaims(
-                    authorizationPolicy,
-                    requester);
-            if (claimAuthorizationResult != null
-                && claimAuthorizationResult.Result != AuthorizationPolicyResultKind.Authorized)
-            {
-                return claimAuthorizationResult;
-            }
-
-            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
+            var claimAuthorizationResult = CheckClaims(authorizationPolicy, requester);
+            return claimAuthorizationResult.Result != AuthorizationPolicyResultKind.Authorized
+                ? claimAuthorizationResult
+                : new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
         }
 
         private static Task<AuthorizationPolicyResult> GetNeedInfoResult(ClaimData[] claims, ClaimsPrincipal requester, string openidConfigurationUrl)
@@ -148,7 +140,7 @@ namespace SimpleAuth.Policies
 
                 if (tokenClaim.ValueType == JsonClaimValueTypes.JsonArray) // is IEnumerable<string> strings)
                 {
-                    var strings = JsonConvert.DeserializeObject<object[]>(tokenClaim.Value);
+                    var strings = JsonConvert.DeserializeObject<object[]>(tokenClaim.Value)!;
                     if (!strings.Any(s => Equals(s, policyClaim.Value)))
                     {
                         return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);

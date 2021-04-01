@@ -25,10 +25,9 @@ namespace SimpleAuth.Shared
 
     internal class GetDiscoveryOperation
     {
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new (1);
 
-        private readonly Dictionary<string, DiscoveryInformation> _cache =
-            new Dictionary<string, DiscoveryInformation>();
+        private readonly Dictionary<string, DiscoveryInformation> _cache = new();
 
         private readonly Uri _discoveryDocumentationUri;
         private readonly Func<HttpClient> _httpClient;
@@ -66,7 +65,7 @@ namespace SimpleAuth.Shared
                 var response =
                     await _httpClient().SendAsync(request, cancellationToken).ConfigureAwait(false);
                 var serializedContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent);
+                doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent)!;
                 _cache.Add(key, doc);
                 return doc;
             }

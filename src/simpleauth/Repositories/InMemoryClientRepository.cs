@@ -36,7 +36,7 @@
             IReadOnlyCollection<Client>? clients = null)
         {
             _logger = logger;
-            _clientFactory = new ClientFactory(httpClient, scopeStore, JsonConvert.DeserializeObject<Uri[]>);
+            _clientFactory = new ClientFactory(httpClient, scopeStore, JsonConvert.DeserializeObject<Uri[]>!);
             _clients = clients == null
                 ? new List<Client>()
                 : clients.ToList();
@@ -107,17 +107,17 @@
 
 
             IEnumerable<Client> result = _clients;
-            if (newClient.ClientIds != null && newClient.ClientIds.Any())
+            if (newClient.ClientIds.Any())
             {
                 result = result.Where(c => newClient.ClientIds.Any(i => c.ClientId.Contains(i)));
             }
 
-            if (newClient.ClientNames != null && newClient.ClientNames.Any())
+            if (newClient.ClientNames.Any())
             {
                 result = result.Where(c => newClient.ClientNames.Any(n => c.ClientName.Contains(n)));
             }
 
-            if (newClient.ClientTypes != null && newClient.ClientTypes.Any())
+            if (newClient.ClientTypes.Any())
             {
                 var clientTypes = newClient.ClientTypes.Select(t => t).ToHashSet();
                 result = result.Where(c => clientTypes.Contains(c.ApplicationType))

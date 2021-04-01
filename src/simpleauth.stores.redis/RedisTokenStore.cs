@@ -28,7 +28,7 @@
         {
             var token = await _database.StringGetAsync(clientId + scopes).ConfigureAwait(false);
             var options = token.HasValue
-                ? JsonConvert.DeserializeObject<GrantedToken[]>(token)
+                ? JsonConvert.DeserializeObject<GrantedToken[]>(token)!
                 : Array.Empty<GrantedToken>();
             return options.FirstOrDefault(
                 x =>
@@ -60,11 +60,11 @@
             var existingScopeValue = await _database.StringGetAsync(grantedToken.ClientId + grantedToken.Scope)
                 .ConfigureAwait(false);
             var existingScopeToken = existingScopeValue.HasValue
-                ? JsonConvert.DeserializeObject<GrantedToken[]>(existingScopeValue)
+                ? JsonConvert.DeserializeObject<GrantedToken[]>(existingScopeValue)!
                 : Array.Empty<GrantedToken>();
             var scopeTokens = JsonConvert.SerializeObject(existingScopeToken.Concat(new[] {grantedToken}).ToArray());
             var expiry = TimeSpan.FromSeconds(grantedToken.ExpiresIn);
-            var idtask = _database.StringSetAsync(grantedToken.Id, value, expiry, When.NotExists);
+            var idTask = _database.StringSetAsync(grantedToken.Id, value, expiry, When.NotExists);
             var scopeTokenTask = _database.StringSetAsync(
                 grantedToken.ClientId + grantedToken.Scope,
                 scopeTokens,
@@ -73,7 +73,7 @@
             var accessTokenTask = _database.StringSetAsync(grantedToken.AccessToken, value, expiry, When.NotExists);
             var refreshTokenTask = _database.StringSetAsync(grantedToken.RefreshToken, value, expiry, When.NotExists);
 
-            if ((await Task.WhenAll(idtask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
+            if ((await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
                 .All(x => x))
             {
                 return true;
@@ -96,12 +96,12 @@
 
         private async Task<bool> RemoveToken(GrantedToken grantedToken)
         {
-            var idtask = _database.KeyDeleteAsync(grantedToken.Id);
+            var idTask = _database.KeyDeleteAsync(grantedToken.Id);
             var scopeTokenTask = _database.KeyDeleteAsync(grantedToken.ClientId + grantedToken.Scope);
             var accessTokenTask = _database.KeyDeleteAsync(grantedToken.AccessToken);
             var refreshTokenTask = _database.KeyDeleteAsync(grantedToken.RefreshToken);
 
-            return (await Task.WhenAll(idtask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
+            return (await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
                 .All(x => x);
         }
     }

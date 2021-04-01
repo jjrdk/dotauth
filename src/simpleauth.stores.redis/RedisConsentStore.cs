@@ -24,7 +24,7 @@
         {
             var consent = await _database.StringGetAsync(subject).ConfigureAwait(false);
             return consent.HasValue
-                ? JsonConvert.DeserializeObject<Consent[]>(consent)
+                ? JsonConvert.DeserializeObject<Consent[]>(consent)!
                 : Array.Empty<Consent>();
         }
 

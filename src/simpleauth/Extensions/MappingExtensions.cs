@@ -274,7 +274,7 @@ namespace SimpleAuth.Extensions
                         if (subChild != null)
                         {
                             var parameters =
-                                JsonConvert.DeserializeObject<Dictionary<string, object>>(subChild.ToString());
+                                JsonConvert.DeserializeObject<Dictionary<string, object>>(subChild.ToString())!;
                             record = record with { Parameters = parameters };
                         }
 

@@ -62,7 +62,7 @@ namespace SimpleAuth.Controllers
             _scopeStore = scopeStore;
             _httpClient = httpClient;
             _httpClient = httpClient;
-            _urlReader = JsonConvert.DeserializeObject<Uri[]>;
+            _urlReader = JsonConvert.DeserializeObject<Uri[]>!;
         }
 
         /// <summary>
@@ -207,11 +207,11 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
         {
-            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>);
+            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!);
             var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
             var result = await _clientRepository.Insert(toInsert, cancellationToken).ConfigureAwait(false);
 
-            return result ? Ok(toInsert) : (IActionResult)BadRequest();
+            return result ? Ok(toInsert) : BadRequest();
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace SimpleAuth.Controllers
                 GrantTypes = viewModel.GrantTypes.ToArray()
             };
 
-            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>);
+            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!);
             var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
             var result = await _clientRepository.Insert(toInsert, cancellationToken).ConfigureAwait(false);
 

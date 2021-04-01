@@ -18,13 +18,14 @@ namespace SimpleAuth.Extensions
     using Shared;
     using System;
     using System.Text;
+    using Newtonsoft.Json;
 
     internal static class DataProtectorExtensions
     {
         public static T Unprotect<T>(this IDataProtector dataProtector, string encoded)
         {
             var unprotected = Unprotect(dataProtector, encoded);
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(unprotected);
+            return JsonConvert.DeserializeObject<T>(unprotected)!;
         }
 
         private static string Unprotect(this IDataProtector dataProtector, string encoded)
