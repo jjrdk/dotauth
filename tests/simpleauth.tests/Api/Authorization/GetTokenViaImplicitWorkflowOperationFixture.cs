@@ -9,10 +9,13 @@
     using SimpleAuth.Api.Authorization;
     using System;
     using System.Security.Claims;
+    using System.Security.Principal;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging.Abstractions;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Results;
     using SimpleAuth.Shared.Errors;
     using Xunit;
     using Client = Shared.Models.Client;
@@ -30,7 +33,8 @@
                 new Mock<ITokenStore>().Object,
                 new Mock<IScopeRepository>().Object,
                 new InMemoryJwksRepository(),
-                new NoOpPublisher());
+                new NoOpPublisher(),
+                NullLogger.Instance);
         }
 
         [Fact]
@@ -42,61 +46,55 @@
         }
 
         [Fact]
-        public async Task When_Passing_Empty_Authorization_Request_Then_Exception_Is_Thrown()
+        public async Task WhenPassingEmptyAuthorizationRequestThenErrorIsReturned()
         {
-            await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _getTokenViaImplicitWorkflowOperation.Execute(
-                        new AuthorizationParameter(),
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None))
+            var result = await _getTokenViaImplicitWorkflowOperation.Execute(
+                    new AuthorizationParameter(),
+                    new ClaimsPrincipal(),
+                    new Client(),
+                    "",
+                    CancellationToken.None)
                 .ConfigureAwait(false);
+
+            Assert.Equal(ActionResultType.BadRequest, result.Type);
         }
 
         [Fact]
-        public async Task When_Passing_No_Nonce_Parameter_Then_Exception_Is_Thrown()
+        public async Task WhenPassingNoNonceParameterThenExceptionIsThrown()
         {
-            var authorizationParameter = new AuthorizationParameter {State = "state"};
+            var authorizationParameter = new AuthorizationParameter { State = "state" };
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _getTokenViaImplicitWorkflowOperation.Execute(
+            var result = await _getTokenViaImplicitWorkflowOperation.Execute(
                         authorizationParameter,
-                        null,
+                        new ClaimsPrincipal(),
                         new Client(),
-                        null,
-                        CancellationToken.None))
+                        "",
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Error!.Title);
             Assert.Equal(
                 string.Format(
                     Strings.MissingParameter,
                     CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
-                exception.Message);
-            Assert.Equal(authorizationParameter.State, exception.State);
+                result.Error.Detail);
         }
 
         [Fact]
-        public async Task When_Implicit_Flow_Is_Not_Supported_Then_Exception_Is_Thrown()
+        public async Task WhenImplicitFlowIsNotSupportedThenErrorIsReturned()
         {
-            var authorizationParameter = new AuthorizationParameter {Nonce = "nonce", State = "state"};
+            var authorizationParameter = new AuthorizationParameter { Nonce = "nonce", State = "state" };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _getTokenViaImplicitWorkflowOperation.Execute(
-                        authorizationParameter,
-                        null,
-                        new Client(),
-                        null,
-                        CancellationToken.None))
+            var ex = await _getTokenViaImplicitWorkflowOperation.Execute(
+                    authorizationParameter,
+                    new ClaimsPrincipal(),
+                    new Client(),
+                    "",
+                    CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, ex.Code);
+            Assert.Equal(ErrorCodes.InvalidRequest, ex.Error!.Title);
             Assert.Equal(
-                string.Format(
-                    Strings.TheClientDoesntSupportTheGrantType,
-                    authorizationParameter.ClientId,
-                    "implicit"),
-                ex.Message);
-            Assert.Equal(authorizationParameter.State, ex.State);
+                string.Format(Strings.TheClientDoesntSupportTheGrantType, authorizationParameter.ClientId, "implicit"),
+                ex.Error!.Detail);
         }
 
         [Fact]
@@ -115,14 +113,14 @@
                 RedirectUrl = new Uri("https://localhost")
             };
 
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("sub", "test")}, "fake"));
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "test") }, "fake"));
 
             var client = new Client
             {
                 ResponseTypes = ResponseTypeNames.All,
-                RedirectionUrls = new[] {new Uri("https://localhost"),},
-                GrantTypes = new[] {GrantTypes.Implicit},
-                AllowedScopes = new[] {"openid"}
+                RedirectionUrls = new[] { new Uri("https://localhost"), },
+                GrantTypes = new[] { GrantTypes.Implicit },
+                AllowedScopes = new[] { "openid" }
             };
             var result = await _getTokenViaImplicitWorkflowOperation.Execute(
                     authorizationParameter,

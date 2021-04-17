@@ -4,8 +4,12 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Properties;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
 
@@ -141,7 +145,7 @@
         }
 
         /// <inheritdoc />
-        public Task<bool> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
+        public Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             if (resourceSet == null)
             {
@@ -151,7 +155,12 @@
             var rec = _resources.FirstOrDefault(p => p.Resource.Id == resourceSet.Id);
             if (rec == null)
             {
-                return Task.FromResult(false);
+                return Task.FromResult<Option>(new Option.Error(new ErrorDetails
+                {
+                    Status = HttpStatusCode.NotFound,
+                    Title = ErrorCodes.NotUpdated,
+                    Detail = SharedStrings.ResourceCannotBeUpdated
+                }));
             }
 
             _resources.Remove(rec);
@@ -165,7 +174,7 @@
             };
             rec = new OwnedResourceSet(rec.Owner, res);
             _resources.Add(rec);
-            return Task.FromResult(true);
+            return Task.FromResult<Option>(new Option.Success());
         }
 
         private class OwnedResourceSet

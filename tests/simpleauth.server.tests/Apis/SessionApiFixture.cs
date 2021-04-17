@@ -4,15 +4,16 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class SessionApiFixture
     {
         private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
 
-        public SessionApiFixture()
+        public SessionApiFixture(ITestOutputHelper outputHelper)
         {
-            _server = new TestOauthServerFixture();
+            _server = new TestOauthServerFixture(outputHelper);
         }
 
         [Fact]
@@ -25,7 +26,7 @@
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-            var html = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            _ = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
         }

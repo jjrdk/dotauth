@@ -22,11 +22,14 @@ namespace SimpleAuth.Tests.Api.Authorization
     using Shared.Repositories;
     using SimpleAuth.Api.Authorization;
     using System;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Results;
     using SimpleAuth.Services;
     using SimpleAuth.Shared.Errors;
     using Xunit;
@@ -40,7 +43,7 @@ namespace SimpleAuth.Tests.Api.Authorization
         private Mock<IClientStore> _clientStore;
 
         [Fact]
-        public async Task When_Client_Require_PKCE_And_NoCodeChallenge_Is_Passed_Then_Exception_Is_Thrown()
+        public async Task WhenClientRequirePKCEAndNoCodeChallengeIsPassedThenAnErrorIsReturned()
         {
             const string clientId = "clientId";
             const string scope = OpenIdScope;
@@ -49,10 +52,10 @@ namespace SimpleAuth.Tests.Api.Authorization
             InitializeFakeObjects(
                 new Client
                 {
-                    ResponseTypes = new[] {ResponseTypeNames.IdToken},
+                    ResponseTypes = new[] { ResponseTypeNames.IdToken },
                     ClientId = clientId,
                     RequirePkce = true,
-                    RedirectionUrls = new[] {redirectUrl}
+                    RedirectionUrls = new[] { redirectUrl }
                 });
 
             var authorizationParameter = new AuthorizationParameter
@@ -63,15 +66,13 @@ namespace SimpleAuth.Tests.Api.Authorization
                 RedirectUrl = redirectUrl
             };
 
-            var result = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationActions.GetAuthorization(
+            var result = await _authorizationActions.GetAuthorization(
                         authorizationParameter,
-                        null,
-                        null,
-                        CancellationToken.None))
+                        new ClaimsPrincipal(),
+                        "",
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, result.Code);
-            Assert.Equal(string.Format(Strings.TheClientRequiresPkce, clientId), result.Message);
+            Assert.Equal(ActionResultType.BadRequest, result.Type);
         }
 
         private void InitializeFakeObjects(Client client = null)
@@ -90,9 +91,10 @@ namespace SimpleAuth.Tests.Api.Authorization
                 new Mock<ITokenStore>().Object,
                 new Mock<IScopeRepository>().Object,
                 new Mock<IConsentRepository>().Object,
-                new InMemoryJwksRepository(), 
+                new InMemoryJwksRepository(),
                 _eventPublisherStub.Object,
-                Array.Empty<IAuthenticateResourceOwnerService>());
+                Array.Empty<IAuthenticateResourceOwnerService>(),
+                new Mock<ILogger>().Object);
         }
     }
 }

@@ -484,15 +484,6 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Resource cannot be updated.
-        /// </summary>
-        internal static string ResourceCannotBeUpdated {
-            get {
-                return ResourceManager.GetString("ResourceCannotBeUpdated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The resource owner credentials are not correct.
         /// </summary>
         internal static string ResourceOwnerCredentialsAreNotCorrect {

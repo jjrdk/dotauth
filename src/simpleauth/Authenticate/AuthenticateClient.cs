@@ -135,9 +135,9 @@ namespace SimpleAuth.Authenticate
         /// </summary>
         /// <param name="instruction">Authentication instruction</param>
         /// <returns>Client id</returns>
-        private string? TryGettingClientId(AuthenticateInstruction instruction)
+        private static string? TryGettingClientId(AuthenticateInstruction instruction)
         {
-            var clientId = _clientAssertionAuthentication.GetClientId(instruction);
+            var clientId = ClientAssertionAuthentication.GetClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
                 return clientId;

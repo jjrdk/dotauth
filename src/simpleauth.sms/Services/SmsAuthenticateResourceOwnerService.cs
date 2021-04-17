@@ -21,23 +21,16 @@
             _confirmationCodeStore = confirmationCodeStore;
         }
 
-        public string Amr => SmsConstants.Amr;
+        public string Amr
+        {
+            get { return SmsConstants.Amr; }
+        }
 
         public async Task<ResourceOwner?> AuthenticateResourceOwner(
             string login,
             string password,
             CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(login))
-            {
-                throw new ArgumentNullException(nameof(login));
-            }
-
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                throw new ArgumentNullException(nameof(password));
-            }
-
             var confirmationCode =
                 await _confirmationCodeStore.Get(password, login, cancellationToken).ConfigureAwait(false);
             if (confirmationCode == null || confirmationCode.Subject != login)

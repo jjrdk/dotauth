@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class UserInfoClientFixture
     {
@@ -13,9 +14,9 @@
         private readonly TestOauthServerFixture _server;
         private readonly TokenClient _userInfoClient;
 
-        public UserInfoClientFixture()
+        public UserInfoClientFixture(ITestOutputHelper outputHelper)
         {
-            _server = new TestOauthServerFixture();
+            _server = new TestOauthServerFixture(outputHelper);
             _userInfoClient = new TokenClient(
                 TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
                 _server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));

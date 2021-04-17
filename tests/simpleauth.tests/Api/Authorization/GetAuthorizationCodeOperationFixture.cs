@@ -10,6 +10,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging.Abstractions;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
@@ -30,7 +31,8 @@
                 new Mock<IClientStore>().Object,
                 new Mock<IConsentRepository>().Object,
                 new InMemoryJwksRepository(),
-                new NoOpPublisher());
+                new NoOpPublisher(),
+                NullLogger.Instance);
         }
 
         [Fact]
@@ -42,7 +44,7 @@
         }
 
         [Fact]
-        public async Task When_The_Client_Grant_Type_Is_Not_Supported_Then_Exception_Is_Thrown()
+        public async Task WhenTheClientGrantTypeIsNotSupportedThenAnErrorIsReturned()
         {
             const string clientId = "clientId";
             const string scope = "scope";
@@ -61,20 +63,19 @@
                 AllowedScopes = new[] { scope },
                 RedirectionUrls = new[] { new Uri(HttpsLocalhost), }
             };
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _getAuthorizationCodeOperation.Execute(
+            var result = await _getAuthorizationCodeOperation.Execute(
                         authorizationParameter,
                         new ClaimsPrincipal(),
                         client,
                         "",
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.NotNull(exception);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
+            Assert.NotNull(result);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Error!.Title);
             Assert.Equal(
                 string.Format(Strings.TheClientDoesntSupportTheGrantType, clientId, "authorization_code"),
-                exception.Message);
+                result.Error.Detail);
         }
 
         [Fact]

@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using Exceptions;
     using Parameters;
     using Results;
     using Shared.Events.OAuth;
@@ -22,14 +21,17 @@ namespace SimpleAuth.Api.Authorization
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
 
     internal class AuthorizationActions
     {
@@ -43,6 +45,7 @@ namespace SimpleAuth.Api.Authorization
             _authorizationCodeGrantTypeParameterValidator;
 
         private readonly IEventPublisher _eventPublisher;
+        private readonly ILogger _logger;
         private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
 
         public AuthorizationActions(
@@ -53,7 +56,8 @@ namespace SimpleAuth.Api.Authorization
             IConsentRepository consentRepository,
             IJwksStore jwksStore,
             IEventPublisher eventPublisher,
-            IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices)
+            IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
+            ILogger logger)
         {
             _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
                 authorizationCodeStore,
@@ -62,7 +66,8 @@ namespace SimpleAuth.Api.Authorization
                 clientStore,
                 consentRepository,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
             _getTokenViaImplicitWorkflowOperation = new GetTokenViaImplicitWorkflowOperation(
                 clientStore,
                 consentRepository,
@@ -70,7 +75,8 @@ namespace SimpleAuth.Api.Authorization
                 tokenStore,
                 scopeRepository,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation =
                 new GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
                     clientStore,
@@ -79,10 +85,12 @@ namespace SimpleAuth.Api.Authorization
                     tokenStore,
                     scopeRepository,
                     jwksStore,
-                    eventPublisher);
+                    eventPublisher,
+                    logger);
             _authorizationCodeGrantTypeParameterValidator =
                 new AuthorizationCodeGrantTypeParameterAuthEdpValidator(clientStore);
             _eventPublisher = eventPublisher;
+            _logger = logger;
             _resourceOwnerServices = resourceOwnerServices.ToArray();
         }
 
@@ -101,36 +109,35 @@ namespace SimpleAuth.Api.Authorization
             if (client.RequirePkce
                 && (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.TheClientRequiresPkce, parameter.ClientId),
-                    parameter.State);
+                _logger.LogError(string.Format(Strings.TheClientRequiresPkce, parameter.ClientId));
+                return EndpointResult.CreateBadRequestResult(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(Strings.TheClientRequiresPkce, parameter.ClientId),
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             var responseTypes = parameter.ResponseType.ParseResponseTypes();
             var authorizationFlow = responseTypes.GetAuthorizationFlow(parameter.State);
-            switch (authorizationFlow)
+            endpointResult = authorizationFlow switch
             {
-                case AuthorizationFlow.AuthorizationCodeFlow:
-                    endpointResult = await _getAuthorizationCodeOperation
-                        .Execute(parameter, claimsPrincipal, client, issuerName, cancellationToken)
-                        .ConfigureAwait(false);
-                    break;
-                case AuthorizationFlow.ImplicitFlow:
-                    endpointResult = await _getTokenViaImplicitWorkflowOperation.Execute(
-                            parameter,
-                            claimsPrincipal,
-                            client,
-                            issuerName,
-                            CancellationToken.None)
-                        .ConfigureAwait(false);
-                    break;
-                case AuthorizationFlow.HybridFlow:
-                    endpointResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation
-                        .Execute(parameter, claimsPrincipal, client, issuerName, cancellationToken)
-                        .ConfigureAwait(false);
-                    break;
-            }
+                AuthorizationFlow.AuthorizationCodeFlow => await _getAuthorizationCodeOperation
+                    .Execute(parameter, claimsPrincipal, client, issuerName, cancellationToken)
+                    .ConfigureAwait(false),
+                AuthorizationFlow.ImplicitFlow => await _getTokenViaImplicitWorkflowOperation.Execute(
+                        parameter,
+                        claimsPrincipal,
+                        client,
+                        issuerName,
+                        CancellationToken.None)
+                    .ConfigureAwait(false),
+                AuthorizationFlow.HybridFlow => await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation
+                    .Execute(parameter, claimsPrincipal, client, issuerName, cancellationToken)
+                    .ConfigureAwait(false),
+                _ => endpointResult
+            };
 
             await _eventPublisher.Publish(
                     new AuthorizationGranted(Id.Create(), claimsPrincipal.Identity?.Name, client.ClientId, DateTimeOffset.UtcNow))

@@ -42,7 +42,7 @@
             await SetUser().ConfigureAwait(false);
             if (_settings.RedirectToLogin)
             {
-                _logger.Log(LogLevel.Debug, "Redirecting to login page");
+                _logger.LogDebug("Redirecting to login page");
                 return RedirectToActionPermanent("Index", "Authenticate");
             }
 

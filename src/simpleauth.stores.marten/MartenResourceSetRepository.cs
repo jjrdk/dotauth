@@ -2,18 +2,22 @@
 {
     using System;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using global::Marten;
     using global::Marten.Pagination;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Properties;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the marten based resource set repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IResourceSetRepository" />
+    /// <seealso cref="IResourceSetRepository" />
     public class MartenResourceSetRepository : IResourceSetRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
@@ -34,8 +38,8 @@
         {
             using var session = _sessionFactory();
 
-            var parameterIds = parameter.Ids ?? Array.Empty<string>();
-            var parameterNames = parameter.Names ?? Array.Empty<string>();
+            var parameterIds = parameter.Ids;
+            var parameterNames = parameter.Names;
             var results = await session.Query<OwnedResourceSet>()
                 .Where(x => x.Name.IsOneOf(parameterIds) && x.Type.IsOneOf(parameterNames))
                 .ToPagedListAsync(parameter.StartIndex + 1, parameter.TotalResults, cancellationToken)
@@ -80,17 +84,22 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
+        public async Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var existing = await session.LoadAsync<OwnedResourceSet>(resourceSet.Id, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
-                return false;
+                return new Option.Error(new ErrorDetails
+                {
+                    Status = HttpStatusCode.NotFound,
+                    Title = ErrorCodes.NotUpdated,
+                    Detail = SharedStrings.ResourceCannotBeUpdated
+                });
             }
             session.Update(OwnedResourceSet.FromResourceSet(resourceSet, existing.Owner));
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return true;
+            return new Option.Success();
         }
 
         /// <inheritdoc />

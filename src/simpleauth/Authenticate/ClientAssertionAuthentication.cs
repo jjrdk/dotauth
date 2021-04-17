@@ -41,7 +41,7 @@ namespace SimpleAuth.Authenticate
         /// </summary>
         /// <param name="instruction"></param>
         /// <returns></returns>
-        public string GetClientId(AuthenticateInstruction instruction)
+        public static string GetClientId(AuthenticateInstruction instruction)
         {
             if (instruction.ClientAssertionType != "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
                 || string.IsNullOrWhiteSpace(instruction.ClientAssertion))
@@ -111,11 +111,6 @@ namespace SimpleAuth.Authenticate
             AuthenticateInstruction instruction,
             CancellationToken cancellationToken)
         {
-            if (instruction == null)
-            {
-                throw new ArgumentNullException(nameof(instruction));
-            }
-
             var clientAssertion = instruction.ClientAssertion;
             var isJweToken = clientAssertion.IsJweToken();
             if (!isJweToken)

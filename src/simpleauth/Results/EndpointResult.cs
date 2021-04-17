@@ -14,6 +14,8 @@
 
 namespace SimpleAuth.Results
 {
+    using SimpleAuth.Shared.Models;
+
     /// <summary>
     /// Represents an endpoint resultKind value.
     /// </summary>
@@ -49,6 +51,11 @@ namespace SimpleAuth.Results
         public string? Amr { get; init; }
 
         /// <summary>
+        /// Gets any error details for the request.
+        /// </summary>
+        public ErrorDetails? Error { get; init; }
+
+        /// <summary>
         /// Creates an empty action resultKind with redirection
         /// </summary>
         /// <returns>Empty action resultKind with redirection</returns>
@@ -59,6 +66,11 @@ namespace SimpleAuth.Results
                 RedirectInstruction = new RedirectInstruction { Action = action, Parameters = parameters },
                 Type = ActionResultType.RedirectToAction
             };
+        }
+
+        public static EndpointResult CreateBadRequestResult(ErrorDetails error)
+        {
+            return new() {Type = ActionResultType.BadRequest, Error = error};
         }
 
         /// <summary>

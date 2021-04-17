@@ -32,13 +32,17 @@
         /// <inheritdoc />
         public void SchemaChange(string sql)
         {
-            _logger.LogInformation("Executing DDL change: " + sql);
+            _logger.LogInformation("Executing DDL change: {0}", sql);
         }
 
         /// <inheritdoc />
         public void LogSuccess(NpgsqlCommand command)
         {
-            var entry = command.Parameters.Aggregate(command.CommandText, (current, npgsqlParameter) => current.Replace(npgsqlParameter.ParameterName, $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
+            var entry = command.Parameters.Aggregate(
+                command.CommandText,
+                (current, npgsqlParameter) => current.Replace(
+                    npgsqlParameter.ParameterName,
+                    $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
             _logger.LogDebug(entry);
         }
 
@@ -46,7 +50,11 @@
         public void LogFailure(NpgsqlCommand command, Exception ex)
         {
             _logger.LogError("PostgreSql command failed!");
-            var entry = command.Parameters.Aggregate(command.CommandText, (current, npgsqlParameter) => current.Replace(npgsqlParameter.ParameterName, $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
+            var entry = command.Parameters.Aggregate(
+                command.CommandText,
+                (current, npgsqlParameter) => current.Replace(
+                    npgsqlParameter.ParameterName,
+                    $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
             _logger.LogError(entry);
         }
 

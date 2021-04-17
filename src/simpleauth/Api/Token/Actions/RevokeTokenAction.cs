@@ -25,7 +25,6 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
 
@@ -90,29 +89,39 @@ namespace SimpleAuth.Api.Token.Actions
 
             if (grantedToken == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidToken, Strings.TheTokenDoesntExist);
+                _logger.LogError(Strings.TheRefreshTokenIsNotValid);
+                return (false,
+                    new ErrorDetails
+                    {
+                        Detail = Strings.TheTokenDoesntExist,
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidToken
+                    });
             }
 
             // 3. Verifies whether the token was issued to the client making the revocation request
             if (grantedToken.ClientId != client.ClientId)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidToken,
-                    string.Format(Strings.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
+                _logger.LogError(Strings.TheRefreshTokenIsNotValid);
+                return (false,
+                    new ErrorDetails
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Title = ErrorCodes.InvalidToken,
+                        Detail = string.Format(Strings.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId)
+                    });
             }
 
-            var success = false;
-            // 4. Invalid the granted token
-            if (isAccessToken)
+            var success = isAccessToken switch
             {
-                success = await _tokenStore.RemoveAccessToken(grantedToken.AccessToken, cancellationToken).ConfigureAwait(false);
-            }
-
-            if (!isAccessToken && grantedToken.RefreshToken != null)
-            {
-                success = await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken, cancellationToken)
-                    .ConfigureAwait(false);
-            }
+                // 4. Invalid the granted token
+                true => await _tokenStore.RemoveAccessToken(grantedToken.AccessToken, cancellationToken)
+                    .ConfigureAwait(false),
+                false when grantedToken.RefreshToken != null => await _tokenStore
+                    .RemoveRefreshToken(grantedToken.RefreshToken, cancellationToken)
+                    .ConfigureAwait(false),
+                _ => false
+            };
 
             return success
                 ? (true, null)

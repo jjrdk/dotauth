@@ -90,7 +90,7 @@ namespace SimpleAuth.Sms.Controllers
             {
                 return BuildError(
                     ErrorCodes.UnhandledExceptionCode,
-                    "unhandled exception occured please contact the administrator",
+                    "unhandled exception occurred please contact the administrator",
                     HttpStatusCode.InternalServerError);
             }
         }

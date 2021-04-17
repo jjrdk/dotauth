@@ -13,8 +13,10 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging.Abstractions;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Results;
     using Xunit;
 
     //using Client = Shared.Models.Client;
@@ -34,7 +36,8 @@
                     new Mock<ITokenStore>().Object,
                     new Mock<IScopeRepository>().Object,
                     new InMemoryJwksRepository(),
-                    new NoOpPublisher());
+                    new NoOpPublisher(),
+                    NullLogger.Instance);
         }
 
         [Fact]
@@ -51,42 +54,22 @@
         }
 
         [Fact]
-        public async Task When_Passing_Empty_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
-                        new AuthorizationParameter(),
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task When_Nonce_Parameter_Is_Not_Set_Then_Exception_Is_Thrown()
+        public async Task WhenNonceParameterIsNotSetThenAnErrorIsReturned()
         {
             var authorizationParameter = new AuthorizationParameter { State = "state" };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
+            var ex = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
                         authorizationParameter,
-                        null,
+                        new ClaimsPrincipal(),
                         new Client(),
-                        null,
-                        CancellationToken.None))
+                        "",
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, ex.Code);
-            Assert.Equal(
-                string.Format(
-                    Strings.MissingParameter,
-                    CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
-                ex.Message);
-            Assert.Equal(authorizationParameter.State, ex.State);
+            Assert.Equal(ActionResultType.BadRequest, ex.Type);
         }
 
         [Fact]
-        public async Task When_Grant_Type_Is_Not_Supported_Then_Exception_Is_Thrown()
+        public async Task WhenGrantTypeIsNotSupportedThenAnErrorIsReturned()
         {
             var redirectUrl = new Uri("https://localhost");
             var authorizationParameter = new AuthorizationParameter
@@ -99,22 +82,14 @@
             };
 
             var client = new Client { RedirectionUrls = new[] { redirectUrl }, AllowedScopes = new[] { "openid" }, };
-            var ex = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
+            var ex = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
                         authorizationParameter,
                         new ClaimsPrincipal(),
                         client,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, ex.Code);
-            Assert.Equal(
-                string.Format(
-                    Strings.TheClientDoesntSupportTheGrantType,
-                    authorizationParameter.ClientId,
-                    "implicit and authorization_code"),
-                ex.Message);
-            Assert.Equal(authorizationParameter.State, ex.State);
+            Assert.Equal(ActionResultType.BadRequest, ex.Type);
         }
     }
 }

@@ -31,6 +31,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
     using Xunit;
+    using Xunit.Abstractions;
     using TokenRequest = Client.TokenRequest;
 
     public class AuthorizationClientFixture : IDisposable
@@ -39,12 +40,12 @@ namespace SimpleAuth.Server.Tests.Apis
         private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
         private readonly TestOauthServerFixture _server;
         private readonly TokenClient _authorizationClient;
-        private readonly JwtSecurityTokenHandler _jwsGenerator = new JwtSecurityTokenHandler();
+        private readonly JwtSecurityTokenHandler _jwsGenerator = new();
 
-        public AuthorizationClientFixture()
+        public AuthorizationClientFixture(ITestOutputHelper outputHelper)
         {
             IdentityModelEventSource.ShowPII = true;
-            _server = new TestOauthServerFixture();
+            _server = new TestOauthServerFixture(outputHelper);
             _authorizationClient = new TokenClient(
                 TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
                 _server.Client,

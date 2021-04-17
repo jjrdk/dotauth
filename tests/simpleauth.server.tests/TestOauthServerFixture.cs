@@ -19,6 +19,7 @@ namespace SimpleAuth.Server.Tests
     using System.Net.Http.Headers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
+    using Xunit.Abstractions;
 
     public class TestOauthServerFixture : IDisposable
     {
@@ -26,10 +27,10 @@ namespace SimpleAuth.Server.Tests
         public Func<HttpClient> Client { get; }
         public SharedContext SharedCtx { get; }
 
-        public TestOauthServerFixture()
+        public TestOauthServerFixture(ITestOutputHelper outputHelper)
         {
             SharedCtx = new SharedContext();
-            var startup = new FakeStartup(SharedCtx);
+            var startup = new FakeStartup(SharedCtx, outputHelper);
             Server = new TestServer(
                 new WebHostBuilder()
                 .UseUrls("http://localhost:5000")

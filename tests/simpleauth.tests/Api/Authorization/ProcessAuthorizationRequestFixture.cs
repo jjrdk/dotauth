@@ -1,40 +1,30 @@
 ﻿namespace SimpleAuth.Tests.Api.Authorization
 {
-    using Moq;
     using Parameters;
-    using Shared.Repositories;
-    using SimpleAuth.Api.Authorization;
     using System;
-    using SimpleAuth.Repositories;
     using Xunit;
 
     public sealed class ProcessAuthorizationRequestFixture
     {
-        private ProcessAuthorizationRequest _processAuthorizationRequest;
-
         [Fact]
         public void When_Passing_NotValidRedirectUrl_To_AuthorizationParameter_Then_Exception_Is_Thrown()
         {
-            InitializeMockingObjects();
+            //InitializeMockingObjects();
             const string state = "state";
             const string clientId = "MyBlog";
             const string redirectUrl = "not valid redirect url";
             Assert.Throws<UriFormatException>(
                 () =>
                 {
-                    var authorizationParameter = new AuthorizationParameter
+                    _ = new AuthorizationParameter
                     {
-                        ClientId = clientId,
-                        Prompt = "login",
-                        State = state,
-                        RedirectUrl = new Uri(redirectUrl)
+                        ClientId = clientId, Prompt = "login", State = state, RedirectUrl = new Uri(redirectUrl)
                     };
                 });
         }
 
         /*
-        #region TEST VALID SCENARIOS
-
+        TODO: Uncomment these tests
         [Fact]
         public void When_TryingToRequestAuthorization_But_TheUserConnectionValidityPeriodIsNotValid_Then_Redirect_To_The_Authentication_Screen()
         {            InitializeMockingObjects();
@@ -181,10 +171,6 @@
             Assert.True(resultKind.RedirectInstruction.Parameters.Count().Equals(0));
         }
 
-        #endregion
-
-        #region TEST THE LOGIN
-
         [Fact]
         public void When_Executing_Correct_Authorization_Request_Then_Events_Are_Logged()
         {            InitializeMockingObjects();
@@ -222,8 +208,6 @@
             _simpleIdentityServerEventSource.Verify(s => s.EndProcessingAuthorizationRequest(jsonAuthorizationParameter, "RedirectToAction", "AuthenticateIndex"));
         }
 
-        #endregion
-        */
         private void InitializeMockingObjects()
         {
             var clientStore = new Mock<IClientStore>();
@@ -232,7 +216,9 @@
             _processAuthorizationRequest = new ProcessAuthorizationRequest(
                 clientStore.Object,
                 consentRepository.Object,
-                new InMemoryJwksRepository());
+                new InMemoryJwksRepository(),
+                NullLogger.Instance);
         }
+        */
     }
 }

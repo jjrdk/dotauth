@@ -16,6 +16,7 @@ namespace SimpleAuth.Shared.Errors
 {
     internal static class ErrorCodes
     {
+        public const string NotUpdated = "not_updated";
         public const string InvalidResourceSetId = "invalid_resource_set_id";
         public const string ExpiredTicket = "expired_ticket";
         public const string ExpiredAuthorizationCode = "expired_code";

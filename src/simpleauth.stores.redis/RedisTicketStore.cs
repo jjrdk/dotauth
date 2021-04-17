@@ -70,7 +70,7 @@
         /// <inheritdoc />
         public Task<IReadOnlyList<Ticket>> GetAll(string owner, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <inheritdoc />

@@ -31,6 +31,7 @@ namespace SimpleAuth.Controllers
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
@@ -66,6 +67,7 @@ namespace SimpleAuth.Controllers
         /// <param name="jwksStore"></param>
         /// <param name="dataProtectionProvider">The data protection provider.</param>
         /// <param name="authenticationService">The authentication service.</param>
+        /// <param name="logger">The logger.</param>
         public AuthorizationController(
             IHttpClientFactory httpClient,
             IEventPublisher eventPublisher,
@@ -77,7 +79,8 @@ namespace SimpleAuth.Controllers
             IConsentRepository consentRepository,
             IJwksStore jwksStore,
             IDataProtectionProvider dataProtectionProvider,
-            IAuthenticationService authenticationService)
+            IAuthenticationService authenticationService,
+            ILogger<AuthenticateController> logger)
         {
             _httpClient = httpClient;
             _clientStore = clientStore;
@@ -90,7 +93,8 @@ namespace SimpleAuth.Controllers
                 consentRepository,
                 jwksStore,
                 eventPublisher,
-                resourceOwnerServices);
+                resourceOwnerServices,
+                logger);
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _authenticationService = authenticationService;
         }
@@ -161,10 +165,12 @@ namespace SimpleAuth.Controllers
                         var redirectionUrl = uri.AddParametersInQuery(actionResult.GetRedirectionParameters());
                         return new RedirectResult(redirectionUrl.AbsoluteUri);
                     }
-                case ActionResultType.Output:
+                case ActionResultType.BadRequest:
+                    return BadRequest(actionResult.Error);
                 case ActionResultType.None:
+                case ActionResultType.Output:
                 default:
-                    return null;
+                    return BadRequest();
             }
         }
 
@@ -238,12 +244,10 @@ namespace SimpleAuth.Controllers
                             authorizationRequest.client_id,
                             cancellationToken)
                         .ConfigureAwait(false);
-                return result == null
-                    ? throw new SimpleAuthExceptionWithState(
+                return result ?? throw new SimpleAuthExceptionWithState(
                         ErrorCodes.InvalidRequest,
                         Strings.TheRequestParameterIsNotCorrect,
-                        authorizationRequest.state)
-                    : result;
+                        authorizationRequest.state);
             }
 
             if (authorizationRequest.request_uri == null)

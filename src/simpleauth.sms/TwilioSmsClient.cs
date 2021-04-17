@@ -41,16 +41,6 @@
         /// </exception>
         public async Task<(bool, string?)> SendMessage(string toPhoneNumber, string message)
         {
-            if (string.IsNullOrWhiteSpace(toPhoneNumber))
-            {
-                throw new ArgumentException(nameof(toPhoneNumber));
-            }
-
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                throw new ArgumentException(nameof(message));
-            }
-
             var keyValues = new []
             {
                 new KeyValuePair<string?, string?>("To", toPhoneNumber),
@@ -66,7 +56,7 @@
             httpRequest.Headers.UserAgent.Add(
                 new ProductInfoHeaderValue("twilio-csharp/5.13.4 (.NET Framework 4.5.1+)"));
             httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpRequest.Headers.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("utf-8"));
+            httpRequest.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("utf-8"));
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(
                 "Basic",
                 CreateBasicAuthenticationHeader(_credentials.AccountSid, _credentials.AuthToken));

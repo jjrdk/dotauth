@@ -26,6 +26,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http;
     using System.Threading.Tasks;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class TokenIntrospectionFixture
     {
@@ -33,9 +34,9 @@ namespace SimpleAuth.Server.Tests.Apis
         private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
         private readonly TestOauthServerFixture _server;
 
-        public TokenIntrospectionFixture()
+        public TokenIntrospectionFixture(ITestOutputHelper outputHelper)
         {
-            _server = new TestOauthServerFixture();
+            _server = new TestOauthServerFixture(outputHelper);
         }
 
         [Fact]

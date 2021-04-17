@@ -10,22 +10,23 @@
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class SmsCodeFixture : IDisposable
     {
         private const string BaseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
 
-        public SmsCodeFixture()
+        public SmsCodeFixture(ITestOutputHelper outputHelper)
         {
-            _server = new TestOauthServerFixture();
+            _server = new TestOauthServerFixture(outputHelper);
         }
 
         [Fact]
         public async Task WhenNoPhoneNumberConfiguredThenReturnsError()
         {
             var client = CreateTokenClient();
-            var noPhoneNumberResult = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = string.Empty})
+            var noPhoneNumberResult = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = string.Empty })
                 .ConfigureAwait(false);
 
             // ASSERT : NO PHONE NUMBER
@@ -50,7 +51,7 @@
             ConfirmationCode confirmationCode;
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ConfirmationCode) null));
+                .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .Callback<ConfirmationCode, CancellationToken>((r, c) => { confirmationCode = r; })
@@ -58,7 +59,7 @@
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync((false, ""));
             var client = CreateTokenClient();
-            var twilioNotConfigured = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
+            var twilioNotConfigured = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
                 .ConfigureAwait(false);
 
             Assert.True(twilioNotConfigured.HasError);
@@ -72,7 +73,7 @@
         {
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ConfirmationCode) null));
+                .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 // .Callback<ConfirmationCode>(r => { confirmationCode = r; })
@@ -82,7 +83,7 @@
                 .ReturnsAsync((true, null));
             var client = CreateTokenClient();
             var cannotInsertConfirmationCode = await client
-                .RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
+                .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
                 .ConfigureAwait(false);
 
             // ASSERT : CANNOT INSERT CONFIRMATION CODE
@@ -99,19 +100,19 @@
                 .ReturnsAsync((true, ""));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ConfirmationCode) null));
+                .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .Callback(() => throw new Exception())
                 .Returns(() => Task.FromResult(false));
             var client = CreateTokenClient();
-            var unhandledException = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
+            var unhandledException = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
                 .ConfigureAwait(false);
 
             Assert.True(unhandledException.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Error.Title);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Error!.Title);
             Assert.Equal(
-                "unhandled exception occured please contact the administrator",
+                "unhandled exception occurred please contact the administrator",
                 unhandledException.Error.Detail);
             Assert.Equal(HttpStatusCode.InternalServerError, unhandledException.StatusCode);
         }
@@ -121,7 +122,7 @@
         {
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((ConfirmationCode) null));
+                .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 //.Callback<ConfirmationCode>(r => { confirmationCode = r; })
@@ -130,7 +131,7 @@
                 .Callback(() => { })
                 .ReturnsAsync((true, null));
             var client = CreateTokenClient();
-            var happyPath = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
+            var happyPath = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
                 .ConfigureAwait(false);
 
             Assert.False(happyPath.HasError);

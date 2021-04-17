@@ -34,11 +34,6 @@ namespace SimpleAuth.Shared
 
         public GetDiscoveryOperation(Uri authority, Func<HttpClient> httpClient)
         {
-            if (authority == null)
-            {
-                throw new ArgumentNullException(nameof(authority));
-            }
-
             var uri = new UriBuilder(
                 authority.Scheme,
                 authority.Host,

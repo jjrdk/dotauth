@@ -144,11 +144,6 @@
         /// <inheritdoc />
         public async Task<bool> Update(Client newClient, CancellationToken cancellationToken = default)
         {
-            if (newClient == null)
-            {
-                return false;
-            }
-
             if (string.IsNullOrWhiteSpace(newClient.ClientId)
                 || !_clients.Exists(x => x.ClientId == newClient.ClientId))
             {

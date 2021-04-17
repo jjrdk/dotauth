@@ -396,7 +396,7 @@ namespace SimpleAuth.Controllers
                 || !await _confirmationCodeStore.Remove(codeViewModel.Code, subject, cancellationToken)
                     .ConfigureAwait(false))
             {
-                ModelState.AddModelError("Code", "an error occured while trying to remove the code");
+                ModelState.AddModelError("Code", "an error occurred while trying to remove the code");
                 return Ok(codeViewModel);
             }
 

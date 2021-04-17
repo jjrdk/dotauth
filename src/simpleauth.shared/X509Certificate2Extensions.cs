@@ -25,10 +25,6 @@
         /// <returns>A <see cref="HashSet{T}"/> instance with all alternate names.</returns>
         public static HashSet<string> GetSubjectAlternativeNames(this X509Certificate2 cert)
         {
-            if (cert == null)
-            {
-                throw new ArgumentNullException(nameof(cert));
-            }
             var subjectAlternativeName = cert.Extensions.Cast<X509Extension>()
                 .Where(n => n.Oid!.Value == SubjectAlternateNameOid)
                 .Select(n => new AsnEncodedData(n.Oid, n.RawData))

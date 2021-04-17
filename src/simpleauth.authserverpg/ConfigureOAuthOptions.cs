@@ -32,7 +32,8 @@
             options.UserInformationEndpoint = _configuration["OAUTH:AUTHORITY"] + "/userinfo";
             options.UsePkce = true;
             options.CallbackPath = "/callback";
-            if (bool.TryParse(_configuration["SERVER:ALLOWSELFSIGNEDCERT"], out var allowSelfSignedCert) && allowSelfSignedCert)
+            if (bool.TryParse(_configuration["SERVER:ALLOWSELFSIGNEDCERT"], out var allowSelfSignedCert)
+                && allowSelfSignedCert)
             {
                 _logger.LogWarning("Self signed certs allowed");
                 options.Backchannel = new HttpClient(
@@ -41,13 +42,14 @@
                         ServerCertificateCustomValidationCallback = (msg, cert, _, __) =>
                         {
                             var altNames = cert.GetSubjectAlternativeNames();
-                            _logger.LogInformation("Subject alt names: " + string.Join(", ", altNames));
+                            _logger.LogInformation("Subject alt names: {0}", string.Join(", ", altNames));
                             _logger.LogInformation($"Request host: {msg.RequestUri?.Host}");
                             var allowed = altNames.Count == 0 || altNames.Contains(msg.RequestUri?.Host);
                             if (!allowed)
                             {
                                 _logger.LogWarning($"Certificate with thumbprint {cert.Thumbprint} not allowed");
                             }
+
                             return allowed;
                         },
                         AllowAutoRedirect = true,
@@ -74,7 +76,7 @@
                 OnRemoteFailure = ctx =>
                 {
                     var logger = ctx.HttpContext.RequestServices.GetService<ILogger<IApplicationBuilder>>();
-                    logger.LogError(ctx.Failure, ctx.Failure.Message);
+                    logger.LogError(ctx.Failure, ctx.Failure!.Message);
                     return Task.CompletedTask;
                 }
             };

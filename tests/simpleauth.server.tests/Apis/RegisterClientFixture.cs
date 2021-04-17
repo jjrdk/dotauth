@@ -26,6 +26,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
     using Xunit;
+    using Xunit.Abstractions;
     using TokenRequest = Client.TokenRequest;
 
     public class RegisterClientFixture : IDisposable
@@ -34,9 +35,9 @@ namespace SimpleAuth.Server.Tests.Apis
         private const string ApplicationJson = "application/json";
         private readonly TestOauthServerFixture _server;
 
-        public RegisterClientFixture()
+        public RegisterClientFixture(ITestOutputHelper outputHelper)
         {
-            _server = new TestOauthServerFixture();
+            _server = new TestOauthServerFixture(outputHelper);
         }
 
         [Fact(Skip = "Run locally")]

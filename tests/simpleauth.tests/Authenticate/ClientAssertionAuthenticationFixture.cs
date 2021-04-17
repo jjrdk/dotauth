@@ -150,17 +150,7 @@
 
             Assert.NotNull(result.Client);
         }
-
-        [Fact]
-        public async Task When_Passing_Null_Then_Exception_Is_Thrown()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
+        
         [Fact]
         public async Task When_Decrypt_Valid_Client_Secret_Jwt_Then_Client_Is_Returned()
         {

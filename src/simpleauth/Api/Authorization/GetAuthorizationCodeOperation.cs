@@ -14,23 +14,26 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using Exceptions;
+    using System.Net;
     using Parameters;
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Errors;
 
     internal sealed class GetAuthorizationCodeOperation
     {
+        private const string AuthorizationCode = "authorization_code";
+        private readonly ILogger _logger;
         private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
 
@@ -41,9 +44,15 @@ namespace SimpleAuth.Api.Authorization
             IClientStore clientStore,
             IConsentRepository consentRepository,
             IJwksStore jwksStore,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
-            _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository, jwksStore);
+            _logger = logger;
+            _processAuthorizationRequest = new ProcessAuthorizationRequest(
+                clientStore,
+                consentRepository,
+                jwksStore,
+                logger);
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 authorizationCodeStore,
                 tokenStore,
@@ -68,29 +77,40 @@ namespace SimpleAuth.Api.Authorization
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-
+            if (result.Type == ActionResultType.BadRequest)
+            {
+                return result;
+            }
             // 1. Check the client is authorized to use the authorization_code flow.
             if (!client.CheckGrantTypes(GrantTypes.AuthorizationCode))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
+                _logger.LogError(
                     string.Format(
                         Strings.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
-                        "authorization_code"),
-                    authorizationParameter.State);
+                        AuthorizationCode));
+                return EndpointResult.CreateBadRequestResult(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            Strings.TheClientDoesntSupportTheGrantType,
+                            authorizationParameter.ClientId,
+                            AuthorizationCode),
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             if (result.Type == ActionResultType.RedirectToCallBackUrl)
             {
                 result = await _generateAuthorizationResponse.Generate(
-                             result,
-                             authorizationParameter,
-                             principal,
-                             client,
-                             issuerName,
-                             CancellationToken.None)
-                         .ConfigureAwait(false);
+                        result,
+                        authorizationParameter,
+                        principal,
+                        client,
+                        issuerName,
+                        CancellationToken.None)
+                    .ConfigureAwait(false);
             }
 
             return result;

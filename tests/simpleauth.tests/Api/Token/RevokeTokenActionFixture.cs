@@ -80,16 +80,15 @@ namespace SimpleAuth.Tests.Api.Token
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",
                 $"{clientid}:{clientsecret}".Base64Encode());
-            var result = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _revokeTokenAction.Execute(
+            var result = await _revokeTokenAction.Execute(
                         parameter,
                         authenticationHeader,
                         null,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal("invalid_token", result.Code);
+            Assert.Equal("invalid_token", result.error.Title);
         }
 
         [Fact]

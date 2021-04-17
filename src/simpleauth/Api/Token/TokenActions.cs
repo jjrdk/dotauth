@@ -345,9 +345,15 @@ namespace SimpleAuth.Api.Token
             // Read this RFC for more information
             if (string.IsNullOrWhiteSpace(revokeTokenParameter.Token))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.MissingParameter, CoreConstants.IntrospectionRequestNames.Token));
+                return (false,
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            Strings.MissingParameter,
+                            CoreConstants.IntrospectionRequestNames.Token),
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             var result = await _revokeTokenAction.Execute(

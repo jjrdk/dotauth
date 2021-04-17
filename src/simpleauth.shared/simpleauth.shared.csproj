@@ -30,12 +30,21 @@
 			<AutoGen>True</AutoGen>
 			<DependentUpon>ErrorMessages.resx</DependentUpon>
 		</Compile>
+		<Compile Update="Properties\SharedStrings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>SharedStrings.resx</DependentUpon>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Update="Errors\ErrorMessages.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Properties\SharedStrings.resx">
+		  <Generator>ResXFileCodeGenerator</Generator>
+		  <LastGenOutput>SharedStrings.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 	</ItemGroup>
 </Project>

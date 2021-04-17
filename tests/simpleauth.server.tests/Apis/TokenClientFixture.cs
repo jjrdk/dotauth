@@ -33,6 +33,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class TokenClientFixture
     {
@@ -41,10 +42,10 @@ namespace SimpleAuth.Server.Tests.Apis
         private const string WellKnownOpenidConfigurationUrl = BaseUrl + WellKnownOpenidConfiguration;
         private readonly TestOauthServerFixture _server;
 
-        public TokenClientFixture()
+        public TokenClientFixture(ITestOutputHelper outputHelper)
         {
             IdentityModelEventSource.ShowPII = true;
-            _server = new TestOauthServerFixture();
+            _server = new TestOauthServerFixture(outputHelper);
         }
 
         [Fact]

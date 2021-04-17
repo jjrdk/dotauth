@@ -37,70 +37,63 @@
         /// <exception cref="ArgumentNullException">claims</exception>
         public async Task<AccountFilterResult> Check(IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            if (claims == null)
-            {
-                throw new ArgumentNullException(nameof(claims));
-            }
-
             var allClaims = claims.ToArray();
             var accountFilterRules = new List<AccountFilterRuleResult>();
             var filters = await _filterStore.GetAll(cancellationToken).ConfigureAwait(false);
-            if (filters != null)
+
+            foreach (var filter in filters)
             {
-                foreach (var filter in filters)
+                var errorMessages = new List<string>();
+                foreach (var rule in filter.Rules)
                 {
-                    var errorMessages = new List<string>();
-                    foreach (var rule in filter.Rules)
+                    var claim = allClaims.FirstOrDefault(c => c.Type == rule.ClaimType);
+                    if (claim == null)
                     {
-                        var claim = allClaims.FirstOrDefault(c => c.Type == rule.ClaimType);
-                        if (claim == null)
-                        {
-                            errorMessages.Add(string.Format(ErrorMessages.TheClaimDoesntExist, rule.ClaimType));
-                            continue;
-                        }
-
-                        switch (rule.Operation)
-                        {
-                            case ComparisonOperations.Equal:
-                                if (rule.ClaimValue != claim.Value)
-                                {
-                                    errorMessages.Add(
-                                        string.Format(
-                                            ErrorMessages.TheFilterEqualsIsWrong,
-                                            claim.Type,
-                                            rule.ClaimValue));
-                                }
-
-                                break;
-                            case ComparisonOperations.NotEqual:
-                                if (rule.ClaimValue == claim.Value)
-                                {
-                                    errorMessages.Add(
-                                        string.Format(
-                                            ErrorMessages.TheFilterNotEqualsIsWrong,
-                                            claim.Type,
-                                            rule.ClaimValue));
-                                }
-
-                                break;
-                            case ComparisonOperations.RegularExpression:
-                                var regex = new Regex(rule.ClaimValue);
-                                if (!regex.IsMatch(claim.Value))
-                                {
-                                    errorMessages.Add(
-                                        string.Format(
-                                            ErrorMessages.TheFilterRegexIsWrong,
-                                            claim.Type,
-                                            rule.ClaimValue));
-                                }
-
-                                break;
-                        }
+                        errorMessages.Add(string.Format(ErrorMessages.TheClaimDoesntExist, rule.ClaimType));
+                        continue;
                     }
 
-                    var accountFilterRule = new AccountFilterRuleResult(filter.Name, errorMessages.Count == 0, errorMessages.ToArray());
-                    accountFilterRules.Add(accountFilterRule);
+                    switch (rule.Operation)
+                    {
+                        case ComparisonOperations.Equal:
+                            if (rule.ClaimValue != claim.Value)
+                            {
+                                errorMessages.Add(
+                                    string.Format(
+                                        ErrorMessages.TheFilterEqualsIsWrong,
+                                        claim.Type,
+                                        rule.ClaimValue));
+                            }
+
+                            break;
+                        case ComparisonOperations.NotEqual:
+                            if (rule.ClaimValue == claim.Value)
+                            {
+                                errorMessages.Add(
+                                    string.Format(
+                                        ErrorMessages.TheFilterNotEqualsIsWrong,
+                                        claim.Type,
+                                        rule.ClaimValue));
+                            }
+
+                            break;
+                        case ComparisonOperations.RegularExpression:
+                            var regex = new Regex(rule.ClaimValue);
+                            if (!regex.IsMatch(claim.Value))
+                            {
+                                errorMessages.Add(
+                                    string.Format(
+                                        ErrorMessages.TheFilterRegexIsWrong,
+                                        claim.Type,
+                                        rule.ClaimValue));
+                            }
+
+                            break;
+                    }
                 }
+
+                var accountFilterRule = new AccountFilterRuleResult(filter.Name, errorMessages.Count == 0, errorMessages.ToArray());
+                accountFilterRules.Add(accountFilterRule);
             }
 
             return !accountFilterRules.Any()

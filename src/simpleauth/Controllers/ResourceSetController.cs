@@ -26,6 +26,7 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
@@ -47,10 +48,11 @@ namespace SimpleAuth.Controllers
         /// Initializes a new instance of the <see cref="ResourceSetController"/> class.
         /// </summary>
         /// <param name="resourceSetRepository">The resource set repository.</param>
-        public ResourceSetController(IResourceSetRepository resourceSetRepository)
+        /// <param name="logger">The logger</param>
+        public ResourceSetController(IResourceSetRepository resourceSetRepository, ILogger<ResourceSetController> logger)
         {
             _resourceSetRepository = resourceSetRepository;
-            _updateResourceSet = new UpdateResourceSetAction(resourceSetRepository);
+            _updateResourceSet = new UpdateResourceSetAction(resourceSetRepository, logger);
         }
 
         /// <summary>
@@ -249,7 +251,12 @@ namespace SimpleAuth.Controllers
             result = result with { AuthorizationPolicies = rules };
             var updated = await _resourceSetRepository.Update(result, cancellationToken).ConfigureAwait(false);
 
-            return updated ? Ok() : (IActionResult)Problem();
+            return updated switch
+            {
+                Option.Error => Problem(),
+                _ => Ok()
+            };
+            //? Ok() : Problem();
         }
 
         /// <summary>
@@ -305,7 +312,7 @@ namespace SimpleAuth.Controllers
             resourceSet = resourceSet with
             {
                 Id = Id.Create(),
-                AuthorizationPolicies = new[] {new PolicyRule {IsResourceOwnerConsentNeeded = true}}
+                AuthorizationPolicies = new[] { new PolicyRule { IsResourceOwnerConsentNeeded = true } }
             };
             if (!await _resourceSetRepository.Add(subject, resourceSet, cancellationToken).ConfigureAwait(false))
             {
@@ -349,10 +356,18 @@ namespace SimpleAuth.Controllers
 
             var resourceSetUpdated =
                 await _updateResourceSet.Execute(resourceSet, cancellationToken).ConfigureAwait(false);
-            if (!resourceSetUpdated)
+            if (resourceSetUpdated is Option.Error e)
             {
-                return GetNotUpdatedResourceSet();
+                return e.Details.Status switch
+                {
+                    HttpStatusCode.BadRequest => BadRequest(e.Details),
+                    _ => new ObjectResult(e.Details) {StatusCode = (int) e.Details.Status}
+                };
             }
+            //if (!resourceSetUpdated)
+            //{
+            //    return GetNotUpdatedResourceSet();
+            //}
 
             var response = new UpdateResourceSetResponse { Id = resourceSet.Id };
 
@@ -378,22 +393,20 @@ namespace SimpleAuth.Controllers
             }
 
             var resourceSetExists = await _resourceSetRepository.Remove(id, cancellationToken).ConfigureAwait(false);
-            return !resourceSetExists
-                ? (IActionResult)BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest })
-                : NoContent();
+            return !resourceSetExists ? BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest }) : NoContent();
         }
 
-        private static ActionResult GetNotUpdatedResourceSet()
-        {
-            var errorResponse = new ErrorDetails
-            {
-                Status = HttpStatusCode.NotFound,
-                Title = "not_updated",
-                Detail = Strings.ResourceCannotBeUpdated
-            };
+        //private static ActionResult GetNotUpdatedResourceSet()
+        //{
+        //    var errorResponse = new ErrorDetails
+        //    {
+        //        Status = HttpStatusCode.NotFound,
+        //        Title = ErrorCodes.NotUpdated,
+        //        Detail = Strings.ResourceCannotBeUpdated
+        //    };
 
-            return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };
-        }
+        //    return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };
+        //}
 
         private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
         {

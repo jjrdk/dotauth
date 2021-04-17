@@ -140,11 +140,6 @@ namespace SimpleAuth.Client
             AuthorizationRequest request,
             CancellationToken cancellationToken = default)
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
             var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var uriBuilder = new UriBuilder(discoveryInformation.AuthorizationEndPoint) { Query = request.ToRequest() };
             var requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = uriBuilder.Uri };

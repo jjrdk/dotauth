@@ -14,24 +14,26 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using Exceptions;
+    using System.Net;
     using Parameters;
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Errors;
 
     internal sealed class GetTokenViaImplicitWorkflowOperation
     {
+        private readonly ILogger _logger;
         private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
 
@@ -42,9 +44,15 @@ namespace SimpleAuth.Api.Authorization
             ITokenStore tokenStore,
             IScopeRepository scopeRepository,
             IJwksStore jwksStore,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
-            _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository, jwksStore);
+            _logger = logger;
+            _processAuthorizationRequest = new ProcessAuthorizationRequest(
+                clientStore,
+                consentRepository,
+                jwksStore,
+                logger);
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 authorizationCodeStore,
                 tokenStore,
@@ -64,32 +72,58 @@ namespace SimpleAuth.Api.Authorization
         {
             if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
-                    authorizationParameter.State);
+                _logger.LogError(
+                    string.Format(
+                        Strings.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.NonceName));
+                return EndpointResult.CreateBadRequestResult(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            Strings.MissingParameter,
+                            CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             if (!client.CheckGrantTypes(GrantTypes.Implicit))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.TheClientDoesntSupportTheGrantType,
+                _logger.LogError(
+                    string.Format(
+                        Strings.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
-                        "implicit"),
-                    authorizationParameter.State);
+                        "implicit"));
+                return EndpointResult.CreateBadRequestResult(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            Strings.TheClientDoesntSupportTheGrantType,
+                            authorizationParameter.ClientId,
+                            "implicit"),
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
-            var claimsPrincipal = (ClaimsPrincipal)principal;
-            var result = await _processAuthorizationRequest
-                .Process(authorizationParameter, claimsPrincipal, client, issuerName, cancellationToken)
+            var claimsPrincipal = (ClaimsPrincipal) principal;
+            var result = await _processAuthorizationRequest.Process(
+                    authorizationParameter,
+                    claimsPrincipal,
+                    client,
+                    issuerName,
+                    cancellationToken)
                 .ConfigureAwait(false);
             if (result.Type == ActionResultType.RedirectToCallBackUrl)
             {
-                result = await _generateAuthorizationResponse
-                         .Generate(result, authorizationParameter, claimsPrincipal, client, issuerName, cancellationToken)
-                         .ConfigureAwait(false);
+                result = await _generateAuthorizationResponse.Generate(
+                        result,
+                        authorizationParameter,
+                        claimsPrincipal,
+                        client,
+                        issuerName,
+                        cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             return result;

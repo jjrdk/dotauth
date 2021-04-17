@@ -17,11 +17,13 @@ namespace SimpleAuth.Server.Tests.Apis
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using SimpleAuth.Api.ResourceSetController;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using Xunit;
-    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     public class UpdateResourceSetActionFixture
     {
@@ -31,9 +33,9 @@ namespace SimpleAuth.Server.Tests.Apis
         public UpdateResourceSetActionFixture()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-            _updateResourceSetAction = new UpdateResourceSetAction(_resourceSetRepositoryStub.Object);
+            _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Option.Success());
+            _updateResourceSetAction = new UpdateResourceSetAction(_resourceSetRepositoryStub.Object, new Mock<ILogger>().Object);
         }
 
         [Fact]
@@ -58,11 +60,11 @@ namespace SimpleAuth.Server.Tests.Apis
             var resourceSet = new Shared.Models.ResourceSet { Id = id };
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceSet);
-            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(false));
+            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult<Option>(new Option.Error(new ErrorDetails())));
 
             var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None).ConfigureAwait(false);
-            Assert.False(result);
+            Assert.IsType<Option.Error>(result);
         }
 
         [Fact]
@@ -79,12 +81,12 @@ namespace SimpleAuth.Server.Tests.Apis
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(resourceSet);
             _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+                .ReturnsAsync(new Option.Success());
 
             var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.True(result);
+            Assert.IsType<Option.Success>(result);
         }
     }
 }

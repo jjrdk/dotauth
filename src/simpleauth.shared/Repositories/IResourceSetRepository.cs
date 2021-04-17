@@ -72,7 +72,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="resourceSet">The resource set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<bool> Update(ResourceSet resourceSet, CancellationToken cancellationToken = default);
+        Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all.

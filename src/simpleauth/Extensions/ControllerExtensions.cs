@@ -47,7 +47,7 @@ namespace SimpleAuth.Extensions
                     authorizationRequest.redirect_uri!,
                     parameters,
                     endpointResult.RedirectInstruction!.ResponseMode!).ToString();
-                logger.LogInformation($"Redirection uri: {redirectUrl}");
+                logger.LogInformation("Redirection uri: {redirectUrl}", redirectUrl);
 
                 return new RedirectResult(redirectUrl);
             }

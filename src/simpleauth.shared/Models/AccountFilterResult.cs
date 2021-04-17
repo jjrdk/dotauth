@@ -19,7 +19,7 @@
         public AccountFilterResult(bool isValid, AccountFilterRuleResult[] accountFilterRules)
         {
             IsValid = isValid;
-            AccountFilterRules = accountFilterRules ?? throw new ArgumentNullException(nameof(accountFilterRules));
+            AccountFilterRules = accountFilterRules;
         }
 
         /// <summary>

@@ -16,53 +16,81 @@ namespace SimpleAuth.Api.ResourceSetController
 {
     using System;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
 
     internal class UpdateResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
+        private readonly ILogger _logger;
 
-        public UpdateResourceSetAction(IResourceSetRepository resourceSetRepository)
+        public UpdateResourceSetAction(IResourceSetRepository resourceSetRepository, ILogger logger)
         {
             _resourceSetRepository = resourceSetRepository;
+            _logger = logger;
         }
 
-        public async Task<bool> Execute(ResourceSet resourceSet, CancellationToken cancellationToken)
+        public async Task<Option> Execute(ResourceSet resourceSet, CancellationToken cancellationToken)
+        {
+            var checkResult = CheckResourceSetParameter(resourceSet);
+            return checkResult switch
+            {
+                Option.Error => checkResult,
+                _ => await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false)
+            };
+        }
+
+        private Option CheckResourceSetParameter(ResourceSet resourceSet)
         {
             if (string.IsNullOrWhiteSpace(resourceSet.Id))
             {
-                return false;
-            }
-
-            CheckResourceSetParameter(resourceSet);
-            return await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false);
-        }
-
-        private static void CheckResourceSetParameter(ResourceSet resourceSet)
-        {
-            if (resourceSet == null)
-            {
-                throw new ArgumentNullException(nameof(resourceSet));
+                var message = string.Format(Strings.MissingParameter, "id");
+                _logger.LogError(message);
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = message,
+                        Status = HttpStatusCode.NotFound
+                    });
             }
 
             if (string.IsNullOrWhiteSpace(resourceSet.Name))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.MissingParameter, "name"));
+                var message = string.Format(Strings.MissingParameter, "name");
+                _logger.LogError(
+                       message);
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = message,
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
-            if (resourceSet.Scopes == null || !resourceSet.Scopes.Any())
+            switch (resourceSet.Scopes.Length)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.MissingParameter, "scopes"));
+                case 0:
+                    var message = string.Format(Strings.MissingParameter, "scopes");
+                    _logger.LogError(message);
+                    return new Option.Error(
+                        new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidRequest,
+                            Detail = message,
+                            Status = HttpStatusCode.BadRequest
+                        });
+                default:
+                    return new Option.Success();
             }
         }
     }

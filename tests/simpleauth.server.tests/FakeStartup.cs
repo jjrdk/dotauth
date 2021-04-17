@@ -23,6 +23,7 @@ namespace SimpleAuth.Server.Tests
 
     using Stores;
     using System.Net.Http;
+    using Divergic.Logging.Xunit;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Hosting.Server;
@@ -35,16 +36,19 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Sms;
     using SimpleAuth.Sms.Services;
     using SimpleAuth.UI;
+    using Xunit.Abstractions;
 
     public class FakeStartup
     {
         private readonly SharedContext _context;
+        private readonly ITestOutputHelper _testOutputHelper;
 
         public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
 
-        public FakeStartup(SharedContext context)
+        public FakeStartup(SharedContext context, ITestOutputHelper testOutputHelper)
         {
             _context = context;
+            _testOutputHelper = testOutputHelper;
             IdentityModelEventSource.ShowPII = true;
         }
 
@@ -78,7 +82,7 @@ namespace SimpleAuth.Server.Tests
                     },
                     new[] { JwtBearerDefaults.AuthenticationScheme })
                 .AddSmsAuthentication(_context.TwilioClient.Object)
-                .AddLogging()
+                .AddLogging(b => b.AddXunit(_testOutputHelper))
                 .AddAccountFilter()
                 .AddSingleton(_context.ConfirmationCodeStore.Object)
                 .AddSingleton(

@@ -198,9 +198,6 @@
   <data name="RegisterAClient" xml:space="preserve">
     <value>Register a client</value>
   </data>
-  <data name="ResourceCannotBeUpdated" xml:space="preserve">
-    <value>Resource cannot be updated</value>
-  </data>
   <data name="ResourceOwnerCredentialsAreNotCorrect" xml:space="preserve">
     <value>The resource owner credentials are not correct</value>
   </data>

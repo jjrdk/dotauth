@@ -58,12 +58,6 @@
         /// <inheritdoc />
         public async Task<ResourceOwner?> Get(ExternalAccountLink externalAccount, CancellationToken cancellationToken)
         {
-            if (externalAccount == null)
-            {
-                throw new ArgumentNullException(nameof(externalAccount));
-            }
-
-
             var externalAccountSubject = externalAccount.Subject;
             var externalAccountIssuer = externalAccount.Issuer;
 

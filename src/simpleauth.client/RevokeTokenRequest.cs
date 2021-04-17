@@ -51,11 +51,6 @@ namespace SimpleAuth.Client
         /// <exception cref="ArgumentNullException">token</exception>
         public static RevokeTokenRequest Create(string token, string tokenType)
         {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentNullException(nameof(token));
-            }
-
             var dict = new Dictionary<string, string>
             {
                 {"token", token},

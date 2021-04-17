@@ -14,23 +14,25 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using Exceptions;
+    using System.Net;
     using Parameters;
     using Results;
     using Shared.Models;
     using SimpleAuth.Common;
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Errors;
 
     internal sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
+        private readonly ILogger _logger;
         private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
 
@@ -41,9 +43,15 @@ namespace SimpleAuth.Api.Authorization
             ITokenStore tokenStore,
             IScopeRepository scopeRepository,
             IJwksStore jwksStore,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
-            _processAuthorizationRequest = new ProcessAuthorizationRequest(clientStore, consentRepository, jwksStore);
+            _logger = logger;
+            _processAuthorizationRequest = new ProcessAuthorizationRequest(
+                clientStore,
+                consentRepository,
+                jwksStore,
+                logger);
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 authorizationCodeStore,
                 tokenStore,
@@ -63,31 +71,58 @@ namespace SimpleAuth.Api.Authorization
         {
             if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
-                    authorizationParameter.State);
+                _logger.LogError(
+                    string.Format(
+                        Strings.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.NonceName));
+                return EndpointResult.CreateBadRequestResult(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            Strings.MissingParameter,
+                            CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
-            var result = await _processAuthorizationRequest
-                .Process(authorizationParameter, principal, client, issuerName, cancellationToken)
+            var result = await _processAuthorizationRequest.Process(
+                    authorizationParameter,
+                    principal,
+                    client,
+                    issuerName,
+                    cancellationToken)
                 .ConfigureAwait(false);
+            if (result.Type == ActionResultType.BadRequest)
+            {
+                return result;
+            }
             if (!client.CheckGrantTypes(GrantTypes.Implicit, GrantTypes.AuthorizationCode))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.TheClientDoesntSupportTheGrantType,
-                        authorizationParameter.ClientId,
-                        $"{GrantTypes.Implicit} and {GrantTypes.AuthorizationCode}"),
-                    authorizationParameter.State);
+                var message = string.Format(
+                    Strings.TheClientDoesntSupportTheGrantType,
+                    authorizationParameter.ClientId,
+                    $"{GrantTypes.Implicit} and {GrantTypes.AuthorizationCode}");
+                _logger.LogError(message);
+                return EndpointResult.CreateBadRequestResult(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = message,
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             if (result.Type == ActionResultType.RedirectToCallBackUrl)
             {
-                result = await _generateAuthorizationResponse
-                        .Generate(result, authorizationParameter, principal, client, issuerName, CancellationToken.None)
-                        .ConfigureAwait(false);
+                result = await _generateAuthorizationResponse.Generate(
+                        result,
+                        authorizationParameter,
+                        principal,
+                        client,
+                        issuerName,
+                        CancellationToken.None)
+                    .ConfigureAwait(false);
             }
 
             return result;

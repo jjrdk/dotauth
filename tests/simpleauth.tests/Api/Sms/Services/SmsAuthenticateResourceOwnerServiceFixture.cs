@@ -27,23 +27,6 @@
         }
 
         [Fact]
-        public async Task When_Pass_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _authenticateResourceOwnerService.AuthenticateResourceOwner(
-                        null,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _authenticateResourceOwnerService.AuthenticateResourceOwner(
-                        "login",
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
         public async Task When_ConfirmationCode_Does_Not_Exist_Then_Null_Is_Returned()
         {
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))

@@ -27,6 +27,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Models;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class RevokeTokenClientFixture
     {
@@ -34,10 +35,10 @@ namespace SimpleAuth.Server.Tests.Apis
         private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
         private readonly TestOauthServerFixture _server;
 
-        public RevokeTokenClientFixture()
+        public RevokeTokenClientFixture(ITestOutputHelper outputHelper)
         {
             IdentityModelEventSource.ShowPII = true;
-            _server = new TestOauthServerFixture();
+            _server = new TestOauthServerFixture(outputHelper);
         }
 
         [Fact]

@@ -38,11 +38,6 @@
             this IMvcBuilder mvcBuilder,
             Func<IServiceProvider, ISmsClient> smsClientFactory)
         {
-            if (mvcBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(mvcBuilder));
-            }
-
             var assembly = typeof(ISmsClient).Assembly;
             var services = mvcBuilder.Services;
             services.AddAuthentication(CookieNames.PasswordLessCookieName)

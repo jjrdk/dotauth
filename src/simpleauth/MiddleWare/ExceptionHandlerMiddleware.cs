@@ -89,7 +89,7 @@ namespace SimpleAuth.MiddleWare
                         }
                 }
 
-                if (!(context.Features[typeof(IEndpointFeature)] is IEndpointFeature endpointFeature))
+                if (context.Features[typeof(IEndpointFeature)] is not IEndpointFeature endpointFeature)
                 {
                     context.Response.Clear();
                     context.Response.StatusCode = 500;
