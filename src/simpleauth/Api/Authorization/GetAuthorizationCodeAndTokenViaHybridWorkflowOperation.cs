@@ -59,7 +59,8 @@ namespace SimpleAuth.Api.Authorization
                 clientStore,
                 consentRepository,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
         }
 
         public async Task<EndpointResult> Execute(

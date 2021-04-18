@@ -1,39 +1,32 @@
 ﻿namespace SimpleAuth.Tests.Helpers
 {
-    using Exceptions;
     using Shared;
     using SimpleAuth.Api.Authorization;
     using System.Collections.Generic;
     using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using Xunit;
 
     public sealed class AuthorizationFlowHelperFixture
     {
         [Fact]
-        public void When_Passing_No_Response_Type_Then_Exception_Is_Thrown()
-        {
-            const string state = "state";
-            ICollection<string> collection = null;
-            var exception =
-                Assert.Throws<SimpleAuthExceptionWithState>(
-                    () => collection.GetAuthorizationFlow(state));
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, exception.Message);
-            Assert.Equal(state, exception.State);
-        }
-
-        [Fact]
-        public void When_Passing_Empty_List_Of_Response_Types_Then_Exception_Is_Thrown()
+        public void WhenPassingEmptyListOfResponseTypesThenErrorIsReturned()
         {
             const string state = "state";
 
-            var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => new List<string>().GetAuthorizationFlow(state));
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, exception.Message);
-            Assert.Equal(state, exception.State);
+            var exception = new List<string>().GetAuthorizationFlow(state) as Option<AuthorizationFlow>.Error;
+
+            var expected = new Option<AuthorizationFlow>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = Strings.TheAuthorizationFlowIsNotSupported
+                },
+                state);
+
+            Assert.Equal(expected, exception);
         }
 
         [Fact]
@@ -41,9 +34,9 @@
         {
             const string state = "state";
 
-            var result = new[] { ResponseTypeNames.Code }.GetAuthorizationFlow(state);
+            var result = new[] { ResponseTypeNames.Code }.GetAuthorizationFlow(state) as Option<AuthorizationFlow>.Result;
 
-            Assert.Equal(AuthorizationFlow.AuthorizationCodeFlow, result);
+            Assert.Equal(AuthorizationFlow.AuthorizationCodeFlow, result.Item);
         }
 
         [Fact]
@@ -51,9 +44,11 @@
         {
             const string state = "state";
 
-            var result = new List<string> { ResponseTypeNames.IdToken }.GetAuthorizationFlow(state);
+            var result =
+                new List<string> { ResponseTypeNames.IdToken }.GetAuthorizationFlow(state) as
+                    Option<AuthorizationFlow>.Result;
 
-            Assert.Equal(AuthorizationFlow.ImplicitFlow, result);
+            Assert.Equal(AuthorizationFlow.ImplicitFlow, result.Item);
         }
 
         [Fact]
@@ -61,9 +56,11 @@
         {
             const string state = "state";
 
-            var result = new List<string> { ResponseTypeNames.IdToken, ResponseTypeNames.Code }.GetAuthorizationFlow(state);
+            var result =
+                new List<string> { ResponseTypeNames.IdToken, ResponseTypeNames.Code }.GetAuthorizationFlow(state) as
+                    Option<AuthorizationFlow>.Result;
 
-            Assert.Equal(AuthorizationFlow.HybridFlow, result);
+            Assert.Equal(AuthorizationFlow.HybridFlow, result.Item);
         }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace SimpleAuth.Tests.WebSite.Consent
 {
-    using Exceptions;
     using Microsoft.IdentityModel.Tokens;
     using Moq;
     using Parameters;
@@ -14,11 +13,13 @@ namespace SimpleAuth.Tests.WebSite.Consent
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
+    using Xunit.Abstractions;
 
     public sealed class DisplayConsentActionFixture
     {
@@ -27,7 +28,7 @@ namespace SimpleAuth.Tests.WebSite.Consent
         private readonly DisplayConsentAction _displayConsentAction;
         private readonly Mock<IConsentRepository> _consentRepository;
 
-        public DisplayConsentActionFixture()
+        public DisplayConsentActionFixture(ITestOutputHelper outputHelper)
         {
             _scopeRepositoryFake = new Mock<IScopeRepository>();
             _clientRepositoryFake = new Mock<IClientStore>();
@@ -39,16 +40,8 @@ namespace SimpleAuth.Tests.WebSite.Consent
                 new Mock<IAuthorizationCodeStore>().Object,
                 new Mock<ITokenStore>().Object,
                 new InMemoryJwksRepository(),
-                new Mock<IEventPublisher>().Object);
-        }
-
-        [Fact]
-        public async Task When_Parameter_Is_Null_Then_Exception_Is_Thrown()
-        {
-            await Assert
-                .ThrowsAsync<NullReferenceException>(
-                    () => _displayConsentAction.Execute(null, null, null, CancellationToken.None))
-                .ConfigureAwait(false);
+                new Mock<IEventPublisher>().Object,
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]
@@ -56,9 +49,14 @@ namespace SimpleAuth.Tests.WebSite.Consent
         {
             var authorizationParameter = new AuthorizationParameter();
 
-            await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _displayConsentAction.Execute(authorizationParameter, null, null, CancellationToken.None))
+            var error = await _displayConsentAction.Execute(
+                    authorizationParameter,
+                    new ClaimsPrincipal(),
+                    "",
+                    CancellationToken.None)
                 .ConfigureAwait(false);
+
+            Assert.NotNull(error.EndpointResult.Error);
         }
 
         [Fact]
@@ -141,17 +139,15 @@ namespace SimpleAuth.Tests.WebSite.Consent
                 .ReturnsAsync(Array.Empty<Client>());
             _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { consent });
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _displayConsentAction.Execute(
+            var result = await _displayConsentAction.Execute(
                         authorizationParameter,
                         claimsPrincipal,
                         "issuer",
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, exception.Message);
-            Assert.Equal(state, exception.State);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.EndpointResult.Error.Title);
+            Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, result.EndpointResult.Error.Detail);
 
         }
 
@@ -167,16 +163,14 @@ namespace SimpleAuth.Tests.WebSite.Consent
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Client)null);
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _displayConsentAction.Execute(
+            var result = await _displayConsentAction.Execute(
                         authorizationParameter,
                         claimsPrincipal,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(string.Format(Strings.ClientIsNotValid, clientId), exception.Message);
-            Assert.Equal(state, exception.State);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.EndpointResult.Error.Title);
+            Assert.Equal(string.Format(Strings.ClientIsNotValid, clientId), result.EndpointResult.Error.Detail);
         }
 
         [Fact]

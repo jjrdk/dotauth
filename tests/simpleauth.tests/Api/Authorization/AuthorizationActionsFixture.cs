@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Tests.Api.Authorization
 {
-    using Exceptions;
     using Moq;
     using Parameters;
     using Shared;
@@ -27,11 +26,9 @@ namespace SimpleAuth.Tests.Api.Authorization
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
-    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Results;
     using SimpleAuth.Services;
-    using SimpleAuth.Shared.Errors;
     using Xunit;
 
     public sealed class AuthorizationActionsFixture

@@ -1,7 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Events.Uma
 {
     using System;
-    using System.Security.Claims;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
 

@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Tests.Api.Authorization
 {
-    using Exceptions;
     using Moq;
     using Parameters;
     using Shared;

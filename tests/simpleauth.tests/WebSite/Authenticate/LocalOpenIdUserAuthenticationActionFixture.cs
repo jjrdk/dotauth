@@ -10,16 +10,20 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Repositories;
     using SimpleAuth.Services;
     using Xunit;
+    using Xunit.Abstractions;
 
     public sealed class LocalOpenIdUserAuthenticationActionFixture
     {
+        private readonly ITestOutputHelper _outputHelper;
         private LocalOpenIdUserAuthenticationAction _localUserAuthenticationAction;
 
-        public LocalOpenIdUserAuthenticationActionFixture()
+        public LocalOpenIdUserAuthenticationActionFixture(ITestOutputHelper outputHelper)
         {
+            _outputHelper = outputHelper;
             InitializeFakeObjects();
         }
 
@@ -35,11 +39,11 @@
         public async Task WhenPassingEmptyParameterThenErrorIsReturned()
         {
             var result = await _localUserAuthenticationAction.Execute(
-                        new LocalAuthenticationParameter(),
-                        null,
-                        null,
-                        null,
-                        CancellationToken.None)
+                    new LocalAuthenticationParameter(),
+                    null,
+                    null,
+                    null,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
             Assert.NotNull(result.ErrorMessage);
@@ -56,7 +60,7 @@
                         It.IsAny<string>(),
                         It.IsAny<string>(),
                         It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ResourceOwner)null);
+                .ReturnsAsync((ResourceOwner) null);
             InitializeFakeObjects(authenticateService.Object);
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
@@ -76,9 +80,9 @@
         public async Task When_Resource_Owner_Credentials_Are_Correct_Then_Event_Is_Logged_And_Claims_Are_Returned()
         {
             const string subject = "subject";
-            var localAuthenticationParameter = new LocalAuthenticationParameter { Password = "abc", UserName = subject };
-            var authorizationParameter = new AuthorizationParameter{ClientId = "client"};
-            var resourceOwner = new ResourceOwner { Subject = subject };
+            var localAuthenticationParameter = new LocalAuthenticationParameter {Password = "abc", UserName = subject};
+            var authorizationParameter = new AuthorizationParameter {ClientId = "client"};
+            var resourceOwner = new ResourceOwner {Subject = subject};
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
             authenticateService.SetupGet(x => x.Amr).Returns("pwd");
             authenticateService
@@ -117,7 +121,8 @@
                 new Mock<IScopeRepository>().Object,
                 mock.Object,
                 new InMemoryJwksRepository(),
-                new NoOpPublisher());
+                new NoOpPublisher(),
+                new TestOutputLogger("test", _outputHelper));
         }
     }
 }

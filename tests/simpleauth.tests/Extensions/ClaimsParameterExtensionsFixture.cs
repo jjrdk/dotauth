@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Tests.Extensions
 {
-    using System.Collections.Generic;
     using Parameters;
     using Shared;
     using SimpleAuth.Extensions;

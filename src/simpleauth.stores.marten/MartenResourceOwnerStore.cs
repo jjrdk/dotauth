@@ -7,15 +7,18 @@
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
 
     using global::Marten.Pagination;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Properties;
 
     /// <summary>
     /// Defines the Marten based resource owner repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IResourceOwnerRepository" />
+    /// <seealso cref="IResourceOwnerRepository" />
     public class MartenResourceOwnerStore : IResourceOwnerRepository
     {
         private readonly string _salt;
@@ -105,16 +108,20 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> Update(
-            ResourceOwner resourceOwner,
-            CancellationToken cancellationToken)
+        public async Task<Option> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             var user = await session.LoadAsync<ResourceOwner>(resourceOwner.Subject, cancellationToken)
                 .ConfigureAwait(false);
             if (user == null)
             {
-                return false;
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InternalError,
+                        Detail = SharedStrings.TheRoDoesntExist,
+                        Status = HttpStatusCode.InternalServerError
+                    });
             }
 
             user.IsLocalAccount = resourceOwner.IsLocalAccount;
@@ -124,7 +131,7 @@
             user.Claims = resourceOwner.Claims;
             session.Update(resourceOwner);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return true;
+            return new Option.Success();
         }
 
         /// <inheritdoc />

@@ -16,7 +16,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
 {
     using Api.Authorization;
     using Common;
-    using Exceptions;
     using Extensions;
     using Parameters;
     using Results;
@@ -27,9 +26,11 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Events.Openid;
@@ -49,7 +50,8 @@ namespace SimpleAuth.WebSite.Consent.Actions
             IClientStore clientRepository,
             IScopeRepository scopeRepository,
             IJwksStore jwksStore,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
@@ -61,7 +63,8 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 clientRepository,
                 consentRepository,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
             _eventPublisher = eventPublisher;
         }
 
@@ -155,21 +158,30 @@ namespace SimpleAuth.WebSite.Consent.Actions
                      .ConfigureAwait(false);
 
             // If redirect to the callback and the response mode has not been set.
-            if (result.Type == ActionResultType.RedirectToCallBackUrl)
+            if (result.Type != ActionResultType.RedirectToCallBackUrl)
             {
-                var responseMode = authorizationParameter.ResponseMode;
-                if (responseMode == ResponseModes.None)
-                {
-                    var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
-                    var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
-                    responseMode = GetResponseMode(authorizationFlow);
-                }
-
-                result = result with
-                {
-                    RedirectInstruction = result.RedirectInstruction! with { ResponseMode = responseMode }
-                };
+                return result;
             }
+
+            var responseMode = authorizationParameter.ResponseMode;
+            if (responseMode == ResponseModes.None)
+            {
+                var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
+                var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
+                switch (authorizationFlow)
+                {
+                    case Option<AuthorizationFlow>.Error e:
+                        return EndpointResult.CreateBadRequestResult(e.Details);
+                    case Option<AuthorizationFlow>.Result r:
+                        responseMode = GetResponseMode(r.Item);
+                        break;
+                }
+            }
+
+            result = result with
+            {
+                RedirectInstruction = result.RedirectInstruction! with { ResponseMode = responseMode }
+            };
 
             return result;
         }
@@ -181,27 +193,23 @@ namespace SimpleAuth.WebSite.Consent.Actions
             return scopes.Select(x => x.Name).ToArray();
         }
 
-        private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string? state)
+        private static Option<AuthorizationFlow> GetAuthorizationFlow(ICollection<string> responseTypes, string? state)
         {
-            if (responseTypes == null)
-            {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheAuthorizationFlowIsNotSupported,
-                    state ?? string.Empty);
-            }
-
             var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys.SingleOrDefault(
                 k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
             if (record == null)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheAuthorizationFlowIsNotSupported,
+                return new Option<AuthorizationFlow>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = Strings.TheAuthorizationFlowIsNotSupported,
+                        Status = HttpStatusCode.BadRequest
+                    },
                     state ?? string.Empty);
             }
 
-            return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];
+            return new Option<AuthorizationFlow>.Result(CoreConstants.MappingResponseTypesToAuthorizationFlows[record]);
         }
 
         private static string GetResponseMode(AuthorizationFlow authorizationFlow)

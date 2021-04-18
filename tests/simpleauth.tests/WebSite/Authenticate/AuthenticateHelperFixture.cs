@@ -10,10 +10,12 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using Xunit;
+    using Xunit.Abstractions;
 
     public sealed class AuthenticateHelperFixture
     {
@@ -21,7 +23,7 @@
         private readonly AuthenticateHelper _authenticateHelper;
         private readonly Mock<IConsentRepository> _consentRepository;
 
-        public AuthenticateHelperFixture()
+        public AuthenticateHelperFixture(ITestOutputHelper outputHelper)
         {
             _clientRepositoryStub = new Mock<IClientStore>();
             _consentRepository = new Mock<IConsentRepository>();
@@ -35,7 +37,8 @@
                 _consentRepository.Object,
                 _clientRepositoryStub.Object,
                 new InMemoryJwksRepository(),
-                new NoopEventPublisher());
+                new NoopEventPublisher(),
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]

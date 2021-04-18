@@ -16,7 +16,7 @@
     {
         private readonly ITestOutputHelper _output;
         private const string BaseUrl = "http://localhost";
-        private static readonly Uri WellKnownUmaConfiguration = new Uri(BaseUrl + "/.well-known/openid-configuration");
+        private static readonly Uri WellKnownUmaConfiguration = new(BaseUrl + "/.well-known/openid-configuration");
         protected TestServerFixture _fixture = null;
         protected ManagementClient _managerClient = null;
         protected TokenClient _tokenClient = null;

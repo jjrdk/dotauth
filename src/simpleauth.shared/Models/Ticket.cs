@@ -15,7 +15,6 @@
 namespace SimpleAuth.Shared.Models
 {
     using System;
-    using System.Security.Claims;
 
     /// <summary>
     /// Defines the ticket content.

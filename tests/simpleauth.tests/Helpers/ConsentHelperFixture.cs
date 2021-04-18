@@ -53,7 +53,7 @@
             };
             IReadOnlyCollection<Consent> consents = new List<Consent>
             {
-                new Consent {Claims = new [] {claimName}, ClientId = clientId}
+                new() {Claims = new [] {claimName}, ClientId = clientId}
             };
 
             _consentRepositoryFake
@@ -77,7 +77,7 @@
             var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
             IReadOnlyCollection<Consent> consents = new List<Consent>
             {
-                new Consent {ClientId = clientId, GrantedScopes = new[] {scope}}
+                new() {ClientId = clientId, GrantedScopes = new[] {scope}}
             };
 
             _consentRepositoryFake
@@ -108,7 +108,7 @@
             };
             IReadOnlyCollection<Consent> consents = new List<Consent>
             {
-                new Consent
+                new()
                 {
                     ClientId = clientId, GrantedScopes = new[] {profileScope, openIdScope}
                 }

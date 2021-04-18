@@ -25,6 +25,7 @@ namespace SimpleAuth.Api.Token.Actions
     using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Errors;
     using System;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
@@ -32,6 +33,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
@@ -48,14 +50,15 @@ namespace SimpleAuth.Api.Token.Actions
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IClientStore clientStore,
-            IScopeRepository scopeRepository,
+            IScopeStore scopeRepository,
             ITokenStore tokenStore,
             IJwksStore jwksStore,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
             _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
-            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore, logger);
             _tokenStore = tokenStore;
             _jwksStore = jwksStore;
             _resourceOwnerServices = resourceOwnerServices.ToArray();
@@ -181,12 +184,18 @@ namespace SimpleAuth.Api.Token.Actions
             var userInfo = await _jwtGenerator
                 .GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter, cancellationToken)
                 .ConfigureAwait(false);
-            var idPayload = await _jwtGenerator.GenerateFilteredIdTokenPayload(
+            var generatedIdTokenPayload = await _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
                 authorizationParameter,
                 Array.Empty<ClaimParameter>(),
                 issuerName,
                 cancellationToken).ConfigureAwait(false);
+            if (generatedIdTokenPayload is Option<JwtPayload>.Error error)
+            {
+                return new GenericResponse<GrantedToken> { Error = error.Details, StatusCode = error.Details.Status };
+            }
+
+            var idPayload = (generatedIdTokenPayload as Option<JwtPayload>.Result)!.Item;
             var generatedToken = await _tokenStore.GetValidGrantedToken(
                     _jwksStore,
                     allowedTokenScopes,
@@ -205,7 +214,7 @@ namespace SimpleAuth.Api.Token.Actions
                         userInfo,
                         cancellationToken,
                         claimsIdentity.Claims.Where(
-                                c => client.UserClaimsToIncludeInAuthToken?.Any(r => r.IsMatch(c.Type)) == true)
+                                c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
                             .ToArray())
                     .ConfigureAwait(false);
                 if (generatedToken.IdTokenPayLoad != null)

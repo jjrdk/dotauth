@@ -9,7 +9,7 @@
     {
         public static List<ResourceOwner> GetUsers()
         {
-            return new List<ResourceOwner>
+            return new()
             {
                 new ResourceOwner
                 {

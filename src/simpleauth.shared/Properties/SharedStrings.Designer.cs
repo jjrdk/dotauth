@@ -68,5 +68,14 @@ namespace SimpleAuth.Shared.Properties {
                 return ResourceManager.GetString("ResourceCannotBeUpdated", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource owner doesn&apos;t exist.
+        /// </summary>
+        internal static string TheRoDoesntExist {
+            get {
+                return ResourceManager.GetString("TheRoDoesntExist", resourceCulture);
+            }
+        }
     }
 }

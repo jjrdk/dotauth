@@ -23,7 +23,6 @@ namespace SimpleAuth.Server.Tests
 
     using Stores;
     using System.Net.Http;
-    using Divergic.Logging.Xunit;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Hosting.Server;

@@ -107,8 +107,8 @@ namespace SimpleAuth.Server.Tests
                     var claimsIdentity = new ClaimsIdentity(
                         new List<Claim>
                         {
-                            new Claim("client_id", "resource_server"),
-                            new Claim("sub", "resource_server")
+                            new("client_id", "resource_server"),
+                            new("sub", "resource_server")
                         },
                         "fakests");
                     context.User = new ClaimsPrincipal(claimsIdentity);

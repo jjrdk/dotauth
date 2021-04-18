@@ -27,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
@@ -86,7 +87,8 @@ namespace SimpleAuth.Controllers
                 authorizationCodeStore,
                 tokenStore,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
             _confirmConsent = new ConfirmConsentAction(
                 authorizationCodeStore,
                 tokenStore,
@@ -94,7 +96,8 @@ namespace SimpleAuth.Controllers
                 clientStore,
                 scopeRepository,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
         }
 
         /// <summary>
@@ -115,7 +118,7 @@ namespace SimpleAuth.Controllers
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _displayConsent.Execute(
                     request.ToParameter(),
-                    authenticatedUser,
+                    authenticatedUser ?? new ClaimsPrincipal(),
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -160,6 +163,10 @@ namespace SimpleAuth.Controllers
             var parameter = request.ToParameter();
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName)
                 .ConfigureAwait(false);
+            if (authenticatedUser == null)
+            {
+                return Unauthorized();
+            }
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _confirmConsent
                 .Execute(parameter, authenticatedUser, issuerName, cancellationToken)

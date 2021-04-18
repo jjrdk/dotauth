@@ -32,14 +32,19 @@
         /// Sets the user.
         /// </summary>
         /// <returns></returns>
-        protected async Task<ClaimsPrincipal> SetUser()
+        protected async Task<ClaimsPrincipal?> SetUser()
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
-            var isAuthenticed = authenticatedUser.Identity != null && authenticatedUser.Identity.IsAuthenticated;
-            ViewBag.IsAuthenticated = isAuthenticed;
-            ViewBag.Name = isAuthenticed ? authenticatedUser.GetName()! : Strings.Unknown;
+            if (authenticatedUser != null)
+            {
+                var isAuthenticated = authenticatedUser.Identity is {IsAuthenticated: true};
+                ViewBag.IsAuthenticated = isAuthenticated;
+                ViewBag.Name = isAuthenticated ? authenticatedUser.GetName()! : Strings.Unknown;
 
-            return authenticatedUser;
+                return authenticatedUser;
+            }
+
+            return null;
         }
     }
 }

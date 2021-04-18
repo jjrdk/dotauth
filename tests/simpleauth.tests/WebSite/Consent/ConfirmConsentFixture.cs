@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Tests.WebSite.Consent
 {
-    using Exceptions;
     using Moq;
     using Parameters;
     using Shared;
@@ -12,10 +11,12 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Errors;
     using Xunit;
+    using Xunit.Abstractions;
 
     public sealed class ConfirmConsentFixture
     {
@@ -24,7 +25,7 @@
         private readonly Mock<IScopeRepository> _scopeRepositoryFake;
         private readonly ConfirmConsentAction _confirmConsentAction;
 
-        public ConfirmConsentFixture()
+        public ConfirmConsentFixture(ITestOutputHelper outputHelper)
         {
             _consentRepositoryFake = new Mock<IConsentRepository>();
             _clientRepositoryFake = new Mock<IClientStore>();
@@ -36,7 +37,8 @@
                 _clientRepositoryFake.Object,
                 _scopeRepositoryFake.Object,
                 new InMemoryJwksRepository(),
-                new NoOpPublisher());
+                new NoOpPublisher(),
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]
@@ -69,11 +71,10 @@
                 ResponseMode = ResponseModes.None,
                 State = state
             };
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client { ClientId = "clientId" };
-            var resourceOwner = new ResourceOwner { Subject = subject };
 
             _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
@@ -82,17 +83,15 @@
 
             _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(Array.Empty<Scope>());
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _confirmConsentAction.Execute(
+            var exception = await _confirmConsentAction.Execute(
                         authorizationParameter,
                         claimsPrincipal,
                         null,
-                        CancellationToken.None))
+                        CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, exception.Message);
-            Assert.Equal(state, exception.State);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Error.Title);
+            Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, exception.Error.Detail);
         }
 
         [Fact]
@@ -113,7 +112,7 @@
                 },
                 Scope = "profile"
             };
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client { ClientId = clientId };
@@ -150,7 +149,7 @@
                 Scope = "profile",
                 ResponseMode = ResponseModes.None
             };
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client { ClientId = "clientId" };

@@ -156,7 +156,7 @@ namespace SimpleAuth.Shared.Models
         /// Gets or sets the list of json web keys
         /// </summary>
         [DataMember(Name = "jwks")]
-        public JsonWebKeySet JsonWebKeys { get; set; } = new JsonWebKeySet();
+        public JsonWebKeySet JsonWebKeys { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the list of contacts

@@ -7,6 +7,7 @@
     using Repositories;
     using Shared.Models;
     using Shared.Repositories;
+    using SimpleAuth.Shared;
     using Xunit;
 
     public class UpdateResourceOwnerPasswordActionFixture
@@ -36,7 +37,7 @@
                 .Update(new ResourceOwner {Subject = subject}, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.False(result);
+            Assert.IsType<Option.Error>(result);
         }
     }
 }

@@ -10,7 +10,7 @@
     {
         public static List<Scope> GetScopes()
         {
-            return new List<Scope>
+            return new()
             {
                 new Scope
                 {
@@ -31,7 +31,7 @@
 
         public static List<Client> GetClients()
         {
-            return new List<Client>
+            return new()
             {
                 // Resource server.
                 new Client

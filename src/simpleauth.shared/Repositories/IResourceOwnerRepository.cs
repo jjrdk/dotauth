@@ -46,7 +46,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="resourceOwner">The resource owner.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<bool> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken);
+        Task<Option> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken);
 
         /// <summary>
         /// Sets the password.

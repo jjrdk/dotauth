@@ -8,53 +8,39 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.WebSite.User;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class UpdateUserClaimsOperationFixture
     {
         private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private readonly UpdateUserClaimsOperation _updateUserClaimsOperation;
 
-        public UpdateUserClaimsOperationFixture()
+        public UpdateUserClaimsOperationFixture(ITestOutputHelper outputHelper)
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _updateUserClaimsOperation = new UpdateUserClaimsOperation(_resourceOwnerRepositoryStub.Object);
-        }
-
-        [Fact]
-        public async Task When_Pass_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _updateUserClaimsOperation.Execute(null, null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task When_Pass_Bad_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _updateUserClaimsOperation.Execute("subject", null, CancellationToken.None))
-                .ConfigureAwait(false);
+            _updateUserClaimsOperation = new UpdateUserClaimsOperation(
+                _resourceOwnerRepositoryStub.Object,
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]
         public async Task When_ResourceOwner_DoesntExist_Then_Exception_Is_Thrown()
         {
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ResourceOwner) null);
+                .ReturnsAsync((ResourceOwner)null);
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _updateUserClaimsOperation.Execute("subject", new List<Claim>(), CancellationToken.None))
-                .ConfigureAwait(false);
+            var exception = await _updateUserClaimsOperation
+                .Execute("subject", new List<Claim>(), CancellationToken.None)
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.Equal(ErrorCodes.InternalError, exception.Code);
-            Assert.Equal(Strings.TheRoDoesntExist, exception.Message);
+            Assert.Equal(ErrorCodes.InternalError, exception.Details.Title);
+            Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);
         }
 
         [Fact]
@@ -62,11 +48,11 @@
         {
             _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
-                    new ResourceOwner {Claims = new[] {new Claim("type", "value"), new Claim("type1", "value")}});
+                    new ResourceOwner { Claims = new[] { new Claim("type", "value"), new Claim("type1", "value") } });
 
             await _updateUserClaimsOperation.Execute(
                     "subjet",
-                    new List<Claim> {new Claim("type", "value1")},
+                    new List<Claim> { new("type", "value1") },
                     CancellationToken.None)
                 .ConfigureAwait(false);
 

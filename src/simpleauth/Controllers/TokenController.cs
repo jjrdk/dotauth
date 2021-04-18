@@ -83,7 +83,8 @@
                 tokenStore,
                 resourceSetRepository,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
         }
 
         /// <summary>

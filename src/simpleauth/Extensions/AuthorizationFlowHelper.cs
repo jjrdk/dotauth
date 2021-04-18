@@ -16,34 +16,32 @@ namespace SimpleAuth.Extensions
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using SimpleAuth.Api.Authorization;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
 
     internal static class AuthorizationFlowHelper
     {
-        public static AuthorizationFlow GetAuthorizationFlow(this ICollection<string> responseTypes, string? state)
+        public static Option<AuthorizationFlow> GetAuthorizationFlow(this ICollection<string> responseTypes, string? state)
         {
-            if (responseTypes == null)
-            {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheAuthorizationFlowIsNotSupported,
-                    state);
-            }
-
             var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
                 .SingleOrDefault(k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
             if (record == null)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheAuthorizationFlowIsNotSupported,
-                    state);
+                return new Option<AuthorizationFlow>.Error(
+                       new ErrorDetails
+                       {
+                           Title = ErrorCodes.InvalidRequest,
+                           Detail = Strings.TheAuthorizationFlowIsNotSupported,
+                           Status = HttpStatusCode.BadRequest
+                       },
+                       state);
             }
 
-            return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];
+            return new Option<AuthorizationFlow>.Result(CoreConstants.MappingResponseTypesToAuthorizationFlows[record]);
         }
     }
 }

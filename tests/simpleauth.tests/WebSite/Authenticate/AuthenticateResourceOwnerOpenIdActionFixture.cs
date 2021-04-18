@@ -27,14 +27,16 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Repositories;
     using Xunit;
+    using Xunit.Abstractions;
 
     public sealed class AuthenticateResourceOwnerOpenIdActionFixture
     {
         private readonly AuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
 
-        public AuthenticateResourceOwnerOpenIdActionFixture()
+        public AuthenticateResourceOwnerOpenIdActionFixture(ITestOutputHelper outputHelper)
         {
             var mock = new Mock<IClientStore>();
             mock.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Client());
@@ -45,7 +47,8 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 new Mock<IConsentRepository>().Object,
                 mock.Object,
                 new InMemoryJwksRepository(),
-                new NoOpPublisher());
+                new NoOpPublisher(),
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]
@@ -118,7 +121,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
             const string code = "code";
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter { ClientId = "abc" };
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject) };
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimsIdentity = new ClaimsIdentity(claims, "authServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 

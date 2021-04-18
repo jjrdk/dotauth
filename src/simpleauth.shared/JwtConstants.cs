@@ -67,7 +67,7 @@ namespace SimpleAuth.Shared
             StandardClaimNames.Subject
         };
 
-        public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new Dictionary<string, string>
+        public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new()
         {
             {ClaimTypes.Name, OpenIdClaimTypes.Name},
             {ClaimTypes.GivenName, OpenIdClaimTypes.GivenName},

@@ -53,7 +53,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("invalid", "invalid")
+                new("invalid", "invalid")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -77,7 +77,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "password")
+                new("grant_type", "password")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -101,8 +101,8 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", "administrator")
+                new("grant_type", "password"),
+                new("username", "administrator")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -126,9 +126,9 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", "administrator"),
-                new KeyValuePair<string, string>("password", "password")
+                new("grant_type", "password"),
+                new("username", "administrator"),
+                new("password", "password")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -152,11 +152,11 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", "administrator"),
-                new KeyValuePair<string, string>("password", "password"),
-                new KeyValuePair<string, string>("scope", "openid"),
-                new KeyValuePair<string, string>("client_id", "invalid_client_id")
+                new("grant_type", "password"),
+                new("username", "administrator"),
+                new("password", "password"),
+                new("scope", "openid"),
+                new("client_id", "invalid_client_id")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -181,11 +181,11 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", "administrator"),
-                new KeyValuePair<string, string>("password", "password"),
-                new KeyValuePair<string, string>("scope", "openid"),
-                new KeyValuePair<string, string>("client_id", "basic_client")
+                new("grant_type", "password"),
+                new("username", "administrator"),
+                new("password", "password"),
+                new("scope", "openid"),
+                new("client_id", "basic_client")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -210,12 +210,12 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", "administrator"),
-                new KeyValuePair<string, string>("password", "invalid_password"),
-                new KeyValuePair<string, string>("scope", "openid"),
-                new KeyValuePair<string, string>("client_id", "client"),
-                new KeyValuePair<string, string>("client_secret", "client")
+                new("grant_type", "password"),
+                new("username", "administrator"),
+                new("password", "invalid_password"),
+                new("scope", "openid"),
+                new("client_id", "client"),
+                new("client_secret", "client")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -239,12 +239,12 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", "administrator"),
-                new KeyValuePair<string, string>("password", "password"),
-                new KeyValuePair<string, string>("client_id", "client"),
-                new KeyValuePair<string, string>("scope", "invalid"),
-                new KeyValuePair<string, string>("client_secret", "client")
+                new("grant_type", "password"),
+                new("username", "administrator"),
+                new("password", "password"),
+                new("client_id", "client"),
+                new("scope", "invalid"),
+                new("client_secret", "client")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -268,7 +268,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "client_credentials")
+                new("grant_type", "client_credentials")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -292,10 +292,10 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("scope", ErrorCodes.InvalidScope),
-                new KeyValuePair<string, string>("client_id", "client"),
-                new KeyValuePair<string, string>("client_secret", "client")
+                new("grant_type", "client_credentials"),
+                new("scope", ErrorCodes.InvalidScope),
+                new("client_id", "client"),
+                new("client_secret", "client")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -320,10 +320,10 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("scope", ErrorCodes.InvalidScope),
-                new KeyValuePair<string, string>("client_id", "clientWithWrongResponseType"),
-                new KeyValuePair<string, string>("client_secret", "clientWithWrongResponseType")
+                new("grant_type", "client_credentials"),
+                new("scope", ErrorCodes.InvalidScope),
+                new("client_id", "clientWithWrongResponseType"),
+                new("client_secret", "clientWithWrongResponseType")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -349,10 +349,10 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("scope", "invalid"),
-                new KeyValuePair<string, string>("client_id", "clientCredentials"),
-                new KeyValuePair<string, string>("client_secret", "clientCredentials")
+                new("grant_type", "client_credentials"),
+                new("scope", "invalid"),
+                new("client_id", "clientCredentials"),
+                new("client_secret", "clientCredentials")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -376,7 +376,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "refresh_token")
+                new("grant_type", "refresh_token")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -400,9 +400,9 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "refresh_token"),
-                new KeyValuePair<string, string>("refresh_token", "invalid_refresh_token"),
-                new KeyValuePair<string, string>("client_id", "invalid_client_id")
+                new("grant_type", "refresh_token"),
+                new("refresh_token", "invalid_refresh_token"),
+                new("client_id", "invalid_client_id")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -426,10 +426,10 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "refresh_token"),
-                new KeyValuePair<string, string>("refresh_token", "invalid_refresh_token"),
-                new KeyValuePair<string, string>("client_id", "client"),
-                new KeyValuePair<string, string>("client_secret", "client")
+                new("grant_type", "refresh_token"),
+                new("refresh_token", "invalid_refresh_token"),
+                new("client_id", "client"),
+                new("client_secret", "client")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -473,7 +473,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "authorization_code")
+                new("grant_type", "authorization_code")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -497,8 +497,8 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                new KeyValuePair<string, string>("code", "code")
+                new("grant_type", "authorization_code"),
+                new("code", "code")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -522,10 +522,10 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                new KeyValuePair<string, string>("code", "code"),
-                new KeyValuePair<string, string>("redirect_uri", "http://localhost:5000/callback"),
-                new KeyValuePair<string, string>("client_id", "invalid_client_id")
+                new("grant_type", "authorization_code"),
+                new("code", "code"),
+                new("redirect_uri", "http://localhost:5000/callback"),
+                new("client_id", "invalid_client_id")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -550,11 +550,11 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                new KeyValuePair<string, string>("code", "code"),
-                new KeyValuePair<string, string>("redirect_uri", "http://localhost:5000/callback"),
-                new KeyValuePair<string, string>("client_id", "client"),
-                new KeyValuePair<string, string>("client_secret", "client")
+                new("grant_type", "authorization_code"),
+                new("code", "code"),
+                new("redirect_uri", "http://localhost:5000/callback"),
+                new("client_id", "client"),
+                new("client_secret", "client")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -578,11 +578,11 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                new KeyValuePair<string, string>("code", "code"),
-                new KeyValuePair<string, string>("redirect_uri", "http://localhost:5000/callback"),
-                new KeyValuePair<string, string>("client_id", "incomplete_authcode_client"),
-                new KeyValuePair<string, string>("client_secret", "incomplete_authcode_client")
+                new("grant_type", "authorization_code"),
+                new("code", "code"),
+                new("redirect_uri", "http://localhost:5000/callback"),
+                new("client_id", "incomplete_authcode_client"),
+                new("client_secret", "incomplete_authcode_client")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
@@ -608,11 +608,11 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                new KeyValuePair<string, string>("code", "code"),
-                new KeyValuePair<string, string>("redirect_uri", "http://localhost:5000/callback"),
-                new KeyValuePair<string, string>("client_id", "authcode_client"),
-                new KeyValuePair<string, string>("client_secret", "authcode_client")
+                new("grant_type", "authorization_code"),
+                new("code", "code"),
+                new("redirect_uri", "http://localhost:5000/callback"),
+                new("client_id", "authcode_client"),
+                new("client_secret", "authcode_client")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage

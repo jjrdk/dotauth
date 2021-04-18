@@ -268,6 +268,15 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Missing identity.
+        /// </summary>
+        internal static string IdentityMissing {
+            get {
+                return ResourceManager.GetString("IdentityMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input missing.
         /// </summary>
         internal static string InputMissing {
@@ -372,6 +381,15 @@ namespace SimpleAuth.Properties {
         internal static string MissingParameter {
             get {
                 return ResourceManager.GetString("MissingParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing values.
+        /// </summary>
+        internal static string MissingValues {
+            get {
+                return ResourceManager.GetString("MissingValues", resourceCulture);
             }
         }
         

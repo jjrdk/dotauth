@@ -15,7 +15,6 @@
 namespace SimpleAuth.Controllers
 {
     using Api.Authorization;
-    using Exceptions;
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.DataProtection;
@@ -28,7 +27,9 @@ namespace SimpleAuth.Controllers
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Net;
     using System.Net.Http;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
@@ -36,6 +37,8 @@ namespace SimpleAuth.Controllers
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
 
     /// <summary>
     /// Defines the authorization controller.
@@ -110,16 +113,24 @@ namespace SimpleAuth.Controllers
         {
             var originUrl = this.GetOriginUrl();
             var sessionId = GetSessionId();
+            var result = await ResolveAuthorizationRequest(authorizationRequest, cancellationToken)
+                .ConfigureAwait(false);
+            if (result is Option<AuthorizationRequest>.Error e)
+            {
+                return BadRequest(e);
+            }
 
-            authorizationRequest =
-                await ResolveAuthorizationRequest(authorizationRequest, cancellationToken).ConfigureAwait(false) with
-                {
-                    origin_url = originUrl,
-                    session_id = sessionId
-                };
+            authorizationRequest = (result as Option<AuthorizationRequest>.Result)!.Item
+            with
+            {
+                origin_url = originUrl,
+                session_id = sessionId
+            };
+
             var authenticatedUser = await _authenticationService
                 .GetAuthenticatedUser(this, CookieNames.CookieName)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) ?? new ClaimsPrincipal();
+            
             var parameter = authorizationRequest.ToParameter();
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName, cancellationToken)
@@ -231,7 +242,7 @@ namespace SimpleAuth.Controllers
         /// <param name="authorizationRequest"></param>
         /// <param name="cancellationToken">The cancellation token for the callback.</param>
         /// <returns>The resolved <see cref="AuthorizationRequest"/></returns>
-        private async Task<AuthorizationRequest> ResolveAuthorizationRequest(
+        private async Task<Option<AuthorizationRequest>> ResolveAuthorizationRequest(
             AuthorizationRequest authorizationRequest,
             CancellationToken cancellationToken)
         {
@@ -244,22 +255,32 @@ namespace SimpleAuth.Controllers
                             authorizationRequest.client_id,
                             cancellationToken)
                         .ConfigureAwait(false);
-                return result ?? throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidRequest,
-                        Strings.TheRequestParameterIsNotCorrect,
-                        authorizationRequest.state);
+                return result is null
+                    ? new Option<AuthorizationRequest>.Error(
+                        new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidRequest,
+                            Detail = Strings.TheRequestParameterIsNotCorrect,
+                            Status = HttpStatusCode.BadRequest
+                        },
+                        authorizationRequest.state)
+                    : new Option<AuthorizationRequest>.Result(result);
             }
 
             if (authorizationRequest.request_uri == null)
             {
-                return authorizationRequest;
+                return new Option<AuthorizationRequest>.Result(authorizationRequest);
             }
 
             if (authorizationRequest.request_uri.IsAbsoluteUri)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequestUriCode,
-                    Strings.TheRequestUriParameterIsNotWellFormed,
+                return new Option<AuthorizationRequest>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequestUriCode,
+                        Detail = Strings.TheRequestUriParameterIsNotWellFormed,
+                        Status = HttpStatusCode.BadRequest
+                    },
                     authorizationRequest.state);
             }
 
@@ -268,9 +289,13 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
             if (!httpResult.IsSuccessStatusCode)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheRequestDownloadedFromRequestUriIsNotValid,
+                return new Option<AuthorizationRequest>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = Strings.TheRequestDownloadedFromRequestUriIsNotValid,
+                        Status = HttpStatusCode.BadRequest
+                    },
                     authorizationRequest.state);
             }
 
@@ -281,13 +306,17 @@ namespace SimpleAuth.Controllers
                     .ConfigureAwait(false);
             if (result2 == null)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheRequestDownloadedFromRequestUriIsNotValid,
+                return new Option<AuthorizationRequest>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = Strings.TheRequestDownloadedFromRequestUriIsNotValid,
+                        Status = HttpStatusCode.BadRequest
+                    },
                     authorizationRequest.state);
             }
 
-            return result2;
+            return new Option<AuthorizationRequest>.Result(result2);
         }
     }
 }

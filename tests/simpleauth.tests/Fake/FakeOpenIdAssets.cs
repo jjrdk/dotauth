@@ -72,7 +72,7 @@ namespace SimpleAuth.Tests.Fake
         /// <returns></returns>
         public static List<Scope> GetScopes()
         {
-            return new List<Scope>
+            return new()
             {
                 new Scope
                 {

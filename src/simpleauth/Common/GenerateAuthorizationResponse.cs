@@ -27,7 +27,10 @@ namespace SimpleAuth.Common
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using SimpleAuth.Api.Authorization;
     using SimpleAuth.Events;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Events.OAuth;
 
     internal class GenerateAuthorizationResponse
@@ -47,11 +50,12 @@ namespace SimpleAuth.Common
             IClientStore clientStore,
             IConsentRepository consentRepository,
             IJwksStore jwksStore,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
             _authorizationCodeStore = authorizationCodeStore;
             _tokenStore = tokenStore;
-            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore, logger);
             _eventPublisher = eventPublisher;
             _clientStore = clientStore;
             _consentRepository = consentRepository;
@@ -69,206 +73,229 @@ namespace SimpleAuth.Common
             var allowedTokenScopes = string.Empty;
             GrantedToken? grantedToken = null;
             var responses = authorizationParameter.ResponseType.ParseResponseTypes();
-            var idTokenPayload = await GenerateIdTokenPayload(
+            var generateIdToken = await GenerateIdTokenPayload(
                     claimsPrincipal,
                     authorizationParameter,
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            var userInformationPayload =
-                await GenerateUserInformationPayload(claimsPrincipal, authorizationParameter, cancellationToken)
-                    .ConfigureAwait(false);
-            if (responses.Contains(ResponseTypeNames.Token))
+            if (generateIdToken is Option<JwtPayload>.Result p)
             {
-                // 1. Generate an access token.
-
-                allowedTokenScopes = string.Join(' ', authorizationParameter.Scope.ParseScopes());
-
-                grantedToken = await _tokenStore.GetValidGrantedToken(
-                                       _jwksStore,
-                                       string.Join(' ', allowedTokenScopes),
-                                       client.ClientId,
-                                       cancellationToken,
-                                       idTokenJwsPayload: userInformationPayload,
-                                       userInfoJwsPayload: idTokenPayload)
-                                   .ConfigureAwait(false)
-                               ?? await client.GenerateToken(
-                                       _jwksStore,
-                                       allowedTokenScopes,
-                                       issuerName,
-                                       userInformationPayload,
-                                       idTokenPayload,
-                                       cancellationToken: cancellationToken,
-                                       claimsPrincipal.Claims.Where(
-                                               c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
-                                           .ToArray())
-                                   .ConfigureAwait(false);
-
-                endpointResult = endpointResult with
-                {
-                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
-                        StandardAuthorizationResponseNames.AccessTokenName,
-                        grantedToken.AccessToken)
-                };
-            }
-
-            AuthorizationCode? authorizationCode = null;
-            var authorizationParameterClientId = authorizationParameter.ClientId;
-            if (responses.Contains(ResponseTypeNames.Code)) // 2. Generate an authorization code.
-            {
-                var subject = claimsPrincipal.GetSubject()!;
-                var assignedConsent = await _consentRepository
-                    .GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
+                var idTokenPayload = p.Item;
+                var payload = await GenerateUserInformationPayload(
+                        claimsPrincipal,
+                        authorizationParameter,
+                        cancellationToken)
                     .ConfigureAwait(false);
-                if (assignedConsent != null)
+                if (payload is Option<JwtPayload>.Error er)
                 {
+                    return EndpointResult.CreateBadRequestResult(er.Details);
+                }
 
-                    if (authorizationParameterClientId == null
-                        || authorizationParameter.RedirectUrl == null
-                        || authorizationParameter.Scope == null)
-                    {
-                        throw new ArgumentException("Missing values", nameof(authorizationParameter));
-                    }
+                var userInformationPayload = (payload as Option<JwtPayload>.Result)!.Item;
+                if (responses.Contains(ResponseTypeNames.Token))
+                {
+                    // 1. Generate an access token.
 
-                    // Insert a temporary authorization code
-                    // It will be used later to retrieve tha id_token or an access token.
-                    authorizationCode = new AuthorizationCode
-                    {
-                        Code = Id.Create(),
-                        RedirectUri = authorizationParameter.RedirectUrl,
-                        CreateDateTime = DateTimeOffset.UtcNow,
-                        ClientId = authorizationParameterClientId,
-                        Scopes = authorizationParameter.Scope,
-                        IdTokenPayload = idTokenPayload,
-                        UserInfoPayLoad = userInformationPayload
-                    };
+                    allowedTokenScopes = string.Join(' ', authorizationParameter.Scope.ParseScopes());
+
+                    grantedToken = await _tokenStore.GetValidGrantedToken(
+                                           _jwksStore,
+                                           string.Join(' ', allowedTokenScopes),
+                                           client.ClientId,
+                                           cancellationToken,
+                                           idTokenJwsPayload: userInformationPayload,
+                                           userInfoJwsPayload: idTokenPayload)
+                                       .ConfigureAwait(false)
+                                   ?? await client.GenerateToken(
+                                           _jwksStore,
+                                           allowedTokenScopes,
+                                           issuerName,
+                                           userInformationPayload,
+                                           idTokenPayload,
+                                           cancellationToken: cancellationToken,
+                                           claimsPrincipal.Claims.Where(
+                                                   c => client.UserClaimsToIncludeInAuthToken.Any(
+                                                       r => r.IsMatch(c.Type)))
+                                               .ToArray())
+                                       .ConfigureAwait(false);
 
                     endpointResult = endpointResult with
                     {
                         RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
-                        StandardAuthorizationResponseNames.AuthorizationCodeName,
-                        authorizationCode.Code)
-                    };
-                }
-            }
-
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(
-                idTokenPayload,
-                authorizationCode == null ? string.Empty : authorizationCode.Code,
-                grantedToken == null ? string.Empty : grantedToken.AccessToken,
-                client);
-
-            if (grantedToken != null)
-            // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
-            {
-                if (authorizationParameterClientId == null
-                    || authorizationParameter.ResponseType == null)
-                {
-                    throw new ArgumentException("Missing values", nameof(authorizationParameter));
-                }
-
-                await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
-                await _eventPublisher.Publish(
-                        new TokenGranted(
-                            Id.Create(),
-                            claimsPrincipal.GetSubject(),
-                            authorizationParameterClientId,
-                            allowedTokenScopes,
-                            authorizationParameter.ResponseType,
-                            DateTimeOffset.UtcNow))
-                    .ConfigureAwait(false);
-            }
-
-            if (authorizationCode != null) // 4. Insert the authorization code into the caching.
-            {
-                if (client.RequirePkce)
-                {
-                    authorizationCode = authorizationCode with
-                    {
-                        CodeChallenge = authorizationParameter.CodeChallenge ?? string.Empty,
-                        CodeChallengeMethod = authorizationParameter.CodeChallengeMethod ?? string.Empty
+                            StandardAuthorizationResponseNames.AccessTokenName,
+                            grantedToken.AccessToken)
                     };
                 }
 
-                await _authorizationCodeStore.Add(authorizationCode, cancellationToken).ConfigureAwait(false);
-                await _eventPublisher.Publish(
-                        new AuthorizationGranted(
-                            Id.Create(),
-                            claimsPrincipal.GetSubject(),
-                            authorizationParameterClientId!,
-                            DateTimeOffset.UtcNow))
-                    .ConfigureAwait(false);
-            }
-
-            if (responses.Contains(ResponseTypeNames.IdToken))
-            {
-                var idToken = await _clientStore.GenerateIdToken(
-                        authorizationParameterClientId!,
-                        idTokenPayload,
-                        _jwksStore,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-                endpointResult = endpointResult with
+                AuthorizationCode? authorizationCode = null;
+                var authorizationParameterClientId = authorizationParameter.ClientId;
+                if (responses.Contains(ResponseTypeNames.Code)) // 2. Generate an authorization code.
                 {
-                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
-                        StandardAuthorizationResponseNames.IdTokenName,
-                        idToken)
-                };
-            }
-
-            if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
-            {
-                endpointResult = endpointResult with
-                {
-                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
-                        StandardAuthorizationResponseNames.StateName,
-                        authorizationParameter.State)
-                };
-            }
-
-            var sessionState = GetSessionState(
-                authorizationParameterClientId,
-                authorizationParameter.OriginUrl,
-                authorizationParameter.SessionId);
-            if (sessionState != null)
-            {
-                endpointResult = endpointResult with
-                {
-                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
-                    StandardAuthorizationResponseNames.SessionState,
-                    sessionState)
-                };
-            }
-
-            if (authorizationParameter.ResponseMode == ResponseModes.FormPost)
-            {
-                endpointResult = endpointResult with
-                {
-                    Type = ActionResultType.RedirectToAction,
-                    RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
-                            "redirect_uri",
-                            authorizationParameter.RedirectUrl?.AbsoluteUri) with
+                    var subject = claimsPrincipal.GetSubject()!;
+                    var assignedConsent = await _consentRepository
+                        .GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
+                        .ConfigureAwait(false);
+                    if (assignedConsent != null)
                     {
-                        Action = SimpleAuthEndPoints.FormIndex
+                        if (authorizationParameterClientId == null
+                            || authorizationParameter.RedirectUrl == null
+                            || authorizationParameter.Scope == null)
+                        {
+                            throw new ArgumentException(Strings.MissingValues, nameof(authorizationParameter));
+                        }
+
+                        // Insert a temporary authorization code
+                        // It will be used later to retrieve tha id_token or an access token.
+                        authorizationCode = new AuthorizationCode
+                        {
+                            Code = Id.Create(),
+                            RedirectUri = authorizationParameter.RedirectUrl,
+                            CreateDateTime = DateTimeOffset.UtcNow,
+                            ClientId = authorizationParameterClientId,
+                            Scopes = authorizationParameter.Scope,
+                            IdTokenPayload = idTokenPayload,
+                            UserInfoPayLoad = userInformationPayload
+                        };
+
+                        endpointResult = endpointResult with
+                        {
+                            RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
+                                StandardAuthorizationResponseNames.AuthorizationCodeName,
+                                authorizationCode.Code)
+                        };
                     }
-                };
-            }
-
-            // Set the response mode
-            if (endpointResult.Type == ActionResultType.RedirectToCallBackUrl)
-            {
-                var responseMode = authorizationParameter.ResponseMode;
-                if (responseMode == ResponseModes.None)
-                {
-                    var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
-                    var authorizationFlow = responseTypes.GetAuthorizationFlow(authorizationParameter.State);
-                    responseMode = CoreConstants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
                 }
 
-                endpointResult = endpointResult with { RedirectInstruction = endpointResult.RedirectInstruction! with { ResponseMode = responseMode } };
-            }
+                _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(
+                    idTokenPayload,
+                    authorizationCode == null ? string.Empty : authorizationCode.Code,
+                    grantedToken == null ? string.Empty : grantedToken.AccessToken,
+                    client);
 
-            return endpointResult;
+                if (grantedToken != null)
+                // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
+                {
+                    if (authorizationParameterClientId == null || authorizationParameter.ResponseType == null)
+                    {
+                        throw new ArgumentException(Strings.MissingValues, nameof(authorizationParameter));
+                    }
+
+                    await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
+                    await _eventPublisher.Publish(
+                            new TokenGranted(
+                                Id.Create(),
+                                claimsPrincipal.GetSubject(),
+                                authorizationParameterClientId,
+                                allowedTokenScopes,
+                                authorizationParameter.ResponseType,
+                                DateTimeOffset.UtcNow))
+                        .ConfigureAwait(false);
+                }
+
+                if (authorizationCode != null) // 4. Insert the authorization code into the caching.
+                {
+                    if (client.RequirePkce)
+                    {
+                        authorizationCode = authorizationCode with
+                        {
+                            CodeChallenge = authorizationParameter.CodeChallenge ?? string.Empty,
+                            CodeChallengeMethod = authorizationParameter.CodeChallengeMethod ?? string.Empty
+                        };
+                    }
+
+                    await _authorizationCodeStore.Add(authorizationCode, cancellationToken).ConfigureAwait(false);
+                    await _eventPublisher.Publish(
+                            new AuthorizationGranted(
+                                Id.Create(),
+                                claimsPrincipal.GetSubject(),
+                                authorizationParameterClientId!,
+                                DateTimeOffset.UtcNow))
+                        .ConfigureAwait(false);
+                }
+
+                if (responses.Contains(ResponseTypeNames.IdToken))
+                {
+                    var idToken = await _clientStore.GenerateIdToken(
+                            authorizationParameterClientId!,
+                            idTokenPayload,
+                            _jwksStore,
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                    endpointResult = endpointResult with
+                    {
+                        RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
+                            StandardAuthorizationResponseNames.IdTokenName,
+                            idToken)
+                    };
+                }
+
+                if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
+                {
+                    endpointResult = endpointResult with
+                    {
+                        RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
+                            StandardAuthorizationResponseNames.StateName,
+                            authorizationParameter.State)
+                    };
+                }
+
+                var sessionState = GetSessionState(
+                    authorizationParameterClientId,
+                    authorizationParameter.OriginUrl,
+                    authorizationParameter.SessionId);
+                if (sessionState != null)
+                {
+                    endpointResult = endpointResult with
+                    {
+                        RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
+                            StandardAuthorizationResponseNames.SessionState,
+                            sessionState)
+                    };
+                }
+
+                if (authorizationParameter.ResponseMode == ResponseModes.FormPost)
+                {
+                    endpointResult = endpointResult with
+                    {
+                        Type = ActionResultType.RedirectToAction,
+                        RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
+                                "redirect_uri",
+                                authorizationParameter.RedirectUrl?.AbsoluteUri) with
+                        {
+                            Action = SimpleAuthEndPoints.FormIndex
+                        }
+                    };
+                }
+
+                // Set the response mode
+                if (endpointResult.Type == ActionResultType.RedirectToCallBackUrl)
+                {
+                    var responseMode = authorizationParameter.ResponseMode;
+                    if (responseMode == ResponseModes.None)
+                    {
+                        var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
+                        var authorizationFlow = responseTypes.GetAuthorizationFlow(authorizationParameter.State);
+                        switch (authorizationFlow)
+                        {
+                            case Option<AuthorizationFlow>.Error error:
+                                return EndpointResult.CreateBadRequestResult(error.Details);
+                            case Option<AuthorizationFlow>.Result r:
+                                responseMode = CoreConstants.MappingAuthorizationFlowAndResponseModes[r.Item];
+                                break;
+                        }
+                    }
+
+                    endpointResult = endpointResult with
+                    {
+                        RedirectInstruction = endpointResult.RedirectInstruction! with { ResponseMode = responseMode }
+                    };
+                }
+
+                return endpointResult;
+            }
+            var e = generateIdToken as Option<JwtPayload>.Error;
+            return EndpointResult.CreateBadRequestResult(e!.Details);
         }
 
         private static string? GetSessionState(string? clientId, string? originUrl, string? sessionId)
@@ -287,7 +314,7 @@ namespace SimpleAuth.Common
             return string.Concat(hex.Base64Encode(), "==.", salt);
         }
 
-        private async Task<JwtPayload> GenerateIdTokenPayload(
+        private async Task<Option<JwtPayload>> GenerateIdTokenPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
             string issuerName,
@@ -319,21 +346,25 @@ namespace SimpleAuth.Common
         /// <param name="authorizationParameter"></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        private async Task<JwtPayload> GenerateUserInformationPayload(
+        private async Task<Option<JwtPayload>> GenerateUserInformationPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
             CancellationToken cancellationToken)
         {
-            return authorizationParameter.Claims != null && authorizationParameter.Claims.IsAnyUserInfoClaimParameter()
-                ? JwtGenerator.GenerateFilteredUserInfoPayload(
+            if (authorizationParameter.Claims != null && authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
+            {
+                return _jwtGenerator.GenerateFilteredUserInfoPayload(
                     authorizationParameter.Claims.UserInfo,
                     claimsPrincipal,
-                    authorizationParameter)
-                : await _jwtGenerator.GenerateUserInfoPayloadForScope(
-                        claimsPrincipal,
-                        authorizationParameter,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+                    authorizationParameter);
+            }
+
+            var payload = await _jwtGenerator.GenerateUserInfoPayloadForScope(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            return new Option<JwtPayload>.Result(payload);
         }
     }
 }

@@ -66,7 +66,8 @@ namespace SimpleAuth.Api.Token
                 tokenStore,
                 jwksStore,
                 resourceOwnerServices,
-                eventPublisher);
+                eventPublisher,
+                logger);
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 authorizationCodeStore,
                 simpleAuthOptions,

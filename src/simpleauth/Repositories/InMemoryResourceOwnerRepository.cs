@@ -6,9 +6,12 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
     /// <summary>
     /// Defines the in-memory resource owner repository.
@@ -185,7 +188,7 @@
         }
 
         /// <inheritdoc />
-        public Task<bool> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)
+        public Task<Option> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken)
         {
             if (resourceOwner == null)
             {
@@ -195,14 +198,19 @@
             var user = _users.FirstOrDefault(u => u.Subject == resourceOwner.Subject);
             if (user == null)
             {
-                return Task.FromResult(false);
+                return Task.FromResult<Option>(new Option.Error(new ErrorDetails
+                {
+                    Title = ErrorCodes.InternalError,
+                    Detail = Strings.TheRoDoesntExist,
+                    Status = HttpStatusCode.InternalServerError
+                }));
             }
 
             user.IsLocalAccount = resourceOwner.IsLocalAccount;
             user.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
             user.UpdateDateTime = DateTimeOffset.UtcNow;
             user.Claims = resourceOwner.Claims;
-            return Task.FromResult(true);
+            return Task.FromResult<Option>(new Option.Success());
         }
     }
 }

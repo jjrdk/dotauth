@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Tests.JwtToken
 {
-    using Exceptions;
     using Fake;
     using Helpers;
     using Microsoft.IdentityModel.Tokens;
@@ -34,19 +33,28 @@ namespace SimpleAuth.Tests.JwtToken
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class JwtGeneratorFixture
     {
-        private JwtGenerator _jwtGenerator;
-        private Mock<IClientStore> _clientRepositoryStub;
-        private Mock<IScopeRepository> _scopeRepositoryStub;
+        private readonly JwtGenerator _jwtGenerator;
+        private readonly Mock<IClientStore> _clientRepositoryStub;
+        private readonly Mock<IScopeRepository> _scopeRepositoryStub;
 
-        public JwtGeneratorFixture()
+        public JwtGeneratorFixture(ITestOutputHelper outputHelper)
         {
-            InitializeMockObjects();
+            _clientRepositoryStub = new Mock<IClientStore>();
+            _scopeRepositoryStub = new Mock<IScopeRepository>();
+
+            _jwtGenerator = new JwtGenerator(
+                _clientRepositoryStub.Object,
+                _scopeRepositoryStub.Object,
+                new InMemoryJwksRepository(),
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]
@@ -69,7 +77,7 @@ namespace SimpleAuth.Tests.JwtToken
         public async Task WhenSignatureParametersAreConfiguredThenCanGenerateAccessToken()
         {
             const string clientId = "client_id";
-            var scopes = new List<string> {"openid", "role"};
+            var scopes = new List<string> { "openid", "role" };
             var client = new Client
             {
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
@@ -77,27 +85,10 @@ namespace SimpleAuth.Tests.JwtToken
                 ClientId = clientId
             };
 
-            var result = await _jwtGenerator.GenerateAccessToken(client, scopes, "issuer", default, null)
+            var result = await _jwtGenerator.GenerateAccessToken(client, scopes, "issuer")
                 .ConfigureAwait(false);
 
             Assert.NotNull(result);
-        }
-
-        [Fact]
-        public async Task When_Passing_Null_Parameters_To_GenerateIdTokenPayloadForScopes_Then_Exception_Is_Thrown()
-        {
-            var authorizationParameter = new AuthorizationParameter();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _jwtGenerator.GenerateIdTokenPayloadForScopes(null, null, null, CancellationToken.None))
-                .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _jwtGenerator.GenerateIdTokenPayloadForScopes(
-                        null,
-                        authorizationParameter,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -108,24 +99,25 @@ namespace SimpleAuth.Tests.JwtToken
             var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(OpenIdClaimTypes.Subject, subject)
+                new(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
+                new(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter {ClientId = "test", MaxAge = 2};
+            var authorizationParameter = new AuthorizationParameter { ClientId = "test", MaxAge = 2 };
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
 
-            var result = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+            var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                     claimsPrincipal,
                     authorizationParameter,
                     null,
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
+            var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
             Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.AuthenticationTime);
             Assert.Equal(subject, result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
@@ -139,21 +131,21 @@ namespace SimpleAuth.Tests.JwtToken
             const string issuerName = "IssuerName";
             var clientId = FakeOpenIdAssets.GetClients().First().ClientId;
             const string subject = "john.doe@email.com";
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter {ClientId = clientId};
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
 
-            var result = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+            var result = (await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                     claimsPrincipal,
                     authorizationParameter,
                     issuerName,
                     CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<JwtPayload>.Result)!.Item;
 
             Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
             Assert.True(result.Aud.Count > 1);
@@ -166,59 +158,64 @@ namespace SimpleAuth.Tests.JwtToken
             const string issuerName = "IssuerName";
             const string clientId = "clientId";
             const string subject = "john.doe@email.com";
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter {ClientId = clientId};
+            var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Client) null);
+                .ReturnsAsync((Client)null);
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Array.Empty<Client>());
 
-            var result = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+            var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                     claimsPrincipal,
                     authorizationParameter,
                     issuerName,
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
+            var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
             Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
             Assert.Single(result.Aud);
             Assert.Equal(clientId, result.Azp);
         }
 
         [Fact]
-        public async Task When_Requesting_IdentityToken_JwsPayload_And_Multiple_Scopes_With_Same_Claim_Defined_Then_Role_Should_Be_Returned_Without_Duplicates()
+        public async Task
+            When_Requesting_IdentityToken_JwsPayload_And_Multiple_Scopes_With_Same_Claim_Defined_Then_Role_Should_Be_Returned_Without_Duplicates()
         {
             const string issuerName = "IssuerName";
             const string clientId = "clientId";
             const string subject = "john.doe@email.com";
             const string role = "administrator";
             const string scope = "role";
-            var claims = new List<Claim> { new Claim(OpenIdClaimTypes.Subject, subject), new Claim(OpenIdClaimTypes.Role, role) };
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject), new(OpenIdClaimTypes.Role, role) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
             this._scopeRepositoryStub.Setup(sr => sr.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(
                     new[]
-                        {
-                            new Scope { Type = "role", Claims = new[] { OpenIdClaimTypes.Role } },
-                            new Scope { Type = "manager", Claims = new[] { OpenIdClaimTypes.Role } }
-                        }.ToArray());
+                    {
+                        new Scope {Type = "role", Claims = new[] {OpenIdClaimTypes.Role}},
+                        new Scope {Type = "manager", Claims = new[] {OpenIdClaimTypes.Role}}
+                    }.ToArray());
 
-            var result = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
-                             claimsPrincipal,
-                             authorizationParameter,
-                             issuerName,
-                             CancellationToken.None).ConfigureAwait(false);
+            var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    issuerName,
+                    CancellationToken.None)
+                .ConfigureAwait(false);
 
+            var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
             Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Role);
             Assert.Equal("administrator", result.Claims.Single(c => c.Type.Equals(OpenIdClaimTypes.Role)).Value);
         }
 
         [Fact]
-        public async Task When_Requesting_IdentityToken_JwsPayload_And_Multiple_Scopes_With_Multiple_Unique_Claims_Defined_Then_Role_Should_Be_Returned_With_All_Unique_Claims()
+        public async Task
+            When_Requesting_IdentityToken_JwsPayload_And_Multiple_Scopes_With_Multiple_Unique_Claims_Defined_Then_Role_Should_Be_Returned_With_All_Unique_Claims()
         {
             const string issuerName = "IssuerName";
             const string clientId = "clientId";
@@ -227,30 +224,34 @@ namespace SimpleAuth.Tests.JwtToken
             const string anotherRole = "superadministrator";
             const string scope = "role";
             var claims = new List<Claim>
-                             {
-                                 new Claim(OpenIdClaimTypes.Subject, subject),
-                                 new Claim(OpenIdClaimTypes.Role, role),
-                                 new Claim(OpenIdClaimTypes.Role, anotherRole)
-                             };
+            {
+                new(OpenIdClaimTypes.Subject, subject),
+                new(OpenIdClaimTypes.Role, role),
+                new(OpenIdClaimTypes.Role, anotherRole)
+            };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
             _scopeRepositoryStub.Setup(sr => sr.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(
                     new[]
-                        {
-                            new Scope { Type = "role", Claims = new[] { OpenIdClaimTypes.Role } },
-                            new Scope { Type = "manager", Claims = new[] { OpenIdClaimTypes.Role } }
-                        }.ToArray());
+                    {
+                        new Scope {Type = "role", Claims = new[] {OpenIdClaimTypes.Role}},
+                        new Scope {Type = "manager", Claims = new[] {OpenIdClaimTypes.Role}}
+                    }.ToArray());
 
-            var result = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
-                             claimsPrincipal,
-                             authorizationParameter,
-                             issuerName,
-                             CancellationToken.None).ConfigureAwait(false);
+            var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    issuerName,
+                    CancellationToken.None)
+                .ConfigureAwait(false);
 
+            var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
             Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Role);
-            Assert.Equal("administrator superadministrator", result.Claims.Single(c => c.Type.Equals(OpenIdClaimTypes.Role)).Value);
+            Assert.Equal(
+                "administrator superadministrator",
+                result.Claims.Single(c => c.Type.Equals(OpenIdClaimTypes.Role)).Value);
         }
 
         [Fact]
@@ -259,7 +260,7 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             var authorizationParameter = new AuthorizationParameter();
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -267,36 +268,19 @@ namespace SimpleAuth.Tests.JwtToken
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
 
-            var result = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+            var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                     claimsPrincipal,
                     authorizationParameter,
-                    null,
+                    "",
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
+            var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
             Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.Audiences);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.ExpirationTime);
             Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.Iat);
             Assert.Equal(subject, result.Sub);
-        }
-
-        [Fact]
-        public async Task When_Passing_Null_Parameters_To_GenerateFilteredIdTokenPayload_Then_Exception_Is_Thrown()
-        {
-            var authorizationParameter = new AuthorizationParameter();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _jwtGenerator.GenerateFilteredIdTokenPayload(null, null, null, null, CancellationToken.None))
-                .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _jwtGenerator.GenerateFilteredIdTokenPayload(
-                        null,
-                        authorizationParameter,
-                        null,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -307,13 +291,13 @@ namespace SimpleAuth.Tests.JwtToken
             var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(OpenIdClaimTypes.Subject, subject)
+                new(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
+                new(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter {State = state};
-            var claimsParameter = new []
+            var authorizationParameter = new AuthorizationParameter { State = state };
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -330,19 +314,18 @@ namespace SimpleAuth.Tests.JwtToken
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _jwtGenerator.GenerateFilteredIdTokenPayload(
-                        claimsPrincipal,
-                        authorizationParameter,
-                        claimsParameter,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
+            var exception = await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<JwtPayload>.Error;
             Assert.NotNull(exception);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Details.Title);
             Assert.Equal(
                 string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Audiences),
-                exception.Message);
+                exception.Details.Detail);
             Assert.Equal(state, exception.State);
         }
 
@@ -354,13 +337,13 @@ namespace SimpleAuth.Tests.JwtToken
             var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(OpenIdClaimTypes.Subject, subject)
+                new(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
+                new(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter {State = state};
-            var claimsParameter = new []
+            var authorizationParameter = new AuthorizationParameter { State = state };
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -377,20 +360,23 @@ namespace SimpleAuth.Tests.JwtToken
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _jwtGenerator.GenerateFilteredIdTokenPayload(
-                        claimsPrincipal,
-                        authorizationParameter,
-                        claimsParameter,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.NotNull(exception);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
+            var exception = await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<JwtPayload>.Error;
+
             Assert.Equal(
-                exception.Message,
-                string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Issuer));
-            Assert.Equal(state, exception.State);
+                new Option<JwtPayload>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Issuer)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -401,13 +387,13 @@ namespace SimpleAuth.Tests.JwtToken
             var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(OpenIdClaimTypes.Subject, subject)
+                new(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
+                new(OpenIdClaimTypes.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter {State = state};
-            var claimsParameter = new []
+            var authorizationParameter = new AuthorizationParameter { State = state };
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -424,20 +410,22 @@ namespace SimpleAuth.Tests.JwtToken
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _jwtGenerator.GenerateFilteredIdTokenPayload(
-                        claimsPrincipal,
-                        authorizationParameter,
-                        claimsParameter,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.NotNull(exception);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
+            var exception = await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<JwtPayload>.Error;
             Assert.Equal(
-                string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.ExpirationTime),
-                exception.Message);
-            Assert.Equal(state, exception.State);
+                new Option<JwtPayload>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.ExpirationTime)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -446,12 +434,12 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             const string notValidSubject = "jane.doe@email.com";
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var authorizationParameter = new AuthorizationParameter();
 
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new []
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -468,17 +456,22 @@ namespace SimpleAuth.Tests.JwtToken
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
 
-            var result = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _jwtGenerator.GenerateFilteredIdTokenPayload(
-                        claimsPrincipal,
-                        authorizationParameter,
-                        claimsParameter,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
+            var result = await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<JwtPayload>.Error;
 
-            Assert.Equal(result.Code, ErrorCodes.InvalidGrant);
-            Assert.Equal(result.Message, string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Subject));
+            Assert.Equal(
+                new Option<JwtPayload>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Subject)
+                    }),
+                result);
         }
 
         [Fact]
@@ -487,8 +480,8 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             const string nonce = "nonce";
-            var currentDateTimeOffset = (double) DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
-            var claims = new []
+            var currentDateTimeOffset = (double)DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+            var claims = new[]
             {
                 new Claim(
                     ClaimTypes.AuthenticationInstant,
@@ -496,10 +489,10 @@ namespace SimpleAuth.Tests.JwtToken
                 new Claim(OpenIdClaimTypes.Subject, subject),
                 new Claim(OpenIdClaimTypes.Role, "['role1', 'role2']", ClaimValueTypes.String)
             };
-            var authorizationParameter = new AuthorizationParameter {Nonce = nonce};
+            var authorizationParameter = new AuthorizationParameter { Nonce = nonce };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new []
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -550,7 +543,7 @@ namespace SimpleAuth.Tests.JwtToken
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
 
-            var result = await _jwtGenerator.GenerateFilteredIdTokenPayload(
+            var generateIdTokenPayload = await _jwtGenerator.GenerateFilteredIdTokenPayload(
                     claimsPrincipal,
                     authorizationParameter,
                     claimsParameter,
@@ -558,7 +551,7 @@ namespace SimpleAuth.Tests.JwtToken
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
-
+            var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
             Assert.Equal(subject, result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
             Assert.Equal(
                 currentDateTimeOffset,
@@ -570,33 +563,14 @@ namespace SimpleAuth.Tests.JwtToken
         }
 
         [Fact]
-        public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
-        {
-            var authorizationParameter = new AuthorizationParameter();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _jwtGenerator.GenerateUserInfoPayloadForScope(null, null, CancellationToken.None))
-                .ConfigureAwait(false);
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _jwtGenerator.GenerateUserInfoPayloadForScope(
-                        null,
-                        authorizationParameter,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
         public async Task When_Requesting_UserInformation_JwsPayload_For_Scopes_Then_The_JwsPayload_Is_Correct()
         {
             const string subject = "john.doe@email.com";
             const string name = "John Doe";
-            var claims = new List<Claim>
-            {
-                new Claim(OpenIdClaimTypes.Name, name), new Claim(OpenIdClaimTypes.Subject, subject)
-            };
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Name, name), new(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var authorizationParameter = new AuthorizationParameter {Scope = "profile"};
+            var authorizationParameter = new AuthorizationParameter { Scope = "profile" };
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
@@ -614,24 +588,14 @@ namespace SimpleAuth.Tests.JwtToken
         }
 
         [Fact]
-        public void When_Passing_Null_Parameters_To_GenerateFilteredUserInfoPayload_Then_Exception_Is_Thrown()
-        {
-            var authorizationParameter = new AuthorizationParameter();
-
-            Assert.Throws<ArgumentNullException>(() => JwtGenerator.GenerateFilteredUserInfoPayload(null, null, null));
-            Assert.Throws<ArgumentNullException>(
-                () => JwtGenerator.GenerateFilteredUserInfoPayload(null, null, authorizationParameter));
-        }
-
-        [Fact]
         public void When_Requesting_UserInformation_But_The_Essential_Claim_Subject_Is_Empty_Then_Exception_Is_Thrown()
         {
             const string subject = "";
             const string state = "state";
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new []
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -643,23 +607,20 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter {Scope = "profile", State = state};
+            var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(scopes);
 
-            var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => JwtGenerator.GenerateFilteredUserInfoPayload(
-                    claimsParameter,
-                    claimsPrincipal,
-                    authorizationParameter));
+            var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter) as Option<JwtPayload>.Error;
             Assert.NotNull(exception);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
-            Assert.Equal(
-                string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Subject),
-                exception.Message);
+            Assert.Equal(ErrorCodes.InvalidGrant, exception.Details.Title);
+            Assert.Equal(string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Subject), exception.Details.Detail);
             Assert.Equal(state, exception.State);
         }
 
@@ -669,10 +630,10 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "invalid@loki.be";
             const string state = "state";
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new []
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -684,23 +645,27 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter {Scope = "profile", State = state};
+            var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(scopes);
 
-            var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => JwtGenerator.GenerateFilteredUserInfoPayload(
-                    claimsParameter,
-                    claimsPrincipal,
-                    authorizationParameter));
+            var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter) as Option<JwtPayload>.Error;
 
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
-            Assert.True(
-                exception.Message == string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Subject));
-            Assert.True(exception.State == state);
+            Assert.Equal(
+                new Option<JwtPayload>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Subject)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -708,10 +673,10 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             const string state = "state";
-            var claims = new List<Claim> {new Claim(OpenIdClaimTypes.Subject, subject)};
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new []
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -723,23 +688,27 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter {Scope = "profile", State = state};
+            var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(scopes);
 
-            var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => JwtGenerator.GenerateFilteredUserInfoPayload(
-                    claimsParameter,
-                    claimsPrincipal,
-                    authorizationParameter));
-            Assert.NotNull(exception);
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
-            Assert.True(
-                exception.Message == string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Name));
-            Assert.True(exception.State == state);
+            var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter) as Option<JwtPayload>.Error;
+
+            Assert.Equal(
+                new Option<JwtPayload>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Name)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -749,11 +718,11 @@ namespace SimpleAuth.Tests.JwtToken
             const string state = "state";
             var claims = new List<Claim>
             {
-                new Claim(OpenIdClaimTypes.Subject, subject), new Claim(OpenIdClaimTypes.Name, "invalid_name")
+                new(OpenIdClaimTypes.Subject, subject), new(OpenIdClaimTypes.Name, "invalid_name")
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new []
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -773,23 +742,27 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter {Scope = "profile", State = state};
+            var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(scopes);
 
-            var exception = Assert.Throws<SimpleAuthExceptionWithState>(
-                () => JwtGenerator.GenerateFilteredUserInfoPayload(
-                    claimsParameter,
-                    claimsPrincipal,
-                    authorizationParameter));
+            var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter) as Option<JwtPayload>.Error;
 
-            Assert.Equal(ErrorCodes.InvalidGrant, exception.Code);
-            Assert.True(
-                exception.Message == string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Name));
-            Assert.True(exception.State == state);
+            Assert.Equal(
+                new Option<JwtPayload>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidGrant,
+                        Detail = string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Name)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -797,13 +770,10 @@ namespace SimpleAuth.Tests.JwtToken
         {
             const string subject = "john.doe@email.com";
             const string name = "John Doe";
-            var claims = new List<Claim>
-            {
-                new Claim(OpenIdClaimTypes.Name, name), new Claim(OpenIdClaimTypes.Subject, subject)
-            };
+            var claims = new List<Claim> { new(OpenIdClaimTypes.Name, name), new(OpenIdClaimTypes.Subject, subject) };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-            var claimsParameter = new []
+            var claimsParameter = new[]
             {
                 new ClaimParameter
                 {
@@ -824,18 +794,19 @@ namespace SimpleAuth.Tests.JwtToken
                 }
             };
 
-            var authorizationParameter = new AuthorizationParameter {Scope = "profile"};
+            var authorizationParameter = new AuthorizationParameter { Scope = "profile" };
             var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
             _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(FakeOpenIdAssets.GetClients());
             _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
                 .ReturnsAsync(scopes);
 
-            var result = JwtGenerator.GenerateFilteredUserInfoPayload(
+            var generateIdTokenPayload = _jwtGenerator.GenerateFilteredUserInfoPayload(
                 claimsParameter,
                 claimsPrincipal,
                 authorizationParameter);
 
+            var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
             Assert.Equal(subject, result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
             Assert.Equal(name, result.Claims.First(c => c.Type == OpenIdClaimTypes.Name).Value);
         }
@@ -916,17 +887,6 @@ namespace SimpleAuth.Tests.JwtToken
                 client);
             Assert.Contains(jwsPayload.Claims, c => c.Type == StandardClaimNames.AtHash);
             Assert.Contains(jwsPayload.Claims, c => c.Type == StandardClaimNames.CHash);
-        }
-
-        private void InitializeMockObjects()
-        {
-            _clientRepositoryStub = new Mock<IClientStore>();
-            _scopeRepositoryStub = new Mock<IScopeRepository>();
-
-            _jwtGenerator = new JwtGenerator(
-                _clientRepositoryStub.Object,
-                _scopeRepositoryStub.Object,
-                new InMemoryJwksRepository());
         }
     }
 }

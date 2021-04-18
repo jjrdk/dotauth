@@ -35,7 +35,7 @@
             const string subject = "subject";
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, subject)
+                new(ClaimTypes.NameIdentifier, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -50,7 +50,7 @@
         {
             const string subject = "subject"; var claims = new List<Claim>
             {
-                new Claim(OpenIdClaimTypes.Subject, subject)
+                new(OpenIdClaimTypes.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

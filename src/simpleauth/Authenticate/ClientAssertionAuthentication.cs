@@ -16,7 +16,6 @@ namespace SimpleAuth.Authenticate
 {
     using Microsoft.IdentityModel.Tokens;
     using Shared.Repositories;
-    using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;

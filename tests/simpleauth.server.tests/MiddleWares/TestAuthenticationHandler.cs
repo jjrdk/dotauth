@@ -23,7 +23,7 @@
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            var claims = new List<Claim> { new Claim("sub", UserStore.Instance().Subject) };
+            var claims = new List<Claim> { new("sub", UserStore.Instance().Subject) };
             if (UserStore.Instance().AuthenticationOffset != null)
             {
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant, UserStore.Instance().AuthenticationOffset.Value.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)));

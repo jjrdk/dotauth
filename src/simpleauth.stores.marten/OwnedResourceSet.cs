@@ -20,7 +20,7 @@
         /// <returns></returns>
         public ResourceSet AsResourceSet()
         {
-            return new ResourceSet
+            return new()
             {
                 AuthorizationPolicies = AuthorizationPolicies,
                 Description = Description,
@@ -40,7 +40,7 @@
         /// <returns></returns>
         public static OwnedResourceSet FromResourceSet(ResourceSet resourceSet, string owner)
         {
-            return new OwnedResourceSet
+            return new()
             {
                 AuthorizationPolicies = resourceSet.AuthorizationPolicies,
                 Description = resourceSet.Description,

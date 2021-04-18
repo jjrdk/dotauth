@@ -2,25 +2,29 @@
 {
     using SimpleAuth.Api.Authorization;
     using SimpleAuth.Common;
-    using SimpleAuth.Exceptions;
     using SimpleAuth.Parameters;
     using SimpleAuth.Results;
     using SimpleAuth.Shared.Repositories;
     using System;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
 
     internal sealed class AuthenticateHelper
     {
         private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IConsentRepository _consentRepository;
         private readonly IClientStore _clientRepository;
+        private readonly ILogger _logger;
 
         public AuthenticateHelper(
             IAuthorizationCodeStore authorizationCodeStore,
@@ -29,7 +33,8 @@
             IConsentRepository consentRepository,
             IClientStore clientRepository,
             IJwksStore jwksStore,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 authorizationCodeStore,
@@ -38,9 +43,11 @@
                 clientRepository,
                 consentRepository,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
+            _logger = logger;
         }
 
         public async Task<EndpointResult> ProcessRedirection(
@@ -88,11 +95,23 @@
                         cancellationToken)
                     .ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
-                if (responseMode == ResponseModes.None)
+                if (responseMode != ResponseModes.None)
                 {
-                    var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
-                    var authorizationFlow = GetAuthorizationFlow(authorizationParameter.State, responseTypes);
-                    responseMode = GetResponseMode(authorizationFlow);
+                    return result with
+                    {
+                        RedirectInstruction = result.RedirectInstruction! with {ResponseMode = responseMode}
+                    };
+                }
+
+                var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
+                var authorizationFlow = GetAuthorizationFlow(authorizationParameter.State, responseTypes);
+                switch (authorizationFlow)
+                {
+                    case Option<AuthorizationFlow>.Error e:
+                        return EndpointResult.CreateBadRequestResult(e.Details);
+                    case Option<AuthorizationFlow>.Result r:
+                        responseMode = GetResponseMode(r.Item);
+                        break;
                 }
 
                 return result with
@@ -107,27 +126,26 @@
                 new Parameter("code", code));
         }
 
-        private static AuthorizationFlow GetAuthorizationFlow(string? state, params string[] responseTypes)
+        private Option<AuthorizationFlow> GetAuthorizationFlow(string? state, params string[] responseTypes)
         {
-            if (responseTypes == null)
-            {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheAuthorizationFlowIsNotSupported,
-                    state);
-            }
-
             var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
                 .SingleOrDefault(k => k.Length == responseTypes.Length && k.All(responseTypes.Contains));
-            if (record == null)
+            if (record != null)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheAuthorizationFlowIsNotSupported,
-                    state);
+                return new Option<AuthorizationFlow>.Result(
+                    CoreConstants.MappingResponseTypesToAuthorizationFlows[record]);
             }
 
-            return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];
+            _logger.LogError(Strings.TheAuthorizationFlowIsNotSupported);
+            return new Option<AuthorizationFlow>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = Strings.TheAuthorizationFlowIsNotSupported,
+                    Status = HttpStatusCode.BadRequest
+                },
+                state);
+
         }
 
         private static string GetResponseMode(AuthorizationFlow authorizationFlow)

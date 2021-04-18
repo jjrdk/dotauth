@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.AuthServerPg
 {
-    using System.Diagnostics;
     using Microsoft.AspNetCore.Hosting;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Server.Kestrel.Core;

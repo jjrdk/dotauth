@@ -15,9 +15,10 @@
 namespace SimpleAuth.Extensions
 {
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Exceptions;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Parameters;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
@@ -28,87 +29,128 @@ namespace SimpleAuth.Extensions
     internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
         private readonly IClientStore _clientRepository;
+        private readonly ILogger _logger;
 
-        public AuthorizationCodeGrantTypeParameterAuthEdpValidator(IClientStore clientRepository)
+        public AuthorizationCodeGrantTypeParameterAuthEdpValidator(IClientStore clientRepository, ILogger logger)
         {
             _clientRepository = clientRepository;
+            _logger = logger;
         }
 
-        public async Task<Client> Validate(AuthorizationParameter parameter, CancellationToken cancellationToken)
+        public async Task<Option<Client>> Validate(
+            AuthorizationParameter parameter,
+            CancellationToken cancellationToken)
         {
             // Check the required parameters. Read this RFC : http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
             if (string.IsNullOrWhiteSpace(parameter.Scope))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(
-                        Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
+                var message = string.Format(
+                    Strings.MissingParameter,
+                    CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName);
+                _logger.LogError(message);
+                return new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     parameter.State);
             }
 
             if (string.IsNullOrWhiteSpace(parameter.ClientId))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(
-                        Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
+                var message = string.Format(
+                    Strings.MissingParameter,
+                    CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName);
+                _logger.LogError(message);
+                return new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     parameter.State);
             }
 
             if (parameter.RedirectUrl == null)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(
-                        Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName),
+                var message = string.Format(
+                    Strings.MissingParameter,
+                    CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName);
+                _logger.LogError(message);
+                return new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     parameter.State);
             }
 
             if (string.IsNullOrWhiteSpace(parameter.ResponseType))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(
-                        Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                var message = string.Format(
+                    Strings.MissingParameter,
+                    CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName);
+                _logger.LogError(message);
+                return new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     parameter.State);
             }
 
-            ValidateResponseTypeParameter(parameter.ResponseType, parameter.State);
-            ValidatePromptParameter(parameter.Prompt, parameter.State);
+            var validationResult = ValidateResponseTypeParameter(parameter.ResponseType, parameter.State);
+            if (validationResult is Option.Error e)
+            {
+                return new Option<Client>.Error(e.Details, e.State);
+            }
+
+            validationResult = ValidatePromptParameter(parameter.Prompt, parameter.State);
+            if (validationResult is Option.Error e2)
+            {
+                return new Option<Client>.Error(e2.Details, e2.State);
+            }
 
             // With this instruction
             // The redirect_uri is considered well-formed according to the RFC-3986
             var redirectUrlIsCorrect = parameter.RedirectUrl.IsAbsoluteUri;
             if (!redirectUrlIsCorrect)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheRedirectionUriIsNotWellFormed,
+                var message = Strings.TheRedirectionUriIsNotWellFormed;
+                _logger.LogError(message);
+                return new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     parameter.State);
             }
 
             var client = await _clientRepository.GetById(parameter.ClientId, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.ClientIsNotValid, parameter.ClientId),
+                var message = string.Format(Strings.ClientIsNotValid, parameter.ClientId);
+                _logger.LogError(message);
+                return new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     parameter.State);
             }
 
             if (!client.GetRedirectionUrls(parameter.RedirectUrl).Any())
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.RedirectUrlIsNotValid, parameter.RedirectUrl),
+                var message = string.Format(Strings.RedirectUrlIsNotValid, parameter.RedirectUrl);
+                _logger.LogError(message);
+                return new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     parameter.State);
             }
 
-            return client;
+            return new Option<Client>.Result(client);
         }
 
         /// <summary>
@@ -117,11 +159,11 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="responseType"></param>
         /// <param name="state"></param>
-        private static void ValidateResponseTypeParameter(string responseType, string? state)
+        private Option ValidateResponseTypeParameter(string responseType, string? state)
         {
             if (string.IsNullOrWhiteSpace(responseType))
             {
-                return;
+                return new Option.Success();
             }
 
             //var responseTypeNames = Enum.GetNames(typeof(string));
@@ -129,11 +171,17 @@ namespace SimpleAuth.Extensions
                 .Any(r => !string.IsNullOrWhiteSpace(r) && !ResponseTypeNames.All.Contains(r));
             if (atLeastOneResonseTypeIsNotSupported)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.AtLeastOneResponseTypeIsNotSupported,
+                var message = Strings.AtLeastOneResponseTypeIsNotSupported;
+                _logger.LogError(message);
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     state);
             }
+
+            return new Option.Success();
         }
 
         /// <summary>
@@ -141,11 +189,11 @@ namespace SimpleAuth.Extensions
         /// </summary>
         /// <param name="prompt"></param>
         /// <param name="state"></param>
-        private static void ValidatePromptParameter(string? prompt, string? state)
+        private Option ValidatePromptParameter(string? prompt, string? state)
         {
             if (string.IsNullOrWhiteSpace(prompt))
             {
-                return;
+                return new Option.Success();
             }
 
             var promptNames = PromptParameters.All(); //Enum.GetNames(typeof(PromptParameter));
@@ -153,9 +201,13 @@ namespace SimpleAuth.Extensions
                 .Any(r => !string.IsNullOrWhiteSpace(r) && !promptNames.Contains(r));
             if (atLeastOnePromptIsNotSupported)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.AtLeastOnePromptIsNotSupported,
+                var message = Strings.AtLeastOnePromptIsNotSupported;
+                _logger.LogError(message);
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     state);
             }
 
@@ -165,11 +217,17 @@ namespace SimpleAuth.Extensions
                     || prompts.Contains(PromptParameters.Consent)
                     || prompts.Contains(PromptParameters.SelectAccount)))
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.PromptParameterShouldHaveOnlyNoneValue,
+                var message = Strings.PromptParameterShouldHaveOnlyNoneValue;
+                _logger.LogError(message);
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    },
                     state);
             }
+
+            return new Option.Success();
         }
     }
 }

@@ -6,7 +6,7 @@
     /// <summary>
     /// Defines the error event.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Event" />
+    /// <seealso cref="Event" />
     public record SimpleAuthError : Event
     {
         /// <summary>

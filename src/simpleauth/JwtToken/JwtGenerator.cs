@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.JwtToken
 {
-    using Exceptions;
     using Extensions;
     using Microsoft.IdentityModel.Tokens;
     using Parameters;
@@ -27,41 +26,45 @@ namespace SimpleAuth.JwtToken
     using System.Globalization;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Properties;
 
     internal class JwtGenerator
     {
         private readonly IScopeStore _scopeRepository;
         private readonly IJwksStore _jwksStore;
+        private readonly ILogger _logger;
         private readonly IClientStore _clientRepository;
 
         private readonly Dictionary<string, Func<string, string>> _mappingJwsAlgToHashingFunctions =
             new()
             {
-                {SecurityAlgorithms.EcdsaSha256, HashWithSha256},
-                {SecurityAlgorithms.EcdsaSha384, HashWithSha384},
-                {SecurityAlgorithms.EcdsaSha512, HashWithSha512},
-                {SecurityAlgorithms.HmacSha256, HashWithSha256},
-                {SecurityAlgorithms.HmacSha384, HashWithSha384},
-                {SecurityAlgorithms.HmacSha512, HashWithSha512},
-                {SecurityAlgorithms.RsaSsaPssSha256, HashWithSha256},
-                {SecurityAlgorithms.RsaSsaPssSha384, HashWithSha384},
-                {SecurityAlgorithms.RsaSsaPssSha512, HashWithSha512},
-                {SecurityAlgorithms.RsaSha256, HashWithSha256},
-                {SecurityAlgorithms.RsaSha384, HashWithSha384},
-                {SecurityAlgorithms.RsaSha512, HashWithSha512}
+                { SecurityAlgorithms.EcdsaSha256, HashWithSha256 },
+                { SecurityAlgorithms.EcdsaSha384, HashWithSha384 },
+                { SecurityAlgorithms.EcdsaSha512, HashWithSha512 },
+                { SecurityAlgorithms.HmacSha256, HashWithSha256 },
+                { SecurityAlgorithms.HmacSha384, HashWithSha384 },
+                { SecurityAlgorithms.HmacSha512, HashWithSha512 },
+                { SecurityAlgorithms.RsaSsaPssSha256, HashWithSha256 },
+                { SecurityAlgorithms.RsaSsaPssSha384, HashWithSha384 },
+                { SecurityAlgorithms.RsaSsaPssSha512, HashWithSha512 },
+                { SecurityAlgorithms.RsaSha256, HashWithSha256 },
+                { SecurityAlgorithms.RsaSha384, HashWithSha384 },
+                { SecurityAlgorithms.RsaSha512, HashWithSha512 }
             };
 
-        public JwtGenerator(IClientStore clientRepository, IScopeStore scopeRepository, IJwksStore jwksStore)
+        public JwtGenerator(IClientStore clientRepository, IScopeStore scopeRepository, IJwksStore jwksStore, ILogger logger)
         {
             _clientRepository = clientRepository;
             _scopeRepository = scopeRepository;
             _jwksStore = jwksStore;
+            _logger = logger;
         }
 
         public static JwtPayload UpdatePayloadDate(JwtPayload jwsPayload, TimeSpan? duration)
@@ -121,21 +124,18 @@ namespace SimpleAuth.JwtToken
                 });
             var token = new JwtSecurityToken(jwtHeader, payload);
 
-            if (additionalClaims != null)
-            {
-                payload.AddClaims(additionalClaims);
-            }
+            payload.AddClaims(additionalClaims);
 
             return token;
         }
 
-        public async Task<JwtPayload> GenerateIdTokenPayloadForScopes(
+        public async Task<Option<JwtPayload>> GenerateIdTokenPayloadForScopes(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
+            if (claimsPrincipal.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
@@ -148,23 +148,27 @@ namespace SimpleAuth.JwtToken
                    issuerName,
                    cancellationToken)
                .ConfigureAwait(false);
-            result = await FillInResourceOwnerClaimsFromScopes(
-                       result,
+            if (result is not Option<JwtPayload>.Result r)
+            {
+                return result;
+            }
+            var payload = await FillInResourceOwnerClaimsFromScopes(
+                       r.Item,
                        authorizationParameter,
                        claimsPrincipal,
                        cancellationToken)
                    .ConfigureAwait(false);
-            return result;
+            return new Option<JwtPayload>.Result(payload);
         }
 
-        public async Task<JwtPayload> GenerateFilteredIdTokenPayload(
+        public async Task<Option<JwtPayload>> GenerateFilteredIdTokenPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
             ClaimParameter[] claimParameters,
             string issuerName,
             CancellationToken cancellationToken)
         {
-            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
+            if (claimsPrincipal.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
@@ -177,12 +181,16 @@ namespace SimpleAuth.JwtToken
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            result = FillInResourceOwnerClaimsByClaimsParameter(
-                    result,
-                    claimParameters,
-                    claimsPrincipal,
-                    authorizationParameter);
-            return result;
+            if (result is not Option<JwtPayload>.Result r)
+            {
+                return result;
+            }
+
+            return FillInResourceOwnerClaimsByClaimsParameter(
+                r.Item,
+                claimParameters,
+                claimsPrincipal,
+                authorizationParameter);
         }
 
         public async Task<JwtPayload> GenerateUserInfoPayloadForScope(
@@ -190,38 +198,34 @@ namespace SimpleAuth.JwtToken
             AuthorizationParameter authorizationParameter,
             CancellationToken cancellationToken)
         {
-            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
+            if (claimsPrincipal.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            var result = new JwtPayload();
-            await FillInResourceOwnerClaimsFromScopes(
-                    result,
+            return await FillInResourceOwnerClaimsFromScopes(
+                    new JwtPayload(),
                     authorizationParameter,
                     claimsPrincipal,
                     cancellationToken)
                 .ConfigureAwait(false);
-            return result;
         }
 
-        public static JwtPayload GenerateFilteredUserInfoPayload(
+        public Option<JwtPayload> GenerateFilteredUserInfoPayload(
             ClaimParameter[] claimParameters,
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
-            if (claimsPrincipal?.Identity == null || !claimsPrincipal.IsAuthenticated())
+            if (claimsPrincipal.Identity == null || !claimsPrincipal.IsAuthenticated())
             {
-                throw new ArgumentNullException(nameof(claimParameters));
+                throw new ArgumentException(Strings.IdentityMissing, nameof(claimParameters));
             }
 
-            var result = new JwtPayload();
-            FillInResourceOwnerClaimsByClaimsParameter(
-                result,
-                claimParameters,
-                claimsPrincipal,
-                authorizationParameter);
-            return result;
+            return FillInResourceOwnerClaimsByClaimsParameter(
+                 new JwtPayload(),
+                 claimParameters,
+                 claimsPrincipal,
+                 authorizationParameter);
         }
 
         public void FillInOtherClaimsIdentityTokenPayload(
@@ -231,7 +235,7 @@ namespace SimpleAuth.JwtToken
             Client client)
         {
             var signedAlg = client.IdTokenSignedResponseAlg;
-            if (signedAlg == null || signedAlg == SecurityAlgorithms.None)
+            if (signedAlg is null or SecurityAlgorithms.None)
             {
                 return;
             }
@@ -278,7 +282,7 @@ namespace SimpleAuth.JwtToken
             return jwsPayload;
         }
 
-        private static JwtPayload FillInResourceOwnerClaimsByClaimsParameter(
+        private Option<JwtPayload> FillInResourceOwnerClaimsByClaimsParameter(
             JwtPayload jwsPayload,
             ClaimParameter[] claimParameters,
             ClaimsPrincipal claimsPrincipal,
@@ -304,37 +308,45 @@ namespace SimpleAuth.JwtToken
             // 2. Fill-In all the other resource owner claims
             if (!claimParameters.Any())
             {
-                return jwsPayload;
+                return new Option<JwtPayload>.Result(jwsPayload);
             }
 
             var resourceOwnerClaimParameters = claimParameters
                 .Where(c => Shared.JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
                 .ToList();
-            if (resourceOwnerClaimParameters.Any())
+            if (!resourceOwnerClaimParameters.Any())
             {
-                var requestedClaimNames = resourceOwnerClaimParameters.Select(r => r.Name).ToArray();
-                var resourceOwnerClaims = GetClaims(claimsPrincipal, requestedClaimNames);
-                foreach (var resourceOwnerClaimParameter in resourceOwnerClaimParameters)
-                {
-                    var resourceOwnerClaim =
-                        resourceOwnerClaims.FirstOrDefault(c => c.Type == resourceOwnerClaimParameter.Name);
-                    var isClaimValid = ValidateClaimValue(resourceOwnerClaim?.Value, resourceOwnerClaimParameter);
-                    if (!isClaimValid)
-                    {
-                        throw new SimpleAuthExceptionWithState(
-                            ErrorCodes.InvalidGrant,
-                            string.Format(Strings.TheClaimIsNotValid, resourceOwnerClaimParameter.Name),
-                            state);
-                    }
-
-                    jwsPayload.Add(resourceOwnerClaim!.Type, resourceOwnerClaim.Value);
-                }
+                return new Option<JwtPayload>.Result(jwsPayload);
             }
 
-            return jwsPayload;
+            var requestedClaimNames = resourceOwnerClaimParameters.Select(r => r.Name).ToArray();
+            var resourceOwnerClaims = GetClaims(claimsPrincipal, requestedClaimNames);
+            foreach (var resourceOwnerClaimParameter in resourceOwnerClaimParameters)
+            {
+                var resourceOwnerClaim =
+                    resourceOwnerClaims.FirstOrDefault(c => c.Type == resourceOwnerClaimParameter.Name);
+                var isClaimValid = ValidateClaimValue(resourceOwnerClaim?.Value, resourceOwnerClaimParameter);
+                if (!isClaimValid)
+                {
+                    var message = string.Format(Strings.TheClaimIsNotValid, resourceOwnerClaimParameter.Name);
+                    _logger.LogError(message);
+                    return new Option<JwtPayload>.Error(
+                        new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidGrant,
+                            Detail = message,
+                            Status = HttpStatusCode.BadRequest
+                        },
+                        state);
+                }
+
+                jwsPayload.Add(resourceOwnerClaim!.Type, resourceOwnerClaim.Value);
+            }
+
+            return new Option<JwtPayload>.Result(jwsPayload);
         }
 
-        private async Task<JwtPayload> FillInIdentityTokenClaims(
+        private async Task<Option<JwtPayload>> FillInIdentityTokenClaims(
             JwtPayload jwsPayload,
             AuthorizationParameter authorizationParameter,
             ClaimParameter[] claimParameters,
@@ -363,10 +375,6 @@ namespace SimpleAuth.JwtToken
             var (expirationInSeconds, issuedAtTime) = GetExpirationAndIssuedTime(cl?.TokenLifetime);
             const string acrValues = CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
             var amr = new[] { "password" };
-            if (amrValues != null)
-            {
-                amr = amrValues.ToArray();
-            }
 
             var azp = string.Empty;
 
@@ -392,10 +400,7 @@ namespace SimpleAuth.JwtToken
                 var issuerIsValid = ValidateClaimValue(issuerName, issuerClaimParameter);
                 if (!issuerIsValid)
                 {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidGrant,
-                        string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Issuer),
-                        state);
+                    return CreateClaimError(StandardClaimNames.Issuer, state);
                 }
             }
 
@@ -409,10 +414,7 @@ namespace SimpleAuth.JwtToken
                 var audiencesIsValid = ValidateClaimValues(audiences.ToArray(), audiencesClaimParameter);
                 if (!audiencesIsValid)
                 {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidGrant,
-                        string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Audiences),
-                        state);
+                    return CreateClaimError(StandardClaimNames.Audiences, state);
                 }
             }
 
@@ -423,10 +425,7 @@ namespace SimpleAuth.JwtToken
                     expirationTimeClaimParameter);
                 if (!expirationInSecondsIsValid)
                 {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidGrant,
-                        string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.ExpirationTime),
-                        state);
+                    return CreateClaimError(StandardClaimNames.ExpirationTime, state);
                 }
             }
 
@@ -435,10 +434,7 @@ namespace SimpleAuth.JwtToken
                 var issuedAtTimeIsValid = ValidateClaimValue(issuedAtTime.ToString(), issuedAtTimeClaimParameter);
                 if (!issuedAtTimeIsValid)
                 {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidGrant,
-                        string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Iat),
-                        state);
+                    return CreateClaimError(StandardClaimNames.Iat, state);
                 }
             }
 
@@ -449,10 +445,7 @@ namespace SimpleAuth.JwtToken
                     authenticationTimeParameter);
                 if (!isAuthenticationTimeValid)
                 {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidGrant,
-                        string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.AuthenticationTime),
-                        state);
+                    return CreateClaimError(StandardClaimNames.AuthenticationTime, state);
                 }
             }
 
@@ -461,10 +454,7 @@ namespace SimpleAuth.JwtToken
                 var isAcrParameterValid = ValidateClaimValue(acrValues, acrParameter);
                 if (!isAcrParameterValid)
                 {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidGrant,
-                        string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Acr),
-                        state);
+                    return CreateClaimError(StandardClaimNames.Acr, state);
                 }
             }
 
@@ -473,10 +463,7 @@ namespace SimpleAuth.JwtToken
                 var isNonceParameterValid = ValidateClaimValue(nonce, nonceParameter);
                 if (!isNonceParameterValid)
                 {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidGrant,
-                        string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Nonce),
-                        state);
+                    return CreateClaimError(StandardClaimNames.Nonce, state);
                 }
             }
 
@@ -485,10 +472,7 @@ namespace SimpleAuth.JwtToken
                 var isAmrParameterValid = ValidateClaimValues(amr, amrParameter);
                 if (!isAmrParameterValid)
                 {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidGrant,
-                        string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Amr),
-                        state);
+                    return CreateClaimError(StandardClaimNames.Amr, state);
                 }
             }
 
@@ -498,10 +482,7 @@ namespace SimpleAuth.JwtToken
                 var isAzpParameterValid = ValidateClaimValue(azp, azpParameter);
                 if (!isAzpParameterValid)
                 {
-                    throw new SimpleAuthExceptionWithState(
-                        ErrorCodes.InvalidGrant,
-                        string.Format(Strings.TheClaimIsNotValid, StandardClaimNames.Azp),
-                        state);
+                    return CreateClaimError(StandardClaimNames.Azp, state);
                 }
             }
 
@@ -530,7 +511,16 @@ namespace SimpleAuth.JwtToken
                 jwsPayload.Add(StandardClaimNames.Azp, azp);
             }
 
-            return jwsPayload;
+            return new Option<JwtPayload>.Result(jwsPayload);
+        }
+
+        private Option<JwtPayload> CreateClaimError(string claimName, string? state)
+        {
+            var message = string.Format(Strings.TheClaimIsNotValid, claimName);
+            _logger.LogError(message);
+            return new Option<JwtPayload>.Error(
+                new ErrorDetails { Title = ErrorCodes.InvalidGrant, Detail = message, Status = HttpStatusCode.BadRequest },
+                state);
         }
 
         private static bool ValidateClaimValue(object? claimValue, ClaimParameter claimParameter)

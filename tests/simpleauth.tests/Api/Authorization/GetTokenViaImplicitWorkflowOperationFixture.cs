@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Tests.Api.Authorization
 {
-    using Exceptions;
     using Moq;
     using Parameters;
     using Shared;
@@ -9,7 +8,6 @@
     using SimpleAuth.Api.Authorization;
     using System;
     using System.Security.Claims;
-    using System.Security.Principal;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging.Abstractions;

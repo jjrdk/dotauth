@@ -118,7 +118,8 @@
                 scopeRepository,
                 clientStore,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
         }
 
         /// <summary>
@@ -275,7 +276,7 @@
 
             if (string.IsNullOrWhiteSpace(viewModel.Code))
             {
-                throw new ArgumentNullException(nameof(viewModel.Code));
+                throw new ArgumentException(Strings.MissingValues, nameof(viewModel));
             }
 
             await SetUser().ConfigureAwait(false);

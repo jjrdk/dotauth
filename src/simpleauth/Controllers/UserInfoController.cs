@@ -21,7 +21,6 @@ namespace SimpleAuth.Controllers
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
-    using Exceptions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
@@ -62,7 +61,7 @@ namespace SimpleAuth.Controllers
             var accessToken = await TryToGetTheAccessToken().ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(accessToken))
             {
-                throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
+                return BadRequest(new ErrorDetails { Title = ErrorCodes.InvalidToken });
             }
 
             var grantedToken = await _tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);

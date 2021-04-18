@@ -12,7 +12,7 @@
     {
         public static List<Client> GetClients()
         {
-            return new List<Client>
+            return new()
             {
                 new Client
                 {
@@ -46,12 +46,12 @@
 
         public static List<Scope> GetScopes()
         {
-            return new List<Scope> { };
+            return new() { };
         }
 
         public static List<ResourceOwner> GetUsers(string salt)
         {
-            return new List<ResourceOwner>
+            return new()
             {
                 new ResourceOwner
                 {

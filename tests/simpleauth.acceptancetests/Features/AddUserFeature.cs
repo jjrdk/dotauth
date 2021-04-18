@@ -16,9 +16,9 @@
         private bool _userModified;
         private AddUserOperation _addUserOperation;
         private RuntimeSettings _runtimeSettings;
-        private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepository = new Mock<IResourceOwnerRepository>();
+        private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepository = new();
         private readonly ISubjectBuilder _subjectBuilder = new DefaultSubjectBuilder();
-        private readonly Mock<IEventPublisher> _eventPublisher = new Mock<IEventPublisher>();
+        private readonly Mock<IEventPublisher> _eventPublisher = new();
 
         [Background]
         public void Background()

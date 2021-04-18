@@ -136,7 +136,8 @@
                 consentRepository,
                 clientStore,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
             _generateAndSendSmsCodeOperation = generateSms;
         }
 
@@ -155,7 +156,7 @@
                 return Ok(viewModel);
             }
 
-            return RedirectToAction("Index", "User", new {area = "pwd"});
+            return RedirectToAction("Index", "User", new { area = "pwd" });
         }
 
         /// <summary>
@@ -173,7 +174,7 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new {Area = "pwd"});
+                return RedirectToAction("Index", "User", new { Area = "pwd" });
             }
 
             if (localAuthenticationViewModel == null)
@@ -250,7 +251,7 @@
             var user = await SetUser().ConfigureAwait(false);
             if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new {Area = "pwd"});
+                return RedirectToAction("Index", "User", new { Area = "pwd" });
             }
 
             var authenticatedUser = await _authenticationService
@@ -263,7 +264,7 @@
                     "SMS authentication cannot be performed");
             }
 
-            return Ok(new ConfirmCodeViewModel {Code = code});
+            return Ok(new ConfirmCodeViewModel { Code = code });
         }
 
         /// <summary>
@@ -288,7 +289,7 @@
             var user = await SetUser().ConfigureAwait(false);
             if (user?.Identity != null && user.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User", new {Area = "pwd"});
+                return RedirectToAction("Index", "User", new { Area = "pwd" });
             }
 
             var authenticatedUser = await _authenticationService
@@ -335,11 +336,11 @@
                     await SetTwoFactorCookie(authenticatedUserClaims).ConfigureAwait(false);
                     await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, cancellationToken)
                         .ConfigureAwait(false);
-                    return RedirectToAction("SendCode", new {code = confirmCodeViewModel.Code});
+                    return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
                 catch (ClaimRequiredException)
                 {
-                    return RedirectToAction("SendCode", new {code = confirmCodeViewModel.Code});
+                    return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
                 catch (Exception)
                 {
@@ -380,7 +381,7 @@
                 await _confirmationCodeStore.Remove(modelCode, subject, cancellationToken).ConfigureAwait(false);
             }
 
-            return RedirectToAction("Index", "User", new {Area = "pwd"});
+            return RedirectToAction("Index", "User", new { Area = "pwd" });
         }
 
         /// <summary>
@@ -406,7 +407,7 @@
 
             if (string.IsNullOrWhiteSpace(viewModel.Code))
             {
-                throw new ArgumentNullException(nameof(viewModel.Code), ErrorMessages.InvalidCode);
+                throw new ArgumentException(ErrorMessages.InvalidCode, nameof(viewModel));
             }
 
             await SetUser().ConfigureAwait(false);
@@ -453,7 +454,7 @@
                     await SetPasswordLessCookie(resourceOwner.Claims).ConfigureAwait(false);
                     try
                     {
-                        return RedirectToAction("ConfirmCode", new {code = viewModel.Code});
+                        return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
                     }
                     catch (Exception ex)
                     {
@@ -485,9 +486,10 @@
                     CookieNames.PasswordLessCookieName,
                     principal,
                     new AuthenticationProperties
-                        {
-                            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20), IsPersistent = false
-                        })
+                    {
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20),
+                        IsPersistent = false
+                    })
                 .ConfigureAwait(false);
         }
     }

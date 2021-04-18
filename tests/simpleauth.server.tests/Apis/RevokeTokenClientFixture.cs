@@ -65,7 +65,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var request = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("invalid", "invalid")
+                new("invalid", "invalid")
             };
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage

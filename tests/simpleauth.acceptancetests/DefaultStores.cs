@@ -28,7 +28,7 @@ namespace SimpleAuth.AcceptanceTests
     {
         public static List<Consent> Consents()
         {
-            return new List<Consent>()
+            return new()
             {
                 new Consent
                 {
@@ -63,7 +63,7 @@ namespace SimpleAuth.AcceptanceTests
 
         public static List<ResourceOwner> Users()
         {
-            return new List<ResourceOwner>
+            return new()
             {
                 new ResourceOwner
                 {
@@ -107,7 +107,7 @@ namespace SimpleAuth.AcceptanceTests
 
         public static List<Client> Clients(SharedContext sharedCtx)
         {
-            return new List<Client>
+            return new()
             {
                 new Client
                 {

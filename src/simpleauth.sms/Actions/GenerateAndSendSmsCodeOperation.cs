@@ -11,7 +11,7 @@
 
     internal sealed class GenerateAndSendSmsCodeOperation
     {
-        private readonly Random _random = new Random(DateTimeOffset.UtcNow.Second);
+        private readonly Random _random = new(DateTimeOffset.UtcNow.Second);
         private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly ISmsClient _smsClient;
 

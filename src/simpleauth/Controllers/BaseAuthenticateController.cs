@@ -130,7 +130,8 @@ namespace SimpleAuth.Controllers
                 consentRepository,
                 clientStore,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
             _authenticateResourceOwnerOpenId = new AuthenticateResourceOwnerOpenIdAction(
                 authorizationCodeStore,
                 tokenStore,
@@ -138,7 +139,8 @@ namespace SimpleAuth.Controllers
                 consentRepository,
                 clientStore,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
             DataProtector = dataProtectionProvider.CreateProtector("Request");
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
@@ -150,7 +152,7 @@ namespace SimpleAuth.Controllers
                 subjectBuilder,
                 eventPublisher);
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
-            _updateUserClaimsOperation = new UpdateUserClaimsOperation(resourceOwnerRepository);
+            _updateUserClaimsOperation = new UpdateUserClaimsOperation(resourceOwnerRepository, logger);
             _runtimeSettings = runtimeSettings;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
             _resourceOwnerRepository = resourceOwnerRepository;
@@ -192,7 +194,7 @@ namespace SimpleAuth.Controllers
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties() {RedirectUri = redirectUrl})
+                    new AuthenticationProperties() { RedirectUri = redirectUrl })
                 .ConfigureAwait(false);
         }
 
@@ -226,7 +228,8 @@ namespace SimpleAuth.Controllers
             var resourceOwner = await _resourceOwnerRepository.Get(
                     new ExternalAccountLink
                     {
-                        Issuer = authenticatedUser.Identity!.AuthenticationType!, Subject = externalSubject
+                        Issuer = authenticatedUser.Identity!.AuthenticationType!,
+                        Subject = externalSubject
                     },
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -243,7 +246,7 @@ namespace SimpleAuth.Controllers
                     await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(subject))
                 {
-                    return RedirectToAction("Index", "Error", new {code = statusCode!.Value, message = s});
+                    return RedirectToAction("Index", "Error", new { code = statusCode!.Value, message = s });
                 }
 
                 var nameIdentifier = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
@@ -317,7 +320,7 @@ namespace SimpleAuth.Controllers
                 return BadRequest();
             }
 
-            var viewModel = new CodeViewModel {AuthRequestCode = code, ClaimName = service.RequiredClaim};
+            var viewModel = new CodeViewModel { AuthRequestCode = code, ClaimName = service.RequiredClaim };
             var claim = resourceOwner?.Claims.FirstOrDefault(c => c.Type == service.RequiredClaim);
             if (claim != null)
             {
@@ -450,7 +453,7 @@ namespace SimpleAuth.Controllers
         {
             if (string.IsNullOrWhiteSpace(code))
             {
-                var vm = new AuthorizeOpenIdViewModel {Code = code};
+                var vm = new AuthorizeOpenIdViewModel { Code = code };
 
                 await SetIdProviders(vm).ConfigureAwait(false);
                 return Ok(vm);
@@ -461,7 +464,7 @@ namespace SimpleAuth.Controllers
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _authenticateResourceOwnerOpenId.Execute(
                     request.ToParameter(),
-                    authenticatedUser,
+                    authenticatedUser!,
                     code,
                     issuerName,
                     cancellationToken)
@@ -473,7 +476,7 @@ namespace SimpleAuth.Controllers
                 return result;
             }
 
-            var viewModel = new AuthorizeOpenIdViewModel {Code = code};
+            var viewModel = new AuthorizeOpenIdViewModel { Code = code };
 
             await SetIdProviders(viewModel).ConfigureAwait(false);
             return Ok(viewModel);
@@ -500,18 +503,18 @@ namespace SimpleAuth.Controllers
             Response.Cookies.Append(
                 cookieName,
                 code,
-                new CookieOptions {Expires = DateTimeOffset.UtcNow.AddMinutes(5)});
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMinutes(5) });
 
             // 2. Redirect the User agent
             var redirectUrl = _urlHelper.Action(
                 "LoginCallbackOpenId",
                 "Authenticate",
-                new {code = cookieValue},
+                new { code = cookieValue },
                 Request.Scheme);
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties {RedirectUri = redirectUrl})
+                    new AuthenticationProperties { RedirectUri = redirectUrl })
                 .ConfigureAwait(false);
         }
 
@@ -550,7 +553,7 @@ namespace SimpleAuth.Controllers
             Response.Cookies.Append(
                 cookieName,
                 string.Empty,
-                new CookieOptions {Expires = DateTimeOffset.UtcNow.AddDays(-1)});
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddDays(-1) });
 
             // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
@@ -576,7 +579,8 @@ namespace SimpleAuth.Controllers
             var resourceOwner = await _resourceOwnerRepository.Get(
                     new ExternalAccountLink
                     {
-                        Issuer = authenticatedUser.Identity!.AuthenticationType!, Subject = externalSubject!
+                        Issuer = authenticatedUser.Identity!.AuthenticationType!,
+                        Subject = externalSubject!
                     },
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -587,7 +591,7 @@ namespace SimpleAuth.Controllers
                     await AddExternalUser(authenticatedUser, cancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(s))
                 {
-                    return RedirectToAction("Index", "Error", new {code = statusCode!.Value, message = error1});
+                    return RedirectToAction("Index", "Error", new { code = statusCode!.Value, message = error1 });
                 }
 
                 sub = s;
@@ -609,7 +613,7 @@ namespace SimpleAuth.Controllers
             {
                 await SetTwoFactorCookie(claims).ConfigureAwait(false);
                 await _generateAndSendCode.Send(resourceOwner.Subject!, cancellationToken).ConfigureAwait(false);
-                return RedirectToAction("SendCode", new {code = request});
+                return RedirectToAction("SendCode", new { code = request });
             }
 
             var subject = resourceOwner!.Subject!;
@@ -639,7 +643,7 @@ namespace SimpleAuth.Controllers
                 return actionResult.CreateRedirectionFromActionResult(authorizationRequest, _logger)!;
             }
 
-            return RedirectToAction("OpenId", "Authenticate", new {code});
+            return RedirectToAction("OpenId", "Authenticate", new { code });
         }
 
         /// <summary>
@@ -654,7 +658,8 @@ namespace SimpleAuth.Controllers
             var idProviders = schemes.Select(
                     scheme => new IdProviderViewModel
                     {
-                        AuthenticationScheme = scheme.Name, DisplayName = scheme.DisplayName
+                        AuthenticationScheme = scheme.Name,
+                        DisplayName = scheme.DisplayName
                     })
                 .ToArray();
 
@@ -688,7 +693,7 @@ namespace SimpleAuth.Controllers
             Response.Cookies.Append(
                 CoreConstants.SessionId,
                 sessionId,
-                new CookieOptions {HttpOnly = false, Expires = expires, SameSite = SameSiteMode.None});
+                new CookieOptions { HttpOnly = false, Expires = expires, SameSite = SameSiteMode.None });
             var identity = new ClaimsIdentity(claims, CookieNames.CookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(
@@ -697,7 +702,10 @@ namespace SimpleAuth.Controllers
                     principal,
                     new AuthenticationProperties
                     {
-                        IssuedUtc = now, ExpiresUtc = expires, AllowRefresh = false, IsPersistent = false
+                        IssuedUtc = now,
+                        ExpiresUtc = expires,
+                        AllowRefresh = false,
+                        IsPersistent = false
                     })
                 .ConfigureAwait(false);
         }
@@ -716,9 +724,10 @@ namespace SimpleAuth.Controllers
                     CookieNames.TwoFactorCookieName,
                     principal,
                     new AuthenticationProperties
-                        {
-                            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5), IsPersistent = false
-                        })
+                    {
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5),
+                        IsPersistent = false
+                    })
                 .ConfigureAwait(false);
         }
 
@@ -764,7 +773,7 @@ namespace SimpleAuth.Controllers
             var (success, subject) = await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);
             if (!success)
             {
-                return (null, (int) HttpStatusCode.Conflict, Strings.FailedToAddUser);
+                return (null, (int)HttpStatusCode.Conflict, Strings.FailedToAddUser);
             }
 
             record.Password = string.Empty;

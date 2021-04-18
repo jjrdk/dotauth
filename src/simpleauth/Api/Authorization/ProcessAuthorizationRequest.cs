@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Api.Authorization
 {
-    using Exceptions;
     using Extensions;
     using Parameters;
     using Results;
@@ -170,7 +169,7 @@ namespace SimpleAuth.Api.Authorization
                 return result;
             }
 
-            result = ProcessPromptParameters(prompts, claimsPrincipal, authorizationParameter, confirmedConsent);
+            result = ProcessPromptParameters(prompts, claimsPrincipal, confirmedConsent);
             if (result.Type == ActionResultType.BadRequest)
             {
                 return result;
@@ -272,7 +271,6 @@ namespace SimpleAuth.Api.Authorization
         private EndpointResult ProcessPromptParameters(
             ICollection<string> prompts,
             ClaimsPrincipal principal,
-            AuthorizationParameter authorizationParameter,
             Consent? confirmedConsent)
         {
             if (prompts.Count == 0)
@@ -336,10 +334,14 @@ namespace SimpleAuth.Api.Authorization
                     endUserIsAuthenticated ? SimpleAuthEndPoints.ConsentIndex : SimpleAuthEndPoints.AuthenticateIndex);
             }
 
-            throw new SimpleAuthExceptionWithState(
-                ErrorCodes.InvalidRequest,
-                string.Format(Strings.ThePromptParameterIsNotSupported, string.Join(",", prompts)),
-                authorizationParameter.State);
+            var message = string.Format(Strings.ThePromptParameterIsNotSupported, string.Join(",", prompts));
+            _logger.LogError(message);
+            return EndpointResult.CreateBadRequestResult(new ErrorDetails
+            {
+                Title = ErrorCodes.InvalidRequest,
+                Detail = message,
+                Status = HttpStatusCode.BadRequest
+            });
         }
 
         private async Task<Consent?> GetResourceOwnerConsent(

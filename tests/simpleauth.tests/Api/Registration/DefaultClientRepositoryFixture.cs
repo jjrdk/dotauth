@@ -112,7 +112,7 @@ namespace SimpleAuth.Tests.Api.Registration
                 PolicyUri = policyUri,
                 TosUri = tosUri,
                 //JwksUri = jwksUri,
-                JsonWebKeys = new List<JsonWebKey> { new JsonWebKey { Kid = kid } }.ToJwks(),
+                JsonWebKeys = new List<JsonWebKey> { new() { Kid = kid } }.ToJwks(),
                 RedirectionUrls = new[] { new Uri("https://localhost"), },
                 //SectorIdentifierUri = sectorIdentifierUri,
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,

@@ -20,7 +20,7 @@ namespace SimpleAuth.Client
 
     internal static class PkceBuilder
     {
-        private static readonly Random Random = new Random();
+        private static readonly Random Random = new();
 
         public static Pkce BuildPkce(this string method)
         {

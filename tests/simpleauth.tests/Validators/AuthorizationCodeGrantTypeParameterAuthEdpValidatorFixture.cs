@@ -1,6 +1,5 @@
 ﻿namespace SimpleAuth.Tests.Validators
 {
-    using Exceptions;
     using Moq;
     using Parameters;
     using Shared.Models;
@@ -10,9 +9,12 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
     using Xunit;
+    using Xunit.Abstractions;
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     {
@@ -21,51 +23,61 @@
         private readonly AuthorizationCodeGrantTypeParameterAuthEdpValidator
             _authorizationCodeGrantTypeParameterAuthEdpValidator;
 
-        public AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture()
+        public AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture(ITestOutputHelper outputHelper)
         {
             _clientRepository = new Mock<IClientStore>();
             _authorizationCodeGrantTypeParameterAuthEdpValidator =
-                new AuthorizationCodeGrantTypeParameterAuthEdpValidator(_clientRepository.Object);
+                new AuthorizationCodeGrantTypeParameterAuthEdpValidator(
+                    _clientRepository.Object,
+                    new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]
         public async Task When_Validating_Authorization_Parameter_With_Empty_Scope_Then_Exception_Is_Thrown()
         {
             const string state = "state";
-            var authorizationParameter = new AuthorizationParameter { State = state };
+            var authorizationParameter = new AuthorizationParameter {State = state};
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                        authorizationParameter,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
+            var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<Client>.Error;
+
             Assert.Equal(
-                string.Format(
-                    Strings.MissingParameter,
-                    CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
-                exception.Message);
-            Assert.Equal(state, exception.State);
+                new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            Strings.MissingParameter,
+                            CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
         public async Task When_Validating_Authorization_Parameter_With_Empty_ClientId_Then_Exception_Is_Thrown()
         {
             const string state = "state";
-            var authorizationParameter = new AuthorizationParameter { State = state, Scope = "scope" };
+            var authorizationParameter = new AuthorizationParameter {State = state, Scope = "scope"};
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                        authorizationParameter,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
+            var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<Client>.Error;
+
             Assert.Equal(
-                string.Format(
-                    Strings.MissingParameter,
-                    CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
-                exception.Message);
-            Assert.Equal(state, exception.State);
+                new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            Strings.MissingParameter,
+                            CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -74,23 +86,25 @@
             const string state = "state";
             var authorizationParameter = new AuthorizationParameter
             {
-                State = state,
-                Scope = "scope",
-                ClientId = "clientId"
+                State = state, Scope = "scope", ClientId = "clientId"
             };
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                        authorizationParameter,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.True(
-                exception.Message
-                == string.Format(
-                    Strings.MissingParameter,
-                    CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName));
-            Assert.True(exception.State == state);
+            var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<Client>.Error;
+
+            Assert.Equal(
+                new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            Strings.MissingParameter,
+                            CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -99,28 +113,29 @@
             const string state = "state";
             var authorizationParameter = new AuthorizationParameter
             {
-                State = state,
-                Scope = "scope",
-                ClientId = "clientId",
-                RedirectUrl = new Uri("https://redirectUrl")
+                State = state, Scope = "scope", ClientId = "clientId", RedirectUrl = new Uri("https://redirectUrl")
             };
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                        authorizationParameter,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.True(
-                exception.Message
-                == string.Format(
-                    Strings.MissingParameter,
-                    CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName));
-            Assert.True(exception.State == state);
+            var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<Client>.Error;
+
+            Assert.Equal(
+                new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(
+                            Strings.MissingParameter,
+                            CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
-        public async Task When_Vadidating_Authorization_Parameter_With_InvalidResponseType_Then_Exception_Is_Thrown()
+        public async Task When_Validating_Authorization_Parameter_With_InvalidResponseType_Then_Exception_Is_Thrown()
         {
             const string state = "state";
             var authorizationParameter = new AuthorizationParameter
@@ -132,14 +147,19 @@
                 ResponseType = "invalid_response_type"
             };
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                        authorizationParameter,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.True(exception.Message == Strings.AtLeastOneResponseTypeIsNotSupported);
-            Assert.True(exception.State == state);
+            var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<Client>.Error;
+
+            Assert.Equal(
+                new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = Strings.AtLeastOneResponseTypeIsNotSupported
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -156,14 +176,19 @@
                 Prompt = "invalid_prompt"
             };
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                        authorizationParameter,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.True(exception.Message == Strings.AtLeastOnePromptIsNotSupported);
-            Assert.True(exception.State == state);
+            var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<Client>.Error;
+
+            Assert.Equal(
+                new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = Strings.AtLeastOnePromptIsNotSupported
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -181,14 +206,19 @@
                 Prompt = "none login"
             };
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                        authorizationParameter,
-                        CancellationToken.None))
+            var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.True(exception.Message == Strings.PromptParameterShouldHaveOnlyNoneValue);
-            Assert.True(exception.State == state);
+
+            Assert.Equal(
+                new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest, Detail = Strings.PromptParameterShouldHaveOnlyNoneValue
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -207,16 +237,22 @@
             };
 
             _clientRepository.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult((Client)null));
+                .Returns(() => Task.FromResult((Client) null));
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                        authorizationParameter,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(string.Format(Strings.ClientIsNotValid, clientId), exception.Message);
-            Assert.Equal(state, exception.State);
+            var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false) as Option<Client>.Error;
+
+            Assert.Equal(
+                new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(Strings.ClientIsNotValid, clientId)
+                    },
+                    state),
+                exception);
         }
 
         [Fact]
@@ -240,14 +276,20 @@
             _clientRepository.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(client);
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthExceptionWithState>(
-                    () => _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                        authorizationParameter,
-                        CancellationToken.None))
+            var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
                 .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
-            Assert.Equal(string.Format(Strings.RedirectUrlIsNotValid, redirectUri), exception.Message);
-            Assert.Equal(state, exception.State);
+
+            Assert.Equal(
+                new Option<Client>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = string.Format(Strings.RedirectUrlIsNotValid, redirectUri)
+                    },
+                    state),
+                exception);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace SimpleAuth.WebSite.Authenticate
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
@@ -40,7 +41,8 @@ namespace SimpleAuth.WebSite.Authenticate
             IScopeRepository scopeRepository,
             IClientStore clientStore,
             IJwksStore jwksStore,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
             _resourceOwnerServices = resourceOwnerServices;
             _authenticateHelper = new AuthenticateHelper(
@@ -50,7 +52,8 @@ namespace SimpleAuth.WebSite.Authenticate
                 consentRepository,
                 clientStore,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
         }
 
         /// <summary>

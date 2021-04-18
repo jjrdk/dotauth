@@ -78,8 +78,8 @@ namespace SimpleAuth.Sms.Controllers
 
             try
             {
-                await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber, cancellationToken)
-                    .ConfigureAwait(false);
+                _ = await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber, cancellationToken)
+                           .ConfigureAwait(false);
                 return new OkResult();
             }
             catch (SimpleAuthException ex)

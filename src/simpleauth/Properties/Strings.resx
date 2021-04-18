@@ -489,4 +489,10 @@
   <data name="CouldNotRevokeToken" xml:space="preserve">
     <value>Could not revoke token</value>
   </data>
+  <data name="IdentityMissing" xml:space="preserve">
+    <value>Missing identity</value>
+  </data>
+  <data name="MissingValues" xml:space="preserve">
+    <value>Missing values</value>
+  </data>
 </root>

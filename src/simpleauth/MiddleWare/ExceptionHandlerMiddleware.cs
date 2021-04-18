@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.MiddleWare
 {
-    using Exceptions;
     using Microsoft.AspNetCore.Http;
     using Shared;
     using SimpleAuth.Shared.Events.Logging;
@@ -55,13 +54,10 @@ namespace SimpleAuth.MiddleWare
                 {
                     case SimpleAuthException serverException:
                         {
-                            var state = exception is SimpleAuthExceptionWithState exceptionWithState
-                                ? exceptionWithState.State
-                                : string.Empty;
                             await _publisher.Publish(new SimpleAuthError(Id.Create(),
                                 serverException.Code,
                                 serverException.Message,
-                                state ?? string.Empty,
+                                string.Empty,
                                 DateTimeOffset.UtcNow)).ConfigureAwait(false);
 
                             _logger.LogError(serverException.StackTrace);

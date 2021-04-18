@@ -18,6 +18,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
@@ -51,6 +52,7 @@
         /// <param name="consentRepository">The consent repository.</param>
         /// <param name="scopeRepository"></param>
         /// <param name="twoFactorAuthenticationHandler">The two factor authentication handler.</param>
+        /// <param name="logger">The logger</param>
         public UserController(
             IResourceOwnerRepository resourceOwnerRepository,
             IAuthenticationService authenticationService,
@@ -59,13 +61,14 @@
             IActionContextAccessor actionContextAccessor,
             IConsentRepository consentRepository,
             IScopeRepository scopeRepository,
-            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler)
+            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
+            ILogger<UserController> logger)
             : base(authenticationService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _getUserOperation = new GetUserOperation(resourceOwnerRepository);
             _updateUserTwoFactorAuthenticatorOperation =
-                new UpdateUserTwoFactorAuthenticatorOperation(resourceOwnerRepository);
+                new UpdateUserTwoFactorAuthenticatorOperation(resourceOwnerRepository, logger);
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _consentRepository = consentRepository;
             _scopeRepository = scopeRepository;
@@ -138,7 +141,7 @@
         [HttpPost]
         public async Task<IActionResult> Consent(string id, CancellationToken cancellationToken)
         {
-            var removed = await _consentRepository.Delete(new Consent {Id = id}, cancellationToken)
+            var removed = await _consentRepository.Delete(new Consent { Id = id }, cancellationToken)
                 .ConfigureAwait(false);
             if (!removed)
             {
@@ -160,6 +163,10 @@
         public async Task<IActionResult> Edit(CancellationToken cancellationToken)
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
+            if (authenticatedUser == null)
+            {
+                return Unauthorized();
+            }
             ViewBag.IsUpdated = false;
             ViewBag.IsCreated = false;
             return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
@@ -184,7 +191,7 @@
             viewModel.Validate(ModelState);
             if (!ModelState.IsValid)
             {
-                return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
+                return await GetEditView(authenticatedUser!, cancellationToken).ConfigureAwait(false);
             }
 
             // 2. CreateJwk a new user if he doesn't exist or update the credentials.
@@ -194,7 +201,7 @@
                           && await _resourceOwnerRepository.SetPassword(subject, viewModel.Password!, cancellationToken)
                               .ConfigureAwait(false);
             ViewBag.IsUpdated = updated;
-            return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
+            return await GetEditView(authenticatedUser!, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -225,7 +232,7 @@
                     cancellationToken)
                 .ConfigureAwait(false);
             ViewBag.IsUpdated = true;
-            return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
+            return await GetEditView(authenticatedUser!, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -245,7 +252,7 @@
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties {RedirectUri = redirectUrl})
+                    new AuthenticationProperties { RedirectUri = redirectUrl })
                 .ConfigureAwait(false);
         }
 
@@ -271,8 +278,12 @@
                 var externalClaims = await _authenticationService
                     .GetAuthenticatedUser(this, CookieNames.ExternalCookieName)
                     .ConfigureAwait(false);
-                await InnerLinkProfile(authenticatedUser.GetSubject()!, externalClaims, cancellationToken)
-                    .ConfigureAwait(false);
+                if (externalClaims != null)
+                {
+                    await InnerLinkProfile(authenticatedUser.GetSubject()!, externalClaims, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+
                 await _authenticationService.SignOutAsync(
                         HttpContext,
                         CookieNames.ExternalCookieName,
@@ -308,7 +319,7 @@
             }
 
             await SetUser().ConfigureAwait(false);
-            var authenticationType = ((ClaimsIdentity) externalClaims.Identity).AuthenticationType!;
+            var authenticationType = ((ClaimsIdentity)externalClaims.Identity).AuthenticationType!;
             var viewModel = new LinkProfileConfirmationViewModel(authenticationType);
             return Ok(viewModel);
         }
@@ -366,17 +377,17 @@
                 await UnlinkProfile(
                         authenticatedUser.GetSubject()!,
                         id,
-                        authenticatedUser.Identity!.AuthenticationType!,
+                        authenticatedUser!.Identity!.AuthenticationType!,
                         cancellationToken)
                     .ConfigureAwait(false);
             }
             catch (SimpleAuthException ex)
             {
-                return RedirectToAction("Index", "Error", new {code = ex.Code, message = ex.Message});
+                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index", "Error", new {code = ErrorCodes.InternalError, message = ex.Message});
+                return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message });
             }
 
             return await Index(cancellationToken).ConfigureAwait(false);
@@ -484,7 +495,7 @@
                 : await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<bool> UnlinkProfile(
+        private async Task<Option> UnlinkProfile(
             string localSubject,
             string externalSubject,
             string issuer,
@@ -500,15 +511,16 @@
             var unlink = resourceOwner.ExternalLogins.Where(
                     x => x.Subject == externalSubject && (x.Issuer == issuer || issuer == CookieNames.CookieName))
                 .ToArray();
-            if (unlink.Length > 0)
+            if (unlink.Length <= 0)
             {
-                resourceOwner.ExternalLogins = resourceOwner.ExternalLogins.Remove(unlink);
-                var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken)
-                    .ConfigureAwait(false);
-                return result;
+                return new Option.Error(new ErrorDetails { Title = ErrorCodes.InvalidRequest });
             }
 
-            return false;
+            resourceOwner.ExternalLogins = resourceOwner.ExternalLogins.Remove(unlink);
+            var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken)
+                .ConfigureAwait(false);
+            return result;
+
         }
 
         private async Task<bool> InnerLinkProfile(

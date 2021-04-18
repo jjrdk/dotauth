@@ -14,7 +14,7 @@
     {
         private const string SubjectAlternateNameOid = "2.5.29.17";
 
-        private static readonly Regex DnsNameRegex = new Regex(
+        private static readonly Regex DnsNameRegex = new(
             @"^DNS Name=(.+)",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 

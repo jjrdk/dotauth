@@ -17,7 +17,7 @@
 
     public class ClientAssertionAuthenticationFixture
     {
-        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
+        private readonly JwtSecurityTokenHandler _handler = new();
         private readonly Mock<IClientStore> _clientRepositoryStub;
         private readonly ClientAssertionAuthentication _clientAssertionAuthentication;
 

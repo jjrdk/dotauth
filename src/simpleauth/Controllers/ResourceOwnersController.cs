@@ -258,12 +258,11 @@ namespace SimpleAuth.Controllers
             resourceOwner.Claims = claims.ToArray();
 
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
-            if (!result)
+            return result switch
             {
-                return BadRequest(Strings.TheClaimsCannotBeUpdated);
-            }
-
-            return RedirectToAction("Get", "ResourceOwners", new { id });
+                Option.Error => BadRequest(Strings.TheClaimsCannotBeUpdated),
+                _ => RedirectToAction("Get", "ResourceOwners", new { id })
+            };
         }
 
         /// <summary>
@@ -318,12 +317,8 @@ namespace SimpleAuth.Controllers
             resourceOwner.Claims = resourceOwnerClaims.ToArray();
 
             var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
-            if (!result)
-            {
-                return BadRequest(Strings.TheClaimsCannotBeUpdated);
-            }
 
-            return new OkResult();
+            return result is Option.Success ? new OkResult() : BadRequest(Strings.TheClaimsCannotBeUpdated);
         }
 
         /// <summary>
@@ -449,17 +444,20 @@ namespace SimpleAuth.Controllers
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
 
-            return result
-                ? new JsonResult(new GrantedTokenResponse
-                {
-                    AccessToken = refreshedToken.AccessToken,
-                    ExpiresIn = refreshedToken.ExpiresIn,
-                    IdToken = refreshedToken.IdToken,
-                    RefreshToken = refreshedToken.RefreshToken,
-                    Scope = refreshedToken.Scope,
-                    TokenType = refreshedToken.TokenType
-                })
-                : (IActionResult)BadRequest();
+            return result switch
+            {
+                Option.Error e => BadRequest(e),
+                _ => new JsonResult(
+                    new GrantedTokenResponse
+                    {
+                        AccessToken = refreshedToken.AccessToken,
+                        ExpiresIn = refreshedToken.ExpiresIn,
+                        IdToken = refreshedToken.IdToken,
+                        RefreshToken = refreshedToken.RefreshToken,
+                        Scope = refreshedToken.Scope,
+                        TokenType = refreshedToken.TokenType
+                    })
+            };
         }
 
         /// <summary>

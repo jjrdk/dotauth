@@ -21,6 +21,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
     using Repositories;
     using Shared.Models;
     using Shared.Repositories;
+    using SimpleAuth.Shared;
     using Xunit;
 
     public class UpdateResourceOwnerClaimsActionFixture
@@ -59,7 +60,7 @@ namespace SimpleAuth.Tests.Api.ResourceOwners
                 .Update(new ResourceOwner { Subject = "blah" }, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.False(result);
+            Assert.IsType<Option.Error>(result);
         }
 
         private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)

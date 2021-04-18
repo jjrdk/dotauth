@@ -18,6 +18,7 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
@@ -40,7 +41,8 @@
             ITokenStore tokenStore,
             IResourceSetRepository resourceSetRepository,
             IJwksStore jwksStore,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
             _ticketStore = ticketStore;
             _configurationService = configurationService;
@@ -49,7 +51,7 @@
                 resourceSetRepository,
                 eventPublisher);
             _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
-            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore);
+            _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore, logger);
             _tokenStore = tokenStore;
             _eventPublisher = eventPublisher;
         }

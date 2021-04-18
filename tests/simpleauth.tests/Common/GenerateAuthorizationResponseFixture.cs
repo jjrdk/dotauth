@@ -27,6 +27,7 @@ namespace SimpleAuth.Tests.Common
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Events;
@@ -35,6 +36,7 @@ namespace SimpleAuth.Tests.Common
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Tests.Helpers;
     using Xunit;
+    using Xunit.Abstractions;
 
     public sealed class GenerateAuthorizationResponseFixture
     {
@@ -46,7 +48,7 @@ namespace SimpleAuth.Tests.Common
         private readonly Mock<IConsentRepository> _consentRepository;
         private readonly InMemoryJwksRepository _inMemoryJwksRepository;
 
-        public GenerateAuthorizationResponseFixture()
+        public GenerateAuthorizationResponseFixture(ITestOutputHelper outputHelper)
         {
             IdentityModelEventSource.ShowPII = true;
             _authorizationCodeRepositoryFake = new Mock<IAuthorizationCodeStore>();
@@ -68,7 +70,8 @@ namespace SimpleAuth.Tests.Common
                 _clientStore.Object,
                 _consentRepository.Object,
                 _inMemoryJwksRepository,
-                _eventPublisher.Object);
+                _eventPublisher.Object,
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]
@@ -80,9 +83,9 @@ namespace SimpleAuth.Tests.Common
                     () => _generateAuthorizationResponse.Generate(
                         redirectInstruction,
                         new AuthorizationParameter(),
-                        null,
-                        null,
-                        null,
+                        new ClaimsPrincipal(),
+                        new Client(),
+                        "",
                         CancellationToken.None))
                 .ConfigureAwait(false);
         }

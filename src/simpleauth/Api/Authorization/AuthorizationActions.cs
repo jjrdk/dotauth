@@ -30,6 +30,7 @@ namespace SimpleAuth.Api.Authorization
     using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
 
@@ -88,7 +89,7 @@ namespace SimpleAuth.Api.Authorization
                     eventPublisher,
                     logger);
             _authorizationCodeGrantTypeParameterValidator =
-                new AuthorizationCodeGrantTypeParameterAuthEdpValidator(clientStore);
+                new AuthorizationCodeGrantTypeParameterAuthEdpValidator(clientStore, logger);
             _eventPublisher = eventPublisher;
             _logger = logger;
             _resourceOwnerServices = resourceOwnerServices.ToArray();
@@ -102,8 +103,18 @@ namespace SimpleAuth.Api.Authorization
         {
             var processId = Id.Create();
 
-            var client = await _authorizationCodeGrantTypeParameterValidator.Validate(parameter, cancellationToken)
+            var result = await _authorizationCodeGrantTypeParameterValidator.Validate(parameter, cancellationToken)
                 .ConfigureAwait(false);
+            Client client = null!;
+            switch (result)
+            {
+                case Option<Client>.Error error:
+                    return EndpointResult.CreateBadRequestResult(error.Details);
+                case Option<Client>.Result r:
+                    client = r.Item;
+                    break;
+            }
+
             EndpointResult? endpointResult = null;
 
             if (client.RequirePkce
@@ -123,19 +134,28 @@ namespace SimpleAuth.Api.Authorization
             var authorizationFlow = responseTypes.GetAuthorizationFlow(parameter.State);
             endpointResult = authorizationFlow switch
             {
-                AuthorizationFlow.AuthorizationCodeFlow => await _getAuthorizationCodeOperation
+                Option<AuthorizationFlow>.Error e => EndpointResult.CreateBadRequestResult(e.Details),
+                Option<AuthorizationFlow>.Result
+                    {Item: AuthorizationFlow.AuthorizationCodeFlow} => await _getAuthorizationCodeOperation
                     .Execute(parameter, claimsPrincipal, client, issuerName, cancellationToken)
                     .ConfigureAwait(false),
-                AuthorizationFlow.ImplicitFlow => await _getTokenViaImplicitWorkflowOperation.Execute(
+                Option<AuthorizationFlow>.Result
+                    {Item: AuthorizationFlow.ImplicitFlow} => await _getTokenViaImplicitWorkflowOperation.Execute(
                         parameter,
                         claimsPrincipal,
                         client,
                         issuerName,
                         CancellationToken.None)
                     .ConfigureAwait(false),
-                AuthorizationFlow.HybridFlow => await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation
-                    .Execute(parameter, claimsPrincipal, client, issuerName, cancellationToken)
-                    .ConfigureAwait(false),
+                Option<AuthorizationFlow>.Result
+                    {Item: AuthorizationFlow.HybridFlow} => await
+                    _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
+                            parameter,
+                            claimsPrincipal,
+                            client,
+                            issuerName,
+                            cancellationToken)
+                        .ConfigureAwait(false),
                 _ => endpointResult
             };
 

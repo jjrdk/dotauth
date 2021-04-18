@@ -17,7 +17,6 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using System;
     using Api.Authorization;
     using Common;
-    using Exceptions;
     using Extensions;
     using Parameters;
     using Results;
@@ -26,9 +25,11 @@ namespace SimpleAuth.WebSite.Consent.Actions
     using SimpleAuth.Shared;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
@@ -47,7 +48,8 @@ namespace SimpleAuth.WebSite.Consent.Actions
             IAuthorizationCodeStore authorizationCodeStore,
             ITokenStore tokenStore,
             IJwksStore jwksStore,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
             _scopeRepository = scopeRepository;
             _clientRepository = clientRepository;
@@ -59,7 +61,8 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 clientRepository,
                 consentRepository,
                 jwksStore,
-                eventPublisher);
+                eventPublisher,
+                logger);
         }
 
         /// <summary>
@@ -83,10 +86,14 @@ namespace SimpleAuth.WebSite.Consent.Actions
                     .ConfigureAwait(false);
             if (client == null)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.ClientIsNotValid, authorizationParameter.ClientId),
-                    authorizationParameter.State);
+                return new DisplayContentResult(
+                    EndpointResult.CreateBadRequestResult(
+                        new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidRequest,
+                            Detail = string.Format(Strings.ClientIsNotValid, authorizationParameter.ClientId),
+                            Status = HttpStatusCode.BadRequest
+                        }));
             }
 
             EndpointResult endpointResult;
@@ -110,10 +117,17 @@ namespace SimpleAuth.WebSite.Consent.Actions
                 {
                     var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
                     var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
-                    responseMode = GetResponseMode(authorizationFlow);
+                    switch (authorizationFlow)
+                    {
+                        case Option<AuthorizationFlow>.Error e:
+                            return new DisplayContentResult(EndpointResult.CreateBadRequestResult(e.Details));
+                        case Option<AuthorizationFlow>.Result r:
+                            responseMode = GetResponseMode(r.Item);
+                            break;
+                    }
                 }
 
-                endpointResult = endpointResult with {RedirectInstruction = endpointResult.RedirectInstruction! with {ResponseMode = responseMode}};
+                endpointResult = endpointResult with { RedirectInstruction = endpointResult.RedirectInstruction! with { ResponseMode = responseMode } };
                 return new DisplayContentResult(endpointResult);
             }
 
@@ -144,27 +158,23 @@ namespace SimpleAuth.WebSite.Consent.Actions
             return await _scopeRepository.SearchByNames(cancellationToken, scopeNames).ConfigureAwait(false);
         }
 
-        private static AuthorizationFlow GetAuthorizationFlow(ICollection<string> responseTypes, string? state)
+        private static Option<AuthorizationFlow> GetAuthorizationFlow(ICollection<string> responseTypes, string? state)
         {
-            if (responseTypes == null)
-            {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheAuthorizationFlowIsNotSupported,
-                    state);
-            }
-
             var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys.SingleOrDefault(
                 k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
             if (record == null)
             {
-                throw new SimpleAuthExceptionWithState(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheAuthorizationFlowIsNotSupported,
+                return new Option<AuthorizationFlow>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = Strings.TheAuthorizationFlowIsNotSupported,
+                        Status = HttpStatusCode.BadRequest
+                    },
                     state);
             }
 
-            return CoreConstants.MappingResponseTypesToAuthorizationFlows[record];
+            return new Option<AuthorizationFlow>.Result(CoreConstants.MappingResponseTypesToAuthorizationFlows[record]);
         }
 
         private static string GetResponseMode(AuthorizationFlow authorizationFlow)

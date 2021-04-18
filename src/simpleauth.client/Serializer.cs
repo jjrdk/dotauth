@@ -38,7 +38,7 @@ namespace SimpleAuth.Client
             _serializer.Converters.Add(new ClaimConverter());
         }
 
-        public static Serializer Default { get; } = new Serializer();
+        public static Serializer Default { get; } = new();
 
         public string Serialize<T>(T item)
         {
