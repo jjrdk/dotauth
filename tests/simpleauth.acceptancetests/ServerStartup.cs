@@ -17,13 +17,15 @@
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms.Ui;
     using SimpleAuth.UI;
+    using Xunit.Abstractions;
 
     public class ServerStartup
     {
         private readonly SimpleAuthOptions _options;
         private readonly SharedContext _context;
+        private readonly ITestOutputHelper _outputHelper;
 
-        public ServerStartup(SharedContext context)
+        public ServerStartup(SharedContext context, ITestOutputHelper outputHelper)
         {
             IdentityModelEventSource.ShowPII = true;
             var mockConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
@@ -61,6 +63,7 @@
                 ClaimsIncludedInUserCreation = new[] { "acceptance_test" },
             };
             _context = context;
+            _outputHelper = outputHelper;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -81,7 +84,7 @@
                     },
                     assemblyTypes: new[] { typeof(IDefaultUi), typeof(IDefaultSmsUi) })
                 .AddSmsAuthentication(mockSmsClient.Object);
-            services.AddLogging().AddAccountFilter();
+            services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter();
             services.AddAuthentication(
                     cfg =>
                     {

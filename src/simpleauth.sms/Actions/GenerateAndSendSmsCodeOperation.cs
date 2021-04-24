@@ -4,8 +4,10 @@
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Sms.Properties;
 
@@ -13,17 +15,20 @@
     {
         private readonly Random _random = new(DateTimeOffset.UtcNow.Second);
         private readonly IConfirmationCodeStore _confirmationCodeStore;
+        private readonly ILogger _logger;
         private readonly ISmsClient _smsClient;
 
         public GenerateAndSendSmsCodeOperation(
             ISmsClient smsClient,
-            IConfirmationCodeStore confirmationCodeStore)
+            IConfirmationCodeStore confirmationCodeStore,
+            ILogger logger)
         {
             _confirmationCodeStore = confirmationCodeStore;
+            _logger = logger;
             _smsClient = smsClient;
         }
 
-        public async Task<string> Execute(string phoneNumber, CancellationToken cancellationToken)
+        public async Task<Option<string>> Execute(string phoneNumber, CancellationToken cancellationToken)
         {
             var confirmationCode = new ConfirmationCode
             {
@@ -38,18 +43,30 @@
 
             if (!sendResult.Item1)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    SmsStrings.TheSmsAccountIsNotProperlyConfigured);
+                _logger.LogError(SmsStrings.TheSmsAccountIsNotProperlyConfigured);
+                return new Option<string>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.UnhandledExceptionCode,
+                        Detail = SmsStrings.TheSmsAccountIsNotProperlyConfigured,
+                        Status = HttpStatusCode.InternalServerError
+                    });
             }
 
-            if (!await _confirmationCodeStore.Add(confirmationCode, cancellationToken).ConfigureAwait(false))
+            if (await _confirmationCodeStore.Add(confirmationCode, cancellationToken).ConfigureAwait(false))
             {
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode,
-                    SmsStrings.TheConfirmationCodeCannotBeSaved);
+                return new Option<string>.Result(confirmationCode.Value);
             }
 
-            return confirmationCode.Value;
+            _logger.LogError(SmsStrings.TheConfirmationCodeCannotBeSaved);
+            return new Option<string>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.UnhandledExceptionCode,
+                    Detail = SmsStrings.TheConfirmationCodeCannotBeSaved,
+                    Status = HttpStatusCode.InternalServerError
+                });
+
         }
 
         private async Task<string> GetCode(string subject, CancellationToken cancellationToken)

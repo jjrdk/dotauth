@@ -21,6 +21,7 @@ namespace SimpleAuth.Authenticate
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Properties;
 
     /// <summary>
     /// Defines the authenticate client.
@@ -65,7 +66,7 @@ namespace SimpleAuth.Authenticate
 
             if (client == null)
             {
-                return new AuthenticationResult(null, Strings.TheClientDoesntExist);
+                return new AuthenticationResult(null, SharedStrings.TheClientDoesntExist);
             }
 
             var errorMessage = string.Empty;

@@ -22,19 +22,23 @@ namespace SimpleAuth.Tests.WebSite.User
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Properties;
     using SimpleAuth.WebSite.User;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class GetUserOperationFixture
     {
         private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private readonly GetUserOperation _getUserOperation;
 
-        public GetUserOperationFixture()
+        public GetUserOperationFixture(ITestOutputHelper outputHelper)
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _getUserOperation = new GetUserOperation(_resourceOwnerRepositoryStub.Object);
+            _getUserOperation = new GetUserOperation(
+                _resourceOwnerRepositoryStub.Object,
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]
@@ -42,13 +46,11 @@ namespace SimpleAuth.Tests.WebSite.User
         {
             var emptyClaimsPrincipal = new ClaimsPrincipal();
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _getUserOperation.Execute(emptyClaimsPrincipal, CancellationToken.None))
-                .ConfigureAwait(false);
+            var exception = await _getUserOperation.Execute(emptyClaimsPrincipal, CancellationToken.None)
+                .ConfigureAwait(false) as Option<ResourceOwner>.Error;
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(Strings.TheUserNeedsToBeAuthenticated, exception.Message);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+            Assert.Equal(Strings.TheUserNeedsToBeAuthenticated, exception.Details.Detail);
         }
 
         [Fact]
@@ -58,13 +60,11 @@ namespace SimpleAuth.Tests.WebSite.User
             claimsIdentity.AddClaim(new Claim("test", "test"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(
-                    () => _getUserOperation.Execute(claimsPrincipal, CancellationToken.None))
-                .ConfigureAwait(false);
+            var exception = await _getUserOperation.Execute(claimsPrincipal, CancellationToken.None)
+                .ConfigureAwait(false) as Option<ResourceOwner>.Error;
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal(Strings.TheSubjectCannotBeRetrieved, exception.Message);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+            Assert.Equal(Strings.TheSubjectCannotBeRetrieved, exception.Details.Detail);
         }
 
         [Fact]

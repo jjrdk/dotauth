@@ -5,6 +5,7 @@
     using System.Net.Http.Headers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
+    using Xunit.Abstractions;
 
     public class TestServerFixture : IDisposable
     {
@@ -14,10 +15,10 @@
 
         public SharedContext SharedCtx { get; }
 
-        public TestServerFixture(params string[] urls)
+        public TestServerFixture(ITestOutputHelper outputHelper, params string[] urls)
         {
             SharedCtx = SharedContext.Instance;
-            var startup = new ServerStartup(SharedCtx);
+            var startup = new ServerStartup(SharedCtx, outputHelper);
             Server = new TestServer(
                 new WebHostBuilder().UseUrls(urls)
                     .ConfigureServices(

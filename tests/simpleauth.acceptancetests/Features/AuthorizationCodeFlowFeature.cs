@@ -7,9 +7,16 @@
     using SimpleAuth.Shared.Errors;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class AuthorizationCodeFlowFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public AuthorizationCodeFlowFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario]
         public void SuccessfulAuthorizationCodeGrant()
         {

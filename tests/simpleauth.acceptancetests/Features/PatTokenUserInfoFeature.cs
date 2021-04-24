@@ -4,9 +4,16 @@
     using SimpleAuth.Client;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class PatTokenUserInfoFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public PatTokenUserInfoFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Can get user info for PAT token")]
         public void CanGetUserInfoFromPatToken()
         {

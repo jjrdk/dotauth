@@ -4,9 +4,11 @@
     using System.Threading.Tasks;
     using Extensions;
     using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
 
     /// <summary>
     /// Defines the abstract base controller.
@@ -37,7 +39,7 @@
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
             if (authenticatedUser != null)
             {
-                var isAuthenticated = authenticatedUser.Identity is {IsAuthenticated: true};
+                var isAuthenticated = authenticatedUser.Identity is { IsAuthenticated: true };
                 ViewBag.IsAuthenticated = isAuthenticated;
                 ViewBag.Name = isAuthenticated ? authenticatedUser.GetName()! : Strings.Unknown;
 
@@ -45,6 +47,11 @@
             }
 
             return null;
+        }
+
+        protected IActionResult SetRedirection(string message, string? code = null, string? title = null)
+        {
+            return RedirectToAction("Index", "Error", new { code, title, message });
         }
     }
 }

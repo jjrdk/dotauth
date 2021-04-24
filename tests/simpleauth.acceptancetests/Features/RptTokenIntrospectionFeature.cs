@@ -6,10 +6,17 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
     using IntrospectionRequest = Client.IntrospectionRequest;
 
     public class RptTokenIntrospectionFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public RptTokenIntrospectionFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Can use PAT token to introspect RPT token")]
         public void CanGetUserInfoFromPatToken()
         {

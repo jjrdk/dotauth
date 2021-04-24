@@ -20,16 +20,17 @@ namespace SimpleAuth.AcceptanceTests
     using System.Net.Http;
     using System.Threading.Tasks;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class EndpointFixture
     {
         private const string BaseUrl = "http://localhost:5000";
         private readonly TestServerFixture _server;
 
-        public EndpointFixture()
+        public EndpointFixture(ITestOutputHelper outputHelper)
         {
             IdentityModelEventSource.ShowPII = true;
-            _server = new TestServerFixture(BaseUrl);
+            _server = new TestServerFixture(outputHelper, BaseUrl);
         }
 
         [Theory]

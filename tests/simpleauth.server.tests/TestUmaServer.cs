@@ -19,17 +19,18 @@ namespace SimpleAuth.Server.Tests
     using System.Net.Http.Headers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
+    using Xunit.Abstractions;
 
-    public class TestUmaServerFixture : IDisposable
+    public class TestUmaServer : IDisposable
     {
         public TestServer Server { get; }
         public Func<HttpClient> Client { get; }
         public SharedUmaContext SharedUmaCtx { get; }
 
-        public TestUmaServerFixture()
+        public TestUmaServer(ITestOutputHelper outputHelper)
         {
             SharedUmaCtx = new SharedUmaContext();
-            var startup = new FakeUmaStartup();
+            var startup = new FakeUmaStartup(outputHelper);
             Server = new TestServer(new WebHostBuilder()
                 .UseUrls("http://localhost:5000")
                 .ConfigureServices(services =>

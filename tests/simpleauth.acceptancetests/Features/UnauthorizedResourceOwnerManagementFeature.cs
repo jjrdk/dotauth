@@ -7,9 +7,16 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class UnauthorizedResourceOwnerManagementFeature : UnauthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public UnauthorizedResourceOwnerManagementFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario]
         public void RejectAddResourceOwner()
         {

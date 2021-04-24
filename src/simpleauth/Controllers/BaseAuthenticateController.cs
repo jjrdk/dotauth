@@ -121,7 +121,8 @@ namespace SimpleAuth.Controllers
             _generateAndSendCode = new GenerateAndSendCodeAction(
                 resourceOwnerRepository,
                 confirmationCodeStore,
-                twoFactorAuthenticationHandler);
+                twoFactorAuthenticationHandler,
+                logger);
             _validateConfirmationCode = new ValidateConfirmationCodeAction(confirmationCodeStore);
             _authenticateHelper = new AuthenticateHelper(
                 authorizationCodeStore,
@@ -151,7 +152,7 @@ namespace SimpleAuth.Controllers
                 accountFilters,
                 subjectBuilder,
                 eventPublisher);
-            _getUserOperation = new GetUserOperation(resourceOwnerRepository);
+            _getUserOperation = new GetUserOperation(resourceOwnerRepository, logger);
             _updateUserClaimsOperation = new UpdateUserClaimsOperation(resourceOwnerRepository, logger);
             _runtimeSettings = runtimeSettings;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
@@ -204,15 +205,14 @@ namespace SimpleAuth.Controllers
         /// <param name="error">The error.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        /// <exception cref="SimpleAuthException"></exception>
         [HttpGet]
         public async Task<IActionResult> LoginCallback(string error, CancellationToken cancellationToken)
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                var message = string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
+                _logger.LogError(message);
+                return SetRedirection(message, Strings.InternalServerError, ErrorCodes.InternalError);
             }
 
             // 1. Get the authenticated user.
@@ -294,7 +294,6 @@ namespace SimpleAuth.Controllers
         /// <param name="code">The code.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        /// <exception cref="SimpleAuthException"></exception>
         [HttpGet]
         public async Task<IActionResult> SendCode(string code, CancellationToken cancellationToken)
         {
@@ -304,15 +303,24 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    Strings.TwoFactorAuthenticationCannotBePerformed);
+                _logger.LogError(Strings.TwoFactorAuthenticationCannotBePerformed);
+                return SetRedirection(
+                    Strings.TwoFactorAuthenticationCannotBePerformed,
+                    Strings.InternalServerError,
+                    ErrorCodes.UnhandledExceptionCode);
             }
 
             // 2. Return translated view.
-            var resourceOwner =
+            var resourceOwnerOption =
                 await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
-            var service = resourceOwner?.TwoFactorAuthentication == null
+            if (resourceOwnerOption is Option<ResourceOwner>.Error)
+            {
+                return BadRequest();
+            }
+
+            var resourceOwner = ((Option<ResourceOwner>.Result)resourceOwnerOption).Item;
+
+            var service = resourceOwner.TwoFactorAuthentication == null
                 ? null
                 : _twoFactorAuthenticationHandler.Get(resourceOwner.TwoFactorAuthentication);
             if (service == null)
@@ -338,7 +346,6 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">codeViewModel</exception>
-        /// <exception cref="SimpleAuthException"></exception>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendCode(CodeViewModel codeViewModel, CancellationToken cancellationToken)
@@ -361,17 +368,28 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity?.IsAuthenticated != true)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    Strings.TwoFactorAuthenticationCannotBePerformed);
+                _logger.LogError(Strings.TwoFactorAuthenticationCannotBePerformed);
+                return BadRequest(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.UnhandledExceptionCode,
+                        Detail = Strings.TwoFactorAuthenticationCannotBePerformed,
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             // 2. Resend the confirmation code.
             var subject = authenticatedUser.GetSubject()!;
             if (codeViewModel.Action == CodeViewModel.ResendAction)
             {
-                var resourceOwner = (await _getUserOperation.Execute(authenticatedUser, cancellationToken)
-                    .ConfigureAwait(false))!;
+                var option = await _getUserOperation.Execute(authenticatedUser, cancellationToken)
+                    .ConfigureAwait(false);
+                if (option is not Option<ResourceOwner>.Result ro)
+                {
+                    return BadRequest();
+                }
+
+                var resourceOwner = ro.Item;
                 var claim = resourceOwner.Claims.FirstOrDefault(c => c.Type == codeViewModel.ClaimName);
                 if (claim != null)
                 {
@@ -526,8 +544,6 @@ namespace SimpleAuth.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">code</exception>
-        /// <exception cref="SimpleAuthException">
-        /// </exception>
         [HttpGet]
         public async Task<IActionResult> LoginCallbackOpenId(
             string code,
@@ -544,9 +560,11 @@ namespace SimpleAuth.Controllers
             var request = Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
             if (request == null)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    Strings.TheRequestCannotBeExtractedFromTheCookie);
+                _logger.LogError(Strings.TheRequestCannotBeExtractedFromTheCookie);
+                return SetRedirection(
+                    Strings.TheRequestCannotBeExtractedFromTheCookie,
+                    Strings.InternalServerError,
+                    ErrorCodes.UnhandledExceptionCode);
             }
 
             // 2 : remove the cookie
@@ -558,9 +576,9 @@ namespace SimpleAuth.Controllers
             // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                var message = string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
+                _logger.LogError(message);
+                return SetRedirection(message, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
             }
 
             // 4. Check if the user is authenticated
@@ -569,7 +587,9 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity?.IsAuthenticated != true || !(authenticatedUser.Identity is ClaimsIdentity))
             {
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, Strings.TheUserNeedsToBeAuthenticated);
+                var message = Strings.TheUserNeedsToBeAuthenticated;
+                _logger.LogError(message);
+                return SetRedirection(message, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
             }
 
             // 5. Retrieve the claims & insert the resource owner if needed.

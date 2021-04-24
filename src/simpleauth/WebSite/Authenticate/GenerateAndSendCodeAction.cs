@@ -16,8 +16,10 @@ namespace SimpleAuth.WebSite.Authenticate
 {
     using System;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Exceptions;
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
@@ -31,36 +33,58 @@ namespace SimpleAuth.WebSite.Authenticate
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
+        private readonly ILogger _logger;
 
         public GenerateAndSendCodeAction(
             IResourceOwnerRepository resourceOwnerRepository,
             IConfirmationCodeStore confirmationCodeStore,
-            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler)
+            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
+            ILogger logger)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _confirmationCodeStore = confirmationCodeStore;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
+            _logger = logger;
         }
 
 
-        public async Task<string> Send(string subject, CancellationToken cancellationToken)
+        public async Task<Option<string>> Send(string subject, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
-                throw new ArgumentNullException(nameof(subject));
+                _logger.LogError(Strings.TheSubjectCannotBeRetrieved);
+                return new Option<string>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.UnhandledExceptionCode,
+                        Detail = Strings.TheSubjectCannotBeRetrieved,
+                        Status = HttpStatusCode.NotFound
+                    });
             }
 
             var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, Strings.TheRoDoesntExist);
+                _logger.LogError(Strings.TheRoDoesntExist);
+                return new Option<string>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.UnhandledExceptionCode,
+                        Detail = Strings.TheRoDoesntExist,
+                        Status = HttpStatusCode.NotFound
+                    });
             }
 
             if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    Strings.TwoFactorAuthenticationIsNotEnabled);
+                _logger.LogError(Strings.TwoFactorAuthenticationIsNotEnabled);
+                return new Option<string>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.UnhandledExceptionCode,
+                        Detail = Strings.TwoFactorAuthenticationIsNotEnabled,
+                        Status = HttpStatusCode.NotFound
+                    });
             }
 
             var confirmationCode = new ConfirmationCode
@@ -78,11 +102,18 @@ namespace SimpleAuth.WebSite.Authenticate
 
             if (!await _confirmationCodeStore.Add(confirmationCode, cancellationToken).ConfigureAwait(false))
             {
-                throw new SimpleAuthException(ErrorCodes.UnhandledExceptionCode, Strings.TheConfirmationCodeCannotBeSaved);
+                _logger.LogError(Strings.TheConfirmationCodeCannotBeSaved);
+                return new Option<string>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.UnhandledExceptionCode,
+                        Detail = Strings.TheConfirmationCodeCannotBeSaved,
+                        Status = HttpStatusCode.InternalServerError
+                    });
             }
 
             await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Value, resourceOwner.TwoFactorAuthentication, resourceOwner).ConfigureAwait(false);
-            return confirmationCode.Value;
+            return new Option<string>.Result(confirmationCode.Value);
         }
 
         private async Task<string> GetCode(string subject, CancellationToken cancellationToken)

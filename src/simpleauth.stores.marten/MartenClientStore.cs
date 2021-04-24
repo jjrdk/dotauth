@@ -6,15 +6,20 @@
     using SimpleAuth.Shared.Requests;
     using System;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
 
     using global::Marten.Pagination;
+    using Microsoft.VisualBasic;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Properties;
 
     /// <summary>
     /// Defines the marten based client store.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IClientRepository" />
+    /// <seealso cref="IClientRepository" />
     public class MartenClientStore : IClientRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
@@ -65,17 +70,23 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> Update(Client client, CancellationToken cancellationToken = default)
+        public async Task<Option> Update(Client client, CancellationToken cancellationToken)
         {
             using var session = _sessionFactory();
             if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
             {
-                return false;
+                return new Option.Error(
+                   new ErrorDetails
+                   {
+                       Title = ErrorCodes.InvalidClient,
+                       Detail = SharedStrings.TheClientDoesntExist,
+                       Status = HttpStatusCode.NotFound
+                   });
             }
 
             session.Update(client);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return true;
+            return new Option.Success();
         }
 
         /// <inheritdoc />

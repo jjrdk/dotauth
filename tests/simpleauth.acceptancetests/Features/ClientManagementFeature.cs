@@ -5,9 +5,16 @@
     using System;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ClientManagementFeature : AuthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public ClientManagementFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario]
         public void SuccessfulClientListing()
         {

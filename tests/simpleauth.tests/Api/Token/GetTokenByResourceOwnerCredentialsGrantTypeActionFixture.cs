@@ -33,6 +33,7 @@ namespace SimpleAuth.Tests.Api.Token
     using SimpleAuth.Services;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Events.OAuth;
+    using SimpleAuth.Shared.Properties;
     using SimpleAuth.Tests.Helpers;
     using Xunit;
     using Xunit.Abstractions;
@@ -95,7 +96,7 @@ namespace SimpleAuth.Tests.Api.Token
                 .ConfigureAwait(false);
 
             Assert.Equal(ErrorCodes.InvalidClient, result.Error.Title);
-            Assert.Equal(string.Format(Strings.TheClientDoesntExist), result.Error.Detail);
+            Assert.Equal(string.Format(SharedStrings.TheClientDoesntExist), result.Error.Detail);
         }
 
         [Fact]

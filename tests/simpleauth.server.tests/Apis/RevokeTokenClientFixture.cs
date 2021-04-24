@@ -26,6 +26,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Properties;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -96,7 +97,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.True(ex.HasError);
             Assert.Equal("invalid_client", ex.Error.Title);
-            Assert.Equal(Strings.TheClientDoesntExist, ex.Error.Detail);
+            Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Error.Detail);
         }
 
         [Fact]

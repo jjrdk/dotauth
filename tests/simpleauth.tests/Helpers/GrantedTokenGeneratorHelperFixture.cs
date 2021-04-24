@@ -26,6 +26,7 @@ namespace SimpleAuth.Tests.Helpers
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Shared.Properties;
     using Xunit;
 
     public class GrantedTokenGeneratorHelperFixture
@@ -38,36 +39,36 @@ namespace SimpleAuth.Tests.Helpers
         }
 
         [Fact]
-        public async Task When_Passing_NullOrWhiteSpace_Then_Exceptions_Are_Thrown()
+        public async Task WhenPassingNullOrWhiteSpaceThenErrorIsReturned()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => _clientRepositoryStub.Object.GenerateToken(
-                        new InMemoryJwksRepository(),
-                        string.Empty,
-                        null,
-                        null,
-                        CancellationToken.None,
-                        userInformationPayload: null))
-                .ConfigureAwait(false);
+            var result = await _clientRepositoryStub.Object.GenerateToken(
+                          new InMemoryJwksRepository(),
+                          string.Empty,
+                          "",
+                          "",
+                          CancellationToken.None,
+                          userInformationPayload: null)
+                  .ConfigureAwait(false);
+
+            Assert.IsType<Option<GrantedToken>.Error>(result);
         }
 
         [Fact]
-        public async Task When_Client_DoesNot_Exist_Then_Exception_Is_Thrown()
+        public async Task WhenClientDoesNotExistThenErrorIsReturned()
         {
             _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Client)null);
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _clientRepositoryStub.Object.GenerateToken(
+            var ex = await _clientRepositoryStub.Object.GenerateToken(
                         new InMemoryJwksRepository(),
                         "invalid_client",
-                        null,
-                        null,
+                        "",
+                        "",
                         CancellationToken.None,
-                        userInformationPayload: null))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, ex.Code);
-            Assert.Equal(Strings.TheClientDoesntExist, ex.Message);
+                        userInformationPayload: null)
+                .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            Assert.Equal(ErrorCodes.InvalidClient, ex.Details.Title);
+            Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Details.Detail);
         }
 
         [Fact]
@@ -93,9 +94,9 @@ namespace SimpleAuth.Tests.Helpers
                     "issuer",
                     CancellationToken.None,
                     userInformationPayload: null)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedToken>.Result;
 
-            Assert.Equal(3700, result.ExpiresIn);
+            Assert.Equal(3700, result.Item.ExpiresIn);
         }
     }
 }

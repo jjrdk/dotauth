@@ -3,9 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
@@ -18,85 +20,120 @@
         private readonly IHttpClientFactory _httpClient;
         private readonly IScopeStore _scopeRepository;
         private readonly Func<string, Uri[]> _urlReader;
+        private readonly ILogger _logger;
 
-        public ClientFactory(IHttpClientFactory httpClient, IScopeStore scopeRepository, Func<string, Uri[]> urlReader)
+        public ClientFactory(IHttpClientFactory httpClient, IScopeStore scopeRepository, Func<string, Uri[]> urlReader, ILogger logger)
         {
             _httpClient = httpClient;
             _scopeRepository = scopeRepository;
             _urlReader = urlReader;
+            _logger = logger;
         }
 
-        public async Task<Client> Build(Client newClient, bool updateId = true, CancellationToken cancellationToken = default)
+        public async Task<Option<Client>> Build(Client newClient, bool updateId = true, CancellationToken cancellationToken = default)
         {
-            if (newClient == null)
+            var result = ValidateNotMandatoryUri(newClient.ClientUri, "client_uri");
+            if (result is Option.Error e)
             {
-                throw new ArgumentNullException(nameof(newClient));
+                _logger.LogError(e.Details.Detail);
+                return new Option<Client>.Error(e.Details, e.State);
             }
-
-            ValidateNotMandatoryUri(newClient.ClientUri, "client_uri");
-            ValidateNotMandatoryUri(newClient.TosUri, "tos_uri");
-            ValidateNotMandatoryUri(newClient.SectorIdentifierUri, "sector_identifier_uri", true);
-
+            result = ValidateNotMandatoryUri(newClient.TosUri, "tos_uri");
+            if (result is Option.Error e2)
+            {
+                _logger.LogError(e2.Details.Detail);
+                return new Option<Client>.Error(e2.Details, e2.State);
+            }
+            result = ValidateNotMandatoryUri(newClient.SectorIdentifierUri, "sector_identifier_uri", true);
+            if (result is Option.Error e3)
+            {
+                _logger.LogError(e3.Details.Detail);
+                return new Option<Client>.Error(e3.Details, e3.State);
+            }
             // Based on the RFC : http://openid.net/specs/openid-connect-registration-1_0.html#SectorIdentifierValidation validate the sector_identifier_uri
             if (newClient.SectorIdentifierUri != null)
             {
-                var sectorIdentifierUris =
+                var sectorIdentifierUrisOption =
                     await GetSectorIdentifierUris(newClient.SectorIdentifierUri, cancellationToken).ConfigureAwait(false);
+                if (sectorIdentifierUrisOption is Option<IReadOnlyCollection<Uri>>.Error error)
+                {
+                    return new Option<Client>.Error(error.Details, error.State);
+                }
+
+                var sectorIdentifierUris = ((Option<IReadOnlyCollection<Uri>>.Result)sectorIdentifierUrisOption).Item;
                 if (sectorIdentifierUris.Any(
                     sectorIdentifierUri => !newClient.RedirectionUrls.Contains(sectorIdentifierUri)))
                 {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidClientMetaData,
-                        Strings.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
+                    _logger.LogError(Strings.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
+                    return new Option<Client>.Error(new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidClientMetaData,
+                        Detail = Strings.OneOrMoreSectorIdentifierUriIsNotARedirectUri,
+                        Status = HttpStatusCode.BadRequest
+                    });
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc))
+            if (!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc) && string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg))
             {
-                if (string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg))
+                _logger.LogError(Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
+                return new Option<Client>.Error(new ErrorDetails
                 {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidClientMetaData,
-                        Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
-                }
+                    Title = ErrorCodes.InvalidClientMetaData,
+                    Detail = Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified,
+                    Status = HttpStatusCode.BadRequest
+                });
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseEnc))
+            if (!string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseEnc) && string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseAlg))
             {
-                if (string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseAlg))
+                _logger.LogError(Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
+                return new Option<Client>.Error(new ErrorDetails
                 {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidClientMetaData,
-                        Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
-                }
+                    Title = ErrorCodes.InvalidClientMetaData,
+                    Detail = Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified,
+                    Status = HttpStatusCode.BadRequest
+                });
             }
 
-            if (!string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionEnc))
+            if (!string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionEnc) && string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionAlg))
             {
-                if (string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionAlg))
+                _logger.LogError(Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
+                return new Option<Client>.Error(new ErrorDetails
                 {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidClientMetaData,
-                        Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
-                }
+                    Title = ErrorCodes.InvalidClientMetaData,
+                    Detail = Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified,
+                    Status = HttpStatusCode.BadRequest
+                });
             }
 
-            if (newClient.RedirectionUrls == null || newClient.RedirectionUrls.Length == 0)
+            if (newClient.RedirectionUrls.Length == 0)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidRedirectUri,
-                    string.Format(Strings.MissingParameter, "redirect_uris"));
+                var message = string.Format(Strings.MissingParameter, "redirect_uris");
+                _logger.LogError(message);
+                return new Option<Client>.Error(new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRedirectUri,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
+                });
             }
 
-            ValidateNotMandatoryUri(newClient.InitiateLoginUri, "initiate_login_uri", true);
-
-            newClient.RequestUris ??= Array.Empty<Uri>();
-
+            result = ValidateNotMandatoryUri(newClient.InitiateLoginUri, "initiate_login_uri", true);
+            if (result is Option.Error e4)
+            {
+                return new Option<Client>.Error(e4.Details, e4.State);
+            }
             if (newClient.RequestUris.Any(requestUri => !requestUri.IsAbsoluteUri))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClientMetaData,
-                    Strings.OneOfTheRequestUriIsNotValid);
+                var message = Strings.OneOfTheRequestUriIsNotValid;
+                _logger.LogError(message);
+                return new Option<Client>.Error(new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidClientMetaData,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
+                });
             }
 
             var client = new Client
@@ -115,7 +152,7 @@
             client.DefaultAcrValues = newClient.DefaultAcrValues;
 
             // If omitted then the default value is authorization code response type
-            client.ResponseTypes = newClient.ResponseTypes?.Any() != true ? new[] { ResponseTypeNames.Code } : newClient.ResponseTypes;
+            client.ResponseTypes = newClient.ResponseTypes.Length == 0 ? new[] { ResponseTypeNames.Code } : newClient.ResponseTypes;
             client.SectorIdentifierUri = newClient.SectorIdentifierUri;
             client.TokenEndPointAuthMethod = newClient.TokenEndPointAuthMethod;
             client.TokenEndPointAuthSigningAlg = newClient.TokenEndPointAuthSigningAlg;
@@ -123,26 +160,19 @@
             client.UserInfoEncryptedResponseAlg = newClient.UserInfoEncryptedResponseAlg;
             client.UserInfoEncryptedResponseEnc = newClient.UserInfoEncryptedResponseEnc;
 
-            if (newClient.Secrets?.Length == 0
-                && client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.PrivateKeyJwt)
+            client.Secrets = newClient.Secrets.Length switch
             {
-                client.Secrets = new[]
+                0 when client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.PrivateKeyJwt => new[]
                 {
-                    new ClientSecret
-                    {
-                        Type = ClientSecretTypes.SharedSecret,
-                        Value = Id.Create()
-                    }
-                };
-            }
-            else if (newClient.Secrets?.Any() == true)
-            {
-                client.Secrets = newClient.Secrets.Select(
+                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = Id.Create()}
+                },
+                > 0 => newClient.Secrets.Select(
                         secret => secret.Type == ClientSecretTypes.SharedSecret
-                            ? new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Id.Create() }
+                            ? new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = Id.Create()}
                             : secret)
-                    .ToArray();
-            }
+                    .ToArray(),
+                _ => client.Secrets
+            };
 
             // If omitted then the default value is authorization code grant type
             client.GrantTypes = newClient.GrantTypes.Length == 0
@@ -161,9 +191,14 @@
             }
             else if (!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClientMetaData,
-                    Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
+                var message = Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified;
+                _logger.LogError(message);
+                return new Option<Client>.Error(new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidClientMetaData,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
+                });
             }
 
             client.IdTokenSignedResponseAlg = !string.IsNullOrWhiteSpace(newClient.IdTokenSignedResponseAlg)
@@ -172,20 +207,25 @@
 
             client.InitiateLoginUri = newClient.InitiateLoginUri;
 
-            client.JsonWebKeys = newClient.JsonWebKeys ?? new JsonWebKeySet();
+            client.JsonWebKeys = newClient.JsonWebKeys;
             client.PolicyUri = newClient.PolicyUri;
             client.PostLogoutRedirectUris = newClient.PostLogoutRedirectUris;
 
-            newClient.AllowedScopes ??= Array.Empty<string>();
+            //newClient.AllowedScopes ??= Array.Empty<string>();
 
             var scopes = await _scopeRepository.SearchByNames(CancellationToken.None, newClient.AllowedScopes)
                 .ConfigureAwait(false);
             if (scopes.Length != newClient.AllowedScopes.Length)
             {
                 var enumerable = newClient.AllowedScopes.Except(scopes.Select(x => x.Name));
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidScope,
-                    $"Unknown scopes: {string.Join(",", enumerable)}");
+                var message = $"Unknown scopes: {string.Join(",", enumerable)}";
+                _logger.LogError(message);
+                return new Option<Client>.Error(new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidScope,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
+                });
             }
 
             client.AllowedScopes = newClient.AllowedScopes.ToArray();
@@ -197,16 +237,27 @@
                 {
                     if (!redirectUri.IsAbsoluteUri || !Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                     {
-                        throw new SimpleAuthException(
-                            ErrorCodes.InvalidRedirectUri,
-                            string.Format(Strings.TheRedirectUrlIsNotValid, redirectUri));
+                        var message = string.Format(Strings.TheRedirectUrlIsNotValid, redirectUri);
+                        _logger.LogError(message);
+                        return new Option<Client>.Error(new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidRedirectUri,
+                            Detail = message,
+                            Status = HttpStatusCode.BadRequest
+                        });
                     }
 
                     if (!string.IsNullOrWhiteSpace(redirectUri.Fragment))
                     {
-                        throw new SimpleAuthException(
-                            ErrorCodes.InvalidRedirectUri,
-                            string.Format(Strings.TheRedirectUrlCannotContainsFragment, redirectUri));
+                        var message = string.Format(Strings.TheRedirectUrlCannotContainsFragment, redirectUri);
+                        _logger.LogError(message);
+                        return new Option<Client>.Error(
+                            new ErrorDetails
+                            {
+                                Title = ErrorCodes.InvalidRedirectUri,
+                                Detail = message,
+                                Status = HttpStatusCode.BadRequest
+                            });
                     }
 
                     client.RedirectionUrls = client.RedirectionUrls.Add(redirectUri);
@@ -218,9 +269,15 @@
                 {
                     if (!Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                     {
-                        throw new SimpleAuthException(
-                            ErrorCodes.InvalidRedirectUri,
-                            string.Format(Strings.TheRedirectUrlIsNotValid, redirectUri));
+                        var message = string.Format(Strings.TheRedirectUrlIsNotValid, redirectUri);
+                        _logger.LogError(message);
+                        return new Option<Client>.Error(
+                            new ErrorDetails
+                            {
+                                Title = ErrorCodes.InvalidRedirectUri,
+                                Detail = message,
+                                Status = HttpStatusCode.BadRequest
+                            });
                     }
 
                     client.RedirectionUrls = client.RedirectionUrls.Add(redirectUri);
@@ -268,10 +325,10 @@
                 ? newClient.TokenEndPointAuthSigningAlg
                 : string.Empty;
 
-            return client;
+            return new Option<Client>.Result(client);
         }
 
-        private async Task<IReadOnlyCollection<Uri>> GetSectorIdentifierUris(Uri sectorIdentifierUri, CancellationToken cancellationToken = default)
+        private async Task<Option<IReadOnlyCollection<Uri>>> GetSectorIdentifierUris(Uri sectorIdentifierUri, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -279,38 +336,52 @@
                 var response = client.GetAsync(sectorIdentifierUri, cancellationToken).Result;
                 response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                return _urlReader(result);
+                return new Option<IReadOnlyCollection<Uri>>.Result(_urlReader(result));
                 //result.DeserializeWithJavascript<List<string>>().Select(x => new Uri(x)).ToList();
             }
-            catch (Exception ex)
+            catch
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClientMetaData,
-                    Strings.TheSectorIdentifierUrisCannotBeRetrieved,
-                    ex);
+                _logger.LogError(Strings.TheSectorIdentifierUrisCannotBeRetrieved);
+                return new Option<IReadOnlyCollection<Uri>>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidClientMetaData,
+                        Detail = Strings.TheSectorIdentifierUrisCannotBeRetrieved,
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
         }
 
-        private static void ValidateNotMandatoryUri(Uri? uri, string newClientName, bool checkSchemeIsHttps = false)
+        private static Option ValidateNotMandatoryUri(Uri? uri, string parameter, bool checkSchemeIsHttps = false)
         {
             if (uri == null)
             {
-                return;
+                return new Option.Success();
             }
 
             if (!uri.IsAbsoluteUri || !Uri.IsWellFormedUriString(uri.AbsoluteUri, UriKind.Absolute))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClientMetaData,
-                    string.Format(Strings.ParameterIsNotCorrect, newClientName));
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidClientMetaData,
+                        Detail = string.Format(Strings.ParameterIsNotCorrect, parameter),
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             if (checkSchemeIsHttps && uri.Scheme != Uri.UriSchemeHttps)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.InvalidClientMetaData,
-                    string.Format(Strings.ParameterIsNotCorrect, newClientName));
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidClientMetaData,
+                        Detail = string.Format(Strings.ParameterIsNotCorrect, parameter),
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
+
+            return new Option.Success();
         }
     }
 }

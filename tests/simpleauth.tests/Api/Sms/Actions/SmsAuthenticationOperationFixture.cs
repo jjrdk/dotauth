@@ -5,18 +5,20 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using Moq;
     using SimpleAuth.Events;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms.Actions;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class SmsAuthenticationOperationFixture
     {
         private readonly SmsAuthenticationOperation _smsAuthenticationOperation;
 
-        public SmsAuthenticationOperationFixture()
+        public SmsAuthenticationOperationFixture(ITestOutputHelper outputHelper)
         {
             var generateAndSendSmsCodeOperationStub = new Mock<IConfirmationCodeStore>();
             var resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
@@ -30,7 +32,8 @@
                 resourceOwnerRepositoryStub.Object,
                 subjectBuilderStub.Object,
                 Array.Empty<IAccountFilter>(),
-                new Mock<IEventPublisher>().Object);
+                new Mock<IEventPublisher>().Object,
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]

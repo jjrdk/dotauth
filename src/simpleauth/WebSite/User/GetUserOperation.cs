@@ -14,9 +14,11 @@
 
 namespace SimpleAuth.WebSite.User
 {
+    using System.Net;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
@@ -26,31 +28,58 @@ namespace SimpleAuth.WebSite.User
     internal class GetUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly ILogger _logger;
 
-        public GetUserOperation(IResourceOwnerRepository resourceOwnerRepository)
+        public GetUserOperation(IResourceOwnerRepository resourceOwnerRepository, ILogger logger)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
+            _logger = logger;
         }
 
-        public Task<ResourceOwner?> Execute(ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
+        public async Task<Option<ResourceOwner>> Execute(
+            ClaimsPrincipal claimsPrincipal,
+            CancellationToken cancellationToken)
         {
             var claimsIdentity = claimsPrincipal.Identity as ClaimsIdentity;
             if (claimsIdentity?.IsAuthenticated != true)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    Strings.TheUserNeedsToBeAuthenticated);
+                _logger.LogError(Strings.TheUserNeedsToBeAuthenticated);
+                return new Option<ResourceOwner>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.UnhandledExceptionCode,
+                        Detail = Strings.TheUserNeedsToBeAuthenticated,
+                        Status = HttpStatusCode.InternalServerError
+                    });
             }
 
             var subject = claimsPrincipal.GetSubject();
             if (string.IsNullOrWhiteSpace(subject))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    Strings.TheSubjectCannotBeRetrieved);
+                _logger.LogError(Strings.TheSubjectCannotBeRetrieved);
+                return new Option<ResourceOwner>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.UnhandledExceptionCode,
+                        Detail = Strings.TheSubjectCannotBeRetrieved,
+                        Status = HttpStatusCode.InternalServerError
+                    });
             }
 
-            return _resourceOwnerRepository.Get(subject, cancellationToken);
+            var ro = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
+            if (ro is not null)
+            {
+                return new Option<ResourceOwner>.Result(ro);
+            }
+
+            _logger.LogError(Strings.TheSubjectCannotBeRetrieved);
+            return new Option<ResourceOwner>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.UnhandledExceptionCode,
+                    Detail = Strings.TheRoDoesntExist,
+                    Status = HttpStatusCode.InternalServerError
+                });
         }
     }
 }

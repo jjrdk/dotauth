@@ -23,6 +23,7 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class PermissionFixture : IDisposable
     {
@@ -30,11 +31,11 @@ namespace SimpleAuth.Server.Tests
         private const string WellKnownUma2Configuration = "/.well-known/uma2-configuration";
 
         private readonly UmaClient _umaClient;
-        private readonly TestUmaServerFixture _server;
+        private readonly TestUmaServer _server;
 
-        public PermissionFixture()
+        public PermissionFixture(ITestOutputHelper outputHelper)
         {
-            _server = new TestUmaServerFixture();
+            _server = new TestUmaServer(outputHelper);
             _umaClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration));
         }
 
@@ -97,7 +98,7 @@ namespace SimpleAuth.Server.Tests
                 .ConfigureAwait(false);
 
             Assert.True(ticket.HasError);
-            Assert.Equal(ErrorCodes.InvalidScope, ticket.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidScope, ticket.Error!.Title);
             Assert.Equal("one or more scopes are not valid", ticket.Error.Detail);
         }
 

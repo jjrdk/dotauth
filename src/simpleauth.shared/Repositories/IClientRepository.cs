@@ -39,7 +39,7 @@ namespace SimpleAuth.Shared.Repositories
         /// <param name="client">The client.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<bool> Update(Client client, CancellationToken cancellationToken);
+        Task<Option> Update(Client client, CancellationToken cancellationToken);
 
         /// <summary>
         /// Inserts the specified client.

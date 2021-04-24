@@ -330,9 +330,6 @@
   <data name="TheClientDoesntContainASharedSecret" xml:space="preserve">
     <value>The client {0} doesn't have a shared secret</value>
   </data>
-  <data name="TheClientDoesntExist" xml:space="preserve">
-    <value>The client doesn't exist</value>
-  </data>
   <data name="TheClientDoesntSupportTheGrantType" xml:space="preserve">
     <value>The client {0} doesn't support the grant type {1}</value>
   </data>

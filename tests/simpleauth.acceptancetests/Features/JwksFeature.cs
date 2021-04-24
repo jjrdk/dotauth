@@ -7,9 +7,16 @@
     using System.IdentityModel.Tokens.Jwt;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class JwksFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public JwksFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario]
         public void SuccessfulPermissionCreation()
         {

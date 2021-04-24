@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+      <PackageReference Include="Divergic.Logging.Xunit" Version="3.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
     <PackageReference Include="xbehave" Version="2.4.1" />

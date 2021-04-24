@@ -133,16 +133,21 @@ namespace SimpleAuth.Api.Token.Actions
             }
 
             // 4. Generate a new access token & insert it
-            var generatedToken = await _clientStore.GenerateToken(
-                        _jwksRepository,
-                        grantedToken.ClientId,
-                        grantedToken.Scope,
-                        issuerName,
-                        cancellationToken,
-                        userInformationPayload: grantedToken.UserInfoPayLoad,
-                        idTokenPayload: grantedToken.IdTokenPayLoad,
-                        additionalClaims)
-                    .ConfigureAwait(false) with
+            var option = await _clientStore.GenerateToken(
+                    _jwksRepository,
+                    grantedToken.ClientId,
+                    grantedToken.Scope,
+                    issuerName,
+                    cancellationToken,
+                    userInformationPayload: grantedToken.UserInfoPayLoad,
+                    idTokenPayload: grantedToken.IdTokenPayLoad,
+                    additionalClaims)
+                .ConfigureAwait(false);
+            if (option is Option<GrantedToken>.Error e)
+            {
+                return new GenericResponse<GrantedToken> { Error = e.Details, StatusCode = e.Details.Status };
+            }
+            var generatedToken = ((Option<GrantedToken>.Result)option).Item with
             {
                 ParentTokenId = grantedToken.Id
             };

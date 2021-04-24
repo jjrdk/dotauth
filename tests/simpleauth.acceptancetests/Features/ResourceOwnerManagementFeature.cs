@@ -17,12 +17,19 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     // In order to manage resource owners in the system
     // As a manager
     // I want to perform management actions on resource owners.
     public class ResourceOwnerManagementFeature : AuthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public ResourceOwnerManagementFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario]
         public void SuccessAddResourceOwner()
         {

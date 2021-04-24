@@ -14,6 +14,7 @@
     using SimpleAuth.Events;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Shared.Properties;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -66,7 +67,7 @@
                         CancellationToken.None))
                 .ConfigureAwait(false);
             Assert.Equal(
-                string.Format(Strings.TheClientDoesntExist),
+                string.Format(SharedStrings.TheClientDoesntExist),
                 exception.Message);
         }
 

@@ -8,9 +8,16 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class IdTokenSigningFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public IdTokenSigningFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario]
         public void WhenClientHasNoSigningKeysThenUsesServerKey()
         {

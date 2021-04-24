@@ -18,6 +18,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -148,14 +149,13 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">authorizeViewModel</exception>
-        /// <exception cref="SimpleAuthException">The resource owner credentials are not correct</exception>
         /// <exception cref="Exception">Two factor authenticator is not properly configured</exception>
         [HttpPost]
         public async Task<IActionResult> LocalLogin(
             [FromForm] LocalAuthenticationViewModel authorizeViewModel,
             CancellationToken cancellationToken)
         {
-            if (authorizeViewModel?.Login == null || authorizeViewModel.Password == null)
+            if (authorizeViewModel.Login == null || authorizeViewModel.Password == null)
             {
                 BadRequest();
             }
@@ -183,9 +183,14 @@
                     .ConfigureAwait(false);
                 if (resourceOwner == null)
                 {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidRequest,
-                        Strings.TheResourceOwnerCredentialsAreNotCorrect);
+                    _logger.LogError(Strings.TheResourceOwnerCredentialsAreNotCorrect);
+                    var viewModel = new AuthorizeViewModel
+                    {
+                        Password = authorizeViewModel.Password, UserName = authorizeViewModel.Login
+                    };
+                    await SetIdProviders(viewModel).ConfigureAwait(false);
+                    RouteData.Values["view"] = "Index";
+                    return Ok(viewModel);
                 }
 
                 resourceOwner.Claims = resourceOwner.Claims.Add(
@@ -198,7 +203,7 @@
                 {
                     await SetLocalCookie(resourceOwner.Claims, Id.Create()).ConfigureAwait(false);
                     return !string.IsNullOrWhiteSpace(authorizeViewModel.ReturnUrl)
-                        ? (IActionResult)Redirect(authorizeViewModel.ReturnUrl)
+                        ? Redirect(authorizeViewModel.ReturnUrl)
                         : RedirectToAction("Index", "User");
                 }
 
@@ -329,11 +334,10 @@
                     }
                     catch (Exception ex)
                     {
-                        var se = ex as SimpleAuthException;
                         await _eventPublisher.Publish(
                                 new SimpleAuthError(
                                     Id.Create(),
-                                    se?.Code ?? ex.Message,
+                                    ex.Message,
                                     ex.Message,
                                     string.Empty,
                                     DateTimeOffset.UtcNow))

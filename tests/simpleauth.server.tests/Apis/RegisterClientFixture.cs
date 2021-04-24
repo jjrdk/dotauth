@@ -69,7 +69,7 @@ namespace SimpleAuth.Server.Tests.Apis
         }
 
         [Fact]
-        public async Task When_Pass_Invalid_Redirect_Uris_Then_Error_Is_Returned()
+        public async Task WhenPassInvalidRedirectUrisThenErrorIsReturned()
         {
             var tokenClient = new TokenClient(
                 TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
@@ -101,10 +101,11 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
+            Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal(ErrorCodes.InvalidRedirectUri, error.Title);
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, error!.Title);
         }
 
         [Fact(Skip = "Run locally")]
@@ -146,7 +147,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal("invalid_redirect_uri", error.Title);
+            Assert.Equal("invalid_redirect_uri", error!.Title);
             Assert.Equal(
                 string.Format(
                     Strings.TheRedirectUrlCannotContainsFragment,
@@ -188,7 +189,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal("invalid_client_metadata", error.Title);
+            Assert.Equal("invalid_client_metadata", error!.Title);
             Assert.Equal("the parameter client_uri is not correct", error.Detail);
         }
 
@@ -227,7 +228,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal("invalid_client_metadata", error.Title);
+            Assert.Equal("invalid_client_metadata", error!.Title);
             Assert.Equal("the parameter tos_uri is not correct", error.Detail);
         }
 

@@ -120,6 +120,9 @@
   <data name="ResourceCannotBeUpdated" xml:space="preserve">
     <value>Resource cannot be updated</value>
   </data>
+  <data name="TheClientDoesntExist" xml:space="preserve">
+    <value>The client doesn't exist</value>
+  </data>
   <data name="TheRoDoesntExist" xml:space="preserve">
     <value>The resource owner doesn't exist</value>
   </data>

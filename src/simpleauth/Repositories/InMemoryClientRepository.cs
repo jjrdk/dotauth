@@ -6,11 +6,15 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Properties;
 
     /// <summary>
     /// Defines the in-memory client repository.
@@ -36,7 +40,7 @@
             IReadOnlyCollection<Client>? clients = null)
         {
             _logger = logger;
-            _clientFactory = new ClientFactory(httpClient, scopeStore, JsonConvert.DeserializeObject<Uri[]>!);
+            _clientFactory = new ClientFactory(httpClient, scopeStore, JsonConvert.DeserializeObject<Uri[]>!, logger);
             _clients = clients == null
                 ? new List<Client>()
                 : clients.ToList();
@@ -142,15 +146,27 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> Update(Client newClient, CancellationToken cancellationToken = default)
+        public async Task<Option> Update(Client newClient, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(newClient.ClientId)
                 || !_clients.Exists(x => x.ClientId == newClient.ClientId))
             {
-                return false;
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidClient,
+                        Detail = SharedStrings.TheClientDoesntExist,
+                        Status = HttpStatusCode.NotFound
+                    });
             }
 
-            newClient = await _clientFactory.Build(newClient, false, cancellationToken).ConfigureAwait(false);
+            var option = await _clientFactory.Build(newClient, false, cancellationToken).ConfigureAwait(false);
+            if (option is Option<Client>.Error e)
+            {
+                return new Option.Error(e.Details, e.State);
+            }
+
+            newClient = ((Option<Client>.Result) option).Item;
             lock (_clients)
             {
                 var removed = _clients.RemoveAll(
@@ -163,7 +179,7 @@
                 _clients.Add(newClient);
             }
 
-            return true;
+            return new Option.Success();
         }
     }
 }

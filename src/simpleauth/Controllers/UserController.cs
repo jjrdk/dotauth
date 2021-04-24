@@ -40,6 +40,7 @@
         private readonly IScopeRepository _scopeRepository;
         private readonly IUrlHelper _urlHelper;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
+        private readonly ILogger<UserController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController"/> class.
@@ -66,7 +67,7 @@
             : base(authenticationService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _getUserOperation = new GetUserOperation(resourceOwnerRepository);
+            _getUserOperation = new GetUserOperation(resourceOwnerRepository, logger);
             _updateUserTwoFactorAuthenticatorOperation =
                 new UpdateUserTwoFactorAuthenticatorOperation(resourceOwnerRepository, logger);
             _authenticationSchemeProvider = authenticationSchemeProvider;
@@ -74,6 +75,7 @@
             _scopeRepository = scopeRepository;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
+            _logger = logger;
         }
 
         /// <summary>
@@ -267,9 +269,11 @@
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                _logger.LogError(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                return SetRedirection(
+                    string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error),
+                    "500",
+                    ErrorCodes.UnhandledExceptionCode);
             }
 
             try
@@ -280,8 +284,12 @@
                     .ConfigureAwait(false);
                 if (externalClaims != null)
                 {
-                    await InnerLinkProfile(authenticatedUser.GetSubject()!, externalClaims, cancellationToken)
-                        .ConfigureAwait(false);
+                    var option = await InnerLinkProfile(authenticatedUser.GetSubject()!, externalClaims, cancellationToken)
+                             .ConfigureAwait(false);
+                    if (option is Option.Error e)
+                    {
+                        return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
+                    }
                 }
 
                 await _authenticationService.SignOutAsync(
@@ -343,8 +351,12 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             try
             {
-                await InnerLinkProfile(authenticatedUser.GetSubject()!, externalClaims, cancellationToken)
-                    .ConfigureAwait(false);
+                var option = await InnerLinkProfile(authenticatedUser.GetSubject()!, externalClaims, cancellationToken)
+                      .ConfigureAwait(false);
+                if (option is Option.Error e)
+                {
+                    return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
+                }
                 return RedirectToAction("Index", "User");
             }
             finally
@@ -374,16 +386,20 @@
             var authenticatedUser = await SetUser().ConfigureAwait(false);
             try
             {
-                await UnlinkProfile(
-                        authenticatedUser.GetSubject()!,
-                        id,
-                        authenticatedUser!.Identity!.AuthenticationType!,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (SimpleAuthException ex)
-            {
-                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message });
+                var option = await UnlinkProfile(
+                           authenticatedUser.GetSubject()!,
+                           id,
+                           authenticatedUser!.Identity!.AuthenticationType!,
+                           cancellationToken)
+                       .ConfigureAwait(false);
+
+                if (option is Option.Error e)
+                {
+                    return RedirectToAction(
+                        "Index",
+                        "Error",
+                        new { code = e.Details.Status.ToString(), message = e.Details.Detail });
+                }
             }
             catch (Exception ex)
             {
@@ -397,16 +413,17 @@
             ClaimsPrincipal authenticatedUser,
             CancellationToken cancellationToken)
         {
-            var resourceOwner =
+            var option =
                 await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
             UpdateResourceOwnerViewModel viewModel;
             var subject = authenticatedUser.GetSubject()!;
-            if (resourceOwner == null)
+            if (option is not Option<ResourceOwner>.Result ro)
             {
                 viewModel = BuildViewModel(string.Empty, subject, authenticatedUser.Claims, false);
                 return View("Edit", viewModel);
             }
 
+            var resourceOwner = ro.Item;
             viewModel = BuildViewModel(
                 resourceOwner.TwoFactorAuthentication ?? string.Empty,
                 subject,
@@ -422,10 +439,6 @@
                 .GetConsentsForGivenUser(authenticatedUser.GetSubject()!, cancellationToken)
                 .ConfigureAwait(false);
             var result = new List<ConsentViewModel>();
-            if (consents == null)
-            {
-                return Ok(result);
-            }
 
             var scopes = (await _scopeRepository.SearchByNames(
                     cancellationToken,
@@ -505,7 +518,13 @@
                 await _resourceOwnerRepository.Get(localSubject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError, Strings.TheRoDoesntExist);
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InternalError,
+                        Detail = Strings.TheRoDoesntExist,
+                        Status = HttpStatusCode.InternalServerError
+                    });
             }
 
             var unlink = resourceOwner.ExternalLogins.Where(
@@ -523,7 +542,7 @@
 
         }
 
-        private async Task<bool> InnerLinkProfile(
+        private async Task<Option> InnerLinkProfile(
             string localSubject,
             ClaimsPrincipal externalPrincipal,
             CancellationToken cancellationToken)
@@ -532,14 +551,26 @@
                 await _resourceOwnerRepository.Get(localSubject, cancellationToken).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError, Strings.TheRoDoesntExist);
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InternalError,
+                        Detail = Strings.TheRoDoesntExist,
+                        Status = HttpStatusCode.InternalServerError
+                    });
             }
 
             var issuer = externalPrincipal.Identity!.AuthenticationType;
             var externalSubject = externalPrincipal.GetSubject();
             if (resourceOwner.ExternalLogins.Any(x => x.Subject == externalSubject && x.Issuer == issuer))
             {
-                return false;
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InternalError,
+                        Detail = Strings.TheRoDoesntExist,
+                        Status = HttpStatusCode.InternalServerError
+                    });
             }
 
             var newClaims = externalPrincipal.Claims.ToOpenidClaims()
@@ -558,7 +589,7 @@
                     })
                 .ToArray();
             await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
-            return true;
+            return new Option.Success();
 
         }
     }

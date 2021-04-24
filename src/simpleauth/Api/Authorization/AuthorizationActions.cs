@@ -136,11 +136,11 @@ namespace SimpleAuth.Api.Authorization
             {
                 Option<AuthorizationFlow>.Error e => EndpointResult.CreateBadRequestResult(e.Details),
                 Option<AuthorizationFlow>.Result
-                    {Item: AuthorizationFlow.AuthorizationCodeFlow} => await _getAuthorizationCodeOperation
+                { Item: AuthorizationFlow.AuthorizationCodeFlow } => await _getAuthorizationCodeOperation
                     .Execute(parameter, claimsPrincipal, client, issuerName, cancellationToken)
                     .ConfigureAwait(false),
                 Option<AuthorizationFlow>.Result
-                    {Item: AuthorizationFlow.ImplicitFlow} => await _getTokenViaImplicitWorkflowOperation.Execute(
+                { Item: AuthorizationFlow.ImplicitFlow } => await _getTokenViaImplicitWorkflowOperation.Execute(
                         parameter,
                         claimsPrincipal,
                         client,
@@ -148,7 +148,7 @@ namespace SimpleAuth.Api.Authorization
                         CancellationToken.None)
                     .ConfigureAwait(false),
                 Option<AuthorizationFlow>.Result
-                    {Item: AuthorizationFlow.HybridFlow} => await
+                { Item: AuthorizationFlow.HybridFlow } => await
                     _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
                             parameter,
                             claimsPrincipal,
@@ -162,10 +162,15 @@ namespace SimpleAuth.Api.Authorization
             await _eventPublisher.Publish(
                     new AuthorizationGranted(Id.Create(), claimsPrincipal.Identity?.Name, client.ClientId, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
+            var option = _resourceOwnerServices.GetAmrs().ToArray().GetAmr(parameter.AmrValues.ToArray());
+            if (option is Option<string>.Error er)
+            {
+                return EndpointResult.CreateBadRequestResult(er.Details);
+            }
             return endpointResult! with
             {
                 ProcessId = processId,
-                Amr = _resourceOwnerServices.GetAmrs().ToArray().GetAmr(parameter.AmrValues.ToArray())
+                Amr = ((Option<string>.Result)option).Item
             };
         }
     }

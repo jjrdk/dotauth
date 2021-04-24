@@ -9,9 +9,15 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class SmsLoginFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public SmsLoginFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
 
         [Scenario(DisplayName = "Successfully receive token using sms login")]
         public void SuccessfulSmsAuthentication()

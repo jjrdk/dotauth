@@ -18,6 +18,7 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Properties;
 
     internal sealed class AuthenticateHelper
     {
@@ -64,7 +65,7 @@
                     .ConfigureAwait(false);
             if (client == null)
             {
-                throw new InvalidOperationException(Strings.TheClientDoesntExist);
+                throw new InvalidOperationException(SharedStrings.TheClientDoesntExist);
             }
 
             // Redirect to the consent page if the prompt parameter contains "consent"
@@ -99,7 +100,7 @@
                 {
                     return result with
                     {
-                        RedirectInstruction = result.RedirectInstruction! with {ResponseMode = responseMode}
+                        RedirectInstruction = result.RedirectInstruction! with { ResponseMode = responseMode }
                     };
                 }
 
@@ -116,7 +117,7 @@
 
                 return result with
                 {
-                    RedirectInstruction = result.RedirectInstruction! with {ResponseMode = responseMode}
+                    RedirectInstruction = result.RedirectInstruction! with { ResponseMode = responseMode }
                 };
             }
 

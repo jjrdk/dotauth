@@ -20,6 +20,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using Moq;
     using SimpleAuth.Api.PermissionController;
     using SimpleAuth.Properties;
@@ -29,13 +30,20 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class AddPermissionActionFixture
     {
+        private readonly ITestOutputHelper _outputHelper;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<ITicketStore> _ticketStoreStub;
         private RuntimeSettings _configurationServiceStub;
         private RequestPermissionHandler _requestPermissionHandler;
+
+        public AddPermissionActionFixture(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
+        }
 
         [Fact]
         public async Task When_RequiredParameter_ResourceSetId_Is_Not_Specified_Then_Exception_Is_Thrown()
@@ -43,15 +51,14 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects(new ResourceSet { Id = Id.Create(), Name = "resource" });
             var addPermissionParameter = new PermissionRequest();
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
+            var exception = await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
+                .ConfigureAwait(false) as Option<(string, ClaimData[])>.Error;
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
             Assert.Equal(
                 string.Format(
                     Strings.MissingParameter,
                     UmaConstants.AddPermissionNames.ResourceSetId),
-                exception.Message);
+                exception.Details.Detail);
         }
 
         [Fact]
@@ -60,13 +67,13 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects(new ResourceSet { Id = Id.Create(), Name = "resource" });
             var addPermissionParameter = new PermissionRequest { ResourceSetId = "resource_set_id" };
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Code);
+            var exception =
+                await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
+                    .ConfigureAwait(false) as Option<(string, ClaimData[])>.Error;
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
             Assert.Equal(
                 string.Format(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes),
-                exception.Message);
+                exception.Details.Detail);
         }
 
         [Fact]
@@ -77,11 +84,11 @@ namespace SimpleAuth.Server.Tests.Apis
             var addPermissionParameter =
                 new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Code);
-            Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, resourceSetId), exception.Message);
+            var exception =
+                await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
+                    .ConfigureAwait(false) as Option<(string, ClaimData[])>.Error;
+            Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Details.Title);
+            Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, resourceSetId), exception.Details.Detail);
         }
 
         [Fact]
@@ -90,17 +97,16 @@ namespace SimpleAuth.Server.Tests.Apis
             const string resourceSetId = "resource_set_id";
             var addPermissionParameter = new PermissionRequest
             {
-                ResourceSetId = resourceSetId,
-                Scopes = new[] { ErrorCodes.InvalidScope }
+                ResourceSetId = resourceSetId, Scopes = new[] {ErrorCodes.InvalidScope}
             };
-            var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
+            var resources = new[] {new ResourceSet {Id = resourceSetId, Scopes = new[] {"scope"}}};
             InitializeFakeObjects(resources);
 
-            var exception = await Assert.ThrowsAsync<SimpleAuthException>(
-                    () => _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidScope, exception.Code);
-            Assert.Equal(Strings.TheScopeAreNotValid, exception.Message);
+            var exception =
+                await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
+                    .ConfigureAwait(false) as Option<(string, ClaimData[])>.Error;
+            Assert.Equal(ErrorCodes.InvalidScope, exception.Details.Title);
+            Assert.Equal(Strings.TheScopeAreNotValid, exception.Details.Detail);
         }
 
         [Fact]
@@ -126,9 +132,9 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects(resources);
             _ticketStoreStub.Setup(r => r.Add(It.IsAny<Ticket>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            var (_, requesterClaims) = await _requestPermissionHandler
+            var (_, requesterClaims) = (await _requestPermissionHandler
                 .Execute("tester", CancellationToken.None, addPermissionParameter)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<(string, ClaimData[])>.Result)!.Item;
 
             Assert.NotEmpty(requesterClaims);
         }
@@ -147,7 +153,8 @@ namespace SimpleAuth.Server.Tests.Apis
             _requestPermissionHandler = new RequestPermissionHandler(
                 _resourceSetRepositoryStub.Object,
                 _ticketStoreStub.Object,
-                _configurationServiceStub);
+                _configurationServiceStub,
+                new TestOutputLogger("test", _outputHelper));
         }
     }
 }

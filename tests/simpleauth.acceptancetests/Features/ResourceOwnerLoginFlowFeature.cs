@@ -16,6 +16,7 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     // In order to secure access to a resource
     // As a resource owner
@@ -26,6 +27,12 @@
     // I want to log in using resource owner flow
     public class ResourceOwnerLoginFlowFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public ResourceOwnerLoginFlowFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulResourceOwnerAuthentication()
         {

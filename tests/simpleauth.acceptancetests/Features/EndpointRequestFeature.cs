@@ -4,9 +4,16 @@
     using System.Net.Http.Headers;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class EndpointRequestFeature : AuthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public EndpointRequestFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario]
         public void CanCallControllerEndpoint()
         {

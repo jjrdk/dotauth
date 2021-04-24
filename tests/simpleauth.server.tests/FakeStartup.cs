@@ -73,7 +73,7 @@ namespace SimpleAuth.Server.Tests
                         options.AdministratorRoleDefinition = default;
                         options.Clients = sp => new InMemoryClientRepository(
                             sp.GetRequiredService<IHttpClientFactory>(),
-                            sp.GetService<IScopeStore>(),
+                            sp.GetRequiredService<IScopeStore>(),
                             new Mock<ILogger<InMemoryClientRepository>>().Object,
                             DefaultStores.Clients(_context));
                         options.Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents());

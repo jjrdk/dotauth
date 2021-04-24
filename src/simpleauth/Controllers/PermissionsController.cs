@@ -23,6 +23,8 @@ namespace SimpleAuth.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
@@ -41,7 +43,7 @@ namespace SimpleAuth.Controllers
     [Route(UmaConstants.RouteValues.Permission)]
     [ThrottleFilter]
     [Authorize(Policy = "UmaProtection")]
-    public class PermissionsController : ControllerBase
+    public class PermissionsController : BaseController
     {
         private readonly ITicketStore _ticketStore;
         private readonly IResourceSetRepository _resourceSetRepository;
@@ -51,20 +53,24 @@ namespace SimpleAuth.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="PermissionsController"/> class.
         /// </summary>
+        /// <param name="authenticationService">The default authentication service.</param>
         /// <param name="resourceSetRepository">The resource set repository.</param>
         /// <param name="ticketStore">The ticket store.</param>
         /// <param name="options">The options.</param>
         /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="logger">The logger</param>
         public PermissionsController(
+            IAuthenticationService authenticationService,
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
             RuntimeSettings options,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger<PermissionsController> logger) : base(authenticationService)
         {
             _ticketStore = ticketStore;
             _eventPublisher = eventPublisher;
             _resourceSetRepository = resourceSetRepository;
-            _requestPermission = new RequestPermissionHandler(resourceSetRepository, ticketStore, options);
+            _requestPermission = new RequestPermissionHandler(resourceSetRepository, ticketStore, options, logger);
         }
 
         /// <summary>
@@ -106,7 +112,7 @@ namespace SimpleAuth.Controllers
             }
 
             return success
-                ? (IActionResult)RedirectToAction("GetPermissionRequests", "Permissions")
+                ? RedirectToAction("GetPermissionRequests", "Permissions")
                 : BadRequest(
                     new ErrorViewModel
                     {
@@ -160,22 +166,31 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var (ticketId, requesterClaims) = await _requestPermission
+            var option = await _requestPermission
                 .Execute(resourceSetOwner, cancellationToken, permissionRequest)
                 .ConfigureAwait(false);
-            await _eventPublisher.Publish(
-                    new UmaTicketCreated(
-                        Id.Create(),
-                        User.GetClientId()!,
-                        ticketId,
-                        resourceSetOwner,
-                        User.GetSubject()!,
-                        requesterClaims,
-                        DateTimeOffset.UtcNow,
-                        permissionRequest))
-                .ConfigureAwait(false);
-            var result = new TicketResponse { TicketId = ticketId };
-            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
+            switch (option)
+            {
+                case Option<(string, ClaimData[])>.Error e:
+                    //return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
+                    return BadRequest(e.Details);
+                case Option<(string, ClaimData[])>.Result r:
+                    var (ticketId, requesterClaims) = r.Item;
+                    await _eventPublisher.Publish(
+                            new UmaTicketCreated(
+                                Id.Create(),
+                                User.GetClientId()!,
+                                ticketId,
+                                resourceSetOwner,
+                                User.GetSubject()!,
+                                requesterClaims,
+                                DateTimeOffset.UtcNow,
+                                permissionRequest))
+                        .ConfigureAwait(false);
+                    var result = new TicketResponse { TicketId = ticketId };
+                    return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
+                default: throw new Exception();
+            }
         }
 
         /// <summary>
@@ -186,7 +201,7 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         [HttpPost("bulk")]
         public async Task<IActionResult> BulkRequestPermissions(
-            [FromBody] PermissionRequest[] permissionRequests,
+            [FromBody] PermissionRequest[]? permissionRequests,
             CancellationToken cancellationToken)
         {
             if (permissionRequests == null)
@@ -203,28 +218,33 @@ namespace SimpleAuth.Controllers
             var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, ids).ConfigureAwait(false);
             if (resourceSetOwner == null)
             {
-                return BuildError(
-                    ErrorCodes.InvalidResourceSetId,
-                    string.Join(" ", ids),
-                    HttpStatusCode.BadRequest);
+                return BuildError(ErrorCodes.InvalidResourceSetId, string.Join(" ", ids), HttpStatusCode.BadRequest);
             }
 
-            var (ticketId, requesterClaims) = await _requestPermission
-                .Execute(resourceSetOwner, cancellationToken, permissionRequests)
+            var option = await _requestPermission.Execute(resourceSetOwner, cancellationToken, permissionRequests)
                 .ConfigureAwait(false);
-            await _eventPublisher.Publish(
-                    new UmaTicketCreated(
-                        Id.Create(),
-                        User.GetClientId()!,
-                        ticketId,
-                        resourceSetOwner,
-                        User.GetSubject()!,
-                        requesterClaims,
-                        DateTimeOffset.UtcNow,
-                        permissionRequests))
-                .ConfigureAwait(false);
-            var result = new TicketResponse { TicketId = ticketId };
-            return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
+            switch (option)
+            {
+                case Option<(string, ClaimData[])>.Error e:
+                    return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
+                case Option<(string, ClaimData[])>.Result r:
+
+                    var (ticketId, requesterClaims) = r.Item;
+                    await _eventPublisher.Publish(
+                            new UmaTicketCreated(
+                                Id.Create(),
+                                User.GetClientId()!,
+                                ticketId,
+                                resourceSetOwner,
+                                User.GetSubject()!,
+                                requesterClaims,
+                                DateTimeOffset.UtcNow,
+                                permissionRequests))
+                        .ConfigureAwait(false);
+                    var result = new TicketResponse { TicketId = ticketId };
+                    return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
+                default: throw new Exception();
+            }
         }
 
         private static IActionResult BuildError(string code, string message, HttpStatusCode statusCode)

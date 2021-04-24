@@ -52,18 +52,18 @@ namespace SimpleAuth.MiddleWare
 
                 switch (exception)
                 {
-                    case SimpleAuthException serverException:
-                        {
-                            await _publisher.Publish(new SimpleAuthError(Id.Create(),
-                                serverException.Code,
-                                serverException.Message,
-                                string.Empty,
-                                DateTimeOffset.UtcNow)).ConfigureAwait(false);
+                    //case SimpleAuthException serverException:
+                    //    {
+                    //        await _publisher.Publish(new SimpleAuthError(Id.Create(),
+                    //            serverException.Code,
+                    //            serverException.Message,
+                    //            string.Empty,
+                    //            DateTimeOffset.UtcNow)).ConfigureAwait(false);
 
-                            _logger.LogError(serverException.StackTrace);
-                            SetRedirection(context, exception, "400", serverException.Code);
-                            break;
-                        }
+                    //        _logger.LogError(serverException.StackTrace);
+                    //        SetRedirection(context, exception, "400", serverException.Code);
+                    //        break;
+                    //    }
                     case AggregateException aggregateException:
                         {
                             foreach (var ex in aggregateException.InnerExceptions)

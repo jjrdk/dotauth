@@ -9,9 +9,16 @@
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class LocalAuthenticationOpenIdFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public LocalAuthenticationOpenIdFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Invalid open id code")]
         public void InvalidOpenIdCode()
         {
@@ -19,7 +26,7 @@
             IDataProtector dataProtector = null;
 
             "and a data protector instance".x(
-                () => dataProtector = _fixture.Server.Host.Services.GetService<IDataProtectionProvider>()
+                () => dataProtector = _fixture.Server.Host.Services.GetRequiredService<IDataProtectionProvider>()
                     .CreateProtector("Request"));
 
             "When posting code to openid authentication".x(

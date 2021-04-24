@@ -682,15 +682,6 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The client doesn&apos;t exist.
-        /// </summary>
-        internal static string TheClientDoesntExist {
-            get {
-                return ResourceManager.GetString("TheClientDoesntExist", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The client {0} doesn&apos;t support the grant type {1}.
         /// </summary>
         internal static string TheClientDoesntSupportTheGrantType {

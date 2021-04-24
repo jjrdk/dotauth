@@ -13,29 +13,28 @@
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Properties;
     using Xunit;
+    using Xunit.Abstractions;
 
     public sealed class ClientFactoryFixture
     {
+        private readonly ITestOutputHelper _outputHelper;
         private HttpClient _httpClientFake;
         private ClientFactory _factory;
 
-        public ClientFactoryFixture()
+        public ClientFactoryFixture(ITestOutputHelper outputHelper)
         {
+            _outputHelper = outputHelper;
             _httpClientFake = new HttpClient();
             _factory = new ClientFactory(
                 new TestHttpClientFactory(_httpClientFake),
-                new InMemoryScopeRepository(new[] {new Scope {Name = "test"}}),
-                s => s.DeserializeWithJavascript<Uri[]>());
+                new InMemoryScopeRepository(new[] { new Scope { Name = "test" } }),
+                s => s.DeserializeWithJavascript<Uri[]>(),
+                new TestOutputLogger("test", outputHelper));
         }
-
-        [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _factory.Build(null)).ConfigureAwait(false);
-        }
-
+        
         [Fact]
         public async Task When_One_Request_Uri_Contains_A_Fragment_Then_Exception_Is_Thrown()
         {
@@ -48,10 +47,9 @@
                 RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidRedirectUri, ex.Code);
-            Assert.Equal(string.Format(Strings.TheRedirectUrlCannotContainsFragment, localhost), ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, ex.Details.Title);
+            Assert.Equal(string.Format(Strings.TheRedirectUrlCannotContainsFragment, localhost), ex.Details.Detail);
         }
 
         [Fact]
@@ -66,7 +64,7 @@
                 RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            parameter = await _factory.Build(parameter).ConfigureAwait(false);
+            parameter = (await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Result)!.Item;
 
             Assert.Single(parameter.ResponseTypes);
             Assert.Contains(ResponseTypeNames.Code, parameter.ResponseTypes);
@@ -83,7 +81,7 @@
                 RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            parameter = await _factory.Build(parameter).ConfigureAwait(false);
+            parameter = (await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Result)!.Item;
 
             Assert.Single(parameter.GrantTypes);
             Assert.Contains(GrantTypes.AuthorizationCode, parameter.GrantTypes);
@@ -100,7 +98,7 @@
                 RequestUris = new[] { new Uri("https://localhost"), }
             };
 
-            parameter = await _factory.Build(parameter).ConfigureAwait(false);
+            parameter = (await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Result)!.Item;
 
             Assert.Equal(ApplicationTypes.Web, parameter.ApplicationType);
         }
@@ -114,10 +112,9 @@
                 SectorIdentifierUri = new Uri("https://sector_identifier_uri/")
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(Strings.TheSectorIdentifierUrisCannotBeRetrieved, ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(Strings.TheSectorIdentifierUrisCannotBeRetrieved, ex.Details.Detail);
         }
 
         [Fact]
@@ -129,10 +126,9 @@
                 SectorIdentifierUri = new Uri("http://localhost/identity")
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(string.Format(Strings.ParameterIsNotCorrect, "sector_identifier_uri"), ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(string.Format(Strings.ParameterIsNotCorrect, "sector_identifier_uri"), ex.Details.Detail);
         }
 
         [Fact]
@@ -149,10 +145,10 @@
             var httpClientFake = new HttpClient(handler);
             _httpClientFake = httpClientFake;
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(Strings.TheSectorIdentifierUrisCannotBeRetrieved, ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(Strings.TheSectorIdentifierUrisCannotBeRetrieved, ex.Details.Detail);
         }
 
         [Fact]
@@ -175,12 +171,12 @@
             _factory = new ClientFactory(
                 new TestHttpClientFactory(httpClientFake),
                 new InMemoryScopeRepository(),
-                s => s.DeserializeWithJavascript<Uri[]>());
+                s => s.DeserializeWithJavascript<Uri[]>(),
+                new TestOutputLogger("test", _outputHelper));
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(Strings.OneOrMoreSectorIdentifierUriIsNotARedirectUri, ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(Strings.OneOrMoreSectorIdentifierUriIsNotARedirectUri, ex.Details.Detail);
         }
 
         [Fact]
@@ -193,10 +189,10 @@
                 IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Details.Detail);
         }
 
         [Fact]
@@ -212,10 +208,9 @@
                 IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Details.Detail);
         }
 
         [Fact]
@@ -228,10 +223,9 @@
                 UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Details.Detail);
         }
 
         [Fact]
@@ -245,10 +239,9 @@
                 //UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Details.Detail);
         }
 
         [Fact]
@@ -261,10 +254,9 @@
                 RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Details.Detail);
         }
 
         [Fact]
@@ -280,10 +272,9 @@
                 RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Details.Detail);
         }
 
         [Fact]
@@ -295,10 +286,9 @@
                 InitiateLoginUri = new Uri("http://localhost/identity")
             };
 
-            var ex = await Assert.ThrowsAsync<SimpleAuthException>(() => _factory.Build(parameter))
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Code);
-            Assert.Equal(string.Format(Strings.ParameterIsNotCorrect, "initiate_login_uri"), ex.Message);
+            var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+            Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
+            Assert.Equal(string.Format(Strings.ParameterIsNotCorrect, "initiate_login_uri"), ex.Details.Detail);
         }
 
         [Fact]
@@ -332,7 +322,8 @@
             _factory = new ClientFactory(
                 new TestHttpClientFactory(httpClientFake),
                 new InMemoryScopeRepository(),
-                s => s.DeserializeWithJavascript<Uri[]>());
+                s => s.DeserializeWithJavascript<Uri[]>(),
+                new TestOutputLogger("test", _outputHelper));
 
             var ex = await Record.ExceptionAsync(() => _factory.Build(parameter)).ConfigureAwait(false);
             Assert.Null(ex);

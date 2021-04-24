@@ -12,6 +12,7 @@ namespace SimpleAuth.Sms.Controllers
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
     using SimpleAuth.Shared.Requests;
@@ -37,6 +38,7 @@ namespace SimpleAuth.Sms.Controllers
         /// <param name="subjectBuilder">The subject builder.</param>
         /// <param name="accountFilters">The account filters.</param>
         /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="logger">The logger</param>
         public CodeController(
             RuntimeSettings settings,
             ISmsClient smsClient,
@@ -44,7 +46,8 @@ namespace SimpleAuth.Sms.Controllers
             IResourceOwnerRepository resourceOwnerRepository,
             ISubjectBuilder subjectBuilder,
             IEnumerable<IAccountFilter> accountFilters,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger<CodeController> logger)
         {
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
                 settings,
@@ -53,7 +56,8 @@ namespace SimpleAuth.Sms.Controllers
                 resourceOwnerRepository,
                 subjectBuilder,
                 accountFilters.ToArray(),
-                eventPublisher);
+                eventPublisher,
+                logger);
         }
 
         /// <summary>
@@ -68,7 +72,7 @@ namespace SimpleAuth.Sms.Controllers
             [FromBody] ConfirmationCodeRequest confirmationCodeRequest,
             CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(confirmationCodeRequest?.PhoneNumber))
+            if (string.IsNullOrWhiteSpace(confirmationCodeRequest.PhoneNumber))
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
@@ -78,13 +82,13 @@ namespace SimpleAuth.Sms.Controllers
 
             try
             {
-                _ = await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber, cancellationToken)
+                var option = await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber, cancellationToken)
                            .ConfigureAwait(false);
+                if (option is Option<ResourceOwner>.Error e)
+                {
+                    return new ObjectResult(e.Details) { StatusCode = (int)e.Details.Status };
+                }
                 return new OkResult();
-            }
-            catch (SimpleAuthException ex)
-            {
-                return BuildError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
             }
             catch (Exception)
             {

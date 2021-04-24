@@ -16,9 +16,16 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class UmaTicketLoginFlowFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public UmaTicketLoginFlowFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Successful ticket authentication")]
         public void SuccessfulTicketAuthentication()
         {

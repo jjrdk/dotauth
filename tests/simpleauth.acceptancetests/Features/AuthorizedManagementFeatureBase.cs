@@ -5,20 +5,27 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public abstract class AuthorizedManagementFeatureBase
     {
+        private readonly ITestOutputHelper _outputHelper;
         private const string BaseUrl = "http://localhost";
         private static readonly Uri WellKnownUmaConfiguration = new(BaseUrl + "/.well-known/openid-configuration");
-        protected TestServerFixture _fixture = null;
-        protected ManagementClient _managerClient = null;
-        protected TokenClient _tokenClient = null;
-        protected GrantedTokenResponse _administratorToken = null;
+        protected TestServerFixture _fixture = null!;
+        protected ManagementClient _managerClient = null!;
+        protected TokenClient _tokenClient = null!;
+        protected GrantedTokenResponse _administratorToken = null!;
+
+        public AuthorizedManagementFeatureBase(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
+        }
 
         [Background]
         public void Background()
         {
-            "Given a running auth server".x(() => _fixture = new TestServerFixture(BaseUrl))
+            "Given a running auth server".x(() => _fixture = new TestServerFixture(_outputHelper, BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "and a manager client".x(

@@ -13,18 +13,19 @@
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class TokenFixture : IDisposable
     {
         private const string BaseUrl = "http://localhost:5000";
         private const string WellKnownUma2Configuration = "/.well-known/uma2-configuration";
         private readonly UmaClient _umaClient;
-        private readonly TestUmaServerFixture _server;
+        private readonly TestUmaServer _server;
 
-        public TokenFixture()
+        public TokenFixture(ITestOutputHelper outputHelper)
         {
             IdentityModelEventSource.ShowPII = true;
-            _server = new TestUmaServerFixture();
+            _server = new TestUmaServer(outputHelper);
             _umaClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownUma2Configuration));
         }
 

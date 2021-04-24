@@ -5,9 +5,16 @@
     using System.Net;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class UnauthorizedScopeManagementFeature : UnauthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public UnauthorizedScopeManagementFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario]
         public void RejectedScopeLoad()
         {

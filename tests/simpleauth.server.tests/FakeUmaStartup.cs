@@ -31,10 +31,17 @@ namespace SimpleAuth.Server.Tests
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.UI;
+    using Xunit.Abstractions;
 
     public class FakeUmaStartup
     {
+        private readonly ITestOutputHelper _outputHelper;
         public const string DefaultSchema = "OAuth2Introspection";
+
+        public FakeUmaStartup(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -89,7 +96,7 @@ namespace SimpleAuth.Server.Tests
                 assemblyTypes: typeof(IDefaultUi));
 
             // 3. Enable logging.
-            services.AddLogging();
+            services.AddLogging(l=>l.AddXunit(_outputHelper));
             // 5. Register other classes.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }

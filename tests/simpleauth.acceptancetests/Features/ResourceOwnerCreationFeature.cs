@@ -6,9 +6,16 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ResourceOwnerCreationFeature : AuthorizedManagementFeatureBase
     {
+        /// <inheritdoc />
+        public ResourceOwnerCreationFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Manager created user")]
         public void ManagerCreatedUser()
         {

@@ -28,10 +28,13 @@ namespace SimpleAuth.Controllers
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Repositories;
     using Newtonsoft.Json;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Properties;
     using SimpleAuth.ViewModels;
 
     /// <summary>
@@ -40,27 +43,34 @@ namespace SimpleAuth.Controllers
     /// <seealso cref="ControllerBase" />
     [Route(CoreConstants.EndPoints.Clients)]
     [ThrottleFilter]
-    public class ClientsController : ControllerBase
+    public class ClientsController : BaseController
     {
         private readonly Func<string, Uri[]> _urlReader;
         private readonly IClientRepository _clientRepository;
         private readonly IScopeStore _scopeStore;
         private readonly IHttpClientFactory _httpClient;
+        private readonly ILogger<ClientsController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientsController"/> class.
         /// </summary>
+        /// <param name="authenticationService">The base authentication service.</param>
         /// <param name="clientRepository">The client repository.</param>
         /// <param name="scopeStore"></param>
         /// <param name="httpClient"></param>
+        /// <param name="logger">The logger</param>
         public ClientsController(
+            IAuthenticationService authenticationService,
             IClientRepository clientRepository,
             IScopeStore scopeStore,
-            IHttpClientFactory httpClient)
+            IHttpClientFactory httpClient,
+            ILogger<ClientsController> logger)
+        : base(authenticationService)
         {
             _clientRepository = clientRepository;
             _scopeStore = scopeStore;
             _httpClient = httpClient;
+            _logger = logger;
             _httpClient = httpClient;
             _urlReader = JsonConvert.DeserializeObject<Uri[]>!;
         }
@@ -119,7 +129,7 @@ namespace SimpleAuth.Controllers
             {
                 return BuildError(
                     ErrorCodes.InvalidRequest,
-                    Strings.TheClientDoesntExist,
+                    SharedStrings.TheClientDoesntExist,
                     HttpStatusCode.NotFound);
             }
 
@@ -172,27 +182,31 @@ namespace SimpleAuth.Controllers
 
             try
             {
-
-                var clientFactory = new ClientFactory(_httpClient, _scopeStore, _urlReader);
+                var clientFactory = new ClientFactory(_httpClient, _scopeStore, _urlReader, _logger);
                 var toInsert = await clientFactory.Build(client, false, cancellationToken).ConfigureAwait(false);
-                var result = await _clientRepository.Update(toInsert, cancellationToken)
-                    .ConfigureAwait(false);
-                return result
-                    ? Ok(toInsert)
-                    : (IActionResult)BadRequest(
-                        new ErrorDetails
+                switch (toInsert)
+                {
+                    case Option<Client>.Error error:
+                        return BuildError(error.Details.Title, error.Details.Detail, error.Details.Status);
+                    case Option<Client>.Result result:
+                        var updated = await _clientRepository.Update(result.Item, cancellationToken).ConfigureAwait(false);
+                        return updated switch
                         {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.UnhandledExceptionCode,
-                            Detail = Strings.RequestIsNotValid
-                        });
+                            Option.Success => Ok(result.Item),
+                            _ => BadRequest(
+                                new ErrorDetails
+                                {
+                                    Status = HttpStatusCode.BadRequest,
+                                    Title = ErrorCodes.UnhandledExceptionCode,
+                                    Detail = Strings.RequestIsNotValid
+                                })
+                        };
+                    default: throw new InvalidOperationException();
+                }
             }
-            catch (SimpleAuthException e)
+            catch (Exception exception)
             {
-                return BuildError(e.Code, e.Message, HttpStatusCode.BadRequest);
-            }
-            catch
-            {
+                _logger.LogError(exception, "Failed to update client");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -207,11 +221,18 @@ namespace SimpleAuth.Controllers
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
         {
-            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!);
-            var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
-            var result = await _clientRepository.Insert(toInsert, cancellationToken).ConfigureAwait(false);
-
-            return result ? Ok(toInsert) : BadRequest();
+            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!, _logger);
+            var option = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
+            switch (option)
+            {
+                case Option<Client>.Error e:
+                    return BadRequest(e.Details);
+                //return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
+                case Option<Client>.Result r:
+                    var result = await _clientRepository.Insert(r.Item, cancellationToken).ConfigureAwait(false);
+                    return result ? Ok(r.Item) : BadRequest();
+                default: throw new InvalidOperationException();
+            }
         }
 
         /// <summary>
@@ -241,11 +262,20 @@ namespace SimpleAuth.Controllers
                 GrantTypes = viewModel.GrantTypes.ToArray()
             };
 
-            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!);
+            var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!, _logger);
             var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
-            var result = await _clientRepository.Insert(toInsert, cancellationToken).ConfigureAwait(false);
+            switch (toInsert)
+            {
+                case Option<Client>.Error e:
+                    return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
+                case Option<Client>.Result r:
+                    var result = await _clientRepository.Insert(r.Item, cancellationToken).ConfigureAwait(false);
 
-            return result ? RedirectToAction("Get", "Clients", new { id = toInsert.ClientId }) : (IActionResult)BadRequest();
+                    return result
+                        ? RedirectToAction("Get", "Clients", new { id = r.Item.ClientId })
+                        : BadRequest();
+                default: throw new InvalidOperationException();
+            }
         }
 
         /// <summary>

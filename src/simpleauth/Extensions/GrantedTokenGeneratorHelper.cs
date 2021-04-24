@@ -21,15 +21,17 @@ namespace SimpleAuth.Extensions
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Net;
     using System.Security.Claims;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Properties;
 
     internal static class GrantedTokenGeneratorHelper
     {
-        public static async Task<GrantedToken> GenerateToken(
+        public static async Task<Option<GrantedToken>> GenerateToken(
             this IClientStore clientStore,
             IJwksStore jwksStore,
             string clientId,
@@ -42,16 +44,26 @@ namespace SimpleAuth.Extensions
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
-                throw new ArgumentNullException(nameof(clientId));
+                return new Option<GrantedToken>.Error(new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidClient,
+                    Detail = SharedStrings.TheClientDoesntExist,
+                    Status = HttpStatusCode.NotFound
+                });
             }
 
             var client = await clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
             if (client == null)
             {
-                throw new SimpleAuthException(ErrorCodes.InvalidClient, Strings.TheClientDoesntExist);
+                return new Option<GrantedToken>.Error(new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidClient,
+                    Detail = SharedStrings.TheClientDoesntExist,
+                    Status = HttpStatusCode.NotFound
+                });
             }
 
-            return await GenerateToken(
+            var token = await GenerateToken(
                     client,
                     jwksStore,
                     scope,
@@ -61,6 +73,7 @@ namespace SimpleAuth.Extensions
                     cancellationToken,
                     additionalClaims)
                 .ConfigureAwait(false);
+            return new Option<GrantedToken>.Result(token);
         }
 
         public static async Task<GrantedToken> GenerateToken(

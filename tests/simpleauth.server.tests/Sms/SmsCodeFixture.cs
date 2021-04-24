@@ -48,13 +48,11 @@
         public async Task WhenTwilioNotConfiguredThenReturnsError()
         {
             // ACT : TWILIO NO CONFIGURED
-            ConfirmationCode confirmationCode;
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-                .Callback<ConfirmationCode, CancellationToken>((r, c) => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(true));
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync((false, ""));
@@ -76,7 +74,6 @@
                 .Returns(() => Task.FromResult((ConfirmationCode)null));
             _server.SharedCtx.ConfirmationCodeStore
                 .Setup(h => h.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-                // .Callback<ConfirmationCode>(r => { confirmationCode = r; })
                 .Returns(() => Task.FromResult(false));
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { })
@@ -88,7 +85,7 @@
 
             // ASSERT : CANNOT INSERT CONFIRMATION CODE
             Assert.True(cannotInsertConfirmationCode.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, cannotInsertConfirmationCode.Error.Title);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, cannotInsertConfirmationCode.Error!.Title);
             Assert.Equal("The confirmation code cannot be saved", cannotInsertConfirmationCode.Error.Detail);
             Assert.Equal(HttpStatusCode.InternalServerError, cannotInsertConfirmationCode.StatusCode);
         }

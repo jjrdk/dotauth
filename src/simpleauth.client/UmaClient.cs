@@ -78,11 +78,6 @@ namespace SimpleAuth.Client
             CancellationToken cancellationToken = default,
             params PermissionRequest[] requests)
         {
-            if (requests == null)
-            {
-                throw new ArgumentNullException(nameof(requests));
-            }
-
             if (string.IsNullOrWhiteSpace(token))
             {
                 throw new ArgumentNullException(nameof(token));

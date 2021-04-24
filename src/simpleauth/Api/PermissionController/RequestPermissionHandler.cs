@@ -19,8 +19,10 @@ namespace SimpleAuth.Api.PermissionController
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Repositories;
@@ -31,26 +33,32 @@ namespace SimpleAuth.Api.PermissionController
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly ITicketStore _ticketStore;
         private readonly RuntimeSettings _settings;
+        private readonly ILogger _logger;
 
         public RequestPermissionHandler(
             IResourceSetRepository resourceSetRepository,
             ITicketStore ticketStore,
-            RuntimeSettings settings)
+            RuntimeSettings settings,
+            ILogger logger)
         {
             _resourceSetRepository = resourceSetRepository;
             _ticketStore = ticketStore;
             _settings = settings;
+            _logger = logger;
         }
 
-        public async Task<(string ticketId, ClaimData[] requesterClaims)> Execute(
+        public async Task<Option<(string ticketId, ClaimData[] requesterClaims)>> Execute(
             string owner,
             CancellationToken cancellationToken,
             params PermissionRequest[] addPermissionParameters)
         {
-            await CheckAddPermissionParameter(owner, addPermissionParameters, cancellationToken).ConfigureAwait(false);
+            var result = await CheckAddPermissionParameter(owner, addPermissionParameters, cancellationToken).ConfigureAwait(false);
+            if (result is Option.Error e)
+            {
+                return new Option<(string, ClaimData[])>.Error(e.Details);
+            }
             var handler = new JwtSecurityTokenHandler();
-            var claims = addPermissionParameters
-                .Select(x => x.IdToken)
+            var claims = addPermissionParameters.Select(x => x.IdToken)
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct()
                 .Select(x => handler.ReadJwtToken(x))
@@ -66,7 +74,8 @@ namespace SimpleAuth.Api.PermissionController
                 Requester = claims,
                 Created = DateTimeOffset.UtcNow,
                 Expires = DateTimeOffset.UtcNow.Add(_settings.TicketLifeTime),
-                Lines = addPermissionParameters.Where(x => x.Scopes != null && x.ResourceSetId != null).Select(
+                Lines = addPermissionParameters.Where(x => x.Scopes != null && x.ResourceSetId != null)
+                    .Select(
                         addPermissionParameter => new TicketLine
                         {
                             Scopes = addPermissionParameter.Scopes!,
@@ -77,13 +86,19 @@ namespace SimpleAuth.Api.PermissionController
 
             if (!await _ticketStore.Add(ticket, cancellationToken).ConfigureAwait(false))
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError, Strings.TheTicketCannotBeInserted);
+                return new Option<(string, ClaimData[])>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InternalError,
+                        Detail = Strings.TheTicketCannotBeInserted,
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
-            return (ticket.Id, claims);
+            return new Option<(string, ClaimData[])>.Result((ticket.Id, claims));
         }
 
-        private async Task CheckAddPermissionParameter(
+        private async Task<Option> CheckAddPermissionParameter(
             string owner,
             PermissionRequest[] addPermissionParameters,
             CancellationToken cancellationToken)
@@ -93,41 +108,68 @@ namespace SimpleAuth.Api.PermissionController
             {
                 if (string.IsNullOrWhiteSpace(addPermissionParameter.ResourceSetId))
                 {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidRequest,
-                        string.Format(
-                            Strings.MissingParameter,
-                            UmaConstants.AddPermissionNames.ResourceSetId));
+                    var message = string.Format(
+                        Strings.MissingParameter,
+                        UmaConstants.AddPermissionNames.ResourceSetId);
+                    _logger.LogError(message);
+                    return new Option.Error(
+                        new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidRequest,
+                            Detail = message,
+                            Status = HttpStatusCode.BadRequest
+                        });
                 }
 
                 if (addPermissionParameter.Scopes == null || !addPermissionParameter.Scopes.Any())
                 {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidRequest,
-                        string.Format(
-                            Strings.MissingParameter,
-                            UmaConstants.AddPermissionNames.Scopes));
+                    var message = string.Format(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes);
+                    _logger.LogError(message);
+                    return new Option.Error(
+                        new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidRequest,
+                            Detail = message,
+                            Status = HttpStatusCode.BadRequest
+                        });
                 }
 
                 var resourceSet = await _resourceSetRepository.Get(
-                    owner,
-                    addPermissionParameter.ResourceSetId,
-                    cancellationToken).ConfigureAwait(false);
+                        owner,
+                        addPermissionParameter.ResourceSetId,
+                        cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (resourceSet == null)
                 {
-                    throw new SimpleAuthException(
-                        ErrorCodes.InvalidResourceSetId,
-                        string.Format(
-                            Strings.TheResourceSetDoesntExist,
-                            addPermissionParameter.ResourceSetId));
+                    var message = string.Format(
+                        Strings.TheResourceSetDoesntExist,
+                        addPermissionParameter.ResourceSetId);
+                    _logger.LogError(message);
+                    return new Option.Error(
+                        new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidResourceSetId,
+                            Detail = message,
+                            Status = HttpStatusCode.BadRequest
+                        });
                 }
 
                 if (addPermissionParameter.Scopes.Any(s => !resourceSet.Scopes.Contains(s)))
                 {
-                    throw new SimpleAuthException(ErrorCodes.InvalidScope, Strings.TheScopeAreNotValid);
+                    var message = Strings.TheScopeAreNotValid;
+                    _logger.LogError(message);
+                    return new Option.Error(
+                        new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidScope,
+                            Detail = message,
+                            Status = HttpStatusCode.BadRequest
+                        });
                 }
             }
+
+            return new Option.Success();
         }
     }
 }

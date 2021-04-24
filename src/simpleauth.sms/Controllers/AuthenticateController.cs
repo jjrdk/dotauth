@@ -29,6 +29,7 @@
     using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.Filters;
+    using SimpleAuth.Properties;
     using SimpleAuth.Services;
     using SimpleAuth.Sms.Properties;
     using SimpleAuth.WebSite.User;
@@ -118,8 +119,8 @@
             _eventPublisher = eventPublisher;
             _confirmationCodeStore = confirmationCodeStore;
             _logger = logger;
-            _getUserOperation = new GetUserOperation(resourceOwnerRepository);
-            var generateSms = new GenerateAndSendSmsCodeOperation(smsClient, confirmationCodeStore);
+            _getUserOperation = new GetUserOperation(resourceOwnerRepository, logger);
+            var generateSms = new GenerateAndSendSmsCodeOperation(smsClient, confirmationCodeStore, logger);
             _smsAuthenticationOperation = new SmsAuthenticationOperation(
                 runtimeSettings,
                 smsClient,
@@ -127,7 +128,8 @@
                 resourceOwnerRepository,
                 subjectBuilder,
                 accountFilters.ToArray(),
-                eventPublisher);
+                eventPublisher,
+                logger);
             _validateConfirmationCode = new ValidateConfirmationCodeAction(confirmationCodeStore);
             _authenticateHelper = new AuthenticateHelper(
                 authorizationCodeStore,
@@ -185,24 +187,24 @@
             if (ModelState.IsValid && !string.IsNullOrWhiteSpace(localAuthenticationViewModel.PhoneNumber))
             {
                 ResourceOwner? resourceOwner = null;
-                try
+                var option = await _smsAuthenticationOperation
+                    .Execute(localAuthenticationViewModel.PhoneNumber, cancellationToken)
+                    .ConfigureAwait(false);
+                if (option is Option<ResourceOwner>.Error e)
                 {
-                    resourceOwner = await _smsAuthenticationOperation
-                        .Execute(localAuthenticationViewModel.PhoneNumber, cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    var se = ex as SimpleAuthException;
                     await _eventPublisher.Publish(
                             new SimpleAuthError(
                                 Id.Create(),
-                                se?.Code ?? ex.Message,
-                                ex.Message,
+                                e.Details.Title,
+                                e.Details.Detail,
                                 string.Empty,
                                 DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
-                    ModelState.AddModelError("message_error", ex.Message);
+                    ModelState.AddModelError("message_error", e.Details.Detail);
+                }
+                else
+                {
+                    resourceOwner = ((Option<ResourceOwner>.Result)option).Item;
                 }
 
                 if (resourceOwner != null)
@@ -219,11 +221,10 @@
                     }
                     catch (Exception ex)
                     {
-                        var se = ex as SimpleAuthException;
                         await _eventPublisher.Publish(
                                 new SimpleAuthError(
                                     Id.Create(),
-                                    se?.Code ?? ex.Message,
+                                    ex.Message,
                                     ex.Message,
                                     string.Empty,
                                     DateTimeOffset.UtcNow))
@@ -244,7 +245,6 @@
         /// </summary>
         /// <param name="code">The code.</param>
         /// <returns></returns>
-        /// <exception cref="SimpleAuthException">SMS authentication cannot be performed</exception>
         [HttpGet]
         public async Task<IActionResult> ConfirmCode(string code)
         {
@@ -259,9 +259,9 @@
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    "SMS authentication cannot be performed");
+                var message = "SMS authentication cannot be performed";
+                _logger.LogError(message);
+                return SetRedirection(message, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
             }
 
             return Ok(new ConfirmCodeViewModel { Code = code });
@@ -274,7 +274,6 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">confirmCodeViewModel</exception>
-        /// <exception cref="SimpleAuthException">SMS authentication cannot be performed</exception>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmCode(
@@ -297,9 +296,9 @@
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new SimpleAuthException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    "SMS authentication cannot be performed");
+                var message = "SMS authentication cannot be performed";
+                _logger.LogError(message);
+                return SetRedirection(message, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
             }
 
             var authenticatedUserClaims = authenticatedUser.Claims.ToArray();
@@ -327,9 +326,15 @@
                     CookieNames.PasswordLessCookieName,
                     new AuthenticationProperties())
                 .ConfigureAwait(false);
-            var resourceOwner =
+            var resourceOwnerOption =
                 await _getUserOperation.Execute(authenticatedUser, cancellationToken).ConfigureAwait(false);
-            if (!string.IsNullOrWhiteSpace(resourceOwner?.TwoFactorAuthentication)) // Execute TWO Factor authentication
+            if (resourceOwnerOption is Option<ResourceOwner>.Error e)
+            {
+                return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
+            }
+
+            var resourceOwner = (resourceOwnerOption as Option<ResourceOwner>.Result)!.Item;
+            if (!string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Execute TWO Factor authentication
             {
                 try
                 {
@@ -423,24 +428,23 @@
                 }
                 else
                 {
-                    try
+                    var option = await _smsAuthenticationOperation.Execute(viewModel.PhoneNumber, cancellationToken)
+                        .ConfigureAwait(false);
+                    if (option is Option<ResourceOwner>.Error ex)
                     {
-                        resourceOwner = await _smsAuthenticationOperation
-                            .Execute(viewModel.PhoneNumber, cancellationToken)
-                            .ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        var se = ex as SimpleAuthException;
                         await _eventPublisher.Publish(
                                 new SimpleAuthError(
                                     Id.Create(),
-                                    se?.Code ?? ex.Message,
-                                    ex.Message,
+                                    ex.Details.Title,
+                                    ex.Details.Detail,
                                     string.Empty,
                                     DateTimeOffset.UtcNow))
                             .ConfigureAwait(false);
-                        ModelState.AddModelError("message_error", ex.Message);
+                        ModelState.AddModelError("message_error", ex.Details.Detail);
+                    }
+                    else
+                    {
+                        resourceOwner = ((Option<ResourceOwner>.Result) option).Item;
                     }
                 }
 
@@ -458,11 +462,10 @@
                     }
                     catch (Exception ex)
                     {
-                        var se = ex as SimpleAuthException;
                         await _eventPublisher.Publish(
                                 new SimpleAuthError(
                                     Id.Create(),
-                                    se?.Code ?? ex.Message,
+                                    ex.Message,
                                     ex.Message,
                                     string.Empty,
                                     DateTimeOffset.UtcNow))

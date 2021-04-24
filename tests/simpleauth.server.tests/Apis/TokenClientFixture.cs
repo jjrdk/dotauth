@@ -32,6 +32,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Properties;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -172,7 +173,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Title);
-            Assert.Equal(Strings.TheClientDoesntExist, error.Detail);
+            Assert.Equal(SharedStrings.TheClientDoesntExist, error.Detail);
         }
 
         [Fact]
@@ -418,7 +419,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Title);
-            Assert.Equal(Strings.TheClientDoesntExist, error.Detail);
+            Assert.Equal(SharedStrings.TheClientDoesntExist, error.Detail);
         }
 
         [Fact]
@@ -541,7 +542,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
             Assert.Equal("invalid_client", error.Title);
-            Assert.Equal(Strings.TheClientDoesntExist, error.Detail);
+            Assert.Equal(SharedStrings.TheClientDoesntExist, error.Detail);
         }
 
         [Fact]

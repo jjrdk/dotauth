@@ -83,7 +83,7 @@ namespace SimpleAuth.Controllers
             IJwksStore jwksStore,
             IDataProtectionProvider dataProtectionProvider,
             IAuthenticationService authenticationService,
-            ILogger<AuthenticateController> logger)
+            ILogger<AuthorizationController> logger)
         {
             _httpClient = httpClient;
             _clientStore = clientStore;
@@ -130,7 +130,7 @@ namespace SimpleAuth.Controllers
             var authenticatedUser = await _authenticationService
                 .GetAuthenticatedUser(this, CookieNames.CookieName)
                 .ConfigureAwait(false) ?? new ClaimsPrincipal();
-            
+
             var parameter = authorizationRequest.ToParameter();
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName, cancellationToken)

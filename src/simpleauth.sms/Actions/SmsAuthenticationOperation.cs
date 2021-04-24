@@ -6,6 +6,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Events;
     using SimpleAuth.WebSite.User;
 
@@ -24,21 +25,28 @@
             IResourceOwnerRepository resourceOwnerRepository,
             ISubjectBuilder subjectBuilder,
             IAccountFilter[] accountFilters,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            ILogger logger)
         {
             _salt = settings.Salt;
             _generateAndSendSmsCodeOperation = new GenerateAndSendSmsCodeOperation(
                 smsClient,
-                confirmationCodeStore);
+                confirmationCodeStore,
+                logger);
             _resourceOwnerRepository = resourceOwnerRepository;
             _addUser = new AddUserOperation(settings, resourceOwnerRepository, accountFilters, subjectBuilder, eventPublisher);
             _subjectBuilder = subjectBuilder;
         }
 
-        public async Task<ResourceOwner> Execute(string phoneNumber, CancellationToken cancellationToken)
+        public async Task<Option<ResourceOwner>> Execute(string phoneNumber, CancellationToken cancellationToken)
         {
             // 1. Send the confirmation code (SMS).
-            await _generateAndSendSmsCodeOperation.Execute(phoneNumber, cancellationToken).ConfigureAwait(false);
+            var option = await _generateAndSendSmsCodeOperation.Execute(phoneNumber, cancellationToken).ConfigureAwait(false);
+            if (option is Option<string>.Error e)
+            {
+                return new Option<ResourceOwner>.Error(e.Details, e.State);
+            }
+
             // 2. Try to get the resource owner.
             var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(
                     OpenIdClaimTypes.PhoneNumber,
@@ -47,7 +55,7 @@
                 .ConfigureAwait(false);
             if (resourceOwner != null)
             {
-                return resourceOwner;
+                return new Option<ResourceOwner>.Result(resourceOwner);
             }
 
             // 3. CreateJwk a new resource owner.
@@ -68,7 +76,7 @@
                     phoneNumber,
                     cancellationToken)
                 .ConfigureAwait(false);
-            return result!;
+            return new Option<ResourceOwner>.Result(result!);
         }
     }
 }

@@ -70,6 +70,15 @@ namespace SimpleAuth.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The client doesn&apos;t exist.
+        /// </summary>
+        internal static string TheClientDoesntExist {
+            get {
+                return ResourceManager.GetString("TheClientDoesntExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The resource owner doesn&apos;t exist.
         /// </summary>
         internal static string TheRoDoesntExist {

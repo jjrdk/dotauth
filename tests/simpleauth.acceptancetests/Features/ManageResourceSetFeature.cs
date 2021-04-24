@@ -9,9 +9,16 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ManageResourceSetFeature : AuthFlowFeature
     {
+        /// <inheritdoc />
+        public ManageResourceSetFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
+        {
+        }
+
         [Scenario(DisplayName = "Can register a resource for a user and manage policies")]
         public void CanRegisterAResourceForUserAndManagePolicies()
         {

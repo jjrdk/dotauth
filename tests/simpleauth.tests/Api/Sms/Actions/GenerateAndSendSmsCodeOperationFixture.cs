@@ -8,8 +8,10 @@
     using SimpleAuth.Sms.Actions;
     using System.Threading;
     using System.Threading.Tasks;
+    using Divergic.Logging.Xunit;
     using SimpleAuth.Shared.Models;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class GenerateAndSendSmsCodeOperationFixture
     {
@@ -17,21 +19,14 @@
         private readonly Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
         private readonly GenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
 
-        public GenerateAndSendSmsCodeOperationFixture()
+        public GenerateAndSendSmsCodeOperationFixture(ITestOutputHelper outputHelper)
         {
             _twilioClientStub = new Mock<ISmsClient>();
             _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
             _generateAndSendSmsCodeOperation = new GenerateAndSendSmsCodeOperation(
                 _twilioClientStub.Object,
-                _confirmationCodeStoreStub.Object);
-        }
-
-        [Fact]
-        public async Task When_Pass_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute(null, CancellationToken.None))
-                .ConfigureAwait(false);
+                _confirmationCodeStoreStub.Object,
+                new TestOutputLogger("test", outputHelper));
         }
 
         [Fact]
@@ -40,12 +35,11 @@
             _twilioClientStub.Setup(s => s.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync((false, ""));
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None))
-                .ConfigureAwait(false);
+            var exception = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
+                .ConfigureAwait(false) as Option<string>.Error;
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal("The SMS account is not properly configured", exception.Message);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+            Assert.Equal("The SMS account is not properly configured", exception.Details.Detail);
         }
 
         [Fact]
@@ -56,12 +50,11 @@
             _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(false));
 
-            var exception = await Assert
-                .ThrowsAsync<SimpleAuthException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None))
-                .ConfigureAwait(false);
+            var exception = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
+                .ConfigureAwait(false) as Option<string>.Error;
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Code);
-            Assert.Equal("The confirmation code cannot be saved", exception.Message);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+            Assert.Equal("The confirmation code cannot be saved", exception.Details.Detail);
         }
 
         [Fact]

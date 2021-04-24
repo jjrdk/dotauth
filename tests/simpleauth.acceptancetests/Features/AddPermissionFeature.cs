@@ -11,14 +11,17 @@
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class AddPermissionFeature
     {
+        private readonly ITestOutputHelper _outputHelper;
         private const string BaseUrl = "http://localhost:5000";
         private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
 
-        public AddPermissionFeature()
+        public AddPermissionFeature(ITestOutputHelper outputHelper)
         {
+            _outputHelper = outputHelper;
             IdentityModelEventSource.ShowPII = true;
         }
 
@@ -31,7 +34,7 @@
             string resourceId = null;
             string ticketId = null;
 
-            "Given a running auth server".x(() => fixture = new TestServerFixture(BaseUrl))
+            "Given a running auth server".x(() => fixture = new TestServerFixture(_outputHelper, BaseUrl))
                 .Teardown(() => fixture.Dispose());
 
             "and the server's signing key".x(
@@ -65,7 +68,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
+                            new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -76,7 +79,7 @@
                 {
                     var response = await client.RequestPermission(
                             grantedToken.AccessToken,
-                            requests: new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                            requests: new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
                         .ConfigureAwait(false);
 
                     Assert.False(response.HasError);
@@ -96,7 +99,7 @@
             string resourceId = null;
             string ticketId = null;
 
-            "Given a running auth server".x(() => fixture = new TestServerFixture(BaseUrl))
+            "Given a running auth server".x(() => fixture = new TestServerFixture(_outputHelper, BaseUrl))
                 .Teardown(() => fixture.Dispose());
 
             "and a valid UMA token".x(
@@ -118,7 +121,7 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
+                            new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
                             grantedToken.AccessToken)
                         .ConfigureAwait(false);
                     resourceId = resource.Content.Id;
@@ -130,8 +133,8 @@
                     var response = await client.RequestPermission(
                             grantedToken.AccessToken,
                             CancellationToken.None,
-                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"write"}},
-                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
+                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
                         .ConfigureAwait(false);
 
                     Assert.False(response.HasError);

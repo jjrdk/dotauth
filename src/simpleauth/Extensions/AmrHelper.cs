@@ -1,17 +1,25 @@
 ﻿namespace SimpleAuth.Extensions
 {
     using System.Linq;
+    using System.Net;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
 
     internal static class AmrHelper
     {
-        public static string GetAmr(this string[] currentAmrs, string[]? exceptedAmrs = null)
+        public static Option<string> GetAmr(this string[] currentAmrs, string[]? exceptedAmrs = null)
         {
-            if (currentAmrs == null || currentAmrs.Length == 0)
+            if (currentAmrs.Length == 0)
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError, Strings.NoActiveAmr);
+                return new Option<string>.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InternalError,
+                        Detail = Strings.NoActiveAmr,
+                        Status = HttpStatusCode.BadRequest
+                    });
             }
 
             var amr = CoreConstants.DefaultAmr;
@@ -29,10 +37,16 @@
 
             if (!currentAmrs.Contains(amr))
             {
-                throw new SimpleAuthException(ErrorCodes.InternalError, string.Format(Strings.TheAmrDoesntExist, amr));
+                return new Option<string>.Error(
+                       new ErrorDetails
+                       {
+                           Title = ErrorCodes.InternalError,
+                           Detail = string.Format(Strings.TheAmrDoesntExist, amr),
+                           Status = HttpStatusCode.BadRequest
+                       });
             }
 
-            return amr;
+            return new Option<string>.Result(amr);
         }
     }
 }

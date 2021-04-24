@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
+    using SimpleAuth.Shared.Properties;
     using Xunit;
 
     public sealed class AuthenticateClientFixture
@@ -40,7 +41,7 @@
                 .ConfigureAwait(false);
 
             Assert.Null(result.Client);
-            Assert.Equal(Strings.TheClientDoesntExist, result.ErrorMessage);
+            Assert.Equal(SharedStrings.TheClientDoesntExist, result.ErrorMessage);
         }
 
         [Fact]
@@ -54,7 +55,7 @@
                 .ConfigureAwait(false);
 
             Assert.Null(result.Client);
-            Assert.Equal(Strings.TheClientDoesntExist, result.ErrorMessage);
+            Assert.Equal(SharedStrings.TheClientDoesntExist, result.ErrorMessage);
         }
 
         [Fact]
