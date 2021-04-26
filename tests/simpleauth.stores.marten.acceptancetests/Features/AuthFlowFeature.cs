@@ -29,7 +29,8 @@
             "Given loaded configuration values".x(
                 () =>
                 {
-                    var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
+                    var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false)
+                        .Build();
                     _connectionString = configuration["Db:ConnectionString"];
                     _outputHelper.WriteLine(_connectionString);
                     Assert.NotNull(_connectionString);
@@ -40,12 +41,12 @@
                     {
                         _connectionString = await DbInitializer.Init(
                                 _outputHelper,
-                               _connectionString,
-                               DefaultStores.Consents(),
-                               DefaultStores.Users(),
-                               DefaultStores.Clients(SharedContext.Instance),
-                               DefaultStores.Scopes())
-                           .ConfigureAwait(false);
+                                _connectionString,
+                                DefaultStores.Consents(),
+                                DefaultStores.Users(),
+                                DefaultStores.Clients(SharedContext.Instance),
+                                DefaultStores.Scopes())
+                            .ConfigureAwait(false);
                         var builder = new NpgsqlConnectionStringBuilder(_connectionString);
 
                         Assert.False(string.IsNullOrWhiteSpace(builder.SearchPath));
@@ -53,7 +54,8 @@
                     })
                 .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))
+            "and a running auth server"
+                .x(() => _fixture = new TestServerFixture(_outputHelper, _connectionString, BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "And the server signing keys".x(

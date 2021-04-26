@@ -48,7 +48,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
                 .Result;
             _outputHelper.WriteLine("Created connection string");
             _outputHelper.WriteLine(_connectionString);
-            _server = new TestServerFixture(_connectionString, BaseUrl);
+            _server = new TestServerFixture(outputHelper, _connectionString, BaseUrl);
         }
 
         [Theory]

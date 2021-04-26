@@ -29,6 +29,7 @@ namespace SimpleAuth.AuthServer
     using System.Linq;
     using System.Net.Http;
     using System.Security.Claims;
+    using System.Text.Json;
     using Amazon;
     using Amazon.Runtime;
     using SimpleAuth.Extensions;
@@ -114,7 +115,13 @@ namespace SimpleAuth.AuthServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient()
-                .AddLogging(log => { log.AddConsole(); })
+                .AddLogging(log => { log.AddJsonConsole(
+                    o =>
+                    {
+                        o.IncludeScopes = true;
+                        o.UseUtcTimestamp = true;
+                        o.JsonWriterOptions = new JsonWriterOptions {Indented = false};
+                    }); })
                 .AddAuthentication(
                     options =>
                     {

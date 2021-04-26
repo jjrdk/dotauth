@@ -76,6 +76,8 @@
                     };
 
                     result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+
+                    Assert.NotNull(result);
                 });
 
             "then returns login".x(() => { Assert.Equal(HttpStatusCode.OK, result.StatusCode); });

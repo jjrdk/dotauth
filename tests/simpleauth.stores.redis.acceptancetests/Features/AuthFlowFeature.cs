@@ -14,7 +14,7 @@
         protected const string BaseUrl = "http://localhost:5000";
         protected TestServerFixture _fixture = null;
         protected JsonWebKeySet _jwks = null;
-        protected string _connectionString = null;
+        private string _connectionString = null;
 
         public AuthFlowFeature(ITestOutputHelper output)
         {
@@ -47,7 +47,7 @@
                     })
                 .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))
+            "and a running auth server".x(() => _fixture = new TestServerFixture(_output, _connectionString, BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "And the server signing keys".x(

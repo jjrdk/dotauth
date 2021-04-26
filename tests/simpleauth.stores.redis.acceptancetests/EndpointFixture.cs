@@ -44,7 +44,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
                     DefaultStores.Scopes())
                 .Result;
 
-            _server = new TestServerFixture(_connectionString, BaseUrl);
+            _server = new TestServerFixture(output, _connectionString, BaseUrl);
         }
 
         [Theory]

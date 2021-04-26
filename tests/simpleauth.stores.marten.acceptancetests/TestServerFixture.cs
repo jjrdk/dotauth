@@ -7,6 +7,7 @@
     using System;
     using System.Net.Http;
     using SimpleAuth.Extensions;
+    using Xunit.Abstractions;
 
     public class TestServerFixture : IDisposable
     {
@@ -14,11 +15,11 @@
         public Func<HttpClient> Client { get; }
         public SharedContext SharedCtx { get; }
 
-        public TestServerFixture(string connectionString, params string[] urls)
+        public TestServerFixture(ITestOutputHelper outputHelper, string connectionString, params string[] urls)
         {
             Globals.ApplicationName = "test";
             SharedCtx = SharedContext.Instance;
-            var startup = new ServerStartup(SharedCtx, connectionString);
+            var startup = new ServerStartup(SharedCtx, connectionString, outputHelper);
             Server = new TestServer(
                 new WebHostBuilder().UseUrls(urls)
                     .UseConfiguration(

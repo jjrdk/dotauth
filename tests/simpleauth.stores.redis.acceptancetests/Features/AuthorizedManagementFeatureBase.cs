@@ -16,9 +16,9 @@
         private string _connectionString = null;
         protected TestServerFixture _fixture = null;
         protected ManagementClient _managerClient = null;
-        protected TokenClient _tokenClient = null;
+        private TokenClient _tokenClient = null;
         protected GrantedTokenResponse _grantedToken = null;
-        private ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output;
 
         public AuthorizedManagementFeatureBase(ITestOutputHelper output)
         {
@@ -54,7 +54,7 @@
                     })
                 .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(_connectionString, BaseUrl))
+            "and a running auth server".x(() => _fixture = new TestServerFixture(_output, _connectionString, BaseUrl))
                 .Teardown(() => _fixture.Dispose());
 
             "and a manager client".x(

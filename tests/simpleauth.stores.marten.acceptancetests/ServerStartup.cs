@@ -8,9 +8,10 @@
     using System;
     using System.Net.Http;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
-
+    using Microsoft.Extensions.Logging;
     using SimpleAuth.Repositories;
     using SimpleAuth.UI;
+    using Xunit.Abstractions;
 
     public class ServerStartup
     {
@@ -18,9 +19,10 @@
         private readonly SimpleAuthOptions _martenOptions;
         private readonly SharedContext _context;
         private readonly string _connectionString;
+        private readonly ITestOutputHelper _outputHelper;
         private readonly string _schemaName;
 
-        public ServerStartup(SharedContext context, string connectionString)
+        public ServerStartup(SharedContext context, string connectionString, ITestOutputHelper outputHelper)
         {
             _martenOptions = new SimpleAuthOptions
             {
@@ -37,6 +39,7 @@
             };
             _context = context;
             _connectionString = connectionString;
+            _outputHelper = outputHelper;
             var builder = new NpgsqlConnectionStringBuilder { ConnectionString = _connectionString };
             _schemaName = builder.SearchPath ?? "public";
         }
@@ -62,7 +65,7 @@
                 _martenOptions,
                 new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme },
                 assemblyTypes: typeof(IDefaultUi));
-            services.AddLogging().AddAccountFilter().AddSingleton(sp => _context.Client);
+            services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(sp => _context.Client);
             services.AddAuthentication(
                     cfg =>
                     {
