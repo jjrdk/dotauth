@@ -16,7 +16,7 @@ namespace SimpleAuth.Build
                 ? versionInfo.MajorMinorPatch
                 : versionInfo.MajorMinorPatch
                   + "-"
-                  + versionInfo.BranchName.Replace("features/", "")
+                  + versionInfo.BranchName.Replace("features/", "").Replace("_", "")
                   + "."
                   + versionInfo.CommitsSinceVersionSource;
             if (versionInfo.BranchName == "master")

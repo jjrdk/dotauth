@@ -22,7 +22,7 @@
         <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.0.6" />
+        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.1" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Properties\SmsStrings.Designer.cs">

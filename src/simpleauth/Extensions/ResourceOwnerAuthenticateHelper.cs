@@ -21,7 +21,7 @@
             var amr = currentAmrs.GetAmr(exceptedAmrValues);
             if (amr is not Option<string>.Result result)
             {
-                return default;
+                return Task.FromResult<ResourceOwner?>(null);
             }
             var service = services.Single(s => s.Amr == result.Item);
             return service.AuthenticateResourceOwner(login, password, cancellationToken);
