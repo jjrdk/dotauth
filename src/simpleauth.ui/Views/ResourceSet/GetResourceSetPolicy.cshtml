@@ -48,8 +48,7 @@
                     <div class="row">
                         @for (var i = 0; i < Model.Rules.Length; i++)
                         {
-                            <h5>Access Rule @i</h5>
-                            <hr />
+                            <h5 class="col s12">Access Rule</h5>
                             <div class="col s12 m12">
                                 <label>
                                     <input type="checkbox" asp-for="@Model.Rules[i].IsResourceOwnerConsentNeeded" class="filled-in blue-text text-darken-3" />
@@ -74,7 +73,7 @@
                             <div id="@string.Concat("rule",@i,"claims")">
                                 @for (var j = 0; j < Model.Rules[i].Claims.Length; j++)
                                 {
-                                    <div id="@string.Concat("rule", @i, "claim", @j)">
+                                    <div id="@string.Concat("rule", i, "claim", j)">
                                         <div class="input-field col s5">
                                             <label asp-for="@Model.Rules[i].Claims[j].Type"></label>
                                             <input asp-for="@Model.Rules[i].Claims[j].Type" />
