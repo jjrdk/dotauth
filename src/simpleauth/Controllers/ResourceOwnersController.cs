@@ -108,7 +108,6 @@ namespace SimpleAuth.Controllers
         /// <param name="id">The identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        /// <exception cref="SimpleAuthException"></exception>
         [HttpGet("{id}")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
@@ -271,7 +270,6 @@ namespace SimpleAuth.Controllers
         /// <param name="request">The request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        /// <exception cref="SimpleAuthException"></exception>
         [HttpPut("claims")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> UpdateClaims(
@@ -466,7 +464,6 @@ namespace SimpleAuth.Controllers
         /// <param name="request">The request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        /// <exception cref="SimpleAuthException"></exception>
         [HttpPut("password")]
         [Authorize(Policy = "manager")]
         public async Task<IActionResult> UpdatePassword(

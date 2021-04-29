@@ -19,6 +19,9 @@
             Claim = claim;
         }
 
+        /// <summary>
+        /// Gets the error code.
+        /// </summary>
         public string Code { get; } = ErrorCodes.ClaimRequired;
 
         /// <summary>

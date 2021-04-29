@@ -283,7 +283,6 @@ namespace SimpleAuth.Api.Token
                 var scopeValidation = clientCredentialsGrantTypeParameter.Scope.Check(client);
                 if (!scopeValidation.IsValid)
                 {
-                    // throw new SimpleAuthException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
                     return new GenericResponse<GrantedToken>
                     {
                         StatusCode = HttpStatusCode.BadRequest,

@@ -58,8 +58,6 @@ namespace SimpleAuth.WebSite.Authenticate
 
         /// <summary>
         /// Authenticate local user account.
-        /// Exceptions :
-        /// Throw the exception <see cref="SimpleAuthException "/> if the user cannot be authenticated
         /// </summary>
         /// <param name="localAuthenticationParameter">User's credentials</param>
         /// <param name="authorizationParameter">Authorization parameters</param>
