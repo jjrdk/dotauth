@@ -43,7 +43,7 @@
                 (current, npgsqlParameter) => current.Replace(
                     npgsqlParameter.ParameterName,
                     $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
-            _logger.LogDebug(entry);
+            _logger.LogInformation(entry);
         }
 
         /// <inheritdoc />
@@ -61,7 +61,7 @@
         /// <inheritdoc />
         public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
         {
-            _logger.LogDebug(
+            _logger.LogInformation(
                 $"Persisted {commit.Updated.Count()} updates, {commit.Inserted.Count()} inserts, and {commit.Deleted.Count()} deletions");
         }
     }
