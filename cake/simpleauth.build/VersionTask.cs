@@ -12,13 +12,22 @@ namespace SimpleAuth.Build
         public override async void Run(BuildContext context)
         {
             var versionInfo = context.GitVersion(new GitVersionSettings { UpdateAssemblyInfo = false });
-            context.BuildVersion = versionInfo.BranchName == "master" || versionInfo.BranchName.StartsWith("tags/")
-                ? versionInfo.MajorMinorPatch
-                : versionInfo.MajorMinorPatch
-                  + "-"
-                  + versionInfo.BranchName.Replace("features/", "").Replace("_", "")
-                  + "."
-                  + versionInfo.CommitsSinceVersionSource;
+            if (versionInfo.BranchName == "master" || versionInfo.BranchName.StartsWith("tags/"))
+            {
+                context.BuildVersion =
+                    versionInfo.CommitsSinceVersionSource is > 0
+                        ? $"{versionInfo.MajorMinorPatch}-beta{versionInfo.CommitsSinceVersionSource.Value}"
+                        : versionInfo.MajorMinorPatch;
+            }
+            else
+            {
+                context.BuildVersion = versionInfo.MajorMinorPatch
+                                       + "-"
+                                       + versionInfo.BranchName.Replace("features/", "").Replace("_", "")
+                                       + "."
+                                       + versionInfo.CommitsSinceVersionSource;
+            }
+
             if (versionInfo.BranchName == "master")
             {
                 context.BuildConfiguration = "Release";
