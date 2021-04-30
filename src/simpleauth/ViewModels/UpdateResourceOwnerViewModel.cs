@@ -7,7 +7,7 @@
     /// Defines the update resource owner view model.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class UpdateResourceOwnerViewModel
+    public class UpdateResourceOwnerViewModel
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateResourceOwnerViewModel"/> class.

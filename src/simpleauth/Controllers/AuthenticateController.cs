@@ -186,7 +186,8 @@
                     _logger.LogError(Strings.TheResourceOwnerCredentialsAreNotCorrect);
                     var viewModel = new AuthorizeViewModel
                     {
-                        Password = authorizeViewModel.Password, UserName = authorizeViewModel.Login
+                        Password = authorizeViewModel.Password,
+                        UserName = authorizeViewModel.Login
                     };
                     await SetIdProviders(viewModel).ConfigureAwait(false);
                     RouteData.Values["view"] = "Index";
