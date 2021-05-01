@@ -6,14 +6,25 @@
     using Microsoft.AspNetCore.Mvc;
     using SimpleAuth.ViewModels;
 
+    /// <summary>
+    /// Defines the account controller
+    /// </summary>
     [Route("Account")]
     public class AccountController : BaseController
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountController"/> class.
+        /// </summary>
+        /// <param name="authenticationService"></param>
         public AccountController(IAuthenticationService authenticationService)
             : base(authenticationService)
         {
         }
 
+        /// <summary>
+        /// Handles the default request.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -26,6 +37,10 @@
             return RedirectToAction("Index", "Authenticate"); //View();
         }
 
+        /// <summary>
+        /// Handles the AccessDenied request.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("AccessDenied")]
         public async Task<IActionResult> AccessDenied()
         {
@@ -34,6 +49,11 @@
                 : RedirectToAction("Index", "Authenticate");
         }
 
+        /// <summary>
+        /// Handles the update account request.
+        /// </summary>
+        /// <param name="updateResourceOwnerViewModel">The update view model.</param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         public async Task<ActionResult> Index(UpdateResourceOwnerViewModel? updateResourceOwnerViewModel)

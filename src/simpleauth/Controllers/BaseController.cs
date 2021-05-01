@@ -37,18 +37,26 @@
         protected async Task<ClaimsPrincipal?> SetUser()
         {
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
-            if (authenticatedUser != null)
+            if (authenticatedUser == null)
             {
-                var isAuthenticated = authenticatedUser.Identity is { IsAuthenticated: true };
-                ViewBag.IsAuthenticated = isAuthenticated;
-                ViewBag.Name = isAuthenticated ? authenticatedUser.GetName()! : Strings.Unknown;
-
-                return authenticatedUser;
+                return null;
             }
 
-            return null;
+            var isAuthenticated = authenticatedUser.Identity is { IsAuthenticated: true };
+            ViewBag.IsAuthenticated = isAuthenticated;
+            ViewBag.Name = isAuthenticated ? authenticatedUser.GetName()! : Strings.Unknown;
+
+            return authenticatedUser;
+
         }
 
+        /// <summary>
+        /// Handles the default error redirection request.
+        /// </summary>
+        /// <param name="message">The error message.</param>
+        /// <param name="code">The error status code.</param>
+        /// <param name="title">The error title.</param>
+        /// <returns></returns>
         protected IActionResult SetRedirection(string message, string? code = null, string? title = null)
         {
             return RedirectToAction("Index", "Error", new { code, title, message });
