@@ -89,8 +89,15 @@ namespace SimpleAuth
                                 return false;
                             }
 
+                            if (p.User.Claims.Where(c => c.Type == ScopeType)
+                                .Any(c => c.HasClaimValue("uma_protection")))
+                            {
+                                return true;
+                            }
+
                             var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == ScopeType);
-                            return claimScopes != null && claimScopes.Value.Split(' ').Any(s => s == "uma_protection");
+                            return claimScopes != null
+                                   && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries).Any(s => s == "uma_protection");
                         });
                 });
             options.AddPolicy(
