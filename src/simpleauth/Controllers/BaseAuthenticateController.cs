@@ -530,8 +530,7 @@ namespace SimpleAuth.Controllers
                 code,
                 new CookieOptions
                 {
-                    Domain = Request.Host.Host,
-                    SameSite = SameSiteMode.Strict,
+                    //SameSite = SameSiteMode.Unspecified,
                     Secure = !_runtimeSettings.AllowHttp,
                     HttpOnly = _runtimeSettings.AllowHttp,
                     Expires = DateTimeOffset.UtcNow.AddMinutes(5)
@@ -571,7 +570,7 @@ namespace SimpleAuth.Controllers
 
             // 1 : retrieve the request from the cookie
             var cookieName = string.Format(ExternalAuthenticateCookieName, code);
-            var request = Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
+            var request = Request.Cookies[cookieName];
             if (request == null)
             {
                 _logger.LogError(Strings.TheRequestCannotBeExtractedFromTheCookie);
@@ -587,7 +586,6 @@ namespace SimpleAuth.Controllers
                 string.Empty,
                 new CookieOptions
                 {
-                    Domain = Request.Host.Host,
                     HttpOnly = _runtimeSettings.AllowHttp,
                     Secure = !_runtimeSettings.AllowHttp,
                     SameSite = SameSiteMode.Strict,
@@ -728,15 +726,13 @@ namespace SimpleAuth.Controllers
         /// <returns></returns>
         protected async Task SetLocalCookie(Claim[] claims, string sessionId)
         {
-            var tokenValidity = TimeSpan.FromHours(1d); //_configurationService.TokenValidityPeriod;
             var now = DateTimeOffset.UtcNow;
-            var expires = now.Add(tokenValidity);
+            var expires = now.Add(_runtimeSettings.RptLifeTime);
             Response.Cookies.Append(
                 CoreConstants.SessionId,
                 sessionId,
                 new CookieOptions
                 {
-                    Domain = Request.Host.Host,
                     HttpOnly = _runtimeSettings.AllowHttp,
                     Secure = !_runtimeSettings.AllowHttp,
                     Expires = expires,
