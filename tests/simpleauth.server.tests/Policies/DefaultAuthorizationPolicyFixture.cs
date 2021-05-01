@@ -20,6 +20,7 @@ namespace SimpleAuth.Server.Tests.Policies
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
     using SimpleAuth.Policies;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Responses;
@@ -32,6 +33,89 @@ namespace SimpleAuth.Server.Tests.Policies
         public DefaultAuthorizationPolicyFixture()
         {
             _authorizationPolicy = new DefaultAuthorizationPolicy();
+        }
+
+        [Fact]
+        public async Task WhenTicketIsValidThenPolicyAuthorizes()
+        {
+            var ticketJson = @"{
+    ""Id"": ""95FE0861AFF41E4ABECC748C026C36F8"",
+    ""Lines"": [
+        {
+            ""scopes"": [
+                ""read""
+            ],
+            ""resource_id"": ""RES123""
+        }
+    ],
+    ""Created"": ""2021-04-30T21:42:25.7091988+00:00"",
+    ""Expires"": ""2021-04-30T22:12:25.7092013+00:00"",
+    ""Requester"": [
+        {
+            ""type"": ""sub"",
+            ""value"": ""abc123""
+        },
+        {
+            ""type"": ""name"",
+            ""value"": ""A Tester""
+        },
+        {
+            ""type"": ""email"",
+            ""value"": ""a.tester@email.com""
+        },
+        {
+            ""type"": ""given_name"",
+            ""value"": ""Anne""
+        },
+        {
+            ""type"": ""family_name"",
+            ""value"": ""Tester""
+        }
+    ],
+    ""ResourceOwner"": ""98765"",
+    ""IsAuthorizedByRo"": true
+}";
+            var resourceSetJson = @"{
+    ""_id"": ""RES123"",
+    ""name"": ""tux.jpg"",
+    ""type"": ""Picture"",
+    ""owner"": ""98765"",
+    ""resource_scopes"": [
+        ""read""
+    ],
+    ""authorization_policies"": [
+        {
+            ""claims"": [{""type"":""email"", ""value"":""a.tester@email.com""}],
+            ""scopes"": [
+                ""read""
+            ],
+            ""clients"": [
+                ""Test""
+            ],
+            ""consent_needed"": true
+        }
+    ]
+}";
+            var resourceSet = JsonConvert.DeserializeObject<ResourceSet>(resourceSetJson);
+            var ticket = JsonConvert.DeserializeObject<Ticket>(ticketJson);
+            var kind = AuthorizationPolicyResultKind.NotAuthorized;
+            foreach (var ticketLine in ticket!.Lines)
+            {
+                var result = await _authorizationPolicy.Execute(
+                        new TicketLineParameter("Test", ticketLine.Scopes, ticket.IsAuthorizedByRo),
+                        UmaConstants.IdTokenType,
+                        new ClaimsPrincipal(new ClaimsIdentity(ticket.Requester.Select(c => new Claim(c.Type, c.Value)))),
+                        CancellationToken.None,
+                        resourceSet!.AuthorizationPolicies)
+                    .ConfigureAwait(false);
+                kind = result.Result;
+                if (kind == AuthorizationPolicyResultKind.Authorized)
+                {
+                    break;
+                }
+            }
+
+            Assert.Equal(AuthorizationPolicyResultKind.Authorized, kind);
         }
 
         [Fact]

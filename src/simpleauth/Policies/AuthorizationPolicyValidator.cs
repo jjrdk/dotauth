@@ -51,9 +51,9 @@ namespace SimpleAuth.Policies
             ClaimTokenParameter claimTokenParameter,
             CancellationToken cancellationToken)
         {
-            if (validTicket.Lines == null || !validTicket.Lines.Any())
+            if (validTicket.Lines.Length == 0)
             {
-                throw new ArgumentNullException(nameof(validTicket.Lines));
+                throw new ArgumentException(nameof(validTicket.Lines));
             }
             var handler = new JwtSecurityTokenHandler();
             var validationParameters = await client.CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -61,7 +61,7 @@ namespace SimpleAuth.Policies
 
             var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId).ToArray();
             var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
-            if (resources == null || !resources.Any() || resources.Length != resourceIds.Length)
+            if (resources.Length == 0 || resources.Length != resourceIds.Length)
             {
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
             }
@@ -129,23 +129,12 @@ namespace SimpleAuth.Policies
                 return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted, requester);
             }
 
-            AuthorizationPolicyResult? result = null;
-            foreach (var authorizationPolicy in resource.AuthorizationPolicies)
-            {
-                result = await _authorizationPolicy.Execute(
-                        ticketLineParameter,
-                        claimTokenFormat,
-                        requester,
-                        cancellationToken,
-                        authorizationPolicy)
-                    .ConfigureAwait(false);
-                if (result.Result == AuthorizationPolicyResultKind.Authorized)
-                {
-                    break;
-                }
-            }
-
-            return result!;
+            return await _authorizationPolicy.Execute(
+                    ticketLineParameter,
+                    claimTokenFormat,
+                    requester,
+                    cancellationToken, resource.AuthorizationPolicies)
+                .ConfigureAwait(false);
         }
     }
 }

@@ -52,6 +52,7 @@ namespace SimpleAuth.AuthServer
             _options = new SimpleAuthOptions
             {
                 Salt = salt,
+                AllowHttp = true,
                 RedirectToLogin = redirect,
                 ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
                 Users = sp => new InMemoryResourceOwnerRepository(salt, DefaultConfiguration.GetUsers(salt)),

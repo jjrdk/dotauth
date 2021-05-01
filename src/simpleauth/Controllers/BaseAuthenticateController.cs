@@ -63,8 +63,6 @@ namespace SimpleAuth.Controllers
         private readonly IUrlHelper _urlHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
-
-        //protected readonly IUserActions _addUser;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         private readonly RuntimeSettings _runtimeSettings;
         private readonly IResourceOwnerStore _resourceOwnerRepository;
@@ -329,7 +327,7 @@ namespace SimpleAuth.Controllers
             }
 
             var viewModel = new CodeViewModel { AuthRequestCode = code, ClaimName = service.RequiredClaim };
-            var claim = resourceOwner?.Claims.FirstOrDefault(c => c.Type == service.RequiredClaim);
+            var claim = resourceOwner.Claims.FirstOrDefault(c => c.Type == service.RequiredClaim);
             if (claim != null)
             {
                 viewModel.ClaimValue = claim.Value;
@@ -408,6 +406,15 @@ namespace SimpleAuth.Controllers
             if (!await _validateConfirmationCode.Execute(codeViewModel.Code!, subject, cancellationToken)
                 .ConfigureAwait(false))
             {
+                _logger.LogError(
+                    $"Two factor authentication failed for subject: {subject}, auth request: {codeViewModel.AuthRequestCode}, code: {codeViewModel.Code}");
+                await _eventPublisher.Publish(
+                       new TwoFactorAuthenticationFailed(
+                           Id.Create(),
+                           subject,
+                           codeViewModel.AuthRequestCode,
+                           codeViewModel.Code,
+                           DateTimeOffset.UtcNow)).ConfigureAwait(false);
                 ModelState.AddModelError("Code", "confirmation code is not valid");
                 return Ok(codeViewModel);
             }
@@ -521,7 +528,14 @@ namespace SimpleAuth.Controllers
             Response.Cookies.Append(
                 cookieName,
                 code,
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMinutes(5) });
+                new CookieOptions
+                {
+                    Domain = Request.Host.Host,
+                    SameSite = SameSiteMode.Strict,
+                    Secure = !_runtimeSettings.AllowHttp,
+                    HttpOnly = _runtimeSettings.AllowHttp,
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(5)
+                });
 
             // 2. Redirect the User agent
             var redirectUrl = _urlHelper.Action(
@@ -571,7 +585,14 @@ namespace SimpleAuth.Controllers
             Response.Cookies.Append(
                 cookieName,
                 string.Empty,
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddDays(-1) });
+                new CookieOptions
+                {
+                    Domain = Request.Host.Host,
+                    HttpOnly = _runtimeSettings.AllowHttp,
+                    Secure = !_runtimeSettings.AllowHttp,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddDays(-1)
+                });
 
             // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
@@ -713,7 +734,14 @@ namespace SimpleAuth.Controllers
             Response.Cookies.Append(
                 CoreConstants.SessionId,
                 sessionId,
-                new CookieOptions { HttpOnly = false, Expires = expires, SameSite = SameSiteMode.None });
+                new CookieOptions
+                {
+                    Domain = Request.Host.Host,
+                    HttpOnly = _runtimeSettings.AllowHttp,
+                    Secure = !_runtimeSettings.AllowHttp,
+                    Expires = expires,
+                    SameSite = SameSiteMode.Strict
+                });
             var identity = new ClaimsIdentity(claims, CookieNames.CookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(

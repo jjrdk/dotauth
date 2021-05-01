@@ -49,9 +49,11 @@ namespace SimpleAuth.AuthServerPg
         {
             _configuration = configuration;
             _ = bool.TryParse(_configuration[ConfigurationValues.ServerRedirect], out var redirect);
+            var allowHttp = bool.TryParse(_configuration[ConfigurationValues.AllowHttp], out var ah) && ah;
             var salt = _configuration["SALT"] ?? string.Empty;
             _options = new SimpleAuthOptions
             {
+                AllowHttp = allowHttp,
                 Salt = salt,
                 RedirectToLogin = redirect,
                 ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "SimpleAuth",
@@ -105,10 +107,10 @@ namespace SimpleAuth.AuthServerPg
                         x.EnableForHttps = true;
                         x.Providers.Add(
                             new GzipCompressionProvider(
-                                new GzipCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                         x.Providers.Add(
                             new BrotliCompressionProvider(
-                                new BrotliCompressionProviderOptions {Level = CompressionLevel.Optimal}));
+                                new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                     })
                 .AddLogging(
                     log =>
@@ -142,8 +144,7 @@ namespace SimpleAuth.AuthServerPg
                                 .ToArray()
                         };
 
-                        var allowHttp = bool.TryParse(_configuration[ConfigurationValues.AllowHttp], out var ah) && ah;
-                        cfg.RequireHttpsMetadata = !allowHttp;
+                        cfg.RequireHttpsMetadata = !_options.AllowHttp;
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>()
                 .AddHealthChecks()
@@ -174,8 +175,8 @@ namespace SimpleAuth.AuthServerPg
             {
                 services.AddSimpleAuth(
                         _options,
-                        new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
-                        assemblyTypes: new[] {GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi)})
+                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                        assemblyTypes: new[] { GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi) })
                     .AddSmsAuthentication(
                         new AwsSmsClient(
                             new BasicAWSCredentials(
@@ -188,8 +189,8 @@ namespace SimpleAuth.AuthServerPg
             {
                 services.AddSimpleAuth(
                     _options,
-                    new[] {CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme},
-                    assemblyTypes: new[] {GetType(), typeof(IDefaultUi)});
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                    assemblyTypes: new[] { GetType(), typeof(IDefaultUi) });
             }
         }
 

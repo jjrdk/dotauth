@@ -54,8 +54,10 @@ namespace SimpleAuth.AuthServerPgRedis
             _configuration = configuration;
             _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
             var salt = _configuration["SALT"] ?? string.Empty;
+            var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
             _options = new SimpleAuthOptions
             {
+                AllowHttp = allowHttp,
                 Salt = salt,
                 RedirectToLogin = redirect,
                 ApplicationName = _configuration["SERVER:NAME"] ?? "SimpleAuth",
@@ -152,8 +154,7 @@ namespace SimpleAuth.AuthServerPgRedis
                                 .ToArray()
                         };
 
-                        var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
-                        cfg.RequireHttpsMetadata = !allowHttp;
+                        cfg.RequireHttpsMetadata = !_options.AllowHttp;
                     });
             services.ConfigureOptions<ConfigureOAuthOptions>();
 

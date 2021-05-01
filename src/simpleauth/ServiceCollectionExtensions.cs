@@ -374,6 +374,7 @@ namespace SimpleAuth
                 rptLifeTime: options.RptLifeTime,
                 patLifeTime: options.PatLifeTime,
                 ticketLifeTime: options.TicketLifeTime,
+                allowHttp: options.AllowHttp,
                 redirectToLogin: options.RedirectToLogin);
         }
     }

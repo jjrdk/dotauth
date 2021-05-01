@@ -131,15 +131,15 @@
         public async Task<IActionResult> Index()
         {
             var authenticatedUser = await SetUser().ConfigureAwait(false);
+            var hasReturnUrl = Request.Query.TryGetValue("ReturnUrl", out var returnUrl);
             if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                Request.Query.TryGetValue("ReturnUrl", out var returnUrl);
                 var viewModel = new AuthorizeViewModel { ReturnUrl = returnUrl };
                 await SetIdProviders(viewModel).ConfigureAwait(false);
                 return Ok(viewModel);
             }
 
-            return RedirectToAction("Index", "User");
+            return hasReturnUrl ? Redirect(returnUrl) : RedirectToAction("Index", "User");
         }
 
         /// <summary>

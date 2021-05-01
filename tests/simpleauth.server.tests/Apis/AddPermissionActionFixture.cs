@@ -52,7 +52,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var addPermissionParameter = new PermissionRequest();
 
             var exception = await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                .ConfigureAwait(false) as Option<(string, ClaimData[])>.Error;
+                .ConfigureAwait(false) as Option<Ticket>.Error;
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
             Assert.Equal(
                 string.Format(
@@ -69,7 +69,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var exception =
                 await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                    .ConfigureAwait(false) as Option<(string, ClaimData[])>.Error;
+                    .ConfigureAwait(false) as Option<Ticket>.Error;
             Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
             Assert.Equal(
                 string.Format(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes),
@@ -86,7 +86,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var exception =
                 await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                    .ConfigureAwait(false) as Option<(string, ClaimData[])>.Error;
+                    .ConfigureAwait(false) as Option<Ticket>.Error;
             Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Details.Title);
             Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, resourceSetId), exception.Details.Detail);
         }
@@ -97,14 +97,15 @@ namespace SimpleAuth.Server.Tests.Apis
             const string resourceSetId = "resource_set_id";
             var addPermissionParameter = new PermissionRequest
             {
-                ResourceSetId = resourceSetId, Scopes = new[] {ErrorCodes.InvalidScope}
+                ResourceSetId = resourceSetId,
+                Scopes = new[] { ErrorCodes.InvalidScope }
             };
-            var resources = new[] {new ResourceSet {Id = resourceSetId, Scopes = new[] {"scope"}}};
+            var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
             InitializeFakeObjects(resources);
 
             var exception =
                 await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                    .ConfigureAwait(false) as Option<(string, ClaimData[])>.Error;
+                    .ConfigureAwait(false) as Option<Ticket>.Error;
             Assert.Equal(ErrorCodes.InvalidScope, exception.Details.Title);
             Assert.Equal(Strings.TheScopeAreNotValid, exception.Details.Detail);
         }
@@ -132,11 +133,11 @@ namespace SimpleAuth.Server.Tests.Apis
             InitializeFakeObjects(resources);
             _ticketStoreStub.Setup(r => r.Add(It.IsAny<Ticket>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            var (_, requesterClaims) = (await _requestPermissionHandler
+            var ticket = (await _requestPermissionHandler
                 .Execute("tester", CancellationToken.None, addPermissionParameter)
-                .ConfigureAwait(false) as Option<(string, ClaimData[])>.Result)!.Item;
+                .ConfigureAwait(false) as Option<Ticket>.Result)!.Item;
 
-            Assert.NotEmpty(requesterClaims);
+            Assert.NotEmpty(ticket.Requester);
         }
 
         private void InitializeFakeObjects(params ResourceSet[] resourceSets)
@@ -152,7 +153,6 @@ namespace SimpleAuth.Server.Tests.Apis
             _configurationServiceStub = new RuntimeSettings(ticketLifeTime: TimeSpan.FromSeconds(2));
             _requestPermissionHandler = new RequestPermissionHandler(
                 _resourceSetRepositoryStub.Object,
-                _ticketStoreStub.Object,
                 _configurationServiceStub,
                 new TestOutputLogger("test", _outputHelper));
         }

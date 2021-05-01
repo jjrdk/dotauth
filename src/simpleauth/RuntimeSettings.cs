@@ -18,6 +18,7 @@
         /// <param name="rptLifeTime">The RPT life time.</param>
         /// <param name="patLifeTime">The PAT life time.</param>
         /// <param name="ticketLifeTime">The ticket life time.</param>
+        /// <param name="allowHttp">Sets whether to allow insecure requests.</param>
         /// <param name="redirectToLogin">Flag to determine whether to redirect home screen to login screen.</param>
         public RuntimeSettings(
             string salt = "",
@@ -27,8 +28,10 @@
             TimeSpan rptLifeTime = default,
             TimeSpan patLifeTime = default,
             TimeSpan ticketLifeTime = default,
+            bool allowHttp = false,
             bool redirectToLogin = false)
         {
+            AllowHttp = allowHttp;
             Salt = salt;
             PatLifeTime = patLifeTime;
             RedirectToLogin = redirectToLogin;
@@ -87,5 +90,10 @@
         /// Gets the ticket lifetime (seconds).
         /// </summary>
         public TimeSpan TicketLifeTime { get; }
+
+        /// <summary>
+        /// Gets whether to allow insecure requests.
+        /// </summary>
+        public bool AllowHttp { get; }
     }
 }

@@ -60,7 +60,7 @@ namespace SimpleAuth.Server.Tests.Policies
         [Fact]
         public async Task WhenPassingEmptyTicketParameterThenExceptionsAreThrown()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<ArgumentException>(
                     () => _authorizationPolicyValidator.IsAuthorized(new Ticket(), null, null, CancellationToken.None))
                 .ConfigureAwait(false);
         }

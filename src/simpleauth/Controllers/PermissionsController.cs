@@ -48,6 +48,7 @@ namespace SimpleAuth.Controllers
         private readonly ITicketStore _ticketStore;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IEventPublisher _eventPublisher;
+        private readonly ILogger<PermissionsController> _logger;
         private readonly RequestPermissionHandler _requestPermission;
 
         /// <summary>
@@ -65,12 +66,14 @@ namespace SimpleAuth.Controllers
             ITicketStore ticketStore,
             RuntimeSettings options,
             IEventPublisher eventPublisher,
-            ILogger<PermissionsController> logger) : base(authenticationService)
+            ILogger<PermissionsController> logger)
+            : base(authenticationService)
         {
             _ticketStore = ticketStore;
             _eventPublisher = eventPublisher;
+            _logger = logger;
             _resourceSetRepository = resourceSetRepository;
-            _requestPermission = new RequestPermissionHandler(resourceSetRepository, ticketStore, options, logger);
+            _requestPermission = new RequestPermissionHandler(resourceSetRepository, options, logger);
         }
 
         /// <summary>
@@ -157,7 +160,9 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var resourceSetOwner = await _resourceSetRepository.GetOwner(cancellationToken, permissionRequest.ResourceSetId).ConfigureAwait(false);
+            var resourceSetOwner = await _resourceSetRepository
+                .GetOwner(cancellationToken, permissionRequest.ResourceSetId)
+                .ConfigureAwait(false);
             if (resourceSetOwner == null)
             {
                 return BuildError(
@@ -166,31 +171,9 @@ namespace SimpleAuth.Controllers
                     HttpStatusCode.BadRequest);
             }
 
-            var option = await _requestPermission
-                .Execute(resourceSetOwner, cancellationToken, permissionRequest)
+            var option = await _requestPermission.Execute(resourceSetOwner, cancellationToken, permissionRequest)
                 .ConfigureAwait(false);
-            switch (option)
-            {
-                case Option<(string, ClaimData[])>.Error e:
-                    //return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
-                    return BadRequest(e.Details);
-                case Option<(string, ClaimData[])>.Result r:
-                    var (ticketId, requesterClaims) = r.Item;
-                    await _eventPublisher.Publish(
-                            new UmaTicketCreated(
-                                Id.Create(),
-                                User.GetClientId()!,
-                                ticketId,
-                                resourceSetOwner,
-                                User.GetSubject()!,
-                                requesterClaims,
-                                DateTimeOffset.UtcNow,
-                                permissionRequest))
-                        .ConfigureAwait(false);
-                    var result = new TicketResponse { TicketId = ticketId };
-                    return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
-                default: throw new Exception();
-            }
+            return await CreateResultFromOption(option, resourceSetOwner, cancellationToken, permissionRequest).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -223,32 +206,49 @@ namespace SimpleAuth.Controllers
 
             var option = await _requestPermission.Execute(resourceSetOwner, cancellationToken, permissionRequests)
                 .ConfigureAwait(false);
+            return await CreateResultFromOption(option, resourceSetOwner, cancellationToken, permissionRequests)
+                .ConfigureAwait(false);
+        }
+
+        private async Task<IActionResult> CreateResultFromOption(
+            Option<Ticket>? option,
+            string resourceSetOwner,
+            CancellationToken cancellationToken,
+            params PermissionRequest[] permissionRequests)
+        {
             switch (option)
             {
-                case Option<(string, ClaimData[])>.Error e:
-                    return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
-                case Option<(string, ClaimData[])>.Result r:
+                case Option<Ticket>.Error e:
+                    _logger.LogError(e.Details.Detail);
+                    return BadRequest(e.Details);
+                case Option<Ticket>.Result r:
+                    var ticket = r.Item;
+                    var saved = await _ticketStore.Add(ticket, cancellationToken).ConfigureAwait(false);
+                    if (!saved)
+                    {
+                        return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+                    }
 
-                    var (ticketId, requesterClaims) = r.Item;
                     await _eventPublisher.Publish(
                             new UmaTicketCreated(
                                 Id.Create(),
                                 User.GetClientId()!,
-                                ticketId,
+                                ticket.Id,
                                 resourceSetOwner,
                                 User.GetSubject()!,
-                                requesterClaims,
+                                ticket.Requester,
                                 DateTimeOffset.UtcNow,
                                 permissionRequests))
                         .ConfigureAwait(false);
-                    var result = new TicketResponse { TicketId = ticketId };
+                    var result = new TicketResponse { TicketId = ticket.Id };
                     return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.Created };
                 default: throw new Exception();
             }
         }
 
-        private static IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
+        private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
         {
+            _logger.LogError(message);
             var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
             return new BadRequestObjectResult(error) { StatusCode = (int)statusCode };
         }

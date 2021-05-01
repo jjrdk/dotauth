@@ -43,7 +43,7 @@
             if (_settings.RedirectToLogin)
             {
                 _logger.LogDebug("Redirecting to login page");
-                return RedirectToActionPermanent("Index", "Authenticate");
+                return RedirectToAction("Index", "Authenticate");
             }
 
             return Ok(new object());

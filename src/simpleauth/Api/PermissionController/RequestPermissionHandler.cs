@@ -31,23 +31,20 @@ namespace SimpleAuth.Api.PermissionController
     internal class RequestPermissionHandler
     {
         private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly ITicketStore _ticketStore;
         private readonly RuntimeSettings _settings;
         private readonly ILogger _logger;
 
         public RequestPermissionHandler(
             IResourceSetRepository resourceSetRepository,
-            ITicketStore ticketStore,
             RuntimeSettings settings,
             ILogger logger)
         {
             _resourceSetRepository = resourceSetRepository;
-            _ticketStore = ticketStore;
             _settings = settings;
             _logger = logger;
         }
 
-        public async Task<Option<(string ticketId, ClaimData[] requesterClaims)>> Execute(
+        public async Task<Option<Ticket>> Execute(
             string owner,
             CancellationToken cancellationToken,
             params PermissionRequest[] addPermissionParameters)
@@ -55,7 +52,7 @@ namespace SimpleAuth.Api.PermissionController
             var result = await CheckAddPermissionParameter(owner, addPermissionParameters, cancellationToken).ConfigureAwait(false);
             if (result is Option.Error e)
             {
-                return new Option<(string, ClaimData[])>.Error(e.Details);
+                return new Option<Ticket>.Error(e.Details);
             }
             var handler = new JwtSecurityTokenHandler();
             var claims = addPermissionParameters.Select(x => x.IdToken)
@@ -83,19 +80,19 @@ namespace SimpleAuth.Api.PermissionController
                         })
                     .ToArray()
             };
+            //if (!await _ticketStore.Add(ticket, cancellationToken).ConfigureAwait(false))
+            //{
+            //    return new Option<(string, ClaimData[])>.Error(
+            //        new ErrorDetails
+            //        {
+            //            Title = ErrorCodes.InternalError,
+            //            Detail = Strings.TheTicketCannotBeInserted,
+            //            Status = HttpStatusCode.BadRequest
+            //        },
+            //        ticket.Id);
+            //}
 
-            if (!await _ticketStore.Add(ticket, cancellationToken).ConfigureAwait(false))
-            {
-                return new Option<(string, ClaimData[])>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InternalError,
-                        Detail = Strings.TheTicketCannotBeInserted,
-                        Status = HttpStatusCode.BadRequest
-                    });
-            }
-
-            return new Option<(string, ClaimData[])>.Result((ticket.Id, claims));
+            return new Option<Ticket>.Result(ticket);
         }
 
         private async Task<Option> CheckAddPermissionParameter(

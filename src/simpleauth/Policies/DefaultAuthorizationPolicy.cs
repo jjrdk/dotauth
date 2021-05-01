@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Policies
 {
+    using System;
     using Shared.Models;
     using Shared.Responses;
     using System.Collections.Generic;
@@ -56,7 +57,6 @@ namespace SimpleAuth.Policies
                         cancellationToken);
                 if (result.Result == AuthorizationPolicyResultKind.Authorized)
                 {
-                    //return Task.FromResult(result);
                     break;
                 }
             }

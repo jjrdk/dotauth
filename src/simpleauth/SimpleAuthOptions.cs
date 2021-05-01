@@ -212,5 +212,10 @@ namespace SimpleAuth
         /// Gets or sets whether to redirect home screen to login screen.
         /// </summary>
         public bool RedirectToLogin { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to allow insecure requests.
+        /// </summary>
+        public bool AllowHttp { get; set; }
     }
 }

@@ -127,7 +127,7 @@
                 .ConfigureAwait(false);
 
             return result.StatusCode == HttpStatusCode.OK
-                ? (IActionResult)new OkObjectResult(result.Content.ToDto())
+                ? new OkObjectResult(result.Content.ToDto())
                 : new BadRequestObjectResult(result.Error);
         }
 
