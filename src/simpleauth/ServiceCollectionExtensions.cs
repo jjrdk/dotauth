@@ -336,14 +336,6 @@ namespace SimpleAuth
             forwardedHeaderConfiguration?.Invoke(forwardedHeadersOptions);
             return app
                 .UseForwardedHeaders(forwardedHeadersOptions)
-                .Use(
-                    (ctx, next) =>
-                    {
-                        var logger = ctx.RequestServices.GetService<ILogger<IApplicationBuilder>>();
-                        logger.LogInformation(ctx.Request.Scheme);
-                        logger.LogInformation(ctx.Request.GetAbsoluteUriWithVirtualPath());
-                        return next();
-                    })
                 .UseMiddleware<ExceptionHandlerMiddleware>(publisher)
                 .UseResponseCompression()
                 .UseStaticFiles(

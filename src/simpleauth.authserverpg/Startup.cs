@@ -213,7 +213,7 @@ namespace SimpleAuth.AuthServerPg
 
             app.UseResponseCompression()
                 .UseSimpleAuthMvc(x => { x.KnownProxies.AddRange(knownProxies); }, applicationTypes: typeof(IDefaultUi))
-                .UseEndpoints(endpoint => { endpoint.MapHealthChecks("/health").RequireAuthorization(); });
+                .UseEndpoints(endpoint => { endpoint.MapHealthChecks("/health"); });
         }
     }
 }
