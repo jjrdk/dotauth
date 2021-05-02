@@ -80,17 +80,6 @@ namespace SimpleAuth.Api.PermissionController
                         })
                     .ToArray()
             };
-            //if (!await _ticketStore.Add(ticket, cancellationToken).ConfigureAwait(false))
-            //{
-            //    return new Option<(string, ClaimData[])>.Error(
-            //        new ErrorDetails
-            //        {
-            //            Title = ErrorCodes.InternalError,
-            //            Detail = Strings.TheTicketCannotBeInserted,
-            //            Status = HttpStatusCode.BadRequest
-            //        },
-            //        ticket.Id);
-            //}
 
             return new Option<Ticket>.Result(ticket);
         }
