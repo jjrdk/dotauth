@@ -26,7 +26,6 @@ namespace SimpleAuth.Extensions
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Properties;
     using SimpleAuth.Shared.Properties;
 
     internal static class GrantedTokenGeneratorHelper

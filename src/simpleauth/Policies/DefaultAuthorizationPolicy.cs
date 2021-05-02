@@ -14,7 +14,6 @@
 
 namespace SimpleAuth.Policies
 {
-    using System;
     using Shared.Models;
     using Shared.Responses;
     using System.Collections.Generic;

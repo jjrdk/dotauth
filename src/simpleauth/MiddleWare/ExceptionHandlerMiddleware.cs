@@ -15,7 +15,6 @@
 namespace SimpleAuth.MiddleWare
 {
     using Microsoft.AspNetCore.Http;
-    using Shared;
     using SimpleAuth.Shared.Events.Logging;
     using System;
     using System.Threading.Tasks;
