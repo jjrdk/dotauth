@@ -122,8 +122,11 @@ namespace SimpleAuth.Server.Tests.Apis
             var result = await tokenClient.GetToken(
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
                 .ConfigureAwait(false);
+
+            Assert.NotNull(result.Content.RefreshToken);
+
             var introspection = await tokenClient.Introspect(
-                    IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken, "pat"))
+                    IntrospectionRequest.Create(result.Content.RefreshToken!, TokenTypes.RefreshToken, "pat"))
                 .ConfigureAwait(false);
 
             Assert.Single(introspection.Content.Scope);

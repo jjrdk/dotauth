@@ -93,7 +93,7 @@
                     var content = await policyResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     policyRules = JsonConvert.DeserializeObject<EditPolicyResponse>(content);
 
-                    Assert.Single(policyRules.Rules);
+                    Assert.Single(policyRules!.Rules);
                 });
 
             "And can update resource policies".x(

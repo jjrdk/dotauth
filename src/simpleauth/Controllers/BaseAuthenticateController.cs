@@ -193,7 +193,7 @@ namespace SimpleAuth.Controllers
             await _authenticationService.ChallengeAsync(
                     HttpContext,
                     provider,
-                    new AuthenticationProperties() { RedirectUri = redirectUrl })
+                    new AuthenticationProperties { RedirectUri = redirectUrl })
                 .ConfigureAwait(false);
         }
 
@@ -247,8 +247,11 @@ namespace SimpleAuth.Controllers
                     return RedirectToAction("Index", "Error", new { code = statusCode!.Value, message = s });
                 }
 
-                var nameIdentifier = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
-                claims.Remove(nameIdentifier);
+                var nameIdentifier = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                if (nameIdentifier != null)
+                {
+                    claims.Remove(nameIdentifier);
+                }
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, subject));
                 resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
             }
@@ -283,7 +286,9 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
 
             // 5. Redirect to the profile
-            return RedirectToAction("Index", "User");
+            return Request.Query.TryGetValue("ReturnUrl", out var returnUrl)
+                ? Redirect(returnUrl)
+                : RedirectToAction("Index", "User");
         }
 
         /// <summary>

@@ -73,7 +73,7 @@ namespace SimpleAuth.Shared
         /// </summary>
         /// <param name="principal">The user principal</param>
         /// <returns>The user is authenticated</returns>
-        public static bool IsAuthenticated(this ClaimsPrincipal principal)
+        public static bool IsAuthenticated(this ClaimsPrincipal? principal)
         {
             return principal?.Identity?.IsAuthenticated == true;
         }
