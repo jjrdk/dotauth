@@ -25,11 +25,13 @@ namespace SimpleAuth.AuthServerPg
     using System.Linq;
     using System.Net;
     using System.Security.Claims;
+    using System.Security.Cryptography;
     using Amazon;
     using Amazon.Runtime;
     using Baseline;
     using Marten;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.DataProtection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Extensions;
@@ -37,6 +39,7 @@ namespace SimpleAuth.AuthServerPg
     using SimpleAuth.Sms.Ui;
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.UI;
+    using Aes = System.Security.Cryptography.Aes;
 
     public class Startup
     {
@@ -51,42 +54,59 @@ namespace SimpleAuth.AuthServerPg
             _ = bool.TryParse(_configuration[ConfigurationValues.ServerRedirect], out var redirect);
             var allowHttp = bool.TryParse(_configuration[ConfigurationValues.AllowHttp], out var ah) && ah;
             var salt = _configuration["SALT"] ?? string.Empty;
-            _options = new SimpleAuthOptions
-            {
-                AllowHttp = allowHttp,
-                Salt = salt,
-                RedirectToLogin = redirect,
-                ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "SimpleAuth",
-                Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
-                Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
-                Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
-                AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
-                AuthorizationCodes =
-                    sp => new MartenAuthorizationCodeStore(sp.GetRequiredService<IDocumentSession>),
-                ConfirmationCodes = sp => new MartenConfirmationCodeStore(sp.GetRequiredService<IDocumentSession>),
-                Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
-                JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
-                Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
-                Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
-                ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
-                EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
-                ClaimsIncludedInUserCreation = new[]
-                {
-                    ClaimTypes.Name,
-                    ClaimTypes.Uri,
-                    ClaimTypes.Country,
-                    ClaimTypes.DateOfBirth,
-                    ClaimTypes.Email,
-                    ClaimTypes.Gender,
-                    ClaimTypes.GivenName,
-                    ClaimTypes.Locality,
-                    ClaimTypes.PostalCode,
-                    ClaimTypes.Role,
-                    ClaimTypes.StateOrProvince,
-                    ClaimTypes.StreetAddress,
-                    ClaimTypes.Surname
-                }
-            };
+            Func<IServiceProvider, IDataProtector>? dataProtector =
+                !string.IsNullOrWhiteSpace(_configuration["IV"]) && !string.IsNullOrWhiteSpace(_configuration["KEY"])
+                    ? _ =>
+                    {
+                        var symmetricAlgorithm = Aes.Create();
+                        symmetricAlgorithm.IV = Convert.FromBase64String(_configuration["IV"]);
+                        symmetricAlgorithm.Key = Convert.FromBase64String(_configuration["KEY"]);
+                        symmetricAlgorithm.Padding = PaddingMode.ISO10126;
+                        return new SymmetricDataProtector(symmetricAlgorithm);
+                    }
+                    : null;
+            _options =
+                new
+                    SimpleAuthOptions(
+                        salt,
+                        ticketLifetime: TimeSpan.FromDays(7),
+                        claimsIncludedInUserCreation: new[]
+                        {
+                            ClaimTypes.Name,
+                            ClaimTypes.Uri,
+                            ClaimTypes.Country,
+                            ClaimTypes.DateOfBirth,
+                            ClaimTypes.Email,
+                            ClaimTypes.Gender,
+                            ClaimTypes.GivenName,
+                            ClaimTypes.Locality,
+                            ClaimTypes.PostalCode,
+                            ClaimTypes.Role,
+                            ClaimTypes.StateOrProvince,
+                            ClaimTypes.StreetAddress,
+                            ClaimTypes.Surname
+                        })
+                    {
+                        DataProtector = dataProtector,
+                        AllowHttp = allowHttp,
+                        RedirectToLogin = redirect,
+                        ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "SimpleAuth",
+                        Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
+                        Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
+                        Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
+                        AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
+                        AuthorizationCodes =
+                            sp => new MartenAuthorizationCodeStore(sp.GetRequiredService<IDocumentSession>),
+                        ConfirmationCodes =
+                            sp => new MartenConfirmationCodeStore(sp.GetRequiredService<IDocumentSession>),
+                        Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
+                        JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
+                        Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
+                        Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
+                        ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
+                        EventPublisher = sp =>
+                            new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>())
+                    };
         }
 
         public void ConfigureServices(IServiceCollection services)

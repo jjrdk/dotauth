@@ -41,13 +41,14 @@
                     {
                         ServerCertificateCustomValidationCallback = (msg, cert, _, __) =>
                         {
-                            var altNames = cert.GetSubjectAlternativeNames();
+                            var altNames = cert!.GetSubjectAlternativeNames();
                             _logger.LogInformation("Subject alt names: {0}", string.Join(", ", altNames));
-                            _logger.LogInformation($"Request host: {msg.RequestUri?.Host}");
-                            var allowed = altNames.Count == 0 || altNames.Contains(msg.RequestUri?.Host);
+                            var requestUriHost = msg.RequestUri?.Host;
+                            _logger.LogInformation($"Request host: {requestUriHost}");
+                            var allowed = requestUriHost != null && (altNames.Count == 0 || altNames.Contains(requestUriHost));
                             if (!allowed)
                             {
-                                _logger.LogWarning($"Certificate with thumbprint {cert.Thumbprint} not allowed");
+                                _logger.LogWarning($"Certificate with thumbprint {cert!.Thumbprint} not allowed");
                             }
 
                             return allowed;

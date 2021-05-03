@@ -49,9 +49,8 @@ namespace SimpleAuth.AuthServer
             _configuration = configuration;
             _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
             var salt = _configuration["SALT"] ?? string.Empty;
-            _options = new SimpleAuthOptions
+            _options = new SimpleAuthOptions(salt)
             {
-                Salt = salt,
                 AllowHttp = true,
                 RedirectToLogin = redirect,
                 ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",

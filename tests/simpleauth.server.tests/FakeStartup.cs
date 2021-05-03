@@ -23,6 +23,7 @@ namespace SimpleAuth.Server.Tests
 
     using Stores;
     using System.Net.Http;
+    using System.Security.Cryptography;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Hosting.Server;
@@ -66,10 +67,14 @@ namespace SimpleAuth.Server.Tests
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { })
                 .AddFakeCustomAuth(_ => { });
 
+            var symmetricAlgorithm = Aes.Create();
+            symmetricAlgorithm.GenerateIV();
+            symmetricAlgorithm.GenerateKey();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
                 .AddSimpleAuth(
                     options =>
                     {
+                        options.DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm);
                         options.AdministratorRoleDefinition = default;
                         options.Clients = sp => new InMemoryClientRepository(
                             sp.GetRequiredService<IHttpClientFactory>(),

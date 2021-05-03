@@ -9,6 +9,7 @@
     using SimpleAuth.Sms;
     using System;
     using System.Net.Http;
+    using System.Security.Cryptography;
     using System.Threading;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
@@ -42,8 +43,12 @@
                         Subject = "phone",
                         Value = "123"
                     });
+            var symmetricAlgorithm = Aes.Create();
+            symmetricAlgorithm.GenerateIV();
+            symmetricAlgorithm.GenerateKey();
             _options = new SimpleAuthOptions
             {
+                DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm),
                 AdministratorRoleDefinition = default,
                 JsonWebKeys = sp =>
                 {

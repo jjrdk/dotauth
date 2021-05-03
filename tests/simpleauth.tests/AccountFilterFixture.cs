@@ -22,7 +22,7 @@
             _filterRepositoryStub = new Mock<IFilterStore>();
             _accountFilter = new AccountFilter(_filterRepositoryStub.Object);
         }
-
+        
         [Fact]
         public async Task When_Pass_Null_Parameter_Then_Exception_Is_Thrown()
         {

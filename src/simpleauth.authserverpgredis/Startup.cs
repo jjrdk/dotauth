@@ -55,10 +55,9 @@ namespace SimpleAuth.AuthServerPgRedis
             _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
             var salt = _configuration["SALT"] ?? string.Empty;
             var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
-            _options = new SimpleAuthOptions
+            _options = new SimpleAuthOptions(salt)
             {
                 AllowHttp = allowHttp,
-                Salt = salt,
                 RedirectToLogin = redirect,
                 ApplicationName = _configuration["SERVER:NAME"] ?? "SimpleAuth",
                 Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),

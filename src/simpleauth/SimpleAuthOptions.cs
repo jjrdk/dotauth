@@ -17,6 +17,7 @@ namespace SimpleAuth
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using System;
+    using Microsoft.AspNetCore.DataProtection;
     using SimpleAuth.Events;
     using SimpleAuth.Shared;
 
@@ -57,7 +58,7 @@ namespace SimpleAuth
         /// <summary>
         /// Gets or sets the hashing salt.
         /// </summary>
-        public string Salt { get; set; }
+        public string Salt { get; }
 
         /// <summary>
         /// Gets or sets the delegate to run when resource owner created.
@@ -172,17 +173,22 @@ namespace SimpleAuth
         public Func<IServiceProvider, ISubjectBuilder>? SubjectBuilder { get; set; }
 
         /// <summary>
+        /// Gets the custom <see cref="IDataProtector"/> to use in the server.
+        /// </summary>
+        public Func<IServiceProvider, IDataProtector>? DataProtector { get; set; }
+
+        /// <summary>
         /// Gets or sets the authorization code validity period.
         /// </summary>
         /// <value>
         /// The authorization code validity period.
         /// </value>
-        public TimeSpan AuthorizationCodeValidityPeriod { get; set; }
+        public TimeSpan AuthorizationCodeValidityPeriod { get; }
 
         /// <summary>
         /// Gets or sets the RPT lifetime.
         /// </summary>
-        public TimeSpan RptLifeTime { get; set; }
+        public TimeSpan RptLifeTime { get; }
 
         /// <summary>
         /// Gets or sets the PAT lifetime.
@@ -192,7 +198,7 @@ namespace SimpleAuth
         /// <summary>
         /// Gets or sets the ticket lifetime.
         /// </summary>
-        public TimeSpan TicketLifeTime { get; set; }
+        public TimeSpan TicketLifeTime { get; }
 
         /// <summary>
         /// Gets a list of claims include when the resource owner is created.

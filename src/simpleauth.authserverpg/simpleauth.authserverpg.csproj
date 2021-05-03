@@ -1,45 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>simpleauth.authserverpg</AssemblyName>
-    <OutputType>Exe</OutputType>
-    <StartupObject>SimpleAuth.AuthServerPg.Program</StartupObject>
-    <RootNamespace>SimpleAuth.AuthServerPg</RootNamespace>
-    <UserSecretsId>simpleauth-authserver</UserSecretsId>
-  </PropertyGroup>
-  <Import Project="../../shared.projinfo" />
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+        <AssemblyName>simpleauth.authserverpg</AssemblyName>
+        <OutputType>Exe</OutputType>
+        <StartupObject>SimpleAuth.AuthServerPg.Program</StartupObject>
+        <RootNamespace>SimpleAuth.AuthServerPg</RootNamespace>
+        <UserSecretsId>simpleauth-authserver</UserSecretsId>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <Import Project="../../shared.projinfo" />
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.5" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="5.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.Npgsql" Version="3.1.1" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.5" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="5.0.5" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+        <PackageReference Include="AspNetCore.HealthChecks.Npgsql" Version="3.1.1" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\simpleauth.sms.ui\simpleauth.sms.ui.csproj" />
-    <ProjectReference Include="..\simpleauth.sms\simpleauth.sms.csproj" />
-    <ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
-    <ProjectReference Include="..\simpleauth.ui\simpleauth.ui.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\simpleauth.sms.ui\simpleauth.sms.ui.csproj" />
+        <ProjectReference Include="..\simpleauth.sms\simpleauth.sms.csproj" />
+        <ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
+        <ProjectReference Include="..\simpleauth.ui\simpleauth.ui.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-	  <TrimmerRootAssembly Include="System.Runtime" />
-	  <TrimmerRootAssembly Include="System.Private.CoreLib" />
-  </ItemGroup>
+    <ItemGroup>
+        <TrimmerRootAssembly Include="System.Runtime" />
+        <TrimmerRootAssembly Include="System.Private.CoreLib" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Properties\" />
+    </ItemGroup>
 
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/phraseapp" />
-    </VisualStudio>
-  </ProjectExtensions>
+    <ProjectExtensions>
+        <VisualStudio>
+            <UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/phraseapp" />
+        </VisualStudio>
+    </ProjectExtensions>
 
 </Project>

@@ -30,6 +30,7 @@ namespace SimpleAuth
     using System.Linq;
     using System.Net.Http;
     using System.Reflection;
+    using Microsoft.AspNetCore.DataProtection;
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.ResponseCompression;
@@ -296,7 +297,16 @@ namespace SimpleAuth
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddTransient<IAuthorizationPolicy, DefaultAuthorizationPolicy>();
-            s.AddDataProtection();
+            if (options.DataProtector != null)
+            {
+                s.AddSingleton(options.DataProtector);
+                s.AddTransient<IDataProtectionProvider>(sp => sp.GetRequiredService<IDataProtector>());
+            }
+            else
+            {
+                s.AddDataProtection();
+            }
+
             return mvcBuilder;
         }
 
