@@ -4,7 +4,13 @@
 
 ## Description
 
-A minimalist take on the [SimpleIdentityServer](https://github.com/thabart/SimpleIdentityServer) project.
+SimpleAuth is an authorization server SDK. The simplest way consume it is as a ready build container at [Docker Hub](https://hub.docker.com/r/jjrdk/simpleauth).
+
+You can also use the SDK to create an authorization server and add more custom configurations. See the different [server examples](https://github.com/jjrdk/SimpleAuth/tree/master/src) on how to get started.
+
+## Origin
+
+SimpleAuth is based on the [SimpleIdentityServer](https://github.com/thabart/SimpleIdentityServer) project, but has been reduced and adjusted to make it more cloud friendly.
 
 Most features have been merged into the simpleauth project.
 
@@ -12,7 +18,7 @@ All EntityFramework dependencies have been stripped away. It is up to you to pro
 
 ## Runtime Environment
 
-The project runs under .NET core >= 3.1.
+The project runs under .NET 5.
 
 This project has been tested to run in Docker, AWS Lambda and as a simple process, in both Windows and Linux.
 
