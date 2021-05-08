@@ -32,6 +32,7 @@
         private readonly JwtGenerator _jwtGenerator;
         private readonly ITokenStore _tokenStore;
         private readonly IEventPublisher _eventPublisher;
+        private readonly ILogger _logger;
 
         public UmaTokenActions(
             ITicketStore ticketStore,
@@ -54,6 +55,7 @@
             _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore, logger);
             _tokenStore = tokenStore;
             _eventPublisher = eventPublisher;
+            _logger = logger;
         }
 
         public async Task<GenericResponse<GrantedToken>> GetTokenByTicketId(
@@ -65,6 +67,7 @@
         {
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
             {
+                _logger.LogError("Ticket is null or empty");
                 return new GenericResponse<GrantedToken>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
@@ -85,6 +88,7 @@
             var client = authResult.Client;
             if (client == null)
             {
+                _logger.LogError("Client not found.");
                 return new GenericResponse<GrantedToken>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
@@ -99,6 +103,7 @@
 
             if (client.GrantTypes.All(x => x != GrantTypes.UmaTicket))
             {
+                _logger.LogError("UMA Grant type not supported");
                 return new GenericResponse<GrantedToken>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
@@ -117,6 +122,7 @@
             var ticket = await _ticketStore.Get(parameter.Ticket, cancellationToken).ConfigureAwait(false);
             if (ticket == null)
             {
+                _logger.LogError($"Ticket {parameter.Ticket} not found");
                 return new GenericResponse<GrantedToken>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
@@ -132,6 +138,7 @@
             // 4. Check the ticket.
             if (ticket.Expires < DateTimeOffset.UtcNow)
             {
+                _logger.LogError("Ticket expired");
                 return new GenericResponse<GrantedToken>
                 {
                     StatusCode = HttpStatusCode.BadRequest,

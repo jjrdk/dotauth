@@ -29,6 +29,6 @@ namespace SimpleAuth.Shared.Responses
         /// The ticket identifier.
         /// </value>
         [DataMember(Name = "ticket_id")]
-        public string TicketId { get; init; } = null!;
+        public string TicketId { get; set; } = null!;
     }
 }

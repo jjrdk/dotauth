@@ -46,12 +46,15 @@
                 var read = cs.Read(buffer, 0, bufferLength);
                 if (read < bufferLength)
                 {
+                    var result = new byte[read];
+                    Array.Copy(buffer, 0, result, 0, read);
+                    ArrayPool<byte>.Shared.Return(buffer);
                     if (list == null)
                     {
-                        return buffer;
+                        return result;
                     }
 
-                    list.AddRange(buffer.Take(read));
+                    list.AddRange(result);
                     return list.ToArray();
                 }
 
