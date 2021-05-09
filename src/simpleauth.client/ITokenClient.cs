@@ -4,6 +4,7 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
@@ -14,12 +15,33 @@
     public interface ITokenClient
     {
         /// <summary>
+        /// Executes the specified introspection request.
+        /// </summary>
+        /// <param name="introspectionRequest">The introspection request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns></returns>
+        public Task<GenericResponse<OauthIntrospectionResponse>> Introspect(
+            IntrospectionRequest introspectionRequest,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Gets the token.
         /// </summary>
         /// <param name="tokenRequest">The token request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         Task<GenericResponse<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the authorization.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">request</exception>
+        public Task<GenericResponse<Uri>> GetAuthorization(
+            AuthorizationRequest request,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sends the specified request URL.
@@ -58,5 +80,12 @@
             string accessToken,
             bool inBody = false,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the public web keys.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns>The public <see cref="JsonWebKeySet"/> as a <see cref="Task{TResult}"/>.</returns>
+        Task<JsonWebKeySet> GetJwks(CancellationToken cancellationToken = default);
     }
 }

@@ -104,12 +104,7 @@ namespace SimpleAuth.Client
             return result;
         }
 
-        /// <summary>
-        /// Executes the specified introspection request.
-        /// </summary>
-        /// <param name="introspectionRequest">The introspection request.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public async Task<GenericResponse<OauthIntrospectionResponse>> Introspect(
             IntrospectionRequest introspectionRequest,
             CancellationToken cancellationToken = default)
@@ -129,13 +124,7 @@ namespace SimpleAuth.Client
                 .ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Gets the authorization.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">request</exception>
+        /// <inheritdoc />
         public async Task<GenericResponse<Uri>> GetAuthorization(
             AuthorizationRequest request,
             CancellationToken cancellationToken = default)
@@ -157,11 +146,7 @@ namespace SimpleAuth.Client
                 };
         }
 
-        /// <summary>
-        /// Gets the public web keys.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns>The public <see cref="JsonWebKeySet"/> as a <see cref="Task{TResult}"/>.</returns>
+        /// <inheritdoc />
         public async Task<JsonWebKeySet> GetJwks(CancellationToken cancellationToken = default)
         {
             var discoveryDoc = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
