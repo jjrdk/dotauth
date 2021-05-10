@@ -18,7 +18,7 @@ namespace SimpleAuth.Build
             var packSettings = new DotNetCorePackSettings
             {
                 Configuration = context.BuildConfiguration,
-                NoBuild = true,
+                NoBuild = false,
                 NoRestore = true,
                 OutputDirectory = "./artifacts/packages",
                 IncludeSymbols = true,

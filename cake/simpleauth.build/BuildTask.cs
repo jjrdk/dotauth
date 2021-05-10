@@ -1,8 +1,6 @@
 namespace SimpleAuth.Build
 {
     using System.Collections.Generic;
-    using Cake.Common.Tools.DotNetCore;
-    using Cake.Common.Tools.DotNetCore.MSBuild;
     using Cake.Common.Tools.MSBuild;
     using Cake.Frosting;
 

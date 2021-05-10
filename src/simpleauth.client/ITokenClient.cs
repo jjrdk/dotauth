@@ -20,7 +20,7 @@
         /// <param name="introspectionRequest">The introspection request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<OauthIntrospectionResponse>> Introspect(
+        Task<GenericResponse<OauthIntrospectionResponse>> Introspect(
             IntrospectionRequest introspectionRequest,
             CancellationToken cancellationToken = default);
 
@@ -39,7 +39,7 @@
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">request</exception>
-        public Task<GenericResponse<Uri>> GetAuthorization(
+        Task<GenericResponse<Uri>> GetAuthorization(
             AuthorizationRequest request,
             CancellationToken cancellationToken = default);
 

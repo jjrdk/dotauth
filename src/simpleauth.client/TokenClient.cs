@@ -237,12 +237,6 @@ namespace SimpleAuth.Client
             return new GenericResponse<object> { StatusCode = result.StatusCode };
         }
 
-        private async Task<DiscoveryInformation> GetDiscoveryInformation(CancellationToken cancellationToken = default)
-        {
-            return _discovery ??= await _discoveryOperation!.Execute(cancellationToken)
-                .ConfigureAwait(false);
-        }
-
         /// <summary>
         /// Gets the specified user info based on the configuration URL and access token.
         /// </summary>
@@ -281,6 +275,12 @@ namespace SimpleAuth.Client
             }
 
             return await GetResult<JwtPayload>(request, inBody ? null : accessToken, _certificate, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        private async Task<DiscoveryInformation> GetDiscoveryInformation(CancellationToken cancellationToken = default)
+        {
+            return _discovery ??= await _discoveryOperation!.Execute(cancellationToken)
                 .ConfigureAwait(false);
         }
     }
