@@ -16,7 +16,7 @@
         /// The scopes.
         /// </value>
         [DataMember(Name = "scopes")]
-        public string[] Scopes { get; init; } = Array.Empty<string>();
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the resource set identifier.
@@ -25,6 +25,6 @@
         /// The resource set identifier.
         /// </value>
         [DataMember(Name = "resource_id")]
-        public string ResourceSetId { get; init; } = null!;
+        public string ResourceSetId { get; set; } = null!;
     }
 }
