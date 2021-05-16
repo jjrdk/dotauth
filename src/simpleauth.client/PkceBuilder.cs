@@ -18,7 +18,7 @@ namespace SimpleAuth.Client
     using System.Text;
     using SimpleAuth.Shared.Models;
 
-    internal static class PkceBuilder
+    public static class PkceBuilder
     {
         private static readonly Random Random = new();
 
@@ -34,7 +34,6 @@ namespace SimpleAuth.Client
             const string possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
             var nb = Random.Next(43, 128);
             var buffer = new char[nb];
-            //var result = new StringBuilder();
             for (var i = 0; i < nb; i++)
             {
                 buffer[i] = possibleChars[Random.Next(possibleChars.Length)];

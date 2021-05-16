@@ -4,6 +4,7 @@
     using SimpleAuth.Client;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
@@ -30,12 +31,15 @@
             "when requesting authorization".x(
                 async () =>
                 {
+                    var pkce = CodeChallengeMethods.S256.BuildPkce();
                     var response = await client.GetAuthorization(
                             new AuthorizationRequest(
                                 new[] { "api1" },
                                 new[] { ResponseTypeNames.Code },
                                 "authcode_client",
                                 new Uri("http://localhost:5000/callback"),
+                                pkce.CodeChallenge,
+                                CodeChallengeMethods.S256,
                                 "abc"))
                         .ConfigureAwait(false);
 
@@ -62,12 +66,15 @@
             "when requesting authorization".x(
                 async () =>
                 {
+                    var pkce = CodeChallengeMethods.S256.BuildPkce();
                     result = await client.GetAuthorization(
                             new AuthorizationRequest(
                                 new[] { "cheese" },
                                 new[] { ResponseTypeNames.Code },
                                 "authcode_client",
                                 new Uri("http://localhost:5000/callback"),
+                                pkce.CodeChallenge,
+                                CodeChallengeMethods.S256,
                                 "abc"))
                         .ConfigureAwait(false);
                 });
@@ -90,12 +97,15 @@
             "when requesting authorization".x(
                 async () =>
                 {
+                    var pkce = CodeChallengeMethods.S256.BuildPkce();
                     result = await client.GetAuthorization(
                             new AuthorizationRequest(
                                 new[] { "api1" },
                                 new[] { ResponseTypeNames.Code },
                                 "authcode_client",
                                 new Uri("http://localhost:1000/callback"),
+                                pkce.CodeChallenge,
+                                CodeChallengeMethods.S256,
                                 "abc"))
                         .ConfigureAwait(false);
                 });

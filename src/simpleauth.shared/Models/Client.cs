@@ -227,11 +227,11 @@ namespace SimpleAuth.Shared.Models
         [DataMember(Name = "token_endpoint_auth_signing_alg")]
         public string TokenEndPointAuthSigningAlg { get; set; } = SecurityAlgorithms.RsaSha256;
 
-        ///// <summary>
-        ///// Gets or sets the default max age
-        ///// </summary>
-        //[DataMember(Name = "default_max_age")]
-        //public double DefaultMaxAge { get; set; }
+        /// <summary>
+        /// Gets or sets the default max age
+        /// </summary>
+        [DataMember(Name = "default_max_age")]
+        public double DefaultMaxAge { get; set; }
 
         /// <summary>
         /// Gets or sets the require authentication time
@@ -261,7 +261,7 @@ namespace SimpleAuth.Shared.Models
         /// Client require PKCE.
         /// </summary>
         [DataMember(Name = "require_pkce")]
-        public bool RequirePkce { get; set; }
+        public bool RequirePkce { get; set; } = true;
 
         /// <summary>
         /// Get or sets the post logout redirect uris.

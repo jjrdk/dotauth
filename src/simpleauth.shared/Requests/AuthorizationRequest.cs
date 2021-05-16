@@ -30,7 +30,9 @@ namespace SimpleAuth.Shared.Requests
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.
         /// </summary>
-        public AuthorizationRequest() { }
+        public AuthorizationRequest()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.
@@ -40,15 +42,27 @@ namespace SimpleAuth.Shared.Requests
         /// <param name="clientId">The client identifier.</param>
         /// <param name="redirectUri">The redirect URI.</param>
         /// <param name="requestState">State of the request.</param>
-        public AuthorizationRequest(IEnumerable<string> scopes, IEnumerable<string> responseTypes, string clientId, Uri redirectUri, string requestState)
+        /// <param name="codeChallenge">The PKCE code challenge.</param>
+        /// <param name="codeChallengeMethod">The PKCE code challenge method.</param>
+        public AuthorizationRequest(
+            IEnumerable<string> scopes,
+            IEnumerable<string> responseTypes,
+            string clientId,
+            Uri redirectUri,
+            string? codeChallenge,
+            string? codeChallengeMethod,
+            string? requestState)
         {
             scope = string.Join(" ", scopes);
             response_type = string.Join(" ", responseTypes);
             client_id = clientId;
             redirect_uri = redirectUri;
+            code_challenge = codeChallenge;
+            code_challenge_method = codeChallengeMethod;
             state = requestState;
         }
-
+        
+#pragma warning disable IDE1006 // Naming Styles
         /// <summary>
         /// Gets or sets the scope.
         /// </summary>
@@ -224,6 +238,7 @@ namespace SimpleAuth.Shared.Requests
         /// </value>
         [DataMember(Name = "amr_values")]
         public string? amr_values { get; init; }
+#pragma warning restore IDE1006 // Naming Styles
 
         /// <summary>
         /// Converts to request string.
@@ -233,10 +248,7 @@ namespace SimpleAuth.Shared.Requests
         {
             var properties = typeof(AuthorizationRequest).GetProperties()
                 .Where(x => x.GetValue(this) != null)
-                .Select(
-                    x => x.GetCustomAttribute<DataMemberAttribute>()!.Name
-                         + "="
-                         + x.GetValue(this));
+                .Select(x => x.GetCustomAttribute<DataMemberAttribute>()!.Name + "=" + x.GetValue(this));
 
             return string.Join("&", properties);
         }

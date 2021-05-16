@@ -245,14 +245,14 @@ namespace SimpleAuth.Extensions
 
         public static Permission ToPermission(this TicketLine ticketLine, TimeSpan rptLifetime = default)
         {
-            var at = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             return new Permission
             {
                 Scopes = ticketLine.Scopes,
                 ResourceSetId = ticketLine.ResourceSetId,
                 Expiry = DateTimeOffset.UtcNow.Add(rptLifetime).ToUnixTimeSeconds(),
-                IssuedAt = at,
-                NotBefore = at
+                IssuedAt = iat,
+                NotBefore = iat
             };
         }
 
