@@ -46,7 +46,7 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "uma_protection" }))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "uma_protection", "offline" }))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });

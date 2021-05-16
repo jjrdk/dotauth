@@ -120,16 +120,14 @@ namespace SimpleAuth.Server.Tests.Apis
                     _server.Client,
                     new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                    TokenRequest.FromPassword("administrator", "password", new[] { "scim", "offline" }))
                 .ConfigureAwait(false);
-
-            Assert.NotNull(result.Content.RefreshToken);
 
             var introspection = await tokenClient.Introspect(
                     IntrospectionRequest.Create(result.Content.RefreshToken!, TokenTypes.RefreshToken, "pat"))
                 .ConfigureAwait(false);
 
-            Assert.Single(introspection.Content.Scope);
+            Assert.Equal(2, introspection.Content.Scope.Length);
             Assert.Equal("scim", introspection.Content.Scope.First());
         }
     }

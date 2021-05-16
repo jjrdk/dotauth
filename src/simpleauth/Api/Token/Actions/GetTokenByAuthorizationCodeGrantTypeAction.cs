@@ -99,7 +99,7 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 grantedToken = await result.Client.GenerateToken(
                         _jwksStore,
-                        result.AuthCode.Scopes,
+                        result.AuthCode.Scopes.Split(' '),
                         issuerName,
                         result.AuthCode.UserInfoPayLoad,
                         result.AuthCode.IdTokenPayload,

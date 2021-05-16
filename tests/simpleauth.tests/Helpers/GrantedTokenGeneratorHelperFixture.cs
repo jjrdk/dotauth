@@ -24,7 +24,6 @@ namespace SimpleAuth.Tests.Helpers
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Properties;
     using Xunit;
@@ -44,7 +43,7 @@ namespace SimpleAuth.Tests.Helpers
             var result = await _clientRepositoryStub.Object.GenerateToken(
                           new InMemoryJwksRepository(),
                           string.Empty,
-                          "",
+                          Array.Empty<string>(),
                           "",
                           CancellationToken.None,
                           userInformationPayload: null)
@@ -62,7 +61,7 @@ namespace SimpleAuth.Tests.Helpers
             var ex = await _clientRepositoryStub.Object.GenerateToken(
                         new InMemoryJwksRepository(),
                         "invalid_client",
-                        "",
+                        Array.Empty<string>(),
                         "",
                         CancellationToken.None,
                         userInformationPayload: null)
@@ -90,7 +89,7 @@ namespace SimpleAuth.Tests.Helpers
             var result = await _clientRepositoryStub.Object.GenerateToken(
                     new InMemoryJwksRepository(),
                     "client_id",
-                     "scope",
+                     new[] { "scope" },
                     "issuer",
                     CancellationToken.None,
                     userInformationPayload: null)

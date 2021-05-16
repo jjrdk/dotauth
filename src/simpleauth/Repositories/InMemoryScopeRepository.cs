@@ -23,6 +23,15 @@
         {
             new Scope
             {
+                Name = "offline",
+                IsExposed = true,
+                IsDisplayedInConsent = true,
+                Description = Strings.AccessToRefreshToken,
+                Type = ScopeTypes.ProtectedApi,
+                Claims = Array.Empty<string>()
+            },
+            new Scope
+            {
                 Name = "openid",
                 IsExposed = true,
                 IsDisplayedInConsent = true,

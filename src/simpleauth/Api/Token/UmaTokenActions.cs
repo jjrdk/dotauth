@@ -243,7 +243,8 @@
         {
             // 1. Retrieve the expiration time of the granted token.
             var expiresIn = _configurationService.RptLifeTime;
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName)
+            var scopes = scope.Split(' ');
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scopes, issuerName)
                 .ConfigureAwait(false);
 
             // 2. Construct the JWT token (client).
@@ -257,7 +258,7 @@
             {
                 Id = Id.Create(),
                 AccessToken = accessToken,
-                RefreshToken = Id.Create(),
+                RefreshToken = scopes.Contains(CoreConstants.Offline) ? Id.Create() : null,
                 ExpiresIn = (int)expiresIn.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTimeOffset.UtcNow,

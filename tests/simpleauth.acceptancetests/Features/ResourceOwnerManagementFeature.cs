@@ -254,7 +254,7 @@
             "Then resource owner has new claim".x(
                 async () =>
                 {
-                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" })).ConfigureAwait(false);
+                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager", "offline" })).ConfigureAwait(false);
                     Assert.NotNull(result.Content);
 
                     var handler = new JwtSecurityTokenHandler();

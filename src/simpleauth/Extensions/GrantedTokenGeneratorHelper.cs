@@ -23,7 +23,6 @@ namespace SimpleAuth.Extensions
     using System.Linq;
     using System.Net;
     using System.Security.Claims;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Properties;
@@ -34,7 +33,7 @@ namespace SimpleAuth.Extensions
             this IClientStore clientStore,
             IJwksStore jwksStore,
             string clientId,
-            string scope,
+            string[] scope,
             string issuerName,
             CancellationToken cancellationToken,
             JwtPayload? userInformationPayload = null,
@@ -78,7 +77,7 @@ namespace SimpleAuth.Extensions
         public static async Task<GrantedToken> GenerateToken(
             this Client client,
             IJwksStore jwksStore,
-            string scope,
+            string[] scopes,
             string issuerName,
             JwtPayload? userInformationPayload = null,
             JwtPayload? idTokenPayload = null,
@@ -86,17 +85,18 @@ namespace SimpleAuth.Extensions
             params Claim[] additionalClaims)
         {
             var handler = new JwtSecurityTokenHandler();
+            var scopeString = string.Join(' ', scopes);
             var enumerable =
                 new[]
                     {
-                        new Claim(StandardClaimNames.Scopes, string.Join(' ', scope)),
+                        new Claim(StandardClaimNames.Scopes, scopeString),
                         new Claim(StandardClaimNames.Azp, client.ClientId),
                     }.Concat(client.Claims)
                     .Concat(additionalClaims)
                     .GroupBy(x => x.Type)
                     .Select(x => new Claim(x.Key, string.Join(" ", x.Select(y => y.Value))));
 
-            if (idTokenPayload != null && idTokenPayload.Iss == null)
+            if (idTokenPayload is {Iss: null})
             {
                 idTokenPayload.AddClaim(new Claim(StandardClaimNames.Issuer, issuerName));
             }
@@ -113,18 +113,17 @@ namespace SimpleAuth.Extensions
                 DateTime.UtcNow,
                 signingCredentials);
 
-            var refreshTokenId = Encoding.UTF8.GetBytes(Id.Create());
             // 3. Construct the refresh token.
             return new GrantedToken
             {
                 Id = Id.Create(),
                 AccessToken = accessToken,
-                RefreshToken = Convert.ToBase64String(refreshTokenId),
+                RefreshToken = scopes.Contains(CoreConstants.Offline) ? Id.Create() : null,
                 ExpiresIn = (int)client.TokenLifetime.TotalSeconds,
                 TokenType = CoreConstants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTimeOffset.UtcNow,
                 // IDS
-                Scope = scope,
+                Scope = scopeString,
                 UserInfoPayLoad = userInformationPayload,
                 IdTokenPayLoad = idTokenPayload,
                 ClientId = client.ClientId

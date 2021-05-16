@@ -79,7 +79,7 @@
             "when requesting auth token".x(
                 async () =>
                 {
-                    var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                    var response = await client.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false);
 
                     Assert.False(response.HasError);
 

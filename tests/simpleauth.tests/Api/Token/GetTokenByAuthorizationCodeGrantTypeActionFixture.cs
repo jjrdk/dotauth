@@ -259,6 +259,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             var client = new Client
             {
+                RequirePkce = false,
                 ClientId = clientId,
                 Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
@@ -306,6 +307,7 @@ namespace SimpleAuth.Tests.Api.Token
 
             var client = new Client
             {
+                RequirePkce = false,
                 ClientId = clientId,
                 Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
@@ -351,6 +353,7 @@ namespace SimpleAuth.Tests.Api.Token
             };
             var client = new Client
             {
+                RequirePkce = false,
                 ClientId = clientId,
                 Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
@@ -398,6 +401,7 @@ namespace SimpleAuth.Tests.Api.Token
             };
             var client = new Client
             {
+                RequirePkce = false,
                 ClientId = clientId,
                 Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 GrantTypes = new[] { GrantTypes.AuthorizationCode },
@@ -531,6 +535,7 @@ namespace SimpleAuth.Tests.Api.Token
             };
             var client = new Client
             {
+                RequirePkce = false,
                 ClientName = clientId,
                 RedirectionUrls = new[] { new Uri("https://redirectUri") },
                 ClientId = clientId,

@@ -70,6 +70,24 @@ namespace SimpleAuth.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No Redirection.
+        /// </summary>
+        internal static string NoRedirect {
+            get {
+                return ResourceManager.GetString("NoRedirect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The received response is not a redirection. Maybe HttpClient has been configured to automatically follow redirects..
+        /// </summary>
+        internal static string NotRedirectResponse {
+            get {
+                return ResourceManager.GetString("NotRedirectResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The url {0} is not well formed.
         /// </summary>
         internal static string TheUrlIsNotWellFormed {

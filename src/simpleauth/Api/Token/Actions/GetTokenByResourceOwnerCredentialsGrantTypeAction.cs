@@ -152,6 +152,7 @@ namespace SimpleAuth.Api.Token.Actions
 
             // 4. Check if the requested scopes are valid
             var allowedTokenScopes = string.Empty;
+
             if (!string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
             {
                 var scopeValidation = resourceOwnerGrantTypeParameter.Scope.Check(client);
@@ -208,7 +209,7 @@ namespace SimpleAuth.Api.Token.Actions
             {
                 generatedToken = await client.GenerateToken(
                         _jwksStore,
-                        allowedTokenScopes,
+                        allowedTokenScopes.Split(' '),
                         issuerName,
                         userInfo,
                         userInfo,

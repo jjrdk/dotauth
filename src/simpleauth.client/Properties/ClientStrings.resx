@@ -120,6 +120,12 @@
   <data name="InvalidToken" xml:space="preserve">
     <value>Invalid token</value>
   </data>
+  <data name="NoRedirect" xml:space="preserve">
+    <value>No Redirection</value>
+  </data>
+  <data name="NotRedirectResponse" xml:space="preserve">
+    <value>The received response is not a redirection. Maybe HttpClient has been configured to automatically follow redirects.</value>
+  </data>
   <data name="TheUrlIsNotWellFormed" xml:space="preserve">
     <value>The url {0} is not well formed</value>
   </data>

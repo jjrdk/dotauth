@@ -168,7 +168,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim", "offline" }))
                 .ConfigureAwait(false);
             var revoke = await tokenClient
                 .RevokeToken(RevokeTokenRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken))

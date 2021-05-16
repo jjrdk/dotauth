@@ -136,7 +136,7 @@ namespace SimpleAuth.Api.Token.Actions
             var option = await _clientStore.GenerateToken(
                     _jwksRepository,
                     grantedToken.ClientId,
-                    grantedToken.Scope,
+                    grantedToken.Scope.Split(' ', StringSplitOptions.TrimEntries),
                     issuerName,
                     cancellationToken,
                     userInformationPayload: grantedToken.UserInfoPayLoad,

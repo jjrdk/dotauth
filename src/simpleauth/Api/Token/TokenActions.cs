@@ -308,7 +308,7 @@ namespace SimpleAuth.Api.Token
             {
                 grantedToken = await client.GenerateToken(
                         _jwksStore,
-                        allowedTokenScopes,
+                        allowedTokenScopes.Split(' '),
                         issuerName,
                         new JwtPayload(client.Claims),
                         additionalClaims: client.Claims.Where(

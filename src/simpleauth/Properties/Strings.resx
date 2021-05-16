@@ -492,4 +492,7 @@
   <data name="MissingValues" xml:space="preserve">
     <value>Missing values</value>
   </data>
+  <data name="AccessToRefreshToken" xml:space="preserve">
+    <value>Allow client to obtain a refresh token for offline token requests.</value>
+  </data>
 </root>

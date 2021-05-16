@@ -106,6 +106,15 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow client to obtain a refresh token for offline token requests..
+        /// </summary>
+        internal static string AccessToRefreshToken {
+            get {
+                return ResourceManager.GetString("AccessToRefreshToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Access to your roles..
         /// </summary>
         internal static string AccessToRoles {

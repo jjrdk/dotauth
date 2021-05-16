@@ -23,6 +23,7 @@ namespace SimpleAuth
     {
         public const string SessionId = "session_id";
         public const string DefaultAmr = "pwd";
+        public const string Offline = "offline";
 
         // Open-ClientId Provider Authentication Policy Extension 1.0
         public static class StandardArcParameterNames
@@ -269,13 +270,16 @@ namespace SimpleAuth
         internal static readonly Dictionary<AuthorizationFlow, string> MappingAuthorizationFlowAndResponseModes = new()
         {
             {
-                AuthorizationFlow.AuthorizationCodeFlow, ResponseModes.Query
+                AuthorizationFlow.AuthorizationCodeFlow,
+                ResponseModes.Query
             },
             {
-                AuthorizationFlow.ImplicitFlow, ResponseModes.Fragment
+                AuthorizationFlow.ImplicitFlow,
+                ResponseModes.Fragment
             },
             {
-                AuthorizationFlow.HybridFlow, ResponseModes.Fragment
+                AuthorizationFlow.HybridFlow,
+                ResponseModes.Fragment
             }
         };
 

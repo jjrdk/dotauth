@@ -12,7 +12,6 @@
     using System.Threading.Tasks;
     using Divergic.Logging.Xunit;
     using SimpleAuth.Events;
-    using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Properties;
     using Xunit;

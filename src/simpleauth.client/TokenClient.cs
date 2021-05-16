@@ -20,6 +20,7 @@ namespace SimpleAuth.Client
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
@@ -134,16 +135,29 @@ namespace SimpleAuth.Client
             var requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = uriBuilder.Uri };
             requestMessage.Headers.Accept.Clear();
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
+
             var response = await _client().SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
-            return (int)response.StatusCode < 400
-                ? new GenericResponse<Uri> { StatusCode = response.StatusCode, Content = response.Headers.Location }
-                : new GenericResponse<Uri>
+            return (int)response.StatusCode switch
+            {
+                < 300 => new GenericResponse<Uri>
+                {
+                    Error = new ErrorDetails
+                    {
+                        Title = ClientStrings.NoRedirect,
+                        Detail = ClientStrings.NotRedirectResponse,
+                        Status = HttpStatusCode.UnprocessableEntity
+                    },
+                    StatusCode = HttpStatusCode.UnprocessableEntity
+                },
+                >= 300 and < 400 => new GenericResponse<Uri> { StatusCode = response.StatusCode, Content = response.Headers.Location },
+                _ => new GenericResponse<Uri>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(
                         await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)),
                     StatusCode = response.StatusCode
-                };
+                }
+            };
         }
 
         /// <inheritdoc />

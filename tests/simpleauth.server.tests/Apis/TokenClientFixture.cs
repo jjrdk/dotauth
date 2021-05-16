@@ -456,7 +456,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl));
-            var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false);
+            var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid", "offline")).ConfigureAwait(false);
             var refreshToken = await (new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     _server.Client,

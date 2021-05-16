@@ -97,11 +97,11 @@ namespace SimpleAuth.Common
                 {
                     // 1. Generate an access token.
 
-                    allowedTokenScopes = string.Join(' ', authorizationParameter.Scope.ParseScopes());
-
+                    var tokenScopes = authorizationParameter.Scope.ParseScopes();
+                    allowedTokenScopes = string.Join(' ', tokenScopes);
                     grantedToken = await _tokenStore.GetValidGrantedToken(
                                            _jwksStore,
-                                           string.Join(' ', allowedTokenScopes),
+                                           allowedTokenScopes,
                                            client.ClientId,
                                            cancellationToken,
                                            idTokenJwsPayload: userInformationPayload,
@@ -109,7 +109,7 @@ namespace SimpleAuth.Common
                                        .ConfigureAwait(false)
                                    ?? await client.GenerateToken(
                                            _jwksStore,
-                                           allowedTokenScopes,
+                                           tokenScopes,
                                            issuerName,
                                            userInformationPayload,
                                            idTokenPayload,

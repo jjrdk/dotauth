@@ -22,7 +22,6 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
     using Shared.Repositories;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.WebSite.Authenticate;
-    using System;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
