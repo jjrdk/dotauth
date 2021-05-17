@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<Description>SimpleAuth Client</Description>
 		<Title>SimpleAuth Client</Title>
-		<TargetFrameworks>net5.0</TargetFrameworks>
+		<TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
 		<AssemblyName>simpleauth.client</AssemblyName>
 		<PackageId>simpleauth.client</PackageId>
 		<RootNamespace>SimpleAuth.Client</RootNamespace>

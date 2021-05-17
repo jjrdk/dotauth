@@ -25,46 +25,46 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Gets or sets the authorization code.
         /// </summary>
-        public string Code { get; init; } = null!;
+        public string Code { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the redirection uri.
         /// </summary>
-        public Uri RedirectUri { get; init; } = null!;
+        public Uri RedirectUri { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the creation date time.
         /// </summary>
-        public DateTimeOffset CreateDateTime { get; init; }
+        public DateTimeOffset CreateDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the client id.
         /// </summary>
-        public string ClientId { get; init; } = null!;
+        public string ClientId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the id token payload.
         /// </summary>
-        public JwtPayload? IdTokenPayload { get; init; }
+        public JwtPayload? IdTokenPayload { get; set; }
 
         /// <summary>
         /// Gets or sets the user information payload.
         /// </summary>
-        public JwtPayload? UserInfoPayLoad { get; init; }
+        public JwtPayload? UserInfoPayLoad { get; set; }
 
         /// <summary>
         /// Gets or sets the concatenated list of scopes.
         /// </summary>
-        public string Scopes { get; init; } = null!;
+        public string Scopes { get; set; } = null!;
 
         /// <summary>
         /// Code challenge.
         /// </summary>
-        public string CodeChallenge { get; init; } = null!;
+        public string CodeChallenge { get; set; } = null!;
 
         /// <summary>
         /// Code challenge method.
         /// </summary>
-        public string CodeChallengeMethod { get; init; } = null!;
+        public string CodeChallengeMethod { get; set; } = null!;
     }
 }

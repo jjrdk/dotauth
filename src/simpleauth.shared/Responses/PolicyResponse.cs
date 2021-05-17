@@ -30,7 +30,7 @@ namespace SimpleAuth.Shared.Responses
         /// The identifier.
         /// </value>
         [DataMember(Name = "id")]
-        public string Id { get; init; } = null!;
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the rules.
@@ -39,6 +39,6 @@ namespace SimpleAuth.Shared.Responses
         /// The rules.
         /// </value>
         [DataMember(Name = "rules")]
-        public PolicyRuleResponse[] Rules { get; init; } = Array.Empty<PolicyRuleResponse>();
+        public PolicyRuleResponse[] Rules { get; set; } = Array.Empty<PolicyRuleResponse>();
     }
 }

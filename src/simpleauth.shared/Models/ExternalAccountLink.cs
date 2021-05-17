@@ -14,7 +14,7 @@
         /// <value>
         /// The subject.
         /// </value>
-        public string Subject { get; init; } = null!;
+        public string Subject { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the issuer.
@@ -22,7 +22,7 @@
         /// <value>
         /// The issuer.
         /// </value>
-        public string Issuer { get; init; } = null!;
+        public string Issuer { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the external claims.
@@ -30,6 +30,6 @@
         /// <value>
         /// The external claims.
         /// </value>
-        public Claim[] ExternalClaims { get; init; } = Array.Empty<Claim>();
+        public Claim[] ExternalClaims { get; set; } = Array.Empty<Claim>();
     }
 }

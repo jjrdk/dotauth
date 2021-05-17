@@ -70,7 +70,7 @@ namespace SimpleAuth.Shared.Requests
         /// The scope.
         /// </value>
         [DataMember(Name = "scope")]
-        public string? scope { get; init; }
+        public string? scope { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the response.
@@ -79,7 +79,7 @@ namespace SimpleAuth.Shared.Requests
         /// The type of the response.
         /// </value>
         [DataMember(Name = "response_type")]
-        public string? response_type { get; init; }
+        public string? response_type { get; set; }
 
         /// <summary>
         /// Gets or sets the redirect URI.
@@ -88,7 +88,7 @@ namespace SimpleAuth.Shared.Requests
         /// The redirect URI.
         /// </value>
         [DataMember(Name = "redirect_uri")]
-        public Uri? redirect_uri { get; init; }
+        public Uri? redirect_uri { get; set; }
 
         /// <summary>
         /// Gets or sets the state.
@@ -97,7 +97,7 @@ namespace SimpleAuth.Shared.Requests
         /// The state.
         /// </value>
         [DataMember(Name = "state")]
-        public string? state { get; init; }
+        public string? state { get; set; }
 
         /// <summary>
         /// Gets or sets the response mode.
@@ -106,7 +106,7 @@ namespace SimpleAuth.Shared.Requests
         /// The response mode.
         /// </value>
         [DataMember(Name = "response_mode")]
-        public string? response_mode { get; init; }
+        public string? response_mode { get; set; }
 
         /// <summary>
         /// Gets or sets the nonce.
@@ -115,7 +115,7 @@ namespace SimpleAuth.Shared.Requests
         /// The nonce.
         /// </value>
         [DataMember(Name = "nonce")]
-        public string? nonce { get; init; }
+        public string? nonce { get; set; }
 
         /// <summary>
         /// Gets or sets the display.
@@ -124,13 +124,13 @@ namespace SimpleAuth.Shared.Requests
         /// The display.
         /// </value>
         [DataMember(Name = "display")]
-        public DisplayModes? display { get; init; }
+        public DisplayModes? display { get; set; }
 
         /// <summary>
         /// The possible values are : none, login, consent, select_account
         /// </summary>
         [DataMember(Name = "prompt")]
-        public string? prompt { get; init; }
+        public string? prompt { get; set; }
 
         /// <summary>
         /// Maximum authentication age.
@@ -138,61 +138,61 @@ namespace SimpleAuth.Shared.Requests
         ///  was actively authenticated by the OP.
         /// </summary>
         [DataMember(Name = "max_age")]
-        public double max_age { get; init; }
+        public double max_age { get; set; }
 
         /// <summary>
         /// End-User's preferred languages
         /// </summary>
         [DataMember(Name = "ui_locales")]
-        public string? ui_locales { get; init; }
+        public string? ui_locales { get; set; }
 
         /// <summary>
         /// Token previousely issued by the Authorization Server.
         /// </summary>
         [DataMember(Name = "id_token_hint")]
-        public string? id_token_hint { get; init; }
+        public string? id_token_hint { get; set; }
 
         /// <summary>
         /// Hint to the authorization server about the login identifier the end-user might use to log in.
         /// </summary>
         [DataMember(Name = "login_hint")]
-        public string? login_hint { get; init; }
+        public string? login_hint { get; set; }
 
         /// <summary>
         /// Request that specific Claims be returned from the UserInfo endpoint and/or in the id token.
         /// </summary>
         [DataMember(Name = "claims")]
-        public string? claims { get; init; }
+        public string? claims { get; set; }
 
         /// <summary>
         /// Requested Authentication Context Class References values.
         /// </summary>
         [DataMember(Name = "acr_values")]
-        public string? acr_values { get; init; }
+        public string? acr_values { get; set; }
 
         /// <summary>
         /// Self-contained parameter and can be optionally be signed and / or encrypted
         /// </summary>
         [DataMember(Name = "request")]
-        public string? request { get; init; }
+        public string? request { get; set; }
 
         /// <summary>
         /// Enables OpenID connect requests to be passed by reference rather than by value.
         /// </summary>
         [DataMember(Name = "request_uri")]
-        public Uri? request_uri { get; init; }
+        public Uri? request_uri { get; set; }
 
         /// <summary>
         /// Code challenge.
         /// </summary>
         [DataMember(Name = "code_challenge")]
-        public string? code_challenge { get; init; }
+        public string? code_challenge { get; set; }
 
         /// <summary>
         /// Code challenge method.
         /// </summary>
         [DataMember(Name = "code_challenge_method")]
-        public string? code_challenge_method { get; init; }
+        public string? code_challenge_method { get; set; }
 
         /// <summary>
         /// Gets or sets the client identifier.
@@ -201,7 +201,7 @@ namespace SimpleAuth.Shared.Requests
         /// The client identifier.
         /// </value>
         [DataMember(Name = "client_id")]
-        public string? client_id { get; init; }
+        public string? client_id { get; set; }
 
         /// <summary>
         /// Gets or sets the aggregate identifier.
@@ -210,7 +210,7 @@ namespace SimpleAuth.Shared.Requests
         /// The aggregate identifier.
         /// </value>
         [DataMember(Name = "aggregate_id")]
-        public string? aggregate_id { get; init; }
+        public string? aggregate_id { get; set; }
 
         /// <summary>
         /// Gets or sets the origin URL.
@@ -219,7 +219,7 @@ namespace SimpleAuth.Shared.Requests
         /// The origin URL.
         /// </value>
         [DataMember(Name = "origin_url")]
-        public string? origin_url { get; init; }
+        public string? origin_url { get; set; }
 
         /// <summary>
         /// Gets or sets the session identifier.
@@ -228,7 +228,7 @@ namespace SimpleAuth.Shared.Requests
         /// The session identifier.
         /// </value>
         [DataMember(Name = "session_id")]
-        public string? session_id { get; init; }
+        public string? session_id { get; set; }
 
         /// <summary>
         /// Gets or sets the amr values.
@@ -237,7 +237,7 @@ namespace SimpleAuth.Shared.Requests
         /// The amr values.
         /// </value>
         [DataMember(Name = "amr_values")]
-        public string? amr_values { get; init; }
+        public string? amr_values { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
 
         /// <summary>

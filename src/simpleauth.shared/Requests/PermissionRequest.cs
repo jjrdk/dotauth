@@ -29,18 +29,18 @@ namespace SimpleAuth.Shared.Requests
         /// The resource set identifier.
         /// </value>
         [DataMember(Name = "resource_set_id")]
-        public string? ResourceSetId { get; init; }
+        public string? ResourceSetId { get; set; }
 
         /// <summary>
         /// Gets or sets the requested scopes.
         /// </summary>
         [DataMember(Name = "scopes")]
-        public string[]? Scopes { get; init; }
+        public string[]? Scopes { get; set; }
 
         /// <summary>
         /// Gets or sets the id token of the ticket requester.
         /// </summary>
         [DataMember(Name = "id_token")]
-        public string? IdToken { get; init; }
+        public string? IdToken { get; set; }
     }
 }

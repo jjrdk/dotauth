@@ -17,7 +17,7 @@
         /// The login.
         /// </value>
         [DataMember(Name = "sub")]
-        public string? Subject { get; init; }
+        public string? Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the claims.
@@ -26,6 +26,6 @@
         /// The claims.
         /// </value>
         [DataMember(Name = "claims")]
-        public ClaimData[] Claims { get; init; } = Array.Empty<ClaimData>();
+        public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
     }
 }

@@ -30,7 +30,7 @@ namespace SimpleAuth.Shared.Requests
         /// </value>
         [DataMember(Name = "token")]
 #pragma warning disable IDE1006 // Naming Styles
-        public string? token { get; init; }
+        public string? token { get; set; }
 
         /// <summary>
         /// Gets or sets the token type hint.
@@ -39,7 +39,7 @@ namespace SimpleAuth.Shared.Requests
         /// The token type hint.
         /// </value>
         [DataMember(Name = "token_type_hint")]
-        public string? token_type_hint { get; init; }
+        public string? token_type_hint { get; set; }
 
         /// <summary>
         /// Gets or sets the client identifier.
@@ -48,7 +48,7 @@ namespace SimpleAuth.Shared.Requests
         /// The client identifier.
         /// </value>
         [DataMember(Name = "client_id")]
-        public string? client_id { get; init; }
+        public string? client_id { get; set; }
 
         /// <summary>
         /// Gets or sets the client secret.
@@ -57,7 +57,7 @@ namespace SimpleAuth.Shared.Requests
         /// The client secret.
         /// </value>
         [DataMember(Name = "client_secret")]
-        public string? client_secret { get; init; }
+        public string? client_secret { get; set; }
 
         /// <summary>
         /// Gets or sets the client assertion.
@@ -66,7 +66,7 @@ namespace SimpleAuth.Shared.Requests
         /// The client assertion.
         /// </value>
         [DataMember(Name = "client_assertion")]
-        public string? client_assertion { get; init; }
+        public string? client_assertion { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the client assertion.
@@ -75,7 +75,7 @@ namespace SimpleAuth.Shared.Requests
         /// The type of the client assertion.
         /// </value>
         [DataMember(Name = "client_assertion_type")]
-        public string? client_assertion_type { get; init; }
+        public string? client_assertion_type { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
     }
 }

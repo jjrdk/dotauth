@@ -13,12 +13,12 @@
         /// Gets or sets the resource id.
         /// </summary>
         [DataMember(Name = "id")]
-        public string Id { get; init; } = null!;
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the authorization policies.
         /// </summary>
         [DataMember(Name = "rules")]
-        public PolicyRuleViewModel[] Rules { get; init; } = Array.Empty<PolicyRuleViewModel>();
+        public PolicyRuleViewModel[] Rules { get; set; } = Array.Empty<PolicyRuleViewModel>();
     }
 }

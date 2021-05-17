@@ -29,6 +29,6 @@ namespace SimpleAuth.Shared.Responses
         /// The RPT.
         /// </value>
         [DataMember(Name = "rpt")]
-        public string Rpt { get; init; } = null!;
+        public string Rpt { get; set; } = null!;
     }
 }

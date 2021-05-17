@@ -29,7 +29,7 @@ namespace SimpleAuth.Shared.Responses
         /// The identifier.
         /// </value>
         [DataMember(Name = "_id")]
-        public string Id { get; init; } = null!;
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the user access policy URI.
@@ -38,6 +38,6 @@ namespace SimpleAuth.Shared.Responses
         /// The user access policy URI.
         /// </value>
         [DataMember(Name = "user_access_policy_uri")]
-        public string UserAccessPolicyUri { get; init; } = null!;
+        public string UserAccessPolicyUri { get; set; } = null!;
     }
 }

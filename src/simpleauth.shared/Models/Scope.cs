@@ -30,13 +30,13 @@ namespace SimpleAuth.Shared.Models
         /// The name.
         /// </value>
         [DataMember(Name = "name")]
-        public string Name { get; init; } = null!;
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the icon uri.
         /// </summary>
         [DataMember(Name = "icon_uri")]
-        public Uri? IconUri { get; init; }
+        public Uri? IconUri { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
@@ -45,7 +45,7 @@ namespace SimpleAuth.Shared.Models
         /// The description.
         /// </value>
         [DataMember(Name = "description")]
-        public string Description { get; init; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is displayed in consent.
@@ -54,7 +54,7 @@ namespace SimpleAuth.Shared.Models
         ///   <c>true</c> if this instance is displayed in consent; otherwise, <c>false</c>.
         /// </value>
         [DataMember(Name = "is_displayed_in_consent")]
-        public bool IsDisplayedInConsent { get; init; }
+        public bool IsDisplayedInConsent { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is exposed.
@@ -63,7 +63,7 @@ namespace SimpleAuth.Shared.Models
         ///   <c>true</c> if this instance is exposed; otherwise, <c>false</c>.
         /// </value>
         [DataMember(Name = "is_exposed")]
-        public bool IsExposed { get; init; }
+        public bool IsExposed { get; set; }
 
         /// <summary>
         /// Gets or sets the type.
@@ -72,7 +72,7 @@ namespace SimpleAuth.Shared.Models
         /// The type.
         /// </value>
         [DataMember(Name = "type")]
-        public string Type { get; init; } = null!;
+        public string Type { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the claims.
@@ -81,6 +81,6 @@ namespace SimpleAuth.Shared.Models
         /// The claims.
         /// </value>
         [DataMember(Name = "claims")]
-        public string[] Claims { get; init; } = Array.Empty<string>();
+        public string[] Claims { get; set; } = Array.Empty<string>();
     }
 }

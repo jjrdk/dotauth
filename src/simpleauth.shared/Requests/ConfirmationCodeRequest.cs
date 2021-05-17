@@ -15,6 +15,6 @@
         /// The phone number.
         /// </value>
         [DataMember(Name = "phone_number")]
-        public string? PhoneNumber { get; init; }
+        public string? PhoneNumber { get; set; }
     }
 }

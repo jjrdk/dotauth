@@ -30,7 +30,7 @@ namespace SimpleAuth.Shared.Responses
         /// The identifier.
         /// </value>
         [DataMember(Name = "_id")]
-        public string Id { get; init; } = null!;
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the name.
@@ -39,7 +39,7 @@ namespace SimpleAuth.Shared.Responses
         /// The name.
         /// </value>
         [DataMember(Name = "name")]
-        public string? Name { get; init; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the URI.
@@ -48,7 +48,7 @@ namespace SimpleAuth.Shared.Responses
         /// The URI.
         /// </value>
         [DataMember(Name = "uri")]
-        public string? Uri { get; init; }
+        public string? Uri { get; set; }
 
         /// <summary>
         /// Gets or sets the type.
@@ -57,7 +57,7 @@ namespace SimpleAuth.Shared.Responses
         /// The type.
         /// </value>
         [DataMember(Name = "type")]
-        public string? Type { get; init; }
+        public string? Type { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes.
@@ -66,7 +66,7 @@ namespace SimpleAuth.Shared.Responses
         /// The scopes.
         /// </value>
         [DataMember(Name = "scopes")]
-        public string[] Scopes { get; init; } = Array.Empty<string>();
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the icon URI.
@@ -75,6 +75,6 @@ namespace SimpleAuth.Shared.Responses
         /// The icon URI.
         /// </value>
         [DataMember(Name = "icon_uri")]
-        public string? IconUri { get; init; }
+        public string? IconUri { get; set; }
     }
 }

@@ -15,7 +15,7 @@
         /// The type.
         /// </value>
         [DataMember(Name = "type")]
-        public ClientSecretTypes Type { get; init; }
+        public ClientSecretTypes Type { get; set; }
 
         /// <summary>
         /// Gets or sets the value.
@@ -24,6 +24,6 @@
         /// The value.
         /// </value>
         [DataMember(Name = "value")]
-        public string Value { get; init; } = null!;
+        public string Value { get; set; } = null!;
     }
 }

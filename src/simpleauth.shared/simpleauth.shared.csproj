@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<Description>SimpleAuth Shared Library</Description>
 		<Title>SimpleAuth Shared</Title>
-		<TargetFrameworks>net5.0</TargetFrameworks>
+		<TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
 		<AssemblyName>simpleauth.shared</AssemblyName>
 		<PackageId>simpleauth.shared</PackageId>
 		<RootNamespace>SimpleAuth.Shared</RootNamespace>

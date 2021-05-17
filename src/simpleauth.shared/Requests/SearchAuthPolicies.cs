@@ -16,7 +16,7 @@
         /// The ids.
         /// </value>
         [DataMember(Name = "ids")]
-        public string[] Ids { get; init; } = Array.Empty<string>();
+        public string[] Ids { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the start index.
@@ -25,7 +25,7 @@
         /// The start index.
         /// </value>
         [DataMember(Name = "start_index")]
-        public int StartIndex { get; init; }
+        public int StartIndex { get; set; }
 
         /// <summary>
         /// Gets or sets the total results.
@@ -34,6 +34,6 @@
         /// The total results.
         /// </value>
         [DataMember(Name = "count")]
-        public int TotalResults { get; init; }
+        public int TotalResults { get; set; }
     }
 }

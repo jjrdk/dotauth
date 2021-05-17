@@ -13,7 +13,7 @@
         /// <value>
         /// The value.
         /// </value>
-        public string Value { get; init; } = null!;
+        public string Value { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the subject.
@@ -21,7 +21,7 @@
         /// <value>
         /// The subject.
         /// </value>
-        public string? Subject { get; init; }
+        public string? Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the issue at.
@@ -29,7 +29,7 @@
         /// <value>
         /// The issue at.
         /// </value>
-        public DateTimeOffset IssueAt { get; init; }
+        public DateTimeOffset IssueAt { get; set; }
 
         /// <summary>
         /// Gets or sets the expires in.
@@ -37,6 +37,6 @@
         /// <value>
         /// The expires in.
         /// </value>
-        public double ExpiresIn { get; init; }
+        public double ExpiresIn { get; set; }
     }
 }

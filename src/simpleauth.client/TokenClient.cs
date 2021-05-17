@@ -154,7 +154,12 @@ namespace SimpleAuth.Client
                 _ => new GenericResponse<Uri>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(
-                        await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)),
+#if NET5_0
+                        await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
+#else
+                        await response.Content.ReadAsStringAsync().ConfigureAwait(false)
+#endif
+                    ),
                     StatusCode = response.StatusCode
                 }
             };
@@ -168,8 +173,11 @@ namespace SimpleAuth.Client
             request.Headers.Accept.Clear();
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
             var response = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
+#if NET5_0
             var keyJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
+#else
+            var keyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+#endif
             return JsonWebKeySet.Create(keyJson);
         }
 
@@ -197,7 +205,11 @@ namespace SimpleAuth.Client
             req.Headers.Authorization = _authorizationValue;
 
             var result = await _client().SendAsync(req, cancellationToken).ConfigureAwait(false);
+#if NET5_0
             var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#else
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+#endif
             if (!result.IsSuccessStatusCode)
             {
                 return new GenericResponse<object>
@@ -238,7 +250,11 @@ namespace SimpleAuth.Client
             request.Headers.Authorization = _authorizationValue;
 
             var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
+#if NET5_0
             var json = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#else
+            var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+#endif
             if (!result.IsSuccessStatusCode)
             {
                 return new GenericResponse<object>

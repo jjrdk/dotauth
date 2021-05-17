@@ -26,6 +26,6 @@ namespace SimpleAuth.Shared.Responses
         /// Gets or sets a list of scopes
         /// </summary>
         [DataMember(Name = "scope")]
-        public string[] Scope { get; init; } = Array.Empty<string>();
+        public string[] Scope { get; set; } = Array.Empty<string>();
     }
 }

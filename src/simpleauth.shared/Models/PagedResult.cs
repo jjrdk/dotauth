@@ -17,7 +17,7 @@
         /// The total results.
         /// </value>
         [DataMember(Name = "count")]
-        public long TotalResults { get; init; }
+        public long TotalResults { get; set; }
 
         /// <summary>
         /// Gets or sets the start index.
@@ -26,7 +26,7 @@
         /// The start index.
         /// </value>
         [DataMember(Name = "start_index")]
-        public int StartIndex { get; init; }
+        public int StartIndex { get; set; }
 
         /// <summary>
         /// Gets or sets the content.
@@ -35,6 +35,6 @@
         /// The content.
         /// </value>
         [DataMember(Name = "content")]
-        public T[] Content { get; init; } = Array.Empty<T>();
+        public T[] Content { get; set; } = Array.Empty<T>();
     }
 }

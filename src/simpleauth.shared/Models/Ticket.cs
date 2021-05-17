@@ -27,12 +27,12 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The identifier.
         /// </value>
-        public string Id { get; init; } = null!;
+        public string Id { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the owner of the resource that the ticket relates to.
         /// </summary>
-        public string ResourceOwner { get; init; } = null!;
+        public string ResourceOwner { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is authorized by ro.
@@ -40,7 +40,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         ///   <c>true</c> if this instance is authorized by ro; otherwise, <c>false</c>.
         /// </value>
-        public bool IsAuthorizedByRo { get; init; }
+        public bool IsAuthorizedByRo { get; set; }
 
         /// <summary>
         /// Gets or sets the expiration date time.
@@ -48,7 +48,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The expiration date time.
         /// </value>
-        public DateTimeOffset Expires { get; init; }
+        public DateTimeOffset Expires { get; set; }
 
         /// <summary>
         /// Gets or sets the create date time.
@@ -56,7 +56,7 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The create date time.
         /// </value>
-        public DateTimeOffset Created { get; init; }
+        public DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// Gets or sets the lines.
@@ -64,11 +64,11 @@ namespace SimpleAuth.Shared.Models
         /// <value>
         /// The lines.
         /// </value>
-        public TicketLine[] Lines { get; init; } = Array.Empty<TicketLine>();
+        public TicketLine[] Lines { get; set; } = Array.Empty<TicketLine>();
 
         /// <summary>
         /// Gets or sets the claims associated with the requester.
         /// </summary>
-        public ClaimData[] Requester { get; init; } = Array.Empty<ClaimData>();
+        public ClaimData[] Requester { get; set; } = Array.Empty<ClaimData>();
     }
 }

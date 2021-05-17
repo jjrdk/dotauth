@@ -70,8 +70,11 @@
         {
             request = PrepareRequest(request, token, certificate);
             var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
+#if NET5_0
             var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
+#else
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+#endif
             if (result.IsSuccessStatusCode)
             {
                 return new GenericResponse<T>
