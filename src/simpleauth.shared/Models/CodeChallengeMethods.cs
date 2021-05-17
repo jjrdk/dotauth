@@ -1,6 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Models
 {
-    internal static class CodeChallengeMethods
+    public static class CodeChallengeMethods
     {
         public const string Plain = "plain";
         public const string Rs256 = "RS256";
