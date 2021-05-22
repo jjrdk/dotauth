@@ -43,7 +43,7 @@ namespace SimpleAuth.Shared
         public static long ConvertToUnixTimestamp(this DateTime date)
         {
             var diff = date.ToUniversalTime() - UnixStart;
-            return (long) Math.Floor(diff.TotalSeconds);
+            return (long)Math.Floor(diff.TotalSeconds);
         }
 
         /// <summary>
