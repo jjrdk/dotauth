@@ -24,6 +24,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using Moq;
     using SimpleAuth.Api.PermissionController;
     using SimpleAuth.Properties;
+    using SimpleAuth.Repositories;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
@@ -152,6 +153,7 @@ namespace SimpleAuth.Server.Tests.Apis
             _ticketStoreStub = new Mock<ITicketStore>();
             _configurationServiceStub = new RuntimeSettings(ticketLifeTime: TimeSpan.FromSeconds(2));
             _requestPermissionHandler = new RequestPermissionHandler(
+                new InMemoryTokenStore(),
                 _resourceSetRepositoryStub.Object,
                 _configurationServiceStub,
                 new TestOutputLogger("test", _outputHelper));

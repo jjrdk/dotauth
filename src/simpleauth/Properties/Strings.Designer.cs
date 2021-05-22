@@ -124,6 +124,15 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The requestor identity is ambiguous.
+        /// </summary>
+        internal static string AmbiguousIdentity {
+            get {
+                return ResourceManager.GetString("AmbiguousIdentity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to an error {0} has been raised when trying to authenticate.
         /// </summary>
         internal static string AnErrorHasBeenRaisedWhenTryingToAuthenticate {

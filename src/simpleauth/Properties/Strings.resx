@@ -495,4 +495,7 @@
   <data name="AccessToRefreshToken" xml:space="preserve">
     <value>Allow client to obtain a refresh token for offline token requests.</value>
   </data>
+  <data name="AmbiguousIdentity" xml:space="preserve">
+    <value>The requestor identity is ambiguous</value>
+  </data>
 </root>

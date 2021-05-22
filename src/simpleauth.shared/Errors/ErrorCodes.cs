@@ -40,5 +40,6 @@ namespace SimpleAuth.Shared.Errors
         public const string InternalError = "internal_error";
         public const string ClaimRequired = "claim_required";
         public const string RevokeFailed = "revoke_failed";
+        public const string AmbiguousRequestor = "ambiguous_requestor";
     }
 }

@@ -59,6 +59,7 @@ namespace SimpleAuth.Controllers
         /// <param name="ticketStore">The ticket store.</param>
         /// <param name="options">The options.</param>
         /// <param name="eventPublisher">The event publisher.</param>
+        /// <param name="tokenStore">The token store.</param>
         /// <param name="logger">The logger</param>
         public PermissionsController(
             IAuthenticationService authenticationService,
@@ -66,6 +67,7 @@ namespace SimpleAuth.Controllers
             ITicketStore ticketStore,
             RuntimeSettings options,
             IEventPublisher eventPublisher,
+            ITokenStore tokenStore,
             ILogger<PermissionsController> logger)
             : base(authenticationService)
         {
@@ -73,7 +75,7 @@ namespace SimpleAuth.Controllers
             _eventPublisher = eventPublisher;
             _logger = logger;
             _resourceSetRepository = resourceSetRepository;
-            _requestPermission = new RequestPermissionHandler(resourceSetRepository, options, logger);
+            _requestPermission = new RequestPermissionHandler(tokenStore, resourceSetRepository, options, logger);
         }
 
         /// <summary>

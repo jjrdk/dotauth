@@ -30,15 +30,18 @@ namespace SimpleAuth.Api.PermissionController
 
     internal class RequestPermissionHandler
     {
+        private readonly ITokenStore _tokenStore;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly RuntimeSettings _settings;
         private readonly ILogger _logger;
 
         public RequestPermissionHandler(
+            ITokenStore tokenStore,
             IResourceSetRepository resourceSetRepository,
             RuntimeSettings settings,
             ILogger logger)
         {
+            _tokenStore = tokenStore;
             _resourceSetRepository = resourceSetRepository;
             _settings = settings;
             _logger = logger;
@@ -54,14 +57,29 @@ namespace SimpleAuth.Api.PermissionController
             {
                 return new Option<Ticket>.Error(e.Details);
             }
-            var handler = new JwtSecurityTokenHandler();
-            var claims = addPermissionParameters.Select(x => x.IdToken)
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Distinct()
-                .Select(x => handler.ReadJwtToken(x))
-                .SelectMany(x => x.Claims)
+            var token = addPermissionParameters.Select(x => x.IdToken).First();
+            var grantedToken = token == null ? null : await _tokenStore.GetAccessToken(token, cancellationToken).ConfigureAwait(false);
+            var payload = grantedToken?.IdTokenPayLoad;
+            if (payload == null && token != null)
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(token);
+                payload = jwt.Payload;
+            }
+
+            var claims = payload?.Claims
                 .Where(claim => OpenIdClaimTypes.All.Contains(claim.Type))
+                .Where(claim => !string.IsNullOrWhiteSpace(claim.Value))
                 .Select(x => new ClaimData { Type = x.Type, Value = x.Value })
+                .ToArray() ?? Array.Empty<ClaimData>();
+
+            var lines = addPermissionParameters.Where(x => x.Scopes != null && x.ResourceSetId != null)
+                .Select(
+                    addPermissionParameter => new TicketLine
+                    {
+                        Scopes = addPermissionParameter.Scopes!,
+                        ResourceSetId = addPermissionParameter.ResourceSetId!
+                    })
                 .ToArray();
 
             var ticket = new Ticket
@@ -71,14 +89,7 @@ namespace SimpleAuth.Api.PermissionController
                 Requester = claims,
                 Created = DateTimeOffset.UtcNow,
                 Expires = DateTimeOffset.UtcNow.Add(_settings.TicketLifeTime),
-                Lines = addPermissionParameters.Where(x => x.Scopes != null && x.ResourceSetId != null)
-                    .Select(
-                        addPermissionParameter => new TicketLine
-                        {
-                            Scopes = addPermissionParameter.Scopes!,
-                            ResourceSetId = addPermissionParameter.ResourceSetId!
-                        })
-                    .ToArray()
+                Lines = lines
             };
 
             return new Option<Ticket>.Result(ticket);
@@ -89,6 +100,19 @@ namespace SimpleAuth.Api.PermissionController
             PermissionRequest[] addPermissionParameters,
             CancellationToken cancellationToken)
         {
+            var idTokens = addPermissionParameters.Select(x => x.IdToken)
+                .Distinct()
+                .Count();
+            if (idTokens > 1)
+            {
+                return new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.AmbiguousRequestor,
+                        Detail = Strings.AmbiguousIdentity,
+                        Status = HttpStatusCode.BadRequest
+                    });
+            }
             // 2. Check parameters & scope exist.
             foreach (var addPermissionParameter in addPermissionParameters)
             {

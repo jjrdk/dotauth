@@ -79,7 +79,7 @@
                 {
                     var response = await client.RequestPermission(
                             grantedToken.AccessToken,
-                            requests: new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
+                            requests: new PermissionRequest { IdToken = grantedToken.IdToken, ResourceSetId = resourceId, Scopes = new[] { "read" } })
                         .ConfigureAwait(false);
 
                     Assert.False(response.HasError);
