@@ -83,11 +83,23 @@ namespace SimpleAuth.Shared
                 return HashCode.Combine(Details, State);
             }
 
+            /// <summary>
+            /// Defines the equality operator.
+            /// </summary>
+            /// <param name="left">The left comparand</param>
+            /// <param name="right">The comparand</param>
+            /// <returns><c>true</c> if equal, otherwise <c>false</c>.</returns>
             public static bool operator ==(Error? left, Error? right)
             {
                 return Equals(left, right);
             }
 
+            /// <summary>
+            /// Defines the equality operator.
+            /// </summary>
+            /// <param name="left">The left comparand</param>
+            /// <param name="right">The comparand</param>
+            /// <returns><c>true</c> if unequal, otherwise <c>false</c>.</returns>
             public static bool operator !=(Error? left, Error? right)
             {
                 return !Equals(left, right);
