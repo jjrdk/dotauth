@@ -75,13 +75,12 @@
             using var session = _sessionFactory();
             if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
             {
-                return new Option.Error(
-                   new ErrorDetails
-                   {
-                       Title = ErrorCodes.InvalidClient,
-                       Detail = SharedStrings.TheClientDoesntExist,
-                       Status = HttpStatusCode.NotFound
-                   });
+                return new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidClient,
+                    Detail = SharedStrings.TheClientDoesntExist,
+                    Status = HttpStatusCode.NotFound
+                };
             }
 
             session.Update(client);

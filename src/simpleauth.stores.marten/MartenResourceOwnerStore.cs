@@ -115,13 +115,12 @@
                 .ConfigureAwait(false);
             if (user == null)
             {
-                return new Option.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InternalError,
-                        Detail = SharedStrings.TheRoDoesntExist,
-                        Status = HttpStatusCode.InternalServerError
-                    });
+                return new ErrorDetails
+                {
+                    Title = ErrorCodes.InternalError,
+                    Detail = SharedStrings.TheRoDoesntExist,
+                    Status = HttpStatusCode.InternalServerError
+                };
             }
 
             user.IsLocalAccount = resourceOwner.IsLocalAccount;

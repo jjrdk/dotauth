@@ -90,12 +90,12 @@
             var existing = await session.LoadAsync<OwnedResourceSet>(resourceSet.Id, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
-                return new Option.Error(new ErrorDetails
+                return new ErrorDetails
                 {
                     Status = HttpStatusCode.NotFound,
                     Title = ErrorCodes.NotUpdated,
                     Detail = SharedStrings.ResourceCannotBeUpdated
-                });
+                };
             }
             session.Update(OwnedResourceSet.FromResourceSet(resourceSet, existing.Owner));
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

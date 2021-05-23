@@ -93,6 +93,24 @@ namespace SimpleAuth.Shared
                 return !Equals(left, right);
             }
         }
+
+        /// <summary>
+        /// Implicitly converts <see cref="ErrorDetails"/> to <see cref="Error"/>.
+        /// </summary>
+        /// <param name="errorDetails">The error details</param>
+        public static implicit operator Option<T>(ErrorDetails errorDetails)
+        {
+            return new Error(errorDetails);
+        }
+
+        /// <summary>
+        /// Implicitly converts <see cref="ErrorDetails"/> to <see cref="Result"/>.
+        /// </summary>
+        /// <param name="item">The result item</param>
+        public static implicit operator Option<T>(T item)
+        {
+            return new Result(item);
+        }
     }
 
     /// <summary>
@@ -130,6 +148,15 @@ namespace SimpleAuth.Shared
             /// Gets the state.
             /// </summary>
             public string? State { get; }
+        }
+
+        /// <summary>
+        /// Implicitly converts <see cref="ErrorDetails"/> to <see cref="Error"/>.
+        /// </summary>
+        /// <param name="errorDetails">The error details</param>
+        public static implicit operator Option(ErrorDetails errorDetails)
+        {
+            return new Error(errorDetails);
         }
     }
 }
