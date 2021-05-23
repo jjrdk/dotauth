@@ -22,7 +22,7 @@
             : base(output)
         {
         }
-   
+
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulClientCredentialsAuthentication()
         {
@@ -50,12 +50,12 @@
                     {
                         var tokenHandler = new JwtSecurityTokenHandler();
                         var validationParameters = new TokenValidationParameters
-                                                       {
-                                                           IssuerSigningKeys = _jwks.GetSigningKeys(),
-                                                           ValidAudience = "clientCredentials",
-                                                           ValidIssuer = "https://localhost"
-                                                       };
-                        tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
+                        {
+                            IssuerSigningKeys = _jwks.GetSigningKeys(),
+                            ValidAudience = "clientCredentials",
+                            ValidIssuer = "https://localhost"
+                        };
+                        tokenHandler.ValidateToken(result.AccessToken, validationParameters, out _);
                     });
         }
 
@@ -74,7 +74,7 @@
             "when requesting auth token".x(
                 async () =>
                     {
-                        var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                        var response = await client.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false);
 
                         Assert.False(response.HasError);
 
@@ -138,5 +138,5 @@
 
             "then does not have token".x(() => { Assert.Null(result.Content); });
         }
- }
+    }
 }
