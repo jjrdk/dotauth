@@ -88,6 +88,15 @@ namespace SimpleAuth.Shared.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not found.
+        /// </summary>
+        internal static string NotFound {
+            get {
+                return ResourceManager.GetString("NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The claim &apos;{0}&apos; doesn&apos;t exist.
         /// </summary>
         internal static string TheClaimDoesntExist {

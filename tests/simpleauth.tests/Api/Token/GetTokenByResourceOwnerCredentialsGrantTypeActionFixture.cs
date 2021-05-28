@@ -54,21 +54,6 @@ namespace SimpleAuth.Tests.Api.Token
         }
 
         [Fact]
-        public async Task When_Passing_No_Request_Then_Error_Is_Returned()
-        {
-            InitializeFakeObjects();
-            var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                    null,
-                    null,
-                    null,
-                    null,
-                    CancellationToken.None)
-                .ConfigureAwait(false);
-
-            Assert.True(result.HasError);
-        }
-
-        [Fact]
         public async Task When_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
         {
             InitializeFakeObjects();
@@ -93,10 +78,10 @@ namespace SimpleAuth.Tests.Api.Token
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedToken>.Error;
 
-            Assert.Equal(ErrorCodes.InvalidClient, result.Error.Title);
-            Assert.Equal(string.Format(SharedStrings.TheClientDoesntExist), result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidClient, result.Details.Title);
+            Assert.Equal(string.Format(SharedStrings.TheClientDoesntExist), result.Details.Detail);
         }
 
         [Fact]
@@ -118,8 +103,8 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
-                GrantTypes = new[] {GrantTypes.AuthorizationCode}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
@@ -132,12 +117,12 @@ namespace SimpleAuth.Tests.Api.Token
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedToken>.Error;
 
-            Assert.Equal(ErrorCodes.InvalidGrant, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
             Assert.Equal(
                 string.Format(Strings.TheClientDoesntSupportTheGrantType, clientId, GrantTypes.Password),
-                result.Error.Detail);
+                result.Details.Detail);
         }
 
         [Fact]
@@ -159,8 +144,8 @@ namespace SimpleAuth.Tests.Api.Token
             {
                 ResponseTypes = Array.Empty<string>(),
                 ClientId = clientId,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
-                GrantTypes = new[] {GrantTypes.Password}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                GrantTypes = new[] { GrantTypes.Password }
             };
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
 
@@ -173,12 +158,12 @@ namespace SimpleAuth.Tests.Api.Token
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedToken>.Error;
 
-            Assert.Equal(ErrorCodes.InvalidResponse, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidResponse, result.Details.Title);
             Assert.Equal(
                 string.Format(Strings.TheClientDoesntSupportTheResponseType, clientId, "token id_token"),
-                result.Error.Detail);
+                result.Details.Detail);
         }
 
         [Fact]
@@ -198,9 +183,9 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = clientId,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
-                GrantTypes = new[] {GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                GrantTypes = new[] { GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
             };
 
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
@@ -211,7 +196,7 @@ namespace SimpleAuth.Tests.Api.Token
                         It.IsAny<string>(),
                         It.IsAny<string>(),
                         It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ResourceOwner) null);
+                .ReturnsAsync((ResourceOwner)null);
             InitializeFakeObjects(authenticateService.Object);
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             var authenticationHeader = new AuthenticationHeaderValue(
@@ -223,9 +208,9 @@ namespace SimpleAuth.Tests.Api.Token
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidCredentials, result.Error.Title);
-            Assert.Equal(Strings.ResourceOwnerCredentialsAreNotValid, result.Error.Detail);
+                .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            Assert.Equal(ErrorCodes.InvalidCredentials, result.Details.Title);
+            Assert.Equal(Strings.ResourceOwnerCredentialsAreNotValid, result.Details.Detail);
         }
 
         [Fact]
@@ -247,9 +232,9 @@ namespace SimpleAuth.Tests.Api.Token
             var client = new Client
             {
                 ClientId = "id",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
-                GrantTypes = new[] {GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token}
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+                GrantTypes = new[] { GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
             };
 
             var resourceOwner = new ResourceOwner();
@@ -274,9 +259,9 @@ namespace SimpleAuth.Tests.Api.Token
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedToken>.Error;
 
-            Assert.Equal(ErrorCodes.InvalidScope, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidScope, result.Details.Title);
         }
 
         [Fact]
@@ -298,17 +283,17 @@ namespace SimpleAuth.Tests.Api.Token
             };
             var client = new Client
             {
-                AllowedScopes = new[] {invalidScope},
+                AllowedScopes = new[] { invalidScope },
                 ClientId = clientId,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}},
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
                 JsonWebKeys =
                     TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
-                GrantTypes = new[] {GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token}
+                GrantTypes = new[] { GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
             };
-            var resourceOwner = new ResourceOwner {Subject = "tester"};
+            var resourceOwner = new ResourceOwner { Subject = "tester" };
             var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
             authenticateService
                 .Setup(
@@ -321,7 +306,7 @@ namespace SimpleAuth.Tests.Api.Token
             InitializeFakeObjects(authenticateService.Object);
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
             _scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-                .ReturnsAsync(new[] {new Scope {Name = invalidScope}});
+                .ReturnsAsync(new[] { new Scope { Name = invalidScope } });
 
             var authenticationHeader = new AuthenticationHeaderValue(
                 "Basic",

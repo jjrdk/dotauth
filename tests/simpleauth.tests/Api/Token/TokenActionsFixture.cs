@@ -126,9 +126,9 @@ namespace SimpleAuth.Tests.Api.Token
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedToken>.Result;
 
-            Assert.Equal(clientId, result.Content.ClientId);
+            Assert.Equal(clientId, result.Item.ClientId);
         }
 
         [Fact]

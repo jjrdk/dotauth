@@ -417,12 +417,12 @@ namespace SimpleAuth.Controllers
                     Request.GetAbsoluteUriWithVirtualPath(),
                     cancellationToken)
                 .ConfigureAwait(false);
-            if (refreshedResponse.HasError)
+            if (refreshedResponse is Option<GrantedToken>.Error error)
             {
-                return new BadRequestObjectResult(refreshedResponse.Error);
+                return new BadRequestObjectResult(error.Details);
             }
 
-            var refreshedToken = refreshedResponse.Content;
+            var refreshedToken = ((Option<GrantedToken>.Result)refreshedResponse).Item;
             refreshedToken = refreshedToken with
             {
                 ParentTokenId = existingToken.ParentTokenId,

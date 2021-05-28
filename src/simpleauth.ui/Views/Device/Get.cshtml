@@ -1,0 +1,26 @@
+@{
+	ViewBag.Title = "Device Authorization";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+ <div class="col s12 m6 offset-m3">
+  <div class="card">
+   <div class="card-title"><h1>@ViewBag.Title</h1></div>
+   <div class="card-image">
+	<img alt="Device Authorization" src="~/img/manage_resources.png" />
+   </div>
+   <div class="card-action center">
+	<div>By entering and submitting the code shown on your device, you are confirming that you are authorizing the device to access the approved content on your behalf.</div>
+	<form name="form" enctype="application/x-www-form-urlencoded" method="POST" action="@Url.Action("Approve", "Device")">
+	 <i class="material-icons prefix">account_circle</i>
+	 <input id="code" name="code" type="text" />
+	 <label for="code">User Code</label>
+	 <div class="col s12 m6">
+	  <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Authorize</button>
+	 </div>
+	</form>
+   </div>
+  </div>
+ </div>
+</div>

@@ -6,7 +6,7 @@
 
     internal static class HttpRequestsExtensions
     {
-        public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
+        public static Uri GetAbsoluteUri(this HttpRequest requestMessage)
         {
             var host = requestMessage.Host.Host;
 
@@ -21,7 +21,12 @@
                 uri.Path = requestMessage.PathBase.Value;
             }
 
-            return uri.Uri.AbsoluteUri.TrimEnd('/');
+            return uri.Uri;
+        }
+
+        public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
+        {
+            return requestMessage.GetAbsoluteUri().AbsoluteUri.TrimEnd('/');
         }
 
         public static X509Certificate2? GetCertificate(this HttpRequest request)

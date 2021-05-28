@@ -328,6 +328,8 @@ namespace SimpleAuth
             public const string DiscoveryAction = ".well-known/openid-configuration";
             public const string Authorization = "authorization";
             public const string Token = "token";
+            public const string Device = "device";
+            public const string DeviceAuthorization = "device_authorization";
             public const string UserInfo = "userinfo";
             public const string Jwks = "jwks";
             public const string RevokeSessionCallback = "revoke_session_callback";

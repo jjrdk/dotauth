@@ -58,7 +58,7 @@
             _logger = logger;
         }
 
-        public async Task<GenericResponse<GrantedToken>> GetTokenByTicketId(
+        public async Task<Option<GrantedToken>> GetTokenByTicketId(
             GetTokenViaTicketIdParameter parameter,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,
@@ -68,17 +68,11 @@
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
             {
                 _logger.LogError("Ticket is null or empty");
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(
-                            Strings.MissingParameter,
-                            UmaConstants.RptClaims.Ticket)
-                    }
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = string.Format(Strings.MissingParameter, UmaConstants.RptClaims.Ticket)
                 };
             }
 
@@ -89,33 +83,25 @@
             if (client == null)
             {
                 _logger.LogError("Client not found.");
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidClient,
-                        Detail = authResult.ErrorMessage!
-                    }
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidClient,
+                    Detail = authResult.ErrorMessage!
                 };
             }
 
             if (client.GrantTypes.All(x => x != GrantTypes.UmaTicket))
             {
                 _logger.LogError("UMA Grant type not supported");
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidGrant,
-                        Detail = string.Format(
-                            Strings.TheClientDoesntSupportTheGrantType,
-                            client.ClientId,
-                            GrantTypes.UmaTicket)
-                    }
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidGrant,
+                    Detail = string.Format(
+                        Strings.TheClientDoesntSupportTheGrantType,
+                        client.ClientId,
+                        GrantTypes.UmaTicket)
                 };
             }
 
@@ -123,15 +109,11 @@
             if (ticket == null)
             {
                 _logger.LogError($"Ticket {parameter.Ticket} not found");
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidGrant,
-                        Detail = string.Format(Strings.TheTicketDoesntExist, parameter.Ticket)
-                    }
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidGrant,
+                    Detail = string.Format(Strings.TheTicketDoesntExist, parameter.Ticket)
                 };
             }
 
@@ -139,15 +121,11 @@
             if (ticket.Expires < DateTimeOffset.UtcNow)
             {
                 _logger.LogError("Ticket expired");
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.ExpiredTicket,
-                        Detail = Strings.TheTicketIsExpired
-                    }
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.ExpiredTicket,
+                    Detail = Strings.TheTicketIsExpired
                 };
             }
 
@@ -169,7 +147,7 @@
                 if (await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false))
                 {
                     await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
-                    return new GenericResponse<GrantedToken> { Content = grantedToken, StatusCode = HttpStatusCode.OK };
+                    return grantedToken;
                 }
 
                 await _eventPublisher.Publish(
@@ -180,15 +158,11 @@
                         ticket.ResourceOwner,
                         authorizationResult.Principal.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow)).ConfigureAwait(false);
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.InternalServerError,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.InternalServerError,
-                        Title = ErrorCodes.InternalError,
-                        Detail = Strings.InternalError
-                    }
+                    Status = HttpStatusCode.InternalServerError,
+                    Title = ErrorCodes.InternalError,
+                    Detail = Strings.InternalError
                 };
             }
 
@@ -202,15 +176,11 @@
                             authorizationResult.Principal.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.Forbidden,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.Forbidden,
-                        Title = ErrorCodes.RequestSubmitted,
-                        Detail = Strings.PermissionRequested
-                    }
+                    Status = HttpStatusCode.Forbidden,
+                    Title = ErrorCodes.RequestSubmitted,
+                    Detail = Strings.PermissionRequested
                 };
             }
 
@@ -222,15 +192,11 @@
                         authorizationResult.Principal.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
-            return new GenericResponse<GrantedToken>
+            return new ErrorDetails
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Error = new ErrorDetails
-                {
-                    Status = HttpStatusCode.BadRequest,
-                    Title = ErrorCodes.RequestDenied,
-                    Detail = Strings.TheAuthorizationPolicyIsNotSatisfied
-                }
+                Status = HttpStatusCode.BadRequest,
+                Title = ErrorCodes.RequestDenied,
+                Detail = Strings.TheAuthorizationPolicyIsNotSatisfied
             };
         }
 

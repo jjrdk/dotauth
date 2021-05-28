@@ -126,12 +126,16 @@
                     cancellationToken)
                 .ConfigureAwait(false);
 
-            return result.StatusCode == HttpStatusCode.OK
-                ? new OkObjectResult(result.Content.ToDto())
-                : new BadRequestObjectResult(result.Error);
+            return result switch
+            {
+                //result.StatusCode == HttpStatusCode.OK
+                Option<GrantedToken>.Result r => new OkObjectResult(r.Item.ToDto()),
+                Option<GrantedToken>.Error e => new BadRequestObjectResult(e.Details),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
-        private async Task<GenericResponse<GrantedToken>> GetGrantedToken(
+        private async Task<Option<GrantedToken>> GetGrantedToken(
             TokenRequest tokenRequest,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,

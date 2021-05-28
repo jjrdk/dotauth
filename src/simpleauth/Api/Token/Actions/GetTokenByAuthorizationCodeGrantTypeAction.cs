@@ -39,8 +39,14 @@ namespace SimpleAuth.Api.Token.Actions
     {
         private class ValidationResult
         {
-            public AuthorizationCode AuthCode { get; set; } = null!;
-            public Client Client { get; set; } = null!;
+            public ValidationResult(AuthorizationCode authCode, Client client)
+            {
+                AuthCode = authCode;
+                Client = client;
+            }
+
+            public AuthorizationCode AuthCode { get; }
+            public Client Client { get; }
         }
 
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
@@ -66,27 +72,29 @@ namespace SimpleAuth.Api.Token.Actions
             _jwksStore = jwksStore;
         }
 
-        public async Task<GenericResponse<GrantedToken>> Execute(
+        public async Task<Option<GrantedToken>> Execute(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,
             string issuerName,
             CancellationToken cancellationToken)
         {
-            var (result, genericResponse) = await ValidateParameter(
+            var option = await ValidateParameter(
                     authorizationCodeGrantTypeParameter,
                     authenticationHeaderValue,
                     certificate,
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            if (genericResponse != null)
+            if (option is Option<ValidationResult>.Error e)
             {
-                return genericResponse;
+                return e.Details;
             }
 
+            var result = ((Option<ValidationResult>.Result)option).Item;
+
             // 1. Invalidate the authorization code by removing it !
-            await _authorizationCodeStore.Remove(result!.AuthCode.Code, cancellationToken).ConfigureAwait(false);
+            await _authorizationCodeStore.Remove(result.AuthCode.Code, cancellationToken).ConfigureAwait(false);
             var grantedToken = await _tokenStore.GetValidGrantedToken(
                     _jwksStore,
                     result.AuthCode.Scopes,
@@ -111,14 +119,14 @@ namespace SimpleAuth.Api.Token.Actions
                 await _eventPublisher.Publish(
                         new TokenGranted(
                             Id.Create(),
-                            grantedToken?.UserInfoPayLoad?.Sub,
+                            grantedToken.UserInfoPayLoad?.Sub,
                             result.AuthCode.ClientId,
                             result.AuthCode.Scopes,
                             GrantTypes.AuthorizationCode,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
                 // Fill-in the id-token
-                if (grantedToken?.IdTokenPayLoad != null)
+                if (grantedToken.IdTokenPayLoad != null)
                 {
                     grantedToken = grantedToken with
                     {
@@ -135,7 +143,7 @@ namespace SimpleAuth.Api.Token.Actions
                 await _tokenStore.AddToken(grantedToken!, cancellationToken).ConfigureAwait(false);
             }
 
-            return new GenericResponse<GrantedToken> { StatusCode = HttpStatusCode.OK, Content = grantedToken };
+            return grantedToken!;
         }
 
         /// <summary>
@@ -147,7 +155,7 @@ namespace SimpleAuth.Api.Token.Actions
         /// <param name="issuerName"></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        private async Task<(ValidationResult?, GenericResponse<GrantedToken>?)> ValidateParameter(
+        private async Task<Option<ValidationResult>> ValidateParameter(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,
@@ -156,17 +164,12 @@ namespace SimpleAuth.Api.Token.Actions
         {
             if (authorizationCodeGrantTypeParameter.Code == null)
             {
-                return (null,
-                    new GenericResponse<GrantedToken>
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Error = new ErrorDetails
-                        {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.InvalidGrant,
-                            Detail = Strings.TheAuthorizationCodeIsNotCorrect
-                        }
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidGrant,
+                    Detail = Strings.TheAuthorizationCodeIsNotCorrect
+                };
             }
 
             // 1. Authenticate the client
@@ -178,54 +181,39 @@ namespace SimpleAuth.Api.Token.Actions
             var client = authResult.Client;
             if (client == null)
             {
-                return (null,
-                    new GenericResponse<GrantedToken>
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Error = new ErrorDetails
-                        {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.InvalidClient,
-                            Detail = authResult.ErrorMessage!
-                        }
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidClient,
+                    Detail = authResult.ErrorMessage!
+                };
             }
 
             // 2. Check the client
             if (!client.GrantTypes.Contains(GrantTypes.AuthorizationCode))
             {
-                return (null,
-                    new GenericResponse<GrantedToken>
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Error = new ErrorDetails
-                        {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.InvalidGrant,
-                            Detail = string.Format(
-                                Strings.TheClientDoesntSupportTheGrantType,
-                                client.ClientId,
-                                GrantTypes.AuthorizationCode)
-                        }
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidGrant,
+                    Detail = string.Format(
+                        Strings.TheClientDoesntSupportTheGrantType,
+                        client.ClientId,
+                        GrantTypes.AuthorizationCode)
+                };
             }
 
             if (!client.ResponseTypes.Contains(ResponseTypeNames.Code))
             {
-                return (null,
-                    new GenericResponse<GrantedToken>
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Error = new ErrorDetails
-                        {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.InvalidResponse,
-                            Detail = string.Format(
-                                Strings.TheClientDoesntSupportTheResponseType,
-                                client.ClientId,
-                                ResponseTypeNames.Code)
-                        }
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidResponse,
+                    Detail = string.Format(
+                        Strings.TheClientDoesntSupportTheResponseType,
+                        client.ClientId,
+                        ResponseTypeNames.Code)
+                };
             }
 
             var authorizationCode = await _authorizationCodeStore
@@ -234,67 +222,47 @@ namespace SimpleAuth.Api.Token.Actions
             // 2. Check if the authorization code is valid
             if (authorizationCode == null)
             {
-                return (null,
-                    new GenericResponse<GrantedToken>
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Error = new ErrorDetails
-                        {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.InvalidGrant,
-                            Detail = Strings.TheAuthorizationCodeIsNotCorrect
-                        }
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidGrant,
+                    Detail = Strings.TheAuthorizationCodeIsNotCorrect
+                };
             }
 
             // 3. Check PKCE
             if (!client.CheckPkce(authorizationCodeGrantTypeParameter.CodeVerifier, authorizationCode))
             {
-                return (null,
-                       new GenericResponse<GrantedToken>
-                       {
-                           StatusCode = HttpStatusCode.BadRequest,
-                           Error = new ErrorDetails
-                           {
-                               Status = HttpStatusCode.BadRequest,
-                               Title = ErrorCodes.InvalidRequest,
-                               Detail = Strings.TheCodeVerifierIsNotCorrect
-                           }
-                       });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = Strings.TheCodeVerifierIsNotCorrect
+                };
             }
 
             // 4. Ensure the authorization code was issued to the authenticated client.
             var authorizationClientId = authorizationCode.ClientId;
             if (authorizationClientId != client.ClientId)
             {
-                return (null,
-                    new GenericResponse<GrantedToken>
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Error = new ErrorDetails
-                        {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.InvalidRequest,
-                            Detail = string.Format(
-                                Strings.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
-                                authorizationClientId)
-                        }
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = string.Format(
+                        Strings.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
+                        authorizationClientId)
+                };
             }
 
             if (authorizationCode.RedirectUri != authorizationCodeGrantTypeParameter.RedirectUri)
             {
-                return (null,
-                    new GenericResponse<GrantedToken>
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Error = new ErrorDetails
-                        {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.InvalidRedirectUri,
-                            Detail = Strings.TheRedirectionUrlIsNotTheSame
-                        }
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidRedirectUri,
+                    Detail = Strings.TheRedirectionUrlIsNotTheSame
+                };
             }
 
             // 5. Ensure the authorization code is still valid.
@@ -303,40 +271,30 @@ namespace SimpleAuth.Api.Token.Actions
             var currentDateTime = DateTimeOffset.UtcNow;
             if (currentDateTime > expirationDateTime)
             {
-                return (null,
-                    new GenericResponse<GrantedToken>
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Error = new ErrorDetails
-                        {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.ExpiredAuthorizationCode,
-                            Detail = Strings.TheAuthorizationCodeIsObsolete
-                        }
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.ExpiredAuthorizationCode,
+                    Detail = Strings.TheAuthorizationCodeIsObsolete
+                };
             }
 
             // Ensure that the redirect_uri parameter value is identical to the redirect_uri parameter value.
             var redirectionUrl = client.GetRedirectionUrls(authorizationCodeGrantTypeParameter.RedirectUri);
             if (!redirectionUrl.Any())
             {
-                return (null,
-                    new GenericResponse<GrantedToken>
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Error = new ErrorDetails
-                        {
-                            Status = HttpStatusCode.BadRequest,
-                            Title = ErrorCodes.InvalidRedirectUri,
-                            Detail = string.Format(
-                                Strings.RedirectUrlIsNotValid,
-                                authorizationCodeGrantTypeParameter.RedirectUri)
-                        }
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidRedirectUri,
+                    Detail = string.Format(
+                        Strings.RedirectUrlIsNotValid,
+                        authorizationCodeGrantTypeParameter.RedirectUri)
+                };
             }
 
 
-            return (new ValidationResult { Client = client, AuthCode = authorizationCode }, null);
+            return new ValidationResult(authorizationCode, client);
         }
     }
 }

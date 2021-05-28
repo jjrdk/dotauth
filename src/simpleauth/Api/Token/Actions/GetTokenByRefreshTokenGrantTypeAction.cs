@@ -58,7 +58,7 @@ namespace SimpleAuth.Api.Token.Actions
             _authenticateClient = new AuthenticateClient(clientStore, jwksRepository);
         }
 
-        public async Task<GenericResponse<GrantedToken>> Execute(
+        public async Task<Option<GrantedToken>> Execute(
             RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,
@@ -74,33 +74,25 @@ namespace SimpleAuth.Api.Token.Actions
             var client = authResult.Client;
             if (client == null)
             {
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidClient,
-                        Detail = authResult.ErrorMessage!
-                    }
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidClient,
+                    Detail = authResult.ErrorMessage!
                 };
             }
 
             // 2. Check client
             if (client.GrantTypes.All(x => x != GrantTypes.RefreshToken))
             {
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidGrant,
-                        Detail = string.Format(
-                            Strings.TheClientDoesntSupportTheGrantType,
-                            client.ClientId,
-                            GrantTypes.RefreshToken)
-                    }
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidGrant,
+                    Detail = string.Format(
+                        Strings.TheClientDoesntSupportTheGrantType,
+                        client.ClientId,
+                        GrantTypes.RefreshToken)
                 };
             }
 
@@ -109,15 +101,11 @@ namespace SimpleAuth.Api.Token.Actions
                 .ConfigureAwait(false);
             if (grantedToken?.ClientId != client.ClientId)
             {
-                return new GenericResponse<GrantedToken>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidGrant,
-                        Detail = Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer
-                    }
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidGrant,
+                    Detail = Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer
                 };
             }
 
@@ -145,7 +133,7 @@ namespace SimpleAuth.Api.Token.Actions
                 .ConfigureAwait(false);
             if (option is Option<GrantedToken>.Error e)
             {
-                return new GenericResponse<GrantedToken> { Error = e.Details, StatusCode = e.Details.Status };
+                return e;
             }
             var generatedToken = ((Option<GrantedToken>.Result)option).Item with
             {
@@ -178,11 +166,7 @@ namespace SimpleAuth.Api.Token.Actions
                             GrantTypes.RefreshToken,
                             DateTimeOffset.UtcNow))
                     .ConfigureAwait(false);
-            return new GenericResponse<GrantedToken>
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = generatedToken
-            };
+            return generatedToken;
         }
 
         private async Task<GrantedToken?> ValidateParameter(

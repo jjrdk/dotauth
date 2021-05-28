@@ -36,6 +36,11 @@ namespace SimpleAuth.Shared
         public const string UmaTicket = "urn:ietf:params:oauth:grant-type:uma-ticket"; //"uma_ticket";
 
         /// <summary>
+        /// Device code
+        /// </summary>
+        public const string Device = "urn:ietf:params:oauth:grant-type:device_code";
+
+        /// <summary>
         /// Implicit
         /// </summary>
         public const string Implicit = "implicit";
