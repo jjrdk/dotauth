@@ -39,7 +39,7 @@
                 Expires = DateTimeOffset.UtcNow.AddSeconds(response.ExpiresIn),
                 Interval = response.Interval,
                 Response = response,
-                Scope = scopes
+                Scopes = scopes
             };
             var option = await _store.Save(request).ConfigureAwait(false);
             return option switch

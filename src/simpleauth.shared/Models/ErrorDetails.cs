@@ -23,5 +23,11 @@
         /// A human-readable explanation specific to this occurrence of the problem.
         /// </summary>
         public string Detail { get; set; } = null!;
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{Title} - {Detail.Replace('\n', ' ').Replace("\r", string.Empty)} - {Status}";
+        }
     }
 }

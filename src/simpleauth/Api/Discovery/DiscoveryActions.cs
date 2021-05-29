@@ -69,6 +69,7 @@ namespace SimpleAuth.Api.Discovery
                 // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
 
                 Issuer = new Uri(issuer),
+                DeviceAuthorizationEndPoint = new Uri(issuer+"/"+CoreConstants.EndPoints.DeviceAuthorization),
                 AuthorizationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Authorization),
                 TokenEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Token),
                 UserInfoEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.UserInfo),

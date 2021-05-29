@@ -13,6 +13,7 @@
     using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
+    using System.Runtime.Serialization;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
@@ -23,6 +24,12 @@
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
 
+    [DataContract]
+    internal class OauthError
+    {
+        [DataMember] public string Error { get; init; } = null!;
+    }
+
     /// <summary>
     /// Defines the token controller.
     /// </summary>
@@ -32,6 +39,7 @@
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class TokenController : ControllerBase
     {
+        private readonly ILogger<TokenController> _logger;
         private readonly TokenActions _tokenActions;
         private readonly UmaTokenActions _umaTokenActions;
 
@@ -61,9 +69,11 @@
             ITicketStore ticketStore,
             IJwksStore jwksStore,
             IResourceSetRepository resourceSetRepository,
+            IDeviceAuthorizationStore deviceAuthorizationStore,
             IEventPublisher eventPublisher,
             ILogger<TokenController> logger)
         {
+            _logger = logger;
             _tokenActions = new TokenActions(
                 settings,
                 authorizationCodeStore,
@@ -74,6 +84,7 @@
                 authenticateResourceOwnerServices,
                 eventPublisher,
                 tokenStore,
+                deviceAuthorizationStore,
                 logger);
             _umaTokenActions = new UmaTokenActions(
                 ticketStore,
@@ -126,13 +137,20 @@
                     cancellationToken)
                 .ConfigureAwait(false);
 
-            return result switch
+            if (result is Option<GrantedToken>.Result r)
             {
-                //result.StatusCode == HttpStatusCode.OK
-                Option<GrantedToken>.Result r => new OkObjectResult(r.Item.ToDto()),
-                Option<GrantedToken>.Error e => new BadRequestObjectResult(e.Details),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+                return new OkObjectResult(r.Item.ToDto());
+            }
+
+            var e = (Option<GrantedToken>.Error)result;
+
+            _logger.LogError(
+                "Could not issue token. {0} - {1} - {2}",
+                e.Details.Title,
+                e.Details.Detail,
+                e.Details.Status);
+
+            return new BadRequestObjectResult(new OauthError { Error = e.Details.Title });
         }
 
         private async Task<Option<GrantedToken>> GetGrantedToken(
@@ -144,6 +162,12 @@
         {
             switch (tokenRequest.grant_type)
             {
+                case GrantTypes.Device:
+                    return await _tokenActions.GetTokenByDeviceGrantType(
+                        tokenRequest.client_id,
+                        tokenRequest.device_code,
+                        issuerName,
+                        cancellationToken).ConfigureAwait(false);
                 case GrantTypes.Password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
                     return await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(
@@ -224,14 +248,18 @@
 
             // 2. Revoke the token
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-            var (success, error) = await _tokenActions.RevokeToken(
+            var option = await _tokenActions.RevokeToken(
                     revocationRequest.ToParameter(),
                     authenticationHeaderValue,
                     Request.GetCertificate(),
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            return success ? new OkResult() : (IActionResult)BadRequest(error);
+            return option switch
+            {
+                Option.Success => new OkResult(),
+                Option.Error e => BadRequest(e.Details)
+            };
         }
     }
 }

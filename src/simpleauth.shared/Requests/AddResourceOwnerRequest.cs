@@ -27,7 +27,7 @@
         /// <summary>
         /// Gets or sets the requested scopes.
         /// </summary>
-        public string[] Scope { get; set; } = Array.Empty<string>();
+        public string[] Scopes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets whether the request has been approved.
@@ -38,6 +38,11 @@
         /// Gets or sets the absolute request expiry time.
         /// </summary>
         public DateTimeOffset Expires { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time the request was last polled.
+        /// </summary>
+        public DateTimeOffset LastPolled { get; set; }
 
         /// <summary>
         /// Gets or sets the authorization response to the client.

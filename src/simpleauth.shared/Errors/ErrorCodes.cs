@@ -16,6 +16,9 @@ namespace SimpleAuth.Shared.Errors
 {
     internal static class ErrorCodes
     {
+        public const string ExpiredToken = "expired_token";
+        public const string AccessDenied = "access_denied";
+        public const string AuthorizationPending = "authorization_pending";
         public const string NotUpdated = "not_updated";
         public const string InvalidResourceSetId = "invalid_resource_set_id";
         public const string ExpiredTicket = "expired_ticket";
@@ -41,5 +44,6 @@ namespace SimpleAuth.Shared.Errors
         public const string ClaimRequired = "claim_required";
         public const string RevokeFailed = "revoke_failed";
         public const string AmbiguousRequestor = "ambiguous_requestor";
+        public const string SlowDown = "slow_down";
     }
 }

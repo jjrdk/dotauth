@@ -25,6 +25,12 @@ namespace SimpleAuth.Shared.Responses
     public record DiscoveryInformation
     {
         /// <summary>
+        /// Gets or sets the device authorization endpoint.
+        /// </summary>
+        [DataMember(Name = "device_authorization_endpoint")]
+        public Uri DeviceAuthorizationEndPoint { get; set; } = null!;
+
+        /// <summary>
         /// Gets or sets the authorization end point.
         /// </summary>
         [DataMember(Name = "authorization_endpoint")]

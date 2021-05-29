@@ -25,6 +25,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
 
@@ -41,7 +42,7 @@ namespace SimpleAuth.Api.Token.Actions
             _logger = logger;
         }
 
-        public async Task<(bool success, ErrorDetails? error)> Execute(
+        public async Task<Option> Execute(
             RevokeTokenParameter revokeTokenParameter,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,
@@ -52,12 +53,12 @@ namespace SimpleAuth.Api.Token.Actions
             if (refreshToken == null)
             {
                 _logger.LogError(Strings.TheRefreshTokenIsNotValid);
-                return (false, new ErrorDetails
+                return new ErrorDetails
                 {
                     Detail = Strings.TheRefreshTokenIsNotValid,
                     Status = HttpStatusCode.BadRequest,
                     Title = ErrorCodes.InvalidToken
-                });
+                };
             }
             // 1. Check the client credentials
             var instruction = authenticationHeaderValue.GetAuthenticateInstruction(revokeTokenParameter, certificate);
@@ -67,12 +68,12 @@ namespace SimpleAuth.Api.Token.Actions
             if (client == null)
             {
                 _logger.LogError(authResult.ErrorMessage);
-                return (false, new ErrorDetails
+                return new ErrorDetails
                 {
                     Detail = authResult.ErrorMessage!,
                     Status = HttpStatusCode.BadRequest,
                     Title = ErrorCodes.InvalidClient
-                });
+                };
             }
 
             // 2. Retrieve the granted token & check if it exists
@@ -90,26 +91,24 @@ namespace SimpleAuth.Api.Token.Actions
             if (grantedToken == null)
             {
                 _logger.LogError(Strings.TheRefreshTokenIsNotValid);
-                return (false,
-                    new ErrorDetails
-                    {
-                        Detail = Strings.TheTokenDoesntExist,
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidToken
-                    });
+                return new ErrorDetails
+                {
+                    Detail = Strings.TheTokenDoesntExist,
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidToken
+                };
             }
 
             // 3. Verifies whether the token was issued to the client making the revocation request
             if (grantedToken.ClientId != client.ClientId)
             {
                 _logger.LogError(Strings.TheRefreshTokenIsNotValid);
-                return (false,
-                    new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidToken,
-                        Detail = string.Format(Strings.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId)
-                    });
+                return new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidToken,
+                    Detail = string.Format(Strings.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId)
+                };
             }
 
             var success = isAccessToken switch
@@ -124,14 +123,13 @@ namespace SimpleAuth.Api.Token.Actions
             };
 
             return success
-                ? (true, null)
-                : (false,
-                    new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.RevokeFailed,
-                        Detail = Strings.CouldNotRevokeToken
-                    });
+                ? new Option.Success()
+                : new ErrorDetails
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.RevokeFailed,
+                    Detail = Strings.CouldNotRevokeToken
+                };
         }
     }
 }

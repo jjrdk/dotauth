@@ -39,6 +39,7 @@ namespace SimpleAuth.Api.Token
 
     internal class TokenActions
     {
+        private readonly GetTokenByDeviceAuthorizationTypeAction _getTokenByDeviceAuthorizationTypeAction;
         private readonly GetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantType;
         private readonly GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
         private readonly GetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
@@ -52,14 +53,22 @@ namespace SimpleAuth.Api.Token
             RuntimeSettings simpleAuthOptions,
             IAuthorizationCodeStore authorizationCodeStore,
             IClientStore clientStore,
-            IScopeRepository scopeRepository,
+            IScopeStore scopeRepository,
             IJwksStore jwksStore,
             IResourceOwnerRepository resourceOwnerRepository,
             IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
             IEventPublisher eventPublisher,
             ITokenStore tokenStore,
+            IDeviceAuthorizationStore deviceAuthorizationStore,
             ILogger logger)
         {
+            _getTokenByDeviceAuthorizationTypeAction = new GetTokenByDeviceAuthorizationTypeAction(
+                deviceAuthorizationStore,
+                tokenStore,
+                jwksStore,
+                clientStore,
+                eventPublisher,
+                logger);
             _getTokenByResourceOwnerCredentialsGrantType = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 clientStore,
                 scopeRepository,
@@ -296,7 +305,17 @@ namespace SimpleAuth.Api.Token
             return grantedToken;
         }
 
-        public async Task<(bool success, ErrorDetails? error)> RevokeToken(
+        public async Task<Option<GrantedToken>> GetTokenByDeviceGrantType(string clientId, string deviceCode, string issuerName, CancellationToken cancellationToken)
+        {
+            return await _getTokenByDeviceAuthorizationTypeAction.Execute(
+                clientId,
+                deviceCode,
+                issuerName,
+                cancellationToken).ConfigureAwait(false);
+
+        }
+
+        public async Task<Option> RevokeToken(
             RevokeTokenParameter revokeTokenParameter,
             AuthenticationHeaderValue? authenticationHeaderValue,
             X509Certificate2? certificate,
@@ -306,15 +325,14 @@ namespace SimpleAuth.Api.Token
             // Read this RFC for more information
             if (string.IsNullOrWhiteSpace(revokeTokenParameter.Token))
             {
-                return (false,
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(
+                return new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = string.Format(
                             Strings.MissingParameter,
                             CoreConstants.IntrospectionRequestNames.Token),
-                        Status = HttpStatusCode.BadRequest
-                    });
+                    Status = HttpStatusCode.BadRequest
+                };
             }
 
             var result = await _revokeTokenAction.Execute(
@@ -324,14 +342,16 @@ namespace SimpleAuth.Api.Token
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            if (result.success)
+            if (result is Option.Error e)
             {
-                await _eventPublisher
-                    .Publish(new TokenRevoked(Id.Create(), revokeTokenParameter.Token, DateTimeOffset.UtcNow))
-                    .ConfigureAwait(false);
+                return e.Details;
             }
 
-            return result;
+            await _eventPublisher
+                    .Publish(new TokenRevoked(Id.Create(), revokeTokenParameter.Token, DateTimeOffset.UtcNow))
+                    .ConfigureAwait(false);
+
+            return new Option.Success();
         }
 
         private static Option Validate(AuthorizationCodeGrantTypeParameter parameter)

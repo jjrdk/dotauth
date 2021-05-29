@@ -164,5 +164,10 @@ namespace SimpleAuth.Common
         /// The RPT.
         /// </value>
         public string? rpt { get; init; }
+
+        /// <summary>
+        /// Gets or sets the device code.
+        /// </summary>
+        public string? device_code { get; init; }
     }
 }
