@@ -209,6 +209,16 @@ namespace SimpleAuth
         public TimeSpan TicketLifeTime { get; }
 
         /// <summary>
+        /// Gets or sets the device polling interval
+        /// </summary>
+        public TimeSpan DevicePollingInterval { get; set; }
+
+        /// <summary>
+        /// Gets or sets the device authorization request lifetime.
+        /// </summary>
+        public TimeSpan DeviceAuthorizationLifetime { get; set; }
+
+        /// <summary>
         /// Gets a list of claims include when the resource owner is created.
         /// If the list is empty then all the claims are included.
         /// </summary>

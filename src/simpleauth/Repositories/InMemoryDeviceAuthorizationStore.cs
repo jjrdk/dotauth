@@ -45,5 +45,12 @@
             _requests.Add(request);
             return Task.FromResult<Option>(new Option.Success());
         }
+
+        /// <inheritdoc />
+        public Task<Option> Remove(DeviceAuthorizationData authRequest, CancellationToken cancellationToken)
+        {
+            _requests.Remove(authRequest);
+            return Task.FromResult<Option>(new Option.Success());
+        }
     }
 }

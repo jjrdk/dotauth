@@ -28,6 +28,7 @@ namespace SimpleAuth.Client
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client.Properties;
+    using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
 
@@ -108,12 +109,14 @@ namespace SimpleAuth.Client
 
             var result = await GetResult<GrantedTokenResponse>(request, _authorizationValue, _certificate, cancellationToken)
                 .ConfigureAwait(false);
-            if (!result.HasError || (result.HasError && tokenRequest is not DeviceTokenRequest))
+            return result.HasError switch
             {
-                return result;
-            }
-
-            return await GetToken(tokenRequest, cancellationToken).ConfigureAwait(false);
+                true when result.Error?.Title == ErrorCodes.AuthorizationPending => await GetToken(
+                        tokenRequest,
+                        cancellationToken)
+                    .ConfigureAwait(false),
+                _ => result
+            };
         }
 
         /// <inheritdoc />

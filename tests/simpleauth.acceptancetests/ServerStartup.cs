@@ -66,6 +66,8 @@
                 Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
                 Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users()),
                 ClaimsIncludedInUserCreation = new[] { "acceptance_test" },
+                DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5),
+                DevicePollingInterval = TimeSpan.FromSeconds(3)
             };
             _context = context;
             _outputHelper = outputHelper;

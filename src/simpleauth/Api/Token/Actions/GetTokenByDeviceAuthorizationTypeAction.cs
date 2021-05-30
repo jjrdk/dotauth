@@ -56,13 +56,16 @@
             var authRequest = ((Option<DeviceAuthorizationData>.Result)option).Item;
             if (authRequest.Approved)
             {
-                return await HandleApprovedRequest(issuerName, cancellationToken, authRequest).ConfigureAwait(false);
+                var token = await HandleApprovedRequest(issuerName, authRequest, cancellationToken).ConfigureAwait(false);
+                await _deviceAuthorizationStore.Remove(authRequest, cancellationToken).ConfigureAwait(false);
+                return token;
             }
 
             var now = DateTimeOffset.UtcNow;
 
             if (authRequest.Expires < now)
             {
+                await _deviceAuthorizationStore.Remove(authRequest, cancellationToken).ConfigureAwait(false);
                 const string? format = "Device code {0} is expired at {1}";
                 _logger.LogInformation(format, authRequest.DeviceCode, now);
                 return new ErrorDetails
@@ -74,10 +77,10 @@
             }
 
             var lastPolled = authRequest.LastPolled;
+            authRequest.LastPolled = now;
+            await _deviceAuthorizationStore.Save(authRequest, cancellationToken).ConfigureAwait(false);
             if (lastPolled.AddSeconds(authRequest.Interval) > now)
             {
-                authRequest.LastPolled = now;
-                await _deviceAuthorizationStore.Save(authRequest, cancellationToken).ConfigureAwait(false);
                 const string? detail = "Device with client id {0} polled after only {1} seconds.";
 
                 var totalSeconds = (now - lastPolled).TotalSeconds;
@@ -101,8 +104,8 @@
 
         private async Task<Option<GrantedToken>> HandleApprovedRequest(
             string issuerName,
-            CancellationToken cancellationToken,
-            DeviceAuthorizationData authRequest)
+            DeviceAuthorizationData authRequest,
+            CancellationToken cancellationToken)
         {
             var scopes = string.Join(" ", authRequest.Scopes);
             var grantedToken = await _tokenStore.GetValidGrantedToken(_jwksStore, scopes, authRequest.ClientId, cancellationToken)

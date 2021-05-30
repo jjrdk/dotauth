@@ -21,11 +21,12 @@
         private readonly DeviceAuthorizationActions _actions;
 
         public DeviceAuthorizationController(
+            RuntimeSettings settings,
             IClientStore clientStore,
             IDeviceAuthorizationStore deviceAuthorizationStore,
             ILogger<DeviceController> logger)
         {
-            _actions = new DeviceAuthorizationActions(deviceAuthorizationStore, clientStore, logger);
+            _actions = new DeviceAuthorizationActions(settings, deviceAuthorizationStore, clientStore, logger);
         }
 
         [HttpPost]

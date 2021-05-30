@@ -18,6 +18,8 @@
         /// <param name="rptLifeTime">The RPT life time.</param>
         /// <param name="patLifeTime">The PAT life time.</param>
         /// <param name="ticketLifeTime">The ticket life time.</param>
+        /// <param name="devicePollingInterval">The device polling interval.</param>
+        /// <param name="deviceAuthorizationLifetime">The device authorization request lifetime.</param>
         /// <param name="allowHttp">Sets whether to allow insecure requests.</param>
         /// <param name="redirectToLogin">Flag to determine whether to redirect home screen to login screen.</param>
         public RuntimeSettings(
@@ -28,9 +30,13 @@
             TimeSpan rptLifeTime = default,
             TimeSpan patLifeTime = default,
             TimeSpan ticketLifeTime = default,
+            TimeSpan devicePollingInterval = default,
+            TimeSpan deviceAuthorizationLifetime = default,
             bool allowHttp = false,
             bool redirectToLogin = false)
         {
+            DevicePollingInterval = devicePollingInterval == default ? TimeSpan.FromSeconds(5) : devicePollingInterval;
+            DeviceAuthorizationLifetime = deviceAuthorizationLifetime == default ? TimeSpan.FromSeconds(1800) : deviceAuthorizationLifetime;
             AllowHttp = allowHttp;
             Salt = salt;
             PatLifeTime = patLifeTime;
@@ -95,5 +101,12 @@
         /// Gets whether to allow insecure requests.
         /// </summary>
         public bool AllowHttp { get; }
+
+        /// <summary>
+        /// Gets the polling interval for device authorizations.
+        /// </summary>
+        public TimeSpan DevicePollingInterval { get; }
+
+        public TimeSpan DeviceAuthorizationLifetime { get; }
     }
 }

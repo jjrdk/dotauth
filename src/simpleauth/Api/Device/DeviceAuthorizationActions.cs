@@ -15,14 +15,16 @@
 
     public class DeviceAuthorizationActions
     {
+        private readonly RuntimeSettings _settings;
         private readonly IDeviceAuthorizationStore _store;
         private readonly IClientStore _clientStore;
         private readonly ILogger _logger;
         private static readonly char[] Characters = "ABCDEFGHIJKMOPRSTVXYZ123456789".ToCharArray();
         private static readonly Random Rnd = new(DateTime.UtcNow.Millisecond);
 
-        public DeviceAuthorizationActions(IDeviceAuthorizationStore store, IClientStore clientStore, ILogger logger)
+        public DeviceAuthorizationActions(RuntimeSettings settings, IDeviceAuthorizationStore store, IClientStore clientStore, ILogger logger)
         {
+            _settings = settings;
             _store = store;
             _clientStore = clientStore;
             _logger = logger;
@@ -47,21 +49,23 @@
             var response = new DeviceAuthorizationResponse
             {
                 DeviceCode = Guid.NewGuid().ToString("N"),
-                ExpiresIn = 1800,
-                Interval = 5,
+                ExpiresIn = (int)_settings.DeviceAuthorizationLifetime.TotalSeconds,
+                Interval = (int)_settings.DevicePollingInterval.TotalSeconds,
                 UserCode = userCode,
                 VerificationUri = $"{authority.AbsoluteUri}{CoreConstants.EndPoints.Device}",
                 VerificationUriComplete = $"{authority.AbsoluteUri}{CoreConstants.EndPoints.Device}?user_code={userCode}"
             };
+            var now = DateTimeOffset.UtcNow;
             var request = new DeviceAuthorizationData
             {
                 ClientId = clientId,
                 Approved = false,
                 DeviceCode = response.DeviceCode,
-                Expires = DateTimeOffset.UtcNow.AddSeconds(response.ExpiresIn),
+                Expires = now.AddSeconds(response.ExpiresIn),
                 Interval = response.Interval,
                 Response = response,
-                Scopes = scopes
+                Scopes = scopes,
+                LastPolled = now
             };
             var option = await _store.Save(request, cancellationToken).ConfigureAwait(false);
             return option switch

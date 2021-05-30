@@ -384,6 +384,8 @@ namespace SimpleAuth
                 rptLifeTime: options.RptLifeTime,
                 patLifeTime: options.PatLifeTime,
                 ticketLifeTime: options.TicketLifeTime,
+                devicePollingInterval: options.DevicePollingInterval,
+                deviceAuthorizationLifetime:options.DeviceAuthorizationLifetime,
                 allowHttp: options.AllowHttp,
                 redirectToLogin: options.RedirectToLogin);
         }

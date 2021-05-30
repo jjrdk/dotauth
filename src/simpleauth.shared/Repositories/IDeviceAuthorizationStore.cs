@@ -14,5 +14,7 @@
         public Task<Option> Approve(string userCode, CancellationToken cancellationToken = default);
 
         Task<Option> Save(DeviceAuthorizationData request, CancellationToken cancellationToken = default);
+
+        Task<Option> Remove(DeviceAuthorizationData authRequest, CancellationToken cancellationToken);
     }
 }
