@@ -2,16 +2,36 @@
 	ViewBag.Title = "Authorization Complete";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@model dynamic
+
 <div class="row">
  <div class="col s12 m6 offset-m3">
   <div class="card">
-   <div class="card-title"><h1>@ViewBag.Title</h1></div>
    <div class="card-image">
-	<img alt="Device Authorization" src="~/img/manage_resources.png" />
+	<img alt="Device Authorization" src="~/img/authorize_device.png" />
    </div>
-   <div class="card-action center">
-	<div>Device authorization completed</div>
-	<div>Please return to your device to complete the authorization.</div>
+   <div class="card-content">
+	<div class="card-title">
+					@if (@Model is SimpleAuth.ViewModels.ErrorViewModel)
+					{
+		 <span>Error</span>
+					}
+					else
+					{
+						@ViewBag.Title
+					}
+	</div>
+	<div>
+					@if (@Model is SimpleAuth.ViewModels.ErrorViewModel)
+					{
+		 <div>@Model.Message</div>
+					}
+					else
+					{
+		 <div>Device authorization completed</div>
+		 <div>Please return to your device to complete the authorization.</div>
+					}
+	</div>
    </div>
   </div>
  </div>

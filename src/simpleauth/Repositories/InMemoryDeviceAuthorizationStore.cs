@@ -3,9 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Properties;
     using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Errors;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
@@ -33,7 +37,18 @@
         /// <inheritdoc />
         public Task<Option> Approve(string userCode, CancellationToken cancellationToken = default)
         {
-            var result = _requests.First(x => x.Response.UserCode == userCode);
+            var result = _requests.FirstOrDefault(x => x.Response.UserCode == userCode);
+            if (result == null)
+            {
+                return Task.FromResult<Option>(
+                    new Option.Error(
+                        new ErrorDetails
+                        {
+                            Title = ErrorCodes.InvalidRequest,
+                            Detail = Strings.RequestIsNotValid,
+                            Status = HttpStatusCode.BadRequest
+                        }));
+            }
             result.Approved = true;
 
             return Task.FromResult<Option>(new Option.Success());

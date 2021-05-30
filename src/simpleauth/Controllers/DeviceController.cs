@@ -8,6 +8,7 @@
     using SimpleAuth.Filters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.ViewModels;
 
     [Authorize]
     [Route(CoreConstants.EndPoints.Device)]
@@ -27,11 +28,11 @@
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string code)
         {
-            return Ok(code);
+            return Ok(new DeviceAuthorizationViewModel { Code = code });
         }
 
         [HttpPost]
-        public async Task<IActionResult> ApprovePost([FromForm] string code, CancellationToken cancellationToken)
+        public async Task<IActionResult> Approve([FromForm] string code, CancellationToken cancellationToken)
         {
             return await HandleApprove(code, cancellationToken).ConfigureAwait(false);
         }
@@ -40,13 +41,13 @@
         {
             var authorization = await _deviceAuthorizationStore.Approve(code, cancellationToken).ConfigureAwait(false);
 
-            if (authorization is not Option.Error e)
+            if (authorization is Option.Error e)
             {
-                return Ok(new object());
+                _logger.LogError("User code: {0} not found", code);
+                return BadRequest(e.Details);
             }
 
-            _logger.LogError("User code: {0} not found", code);
-            return BadRequest(e.Details);
+            return Ok(new object());
         }
     }
 }

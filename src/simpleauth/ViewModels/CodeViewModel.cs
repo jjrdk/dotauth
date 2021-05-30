@@ -89,23 +89,23 @@ namespace SimpleAuth.ViewModels
             switch (Action)
             {
                 case ResendAction:
-                {
-                    if (string.IsNullOrWhiteSpace(ClaimValue))
                     {
-                        modelState.AddModelError(nameof(ClaimValue), Strings.TheClaimMustBeSpecified);
-                    }
+                        if (string.IsNullOrWhiteSpace(ClaimValue))
+                        {
+                            modelState.AddModelError(nameof(ClaimValue), Strings.TheClaimMustBeSpecified);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case SubmitAction:
-                {
-                    if (string.IsNullOrWhiteSpace(Code))
                     {
-                        modelState.AddModelError(nameof(Code), Strings.TheConfirmationCodeMustBeSpecified);
-                    }
+                        if (string.IsNullOrWhiteSpace(Code))
+                        {
+                            modelState.AddModelError(nameof(Code), Strings.TheConfirmationCodeMustBeSpecified);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
             }
         }
     }
