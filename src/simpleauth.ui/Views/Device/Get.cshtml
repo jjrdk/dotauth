@@ -2,7 +2,7 @@
 	ViewBag.Title = "Device Authorization";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@model string
 <div class="row">
  <div class="col s12 m6 offset-m3">
   <div class="card">
@@ -14,7 +14,7 @@
 	<div>By entering and submitting the code shown on your device, you are confirming that you are authorizing the device to access the approved content on your behalf.</div>
 	<form name="form" enctype="application/x-www-form-urlencoded" method="POST" action="@Url.Action("Approve", "Device")">
 	 <i class="material-icons prefix">account_circle</i>
-	 <input id="code" name="code" type="text" />
+	 <input id="code" name="code" type="text" value="@Model" />
 	 <label for="code">User Code</label>
 	 <div class="col s12 m6">
 	  <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Authorize</button>

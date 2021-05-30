@@ -60,6 +60,7 @@ namespace SimpleAuth.Tests.Api.Token
                 Array.Empty<IAuthenticateResourceOwnerService>(),
                 eventPublisher.Object,
                 new Mock<ITokenStore>().Object,
+                new Mock<IDeviceAuthorizationStore>().Object,
                 new Mock<ILogger<TokenController>>().Object);
         }
 

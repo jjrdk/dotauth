@@ -7,7 +7,7 @@
     /// <summary>
     /// Defines the device authorization request
     /// </summary>
-    public record DeviceAuthorizationRequest
+    public record DeviceAuthorizationData
     {
         /// <summary>
         /// Gets or sets the device code.

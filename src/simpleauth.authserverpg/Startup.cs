@@ -64,7 +64,7 @@ namespace SimpleAuth.AuthServerPg
                         symmetricAlgorithm.Padding = PaddingMode.ISO10126;
                         return new SymmetricDataProtector(symmetricAlgorithm);
                     }
-                    : null;
+            : null;
             _options =
                 new
                     SimpleAuthOptions(
@@ -86,27 +86,28 @@ namespace SimpleAuth.AuthServerPg
                             ClaimTypes.StreetAddress,
                             ClaimTypes.Surname
                         })
-                    {
-                        DataProtector = dataProtector,
-                        AllowHttp = allowHttp,
-                        RedirectToLogin = redirect,
-                        ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "SimpleAuth",
-                        Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
-                        Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
-                        Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
-                        AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
-                        AuthorizationCodes =
+                {
+                    DataProtector = dataProtector,
+                    AllowHttp = allowHttp,
+                    RedirectToLogin = redirect,
+                    ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "SimpleAuth",
+                    Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
+                    Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
+                    Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
+                    AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
+                    AuthorizationCodes =
                             sp => new MartenAuthorizationCodeStore(sp.GetRequiredService<IDocumentSession>),
-                        ConfirmationCodes =
+                    ConfirmationCodes =
                             sp => new MartenConfirmationCodeStore(sp.GetRequiredService<IDocumentSession>),
-                        Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
-                        JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
-                        Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
-                        Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
-                        ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
-                        EventPublisher = sp =>
-                            new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>())
-                    };
+                    DeviceAuthorizations = sp => new MartenDeviceAuthorizationStore(sp.GetRequiredService<IDocumentSession>),
+                    Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
+                    JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
+                    Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
+                    Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
+                    ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
+                    EventPublisher = sp =>
+                        new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>())
+                };
         }
 
         public void ConfigureServices(IServiceCollection services)

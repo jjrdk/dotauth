@@ -37,10 +37,20 @@
         /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
+        /// <returns>The <see cref="Uri"/> to execute the authorization flow.</returns>
         /// <exception cref="ArgumentNullException">request</exception>
         Task<GenericResponse<Uri>> GetAuthorization(
             AuthorizationRequest request,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets a device authorization
+        /// </summary>
+        /// <param name="request">The authorization request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns>The <see cref="DeviceAuthorizationResponse"/> with information about how to execute the authorization flow.</returns>
+        Task<GenericResponse<DeviceAuthorizationResponse>> GetAuthorization(
+            DeviceAuthorizationRequest request,
             CancellationToken cancellationToken = default);
 
         /// <summary>

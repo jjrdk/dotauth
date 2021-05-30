@@ -74,6 +74,7 @@ namespace SimpleAuth.AuthServerPgRedis
                         sp.GetRequiredService<IDatabaseAsync>(),
                         TimeSpan.FromMinutes(30)),
                 Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
+                DeviceAuthorizations = sp => new MartenDeviceAuthorizationStore(sp.GetRequiredService<IDocumentSession>),
                 JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
                 Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _options.TicketLifeTime),
                 Tokens =

@@ -124,6 +124,11 @@ namespace SimpleAuth.Client
             return new TokenCredentials(dict);
         }
 
+        public static TokenCredentials AsDevice()
+        {
+            return new(new Dictionary<string, string>());
+        }
+
         /// <inheritdoc />
         public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
         {

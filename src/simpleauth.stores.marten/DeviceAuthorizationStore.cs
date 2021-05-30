@@ -26,7 +26,7 @@
         public async Task<Option<DeviceAuthorizationResponse>> Get(string userCode, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFunc();
-            var request = await session.Query<DeviceAuthorizationRequest>()
+            var request = await session.Query<DeviceAuthorizationData>()
                 .Where(x => x.Response.UserCode == userCode)
                 .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
 
@@ -43,15 +43,35 @@
         }
 
         /// <inheritdoc />
+        public async Task<Option<DeviceAuthorizationData>> Get(string clientId, string deviceCode, CancellationToken cancellationToken = default)
+        {
+            using var session = _sessionFunc();
+            var request = await session.Query<DeviceAuthorizationData>()
+                .Where(x => x.ClientId == clientId && x.DeviceCode == deviceCode)
+                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+
+            return request switch
+            {
+                null => new ErrorDetails
+                {
+                    Detail = ErrorMessages.NotFound,
+                    Title = ErrorMessages.NotFound,
+                    Status = HttpStatusCode.NotFound
+                },
+                _ => request!
+            };
+        }
+
+        /// <inheritdoc />
         public Task<Option> Approve(string userCode, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFunc();
-            session.Patch<DeviceAuthorizationRequest>(x => x.Response.UserCode == userCode).Set(x => x.Approved, true);
+            session.Patch<DeviceAuthorizationData>(x => x.Response.UserCode == userCode).Set(x => x.Approved, true);
             return Task.FromResult<Option>(new Option.Success());
         }
 
         /// <inheritdoc />
-        public async Task<Option> Save(DeviceAuthorizationRequest request, CancellationToken cancellationToken = default)
+        public async Task<Option> Save(DeviceAuthorizationData request, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFunc();
             session.Store(request);

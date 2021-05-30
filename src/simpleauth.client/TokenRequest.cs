@@ -27,7 +27,7 @@ namespace SimpleAuth.Client
     {
         private readonly Dictionary<string, string> _form;
 
-        private TokenRequest(Dictionary<string, string> form)
+        protected internal TokenRequest(Dictionary<string, string> form)
         {
             _form = form;
         }
@@ -209,7 +209,7 @@ namespace SimpleAuth.Client
         /// </exception>
         public static TokenRequest FromPassword(string userName, string password, string[] scopes, string amrValue = "pwd")
         {
-            return FromPassword(userName, password, scopes, new[] {amrValue});
+            return FromPassword(userName, password, scopes, new[] { amrValue });
         }
 
         /// <inheritdoc />
@@ -223,5 +223,26 @@ namespace SimpleAuth.Client
         {
             return GetEnumerator();
         }
+
+        public static TokenRequest FromDeviceCode(string clientId, string deviceCode, int interval)
+        {
+            var dictionary = new Dictionary<string, string>
+            {
+                {RequestTokenNames.GrantType, GrantTypes.Device},
+                {"client_id", clientId},
+                {"device_code", deviceCode}
+            };
+            return new DeviceTokenRequest(dictionary, interval);
+        }
+    }
+
+    public record DeviceTokenRequest : TokenRequest
+    {
+        public DeviceTokenRequest(Dictionary<string, string> form, int interval) : base(form)
+        {
+            Interval = interval;
+        }
+
+        public int Interval { get; }
     }
 }

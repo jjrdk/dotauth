@@ -288,6 +288,7 @@ namespace SimpleAuth
                 .AddSingleton<IResourceOwnerStore>(sp => sp.GetRequiredService<IResourceOwnerRepository>())
                 .AddSingleton(sp => options.Scopes?.Invoke(sp) ?? new InMemoryScopeRepository())
                 .AddSingleton<IScopeStore>(sp => sp.GetRequiredService<IScopeRepository>())
+                .AddSingleton(sp => options.DeviceAuthorizations?.Invoke(sp) ?? new InMemoryDeviceAuthorizationStore())
                 .AddSingleton(sp => options.ResourceSets?.Invoke(sp) ?? new InMemoryResourceSetRepository())
                 .AddSingleton(sp => options.Tickets?.Invoke(sp) ?? new InMemoryTicketStore())
                 .AddSingleton(sp => options.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())

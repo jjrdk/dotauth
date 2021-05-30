@@ -54,9 +54,9 @@ namespace SimpleAuth.Tests.Api.Token
             _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Client)null);
 
-            var (_, error) = await _revokeTokenAction.Execute(parameter, null, null, null, CancellationToken.None)
-                .ConfigureAwait(false);
-            Assert.Equal(ErrorCodes.InvalidClient, error.Title);
+            var error = await _revokeTokenAction.Execute(parameter, null, null, null, CancellationToken.None)
+                .ConfigureAwait(false) as Option.Error;
+            Assert.Equal(ErrorCodes.InvalidClient, error.Details.Title);
         }
 
         [Fact]
@@ -86,9 +86,9 @@ namespace SimpleAuth.Tests.Api.Token
                         null,
                         null,
                         CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.Equal("invalid_token", result.error.Title);
+            Assert.Equal("invalid_token", result.Details.Title);
         }
 
         [Fact]

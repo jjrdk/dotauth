@@ -61,7 +61,7 @@ namespace SimpleAuth.Shared.Requests
             code_challenge_method = codeChallengeMethod;
             state = requestState;
         }
-        
+
 #pragma warning disable IDE1006 // Naming Styles
         /// <summary>
         /// Gets or sets the scope.

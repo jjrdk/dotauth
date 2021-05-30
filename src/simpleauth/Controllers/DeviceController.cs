@@ -25,13 +25,18 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] string code)
         {
-            return Ok(new object());
+            return Ok(code);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Approve(string code, CancellationToken cancellationToken)
+        public async Task<IActionResult> ApprovePost([FromForm] string code, CancellationToken cancellationToken)
+        {
+            return await HandleApprove(code, cancellationToken).ConfigureAwait(false);
+        }
+
+        private async Task<IActionResult> HandleApprove(string code, CancellationToken cancellationToken)
         {
             var authorization = await _deviceAuthorizationStore.Approve(code, cancellationToken).ConfigureAwait(false);
 
@@ -42,7 +47,6 @@
 
             _logger.LogError("User code: {0} not found", code);
             return BadRequest(e.Details);
-
         }
     }
 }

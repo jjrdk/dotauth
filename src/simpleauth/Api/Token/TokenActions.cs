@@ -305,8 +305,17 @@ namespace SimpleAuth.Api.Token
             return grantedToken;
         }
 
-        public async Task<Option<GrantedToken>> GetTokenByDeviceGrantType(string clientId, string deviceCode, string issuerName, CancellationToken cancellationToken)
+        public async Task<Option<GrantedToken>> GetTokenByDeviceGrantType(string? clientId, string? deviceCode, string issuerName, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(deviceCode))
+            {
+                return new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidClient,
+                    Detail = Strings.ClientIsNotValid,
+                    Status = HttpStatusCode.BadRequest
+                };
+            }
             return await _getTokenByDeviceAuthorizationTypeAction.Execute(
                 clientId,
                 deviceCode,

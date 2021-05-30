@@ -457,10 +457,10 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl));
             var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid", "offline")).ConfigureAwait(false);
-            var refreshToken = await (new TokenClient(
+            var refreshToken = await new TokenClient(
                     TokenCredentials.FromClientCredentials("client", "client"),
                     _server.Client,
-                    new Uri(WellKnownOpenidConfigurationUrl)))
+                    new Uri(WellKnownOpenidConfigurationUrl))
                 .GetToken(TokenRequest.FromRefreshToken(result.Content.RefreshToken))
                 .ConfigureAwait(false);
 

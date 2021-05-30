@@ -157,6 +157,14 @@ namespace SimpleAuth
         public Func<IServiceProvider, IConfirmationCodeStore>? ConfirmationCodes { get; set; }
 
         /// <summary>
+        /// Gets or sets the device authorization codes.
+        /// </summary>
+        /// <value>
+        /// The device authorization codes.
+        /// </value>
+        public Func<IServiceProvider, IDeviceAuthorizationStore>? DeviceAuthorizations { get; set; }
+
+        /// <summary>
         /// Gets or sets the event publisher.
         /// </summary>
         /// <value>

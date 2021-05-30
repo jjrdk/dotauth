@@ -48,12 +48,12 @@
         {
             var option = await _deviceAuthorizationStore.Get(clientId, deviceCode, cancellationToken)
                 .ConfigureAwait(false);
-            if (option is Option<DeviceAuthorizationRequest>.Error e)
+            if (option is Option<DeviceAuthorizationData>.Error e)
             {
                 return e.Details;
             }
 
-            var authRequest = ((Option<DeviceAuthorizationRequest>.Result)option).Item;
+            var authRequest = ((Option<DeviceAuthorizationData>.Result)option).Item;
             if (authRequest.Approved)
             {
                 return await HandleApprovedRequest(issuerName, cancellationToken, authRequest).ConfigureAwait(false);
@@ -102,7 +102,7 @@
         private async Task<Option<GrantedToken>> HandleApprovedRequest(
             string issuerName,
             CancellationToken cancellationToken,
-            DeviceAuthorizationRequest authRequest)
+            DeviceAuthorizationData authRequest)
         {
             var scopes = string.Join(" ", authRequest.Scopes);
             var grantedToken = await _tokenStore.GetValidGrantedToken(_jwksStore, scopes, authRequest.ClientId, cancellationToken)

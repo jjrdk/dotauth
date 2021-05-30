@@ -91,6 +91,12 @@ namespace SimpleAuth.Client
             TokenRequest tokenRequest,
             CancellationToken cancellationToken = default)
         {
+            if (tokenRequest is DeviceTokenRequest deviceTokenRequest)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(deviceTokenRequest.Interval), cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
             var body = new FormUrlEncodedContent(_form.Concat(tokenRequest));
             var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
             var request = new HttpRequestMessage
@@ -102,7 +108,12 @@ namespace SimpleAuth.Client
 
             var result = await GetResult<GrantedTokenResponse>(request, _authorizationValue, _certificate, cancellationToken)
                 .ConfigureAwait(false);
-            return result;
+            if (!result.HasError || (result.HasError && tokenRequest is not DeviceTokenRequest))
+            {
+                return result;
+            }
+
+            return await GetToken(tokenRequest, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -152,6 +163,51 @@ namespace SimpleAuth.Client
                 },
                 >= 300 and < 400 => new GenericResponse<Uri> { StatusCode = response.StatusCode, Content = response.Headers.Location },
                 _ => new GenericResponse<Uri>
+                {
+                    Error = Serializer.Default.Deserialize<ErrorDetails>(
+#if NET5_0
+                        await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
+#else
+                        await response.Content.ReadAsStringAsync().ConfigureAwait(false)
+#endif
+                    ),
+                    StatusCode = response.StatusCode
+                }
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<GenericResponse<DeviceAuthorizationResponse>> GetAuthorization(
+            DeviceAuthorizationRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
+
+            var requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = discoveryInformation.DeviceAuthorizationEndPoint,
+                Content = new FormUrlEncodedContent(request.ToForm())
+            };
+            requestMessage.Headers.Accept.Clear();
+            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
+
+            var response = await _client().SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+
+            return (int)response.StatusCode switch
+            {
+                < 300 => new GenericResponse<DeviceAuthorizationResponse>
+                {
+                    StatusCode = response.StatusCode,
+                    Content = Serializer.Default.Deserialize<DeviceAuthorizationResponse>(
+#if NET5_0
+                        await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
+#else
+                        await response.Content.ReadAsStringAsync().ConfigureAwait(false)
+#endif
+                    )
+                },
+                _ => new GenericResponse<DeviceAuthorizationResponse>
                 {
                     Error = Serializer.Default.Deserialize<ErrorDetails>(
 #if NET5_0

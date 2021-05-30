@@ -24,12 +24,6 @@
     using SimpleAuth.Properties;
     using SimpleAuth.Services;
 
-    [DataContract]
-    internal class OauthError
-    {
-        [DataMember] public string Error { get; init; } = null!;
-    }
-
     /// <summary>
     /// Defines the token controller.
     /// </summary>
@@ -150,7 +144,7 @@
                 e.Details.Detail,
                 e.Details.Status);
 
-            return new BadRequestObjectResult(new OauthError { Error = e.Details.Title });
+            return new BadRequestObjectResult(e.Details);
         }
 
         private async Task<Option<GrantedToken>> GetGrantedToken(
@@ -258,7 +252,8 @@
             return option switch
             {
                 Option.Success => new OkResult(),
-                Option.Error e => BadRequest(e.Details)
+                Option.Error e => BadRequest(e.Details),
+                _ => throw new ArgumentOutOfRangeException()
             };
         }
     }
