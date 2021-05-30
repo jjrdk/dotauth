@@ -28,6 +28,7 @@
             using var session = _sessionFunc();
             var request = await session.Query<DeviceAuthorizationData>()
                 .Where(x => x.Response.UserCode == userCode)
+                .Select(x => x.Response)
                 .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
 
             return request switch
@@ -38,7 +39,7 @@
                     Title = ErrorMessages.NotFound,
                     Status = HttpStatusCode.NotFound
                 },
-                _ => request!.Response
+                _ => request!
             };
         }
 
@@ -63,11 +64,26 @@
         }
 
         /// <inheritdoc />
-        public Task<Option> Approve(string userCode, CancellationToken cancellationToken = default)
+        public async Task<Option> Approve(string userCode, CancellationToken cancellationToken = default)
         {
             using var session = _sessionFunc();
-            session.Patch<DeviceAuthorizationData>(x => x.Response.UserCode == userCode).Set(x => x.Approved, true);
-            return Task.FromResult<Option>(new Option.Success());
+            var data = await session.Query<DeviceAuthorizationData>().Where(x => x.Response.UserCode == userCode)
+                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+            if (data == null)
+            {
+                return new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = "Not found",
+                    Status = HttpStatusCode.NotFound
+                };
+            }
+
+            data.Approved = true;
+            session.Store(data);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            return new Option.Success();
         }
 
         /// <inheritdoc />
@@ -75,6 +91,15 @@
         {
             using var session = _sessionFunc();
             session.Store(request);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return new Option.Success();
+        }
+
+        /// <inheritdoc />
+        public async Task<Option> Remove(DeviceAuthorizationData authRequest, CancellationToken cancellationToken)
+        {
+            using var session = _sessionFunc();
+            session.Delete<DeviceAuthorizationData>(authRequest.DeviceCode);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return new Option.Success();
         }

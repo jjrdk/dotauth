@@ -5,6 +5,7 @@
     using global::Marten.Schema.Indexing.Unique;
     using NpgsqlTypes;
     using SimpleAuth.Shared.Models;
+    using SimpleAuth.Shared.Requests;
 
     /// <summary>
     /// Defines the default marten registry for stored SimpleAuth types.
@@ -88,6 +89,10 @@
                 .Duplicate(x => x.Jwk.HasPrivateKey, dbType: NpgsqlDbType.Boolean)
                 .Index(x => x.Jwk.KeyOps)
                 .GinIndexJsonData();
+            For<DeviceAuthorizationData>()
+                .Identity(x => x.DeviceCode)
+                .Duplicate(x => x.Response.UserCode, "character(8)", notNull: true)
+                .Duplicate(x => x.ClientId, notNull: true);
         }
     }
 }
