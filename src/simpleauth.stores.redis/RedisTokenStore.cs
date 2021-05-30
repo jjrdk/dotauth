@@ -71,7 +71,10 @@
                 expiry,
                 When.NotExists);
             var accessTokenTask = _database.StringSetAsync(grantedToken.AccessToken, value, expiry, When.NotExists);
-            var refreshTokenTask = _database.StringSetAsync(grantedToken.RefreshToken, value, expiry, When.NotExists);
+
+            var refreshTokenTask = grantedToken.RefreshToken == null
+                ? Task.FromResult(true)
+                : _database.StringSetAsync(grantedToken.RefreshToken, value, expiry, When.NotExists);
 
             if ((await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
                 .All(x => x))
@@ -99,7 +102,9 @@
             var idTask = _database.KeyDeleteAsync(grantedToken.Id);
             var scopeTokenTask = _database.KeyDeleteAsync(grantedToken.ClientId + grantedToken.Scope);
             var accessTokenTask = _database.KeyDeleteAsync(grantedToken.AccessToken);
-            var refreshTokenTask = _database.KeyDeleteAsync(grantedToken.RefreshToken);
+            var refreshTokenTask = grantedToken.RefreshToken == null
+                ? Task.FromResult(true)
+                : _database.KeyDeleteAsync(grantedToken.RefreshToken);
 
             return (await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
                 .All(x => x);

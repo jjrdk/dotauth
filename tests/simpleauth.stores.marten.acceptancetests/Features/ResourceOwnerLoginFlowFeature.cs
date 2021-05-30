@@ -40,7 +40,7 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid", "offline" }))
                         .ConfigureAwait(false);
                     result = response.Content;
 
@@ -95,7 +95,7 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid", "offline" }, "pwd"))
                         .ConfigureAwait(false);
                     result = response.Content;
                 });

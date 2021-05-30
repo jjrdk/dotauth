@@ -102,7 +102,7 @@
                     {
                         var response = await client
                                            .GetToken(
-                                               TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                                               TokenRequest.FromPassword("user", "password", new[] { "openid", "offline" }, "pwd"))
                                            .ConfigureAwait(false);
                         result = response.Content;
                     });

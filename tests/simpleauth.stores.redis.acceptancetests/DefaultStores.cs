@@ -115,7 +115,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {"openid", "role", "profile", "address"},
+                    AllowedScopes = new[] {"openid", "role", "profile", "address", "offline"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
                     ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
                     JsonWebKeys =
@@ -212,7 +212,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
                     //LogoUri = null,
                     PolicyUri = new Uri("http://openid.net"),
                     TosUri = new Uri("http://openid.net"),
-                    AllowedScopes = new[] {"api1", "uma_protection"},
+                    AllowedScopes = new[] {"api1", "uma_protection", "offline"},
                     GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.ClientCredentials},
                     ResponseTypes = new[] {ResponseTypeNames.Token},
                     JsonWebKeys =

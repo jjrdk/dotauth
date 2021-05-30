@@ -30,12 +30,14 @@
                 Clients = sp => new MartenClientStore(sp.GetService<Func<IDocumentSession>>()),
                 JsonWebKeys = sp =>
                 {
-                    var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
+                    var keyset = new[] {context.SignatureKey, context.EncryptionKey}.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
                 Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
                 Consents = sp => new MartenConsentRepository(sp.GetService<Func<IDocumentSession>>()),
-                Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetService<Func<IDocumentSession>>())
+                Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetService<Func<IDocumentSession>>()),
+                DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5),
+                DevicePollingInterval = TimeSpan.FromSeconds(3)
             };
             _context = context;
             _connectionString = connectionString;
