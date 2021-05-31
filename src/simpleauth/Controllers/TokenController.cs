@@ -13,7 +13,6 @@
     using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
-    using System.Runtime.Serialization;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
@@ -50,6 +49,7 @@
         /// <param name="ticketStore">The ticket store.</param>
         /// <param name="jwksStore"></param>
         /// <param name="resourceSetRepository">The resource set repository.</param>
+        /// <param name="deviceAuthorizationStore">The device authorization store.</param>
         /// <param name="eventPublisher">The event publisher.</param>
         /// <param name="logger">The logger.</param>
         public TokenController(

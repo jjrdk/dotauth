@@ -2,6 +2,9 @@
 {
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Defines the device authorization response.
+    /// </summary>
     [DataContract]
     public record DeviceAuthorizationResponse
     {

@@ -27,6 +27,10 @@ namespace SimpleAuth.Client
     {
         private readonly Dictionary<string, string> _form;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenRequest"/> record.
+        /// </summary>
+        /// <param name="form"></param>
         protected internal TokenRequest(Dictionary<string, string> form)
         {
             _form = form;
@@ -212,6 +216,24 @@ namespace SimpleAuth.Client
             return FromPassword(userName, password, scopes, new[] { amrValue });
         }
 
+        /// <summary>
+        /// Creates a request from the device code.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="deviceCode">The device code.</param>
+        /// <param name="interval">The polling interval.</param>
+        /// <returns>A <see cref="TokenRequest"/> instance.</returns>
+        public static TokenRequest FromDeviceCode(string clientId, string deviceCode, int interval)
+        {
+            var dictionary = new Dictionary<string, string>
+            {
+                {RequestTokenNames.GrantType, GrantTypes.Device},
+                {"client_id", clientId},
+                {"device_code", deviceCode}
+            };
+            return new DeviceTokenRequest(dictionary, interval);
+        }
+
         /// <inheritdoc />
         public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
         {
@@ -223,26 +245,5 @@ namespace SimpleAuth.Client
         {
             return GetEnumerator();
         }
-
-        public static TokenRequest FromDeviceCode(string clientId, string deviceCode, int interval)
-        {
-            var dictionary = new Dictionary<string, string>
-            {
-                {RequestTokenNames.GrantType, GrantTypes.Device},
-                {"client_id", clientId},
-                {"device_code", deviceCode}
-            };
-            return new DeviceTokenRequest(dictionary, interval);
-        }
-    }
-
-    public record DeviceTokenRequest : TokenRequest
-    {
-        public DeviceTokenRequest(Dictionary<string, string> form, int interval) : base(form)
-        {
-            Interval = interval;
-        }
-
-        public int Interval { get; }
     }
 }

@@ -124,6 +124,10 @@ namespace SimpleAuth.Client
             return new TokenCredentials(dict);
         }
 
+        /// <summary>
+        /// Creates the credentials as a device.
+        /// </summary>
+        /// <returns></returns>
         public static TokenCredentials AsDevice()
         {
             return new(new Dictionary<string, string>());

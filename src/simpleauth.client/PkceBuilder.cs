@@ -18,10 +18,18 @@ namespace SimpleAuth.Client
     using System.Text;
     using SimpleAuth.Shared.Models;
 
+    /// <summary>
+    /// Defines the PKCE builder.
+    /// </summary>
     public static class PkceBuilder
     {
         private static readonly Random Random = new();
 
+        /// <summary>
+        /// Builds a PKCE challenge.
+        /// </summary>
+        /// <param name="method">The challenge method.</param>
+        /// <returns>A <see cref="Pkce"/> instance.</returns>
         public static Pkce BuildPkce(this string method)
         {
             var codeVerifier = GetCodeVerifier();

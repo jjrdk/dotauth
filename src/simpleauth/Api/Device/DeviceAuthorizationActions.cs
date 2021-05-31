@@ -13,6 +13,9 @@
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
+    /// <summary>
+    /// Defines the device authorization.
+    /// </summary>
     public class DeviceAuthorizationActions
     {
         private readonly RuntimeSettings _settings;
@@ -22,6 +25,13 @@
         private static readonly char[] Characters = "ABCDEFGHIJKMOPRSTVXYZ123456789".ToCharArray();
         private static readonly Random Rnd = new(DateTime.UtcNow.Millisecond);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeviceAuthorizationActions"/> class.
+        /// </summary>
+        /// <param name="settings">The runtime settings.</param>
+        /// <param name="store">The device authorization store.</param>
+        /// <param name="clientStore">The client store.</param>
+        /// <param name="logger">The logger.</param>
         public DeviceAuthorizationActions(RuntimeSettings settings, IDeviceAuthorizationStore store, IClientStore clientStore, ILogger logger)
         {
             _settings = settings;
@@ -30,6 +40,14 @@
             _logger = logger;
         }
 
+        /// <summary>
+        /// Starts the device authorization request.
+        /// </summary>
+        /// <param name="clientId">The client id of the requesting application.</param>
+        /// <param name="authority">The token authority.</param>
+        /// <param name="scopes">The requested scopes.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+        /// <returns></returns>
         public async Task<Option<DeviceAuthorizationData>> StartDeviceAuthorizationRequest(string clientId, Uri authority, string[] scopes, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(clientId)

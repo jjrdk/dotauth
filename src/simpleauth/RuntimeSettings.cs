@@ -107,6 +107,9 @@
         /// </summary>
         public TimeSpan DevicePollingInterval { get; }
 
+        /// <summary>
+        /// Gets the device authorization request lifetime.
+        /// </summary>
         public TimeSpan DeviceAuthorizationLifetime { get; }
     }
 }

@@ -18,10 +18,20 @@
             Scopes = scopes;
         }
 
+        /// <summary>
+        /// Gets the client id.
+        /// </summary>
         public string ClientId { get; }
 
+        /// <summary>
+        /// Gets the scopes.
+        /// </summary>
         public string[] Scopes { get; }
 
+        /// <summary>
+        /// Returns the request as a form.
+        /// </summary>
+        /// <returns>The form fields.</returns>
         public IEnumerable<KeyValuePair<string?, string?>> ToForm()
         {
             yield return new KeyValuePair<string?, string?>("client_id", ClientId);
