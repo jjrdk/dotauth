@@ -20,7 +20,8 @@
     // I want to log in using resource owner flow
     public class ResourceOwnerLoginFlowFeature : AuthFlowFeature
     {
-        public ResourceOwnerLoginFlowFeature(ITestOutputHelper outputHelper) : base(outputHelper)
+        public ResourceOwnerLoginFlowFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
         {
         }
 
@@ -40,9 +41,9 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid", "offline" }))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid", "offline"}))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
 
                     Assert.NotNull(result);
                 });
@@ -59,7 +60,7 @@
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
                 });
 
             "and has valid id token".x(
@@ -95,17 +96,17 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid", "offline" }, "pwd"))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid", "offline"}, "pwd"))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
                 });
 
             "then can get new token from refresh token".x(
                 async () =>
                 {
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
-                        .ConfigureAwait(false);
-                    Assert.False(response.HasError);
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    Assert.NotNull(response);
                 });
         }
 
@@ -125,16 +126,16 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
                 });
 
             "then can revoke token".x(
                 async () =>
                 {
                     var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                    Assert.IsType<Option.Success>(response);
                 });
         }
 
@@ -142,7 +143,7 @@
         public void InvalidClientCredentials()
         {
             TokenClient client = null;
-            GenericResponse<GrantedTokenResponse> result = null;
+            Option<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -154,18 +155,18 @@
                 async () =>
                 {
                     result = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }, "pwd"))
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
                         .ConfigureAwait(false);
                 });
 
-            "then does not have token".x(() => { Assert.True(result.HasError); });
+            "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
         }
 
         [Scenario(DisplayName = "Invalid user credentials")]
         public void InvalidUserCredentials()
         {
             TokenClient client = null;
-            GenericResponse<GrantedTokenResponse> result = null;
+            Option<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -176,11 +177,11 @@
             "when requesting auth token".x(
                 async () =>
                 {
-                    result = await client.GetToken(TokenRequest.FromPassword("someone", "xxx", new[] { "openid" }, "pwd"))
+                    result = await client.GetToken(TokenRequest.FromPassword("someone", "xxx", new[] {"openid"}, "pwd"))
                         .ConfigureAwait(false);
                 });
 
-            "then does not have token".x(() => { Assert.True(result.HasError); });
+            "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
         }
     }
 }

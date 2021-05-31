@@ -1,5 +1,8 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
+    using SimpleAuth.Client;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
@@ -12,7 +15,7 @@
             : base(output)
         {
         }
-   
+
         [Scenario]
         public void SuccessAddResourceOwner()
         {
@@ -24,21 +27,21 @@
                     var response = await _managerClient.AddResourceOwner(
                             new AddResourceOwnerRequest { Password = "test", Subject = "test" },
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    subject = response.Content.Subject;
+                    subject = response.Item.Subject;
                 });
 
             "Then resource owner is local account".x(
                 async () =>
                 {
                     var response = await _managerClient.GetResourceOwner("test", _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<ResourceOwner>.Result;
 
-                    Assert.False(response.HasError);
-                    Assert.True(response.Content.IsLocalAccount);
+                    Assert.NotNull(response);
+                    Assert.True(response.Item.IsLocalAccount);
                 });
         }
 
@@ -51,9 +54,9 @@
                     var response = await _managerClient.AddResourceOwner(
                             new AddResourceOwnerRequest { Password = "test", Subject = "test" },
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
                 });
 
             "Then can update resource owner password".x(
@@ -64,8 +67,8 @@
                             _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.IsType<Option.Success>(response);
                 });
         }
- }
+    }
 }

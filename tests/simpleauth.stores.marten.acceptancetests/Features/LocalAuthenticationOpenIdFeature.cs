@@ -13,7 +13,8 @@
 
     public class LocalAuthenticationOpenIdFeature : AuthFlowFeature
     {
-        public LocalAuthenticationOpenIdFeature(ITestOutputHelper outputHelper) : base(outputHelper)
+        public LocalAuthenticationOpenIdFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
         {
         }
 

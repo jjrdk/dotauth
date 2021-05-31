@@ -1,7 +1,10 @@
 ﻿namespace SimpleAuth.AcceptanceTests.Features
 {
     using System;
+    using System.IdentityModel.Tokens.Jwt;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
     using Xunit.Abstractions;
@@ -34,8 +37,8 @@
                 {
                     var response = await client.GetToken(
                             TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
-                        .ConfigureAwait(false);
-                    token = response.Content.AccessToken;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    token = response.Item.AccessToken;
 
                     Assert.NotNull(token);
                 });
@@ -43,10 +46,11 @@
             "Then can get user information".x(
                 async () =>
                 {
-                    var userInfo = await client.GetUserInfo(token).ConfigureAwait(false);
+                    var userInfo = await client.GetUserInfo(token).ConfigureAwait(false)
+                        as Option<JwtPayload>.Result;
 
-                    Assert.False(userInfo.HasError);
-                    Assert.NotNull(userInfo.Content.Sub);
+                    Assert.NotNull(userInfo);
+                    Assert.NotNull(userInfo.Item.Sub);
                 });
         }
     }

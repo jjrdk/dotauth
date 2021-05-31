@@ -50,8 +50,11 @@
                 {
                     var response = await client
                         .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+
+                    Assert.NotNull(response);
+
+                    result = response.Item;
                 });
 
             "then has valid access token".x(
@@ -103,8 +106,8 @@
                 {
                     var response = await client
                         .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
                 });
 
             "then has valid access token".x(
@@ -155,8 +158,8 @@
                 {
                     var response = await client
                         .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid", "offline"}))
-                        .ConfigureAwait(false);
-                    tokenResponse = response.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    tokenResponse = response.Item;
                 });
 
             "and valid access token is received".x(
@@ -217,18 +220,18 @@
                 {
                     var response = await client
                         .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid", "offline"}))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
                 });
 
             "then can get new token from refresh token".x(
                 async () =>
                 {
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
-                        .ConfigureAwait(false);
-                    Assert.False(response.HasError);
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    Assert.NotNull(response);
 
-                    refreshed = response.Content;
+                    refreshed = response.Item;
                 });
 
             "and token has custom custom claims".x(
@@ -258,15 +261,15 @@
                 {
                     var response = await client
                         .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
                 });
 
             "then can revoke token".x(
                 async () =>
                 {
                     var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                    Assert.IsType<Option.Success>(response);
                 });
         }
 
@@ -274,7 +277,7 @@
         public void InvalidClientCredentials()
         {
             TokenClient client = null;
-            GenericResponse<GrantedTokenResponse> result = null;
+            Option<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -289,14 +292,14 @@
                         .ConfigureAwait(false);
                 });
 
-            "then does not have token".x(() => { Assert.True(result.HasError); });
+            "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
         }
 
         [Scenario(DisplayName = "Invalid user credentials")]
         public void InvalidUserCredentials()
         {
             TokenClient client = null;
-            GenericResponse<GrantedTokenResponse> result = null;
+            Option<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -311,7 +314,7 @@
                         .ConfigureAwait(false);
                 });
 
-            "then does not have token".x(() => { Assert.True(result.HasError); });
+            "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
         }
     }
 }

@@ -26,6 +26,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
 
     public class PostIntrospectionActionFixture
@@ -62,9 +63,10 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null);
 
-            var response = await _postIntrospectionAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
+            var response = await _postIntrospectionAction.Execute(parameter, CancellationToken.None)
+                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            Assert.False(response.Content.Active);
+            Assert.False(response.Item.Active);
         }
 
         [Fact]
@@ -72,8 +74,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
         {
             var parameter = new IntrospectionParameter
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken,
-                Token = "token"
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
             };
             var grantedToken = new GrantedToken
             {
@@ -81,8 +82,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                 ClientId = "client_id",
                 IdTokenPayLoad = new JwtPayload
                 {
-                    {OpenIdClaimTypes.Subject, "tester"},
-                    {StandardClaimNames.Audiences, new[]{"audience"}}
+                    {OpenIdClaimTypes.Subject, "tester"}, {StandardClaimNames.Audiences, new[] {"audience"}}
                 },
                 CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
                 ExpiresIn = 0
@@ -92,9 +92,9 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
 
             var response = await _postIntrospectionAction
                 .Execute(parameter, CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            var result = response.Content;
+            var result = response.Item;
             Assert.False(result.Active);
         }
 
@@ -104,11 +104,10 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             const string clientId = "client_id";
             const string subject = "subject";
             const string audience = "audience";
-            var audiences = new[] { audience };
+            var audiences = new[] {audience};
             var parameter = new IntrospectionParameter
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken,
-                Token = "token"
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
             };
             var grantedToken = new GrantedToken
             {
@@ -116,8 +115,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                 ClientId = clientId,
                 IdTokenPayLoad = new JwtPayload
                 {
-                    {OpenIdClaimTypes.Subject, subject},
-                    {StandardClaimNames.Audiences, audiences}
+                    {OpenIdClaimTypes.Subject, subject}, {StandardClaimNames.Audiences, audiences}
                 },
                 CreateDateTime = DateTimeOffset.UtcNow,
                 ExpiresIn = 20000
@@ -128,9 +126,9 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
 
             var response = await _postIntrospectionAction
                 .Execute(parameter, CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            var result = response.Content;
+            var result = response.Item;
             Assert.True(result.Active);
             Assert.Equal(audience, result.Audience);
             Assert.Equal(subject, result.Subject);
@@ -141,8 +139,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
         {
             var parameter = new IntrospectionParameter
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
-                Token = "token"
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
             };
             var grantedToken = new GrantedToken
             {
@@ -150,8 +147,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                 ClientId = "client_id",
                 IdTokenPayLoad = new JwtPayload
                 {
-                    {OpenIdClaimTypes.Subject, "tester"},
-                    {StandardClaimNames.Audiences, new[]{"audience"}}
+                    {OpenIdClaimTypes.Subject, "tester"}, {StandardClaimNames.Audiences, new[] {"audience"}}
                 },
                 CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
                 ExpiresIn = 0
@@ -161,9 +157,9 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
 
             var response = await _postIntrospectionAction
                 .Execute(parameter, CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            var result = response.Content;
+            var result = response.Item;
             Assert.False(result.Active);
         }
 
@@ -173,11 +169,10 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
             const string clientId = "client_id";
             const string subject = "subject";
             const string audience = "audience";
-            var audiences = new[] { audience };
+            var audiences = new[] {audience};
             var parameter = new IntrospectionParameter
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
-                Token = "token"
+                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
             };
             var grantedToken = new GrantedToken
             {
@@ -185,8 +180,7 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
                 ClientId = clientId,
                 IdTokenPayLoad = new JwtPayload
                 {
-                    {OpenIdClaimTypes.Subject, subject},
-                    {StandardClaimNames.Audiences, audiences}
+                    {OpenIdClaimTypes.Subject, subject}, {StandardClaimNames.Audiences, audiences}
                 },
                 CreateDateTime = DateTimeOffset.UtcNow,
                 ExpiresIn = 20000
@@ -197,9 +191,9 @@ namespace SimpleAuth.Tests.Api.Introspection.Actions
 
             var response = await _postIntrospectionAction
                 .Execute(parameter, CancellationToken.None)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            var result = response.Content;
+            var result = response.Item;
             Assert.True(result.Active);
             Assert.Equal(audience, result.Audience);
             Assert.Equal(subject, result.Subject);

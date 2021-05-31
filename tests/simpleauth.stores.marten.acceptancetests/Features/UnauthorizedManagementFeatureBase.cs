@@ -4,6 +4,7 @@
     using SimpleAuth.Shared.Responses;
     using System;
     using Microsoft.Extensions.Configuration;
+    using SimpleAuth.Shared;
     using Xbehave;
     using Xunit;
     using Xunit.Abstractions;
@@ -30,7 +31,8 @@
             "Given loaded configuration values".x(
                 () =>
                 {
-                    var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
+                    var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false)
+                        .Build();
                     _connectionString = configuration["Db:ConnectionString"];
 
                     Assert.NotNull(_connectionString);
@@ -72,11 +74,13 @@
             "and an admin token".x(
                 async () =>
                 {
-                    var result = await _tokenClient.GetToken(TokenRequest.FromScopes("admin")).ConfigureAwait(false);
+                    var result =
+                        await _tokenClient.GetToken(TokenRequest.FromScopes("admin")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.NotNull(result.Content);
+                    Assert.NotNull(result.Item);
 
-                    _grantedToken = result.Content;
+                    _grantedToken = result.Item;
                 });
         }
     }

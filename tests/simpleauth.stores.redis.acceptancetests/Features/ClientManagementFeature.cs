@@ -23,11 +23,13 @@
             "When getting all clients".x(
                 async () =>
                 {
-                    var response = await _managerClient.GetAllClients(_grantedToken.AccessToken).ConfigureAwait(false);
+                    var response =
+                        await _managerClient.GetAllClients(_grantedToken.AccessToken).ConfigureAwait(false) as
+                            Option<Client[]>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    clients = response.Content;
+                    clients = response.Item;
                 });
 
             "Then contains list of clients".x(() => { Assert.All(clients, x => { Assert.NotNull(x.ClientId); }); });
@@ -44,14 +46,15 @@
                         ClientId = "test_client",
                         ClientName = "Test Client",
                         Secrets =
-                            new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
-                        AllowedScopes = new[] { "api" },
-                        RedirectionUrls = new[] { new Uri("http://localhost/callback"), },
+                            new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
+                        AllowedScopes = new[] {"api"},
+                        RedirectionUrls = new[] {new Uri("http://localhost/callback"),},
                         ApplicationType = ApplicationTypes.Native,
-                        GrantTypes = new[] { GrantTypes.ClientCredentials },
+                        GrantTypes = new[] {GrantTypes.ClientCredentials},
                         JsonWebKeys = TestKeys.SuperSecretKey.CreateSignatureJwk().ToSet()
                     };
-                    var response = await _managerClient.AddClient(client, _grantedToken.AccessToken).ConfigureAwait(false);
+                    var response = await _managerClient.AddClient(client, _grantedToken.AccessToken)
+                        .ConfigureAwait(false);
                 });
         }
     }

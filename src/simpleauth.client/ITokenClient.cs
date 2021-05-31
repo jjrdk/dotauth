@@ -20,7 +20,7 @@
         /// <param name="introspectionRequest">The introspection request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<GenericResponse<OauthIntrospectionResponse>> Introspect(
+        Task<Option<OauthIntrospectionResponse>> Introspect(
             IntrospectionRequest introspectionRequest,
             CancellationToken cancellationToken = default);
 
@@ -30,7 +30,7 @@
         /// <param name="tokenRequest">The token request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<GenericResponse<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest, CancellationToken cancellationToken = default);
+        Task<Option<GrantedTokenResponse>> GetToken(TokenRequest tokenRequest, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the authorization.
@@ -39,7 +39,7 @@
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns>The <see cref="Uri"/> to execute the authorization flow.</returns>
         /// <exception cref="ArgumentNullException">request</exception>
-        Task<GenericResponse<Uri>> GetAuthorization(
+        Task<Option<Uri>> GetAuthorization(
             AuthorizationRequest request,
             CancellationToken cancellationToken = default);
 
@@ -49,7 +49,7 @@
         /// <param name="request">The authorization request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns>The <see cref="DeviceAuthorizationResponse"/> with information about how to execute the authorization flow.</returns>
-        Task<GenericResponse<DeviceAuthorizationResponse>> GetAuthorization(
+        Task<Option<DeviceAuthorizationResponse>> GetAuthorization(
             DeviceAuthorizationRequest request,
             CancellationToken cancellationToken = default);
 
@@ -59,7 +59,7 @@
         /// <param name="request">The request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<GenericResponse<object>> RequestSms(
+        Task<Option> RequestSms(
             ConfirmationCodeRequest request,
             CancellationToken cancellationToken = default);
 
@@ -69,7 +69,7 @@
         /// <param name="revokeTokenRequest">The revoke token request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<GenericResponse<object>> RevokeToken(
+        Task<Option> RevokeToken(
             RevokeTokenRequest revokeTokenRequest,
             CancellationToken cancellationToken = default);
 
@@ -86,7 +86,7 @@
         /// accessToken
         /// </exception>
         /// <exception cref="ArgumentException"></exception>
-        Task<GenericResponse<JwtPayload>> GetUserInfo(
+        Task<Option<JwtPayload>> GetUserInfo(
             string accessToken,
             bool inBody = false,
             CancellationToken cancellationToken = default);

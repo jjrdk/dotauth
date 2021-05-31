@@ -9,9 +9,11 @@
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -37,11 +39,12 @@
                 _server.Client,
                 new Uri(BaseUrl + WellKnownUma2Configuration));
             // Try to get the access token via "ticket_id" grant-type.
-            var token = await tokenClient.GetToken(TokenRequest.FromTicketId("ticket_id", "")).ConfigureAwait(false);
+            var token =
+                await tokenClient.GetToken(TokenRequest.FromTicketId("ticket_id", "")).ConfigureAwait(false) as
+                    Option<GrantedTokenResponse>.Error;
 
-            Assert.True(token.HasError);
-            Assert.Equal(ErrorCodes.InvalidGrant, token.Error.Title);
-            Assert.Equal(string.Format(Strings.TheTicketDoesntExist, "ticket_id"), token.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidGrant, token.Details.Title);
+            Assert.Equal(string.Format(Strings.TheTicketDoesntExist, "ticket_id"), token.Details.Detail);
         }
 
         [Fact]
@@ -52,9 +55,9 @@
                 _server.Client,
                 new Uri(BaseUrl + WellKnownUma2Configuration));
             var result = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-            Assert.NotEmpty(result.Content.AccessToken);
+            Assert.NotEmpty(result.Item.AccessToken);
         }
 
         [Fact]
@@ -67,7 +70,7 @@
             var securityToken = new JwtSecurityToken(
                 "http://server.example.com",
                 "s6BhdRkqt3",
-                new[] { new Claim("sub", "248289761001") },
+                new[] {new Claim("sub", "248289761001")},
                 null,
                 DateTime.UtcNow.AddYears(1),
                 new SigningCredentials(set.GetSignKeys().First(), SecurityAlgorithms.HmacSha256));
@@ -79,12 +82,12 @@
                 new Uri(BaseUrl + WellKnownUma2Configuration));
             // Get PAT.
             var result = await tc.GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
             var resourceSet = new ResourceSet
             {
                 Name = "name",
-                Scopes = new[] { "read", "write", "execute" },
+                Scopes = new[] {"read", "write", "execute"},
                 AuthorizationPolicies = new[]
                 {
                     new PolicyRule
@@ -94,28 +97,29 @@
                     }
                 }
             };
-            var resource = await _umaClient.AddResource(resourceSet, result.Content.AccessToken).ConfigureAwait(false);
-            resourceSet = resourceSet with { Id = resource.Content.Id };
-            await _umaClient.UpdateResource(resourceSet, result.Content.AccessToken).ConfigureAwait(false);
+            var resource =
+                await _umaClient.AddResource(resourceSet, result.Item.AccessToken).ConfigureAwait(false) as
+                    Option<AddResourceSetResponse>.Result;
+            resourceSet = resourceSet with {Id = resource.Item.Id};
+            await _umaClient.UpdateResource(resourceSet, result.Item.AccessToken).ConfigureAwait(false);
             var ticket = await _umaClient.RequestPermission(
                     "header",
                     requests: new PermissionRequest // Add permission & retrieve a ticket id.
                     {
-                        ResourceSetId = resource.Content.Id,
-                        Scopes = new[] { "read" }
+                        ResourceSetId = resource.Item.Id, Scopes = new[] {"read"}
                     })
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-            Assert.NotNull(ticket.Content);
+            Assert.NotNull(ticket.Item);
 
             var tokenClient = new TokenClient(
                 TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
                 _server.Client,
                 new Uri(BaseUrl + WellKnownUma2Configuration));
-            var token = await tokenClient.GetToken(TokenRequest.FromTicketId(ticket.Content.TicketId, jwt))
-                .ConfigureAwait(false);
+            var token = await tokenClient.GetToken(TokenRequest.FromTicketId(ticket.Item.TicketId, jwt))
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-            var jwtToken = handler.ReadJwtToken(token.Content.AccessToken);
+            var jwtToken = handler.ReadJwtToken(token.Item.AccessToken);
             Assert.NotNull(jwtToken.Claims);
         }
 

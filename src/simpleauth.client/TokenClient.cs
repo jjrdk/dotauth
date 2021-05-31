@@ -88,7 +88,7 @@ namespace SimpleAuth.Client
         /// <param name="tokenRequest">The token request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<GrantedTokenResponse>> GetToken(
+        public async Task<Option<GrantedTokenResponse>> GetToken(
             TokenRequest tokenRequest,
             CancellationToken cancellationToken = default)
         {
@@ -109,18 +109,16 @@ namespace SimpleAuth.Client
 
             var result = await GetResult<GrantedTokenResponse>(request, _authorizationValue, _certificate, cancellationToken)
                 .ConfigureAwait(false);
-            return result.HasError switch
+            return result switch
             {
-                true when result.Error?.Title == ErrorCodes.AuthorizationPending => await GetToken(
-                        tokenRequest,
-                        cancellationToken)
-                    .ConfigureAwait(false),
+                Option<GrantedTokenResponse>.Error e when e.Details.Title == ErrorCodes.AuthorizationPending =>
+                    await GetToken(tokenRequest, cancellationToken).ConfigureAwait(false),
                 _ => result
             };
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<OauthIntrospectionResponse>> Introspect(
+        public async Task<Option<OauthIntrospectionResponse>> Introspect(
             IntrospectionRequest introspectionRequest,
             CancellationToken cancellationToken = default)
         {
@@ -140,7 +138,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<Uri>> GetAuthorization(
+        public async Task<Option<Uri>> GetAuthorization(
             AuthorizationRequest request,
             CancellationToken cancellationToken = default)
         {
@@ -154,33 +152,25 @@ namespace SimpleAuth.Client
 
             return (int)response.StatusCode switch
             {
-                < 300 => new GenericResponse<Uri>
+                < 300 => new ErrorDetails
                 {
-                    Error = new ErrorDetails
-                    {
-                        Title = ClientStrings.NoRedirect,
-                        Detail = ClientStrings.NotRedirectResponse,
-                        Status = HttpStatusCode.UnprocessableEntity
-                    },
-                    StatusCode = HttpStatusCode.UnprocessableEntity
+                    Title = ClientStrings.NoRedirect,
+                    Detail = ClientStrings.NotRedirectResponse,
+                    Status = HttpStatusCode.UnprocessableEntity
                 },
-                >= 300 and < 400 => new GenericResponse<Uri> { StatusCode = response.StatusCode, Content = response.Headers.Location },
-                _ => new GenericResponse<Uri>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(
+                >= 300 and < 400 => response.Headers.Location!,
+                _ => Serializer.Default.Deserialize<ErrorDetails>(
 #if NET5_0
-                        await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
+                    await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
 #else
-                        await response.Content.ReadAsStringAsync().ConfigureAwait(false)
+                    await response.Content.ReadAsStringAsync().ConfigureAwait(false)
 #endif
-                    ),
-                    StatusCode = response.StatusCode
-                }
+                )!
             };
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<DeviceAuthorizationResponse>> GetAuthorization(
+        public async Task<Option<DeviceAuthorizationResponse>> GetAuthorization(
             DeviceAuthorizationRequest request,
             CancellationToken cancellationToken = default)
         {
@@ -199,28 +189,20 @@ namespace SimpleAuth.Client
 
             return (int)response.StatusCode switch
             {
-                < 300 => new GenericResponse<DeviceAuthorizationResponse>
-                {
-                    StatusCode = response.StatusCode,
-                    Content = Serializer.Default.Deserialize<DeviceAuthorizationResponse>(
+                < 300 => Serializer.Default.Deserialize<DeviceAuthorizationResponse>(
 #if NET5_0
-                        await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
+                    await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
 #else
                         await response.Content.ReadAsStringAsync().ConfigureAwait(false)
 #endif
-                    )
-                },
-                _ => new GenericResponse<DeviceAuthorizationResponse>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(
+                )!,
+                _ => Serializer.Default.Deserialize<ErrorDetails>(
 #if NET5_0
-                        await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
+                    await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
 #else
                         await response.Content.ReadAsStringAsync().ConfigureAwait(false)
 #endif
-                    ),
-                    StatusCode = response.StatusCode
-                }
+                )!,
             };
         }
 
@@ -246,7 +228,7 @@ namespace SimpleAuth.Client
         /// <param name="request">The request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<object>> RequestSms(
+        public async Task<Option> RequestSms(
             ConfirmationCodeRequest request,
             CancellationToken cancellationToken = default)
         {
@@ -271,14 +253,10 @@ namespace SimpleAuth.Client
 #endif
             if (!result.IsSuccessStatusCode)
             {
-                return new GenericResponse<object>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(content),
-                    StatusCode = result.StatusCode
-                };
+                return Serializer.Default.Deserialize<ErrorDetails>(content)!;
             }
 
-            return new GenericResponse<object>();
+            return new Option.Success();
         }
 
         /// <summary>
@@ -287,7 +265,7 @@ namespace SimpleAuth.Client
         /// <param name="revokeTokenRequest">The revoke token request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public async Task<GenericResponse<object>> RevokeToken(
+        public async Task<Option> RevokeToken(
             RevokeTokenRequest revokeTokenRequest,
             CancellationToken cancellationToken = default)
         {
@@ -316,14 +294,10 @@ namespace SimpleAuth.Client
 #endif
             if (!result.IsSuccessStatusCode)
             {
-                return new GenericResponse<object>
-                {
-                    Error = Serializer.Default.Deserialize<ErrorDetails>(json),
-                    StatusCode = result.StatusCode
-                };
+                return Serializer.Default.Deserialize<ErrorDetails>(json)!;
             }
 
-            return new GenericResponse<object> { StatusCode = result.StatusCode };
+            return new Option.Success();
         }
 
         /// <summary>
@@ -339,7 +313,7 @@ namespace SimpleAuth.Client
         /// accessToken
         /// </exception>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<GenericResponse<JwtPayload>> GetUserInfo(
+        public async Task<Option<JwtPayload>> GetUserInfo(
             string accessToken,
             bool inBody = false,
             CancellationToken cancellationToken = default)

@@ -27,6 +27,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Properties;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -47,8 +48,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri($"{BaseUrl}/token/revoke")
+                Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -64,16 +64,11 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
         {
-            var request = new List<KeyValuePair<string, string>>
-            {
-                new("invalid", "invalid")
-            };
+            var request = new List<KeyValuePair<string, string>> {new("invalid", "invalid")};
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                Content = body,
-                RequestUri = new Uri($"{BaseUrl}/token/revoke")
+                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token/revoke")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -93,11 +88,10 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.True(ex.HasError);
-            Assert.Equal("invalid_client", ex.Error.Title);
-            Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Error.Detail);
+            Assert.Equal("invalid_client", ex.Details.Title);
+            Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Details.Detail);
         }
 
         [Fact]
@@ -108,11 +102,10 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.True(ex.HasError);
-            Assert.Equal("invalid_token", ex.Error.Title);
-            Assert.Equal(Strings.TheTokenDoesntExist, ex.Error.Detail);
+            Assert.Equal("invalid_token", ex.Details.Title);
+            Assert.Equal(Strings.TheTokenDoesntExist, ex.Details.Detail);
         }
 
         [Fact]
@@ -123,19 +116,18 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-                .ConfigureAwait(false);
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
             var revokeClient = new TokenClient(
                 TokenCredentials.FromClientCredentials("client", "client"),
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await revokeClient
-                .RevokeToken(RevokeTokenRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
-                .ConfigureAwait(false);
+                .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken))
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.True(ex.HasError);
-            Assert.Equal("invalid_token", ex.Error.Title);
-            Assert.Equal("The token has not been issued for the given client id 'client'", ex.Error.Detail);
+            Assert.Equal("invalid_token", ex.Details.Title);
+            Assert.Equal("The token has not been issued for the given client id 'client'", ex.Details.Detail);
         }
 
         [Fact]
@@ -146,18 +138,18 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-                .ConfigureAwait(false);
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
             var revoke = await tokenClient
-                .RevokeToken(RevokeTokenRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken))
-                .ConfigureAwait(false);
+                .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken))
+                .ConfigureAwait(false) as Option.Success;
             var introspectionClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await introspectionClient.Introspect(
-                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken, "pat"))
+                    IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
                 .ConfigureAwait(false);
 
-            Assert.False(revoke.HasError);
-            Assert.True(ex.HasError);
+            Assert.IsType<Option.Success>(revoke);
+            Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
         }
 
         [Fact]
@@ -168,18 +160,18 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim", "offline" }))
-                .ConfigureAwait(false);
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim", "offline"}))
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
             var revoke = await tokenClient
-                .RevokeToken(RevokeTokenRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken))
+                .RevokeToken(RevokeTokenRequest.Create(result.Item.RefreshToken, TokenTypes.RefreshToken))
                 .ConfigureAwait(false);
             var introspectClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var ex = await introspectClient.Introspect(
-                    IntrospectionRequest.Create(result.Content.RefreshToken, TokenTypes.RefreshToken, "pat"))
+                    IntrospectionRequest.Create(result.Item.RefreshToken, TokenTypes.RefreshToken, "pat"))
                 .ConfigureAwait(false);
 
-            Assert.False(revoke.HasError);
-            Assert.True(ex.HasError);
+            Assert.IsType<Option.Success>(revoke);
+            Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
         }
     }
 }

@@ -4,6 +4,7 @@
     using System.IdentityModel.Tokens.Jwt;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
@@ -11,7 +12,8 @@
 
     public class JwksFeature : AuthFlowFeature
     {
-        public JwksFeature(ITestOutputHelper outputHelper) : base(outputHelper)
+        public JwksFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
         {
         }
 
@@ -50,11 +52,13 @@
                         TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
                         _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration));
-                    var response = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                    var response =
+                        await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    tokenResponse = response.Content;
+                    tokenResponse = response.Item;
                 });
 
             "then can download json web key set".x(

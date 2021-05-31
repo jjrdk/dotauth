@@ -13,7 +13,8 @@
 
     public class ClientCredentialsLoginFlowFeature : AuthFlowFeature
     {
-        public ClientCredentialsLoginFlowFeature(ITestOutputHelper outputHelper) : base(outputHelper)
+        public ClientCredentialsLoginFlowFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
         {
         }
 
@@ -32,11 +33,13 @@
             "when requesting token".x(
                 async () =>
                 {
-                    var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                    var response =
+                        await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    result = response.Content;
+                    result = response.Item;
                 });
 
             "then has valid access token".x(
@@ -49,7 +52,7 @@
                         ValidAudience = "clientCredentials",
                         ValidIssuer = "https://localhost"
                     };
-                    tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
+                    tokenHandler.ValidateToken(result.AccessToken, validationParameters, out _);
                 });
         }
 
@@ -68,19 +71,21 @@
             "when requesting auth token".x(
                 async () =>
                 {
-                    var response = await client.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false);
+                    var response =
+                        await client.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    result = response.Content;
+                    result = response.Item;
                 });
 
             "then can get new token from refresh token".x(
                 async () =>
                 {
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
-                        .ConfigureAwait(false);
-                    Assert.False(response.HasError);
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    Assert.NotNull(response);
                 });
         }
 
@@ -99,18 +104,20 @@
             "when requesting auth token".x(
                 async () =>
                 {
-                    var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                    var response =
+                        await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    result = response.Content;
+                    result = response.Item;
                 });
 
             "then can revoke token".x(
                 async () =>
                 {
                     var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                    Assert.IsType<Option.Success>(response);
                 });
         }
 
@@ -118,7 +125,7 @@
         public void InvalidClientCredentials()
         {
             TokenClient client = null;
-            GenericResponse<GrantedTokenResponse> result = null;
+            Option<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -129,7 +136,7 @@
             "when requesting auth token".x(
                 async () => { result = await client.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false); });
 
-            "then does not have token".x(() => { Assert.Null(result.Content); });
+            "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
         }
     }
 }

@@ -30,6 +30,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Security.Claims;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
     using Xunit.Abstractions;
     using TokenRequest = Client.TokenRequest;
@@ -261,17 +262,16 @@ namespace SimpleAuth.Server.Tests.Apis
             var pkce = CodeChallengeMethods.S256.BuildPkce();
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "implicit_client",
                         new Uri(baseUrl + "/invalid_callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
                         "state"))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<Uri>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         }
 
         [Fact]
@@ -281,20 +281,18 @@ namespace SimpleAuth.Server.Tests.Apis
             UserStore.Instance().IsInactive = true;
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { prompt = PromptNames.None })
-                .ConfigureAwait(false);
+                        "state") {prompt = PromptNames.None})
+                .ConfigureAwait(false) as Option<Uri>.Error;
             UserStore.Instance().IsInactive = false;
 
-            Assert.True(result.HasError);
-            Assert.Equal("login_required", result.Error.Title);
-            Assert.Equal("The user needs to be authenticated", result.Error.Detail);
+            Assert.Equal("login_required", result.Details.Title);
+            Assert.Equal("The user needs to be authenticated", result.Details.Detail);
         }
 
         [Fact]
@@ -305,20 +303,18 @@ namespace SimpleAuth.Server.Tests.Apis
             UserStore.Instance().Subject = "user";
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { prompt = PromptNames.None })
-                .ConfigureAwait(false);
+                        "state") {prompt = PromptNames.None})
+                .ConfigureAwait(false) as Option<Uri>.Error;
             UserStore.Instance().Subject = "administrator";
 
-            Assert.True(result.HasError);
-            Assert.Equal("interaction_required", result.Error.Title);
-            Assert.Equal("The user needs to give his consent", result.Error.Detail);
+            Assert.Equal("interaction_required", result.Details.Title);
+            Assert.Equal("The user needs to give his consent", result.Details.Detail);
         }
 
         [Fact]
@@ -327,19 +323,17 @@ namespace SimpleAuth.Server.Tests.Apis
             var pkce = CodeChallengeMethods.S256.BuildPkce();
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { id_token_hint = "token", prompt = "none" })
-                .ConfigureAwait(false);
+                        "state") {id_token_hint = "token", prompt = "none"})
+                .ConfigureAwait(false) as Option<Uri>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
-            Assert.Equal(Strings.TheIdTokenHintParameterIsNotAValidToken, result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
+            Assert.Equal(Strings.TheIdTokenHintParameterIsNotAValidToken, result.Details.Detail);
         }
 
         [Fact]
@@ -350,7 +344,7 @@ namespace SimpleAuth.Server.Tests.Apis
             var jws = _jwsGenerator.CreateEncodedJwt(
                 new SecurityTokenDescriptor
                 {
-                    Subject = new ClaimsIdentity(new[] { new Claim("sub", "administrator") }),
+                    Subject = new ClaimsIdentity(new[] {new Claim("sub", "administrator")}),
                     SigningCredentials = new SigningCredentials(
                         TestKeys.SecretKey.CreateSignatureJwk(),
                         SecurityAlgorithms.HmacSha256Signature)
@@ -358,18 +352,16 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { id_token_hint = jws, prompt = "none" })
-                .ConfigureAwait(false);
+                        "state") {id_token_hint = jws, prompt = "none"})
+                .ConfigureAwait(false) as Option<Uri>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
         }
 
         [Fact]
@@ -381,7 +373,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 new SecurityTokenDescriptor
                 {
                     Audience = "http://localhost:5000",
-                    Subject = new ClaimsIdentity(new[] { new Claim("sub", "adm") }),
+                    Subject = new ClaimsIdentity(new[] {new Claim("sub", "adm")}),
                     SigningCredentials = new SigningCredentials(
                         TestKeys.SecretKey.CreateSignatureJwk(),
                         SecurityAlgorithms.HmacSha256)
@@ -390,19 +382,17 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { id_token_hint = jws, prompt = "none" })
-                .ConfigureAwait(false);
+                        "state") {id_token_hint = jws, prompt = "none"})
+                .ConfigureAwait(false) as Option<Uri>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
-            Assert.Equal(Strings.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken, result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
+            Assert.Equal(Strings.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken, result.Details.Detail);
         }
 
         [Fact]
@@ -413,16 +403,15 @@ namespace SimpleAuth.Server.Tests.Apis
             // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(baseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { prompt = PromptNames.None })
-                .ConfigureAwait(false);
-            var location = result.Content;
+                        "state") {prompt = PromptNames.None})
+                .ConfigureAwait(false) as Option<Uri>.Result;
+            var location = result.Item;
             var queries = QueryHelpers.ParseQuery(location.Query);
             var tokenClient = new TokenClient(
                 TokenCredentials.FromClientCredentials("authcode_client", "authcode_client"),
@@ -430,9 +419,9 @@ namespace SimpleAuth.Server.Tests.Apis
                 new Uri(baseUrl + WellKnownOpenidConfiguration));
             var token = await tokenClient
                 .GetToken(TokenRequest.FromAuthorizationCode(queries["code"], "http://localhost:5000/callback"))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-            Assert.NotEmpty(token.Content.AccessToken);
+            Assert.NotEmpty(token.Item.AccessToken);
             Assert.True(queries["state"] == "state");
         }
 
@@ -443,16 +432,15 @@ namespace SimpleAuth.Server.Tests.Apis
             UserStore.Instance().AuthenticationOffset = DateTimeOffset.UtcNow.AddDays(-2);
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { prompt = PromptNames.None, max_age = 300 })
-                .ConfigureAwait(false);
-            var location = result.Content;
+                        "state") {prompt = PromptNames.None, max_age = 300})
+                .ConfigureAwait(false) as Option<Uri>.Result;
+            var location = result.Item;
             UserStore.Instance().AuthenticationOffset = null;
 
             Assert.Equal("/pwd/Authenticate/OpenId", location.LocalPath);
@@ -464,17 +452,16 @@ namespace SimpleAuth.Server.Tests.Apis
             var pkce = CodeChallengeMethods.S256.BuildPkce();
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { prompt = PromptNames.Login })
-                .ConfigureAwait(false);
+                        "state") {prompt = PromptNames.Login})
+                .ConfigureAwait(false) as Option<Uri>.Result;
 
-            Assert.Equal("/pwd/Authenticate/OpenId", result.Content.LocalPath);
+            Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
         }
 
         [Fact]
@@ -484,18 +471,17 @@ namespace SimpleAuth.Server.Tests.Apis
             UserStore.Instance().IsInactive = true;
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { prompt = PromptNames.Consent })
-                .ConfigureAwait(false);
+                        "state") {prompt = PromptNames.Consent})
+                .ConfigureAwait(false) as Option<Uri>.Result;
             UserStore.Instance().IsInactive = false;
 
-            Assert.Equal("/pwd/Authenticate/OpenId", result.Content.LocalPath);
+            Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
         }
 
         [Fact]
@@ -504,17 +490,16 @@ namespace SimpleAuth.Server.Tests.Apis
             var pkce = CodeChallengeMethods.S256.BuildPkce();
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { prompt = PromptNames.Consent })
-                .ConfigureAwait(false);
+                        "state") {prompt = PromptNames.Consent})
+                .ConfigureAwait(false) as Option<Uri>.Result;
 
-            Assert.Equal("/Consent", result.Content.LocalPath);
+            Assert.Equal("/Consent", result.Item.LocalPath);
         }
 
         [Fact]
@@ -524,7 +509,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 new SecurityTokenDescriptor
                 {
                     Audience = "http://localhost:5000",
-                    Subject = new ClaimsIdentity(new[] { new Claim("sub", "administrator") }),
+                    Subject = new ClaimsIdentity(new[] {new Claim("sub", "administrator")}),
                     SigningCredentials =
                         new SigningCredentials(
                             TestKeys.SecretKey.CreateSignatureJwk(),
@@ -538,17 +523,16 @@ namespace SimpleAuth.Server.Tests.Apis
             var pkce = CodeChallengeMethods.S256.BuildPkce();
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "authcode_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { id_token_hint = jwe, prompt = "none" })
+                        "state") {id_token_hint = jwe, prompt = "none"})
                 .ConfigureAwait(false);
 
-            Assert.False(result.HasError);
+            Assert.IsType<Option<Uri>.Result>(result);
         }
 
         [Fact]
@@ -558,18 +542,15 @@ namespace SimpleAuth.Server.Tests.Apis
 
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.Code},
                         "pkce_client",
                         new Uri(BaseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    {
-                        prompt = PromptNames.None
-                    })
-                .ConfigureAwait(false);
-            var location = result.Content;
+                        "state") {prompt = PromptNames.None})
+                .ConfigureAwait(false) as Option<Uri>.Result;
+            var location = result.Item;
             var queries = QueryHelpers.ParseQuery(location.Query);
             var tokenClient = new TokenClient(
                 TokenCredentials.FromClientCredentials("pkce_client", "pkce_client"),
@@ -580,9 +561,9 @@ namespace SimpleAuth.Server.Tests.Apis
                         queries["code"],
                         "http://localhost:5000/callback",
                         pkce.CodeVerifier))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-            Assert.NotNull(token?.Content?.AccessToken);
+            Assert.NotNull(token?.Item.AccessToken);
         }
 
         [Fact]
@@ -594,18 +575,17 @@ namespace SimpleAuth.Server.Tests.Apis
             // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token},
                         "implicit_client",
                         new Uri(baseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { prompt = PromptNames.None, nonce = "nonce" })
-                .ConfigureAwait(false);
-            var queries = QueryHelpers.ParseQuery(result.Content.Fragment.TrimStart('#'));
+                        "state") {prompt = PromptNames.None, nonce = "nonce"})
+                .ConfigureAwait(false) as Option<Uri>.Result;
+            var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
-            Assert.NotNull(result.Content);
+            Assert.NotNull(result.Item);
             Assert.True(queries.ContainsKey("id_token"));
             Assert.True(queries.ContainsKey("access_token"));
             Assert.True(queries.ContainsKey("state"));
@@ -621,18 +601,17 @@ namespace SimpleAuth.Server.Tests.Apis
             // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.GetAuthorization(
                     new AuthorizationRequest(
-                        new[] { "openid", "api1" },
-                        new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code },
+                        new[] {"openid", "api1"},
+                        new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
                         "hybrid_client",
                         new Uri(baseUrl + "/callback"),
                         pkce.CodeChallenge,
                         CodeChallengeMethods.S256,
-                        "state")
-                    { prompt = PromptNames.None, nonce = "nonce" })
-                .ConfigureAwait(false);
-            var queries = QueryHelpers.ParseQuery(result.Content.Fragment.TrimStart('#'));
+                        "state") {prompt = PromptNames.None, nonce = "nonce"})
+                .ConfigureAwait(false) as Option<Uri>.Result;
+            var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
-            Assert.NotNull(result.Content);
+            Assert.NotNull(result.Item);
             Assert.True(queries.ContainsKey("id_token"));
             Assert.True(queries.ContainsKey("access_token"));
             Assert.True(queries.ContainsKey("code"));

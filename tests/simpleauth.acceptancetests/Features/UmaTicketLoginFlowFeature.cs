@@ -46,9 +46,9 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "uma_protection", "offline" }))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"uma_protection", "offline"}))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
                 });
 
             "then has valid access token".x(
@@ -63,7 +63,7 @@
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
                 });
 
             "given a uma client".x(
@@ -77,44 +77,45 @@
             "when creating resource set".x(
                 async () =>
                 {
-                    var resourceSet = new ResourceSet
-                    {
-                        Name = "Local",
-                        Scopes = new[] { "api1" },
-                        Type = "url",
-                    };
+                    var resourceSet = new ResourceSet {Name = "Local", Scopes = new[] {"api1"}, Type = "url",};
 
                     var resourceResponse =
-                        await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
-                    resourceSetResponse = resourceResponse.Content;
+                        await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false) as
+                            Option<AddResourceSetResponse>.Result;
+                    resourceSetResponse = resourceResponse.Item;
 
-                    Assert.False(resourceResponse.HasError);
+                    Assert.NotNull(resourceResponse);
                 });
 
-            "and setting access policy".x(async () =>
-            {
-                var resourceSet = new ResourceSet
+            "and setting access policy".x(
+                async () =>
                 {
-                    Id = resourceSetResponse.Id,
-                    Name = "Local",
-                    Scopes = new[] { "api1" },
-                    Type = "url",
-                    AuthorizationPolicies = new[]
+                    var resourceSet = new ResourceSet
                     {
-                        new PolicyRule
+                        Id = resourceSetResponse.Id,
+                        Name = "Local",
+                        Scopes = new[] {"api1"},
+                        Type = "url",
+                        AuthorizationPolicies = new[]
                         {
-                            Scopes = new[] {"api1"},
-                            Claims = new[] {new ClaimData {Type = ClaimTypes.NameIdentifier, Value = "user"}},
-                            ClientIdsAllowed = new[] {"post_client"},
-                            IsResourceOwnerConsentNeeded = false
+                            new PolicyRule
+                            {
+                                Scopes = new[] {"api1"},
+                                Claims = new[]
+                                {
+                                    new ClaimData {Type = ClaimTypes.NameIdentifier, Value = "user"}
+                                },
+                                ClientIdsAllowed = new[] {"post_client"},
+                                IsResourceOwnerConsentNeeded = false
+                            }
                         }
-                    }
-                };
-                var resourceResponse =
-                    await umaClient.UpdateResource(resourceSet, result.AccessToken).ConfigureAwait(false);
+                    };
+                    var resourceResponse =
+                        await umaClient.UpdateResource(resourceSet, result.AccessToken).ConfigureAwait(false) as
+                            Option<UpdateResourceSetResponse>.Result;
 
-                Assert.False(resourceResponse.HasError);
-            });
+                    Assert.NotNull(resourceResponse);
+                });
 
             "then can get redirection".x(
                 async () =>
@@ -143,10 +144,9 @@
                 async () =>
                 {
                     var response = await client.GetToken(TokenRequest.FromTicketId(ticketId, result.IdToken))
-                        .ConfigureAwait(false);
-                    umaToken = response.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    umaToken = response.Item;
 
-                    Assert.Null(response.Error);
                     Assert.NotNull(umaToken.AccessToken);
                 });
 
@@ -172,7 +172,6 @@
         [Scenario(DisplayName = "Instance policy ticket authentication")]
         public void DefaultPolicyTicketAuthentication()
         {
-            GrantedTokenResponse umaToken = null;
             AddResourceSetResponse resourceSetResponse = null;
             UmaClient umaClient = null;
             TokenClient client = null;
@@ -189,9 +188,9 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "uma_protection" }))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"uma_protection"}))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
                 });
 
             "then has valid access token".x(
@@ -206,7 +205,7 @@
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
                 });
 
             "given a uma client".x(
@@ -217,17 +216,15 @@
                 {
                     var resourceSet = new ResourceSet
                     {
-                        Name = "Local",
-                        Scopes = new[] { "api1" },
-                        Type = "url",
-                        AuthorizationPolicies = null
+                        Name = "Local", Scopes = new[] {"api1"}, Type = "url", AuthorizationPolicies = null
                     };
 
                     var resourceResponse =
-                        await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
-                    resourceSetResponse = resourceResponse.Content;
+                        await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false) as
+                            Option<AddResourceSetResponse>.Result;
+                    resourceSetResponse = resourceResponse.Item;
 
-                    Assert.False(resourceResponse.HasError);
+                    Assert.NotNull(resourceResponse);
                 });
 
             "then can get redirection".x(
@@ -258,18 +255,15 @@
                 {
                     var response = await client.GetToken(TokenRequest.FromTicketId(ticketId, result.IdToken))
                         .ConfigureAwait(false);
-                    umaToken = response.Content;
 
-                    Assert.True(response.HasError);
+                    Assert.IsType<Option<GrantedTokenResponse>.Error>(response);
                 });
-
-            "then has no token".x(() => { Assert.Null(umaToken); });
         }
 
         [Scenario(DisplayName = "Unsuccessful ticket authentication")]
         public void UnsuccessfulTicketAuthentication()
         {
-            GenericResponse<GrantedTokenResponse> ticketResponse = null;
+            Option<GrantedTokenResponse> ticketResponse = null;
             AddResourceSetResponse resourceSetResponse = null;
             UmaClient umaClient = null;
             TokenClient client = null;
@@ -286,9 +280,9 @@
                 async () =>
                 {
                     var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] { "uma_protection" }))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"uma_protection"}))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
                 });
 
             "then has valid access token".x(
@@ -303,7 +297,7 @@
                     };
                     tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotEmpty(((JwtSecurityToken)token).Claims);
+                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
                 });
 
             "given a uma client".x(
@@ -320,40 +314,40 @@
                     var resourceSet = new ResourceSet
                     {
                         Name = "Local",
-                        Scopes = new[] { "api1" },
+                        Scopes = new[] {"api1"},
                         Type = "url",
                         AuthorizationPolicies = new[]
                         {
-                                    new PolicyRule
-                                    {
-                                        Scopes = new[] {"anotherApi"},
-                                        Claims = new[]
-                                        {
-                                            new ClaimData {Type = "sub", Value = "user"}
-                                        },
-                                        ClientIdsAllowed = new[] {"post_client"},
-                                        IsResourceOwnerConsentNeeded = false
-                                    }
+                            new PolicyRule
+                            {
+                                Scopes = new[] {"anotherApi"},
+                                Claims = new[] {new ClaimData {Type = "sub", Value = "user"}},
+                                ClientIdsAllowed = new[] {"post_client"},
+                                IsResourceOwnerConsentNeeded = false
+                            }
                         }
                     };
 
                     var resourceResponse =
-                        await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false);
-                    resourceSetResponse = resourceResponse.Content;
+                        await umaClient.AddResource(resourceSet, result.AccessToken).ConfigureAwait(false) as
+                            Option<AddResourceSetResponse>.Result;
 
-                    Assert.False(resourceResponse.HasError);
+                    Assert.NotNull(resourceResponse);
+
+                    resourceSetResponse = resourceResponse.Item;
                 });
 
             "and requesting permission ticket".x(
                 async () =>
                 {
                     var permission =
-                        new PermissionRequest { ResourceSetId = resourceSetResponse.Id, Scopes = new[] { "api1" } };
+                        new PermissionRequest {ResourceSetId = resourceSetResponse.Id, Scopes = new[] {"api1"}};
                     var permissionResponse = await umaClient.RequestPermission(result.AccessToken, requests: permission)
-                        .ConfigureAwait(false);
-                    ticketId = permissionResponse.Content.TicketId;
+                        .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-                    Assert.Null(permissionResponse.Error);
+                    Assert.NotNull(permissionResponse);
+
+                    ticketId = permissionResponse.Item.TicketId;
                 });
 
             "and requesting token from ticket".x(
@@ -363,12 +357,7 @@
                         .ConfigureAwait(false);
                 });
 
-            "then has error".x(
-                () =>
-                {
-                    Assert.NotNull(ticketResponse.Error);
-                    Assert.Null(ticketResponse.Content);
-                });
+            "then has error".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(ticketResponse); });
         }
     }
 }

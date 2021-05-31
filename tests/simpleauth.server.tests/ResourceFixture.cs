@@ -23,9 +23,11 @@ namespace SimpleAuth.Server.Tests
     using System.Threading.Tasks;
     using SimpleAuth.Client;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -46,22 +48,22 @@ namespace SimpleAuth.Server.Tests
         public async Task When_Add_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.AddResource(new ResourceSet { Name = string.Empty }, "header")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<AddResourceSetResponse>.Error;
 
-            Assert.True(resource.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "name"), resource.Error.Detail);
+            Assert.NotNull(resource);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
+            Assert.Equal(string.Format(Strings.MissingParameter, "name"), resource.Details.Detail);
         }
 
         [Fact]
         public async Task When_Add_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.AddResource(new ResourceSet { Name = "name" }, "header")
-                .ConfigureAwait(false);
+            var resource =
+                await _umaClient.AddResource(new ResourceSet { Name = "name" }, "header").ConfigureAwait(false) as
+                    Option<AddResourceSetResponse>.Error;
 
-            Assert.True(resource.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "scopes"), resource.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
+            Assert.Equal(string.Format(Strings.MissingParameter, "scopes"), resource.Details.Detail);
         }
 
         [Fact]
@@ -86,28 +88,28 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Get_Unknown_Resource_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.GetResource("unknown", "header").ConfigureAwait(false);
+            var resource =
+                await _umaClient.GetResource("unknown", "header").ConfigureAwait(false) as Option<ResourceSet>.Error;
 
-            Assert.Equal(HttpStatusCode.NoContent, resource.StatusCode);
-            Assert.Null(resource.Content);
+            Assert.Equal(HttpStatusCode.NoContent, resource.Details.Status);
         }
 
         [Fact]
         public async Task When_Delete_Unknown_Resource_Then_Error_Is_Returned()
         {
-            var resource = await _umaClient.DeleteResource("unknown", "header").ConfigureAwait(false);
+            var resource = await _umaClient.DeleteResource("unknown", "header").ConfigureAwait(false) as Option.Error;
 
-            Assert.True(resource.HasError);
-            Assert.Equal(HttpStatusCode.BadRequest, resource.Error.Status);
+            Assert.Equal(HttpStatusCode.BadRequest, resource.Details.Status);
         }
 
         [Fact]
         public async Task WhenUpdateResourceAndNoIdIsSpecifiedThenIsNotUpdated()
         {
-            var resource = await _umaClient.UpdateResource(new ResourceSet(), "header").ConfigureAwait(false);
+            var resource =
+                await _umaClient.UpdateResource(new ResourceSet(), "header").ConfigureAwait(false) as
+                    Option<UpdateResourceSetResponse>.Error;
 
-            Assert.True(resource.HasError);
-            Assert.Equal(HttpStatusCode.NotFound, resource.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, resource.Details.Status);
         }
 
         [Fact]
@@ -116,22 +118,20 @@ namespace SimpleAuth.Server.Tests
             var resource = await _umaClient.UpdateResource(
                     new ResourceSet { Id = "invalid", Name = string.Empty },
                     "header")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Error;
 
-            Assert.True(resource.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "name"), resource.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
+            Assert.Equal(string.Format(Strings.MissingParameter, "name"), resource.Details.Detail);
         }
 
         [Fact]
         public async Task When_Update_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.UpdateResource(new ResourceSet { Id = "invalid", Name = "name" }, "header")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Error;
 
-            Assert.True(resource.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, resource.Error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "scopes"), resource.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
+            Assert.Equal(string.Format(Strings.MissingParameter, "scopes"), resource.Details.Detail);
         }
 
         [Fact]
@@ -159,26 +159,25 @@ namespace SimpleAuth.Server.Tests
             var resource = await _umaClient.UpdateResource(
                     new ResourceSet { Id = "invalid", Name = "name", Scopes = new[] { "scope" } },
                     "header")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Error;
 
-            Assert.True(resource.HasError);
-            Assert.Equal("not_updated", resource.Error.Title);
-            Assert.Equal("Resource cannot be updated", resource.Error.Detail);
+            Assert.Equal("not_updated", resource.Details.Title);
+            Assert.Equal("Resource cannot be updated", resource.Details.Detail);
         }
 
         [Fact]
         public async Task When_Getting_Resources_Then_Identifiers_Are_Returned()
         {
-            var resources = await _umaClient.GetAllResources("token").ConfigureAwait(false);
+            var resources = await _umaClient.GetAllResources("token").ConfigureAwait(false) as Option<string[]>.Result;
 
-            Assert.True(resources.Content.Any());
+            Assert.True(resources.Item.Any());
         }
 
         [Fact]
         public async Task When_Getting_ResourceInformation_Then_Dto_Is_Returned()
         {
-            var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false);
-            var resource = await _umaClient.GetResource(resources.Content.First(), "header").ConfigureAwait(false);
+            var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false) as Option<string[]>.Result;
+            var resource = await _umaClient.GetResource(resources.Item.First(), "header").ConfigureAwait(false);
 
             Assert.NotNull(resource);
         }
@@ -186,12 +185,11 @@ namespace SimpleAuth.Server.Tests
         [Fact]
         public async Task When_Deleting_ResourceInformation_Then_It_Does_Not_Exist()
         {
-            var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false);
-            await _umaClient.DeleteResource(resources.Content.First(), "header").ConfigureAwait(false);
-            var information = await _umaClient.GetResource(resources.Content.First(), "header").ConfigureAwait(false);
+            var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false) as Option<string[]>.Result;
+            await _umaClient.DeleteResource(resources.Item.First(), "header").ConfigureAwait(false);
+            var information = await _umaClient.GetResource(resources.Item.First(), "header").ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.NoContent, information.StatusCode);
-            Assert.Null(information.Content);
+            Assert.IsType<Option<ResourceSet>.Error>(information);
         }
 
         [Fact]
@@ -211,10 +209,9 @@ namespace SimpleAuth.Server.Tests
             var resource = await _umaClient.SearchResources(
                     new SearchResourceSet { StartIndex = 0, TotalResults = 100 },
                     "header")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<PagedResult<ResourceSet>>.Result;
 
-            Assert.False(resource.HasError);
-            Assert.True(resource.Content.Content.Any());
+            Assert.True(resource.Item.Content.Any());
         }
 
         [Fact]
@@ -223,23 +220,19 @@ namespace SimpleAuth.Server.Tests
             var resource = await _umaClient.AddResource(
                     new ResourceSet { Name = "name", Scopes = new[] { "scope" } },
                     "header")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
 
             var updateResult = await _umaClient.UpdateResource(
-                    new ResourceSet
-                    {
-                        Id = resource.Content.Id,
-                        Name = "name2",
-                        Type = "type",
-                        Scopes = new[] { "scope2" }
-                    },
+                    new ResourceSet { Id = resource.Item.Id, Name = "name2", Type = "type", Scopes = new[] { "scope2" } },
                     "header")
-                .ConfigureAwait(false);
-            var information = await _umaClient.GetResource(updateResult.Content.Id, "header").ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Result;
+            var information =
+                await _umaClient.GetResource(updateResult.Item.Id, "header").ConfigureAwait(false) as
+                    Option<ResourceSet>.Result;
 
-            Assert.Equal("name2", information.Content.Name);
-            Assert.Equal("type", information.Content.Type);
-            Assert.Equal("scope2", information.Content.Scopes.Single());
+            Assert.Equal("name2", information.Item.Name);
+            Assert.Equal("type", information.Item.Type);
+            Assert.Equal("scope2", information.Item.Scopes.Single());
         }
 
         /// <inheritdoc />

@@ -2,8 +2,10 @@
 {
     using System;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
     using Xunit.Abstractions;
@@ -43,15 +45,15 @@
                 async () =>
                 {
                     var response = await client.GetToken(
-                            TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
-                        .ConfigureAwait(false);
+                            TokenRequest.FromPassword("administrator", "password", new[] {"uma_protection"}))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
-                    Assert.NotNull(response.Content.AccessToken);
-                    Assert.NotNull(response.Content.IdToken);
+                    Assert.NotNull(response);
+                    Assert.NotNull(response.Item.AccessToken);
+                    Assert.NotNull(response.Item.IdToken);
 
-                    patToken = response.Content.AccessToken;
-                    idToken = response.Content.IdToken;
+                    patToken = response.Item.AccessToken;
+                    idToken = response.Item.IdToken;
                 });
 
             "and a registered resource".x(
@@ -61,14 +63,16 @@
                     {
                         Description = "Test resource",
                         Name = "Test resource",
-                        Scopes = new[] { "read" },
+                        Scopes = new[] {"read"},
                         Type = "Test resource"
                     };
-                    var response = await umaClient.AddResource(resourceSet, patToken).ConfigureAwait(false);
+                    var response =
+                        await umaClient.AddResource(resourceSet, patToken).ConfigureAwait(false) as
+                            Option<AddResourceSetResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    resourceId = response.Content.Id;
+                    resourceId = response.Item.Id;
                 });
 
             "and an updated authorization policy".x(
@@ -77,48 +81,50 @@
                     var resourceSet = new ResourceSet
                     {
                         Id = resourceId,
-                        AuthorizationPolicies = new[] { new PolicyRule
-                        {
-                            ClientIdsAllowed = new []{"clientCredentials"},
-                            Scopes = new []{"read"}
-                        } },
+                        AuthorizationPolicies =
+                            new[]
+                            {
+                                new PolicyRule
+                                {
+                                    ClientIdsAllowed = new[] {"clientCredentials"}, Scopes = new[] {"read"}
+                                }
+                            },
                         Description = "Test resource",
                         Name = "Test resource",
-                        Scopes = new[] { "read" },
+                        Scopes = new[] {"read"},
                         Type = "Test resource"
                     };
-                    var response = await umaClient.UpdateResource(resourceSet, patToken).ConfigureAwait(false);
+                    var response =
+                        await umaClient.UpdateResource(resourceSet, patToken).ConfigureAwait(false) as
+                            Option<UpdateResourceSetResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    resourceId = response.Content.Id;
+                    resourceId = response.Item.Id;
                 });
 
             "When getting a ticket".x(
                 async () =>
                 {
                     var ticketResponse = await umaClient.RequestPermission(
-                        patToken,
-                        requests: new PermissionRequest
-                        {
-                            ResourceSetId = resourceId,
-                            Scopes = new[] { "read" }
-                        })
-                        .ConfigureAwait(false);
+                            patToken,
+                            requests: new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                        .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-                    Assert.False(ticketResponse.HasError);
+                    Assert.NotNull(ticketResponse);
 
-                    ticketId = ticketResponse.Content.TicketId;
+                    ticketId = ticketResponse.Item.TicketId;
                 });
 
             "and getting an RPT token".x(
                 async () =>
                 {
-                    var rptResponse = await client.GetToken(TokenRequest.FromTicketId(ticketId, idToken)).ConfigureAwait(false);
+                    var rptResponse = await client.GetToken(TokenRequest.FromTicketId(ticketId, idToken))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(rptResponse.HasError);
+                    Assert.NotNull(rptResponse);
 
-                    rptToken = rptResponse.Content.AccessToken;
+                    rptToken = rptResponse.Item.AccessToken;
                 });
 
             "then can introspect RPT token using PAT token as authentication".x(
@@ -128,7 +134,7 @@
                         .Introspect(IntrospectionRequest.Create(rptToken, "access_token", patToken))
                         .ConfigureAwait(false);
 
-                    Assert.False(introspectResult.HasError);
+                    Assert.IsType<Option<UmaIntrospectionResponse>.Result>(introspectResult);
                 });
         }
     }

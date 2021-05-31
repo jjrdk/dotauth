@@ -59,8 +59,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
         {
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"{BaseUrl}/{path}")
+                Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/{path}")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);

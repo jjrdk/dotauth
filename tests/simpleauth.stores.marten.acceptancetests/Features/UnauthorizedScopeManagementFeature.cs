@@ -14,37 +14,37 @@
             : base(output)
         {
         }
-   
+
         [Scenario]
         public void RejectedScopeLoad()
         {
-            GenericResponse<Scope> scope = null;
+            Option<Scope>.Error scope = null;
 
             "When requesting existing scope".x(
                 async () =>
                 {
                     scope = await _managerClient.GetScope("test", _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<Scope>.Error;
                 });
 
-            "then error is returned".x(() => { Assert.Equal(HttpStatusCode.Forbidden, scope.StatusCode); });
+            "then error is returned".x(() => { Assert.Equal(HttpStatusCode.Forbidden, scope.Details.Status); });
         }
 
         [Scenario]
         public void RejectedAddScope()
         {
-            GenericResponse<Scope> scope = null;
+            Option<Scope>.Error scope = null;
 
             "When adding new scope".x(
                 async () =>
                 {
                     scope = await _managerClient.AddScope(
-                            new Scope { Name = "test", Claims = new[] { "openid" } },
+                            new Scope {Name = "test", Claims = new[] {"openid"}},
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<Scope>.Error;
                 });
 
-            "then error is returned".x(() => { Assert.Equal(HttpStatusCode.Forbidden, scope.StatusCode); });
+            "then error is returned".x(() => { Assert.Equal(HttpStatusCode.Forbidden, scope.Details.Status); });
         }
     }
 }

@@ -5,6 +5,7 @@
     using SimpleAuth.Shared.Responses;
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using SimpleAuth.Shared;
     using Xbehave;
     using Xunit;
     using Xunit.Abstractions;
@@ -52,11 +53,13 @@
                         TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
                         _fixture.Client,
                         new Uri(WellKnownOpenidConfiguration));
-                    var response = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                    var response =
+                        await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    tokenResponse = response.Content;
+                    tokenResponse = response.Item;
                 });
 
             "then can download json web key set".x(

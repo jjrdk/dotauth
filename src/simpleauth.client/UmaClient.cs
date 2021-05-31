@@ -56,7 +56,7 @@ namespace SimpleAuth.Client
         public Uri Authority { get; }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<UmaIntrospectionResponse>> Introspect(
+        public async Task<Option<UmaIntrospectionResponse>> Introspect(
             IntrospectionRequest introspectionRequest,
             CancellationToken cancellationToken = default)
         {
@@ -73,7 +73,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<TicketResponse>> RequestPermission(
+        public async Task<Option<TicketResponse>> RequestPermission(
             string token,
             CancellationToken cancellationToken = default,
             params PermissionRequest[] requests)
@@ -107,7 +107,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<UpdateResourceSetResponse>> UpdateResource(
+        public async Task<Option<UpdateResourceSetResponse>> UpdateResource(
             ResourceSet request,
             string token,
             CancellationToken cancellationToken = default)
@@ -131,7 +131,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<AddResourceSetResponse>> AddResource(
+        public async Task<Option<AddResourceSetResponse>> AddResource(
             ResourceSet request,
             string token,
             CancellationToken cancellationToken = default)
@@ -159,7 +159,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<object>> DeleteResource(
+        public async Task<Option> DeleteResource(
             string resourceSetId,
             string token,
             CancellationToken cancellationToken = default)
@@ -179,11 +179,16 @@ namespace SimpleAuth.Client
             resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
             var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
-            return await GetResult<object>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var result = await GetResult<object>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return result switch
+            {
+                Option<object>.Error e => e.Details,
+                _ => new Option.Success()
+            };
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<string[]>> GetAllResources(
+        public async Task<Option<string[]>> GetAllResources(
             string token,
             CancellationToken cancellationToken = default)
         {
@@ -202,7 +207,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<ResourceSet>> GetResource(
+        public async Task<Option<ResourceSet>> GetResource(
             string resourceSetId,
             string token,
             CancellationToken cancellationToken = default)
@@ -227,7 +232,7 @@ namespace SimpleAuth.Client
         }
 
         /// <inheritdoc />
-        public async Task<GenericResponse<PagedResult<ResourceSet>>> SearchResources(
+        public async Task<Option<PagedResult<ResourceSet>>> SearchResources(
             SearchResourceSet parameter,
             string? token = null,
             CancellationToken cancellationToken = default)
@@ -257,12 +262,12 @@ namespace SimpleAuth.Client
                 new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _configurationUri },
                 (AuthenticationHeaderValue?)null,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
-            if (result.HasError)
+            if (result is Option<UmaConfiguration>.Error e)
             {
-                throw new Exception(result.Error?.Detail);
+                throw new Exception(e.Details.Detail);
             }
 
-            _umaConfiguration = result.Content!;
+            _umaConfiguration = ((Option<UmaConfiguration>.Result)result).Item!;
 
             return _umaConfiguration;
         }

@@ -25,6 +25,8 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Text;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
     using Xunit.Abstractions;
     using TokenRequest = Client.TokenRequest;
@@ -48,11 +50,11 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri($"{BaseUrl}/.well-known/openid-configuration"));
             var grantedToken = await tokenClient.GetToken(TokenRequest.FromScopes("register_client"))
-                .ConfigureAwait(false);
-            var obj = new { fake = "fake" };
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+            var obj = new {fake = "fake"};
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -60,8 +62,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            httpRequest.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Item.AccessToken);
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
@@ -75,20 +76,21 @@ namespace SimpleAuth.Server.Tests.Apis
                 TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
                 _server.Client,
                 new Uri($"{BaseUrl}/.well-known/openid-configuration"));
-            var grantedToken = await tokenClient.GetToken(TokenRequest.FromScopes("manager"))
-                .ConfigureAwait(false);
+            var grantedToken =
+                await tokenClient.GetToken(TokenRequest.FromScopes("manager")).ConfigureAwait(false) as
+                    Option<GrantedTokenResponse>.Result;
             var obj = new
             {
-                allowed_scopes = new[] { "openid" },
-                request_uris = new[] { new Uri("https://localhost") },
-                redirect_uris = new[] { "localhost" },
+                allowed_scopes = new[] {"openid"},
+                request_uris = new[] {new Uri("https://localhost")},
+                redirect_uris = new[] {"localhost"},
                 client_uri = new Uri("http://google.com"),
                 tos_uri = new Uri("http://google.com"),
                 jwks = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -96,8 +98,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            httpRequest.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Item.AccessToken);
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
@@ -116,19 +117,19 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri($"{BaseUrl}/.well-known/openid-configuration"));
             var grantedToken = await tokenClient.GetToken(TokenRequest.FromScopes("register_client"))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
             var obj = new
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                AllowedScopes = new[] { "openid" },
-                RequestUris = new[] { new Uri("https://localhost") },
-                RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
+                AllowedScopes = new[] {"openid"},
+                RequestUris = new[] {new Uri("https://localhost")},
+                RedirectionUrls = new[] {new Uri("http://localhost#fragment")},
                 //LogoUri = "http://google.com",
                 ClientUri = new Uri("https://valid")
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -137,8 +138,8 @@ namespace SimpleAuth.Server.Tests.Apis
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(ApplicationJson);
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(
-                grantedToken.Content.TokenType,
-                grantedToken.Content.AccessToken);
+                grantedToken.Item.TokenType,
+                grantedToken.Item.AccessToken);
 
             var httpResult = await _server.SharedCtx.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
@@ -149,9 +150,7 @@ namespace SimpleAuth.Server.Tests.Apis
 
             Assert.Equal("invalid_redirect_uri", error!.Title);
             Assert.Equal(
-                string.Format(
-                    Strings.TheRedirectUrlCannotContainsFragment,
-                    "http://localhost/#fragment"),
+                string.Format(Strings.TheRedirectUrlCannotContainsFragment, "http://localhost/#fragment"),
                 error.Detail);
         }
 
@@ -163,18 +162,18 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri($"{BaseUrl}/.well-known/openid-configuration"));
             var grantedToken = await tokenClient.GetToken(TokenRequest.FromScopes("register_client"))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
             var obj = new
             {
-                AllowedScopes = new[] { "openid" },
-                RequestUris = new[] { new Uri("https://localhost") },
-                RedirectionUrls = new[] { new Uri("http://localhost") },
+                AllowedScopes = new[] {"openid"},
+                RequestUris = new[] {new Uri("https://localhost")},
+                RedirectionUrls = new[] {new Uri("http://localhost")},
                 LogoUri = "http://google.com",
                 ClientUri = "invalid_client_uri"
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -182,8 +181,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Content = new StringContent(fakeJson, Encoding.UTF8, ApplicationJson)
             };
 
-            httpRequest.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Item.AccessToken);
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -201,19 +199,19 @@ namespace SimpleAuth.Server.Tests.Apis
                 _server.Client,
                 new Uri($"{BaseUrl}/.well-known/openid-configuration"));
             var grantedToken = await tokenClient.GetToken(TokenRequest.FromScopes("register_client"))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
             var obj = new
             {
-                AllowedScopes = new[] { "openid" },
-                RequestUris = new[] { new Uri("https://localhost") },
-                RedirectionUrls = new[] { new Uri("http://localhost") },
+                AllowedScopes = new[] {"openid"},
+                RequestUris = new[] {new Uri("https://localhost")},
+                RedirectionUrls = new[] {new Uri("http://localhost")},
                 LogoUri = new Uri("http://google.com"),
                 ClientUri = new Uri("https://valid_client_uri"),
                 TosUri = "invalid"
             };
             var fakeJson = JsonConvert.SerializeObject(
                 obj,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
             var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -221,8 +219,7 @@ namespace SimpleAuth.Server.Tests.Apis
                 Content = new StringContent(fakeJson)
             };
             httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            httpRequest.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer", grantedToken.Content.AccessToken);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Item.AccessToken);
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -239,8 +236,9 @@ namespace SimpleAuth.Server.Tests.Apis
                 TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
                 _server.Client,
                 new Uri($"{BaseUrl}/.well-known/openid-configuration"));
-            var grantedToken = await tokenClient.GetToken(TokenRequest.FromScopes("manager"))
-                .ConfigureAwait(false);
+            var grantedToken =
+                await tokenClient.GetToken(TokenRequest.FromScopes("manager")).ConfigureAwait(false) as
+                    Option<GrantedTokenResponse>.Result;
 
             var registrationClient = await ManagementClient.Create(
                     _server.Client,
@@ -250,16 +248,16 @@ namespace SimpleAuth.Server.Tests.Apis
                     new Client
                     {
                         JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                        AllowedScopes = new[] { "openid" },
+                        AllowedScopes = new[] {"openid"},
                         ClientName = "Test",
                         ClientId = "id",
-                        RedirectionUrls = new[] { new Uri("https://localhost"), },
-                        RequestUris = new[] { new Uri("https://localhost") },
+                        RedirectionUrls = new[] {new Uri("https://localhost"),},
+                        RequestUris = new[] {new Uri("https://localhost")},
                     },
-                    grantedToken.Content.AccessToken)
-                .ConfigureAwait(false);
+                    grantedToken.Item.AccessToken)
+                .ConfigureAwait(false) as Option<Client>.Result;
 
-            Assert.NotNull(client.Content);
+            Assert.NotNull(client);
         }
 
         public void Dispose()

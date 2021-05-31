@@ -7,6 +7,7 @@
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xunit;
@@ -27,13 +28,12 @@
         {
             var client = CreateTokenClient();
             var noPhoneNumberResult = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = string.Empty })
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
             // ASSERT : NO PHONE NUMBER
-            Assert.True(noPhoneNumberResult.HasError);
-            Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.StatusCode);
-            Assert.Equal(ErrorCodes.InvalidRequest, noPhoneNumberResult.Error.Title);
-            Assert.Equal("parameter phone_number is missing", noPhoneNumberResult.Error.Detail);
+            Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.Details.Status);
+            Assert.Equal(ErrorCodes.InvalidRequest, noPhoneNumberResult.Details.Title);
+            Assert.Equal("parameter phone_number is missing", noPhoneNumberResult.Details.Detail);
         }
 
         private TokenClient CreateTokenClient()
@@ -58,12 +58,11 @@
                 .ReturnsAsync((false, ""));
             var client = CreateTokenClient();
             var twilioNotConfigured = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.True(twilioNotConfigured.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, twilioNotConfigured.Error.Title);
-            Assert.Equal("The SMS account is not properly configured", twilioNotConfigured.Error.Detail);
-            Assert.Equal(HttpStatusCode.InternalServerError, twilioNotConfigured.StatusCode);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, twilioNotConfigured.Details.Title);
+            Assert.Equal("The SMS account is not properly configured", twilioNotConfigured.Details.Detail);
+            Assert.Equal(HttpStatusCode.InternalServerError, twilioNotConfigured.Details.Status);
         }
 
         [Fact]
@@ -81,13 +80,12 @@
             var client = CreateTokenClient();
             var cannotInsertConfirmationCode = await client
                 .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
             // ASSERT : CANNOT INSERT CONFIRMATION CODE
-            Assert.True(cannotInsertConfirmationCode.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, cannotInsertConfirmationCode.Error!.Title);
-            Assert.Equal("The confirmation code cannot be saved", cannotInsertConfirmationCode.Error.Detail);
-            Assert.Equal(HttpStatusCode.InternalServerError, cannotInsertConfirmationCode.StatusCode);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, cannotInsertConfirmationCode.Details.Title);
+            Assert.Equal("The confirmation code cannot be saved", cannotInsertConfirmationCode.Details.Detail);
+            Assert.Equal(HttpStatusCode.InternalServerError, cannotInsertConfirmationCode.Details.Status);
         }
 
         [Fact]
@@ -104,14 +102,13 @@
                 .Returns(() => Task.FromResult(false));
             var client = CreateTokenClient();
             var unhandledException = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.True(unhandledException.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Error!.Title);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Details!.Title);
             Assert.Equal(
                 "unhandled exception occurred please contact the administrator",
-                unhandledException.Error.Detail);
-            Assert.Equal(HttpStatusCode.InternalServerError, unhandledException.StatusCode);
+                unhandledException.Details.Detail);
+            Assert.Equal(HttpStatusCode.InternalServerError, unhandledException.Details.Status);
         }
 
         [Fact]
@@ -131,7 +128,7 @@
             var happyPath = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
                 .ConfigureAwait(false);
 
-            Assert.False(happyPath.HasError);
+            Assert.IsType<Option.Success>(happyPath);
         }
 
         public void Dispose()

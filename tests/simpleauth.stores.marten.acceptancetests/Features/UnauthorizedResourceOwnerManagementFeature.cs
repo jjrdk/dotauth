@@ -20,7 +20,7 @@
         [Scenario]
         public void RejectAddResourceOwner()
         {
-            GenericResponse<AddResourceOwnerResponse> response = null;
+            Option<AddResourceOwnerResponse>.Error response = null;
 
             "When adding resource owner".x(
                 async () =>
@@ -28,20 +28,20 @@
                     response = await _managerClient.AddResourceOwner(
                             new AddResourceOwnerRequest { Password = "test", Subject = "test" },
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Error;
                 });
 
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.Details.Status);
                 });
         }
 
         [Scenario]
         public void RejectUpdateResourceOwnerPassword()
         {
-            GenericResponse<object> response = null;
+            Option.Error response = null;
 
             "When updating resource owner password".x(
                 async () =>
@@ -49,20 +49,20 @@
                     response = await _managerClient.UpdateResourceOwnerPassword(
                             new UpdateResourceOwnerPasswordRequest { Password = "blah", Subject = "administrator" },
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option.Error;
                 });
 
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.Details.Status);
                 });
         }
 
         [Scenario]
         public void RejectUpdateResourceOwnerClaims()
         {
-            GenericResponse<object> response = null;
+            Option.Error response = null;
 
             "When updating resource owner password".x(
                 async () =>
@@ -74,20 +74,20 @@
                                 Subject = "administrator"
                             },
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option.Error;
                 });
 
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.Details.Status);
                 });
         }
 
         [Scenario]
         public void RejectDeleteResourceOwner()
         {
-            GenericResponse<object> response = null;
+            Option.Error response = null;
 
             "When deleting resource owner".x(
                 async () =>
@@ -95,32 +95,32 @@
                     response = await _managerClient.DeleteResourceOwner(
                             "administrator",
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option.Error;
                 });
 
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.Details.Status);
                 });
         }
 
         [Scenario]
         public void RejectedListResourceOwners()
         {
-            GenericResponse<ResourceOwner[]> response = null;
+            Option<ResourceOwner[]>.Error response = null;
 
             "When listing resource owners".x(
                 async () =>
                 {
                     response = await _managerClient.GetAllResourceOwners(_grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<ResourceOwner[]>.Error;
                 });
 
             "Then response has error.".x(
                 () =>
                 {
-                    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+                    Assert.Equal(HttpStatusCode.Forbidden, response.Details.Status);
                 });
         }
     }

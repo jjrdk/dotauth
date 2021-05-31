@@ -34,11 +34,13 @@
             "when requesting token".x(
                 async () =>
                 {
-                    var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                    var response =
+                        await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    result = response.Content;
+                    result = response.Item;
                 });
 
             "then has valid access token".x(
@@ -57,10 +59,10 @@
             "and can get user info".x(
                 async () =>
                 {
-                    var userinfo = await client.GetUserInfo(result.AccessToken).ConfigureAwait(false);
+                    var userinfo = await client.GetUserInfo(result.AccessToken).ConfigureAwait(false) as Option<JwtPayload>.Result;
 
-                    Assert.False(userinfo.HasError);
-                    Assert.NotNull(userinfo.Content);
+                    Assert.NotNull(userinfo);
+                    Assert.NotNull(userinfo.Item);
                 });
         }
 
@@ -79,19 +81,20 @@
             "when requesting auth token".x(
                 async () =>
                 {
-                    var response = await client.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false);
+                    var response = await client.GetToken(TokenRequest.FromScopes("api1", "offline"))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    result = response.Content;
+                    result = response.Item;
                 });
 
             "then can get new token from refresh token".x(
                 async () =>
                 {
                     var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
-                        .ConfigureAwait(false);
-                    Assert.False(response.HasError);
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    Assert.NotNull(response);
                 });
         }
 
@@ -110,18 +113,20 @@
             "when requesting auth token".x(
                 async () =>
                 {
-                    var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                    var response =
+                        await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    result = response.Content;
+                    result = response.Item;
                 });
 
             "then can revoke token".x(
                 async () =>
                 {
                     var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                    Assert.IsType<Option.Success>(response);
                 });
         }
 
@@ -129,7 +134,7 @@
         public void InvalidClientCredentials()
         {
             TokenClient client = null;
-            GenericResponse<GrantedTokenResponse> result = null;
+            Option<GrantedTokenResponse> result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -140,7 +145,7 @@
             "when requesting auth token".x(
                 async () => { result = await client.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false); });
 
-            "then does not have token".x(() => { Assert.Null(result.Content); });
+            "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
         }
     }
 }

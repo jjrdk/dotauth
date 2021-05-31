@@ -23,11 +23,13 @@
             "When getting all clients".x(
                 async () =>
                 {
-                    var response = await _managerClient.GetAllClients(_grantedToken.AccessToken).ConfigureAwait(false);
+                    var response =
+                        await _managerClient.GetAllClients(_grantedToken.AccessToken).ConfigureAwait(false) as
+                            Option<Client[]>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    clients = response.Content;
+                    clients = response.Item;
                 });
 
             "Then contains list of clients".x(() => { Assert.All(clients, x => { Assert.NotNull(x.ClientId); }); });
@@ -51,7 +53,8 @@
                         GrantTypes = new[] {GrantTypes.ClientCredentials},
                         JsonWebKeys = TestKeys.SuperSecretKey.CreateSignatureJwk().ToSet()
                     };
-                    var response = await _managerClient.AddClient(client, _grantedToken.AccessToken).ConfigureAwait(false);
+                    var response = await _managerClient.AddClient(client, _grantedToken.AccessToken)
+                        .ConfigureAwait(false);
                 });
         }
     }

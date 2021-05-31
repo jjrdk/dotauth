@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.AcceptanceTests.Features
 {
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using Xbehave;
     using Xunit;
@@ -22,11 +23,11 @@
                 async () =>
                 {
                     var response = await _managerClient.GetScope("test", _administratorToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<Scope>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    scope = response.Content;
+                    scope = response.Item;
                 });
 
             "then scope information is returned".x(() => { Assert.Equal("test", scope.Name); });

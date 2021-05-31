@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using Xbehave;
     using Xunit;
@@ -12,7 +13,7 @@
             : base(output)
         {
         }
-  
+
         [Scenario]
         public void SuccessScopeLoad()
         {
@@ -22,11 +23,9 @@
                 async () =>
                 {
                     var response = await _managerClient.GetScope("test", _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<Scope>.Result;
 
-                    Assert.False(response.HasError);
-
-                    scope = response.Content;
+                    scope = response.Item;
 
                     Assert.NotNull(scope);
                 });

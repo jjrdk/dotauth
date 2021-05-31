@@ -29,7 +29,7 @@ namespace SimpleAuth.Client
     /// <summary>
     /// Defines the management client.
     /// </summary>
-    public class ManagementClient : ClientBase
+    public class ManagementClient : ClientBase, IManagementClient
     {
         private readonly DiscoveryInformation _discoveryInformation;
 
@@ -66,7 +66,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<Client>> GetClient(
+        public Task<Option<Client>> GetClient(
             string clientId,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -86,7 +86,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<Client>> AddClient(
+        public Task<Option<Client>> AddClient(
             Client client,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -115,7 +115,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<Client>> DeleteClient(
+        public Task<Option<Client>> DeleteClient(
             string clientId,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -135,7 +135,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<Client>> UpdateClient(
+        public Task<Option<Client>> UpdateClient(
             Client client,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -163,7 +163,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<Client[]>> GetAllClients(
+        public Task<Option<Client[]>> GetAllClients(
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
@@ -178,7 +178,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<PagedResult<Client>>> SearchClients(
+        public Task<Option<PagedResult<Client>>> SearchClients(
             SearchClientsRequest searchClientParameter,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -202,7 +202,7 @@ namespace SimpleAuth.Client
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <exception cref="ArgumentException">If id is empty or whitespace.</exception>
         /// <returns></returns>
-        public Task<GenericResponse<Scope>> GetScope(
+        public Task<Option<Scope>> GetScope(
             string id,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -227,7 +227,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<Scope>> AddScope(
+        public Task<Option<Scope>> AddScope(
             Scope scope,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -250,7 +250,7 @@ namespace SimpleAuth.Client
         /// <param name="accessToken">The access token for the request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the asynchronous request.</param>
         /// <returns>A response with success or error details.</returns>
-        public async Task<GenericResponse<Client>> Register(Client client, string accessToken, CancellationToken cancellationToken = default)
+        public async Task<Option<Client>> Register(Client client, string accessToken, CancellationToken cancellationToken = default)
         {
             var json = Serializer.Default.Serialize(client);
             var request = new HttpRequestMessage
@@ -270,7 +270,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<AddResourceOwnerResponse>> AddResourceOwner(
+        public Task<Option<AddResourceOwnerResponse>> AddResourceOwner(
             AddResourceOwnerRequest resourceOwner,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -299,7 +299,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<ResourceOwner>> GetResourceOwner(
+        public Task<Option<ResourceOwner>> GetResourceOwner(
             string resourceOwnerId,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -319,7 +319,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<object>> DeleteResourceOwner(
+        public async Task<Option> DeleteResourceOwner(
             string resourceOwnerId,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -329,7 +329,14 @@ namespace SimpleAuth.Client
                 Method = HttpMethod.Delete,
                 RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
             };
-            return GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+            var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+
+            return result switch
+            {
+                Option<object>.Error e => e.Details,
+                _ => new Option.Success()
+            };
         }
 
         /// <summary>
@@ -339,7 +346,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<object>> UpdateResourceOwnerPassword(
+        public async Task<Option> UpdateResourceOwnerPassword(
             UpdateResourceOwnerPasswordRequest updateResourceOwnerPasswordRequest,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -357,7 +364,13 @@ namespace SimpleAuth.Client
                 RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/password"),
                 Content = body
             };
-            return GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+            var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+            return result switch
+                {
+                    Option<object>.Error e => e.Details,
+                    _ => new Option.Success()
+                };
         }
 
         /// <summary>
@@ -367,7 +380,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<object>> UpdateResourceOwnerClaims(
+        public async Task<Option> UpdateResourceOwnerClaims(
             UpdateResourceOwnerClaimsRequest updateResourceOwnerClaimsRequest,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
@@ -385,7 +398,13 @@ namespace SimpleAuth.Client
                 RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/claims"),
                 Content = body
             };
-            return GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+            var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+            return result switch
+                {
+                    Option<object>.Error e => e.Details,
+                    _ => new Option.Success()
+                };
         }
 
         /// <summary>
@@ -394,7 +413,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<ResourceOwner[]>> GetAllResourceOwners(
+        public Task<Option<ResourceOwner[]>> GetAllResourceOwners(
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)
         {
@@ -413,7 +432,7 @@ namespace SimpleAuth.Client
         /// <param name="authorizationHeaderValue">The authorization token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        public Task<GenericResponse<PagedResult<ResourceOwner>>> SearchResourceOwners(
+        public Task<Option<PagedResult<ResourceOwner>>> SearchResourceOwners(
             SearchResourceOwnersRequest searchResourceOwnersRequest,
             string authorizationHeaderValue,
             CancellationToken cancellationToken = default)

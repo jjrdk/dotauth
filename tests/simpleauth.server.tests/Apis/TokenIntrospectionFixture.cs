@@ -25,6 +25,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -44,8 +45,7 @@ namespace SimpleAuth.Server.Tests.Apis
         {
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri($"{BaseUrl}/introspect")
+                Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/introspect")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -60,16 +60,11 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
         {
-            var request = new List<KeyValuePair<string, string>>
-            {
-                new("invalid", "invalid")
-            };
+            var request = new List<KeyValuePair<string, string>> {new("invalid", "invalid")};
             var body = new FormUrlEncodedContent(request);
             var httpRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                Content = body,
-                RequestUri = new Uri($"{BaseUrl}/introspect")
+                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/introspect")
             };
 
             var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
@@ -89,9 +84,9 @@ namespace SimpleAuth.Server.Tests.Apis
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var introspection = await tokenClient.Introspect(
                     IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken, "pat"))
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            Assert.False(introspection.Content.Active);
+            Assert.False(introspection.Item.Active);
         }
 
         [Fact]
@@ -101,34 +96,34 @@ namespace SimpleAuth.Server.Tests.Apis
                 TokenCredentials.FromClientCredentials("client", "client"),
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-                .ConfigureAwait(false);
+            var result =
+                await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
             var introspection = await tokenClient.Introspect(
-                    IntrospectionRequest.Create(result.Content.AccessToken, TokenTypes.AccessToken, "pat"))
-                .ConfigureAwait(false);
+                    IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
+                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            Assert.Single(introspection.Content.Scope);
-            Assert.Equal("scim", introspection.Content.Scope.First());
+            Assert.Single(introspection.Item.Scope);
+            Assert.Equal("scim", introspection.Item.Scope.First());
         }
 
         [Fact]
         public async Task When_Introspecting_RefreshToken_Then_Information_Are_Returned()
         {
             var tokenClient = new TokenClient(
-                    TokenCredentials.FromClientCredentials("client", "client"),
-                    _server.Client,
-                    new Uri(BaseUrl + WellKnownOpenidConfiguration));
+                TokenCredentials.FromClientCredentials("client", "client"),
+                _server.Client,
+                new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] { "scim", "offline" }))
-                .ConfigureAwait(false);
+                    TokenRequest.FromPassword("administrator", "password", new[] {"scim", "offline"}))
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
             var introspection = await tokenClient.Introspect(
-                    IntrospectionRequest.Create(result.Content.RefreshToken!, TokenTypes.RefreshToken, "pat"))
-                .ConfigureAwait(false);
+                    IntrospectionRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken, "pat"))
+                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            Assert.Equal(2, introspection.Content.Scope.Length);
-            Assert.Equal("scim", introspection.Content.Scope.First());
+            Assert.Equal(2, introspection.Item.Scope.Length);
+            Assert.Equal("scim", introspection.Item.Scope.First());
         }
     }
 }

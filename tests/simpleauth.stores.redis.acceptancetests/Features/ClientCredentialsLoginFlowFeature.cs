@@ -31,32 +31,34 @@
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(
-                          TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                          _fixture.Client,
-                          new Uri(WellKnownOpenidConfiguration)));
+                    TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting token".x(
                 async () =>
-                    {
-                        var response = await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                {
+                    var response =
+                        await client.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                        Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                        result = response.Content;
-                    });
+                    result = response.Item;
+                });
 
             "then has valid access token".x(
                 () =>
+                {
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var validationParameters = new TokenValidationParameters
                     {
-                        var tokenHandler = new JwtSecurityTokenHandler();
-                        var validationParameters = new TokenValidationParameters
-                        {
-                            IssuerSigningKeys = _jwks.GetSigningKeys(),
-                            ValidAudience = "clientCredentials",
-                            ValidIssuer = "https://localhost"
-                        };
-                        tokenHandler.ValidateToken(result.AccessToken, validationParameters, out _);
-                    });
+                        IssuerSigningKeys = _jwks.GetSigningKeys(),
+                        ValidAudience = "clientCredentials",
+                        ValidIssuer = "https://localhost"
+                    };
+                    tokenHandler.ValidateToken(result.AccessToken, validationParameters, out _);
+                });
         }
 
         [Scenario(DisplayName = "Successful token refresh")]
@@ -67,27 +69,29 @@
 
             "and a properly token client".x(
                 () => client = new TokenClient(
-                          TokenCredentials.FromBasicAuthentication("clientCredentials", "clientCredentials"),
-                          _fixture.Client,
-                          new Uri(WellKnownOpenidConfiguration)));
+                    TokenCredentials.FromBasicAuthentication("clientCredentials", "clientCredentials"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
                 async () =>
-                    {
-                        var response = await client.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false);
+                {
+                    var response =
+                        await client.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                        Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                        result = response.Content;
-                    });
+                    result = response.Item;
+                });
 
             "then can get new token from refresh token".x(
                 async () =>
-                    {
-                        var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
-                                           .ConfigureAwait(false);
-                        Assert.False(response.HasError);
-                    });
+                {
+                    var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    Assert.NotNull(response);
+                });
         }
 
         [Scenario(DisplayName = "Successful token revocation")]
@@ -98,45 +102,53 @@
 
             "and a properly token client".x(
                 () => client = new TokenClient(
-                          TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                          _fixture.Client,
-                          new Uri(WellKnownOpenidConfiguration)));
+                    TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
                 async () =>
-                    {
-                        var response = await client.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false);
+                {
+                    var response =
+                        await client.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                        Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                        result = response.Content;
-                    });
+                    result = response.Item;
+                });
 
             "then can revoke token".x(
                 async () =>
-                    {
-                        var response = await client.RevokeToken(RevokeTokenRequest.Create(result))
-                                           .ConfigureAwait(false);
-                        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                    });
+                {
+                    var response =
+                        await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false) as
+                            Option.Error;
+                    Assert.Equal(HttpStatusCode.OK, response.Details.Status);
+                });
         }
 
         [Scenario(DisplayName = "Invalid client")]
         public void InvalidClientCredentials()
         {
             TokenClient client = null;
-            GenericResponse<GrantedTokenResponse> result = null;
+            Option<GrantedTokenResponse>.Result result = null;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
-                          TokenCredentials.FromClientCredentials("xxx", "xxx"),
-                          _fixture.Client,
-                          new Uri(WellKnownOpenidConfiguration)));
+                    TokenCredentials.FromClientCredentials("xxx", "xxx"),
+                    _fixture.Client,
+                    new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
-                async () => { result = await client.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false); });
+                async () =>
+                {
+                    result =
+                        await client.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
+                });
 
-            "then does not have token".x(() => { Assert.Null(result.Content); });
+            "then does not have token".x(() => { Assert.Null(result.Item); });
         }
     }
 }

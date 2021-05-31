@@ -37,20 +37,20 @@
                 async () =>
                 {
                     var response = await _managerClient.AddResourceOwner(
-                            new AddResourceOwnerRequest { Password = "test", Subject = "test" },
+                            new AddResourceOwnerRequest {Password = "test", Subject = "test"},
                             _administratorToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
                 });
 
             "Then resource owner is local account".x(
                 async () =>
                 {
                     var response = await _managerClient.GetResourceOwner("test", _administratorToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<ResourceOwner>.Result;
 
-                    Assert.True(response.Content.IsLocalAccount);
+                    Assert.True(response.Item.IsLocalAccount);
                 });
         }
 
@@ -61,29 +61,31 @@
                 async () =>
                 {
                     var response = await _managerClient.AddResourceOwner(
-                            new AddResourceOwnerRequest { Password = "test", Subject = "test" },
+                            new AddResourceOwnerRequest {Password = "test", Subject = "test"},
                             _administratorToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
                 });
 
             "Then can update resource owner password".x(
                 async () =>
                 {
                     var response = await _managerClient.UpdateResourceOwnerPassword(
-                            new UpdateResourceOwnerPasswordRequest { Subject = "test", Password = "test2" },
+                            new UpdateResourceOwnerPasswordRequest {Subject = "test", Password = "test2"},
                             _administratorToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response as Option.Success);
                 });
 
             "Then user can login with new password".x(
                 async () =>
                 {
-                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("test", "test2", new[] { "manager" })).ConfigureAwait(false);
-                    Assert.NotNull(result.Content);
+                    var result =
+                        await _tokenClient.GetToken(TokenRequest.FromPassword("test", "test2", new[] {"manager"}))
+                            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    Assert.NotNull(result.Item);
                 });
         }
 
@@ -98,7 +100,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] { new ClaimData { Type = "added_claim_test", Value = "something" } }
+                        Claims = new[] {new ClaimData {Type = "added_claim_test", Value = "something"}}
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -115,28 +117,25 @@
                     response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
-            "Then is ok request".x(
-                () =>
-                {
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                });
+            "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
 
-            "and has new token".x(async () =>
-            {
-                var updatedToken = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                Assert.NotNull(updatedToken);
-            });
+            "and has new token".x(
+                async () =>
+                {
+                    var updatedToken = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    Assert.NotNull(updatedToken);
+                });
 
             "When refreshing token, then has updated claims".x(
                 async () =>
                 {
                     var result = await _tokenClient
                         .GetToken(TokenRequest.FromRefreshToken(_administratorToken.RefreshToken))
-                        .ConfigureAwait(false);
-                    Assert.NotNull(result.Content);
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    Assert.NotNull(result.Item);
 
                     var handler = new JwtSecurityTokenHandler();
-                    var token = handler.ReadToken(result.Content.AccessToken) as JwtSecurityToken;
+                    var token = handler.ReadToken(result.Item.AccessToken) as JwtSecurityToken;
                     Assert.Contains(token.Claims, c => c.Type == "added_claim_test" && c.Value == "something");
                 });
         }
@@ -154,7 +153,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] { new ClaimData { Type = "added_claim_test", Value = "something" } }
+                        Claims = new[] {new ClaimData {Type = "added_claim_test", Value = "something"}}
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -171,39 +170,36 @@
                     response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
-            "Then is ok request".x(
-                () =>
+            "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
+
+            "and has new token".x(
+                async () =>
                 {
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                    var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                    updatedToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json);
+
+                    Assert.NotNull(updatedToken);
                 });
-
-            "and has new token".x(async () =>
-            {
-                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                updatedToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json);
-
-                Assert.NotNull(updatedToken);
-            });
 
             "When logging out".x(
                 async () =>
                 {
                     var result = await _tokenClient.RevokeToken(RevokeTokenRequest.Create(updatedToken))
                         .ConfigureAwait(false);
-                    Assert.False(result.HasError);
+                    Assert.IsType<Option.Success>(result);
                 });
 
             "and logging in again".x(
                 async () =>
                 {
                     var result = await _tokenClient
-                        .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" }))
-                        .ConfigureAwait(false);
+                        .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"manager"}))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-                    Assert.NotNull(result.Content);
+                    Assert.NotNull(result);
 
-                    newToken = result.Content;
+                    newToken = result.Item;
                 });
 
             "then gets updated claim in token".x(
@@ -230,7 +226,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] { new ClaimData { Type = "added_claim_test", Value = "something" } }
+                        Claims = new[] {new ClaimData {Type = "added_claim_test", Value = "something"}}
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -241,24 +237,26 @@
                         Method = HttpMethod.Post,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        _administratorToken.AccessToken);
                     response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
-            "Then is ok request".x(
-                () =>
-                {
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                });
+            "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
 
             "Then resource owner has new claim".x(
                 async () =>
                 {
-                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager", "offline" })).ConfigureAwait(false);
-                    Assert.NotNull(result.Content);
+                    var result =
+                        await _tokenClient.GetToken(
+                                TokenRequest.FromPassword("administrator", "password", new[] {"manager", "offline"}))
+                            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+
+                    Assert.NotNull(result.Item);
 
                     var handler = new JwtSecurityTokenHandler();
-                    var token = (JwtSecurityToken)handler.ReadToken(result.Content.AccessToken);
+                    var token = (JwtSecurityToken) handler.ReadToken(result.Item.AccessToken);
                     Assert.Contains(token.Claims, c => c.Type == "added_claim_test" && c.Value == "something");
                 });
         }
@@ -274,26 +272,29 @@
                     var request = new HttpRequestMessage
                     {
                         Method = HttpMethod.Delete,
-                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=acceptance_test")
+                        RequestUri = new Uri(
+                            _fixture.Server.BaseAddress + "resource_owners/claims?type=acceptance_test")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        _administratorToken.AccessToken);
                     response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
-            "Then is ok request".x(
-                () =>
-                {
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                });
+            "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
 
             "Then resource owner no longer has claim".x(
                 async () =>
                 {
-                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" })).ConfigureAwait(false);
-                    Assert.NotNull(result.Content);
+                    var result =
+                        await _tokenClient
+                            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"manager"}))
+                            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+
+                    Assert.NotNull(result.Item);
 
                     var handler = new JwtSecurityTokenHandler();
-                    var token = (JwtSecurityToken)handler.ReadToken(result.Content.AccessToken);
+                    var token = (JwtSecurityToken) handler.ReadToken(result.Item.AccessToken);
                     Assert.DoesNotContain(token.Claims, c => c.Type == "acceptance_test");
                 });
         }
@@ -310,29 +311,27 @@
                     var request = new HttpRequestMessage
                     {
                         Method = HttpMethod.Delete,
-                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
+                        RequestUri = new Uri(
+                            _fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        _administratorToken.AccessToken);
                     response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
-            "Then is ok request".x(
-                () =>
-                {
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                });
+            "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
 
-            "And when getting resource owner from store".x(async () =>
-            {
-                var store = (IResourceOwnerStore)_fixture.Server.Host.Services.GetService(typeof(IResourceOwnerStore));
-                resourceOwner = await store.Get("administrator", CancellationToken.None).ConfigureAwait(false);
-            });
+            "And when getting resource owner from store".x(
+                async () =>
+                {
+                    var store = (IResourceOwnerStore) _fixture.Server.Host.Services.GetService(
+                        typeof(IResourceOwnerStore));
+                    resourceOwner = await store.Get("administrator", CancellationToken.None).ConfigureAwait(false);
+                });
 
             "Then resource owner still has claim".x(
-                () =>
-                {
-                    Assert.Contains(resourceOwner.Claims, c => c.Type == "some_other_claim");
-                });
+                () => { Assert.Contains(resourceOwner.Claims, c => c.Type == "some_other_claim"); });
         }
 
         [Scenario]
@@ -346,7 +345,7 @@
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
                         Subject = "administrator",
-                        Claims = new[] { new ClaimData { Type = "added_claim_test", Value = "something" } }
+                        Claims = new[] {new ClaimData {Type = "added_claim_test", Value = "something"}}
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -357,8 +356,9 @@
                         Method = HttpMethod.Post,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization =
-                        new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        _administratorToken.AccessToken);
                     response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
@@ -371,29 +371,30 @@
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 });
 
-            "and when updating second time".x(async () =>
-            {
-                var updateRequest = new UpdateResourceOwnerClaimsRequest
+            "and when updating second time".x(
+                async () =>
                 {
-                    Subject = "administrator",
-                    Claims = new[] { new ClaimData { Type = "added_claim_test2", Value = "something" } }
-                };
+                    var updateRequest = new UpdateResourceOwnerClaimsRequest
+                    {
+                        Subject = "administrator",
+                        Claims = new[] {new ClaimData {Type = "added_claim_test2", Value = "something"}}
+                    };
 
-                var json = JsonConvert.SerializeObject(updateRequest);
+                    var json = JsonConvert.SerializeObject(updateRequest);
 
-                var request = new HttpRequestMessage
-                {
-                    Content = new StringContent(json, Encoding.UTF8, "application/json"),
-                    Method = HttpMethod.Post,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
-                };
-                request.Headers.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
-            });
+                    var request = new HttpRequestMessage
+                    {
+                        Content = new StringContent(json, Encoding.UTF8, "application/json"),
+                        Method = HttpMethod.Post,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        _administratorToken.AccessToken);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                });
 
-            "Then is also ok response".x(
-                () => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
+            "Then is also ok response".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
         }
 
         [Scenario]
@@ -406,8 +407,7 @@
                 {
                     var updateRequest = new UpdateResourceOwnerClaimsRequest
                     {
-                        Subject = "user",
-                        Claims = new[] { new ClaimData { Type = "test", Value = "something" } }
+                        Subject = "user", Claims = new[] {new ClaimData {Type = "test", Value = "something"}}
                     };
 
                     var json = JsonConvert.SerializeObject(updateRequest);
@@ -418,15 +418,13 @@
                         Method = HttpMethod.Post,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        _administratorToken.AccessToken);
                     response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
-            "Then is bad request".x(
-                () =>
-                {
-                    Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-                });
+            "Then is bad request".x(() => { Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode); });
         }
 
         [Scenario]
@@ -434,16 +432,19 @@
         {
             HttpResponseMessage response = null;
 
-            "When deleting own account".x(async () =>
-            {
-                var request = new HttpRequestMessage
+            "When deleting own account".x(
+                async () =>
                 {
-                    Method = HttpMethod.Delete,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners")
-                };
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
-            });
+                    var request = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Delete,
+                        RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners")
+                    };
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        _administratorToken.AccessToken);
+                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                });
 
             "Then response is OK".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
         }
@@ -476,15 +477,13 @@
                         Method = HttpMethod.Put,
                         RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
                     };
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _administratorToken.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        _administratorToken.AccessToken);
                     response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
-            "Then is ok request".x(
-                () =>
-                {
-                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                });
+            "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
         }
     }
 }

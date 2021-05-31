@@ -14,6 +14,7 @@
 
 namespace SimpleAuth.Controllers
 {
+    using System;
     using Api.Introspection;
     using Extensions;
     using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,9 @@ namespace SimpleAuth.Controllers
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using SimpleAuth.Filters;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
+    using SimpleAuth.Shared.Responses;
 
     /// <summary>
     /// Defines the introspection controller.
@@ -70,9 +73,12 @@ namespace SimpleAuth.Controllers
                     introspectionRequest.ToParameter(),
                     cancellationToken)
                 .ConfigureAwait(false);
-            return result.StatusCode == HttpStatusCode.OK
-                ? Ok(result.Content)
-                : (IActionResult)BadRequest(result.Error);
+            return result switch
+            {
+                Option<OauthIntrospectionResponse>.Result r => Ok(r.Item),
+                Option<OauthIntrospectionResponse>.Error e => BadRequest(e.Details),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         /// <summary>

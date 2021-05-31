@@ -16,7 +16,7 @@
         /// <param name="introspectionRequest">The introspection request.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<GenericResponse<UmaIntrospectionResponse>> Introspect(
+        Task<Option<UmaIntrospectionResponse>> Introspect(
             IntrospectionRequest introspectionRequest,
             CancellationToken cancellationToken = default);
     }

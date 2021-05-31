@@ -37,7 +37,7 @@
                     var response = await client.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
                         .ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.IsType<Option.Success>(response);
                 });
 
             "and then requesting token".x(
@@ -45,8 +45,8 @@
                 {
                     var response = await client
                         .GetToken(TokenRequest.FromPassword("phone", "123", new[] {"openid"}, "sms"))
-                        .ConfigureAwait(false);
-                    result = response.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    result = response.Item;
                 });
 
             "then has valid access token".x(

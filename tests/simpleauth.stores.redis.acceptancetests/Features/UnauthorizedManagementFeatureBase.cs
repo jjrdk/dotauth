@@ -5,6 +5,7 @@
     using Microsoft.Extensions.Configuration;
 
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
 
     using Xbehave;
@@ -17,11 +18,11 @@
         private readonly ITestOutputHelper _output;
         private const string BaseUrl = "http://localhost";
         private static readonly Uri WellKnownUmaConfiguration = new(BaseUrl + "/.well-known/openid-configuration");
-        protected TestServerFixture _fixture = null;
+        private TestServerFixture _fixture = null;
         protected ManagementClient _managerClient = null;
-        protected TokenClient _tokenClient = null;
+        private TokenClient _tokenClient = null;
         protected GrantedTokenResponse _grantedToken = null;
-        protected string _connectionString = null;
+        private string _connectionString = null;
 
         public UnauthorizedManagementFeatureBase(ITestOutputHelper output)
         {
@@ -77,11 +78,11 @@
                 async () =>
                     {
                         var result = await _tokenClient.GetToken(TokenRequest.FromScopes("admin"))
-                                         .ConfigureAwait(false);
+                                         .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-                        Assert.NotNull(result.Content);
+                        Assert.NotNull(result.Item);
 
-                        _grantedToken = result.Content;
+                        _grantedToken = result.Item;
                     });
         }
     }

@@ -49,11 +49,11 @@
                     };
                     var response = await client.GetAuthorization(
                             authorizationRequest)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<Uri>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    result = response.Content;
+                    result = response.Item;
                 });
 
             "then has authorization uri".x(() => { Assert.NotNull(result); });
@@ -63,7 +63,7 @@
         public void InvalidScope()
         {
             TokenClient client = null;
-            GenericResponse<Uri> result = null;
+            Option<Uri>.Error result = null;
 
             "and an improperly configured authorization client".x(
                 () => client = new TokenClient(
@@ -84,17 +84,17 @@
                                 pkce.CodeChallenge,
                                 CodeChallengeMethods.S256,
                                 "abc"))
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<Uri>.Error;
                 });
 
-            "then has expected error message".x(() => { Assert.Equal(ErrorCodes.InvalidScope, result.Error.Title); });
+            "then has expected error message".x(() => { Assert.Equal(ErrorCodes.InvalidScope, result.Details.Title); });
         }
 
         [Scenario(DisplayName = "Redirect uri does not match client registration")]
         public void InvalidRedirectUri()
         {
             TokenClient client = null;
-            GenericResponse<Uri> result = null;
+            Option<Uri>.Error result = null;
 
             "and an improperly configured authorization client".x(
                 () => client = new TokenClient(
@@ -115,10 +115,10 @@
                                 pkce.CodeChallenge,
                                 CodeChallengeMethods.S256,
                                 "abc"))
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<Uri>.Error;
                 });
 
-            "then has expected error message".x(() => { Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title); });
+            "then has expected error message".x(() => { Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title); });
         }
     }
 }

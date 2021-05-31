@@ -10,7 +10,8 @@
 
     public class LocalAuthenticationFeature : AuthFlowFeature
     {
-        public LocalAuthenticationFeature(ITestOutputHelper outputHelper) : base(outputHelper)
+        public LocalAuthenticationFeature(ITestOutputHelper outputHelper)
+            : base(outputHelper)
         {
         }
 

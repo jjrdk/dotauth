@@ -4,6 +4,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Logging;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
@@ -32,7 +33,8 @@
             "Given loaded configuration values".x(
                 () =>
                 {
-                    var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
+                    var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false)
+                        .Build();
                     _connectionString = configuration["Db:ConnectionString"];
 
                     Assert.NotNull(_connectionString);
@@ -66,21 +68,23 @@
 
             "and a token client".x(
                 () =>
-                    {
-                        _tokenClient = new TokenClient(
-                            TokenCredentials.FromClientCredentials("manager_client", "manager_client"),
-                            _fixture.Client,
-                            WellKnownUmaConfiguration);
-                    });
+                {
+                    _tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("manager_client", "manager_client"),
+                        _fixture.Client,
+                        WellKnownUmaConfiguration);
+                });
 
             "and a manager token".x(
                 async () =>
                 {
-                    var result = await _tokenClient.GetToken(TokenRequest.FromScopes("manager")).ConfigureAwait(false);
+                    var result =
+                        await _tokenClient.GetToken(TokenRequest.FromScopes("manager")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.NotNull(result.Content);
+                    Assert.NotNull(result.Item);
 
-                    _grantedToken = result.Content;
+                    _grantedToken = result.Item;
                 });
         }
     }

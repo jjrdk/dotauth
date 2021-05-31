@@ -6,6 +6,7 @@
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
@@ -54,11 +55,11 @@
                         fixture.Client,
                         new Uri(WellKnownUmaConfiguration));
                     var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
                     var handler = new JwtSecurityTokenHandler();
-                    var principal = handler.ReadJwtToken(token.Content.AccessToken);
+                    var principal = handler.ReadJwtToken(token.Item.AccessToken);
                     Assert.NotNull(principal.Issuer);
-                    grantedToken = token.Content;
+                    grantedToken = token.Item;
                 });
 
             "and a properly configured uma client".x(
@@ -70,8 +71,8 @@
                     var resource = await client.AddResource(
                             new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
                             grantedToken.AccessToken)
-                        .ConfigureAwait(false);
-                    resourceId = resource.Content.Id;
+                        .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+                    resourceId = resource.Item.Id;
                 });
 
             "and adding permission".x(
@@ -80,11 +81,11 @@
                     var response = await client.RequestPermission(
                             grantedToken.AccessToken,
                             requests: new PermissionRequest { IdToken = grantedToken.IdToken, ResourceSetId = resourceId, Scopes = new[] { "read" } })
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    ticketId = response.Content.TicketId;
+                    ticketId = response.Item.TicketId;
                 });
 
             "then returns ticket id".x(() => { Assert.NotNull(ticketId); });
@@ -110,8 +111,8 @@
                         fixture.Client,
                         new Uri(WellKnownUmaConfiguration));
                     var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
-                        .ConfigureAwait(false);
-                    grantedToken = token.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    grantedToken = token.Item;
                 });
 
             "and a properly configured uma client".x(
@@ -123,8 +124,8 @@
                     var resource = await client.AddResource(
                             new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
                             grantedToken.AccessToken)
-                        .ConfigureAwait(false);
-                    resourceId = resource.Content.Id;
+                        .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+                    resourceId = resource.Item.Id;
                 });
 
             "and adding permission".x(
@@ -135,11 +136,11 @@
                             CancellationToken.None,
                             new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
                             new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    ticketId = response.Content.TicketId;
+                    ticketId = response.Item.TicketId;
                 });
 
             "then returns ticket id".x(() => { Assert.NotNull(ticketId); });

@@ -2,8 +2,11 @@
 {
     using Client;
     using System;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Threading.Tasks;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -25,11 +28,12 @@
         [Fact]
         public async Task When_Pass_Invalid_Token_To_UserInfo_Then_Error_Is_Returned()
         {
-            var getUserInfoResult = await _userInfoClient.GetUserInfo("invalid_access_token").ConfigureAwait(false);
+            var getUserInfoResult =
+                await _userInfoClient.GetUserInfo("invalid_access_token").ConfigureAwait(false) as
+                    Option<JwtPayload>.Error;
 
-            Assert.True(getUserInfoResult.HasError);
-            Assert.Equal("invalid_token", getUserInfoResult.Error.Title);
-            Assert.Equal(Strings.TheTokenIsNotValid, getUserInfoResult.Error.Detail);
+            Assert.Equal("invalid_token", getUserInfoResult.Details.Title);
+            Assert.Equal(Strings.TheTokenIsNotValid, getUserInfoResult.Details.Detail);
         }
 
         [Fact]
@@ -39,10 +43,10 @@
                 TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
                 _server.Client,
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
+            var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
 
-            Assert.False(getUserInfoResult.HasError);
+            Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
         }
 
         [Fact]
@@ -54,10 +58,10 @@
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient.GetToken(
                     TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-                .ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
 
-            Assert.NotNull(getUserInfoResult);
+            Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
         }
 
         [Fact]
@@ -69,10 +73,10 @@
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-                .ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
 
-            Assert.NotNull(getUserInfoResult.Content);
+            Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
         }
 
         [Fact]
@@ -84,10 +88,10 @@
                 new Uri(BaseUrl + WellKnownOpenidConfiguration));
             var result = await tokenClient
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-                .ConfigureAwait(false);
-            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Content.AccessToken).ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+            var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
 
-            Assert.NotNull(getUserInfoResult.Content);
+            Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
         }
     }
 }

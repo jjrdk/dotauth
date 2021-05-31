@@ -22,22 +22,18 @@
             _tokenStore = tokenStore;
         }
 
-        public async Task<GenericResponse<UmaIntrospectionResponse>> Execute(
+        public async Task<Option<UmaIntrospectionResponse>> Execute(
             IntrospectionParameter introspectionParameter,
             CancellationToken cancellationToken)
         {
             var introspectionParameterToken = introspectionParameter.Token;
             if (string.IsNullOrWhiteSpace(introspectionParameterToken))
             {
-                return new GenericResponse<UmaIntrospectionResponse>
+                return new ErrorDetails
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Title = ErrorCodes.InvalidToken,
-                        Detail = Strings.TheTokenDoesntExist
-                    }
+                    Status = HttpStatusCode.BadRequest,
+                    Title = ErrorCodes.InvalidToken,
+                    Detail = Strings.TheTokenDoesntExist
                 };
             }
             // Read this RFC for more information - https://docs.kantarainitiative.org/uma/wg/rec-oauth-uma-federated-authz-2.0.html#introspection-endpoint
@@ -64,15 +60,7 @@
             // 5. Return an error if there's no granted token
             if (grantedToken == null)
             {
-                return new GenericResponse<UmaIntrospectionResponse>
-                {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Error = new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidGrant,
-                        Detail = Strings.TheTokenIsNotValid
-                    }
-                };
+                return new ErrorDetails { Title = ErrorCodes.InvalidGrant, Detail = Strings.TheTokenIsNotValid };
             }
 
             // 6. Fill-in parameters
@@ -125,11 +113,7 @@
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
             result = result with { Active = DateTimeOffset.UtcNow < expirationDateTime };
 
-            return new GenericResponse<UmaIntrospectionResponse>
-            {
-                Content = result,
-                StatusCode = HttpStatusCode.OK
-            };
+            return result;
         }
     }
 }

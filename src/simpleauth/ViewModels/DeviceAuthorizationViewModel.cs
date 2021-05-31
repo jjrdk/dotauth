@@ -11,6 +11,6 @@
         /// <summary>
         /// Gets or sets the user code.
         /// </summary>
-        public string Code { get; set; }
+        public string? Code { get; set; }
     }
 }

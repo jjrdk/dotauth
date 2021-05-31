@@ -1,5 +1,8 @@
 ﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests.Features
 {
+    using SimpleAuth.Client;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xbehave;
     using Xunit;
@@ -24,21 +27,20 @@
                     var response = await _managerClient.AddResourceOwner(
                             new AddResourceOwnerRequest { Password = "test", Subject = "test" },
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    subject = response.Content.Subject;
+                    subject = response.Item.Subject;
                 });
 
             "Then resource owner is local account".x(
                 async () =>
                 {
                     var response = await _managerClient.GetResourceOwner("test", _grantedToken.AccessToken)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<ResourceOwner>.Result;
 
-                    Assert.False(response.HasError);
-                    Assert.True(response.Content.IsLocalAccount);
+                    Assert.True(response.Item.IsLocalAccount);
                 });
         }
 
@@ -53,7 +55,7 @@
                             _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.IsType<Option<AddResourceOwnerResponse>.Result>(response);
                 });
 
             "Then can update resource owner password".x(
@@ -64,7 +66,7 @@
                             _grantedToken.AccessToken)
                         .ConfigureAwait(false);
 
-                    Assert.False(response.HasError);
+                    Assert.IsType<Option.Success>(response);
                 });
         }
     }

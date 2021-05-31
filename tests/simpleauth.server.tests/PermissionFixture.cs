@@ -19,9 +19,11 @@ namespace SimpleAuth.Server.Tests
     using System.Threading.Tasks;
     using SimpleAuth.Client;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -44,12 +46,11 @@ namespace SimpleAuth.Server.Tests
         {
             var ticket = await _umaClient.RequestPermission(
                     "header",
-                    requests: new PermissionRequest { ResourceSetId = string.Empty })
-                .ConfigureAwait(false);
+                    requests: new PermissionRequest {ResourceSetId = string.Empty})
+                .ConfigureAwait(false) as Option<TicketResponse>.Error;
 
-            Assert.True(ticket.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
-            Assert.Equal("The parameter resource_set_id needs to be specified", ticket.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, ticket.Details.Title);
+            Assert.Equal("The parameter resource_set_id needs to be specified", ticket.Details.Detail);
         }
 
         [Fact]
@@ -57,14 +58,11 @@ namespace SimpleAuth.Server.Tests
         {
             var ticket = await _umaClient.RequestPermission(
                     "header",
-                    requests: new PermissionRequest { ResourceSetId = "resource" })
-                .ConfigureAwait(false);
+                    requests: new PermissionRequest {ResourceSetId = "resource"})
+                .ConfigureAwait(false) as Option<TicketResponse>.Error;
 
-            Assert.True(ticket.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, ticket.Error.Title);
-            Assert.Equal(
-                string.Format(Strings.MissingParameter, "scopes"),
-                ticket.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, ticket.Details.Title);
+            Assert.Equal(string.Format(Strings.MissingParameter, "scopes"), ticket.Details.Detail);
         }
 
         [Fact]
@@ -72,63 +70,60 @@ namespace SimpleAuth.Server.Tests
         {
             var ticket = await _umaClient.RequestPermission(
                     "header",
-                    requests: new PermissionRequest { ResourceSetId = "resource", Scopes = new[] { "scope" } })
-                .ConfigureAwait(false);
+                    requests: new PermissionRequest {ResourceSetId = "resource", Scopes = new[] {"scope"}})
+                .ConfigureAwait(false) as Option<TicketResponse>.Error;
 
-            Assert.True(ticket.HasError);
-            Assert.Equal(ErrorCodes.InvalidResourceSetId, ticket.Error.Title);
-            Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, "resource"), ticket.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidResourceSetId, ticket.Details.Title);
+            Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, "resource"), ticket.Details.Detail);
         }
 
         [Fact]
         public async Task When_Scopes_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
 
             var ticket = await _umaClient.RequestPermission(
                     "header",
                     requests: new PermissionRequest
-                    {
-                        ResourceSetId = resource.Content.Id,
-                        Scopes = new[] { "scopescopescope" }
-                    })
-                .ConfigureAwait(false);
+                        {
+                            ResourceSetId = resource.Item.Id, Scopes = new[] {"scopescopescope"}
+                        })
+                .ConfigureAwait(false) as Option<TicketResponse>.Error;
 
-            Assert.True(ticket.HasError);
-            Assert.Equal(ErrorCodes.InvalidScope, ticket.Error!.Title);
-            Assert.Equal("one or more scopes are not valid", ticket.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidScope, ticket.Details!.Title);
+            Assert.Equal("one or more scopes are not valid", ticket.Details.Detail);
         }
 
         [Fact]
         public async Task When_Adding_Permission_Then_TicketId_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
 
             var ticket = await _umaClient.RequestPermission(
                     "header",
-                    requests: new PermissionRequest { ResourceSetId = resource.Content.Id, Scopes = new[] { "read" } })
-                .ConfigureAwait(false);
+                    requests: new PermissionRequest {ResourceSetId = resource.Item.Id, Scopes = new[] {"read"}})
+                .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-            Assert.NotEmpty(ticket.Content.TicketId);
+            Assert.NotEmpty(ticket.Item.TicketId);
         }
 
         [Fact]
         public async Task When_Adding_Permissions_Then_TicketIds_Is_Returned()
         {
             var resource = await _umaClient.AddResource(
-                    new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                    new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                     "header")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
             var permissions = new[]
             {
-                new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}},
-                new PermissionRequest {ResourceSetId = resource.Content.Id, Scopes = new[] {"read"}}
+                new PermissionRequest {ResourceSetId = resource.Item.Id, Scopes = new[] {"read"}},
+                new PermissionRequest {ResourceSetId = resource.Item.Id, Scopes = new[] {"read"}}
             };
 
             var ticket = await _umaClient.RequestPermission("header", CancellationToken.None, permissions)

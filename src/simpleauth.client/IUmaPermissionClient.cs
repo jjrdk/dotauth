@@ -43,7 +43,7 @@ namespace SimpleAuth.Client
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<TicketResponse>> RequestPermission(string token, CancellationToken cancellationToken = default, params PermissionRequest[] requests);
+        Task<Option<TicketResponse>> RequestPermission(string token, CancellationToken cancellationToken = default, params PermissionRequest[] requests);
 
         /// <summary>
         /// Gets the <see cref="UmaConfiguration"/>.

@@ -4,6 +4,8 @@ namespace SimpleAuth.IntegrationTests
     using System.Net.Http;
     using System.Threading.Tasks;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
+    using SimpleAuth.Shared.Responses;
     using Xunit;
 
     public class TokenTests : IClassFixture<DbFixture>
@@ -23,12 +25,12 @@ namespace SimpleAuth.IntegrationTests
                 () => new HttpClient(),
                 new Uri("http://localhost:8080/.well-known/openid-configuration"));
             await _fixture.GetUser().ConfigureAwait(false);
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 var token = await client.GetToken(TokenRequest.FromPassword("user", "password", new[] { "read" }))
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-                Assert.NotNull(token.Content);
+                Assert.NotNull(token.Item);
             }
         }
     }

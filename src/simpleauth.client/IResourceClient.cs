@@ -25,7 +25,7 @@
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<UpdateResourceSetResponse>> UpdateResource(
+        Task<Option<UpdateResourceSetResponse>> UpdateResource(
             ResourceSet request,
             string token,
             CancellationToken cancellationToken = default);
@@ -42,7 +42,7 @@
         /// or
         /// token
         /// </exception>
-        Task<GenericResponse<AddResourceSetResponse>> AddResource(ResourceSet request, string token, CancellationToken cancellationToken = default);
+        Task<Option<AddResourceSetResponse>> AddResource(ResourceSet request, string token, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deletes the resource.
@@ -56,7 +56,7 @@
         /// or
         /// authorizationHeaderValue
         /// </exception>
-        Task<GenericResponse<object>> DeleteResource(string resourceSetId, string token, CancellationToken cancellationToken = default);
+        Task<Option> DeleteResource(string resourceSetId, string token, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all resources.
@@ -65,7 +65,7 @@
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">authorizationHeaderValue</exception>
-        Task<GenericResponse<string[]>> GetAllResources(string token, CancellationToken cancellationToken = default);
+        Task<Option<string[]>> GetAllResources(string token, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the resource.
@@ -79,7 +79,7 @@
         /// or
         /// authorizationHeaderValue
         /// </exception>
-        Task<GenericResponse<ResourceSet>> GetResource(
+        Task<Option<ResourceSet>> GetResource(
             string resourceSetId,
             string token,
             CancellationToken cancellationToken = default);
@@ -91,7 +91,7 @@
         /// <param name="token">The authorization header value.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
         /// <returns></returns>
-        Task<GenericResponse<PagedResult<ResourceSet>>> SearchResources(
+        Task<Option<PagedResult<ResourceSet>>> SearchResources(
             SearchResourceSet parameter,
             string? token = null,
             CancellationToken cancellationToken = default);

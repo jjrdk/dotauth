@@ -12,7 +12,7 @@ namespace SimpleAuth.Shared
         /// <summary>
         /// Defines the successful result.
         /// </summary>
-        public class Result : Option<T>
+        public sealed class Result : Option<T>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="Option{T}.Result"/> class.
@@ -32,7 +32,7 @@ namespace SimpleAuth.Shared
         /// <summary>
         /// Defines the error result.
         /// </summary>
-        public class Error : Option<T>, IEquatable<Option<T>.Error>
+        public sealed class Error : Option<T>, IEquatable<Option<T>.Error>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="Option{T}.Error"/> class.
@@ -133,12 +133,12 @@ namespace SimpleAuth.Shared
         /// <summary>
         /// Defines the success result.
         /// </summary>
-        public class Success : Option { }
+        public sealed class Success : Option { }
 
         /// <summary>
         /// Defines the error result.
         /// </summary>
-        public class Error : Option
+        public sealed class Error : Option
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="Option.Error"/> class.

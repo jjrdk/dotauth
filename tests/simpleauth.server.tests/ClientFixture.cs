@@ -26,10 +26,9 @@
         [Fact]
         public async Task When_Pass_No_Parameter_Then_Error_Is_Returned()
         {
-            var result = await _openidClients.AddClient(new Client(), "token").ConfigureAwait(false);
+            var result = await _openidClients.AddClient(new Client(), "token").ConfigureAwait(false) as Option<Client>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
         }
 
         [Fact]
@@ -46,21 +45,19 @@
                         RequestUris = new[] { new Uri("https://localhost") }
                     },
                     null)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<Client>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal("invalid_redirect_uri", result.Error.Title);
-            Assert.Equal("The redirect_uri http://localhost/#fragment cannot contain fragment", result.Error.Detail);
+            Assert.Equal("invalid_redirect_uri", result.Details.Title);
+            Assert.Equal("The redirect_uri http://localhost/#fragment cannot contain fragment", result.Details.Detail);
         }
 
         [Fact]
         public async Task When_Update_And_Pass_No_Parameter_Then_Error_Is_Returned()
         {
-            var result = await _openidClients.UpdateClient(new Client(), "token").ConfigureAwait(false);
+            var result = await _openidClients.UpdateClient(new Client(), "token").ConfigureAwait(false) as Option<Client>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "redirect_uris"), result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
+            Assert.Equal(string.Format(Strings.MissingParameter, "redirect_uris"), result.Details.Detail);
         }
 
         [Fact]
@@ -82,24 +79,22 @@
                 PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                 //LogoUri = new Uri("http://logouri.com")
             };
-            var addClientResult = await _openidClients.AddClient(client, "token").ConfigureAwait(false);
-            client = addClientResult.Content;
+            var addClientResult = await _openidClients.AddClient(client, "token").ConfigureAwait(false) as Option<Client>.Result;
+            client = addClientResult.Item;
             client.AllowedScopes = new[] { "not_valid" };
-            var result = await _openidClients.UpdateClient(client, "token").ConfigureAwait(false);
+            var result = await _openidClients.UpdateClient(client, "token").ConfigureAwait(false) as Option<Client>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidScope, result.Error.Title);
-            Assert.Equal("Unknown scopes: not_valid", result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidScope, result.Details.Title);
+            Assert.Equal("Unknown scopes: not_valid", result.Details.Detail);
         }
 
         [Fact]
         public async Task When_Get_Unknown_Client_Then_Error_Is_Returned()
         {
-            var newClient = await _openidClients.GetClient("unknown_client", "token").ConfigureAwait(false);
+            var newClient = await _openidClients.GetClient("unknown_client", "token").ConfigureAwait(false) as Option<Client>.Error;
 
-            Assert.True(newClient.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, newClient.Error.Title);
-            Assert.Equal(SharedStrings.TheClientDoesntExist, newClient.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, newClient.Details.Title);
+            Assert.Equal(SharedStrings.TheClientDoesntExist, newClient.Details.Detail);
         }
 
         [Fact]
@@ -107,7 +102,7 @@
         {
             var newClient = await _openidClients.DeleteClient("unknown_client", "token").ConfigureAwait(false);
 
-            Assert.True(newClient.HasError);
+            Assert.IsType<Option<Client>.Error>(newClient);
         }
 
         [Fact]
@@ -141,22 +136,19 @@
                 PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback"), },
                 //LogoUri = new Uri("http://logouri.com")
             };
-            var result = await _openidClients.AddClient(client, "token").ConfigureAwait(false);
+            var result = await _openidClients.AddClient(client, "token").ConfigureAwait(false) as Option<Client>.Result;
 
-            Assert.False(result.HasError, result.Error?.Detail);
+            var newClient = await _openidClients.GetClient(result.Item.ClientId, "token").ConfigureAwait(false) as Option<Client>.Result;
 
-            var newClient = await _openidClients.GetClient(result.Content.ClientId, "token").ConfigureAwait(false);
-
-            Assert.False(newClient.HasError);
-            Assert.Equal(ApplicationTypes.Web, newClient.Content.ApplicationType);
-            Assert.Equal("client_name", newClient.Content.ClientName);
-            Assert.Equal(new Uri("http://clienturi.com"), newClient.Content.ClientUri);
-            Assert.Equal("sms", newClient.Content.DefaultAcrValues);
-            Assert.Single(newClient.Content.Contacts);
-            Assert.Single(newClient.Content.RedirectionUrls);
-            Assert.Single(newClient.Content.PostLogoutRedirectUris);
-            Assert.Equal(3, newClient.Content.GrantTypes.Length);
-            Assert.Equal(3, newClient.Content.ResponseTypes.Length);
+            Assert.Equal(ApplicationTypes.Web, newClient.Item.ApplicationType);
+            Assert.Equal("client_name", newClient.Item.ClientName);
+            Assert.Equal(new Uri("http://clienturi.com"), newClient.Item.ClientUri);
+            Assert.Equal("sms", newClient.Item.DefaultAcrValues);
+            Assert.Single(newClient.Item.Contacts);
+            Assert.Single(newClient.Item.RedirectionUrls);
+            Assert.Single(newClient.Item.PostLogoutRedirectUris);
+            Assert.Equal(3, newClient.Item.GrantTypes.Length);
+            Assert.Equal(3, newClient.Item.ResponseTypes.Length);
         }
 
         [Fact]
@@ -180,20 +172,19 @@
                 //LogoUri = new Uri("http://logouri.com")
             };
 
-            var addClientResult = await _openidClients.AddClient(client, "token").ConfigureAwait(false);
-            client = addClientResult.Content;
+            var addClientResult = await _openidClients.AddClient(client, "token").ConfigureAwait(false) as Option<Client>.Result;
+            client = addClientResult.Item;
             client.PostLogoutRedirectUris = new[]
             {
                 new Uri("http://localhost/callback"), new Uri("http://localhost/callback2"),
             };
             client.GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, };
-            var result = await _openidClients.UpdateClient(client, "token").ConfigureAwait(false);
-            var newClient = await _openidClients.GetClient(result.Content.ClientId, "token").ConfigureAwait(false);
+            var result = await _openidClients.UpdateClient(client, "token").ConfigureAwait(false) as Option<Client>.Result;
+            var newClient = await _openidClients.GetClient(result.Item.ClientId, "token").ConfigureAwait(false) as Option<Client>.Result;
 
-            Assert.False(result.HasError);
-            Assert.Equal(2, newClient.Content.PostLogoutRedirectUris.Length);
-            Assert.Single(newClient.Content.RedirectionUrls);
-            Assert.Equal(2, newClient.Content.GrantTypes.Length);
+            Assert.Equal(2, newClient.Item.PostLogoutRedirectUris.Length);
+            Assert.Single(newClient.Item.RedirectionUrls);
+            Assert.Equal(2, newClient.Item.GrantTypes.Length);
         }
 
         [Fact]
@@ -218,12 +209,12 @@
                         //LogoUri = new Uri("http://logouri.com")
                     },
                     null)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<Client>.Result;
 
             var deleteResult =
-                await _openidClients.DeleteClient(addClientResult.Content.ClientId, "token").ConfigureAwait(false);
+                await _openidClients.DeleteClient(addClientResult.Item.ClientId, "token").ConfigureAwait(false);
 
-            Assert.False(deleteResult.HasError);
+            Assert.NotNull(deleteResult);
         }
 
         [Fact]
@@ -268,10 +259,9 @@
             var searchResult = await _openidClients.SearchClients(
                     new SearchClientsRequest { StartIndex = 0, NbResults = 1 },
                     null)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<PagedResult<Client>>.Result;
 
-            Assert.False(searchResult.HasError);
-            Assert.Single(searchResult.Content.Content);
+            Assert.Single(searchResult.Item.Content);
         }
 
         /// <inheritdoc />

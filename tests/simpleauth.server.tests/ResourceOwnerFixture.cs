@@ -32,35 +32,34 @@
         public async Task When_Trying_To_Get_Unknown_Resource_Owner_Then_Error_Is_Returned()
         {
             var resourceOwnerId = "invalid_login";
-            var result = await _resourceOwnerClient.GetResourceOwner(resourceOwnerId, "token").ConfigureAwait(false);
+            var result =
+                await _resourceOwnerClient.GetResourceOwner(resourceOwnerId, "token").ConfigureAwait(false) as
+                    Option<ResourceOwner>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidRequest, result.Error.Title);
-            Assert.Equal(Strings.TheRoDoesntExist, result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
+            Assert.Equal(Strings.TheRoDoesntExist, result.Details.Detail);
         }
 
         [Fact]
         public async Task When_Pass_No_Password_To_Add_ResourceOwner_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient
-                .AddResourceOwner(new AddResourceOwnerRequest { Subject = "subject" }, "token")
-                .ConfigureAwait(false);
+                .AddResourceOwner(new AddResourceOwnerRequest {Subject = "subject"}, "token")
+                .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
         }
 
         [Fact]
         public async Task When_Login_Already_Exists_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.AddResourceOwner(
-                    new AddResourceOwnerRequest { Subject = "administrator", Password = "password" },
+                    new AddResourceOwnerRequest {Subject = "administrator", Password = "password"},
                     "token")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal("A resource owner with same credentials already exists", result.Error.Detail);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
+            Assert.Equal("A resource owner with same credentials already exists", result.Details.Detail);
         }
 
         [Fact]
@@ -68,24 +67,22 @@
         {
             var result = await _resourceOwnerClient
                 .UpdateResourceOwnerClaims(new UpdateResourceOwnerClaimsRequest(), "token")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "login"), result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
+            Assert.Equal(string.Format(Strings.MissingParameter, "login"), result.Details.Detail);
         }
 
         [Fact]
         public async Task When_Update_Claims_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerClaims(
-                    new UpdateResourceOwnerClaimsRequest { Subject = "invalid_login" },
+                    new UpdateResourceOwnerClaimsRequest {Subject = "invalid_login"},
                     "token")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.True(result.HasError);
-            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal("The resource owner doesn't exist", result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
+            Assert.Equal("The resource owner doesn't exist", result.Details.Detail);
         }
 
         [Fact]
@@ -93,45 +90,45 @@
         {
             var result = await _resourceOwnerClient
                 .UpdateResourceOwnerPassword(new UpdateResourceOwnerPasswordRequest(), "token")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "login"), result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
+            Assert.Equal(string.Format(Strings.MissingParameter, "login"), result.Details.Detail);
         }
 
         [Fact]
         public async Task When_Update_Password_And_No_Password_Is_Passed_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                    new UpdateResourceOwnerPasswordRequest { Subject = "login" },
+                    new UpdateResourceOwnerPasswordRequest {Subject = "login"},
                     "token")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "password"), result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
+            Assert.Equal(string.Format(Strings.MissingParameter, "password"), result.Details.Detail);
         }
 
         [Fact]
         public async Task When_Update_Password_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
         {
             var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                    new UpdateResourceOwnerPasswordRequest { Subject = "invalid_login", Password = "password" },
+                    new UpdateResourceOwnerPasswordRequest {Subject = "invalid_login", Password = "password"},
                     "token")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option.Error;
 
-            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Error.Title);
-            Assert.Equal(
-                Strings.TheRoDoesntExist,
-                result.Error.Detail);
+            Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
+            Assert.Equal(Strings.TheRoDoesntExist, result.Details.Detail);
         }
 
         [Fact]
         public async Task When_Delete_Unknown_Resource_Owner_Then_Error_Is_Returned()
         {
-            var result = await _resourceOwnerClient.DeleteResourceOwner("invalid_login", "token").ConfigureAwait(false);
+            var result =
+                await _resourceOwnerClient.DeleteResourceOwner("invalid_login", "token").ConfigureAwait(false) as
+                    Option.Error;
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Error.Title);
-            Assert.Equal(Strings.TheResourceOwnerCannotBeRemoved, result.Error.Detail);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
+            Assert.Equal(Strings.TheResourceOwnerCannotBeRemoved, result.Details.Detail);
         }
 
         [Fact]
@@ -150,68 +147,68 @@
                     "token")
                 .ConfigureAwait(false);
             var resourceOwner =
-                await _resourceOwnerClient.GetResourceOwner("administrator", "token").ConfigureAwait(false);
+                await _resourceOwnerClient.GetResourceOwner("administrator", "token").ConfigureAwait(false) as
+                    Option<ResourceOwner>.Result;
 
-            Assert.False(resourceOwner.HasError);
-            Assert.Equal("role", resourceOwner.Content.Claims.First(c => c.Type == "role").Value);
+            Assert.Equal("role", resourceOwner.Item.Claims.First(c => c.Type == "role").Value);
         }
 
         [Fact]
         public async Task When_Update_Password_Then_ResourceOwner_Is_Updated()
         {
             _ = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                    new UpdateResourceOwnerPasswordRequest { Subject = "administrator", Password = "pass" },
+                    new UpdateResourceOwnerPasswordRequest {Subject = "administrator", Password = "pass"},
                     "token")
                 .ConfigureAwait(false);
             var resourceOwner =
-                await _resourceOwnerClient.GetResourceOwner("administrator", "token").ConfigureAwait(false);
+                await _resourceOwnerClient.GetResourceOwner("administrator", "token").ConfigureAwait(false) as
+                    Option<ResourceOwner>.Result;
 
-            Assert.Equal("pass".ToSha256Hash(string.Empty), resourceOwner.Content.Password);
+            Assert.Equal("pass".ToSha256Hash(string.Empty), resourceOwner.Item.Password);
         }
 
         [Fact]
         public async Task When_Search_Resource_Owners_Then_One_Resource_Owner_Is_Returned()
         {
             var result = await _resourceOwnerClient.SearchResourceOwners(
-                    new SearchResourceOwnersRequest { StartIndex = 0, NbResults = 1 },
+                    new SearchResourceOwnersRequest {StartIndex = 0, NbResults = 1},
                     "token")
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<PagedResult<ResourceOwner>>.Result;
 
-            Assert.Single(result.Content.Content);
+            Assert.Single(result.Item.Content);
         }
 
         [Fact]
         public async Task When_Get_All_ResourceOwners_Then_All_Resource_Owners_Are_Returned()
         {
             var resourceOwners = await _resourceOwnerClient.GetAllResourceOwners("token") // "administrator"
-                .ConfigureAwait(false);
+                .ConfigureAwait(false) as Option<ResourceOwner[]>.Result;
 
-            Assert.False(resourceOwners.HasError);
-            Assert.NotEmpty(resourceOwners.Content);
+            Assert.NotEmpty(resourceOwners.Item);
         }
 
         [Fact]
         public async Task When_Add_Resource_Owner_Then_Ok_Is_Returned()
         {
             var result = await _resourceOwnerClient.AddResourceOwner(
-                    new AddResourceOwnerRequest { Subject = "login", Password = "password" },
+                    new AddResourceOwnerRequest {Subject = "login", Password = "password"},
                     "token")
                 .ConfigureAwait(false);
 
-            Assert.False(result.HasError);
+            Assert.IsType<Option<AddResourceOwnerResponse>.Result>(result);
         }
 
         [Fact]
         public async Task When_Delete_ResourceOwner_Then_ResourceOwner_Does_Not_Exist()
         {
             var result = await _resourceOwnerClient.AddResourceOwner(
-                    new AddResourceOwnerRequest { Subject = "login1", Password = "password" },
+                    new AddResourceOwnerRequest {Subject = "login1", Password = "password"},
                     "token")
-                .ConfigureAwait(false);
-            var remove = await _resourceOwnerClient.DeleteResourceOwner(result.Content.Subject, "token")
+                .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
+            var remove = await _resourceOwnerClient.DeleteResourceOwner(result.Item.Subject, "token")
                 .ConfigureAwait(false);
 
-            Assert.False(remove.HasError);
+            Assert.IsType<Option.Success>(remove);
         }
 
         /// <inheritdoc />

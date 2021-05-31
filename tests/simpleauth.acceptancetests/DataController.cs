@@ -12,6 +12,7 @@
     using SimpleAuth.Client;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
     [Route("[controller]")]
     public class DataController : ControllerBase
@@ -34,11 +35,13 @@
             }
 
             var token = await HttpContext.GetTokenAsync("access_token").ConfigureAwait(false);
-            var request = new PermissionRequest { ResourceSetId = id, Scopes = new[] { "api1" } };
-            var ticket = await _umaClient.RequestPermission(token, cancellationToken, request).ConfigureAwait(false);
-            Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            var request = new PermissionRequest {ResourceSetId = id, Scopes = new[] {"api1"}};
+            var ticket =
+                await _umaClient.RequestPermission(token, cancellationToken, request).ConfigureAwait(false) as
+                    Option<TicketResponse>.Result;
+            Response.StatusCode = (int) HttpStatusCode.Unauthorized;
             Response.Headers[HeaderNames.WWWAuthenticate] =
-                $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket.Content.TicketId}\"";
+                $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket.Item.TicketId}\"";
 
             return StatusCode((int) HttpStatusCode.Unauthorized);
         }

@@ -57,7 +57,7 @@
             ITokenClient tokenClient = null;
             DeviceAuthorizationResponse response = null;
             GrantedTokenResponse token = null;
-            Task<GenericResponse<GrantedTokenResponse>> pollingTask = null;
+            Task<Option<GrantedTokenResponse>> pollingTask = null;
 
             "Given a token client".x(
                 () =>
@@ -81,9 +81,9 @@
                             TokenRequest.FromPassword("user", "password", new[] { "openid" }))
                         .ConfigureAwait(false);
 
-                    Assert.False(tokenResponse.HasError);
+                    Assert.IsType<Option<GrantedTokenResponse>.Result>(tokenResponse);
 
-                    token = tokenResponse.Content;
+                    token = (tokenResponse as Option<GrantedTokenResponse>.Result).Item;
                 });
 
             "When a device requests authorization".x(
@@ -92,9 +92,9 @@
                     var genericResponse = await tokenClient.GetAuthorization(new DeviceAuthorizationRequest(clientId))
                         .ConfigureAwait(false);
 
-                    Assert.False(genericResponse.HasError);
+                    Assert.IsType<Option<DeviceAuthorizationResponse>.Result>(genericResponse);
 
-                    response = genericResponse.Content;
+                    response = (genericResponse as Option<DeviceAuthorizationResponse>.Result).Item;
                 });
 
             "and the device polls the token server".x(
@@ -129,7 +129,7 @@
                 {
                     var tokenResponse = await pollingTask.ConfigureAwait(false);
 
-                    Assert.False(tokenResponse.HasError);
+                    Assert.IsType<Option<GrantedTokenResponse>.Result>(tokenResponse);
                 });
         }
 
@@ -140,7 +140,7 @@
             ITokenClient tokenClient = null;
             DeviceAuthorizationResponse response = null;
             GrantedTokenResponse token = null;
-            Task<GenericResponse<GrantedTokenResponse>> pollingTask = null;
+            Task<Option<GrantedTokenResponse>> pollingTask = null;
 
             "Given a token client".x(
                 () =>
@@ -162,22 +162,22 @@
                         new Uri(WellKnownOpenidConfiguration));
                     var tokenResponse = await authClient.GetToken(
                             TokenRequest.FromPassword("user", "password", new[] { "openid" }))
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(tokenResponse.HasError);
+                    Assert.NotNull(tokenResponse);
 
-                    token = tokenResponse.Content;
+                    token = tokenResponse.Item;
                 });
 
             "When a device requests authorization".x(
                 async () =>
                 {
                     var genericResponse = await tokenClient.GetAuthorization(new DeviceAuthorizationRequest(clientId))
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<DeviceAuthorizationResponse>.Result;
 
-                    Assert.False(genericResponse.HasError);
+                    Assert.NotNull(genericResponse);
 
-                    response = genericResponse.Content;
+                    response = genericResponse.Item;
                 });
 
             "and the device polls the token server too fast".x(
@@ -185,10 +185,10 @@
                 {
                     var fastPoll = await tokenClient.GetToken(
                             TokenRequest.FromDeviceCode(clientId, response.DeviceCode, 1))
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Error;
 
-                    Assert.True(fastPoll.HasError);
-                    Assert.Equal(ErrorCodes.SlowDown, fastPoll.Error.Title);
+                    Assert.NotNull(fastPoll);
+                    Assert.Equal(ErrorCodes.SlowDown, fastPoll.Details.Title);
                 });
 
             "and the device polls the token server polls properly".x(
@@ -223,7 +223,7 @@
                 {
                     var tokenResponse = await pollingTask.ConfigureAwait(false);
 
-                    Assert.False(tokenResponse.HasError);
+                    Assert.IsType<Option<GrantedTokenResponse>.Result>(tokenResponse);
                 });
         }
 
@@ -233,8 +233,6 @@
             const string clientId = "device";
             ITokenClient tokenClient = null;
             DeviceAuthorizationResponse response = null;
-            GrantedTokenResponse token = null;
-            Task<GenericResponse<GrantedTokenResponse>> pollingTask = null;
 
             "Given a token client".x(
                 () =>
@@ -251,14 +249,14 @@
                 async () =>
                 {
                     var genericResponse = await tokenClient.GetAuthorization(new DeviceAuthorizationRequest(clientId))
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false) as Option<DeviceAuthorizationResponse>.Result;
 
-                    Assert.False(genericResponse.HasError);
+                    Assert.NotNull(genericResponse);
 
-                    response = genericResponse.Content;
+                    response = genericResponse.Item;
                 });
 
-            GenericResponse<GrantedTokenResponse> expiredPoll = null;
+            Option<GrantedTokenResponse> expiredPoll = null;
 
             "and the device polls the token server after expiry".x(
                 async () =>
@@ -271,8 +269,10 @@
             "then error shows request expiry".x(
                 async () =>
                 {
-                    Assert.True(expiredPoll.HasError);
-                    Assert.Equal(ErrorCodes.ExpiredToken, expiredPoll.Error.Title);
+                    Assert.IsType<Option<GrantedTokenResponse>.Error>(expiredPoll);
+                    Assert.Equal(
+                        ErrorCodes.ExpiredToken,
+                        (expiredPoll as Option<GrantedTokenResponse>.Error).Details.Title);
                 });
         }
     }

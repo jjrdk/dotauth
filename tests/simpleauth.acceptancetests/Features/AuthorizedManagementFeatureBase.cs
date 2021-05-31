@@ -2,6 +2,7 @@
 {
     using System;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
@@ -47,11 +48,13 @@
             "and a manager token".x(
                 async () =>
                 {
-                    var result = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager", "offline" })).ConfigureAwait(false);
+                    var result = await _tokenClient.GetToken(
+                            TokenRequest.FromPassword("administrator", "password", new[] {"manager", "offline"}))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-                    Assert.NotNull(result.Content);
+                    Assert.NotNull(result.Item);
 
-                    _administratorToken = result.Content;
+                    _administratorToken = result.Item;
                 });
         }
     }

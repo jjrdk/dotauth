@@ -5,6 +5,7 @@
     using System.Net.Http.Headers;
     using Newtonsoft.Json;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
@@ -44,8 +45,8 @@
                 {
                     var response = await client.GetToken(
                             TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
-                        .ConfigureAwait(false);
-                    token = response.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    token = response.Item;
 
                     Assert.NotNull(token);
                 });
@@ -68,11 +69,11 @@
                         Scopes = new[] { "read" },
                         Type = "test"
                     };
-                    var response = await umaClient.AddResource(resource, token.AccessToken).ConfigureAwait(false);
+                    var response = await umaClient.AddResource(resource, token.AccessToken).ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    resourceSetResponse = response.Content;
+                    resourceSetResponse = response.Item;
                 });
 
             "And can view resource policies".x(

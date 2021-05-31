@@ -18,7 +18,6 @@ namespace SimpleAuth.Api.Introspection
     using Shared;
     using System;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Shared.Repositories;
@@ -33,7 +32,7 @@ namespace SimpleAuth.Api.Introspection
             _tokenStore = tokenStore;
         }
 
-        public async Task<GenericResponse<OauthIntrospectionResponse>> Execute(
+        public async Task<Option<OauthIntrospectionResponse>> Execute(
             IntrospectionParameter introspectionParameter,
             CancellationToken cancellationToken)
         {
@@ -63,11 +62,7 @@ namespace SimpleAuth.Api.Introspection
             // 5. Return an error if there's no granted token
             if (grantedToken == null)
             {
-                return new GenericResponse<OauthIntrospectionResponse>
-                {
-                    Content = new OauthIntrospectionResponse(),
-                    StatusCode = HttpStatusCode.OK
-                };
+                return new OauthIntrospectionResponse();
             }
 
             // 6. Fill-in parameters
@@ -120,11 +115,7 @@ namespace SimpleAuth.Api.Introspection
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
             result = result with { Active = DateTimeOffset.UtcNow < expirationDateTime };
 
-            return new GenericResponse<OauthIntrospectionResponse>
-            {
-                Content = result,
-                StatusCode = HttpStatusCode.OK
-            };
+            return result;
         }
     }
 }

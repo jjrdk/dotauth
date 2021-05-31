@@ -15,7 +15,7 @@
             : base(output)
         {
         }
-   
+
         [Scenario(DisplayName = "Successful logout")]
         public void SuccessfulLogout()
         {
@@ -82,5 +82,5 @@
 
             "then receives auth cookie".x(() => { Assert.Equal(HttpStatusCode.OK, result.StatusCode); });
         }
- }
+    }
 }

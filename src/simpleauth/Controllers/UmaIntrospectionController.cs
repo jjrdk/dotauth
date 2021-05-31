@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Controllers
 {
+    using System;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -9,10 +10,12 @@
     using SimpleAuth.Extensions;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
+    using SimpleAuth.Shared.Responses;
 
 
     /// <summary>
@@ -58,9 +61,12 @@
                     introspectionRequest.ToParameter(),
                     cancellationToken)
                 .ConfigureAwait(false);
-            return result.StatusCode == HttpStatusCode.OK
-                ? Ok(result.Content)
-                : (IActionResult)BadRequest(result.Error);
+            return result switch
+            {
+                Option<UmaIntrospectionResponse>.Result r => Ok(r.Item),
+                Option<UmaIntrospectionResponse>.Error e => BadRequest(e.Details),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         /// <summary>

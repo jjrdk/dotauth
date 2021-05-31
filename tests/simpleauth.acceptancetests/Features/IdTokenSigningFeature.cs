@@ -5,6 +5,7 @@
     using System.Linq;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
@@ -33,31 +34,33 @@
                         new Uri(WellKnownOpenidConfiguration));
                 });
 
-            "When getting token".x(async () =>
-            {
-                var response = await client
-                    .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "api" }))
-                    .ConfigureAwait(false);
-                token = response.Content;
-
-                Assert.NotNull(token);
-            });
-
-            "Then token is signed with server key".x(() =>
-            {
-                var key = _jwks.GetSignKeys().First();
-                var validationParameters = new TokenValidationParameters
+            "When getting token".x(
+                async () =>
                 {
-                    IssuerSigningKey = key,
-                    ValidateAudience = false,
-                    ValidateActor = false,
-                    ValidateIssuer = false,
-                    ValidateLifetime = false,
-                    ValidateTokenReplay = false
-                };
-                var handler = new JwtSecurityTokenHandler();
-                handler.ValidateToken(token.IdToken, validationParameters, out _);
-            });
+                    var response = await client
+                        .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"api"}))
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    token = response.Item;
+
+                    Assert.NotNull(token);
+                });
+
+            "Then token is signed with server key".x(
+                () =>
+                {
+                    var key = _jwks.GetSignKeys().First();
+                    var validationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = key,
+                        ValidateAudience = false,
+                        ValidateActor = false,
+                        ValidateIssuer = false,
+                        ValidateLifetime = false,
+                        ValidateTokenReplay = false
+                    };
+                    var handler = new JwtSecurityTokenHandler();
+                    handler.ValidateToken(token.IdToken, validationParameters, out _);
+                });
         }
     }
 }

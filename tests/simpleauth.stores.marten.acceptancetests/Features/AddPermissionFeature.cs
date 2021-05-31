@@ -6,6 +6,7 @@
     using SimpleAuth.Shared.Responses;
     using System;
     using System.Threading;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
     using Xbehave;
@@ -16,7 +17,8 @@
     {
         private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
 
-        public AddPermissionFeature(ITestOutputHelper output) : base(output)
+        public AddPermissionFeature(ITestOutputHelper output)
+            : base(output)
         {
             IdentityModelEventSource.ShowPII = true;
         }
@@ -47,8 +49,8 @@
                         _fixture.Client,
                         new Uri(WellKnownUmaConfiguration));
                     var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
-                        .ConfigureAwait(false);
-                    grantedToken = token.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    grantedToken = token.Item;
 
                     Assert.NotNull(grantedToken.AccessToken);
                 });
@@ -60,10 +62,10 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                            new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                             grantedToken.AccessToken)
-                        .ConfigureAwait(false);
-                    resourceId = resource.Content.Id;
+                        .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+                    resourceId = resource.Item.Id;
                 });
 
             "and adding permission".x(
@@ -71,12 +73,10 @@
                 {
                     var response = await client.RequestPermission(
                             grantedToken.AccessToken,
-                            requests: new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
-                        .ConfigureAwait(false);
+                            requests: new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                        .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-                    Assert.False(response.HasError);
-
-                    ticketId = response.Content.TicketId;
+                    ticketId = response.Item.TicketId;
                 });
 
             "then returns ticket id".x(() => { Assert.NotNull(ticketId); });
@@ -99,8 +99,8 @@
                         _fixture.Client,
                         new Uri(WellKnownUmaConfiguration));
                     var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
-                        .ConfigureAwait(false);
-                    grantedToken = token.Content;
+                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                    grantedToken = token.Item;
 
                     Assert.NotNull(grantedToken);
                 });
@@ -112,10 +112,10 @@
                 async () =>
                 {
                     var resource = await client.AddResource(
-                            new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
+                            new ResourceSet {Name = "picture", Scopes = new[] {"read", "write"}},
                             grantedToken.AccessToken)
-                        .ConfigureAwait(false);
-                    resourceId = resource.Content.Id;
+                        .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+                    resourceId = resource.Item.Id;
 
                     Assert.NotNull(resourceId);
                 });
@@ -126,13 +126,11 @@
                     var response = await client.RequestPermission(
                             grantedToken.AccessToken,
                             CancellationToken.None,
-                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
-                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
-                        .ConfigureAwait(false);
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"write"}},
+                            new PermissionRequest {ResourceSetId = resourceId, Scopes = new[] {"read"}})
+                        .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-                    Assert.False(response.HasError);
-
-                    ticketId = response.Content.TicketId;
+                    ticketId = response.Item.TicketId;
 
                     Assert.NotNull(ticketId);
                 });

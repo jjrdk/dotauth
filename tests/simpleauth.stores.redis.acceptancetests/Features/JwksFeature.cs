@@ -4,6 +4,7 @@
     using System.IdentityModel.Tokens.Jwt;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Client;
+    using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
     using Xbehave;
     using Xunit;
@@ -16,7 +17,7 @@
             : base(output)
         {
         }
-  
+
         [Scenario]
         public void SuccessfulPermissionCreation()
         {
@@ -47,16 +48,18 @@
 
             "And a valid token".x(
                 async () =>
-                    {
-                        var tokenClient = new TokenClient(
-                            TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                            _fixture.Client,
-                            new Uri(WellKnownOpenidConfiguration));
-                    var response = await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false);
+                {
+                    var tokenClient = new TokenClient(
+                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                        _fixture.Client,
+                        new Uri(WellKnownOpenidConfiguration));
+                    var response =
+                        await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+                            Option<GrantedTokenResponse>.Result;
 
-                    Assert.False(response.HasError);
+                    Assert.NotNull(response);
 
-                    tokenResponse = response.Content;
+                    tokenResponse = response.Item;
                 });
 
             "then can download json web key set".x(
@@ -74,7 +77,9 @@
                 {
                     var validationParameters = new TokenValidationParameters
                     {
-                        IssuerSigningKeys = jwks.Keys, ValidIssuer = "https://localhost", ValidAudience = "clientCredentials"
+                        IssuerSigningKeys = jwks.Keys,
+                        ValidIssuer = "https://localhost",
+                        ValidAudience = "clientCredentials"
                     };
 
                     var handler = new JwtSecurityTokenHandler();
@@ -84,5 +89,5 @@
                     Assert.NotNull(securityToken);
                 });
         }
-  }
+    }
 }
