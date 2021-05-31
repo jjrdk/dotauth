@@ -13,10 +13,17 @@
     using SimpleAuth.Shared.Requests;
     using SimpleAuth.Shared.Responses;
 
+    /// <summary>
+    /// Defines the Marten device authorization store.
+    /// </summary>
     public class MartenDeviceAuthorizationStore : IDeviceAuthorizationStore
     {
         private readonly Func<IDocumentSession> _sessionFunc;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MartenDeviceAuthorizationStore"/> class.
+        /// </summary>
+        /// <param name="sessionFunc">The session factory.</param>
         public MartenDeviceAuthorizationStore(Func<IDocumentSession> sessionFunc)
         {
             _sessionFunc = sessionFunc;
