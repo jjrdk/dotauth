@@ -78,7 +78,6 @@ namespace SimpleAuth.Server.Tests
             services
                 .AddControllersWithViews()
                 .AddRazorRuntimeCompilation()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddApplicationPart(typeof(CoreConstants).Assembly);
             services.AddRazorPages();
             services.AddSimpleAuth(

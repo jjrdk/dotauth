@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>SimpleAuth SMS Authentication Library</Description>
         <Title>SimpleAuth SMS Authentication</Title>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <AssemblyName>simpleauth.sms</AssemblyName>
         <PackageId>simpleauth.sms</PackageId>
         <RootNamespace>SimpleAuth.Sms</RootNamespace>
@@ -22,7 +22,7 @@
         <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.2.38" />
+        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.2.39" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Properties\SmsStrings.Designer.cs">

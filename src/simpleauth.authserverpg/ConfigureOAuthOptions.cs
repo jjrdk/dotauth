@@ -69,14 +69,14 @@
                 {
                     var handler = new JwtSecurityTokenHandler();
                     var jwt = handler.ReadJwtToken(ctx.AccessToken);
-                    var claims = jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)).ToArray();
-                    ctx.Identity.AddClaims(claims);
+                    var claims = jwt.Claims.Where(c => !ctx.Identity!.HasClaim(x => x.Type == c.Type)).ToArray();
+                    ctx.Identity!.AddClaims(claims);
                     ctx.Success();
                     return Task.CompletedTask;
                 },
                 OnRemoteFailure = ctx =>
                 {
-                    var logger = ctx.HttpContext.RequestServices.GetService<ILogger<IApplicationBuilder>>();
+                    var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<IApplicationBuilder>>();
                     logger.LogError(ctx.Failure, ctx.Failure!.Message);
                     return Task.CompletedTask;
                 }

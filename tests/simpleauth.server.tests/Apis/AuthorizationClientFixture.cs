@@ -93,7 +93,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_ResponseType_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var redirect = Uri.EscapeUriString("https://redirect_uri");
+            var redirect = Uri.EscapeDataString("https://redirect_uri");
             var httpResult = await _server.Client()
                 .GetAsync(new Uri(BaseUrl + $"/authorization?scope=scope&client_id=client&redirect_uri={redirect}"))
                 .ConfigureAwait(false);
@@ -107,7 +107,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_Unsupported_ResponseType_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var redirect = Uri.EscapeUriString("https://redirect_uri");
+            var redirect = Uri.EscapeDataString("https://redirect_uri");
             var httpResult = await _server.Client()
                 .GetAsync(
                     new Uri(
@@ -124,7 +124,7 @@ namespace SimpleAuth.Server.Tests.Apis
         [Fact]
         public async Task When_UnsupportedPrompt_Is_Passed_To_Authorization_Then_Json_Is_Returned()
         {
-            var redirect = Uri.EscapeUriString("https://redirect_uri");
+            var redirect = Uri.EscapeDataString("https://redirect_uri");
             var httpResult = await _server.Client()
                 .GetAsync(
                     new Uri(

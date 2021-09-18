@@ -46,7 +46,7 @@
                 var keyAlg = certificate.SignatureAlgorithm.FriendlyName ?? string.Empty;
                 if (keyAlg.Contains("RSA"))
                 {
-                    var rsa = (RSA)certificate.PrivateKey!;
+                    var rsa = certificate.GetRSAPrivateKey()!;
                     var parameters = rsa.ExportParameters(true);
                     jwk = new JsonWebKey
                     {

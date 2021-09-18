@@ -141,7 +141,7 @@ namespace SimpleAuth.Controllers
                 eventPublisher,
                 logger);
             DataProtector = dataProtectionProvider.CreateProtector("Request");
-            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
             _eventPublisher = eventPublisher;
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _addUser = new AddUserOperation(

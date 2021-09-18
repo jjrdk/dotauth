@@ -73,7 +73,7 @@
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _consentRepository = consentRepository;
             _scopeRepository = scopeRepository;
-            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
             _logger = logger;
         }

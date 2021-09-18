@@ -48,7 +48,7 @@ namespace SimpleAuth.Controllers
         {
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _actionContextAccessor = actionContextAccessor;
-            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
         }
 
         /// <summary>
