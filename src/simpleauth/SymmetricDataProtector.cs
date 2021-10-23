@@ -46,7 +46,7 @@
             while (true)
             {
                 var read = cs.Read(buffer);
-                if (read < bufferLength)
+                if (read == 0)
                 {
                     var result = new byte[read];
                     Array.Copy(buffer, 0, result, 0, read);
