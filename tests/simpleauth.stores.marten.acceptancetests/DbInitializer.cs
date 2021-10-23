@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using global::Marten;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Npgsql;
     using SimpleAuth.Shared.Models;
     using Xunit.Abstractions;
@@ -28,7 +29,8 @@
             }
 
             var builder = new NpgsqlConnectionStringBuilder(connectionString);
-            await using var connection = new NpgsqlConnection(connectionString);
+            var connection = new NpgsqlConnection(connectionString);
+            await using var _ = connection.ConfigureAwait(false);
             try
             {
                 await Semaphore.WaitAsync().ConfigureAwait(false);
@@ -46,6 +48,7 @@
                         await Task.Delay(TimeSpan.FromMilliseconds(i * 250)).ConfigureAwait(false);
                     }
                 }
+
                 var schema = $"test_{DateTimeOffset.UtcNow.Ticks}";
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION simpleauth; ";
@@ -69,7 +72,11 @@
             IEnumerable<Client> clients,
             IEnumerable<Scope> scopes)
         {
-            using var store = new DocumentStore(new SimpleAuthMartenOptions(connectionString, new NulloMartenLogger(), searchPath));
+            using var store = new DocumentStore(
+                new SimpleAuthMartenOptions(
+                    connectionString,
+                    new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
+                    searchPath));
             using var session = store.LightweightSession();
             if (consents != null) session.Store(consents.ToArray());
             if (users != null) session.Store(users.ToArray());
@@ -81,7 +88,8 @@
         public static async Task Drop(string connectionString)
         {
             NpgsqlConnection.ClearAllPools();
-            await using var connection = new NpgsqlConnection(connectionString);
+            var connection = new NpgsqlConnection(connectionString);
+            await using var _ = connection.ConfigureAwait(false);
             await connection.OpenAsync().ConfigureAwait(false);
             var builder = new NpgsqlConnectionStringBuilder { ConnectionString = connectionString };
             var cmd = connection.CreateCommand();

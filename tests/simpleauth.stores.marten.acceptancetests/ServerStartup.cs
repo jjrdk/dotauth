@@ -9,6 +9,7 @@
     using System.Net.Http;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using SimpleAuth.Repositories;
     using SimpleAuth.UI;
     using Xunit.Abstractions;
@@ -30,7 +31,7 @@
                 Clients = sp => new MartenClientStore(sp.GetService<Func<IDocumentSession>>()),
                 JsonWebKeys = sp =>
                 {
-                    var keyset = new[] {context.SignatureKey, context.EncryptionKey}.ToJwks();
+                    var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
                 Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
@@ -52,7 +53,10 @@
                 .AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
             services.AddSingleton<IDocumentStore>(
                 provider => new DocumentStore(
-                    new SimpleAuthMartenOptions(_connectionString, new NulloMartenLogger(), _schemaName)));
+                    new SimpleAuthMartenOptions(
+                        _connectionString,
+                        new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
+                        _schemaName)));
             services.AddTransient<Func<IDocumentSession>>(
                 sp =>
                 {

@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using global::Marten;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Npgsql;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Stores.Marten;
@@ -24,7 +25,8 @@
             IEnumerable<Scope> scopes = null)
         {
             var builder = new NpgsqlConnectionStringBuilder(connectionString);
-            await using var connection = new NpgsqlConnection(connectionString);
+            var connection = new NpgsqlConnection(connectionString);
+            await using var _ = connection.ConfigureAwait(false);
             try
             {
                 await Semaphore.WaitAsync().ConfigureAwait(false);
@@ -42,6 +44,7 @@
                         await Task.Delay(TimeSpan.FromMilliseconds(i * 250)).ConfigureAwait(false);
                     }
                 }
+
                 var schema = $"test_{DateTime.UtcNow.Ticks}";
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION simpleauth; ";
@@ -65,8 +68,13 @@
             IEnumerable<Client> clients,
             IEnumerable<Scope> scopes)
         {
-            using var store = new DocumentStore(new SimpleAuthMartenOptions(connectionString, new NulloMartenLogger(), searchPath));
-            using var session = store.LightweightSession();
+            using var store = new DocumentStore(
+                new SimpleAuthMartenOptions(
+                    connectionString,
+                    new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
+                    searchPath));
+            var session = store.LightweightSession();
+            await using var _ = session.ConfigureAwait(false);
             if (consents != null) session.Store(consents.ToArray());
             if (users != null) session.Store(users.ToArray());
             if (clients != null) session.Store(clients.ToArray());

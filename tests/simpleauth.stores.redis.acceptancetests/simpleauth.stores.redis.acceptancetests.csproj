@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.0.0-2.21354.7" />
         <PackageReference Include="Divergic.Logging.Xunit" Version="3.6.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0-rc.1.21452.15" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />

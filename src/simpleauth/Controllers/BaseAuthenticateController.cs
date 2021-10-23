@@ -208,9 +208,8 @@ namespace SimpleAuth.Controllers
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                var message = string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
-                _logger.LogError(message);
-                return SetRedirection(message, Strings.InternalServerError, ErrorCodes.InternalError);
+                _logger.LogError(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
+                return SetRedirection(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error), Strings.InternalServerError, ErrorCodes.InternalError);
             }
 
             // 1. Get the authenticated user.
@@ -490,7 +489,8 @@ namespace SimpleAuth.Controllers
             }
 
             var authenticatedUser = await SetUser().ConfigureAwait(false);
-            var request = DataProtector.Unprotect<AuthorizationRequest>(code);
+            var dataString = Uri.UnescapeDataString(code);
+            var request = DataProtector.Unprotect<AuthorizationRequest>(dataString);
             var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             var actionResult = await _authenticateResourceOwnerOpenId.Execute(
                     request.ToParameter(),
@@ -600,9 +600,8 @@ namespace SimpleAuth.Controllers
             // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
             {
-                var message = string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
-                _logger.LogError(message);
-                return SetRedirection(message, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
+                _logger.LogError(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
+                return SetRedirection(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error), Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
             }
 
             // 4. Check if the user is authenticated
@@ -611,9 +610,8 @@ namespace SimpleAuth.Controllers
                 .ConfigureAwait(false);
             if (authenticatedUser?.Identity?.IsAuthenticated != true || !(authenticatedUser.Identity is ClaimsIdentity))
             {
-                var message = Strings.TheUserNeedsToBeAuthenticated;
-                _logger.LogError(message);
-                return SetRedirection(message, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
+                _logger.LogError(Strings.TheUserNeedsToBeAuthenticated);
+                return SetRedirection(Strings.TheUserNeedsToBeAuthenticated, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
             }
 
             // 5. Retrieve the claims & insert the resource owner if needed.

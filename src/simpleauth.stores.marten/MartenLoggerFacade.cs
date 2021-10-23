@@ -64,5 +64,11 @@
             _logger.LogInformation(
                 $"Persisted {commit.Updated.Count()} updates, {commit.Inserted.Count()} inserts, and {commit.Deleted.Count()} deletions");
         }
+
+        /// <inheritdoc />
+        public void OnBeforeExecute(NpgsqlCommand command)
+        {
+            _logger.LogError("Before PostgreSql command: " + command.CommandText);
+        }
     }
 }

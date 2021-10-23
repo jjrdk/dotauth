@@ -6,6 +6,7 @@
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
+    using System.Text;
     using Microsoft.AspNetCore.DataProtection;
 
     internal class SymmetricDataProtector : IDataProtector
@@ -28,7 +29,8 @@
         {
             using var ms = new MemoryStream();
             using var cs = new CryptoStream(ms, _algo.CreateEncryptor(), CryptoStreamMode.Write);
-            cs.Write(plaintext.AsSpan(0, plaintext.Length));
+            cs.Write(plaintext);
+            cs.Flush();
             cs.FlushFinalBlock();
             return ms.ToArray();
         }
@@ -39,11 +41,11 @@
             using var ms = new MemoryStream(protectedData);
             using var cs = new CryptoStream(ms, _algo.CreateDecryptor(), CryptoStreamMode.Read);
             List<byte>? list = null;
-            const int bufferLength = 4 * 4096;
+            const int bufferLength = 4096;
             var buffer = ArrayPool<byte>.Shared.Rent(bufferLength);
             while (true)
             {
-                var read = cs.Read(buffer, 0, bufferLength);
+                var read = cs.Read(buffer);
                 if (read < bufferLength)
                 {
                     var result = new byte[read];

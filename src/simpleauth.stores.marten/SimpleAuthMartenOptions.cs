@@ -3,9 +3,14 @@
     using global::Marten;
     using Newtonsoft.Json;
     using System;
+    using System.Data.Common;
     using System.IO;
     using System.Security.Claims;
     using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Weasel.Core;
+    using Weasel.Postgresql;
 
     /// <summary>
     /// Defines the marten options for SimpleAuth.
@@ -91,11 +96,6 @@
                 _innerSerializer.Converters.Add(new ClaimConverter());
             }
 
-            public void ToJson(object document, TextWriter writer)
-            {
-                _innerSerializer.Serialize(writer, document);
-            }
-
             public string ToJson(object document)
             {
                 var sb = new StringBuilder();
@@ -105,16 +105,73 @@
                 return sb.ToString();
             }
 
-            public T FromJson<T>(TextReader reader)
+            /// <inheritdoc />
+            public T FromJson<T>(Stream stream)
             {
-                using var jsonReader = new JsonTextReader(reader);
-                return _innerSerializer.Deserialize<T>(jsonReader)!;
+                using var streamReader = new StreamReader(stream);
+                using var reader = new JsonTextReader(streamReader);
+                return _innerSerializer.Deserialize<T>(reader)
+                       ?? throw new NullReferenceException("Could not deserialize from stream");
             }
 
-            public object FromJson(Type type, TextReader reader)
+            /// <inheritdoc />
+            public T FromJson<T>(DbDataReader reader, int index)
             {
-                using var jsonReader = new JsonTextReader(reader);
-                return _innerSerializer.Deserialize(jsonReader, type)!;
+                throw new NotImplementedException();
+            }
+
+            /// <inheritdoc />
+            public ValueTask<T> FromJsonAsync<T>(Stream stream, CancellationToken cancellationToken = new())
+            {
+                using var streamReader = new StreamReader(stream);
+                using var reader = new JsonTextReader(streamReader);
+                var item = _innerSerializer.Deserialize<T>(reader)
+                       ?? throw new NullReferenceException("Could not deserialize from stream");
+                return new ValueTask<T>(item);
+            }
+
+            /// <inheritdoc />
+            public ValueTask<T> FromJsonAsync<T>(
+                DbDataReader reader,
+                int index,
+                CancellationToken cancellationToken = new())
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <inheritdoc />
+            public object FromJson(Type type, Stream stream)
+            {
+                using var streamReader = new StreamReader(stream);
+                using var reader = new JsonTextReader(streamReader);
+                return _innerSerializer.Deserialize(reader, type)
+                       ?? throw new NullReferenceException("Could not deserialize from stream");
+            }
+
+            /// <inheritdoc />
+            public object FromJson(Type type, DbDataReader reader, int index)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <inheritdoc />
+            public ValueTask<object> FromJsonAsync(Type type, Stream stream, CancellationToken cancellationToken = new())
+            {
+                using var streamReader = new StreamReader(stream);
+                using var reader = new JsonTextReader(streamReader);
+                var item = _innerSerializer.Deserialize(reader, type)
+                       ?? throw new NullReferenceException("Could not deserialize from stream");
+                return new ValueTask<object>(item);
+            }
+
+            /// <inheritdoc />
+            public ValueTask<object> FromJsonAsync(
+                Type type,
+                DbDataReader reader,
+                int index,
+                CancellationToken cancellationToken = new())
+            {
+                throw new NotImplementedException();
             }
 
             public string ToCleanJson(object document)
@@ -122,13 +179,27 @@
                 return ToJson(document);
             }
 
-            public EnumStorage EnumStorage { get; } = EnumStorage.AsString;
+            /// <inheritdoc />
+            public string ToJsonWithTypes(object document)
+            {
+                throw new NotImplementedException();
+            }
 
-            public Casing Casing { get; } = Casing.CamelCase;
+            public EnumStorage EnumStorage
+            {
+                get { return EnumStorage.AsString; }
+            }
 
-            public CollectionStorage CollectionStorage { get; } = CollectionStorage.AsArray;
+            public Casing Casing
+            {
+                get { return Casing.CamelCase; }
+            }
 
-            public NonPublicMembersStorage NonPublicMembersStorage { get; } = NonPublicMembersStorage.Default;
+            /// <inheritdoc />
+            public ValueCasting ValueCasting
+            {
+                get { return ValueCasting.Strict; }
+            }
         }
     }
 }

@@ -25,7 +25,7 @@
         /// <returns>A <see cref="JsonWebKeyContainer"/> instance.</returns>
         public static JsonWebKeyContainer Create(JsonWebKey key)
         {
-            return new()
+            return new JsonWebKeyContainer
             {
                 Id = Guid.NewGuid().ToString("N"),
                 Jwk = key

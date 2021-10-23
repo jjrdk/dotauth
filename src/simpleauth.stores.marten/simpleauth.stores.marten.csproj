@@ -14,7 +14,7 @@
     </PropertyGroup>
     <Import Project="../../shared.projinfo" />
     <ItemGroup>
-        <PackageReference Include="marten" Version="3.13.4" />
+        <PackageReference Include="marten" Version="4.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0-rc.1.21451.13" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0-rc.1.21451.13" />
     </ItemGroup>
