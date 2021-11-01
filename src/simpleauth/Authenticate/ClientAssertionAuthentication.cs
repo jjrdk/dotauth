@@ -20,6 +20,7 @@ namespace SimpleAuth.Authenticate
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Logging;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
 
     internal class ClientAssertionAuthentication

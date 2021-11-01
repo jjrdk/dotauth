@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth
+﻿namespace SimpleAuth.Extensions
 {
-    using Microsoft.AspNetCore.Http;
     using System;
     using System.Security.Cryptography.X509Certificates;
+    using Microsoft.AspNetCore.Http;
 
     internal static class HttpRequestsExtensions
     {

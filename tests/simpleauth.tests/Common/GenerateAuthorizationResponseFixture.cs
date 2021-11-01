@@ -31,6 +31,7 @@ namespace SimpleAuth.Tests.Common
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using SimpleAuth.Events;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Events.OAuth;
     using SimpleAuth.Shared.Repositories;

@@ -7,6 +7,7 @@
     using System;
     using System.IdentityModel.Tokens.Jwt;
     using System.Net;
+    using SimpleAuth.Extensions;
     using Xbehave;
     using Xunit;
     using Xunit.Abstractions;

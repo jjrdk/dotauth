@@ -36,7 +36,7 @@
                 return new PagedResult<Scope>();
             }
 
-            using var session = this._sessionFactory();
+            await using var session = this._sessionFactory();
             var results = await session.Query<Scope>()
                               .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
                               .ToPagedListAsync(parameter.StartIndex + 1, parameter.NbResults, cancellationToken)
@@ -58,7 +58,7 @@
                 return null;
             }
 
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var scope = await session.LoadAsync<Scope>(name, cancellationToken).ConfigureAwait(false);
 
             return scope;
@@ -72,7 +72,7 @@
                 return Array.Empty<Scope>();
             }
 
-            using var session = this._sessionFactory();
+            await using var session = this._sessionFactory();
             var scopes = await session.Query<Scope>()
                              .Where(x => x.Name.IsOneOf(names))
                              .ToListAsync(cancellationToken)
@@ -84,7 +84,7 @@
         /// <inheritdoc />
         public async Task<Scope[]> GetAll(CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var scopes = await session.Query<Scope>()
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
@@ -100,7 +100,7 @@
                 return false;
             }
 
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Store(scope);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -114,7 +114,7 @@
                 return false;
             }
 
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Delete(scope.Name);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -128,7 +128,7 @@
                 return false;
             }
 
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Update(scope);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;

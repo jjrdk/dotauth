@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;
 

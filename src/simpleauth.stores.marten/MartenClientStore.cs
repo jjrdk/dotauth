@@ -11,7 +11,6 @@
     using System.Threading.Tasks;
 
     using global::Marten.Pagination;
-    using Microsoft.VisualBasic;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;
     using SimpleAuth.Shared.Properties;
@@ -36,7 +35,7 @@
         /// <inheritdoc />
         public async Task<Client?> GetById(string clientId, CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var client = await session.LoadAsync<Client>(clientId, cancellationToken).ConfigureAwait(false);
             return client;
         }
@@ -44,7 +43,7 @@
         /// <inheritdoc />
         public async Task<Client[]> GetAll(CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var clients = await session.Query<Client>().ToListAsync(cancellationToken).ConfigureAwait(false);
             return clients.ToArray();
         }
@@ -54,7 +53,7 @@
             SearchClientsRequest parameter,
             CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var take = parameter.NbResults == 0 ? int.MaxValue : parameter.NbResults;
             var results = await session.Query<Client>()
                 .Where(x => x.ClientId.IsOneOf(parameter.ClientIds))
@@ -72,7 +71,7 @@
         /// <inheritdoc />
         public async Task<Option> Update(Client client, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
             {
                 return new ErrorDetails
@@ -91,7 +90,7 @@
         /// <inheritdoc />
         public async Task<bool> Insert(Client client, CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
             {
                 return false;
@@ -105,7 +104,7 @@
         /// <inheritdoc />
         public async Task<bool> Delete(string clientId, CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Delete<Client>(clientId);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;

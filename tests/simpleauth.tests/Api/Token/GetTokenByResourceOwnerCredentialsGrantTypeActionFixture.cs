@@ -28,6 +28,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System.Threading.Tasks;
     using Divergic.Logging.Xunit;
     using SimpleAuth.Events;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Services;

@@ -14,6 +14,7 @@
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms.Ui;

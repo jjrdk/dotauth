@@ -27,7 +27,7 @@
         /// <inheritdoc />
         public async Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var authorizationCode = await session.LoadAsync<AuthorizationCode>(code, cancellationToken)
                 .ConfigureAwait(false);
 
@@ -39,7 +39,7 @@
             AuthorizationCode authorizationCode,
             CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Store(authorizationCode);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -48,7 +48,7 @@
         /// <inheritdoc />
         public async Task<bool> Remove(string code, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Delete<AuthorizationCode>(code);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;

@@ -3,6 +3,7 @@
     using System.Security.Cryptography.X509Certificates;
     using Microsoft.IdentityModel.Tokens;
     using Shared;
+    using SimpleAuth.Extensions;
     using Xunit;
 
     public class CertificateTests

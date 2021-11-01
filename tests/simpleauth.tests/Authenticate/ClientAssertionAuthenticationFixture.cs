@@ -11,6 +11,7 @@
     using System.IdentityModel.Tokens.Jwt;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using Xunit;

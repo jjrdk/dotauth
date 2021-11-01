@@ -29,6 +29,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Responses;
     using Xunit;

@@ -18,6 +18,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
     using System.Net.Http;
     using System.Security.Cryptography;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Extensions;
 
     public class SharedContext
     {

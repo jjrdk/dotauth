@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
 {
     using System;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using Xbehave;

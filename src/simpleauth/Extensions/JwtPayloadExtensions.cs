@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth
+﻿namespace SimpleAuth.Extensions
 {
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;

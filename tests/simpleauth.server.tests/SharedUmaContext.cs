@@ -1,6 +1,7 @@
 ﻿namespace SimpleAuth.Server.Tests
 {
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Extensions;
 
     public class SharedUmaContext
     {

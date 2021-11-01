@@ -17,6 +17,7 @@ namespace SimpleAuth.Tests.Authenticate
     using Shared;
     using SimpleAuth;
     using System.Net.Http.Headers;
+    using SimpleAuth.Extensions;
     using Xunit;
 
     public class AuthenticateInstructionGeneratorFixture

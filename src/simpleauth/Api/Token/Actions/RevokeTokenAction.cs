@@ -24,6 +24,7 @@ namespace SimpleAuth.Api.Token.Actions
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Errors;

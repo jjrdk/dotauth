@@ -10,6 +10,7 @@
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.UI;
     using Xunit.Abstractions;

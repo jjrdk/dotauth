@@ -36,13 +36,13 @@ namespace SimpleAuth.Shared.Models
         /// The name.
         /// </value>
         [DataMember(Name = "name")]
-        public string? Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Gets or sets the resource description.
         /// </summary>
         [DataMember(Name = "description")]
-        public string? Description { get; set; }
+        public string Description { get; set; } = "";
 
         /// <summary>
         /// Gets or sets the type.
@@ -51,7 +51,7 @@ namespace SimpleAuth.Shared.Models
         /// The type.
         /// </value>
         [DataMember(Name = "type")]
-        public string? Type { get; set; }
+        public string Type { get; set; } = "";
 
         /// <summary>
         /// Gets or sets the scopes.

@@ -27,6 +27,7 @@ namespace SimpleAuth.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Filters;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;

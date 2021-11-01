@@ -28,7 +28,10 @@ namespace SimpleAuth.Extensions
     internal static class ClientHelper
     {
         public static async Task<string?> GenerateIdToken(
-            this IClientStore clientStore, string clientId, JwtPayload jwsPayload, IJwksStore jwksStore,
+            this IClientStore clientStore,
+            string clientId,
+            JwtPayload jwsPayload,
+            IJwksStore jwksStore,
             CancellationToken cancellationToken)
         {
             var client = await clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
@@ -37,28 +40,38 @@ namespace SimpleAuth.Extensions
                 : await GenerateIdToken(client, jwsPayload, jwksStore, cancellationToken).ConfigureAwait(false);
         }
 
-        public static async Task<List<SigningCredentials>> GetSigningCredentials(this Client client, IJwksStore jwksStore, CancellationToken cancellationToken = default)
+        public static async Task<List<SigningCredentials>> GetSigningCredentials(
+            this Client client,
+            IJwksStore jwksStore,
+            CancellationToken cancellationToken = default)
         {
             var signingKeys = client.JsonWebKeys.Keys.Where(key => key.Use == JsonWebKeyUseNames.Sig)
                 .Select(key => new SigningCredentials(key, key.Alg))
                 .ToList();
-            if (signingKeys.Count == 0)
+            if (signingKeys.Count != 0)
             {
-                var keys = await (client.IdTokenSignedResponseAlg == null
-                    ? jwksStore.GetDefaultSigningKey(cancellationToken)
-                    : jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken)).ConfigureAwait(false);
-
-                signingKeys = new List<SigningCredentials> { keys };
+                return signingKeys;
             }
+
+            var keys = await (client.IdTokenSignedResponseAlg == null
+                    ? jwksStore.GetDefaultSigningKey(cancellationToken)
+                    : jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken))
+                .ConfigureAwait(false);
+
+            signingKeys = new List<SigningCredentials> { keys };
 
             return signingKeys;
         }
 
         public static async Task<string> GenerateIdToken(
-            this Client client, JwtPayload jwsPayload, IJwksStore jwksStore, CancellationToken cancellationToken)
+            this Client client,
+            JwtPayload jwsPayload,
+            IJwksStore jwksStore,
+            CancellationToken cancellationToken)
         {
             var handler = new JwtSecurityTokenHandler();
-            var signingCredentials = await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
+            var signingCredentials =
+                await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
             var jwt = handler.CreateEncodedJwt(
                 jwsPayload.Iss,
                 client.ClientName,

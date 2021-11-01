@@ -7,6 +7,7 @@
     using System;
     using System.Threading.Tasks;
     using SimpleAuth.Client;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Properties;
     using Xunit;

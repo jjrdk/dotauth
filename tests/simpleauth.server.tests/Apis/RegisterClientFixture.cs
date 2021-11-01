@@ -24,6 +24,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;

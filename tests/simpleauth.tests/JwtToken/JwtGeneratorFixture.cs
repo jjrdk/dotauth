@@ -34,6 +34,7 @@ namespace SimpleAuth.Tests.JwtToken
     using System.Threading;
     using System.Threading.Tasks;
     using Divergic.Logging.Xunit;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using Xunit;

@@ -2,7 +2,6 @@
 {
     using global::Marten;
     using global::Marten.Schema;
-    using global::Marten.Schema.Indexing.Unique;
     using NpgsqlTypes;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
@@ -41,7 +40,7 @@
                 .UniqueIndex(UniqueIndexType.Computed, s => s.ClientId)
                 .Index(x => x.AllowedScopes)
                 .Index(x => x.GrantTypes)
-                .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)")
+                .Duplicate(x => x.IdTokenEncryptedResponseAlg ?? "", "varchar(10)")
                 .Index(x => x.ResponseTypes)
                 .Index(x => x.Claims)
                 .GinIndexJsonData();
@@ -76,9 +75,9 @@
                 .Duplicate(x => x.ClientId)
                 .Duplicate(x => x.CreateDateTime)
                 .Duplicate(x => x.ExpiresIn, dbType: NpgsqlDbType.Integer)
-                .Duplicate(x => x.IdToken)
-                .Duplicate(x => x.ParentTokenId)
-                .Duplicate(x => x.RefreshToken)
+                .Duplicate(x => x.IdToken ?? "", notNull: false, dbType: NpgsqlDbType.Varchar)
+                .Duplicate(x => x.ParentTokenId ?? "", notNull: false, dbType: NpgsqlDbType.Varchar)
+                .Duplicate(x => x.RefreshToken ?? "", notNull: false, dbType: NpgsqlDbType.Varchar)
                 .Duplicate(x => x.TokenType, "character(10)")
                 .GinIndexJsonData();
             For<JsonWebKeyContainer>()

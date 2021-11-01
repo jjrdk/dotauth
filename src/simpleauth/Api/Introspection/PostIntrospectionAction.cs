@@ -20,6 +20,7 @@ namespace SimpleAuth.Api.Introspection
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Responses;
 

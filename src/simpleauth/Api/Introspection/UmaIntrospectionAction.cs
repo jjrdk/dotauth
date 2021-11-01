@@ -5,6 +5,7 @@
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Parameters;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared;

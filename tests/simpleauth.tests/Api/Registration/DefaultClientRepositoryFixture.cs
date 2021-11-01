@@ -29,6 +29,7 @@ namespace SimpleAuth.Tests.Api.Registration
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Tests.Validators;
     using Xunit;
 

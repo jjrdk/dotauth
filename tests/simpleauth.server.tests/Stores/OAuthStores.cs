@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Microsoft.IdentityModel.Tokens;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
 

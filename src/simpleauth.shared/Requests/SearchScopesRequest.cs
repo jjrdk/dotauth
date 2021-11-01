@@ -1,5 +1,6 @@
 ﻿namespace SimpleAuth.Shared.Requests
 {
+    using System;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -15,7 +16,7 @@
         /// The scope types.
         /// </value>
         [DataMember(Name = "types")]
-        public string[]? ScopeTypes { get; set; }
+        public string[] ScopeTypes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the scope names.
@@ -24,7 +25,7 @@
         /// The scope names.
         /// </value>
         [DataMember(Name = "names")]
-        public string[]? ScopeNames { get; set; }
+        public string[] ScopeNames { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the start index.

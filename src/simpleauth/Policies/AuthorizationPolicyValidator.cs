@@ -26,6 +26,7 @@ namespace SimpleAuth.Policies
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Events;
+    using SimpleAuth.Extensions;
 
     internal class AuthorizationPolicyValidator
     {

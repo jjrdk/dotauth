@@ -39,7 +39,7 @@
                 return null;
             }
 
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var options = await session.Query<GrantedToken>()
                 .Where(
                     x => x.ClientId == clientId
@@ -56,7 +56,7 @@
         /// <inheritdoc />
         public async Task<GrantedToken?> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var grantedToken = await session.Query<GrantedToken>()
                 .FirstOrDefaultAsync(x => x.RefreshToken == getRefreshToken, token: cancellationToken)
                 .ConfigureAwait(false);
@@ -66,7 +66,7 @@
         /// <inheritdoc />
         public async Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var grantedToken = await session.Query<GrantedToken>()
                 .FirstOrDefaultAsync(x => x.AccessToken == accessToken, token: cancellationToken)
                 .ConfigureAwait(false);
@@ -76,7 +76,7 @@
         /// <inheritdoc />
         public async Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Store(grantedToken);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -85,7 +85,7 @@
         /// <inheritdoc />
         public async Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.DeleteWhere<GrantedToken>(x => x.AccessToken == accessToken);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -94,7 +94,7 @@
         /// <inheritdoc />
         public async Task<bool> RemoveRefreshToken(string refreshToken, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.DeleteWhere<GrantedToken>(x => x.RefreshToken == refreshToken);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;

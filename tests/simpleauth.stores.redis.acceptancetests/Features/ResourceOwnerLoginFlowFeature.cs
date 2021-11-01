@@ -7,6 +7,7 @@
     using Microsoft.IdentityModel.Tokens;
 
     using SimpleAuth.Client;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Responses;
 

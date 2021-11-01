@@ -31,6 +31,7 @@ namespace SimpleAuth.Server.Tests.Apis
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Shared.Properties;
     using SimpleAuth.Shared.Responses;

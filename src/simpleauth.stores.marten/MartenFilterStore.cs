@@ -28,7 +28,7 @@
         /// <inheritdoc />
         public async Task<Filter[]> GetAll(CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var filters = await session.Query<Filter>().ToListAsync(token: cancellationToken).ConfigureAwait(false);
             return filters.ToArray();
         }

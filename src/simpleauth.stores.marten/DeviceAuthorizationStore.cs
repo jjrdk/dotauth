@@ -32,7 +32,7 @@
         /// <inheritdoc />
         public async Task<Option<DeviceAuthorizationResponse>> Get(string userCode, CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFunc();
+            await using var session = _sessionFunc();
             var request = await session.Query<DeviceAuthorizationData>()
                 .Where(x => x.Response.UserCode == userCode)
                 .Select(x => x.Response)
@@ -53,7 +53,7 @@
         /// <inheritdoc />
         public async Task<Option<DeviceAuthorizationData>> Get(string clientId, string deviceCode, CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFunc();
+            await using var session = _sessionFunc();
             var request = await session.Query<DeviceAuthorizationData>()
                 .Where(x => x.ClientId == clientId && x.DeviceCode == deviceCode)
                 .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
@@ -73,7 +73,7 @@
         /// <inheritdoc />
         public async Task<Option> Approve(string userCode, CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFunc();
+            await using var session = _sessionFunc();
             var data = await session.Query<DeviceAuthorizationData>().Where(x => x.Response.UserCode == userCode)
                 .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
             if (data == null)
@@ -96,7 +96,7 @@
         /// <inheritdoc />
         public async Task<Option> Save(DeviceAuthorizationData request, CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFunc();
+            await using var session = _sessionFunc();
             session.Store(request);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return new Option.Success();
@@ -105,7 +105,7 @@
         /// <inheritdoc />
         public async Task<Option> Remove(DeviceAuthorizationData authRequest, CancellationToken cancellationToken)
         {
-            using var session = _sessionFunc();
+            await using var session = _sessionFunc();
             session.Delete<DeviceAuthorizationData>(authRequest.DeviceCode);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return new Option.Success();

@@ -16,6 +16,7 @@ namespace SimpleAuth.Tests.Api.Token
     using Microsoft.Extensions.Logging;
     using SimpleAuth.Controllers;
     using SimpleAuth.Events;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.Services;
     using Xunit;

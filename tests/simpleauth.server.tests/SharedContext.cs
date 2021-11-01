@@ -20,6 +20,7 @@ namespace SimpleAuth.Server.Tests
     using Shared;
     using SimpleAuth;
     using System.Net.Http;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Sms;
 

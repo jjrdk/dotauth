@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth
+namespace SimpleAuth.Extensions
 {
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Tokens;
-    using Shared.Models;
-    using SimpleAuth.Extensions;
+    using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Repositories;
 
     internal static class ClientExtensions

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth
+namespace SimpleAuth.Extensions
 {
     using System;
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
-    using Authenticate;
-    using Parameters;
-    using Shared;
+    using SimpleAuth.Authenticate;
+    using SimpleAuth.Parameters;
+    using SimpleAuth.Shared;
 
     internal static class AuthenticationHeaderValueExtensions
     {

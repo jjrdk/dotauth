@@ -36,7 +36,7 @@
             SearchResourceSet parameter,
             CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
 
             var parameterIds = parameter.Ids;
             var parameterNames = parameter.Names;
@@ -56,7 +56,7 @@
         /// <inheritdoc />
         public async Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Store(OwnedResourceSet.FromResourceSet(resourceSet, owner));
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -65,7 +65,7 @@
         /// <inheritdoc />
         public async Task<ResourceSet?> Get(string owner, string id, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var resourceSet = await session.LoadAsync<OwnedResourceSet>(id, cancellationToken).ConfigureAwait(false);
 
             return resourceSet?.Owner == owner
@@ -76,7 +76,7 @@
         /// <inheritdoc />
         public async Task<string?> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var resourceSets = await session.LoadManyAsync<OwnedResourceSet>(cancellationToken, ids).ConfigureAwait(false);
             var owners = resourceSets.Select(x => x.Owner).Distinct();
 
@@ -86,7 +86,7 @@
         /// <inheritdoc />
         public async Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var existing = await session.LoadAsync<OwnedResourceSet>(resourceSet.Id, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
@@ -105,7 +105,7 @@
         /// <inheritdoc />
         public async Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var resourceSets = await session.Query<OwnedResourceSet>()
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
@@ -116,7 +116,7 @@
         /// <inheritdoc />
         public async Task<bool> Remove(string id, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Delete<OwnedResourceSet>(id);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -125,7 +125,7 @@
         /// <inheritdoc />
         public async Task<ResourceSet[]> Get(CancellationToken cancellationToken = default, params string[] ids)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var resourceSets =
                 await session.LoadManyAsync<OwnedResourceSet>(cancellationToken, ids).ConfigureAwait(false);
 

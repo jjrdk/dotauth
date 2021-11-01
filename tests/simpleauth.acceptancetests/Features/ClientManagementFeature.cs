@@ -3,6 +3,7 @@
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Models;
     using System;
+    using SimpleAuth.Extensions;
     using Xbehave;
     using Xunit;
     using Xunit.Abstractions;

@@ -34,6 +34,7 @@ namespace SimpleAuth.Controllers
     using Shared.Events.Logging;
     using SimpleAuth.Api.Token.Actions;
     using SimpleAuth.Events;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Filters;
     using SimpleAuth.Parameters;
     using SimpleAuth.Properties;

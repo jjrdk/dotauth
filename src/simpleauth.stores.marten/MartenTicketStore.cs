@@ -29,7 +29,7 @@
         /// <inheritdoc />
         public async Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Store(ticket);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -40,7 +40,7 @@
             string ticketId,
             CancellationToken cancellationToken = default)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
             if (ticket == null)
             {
@@ -60,7 +60,7 @@
         /// <inheritdoc />
         public async Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.Delete<Ticket>(ticketId);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
@@ -69,7 +69,7 @@
         /// <inheritdoc />
         public async Task<Ticket?> Get(string ticketId, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
 
             return ticket;
@@ -78,7 +78,7 @@
         /// <inheritdoc />
         public async Task<IReadOnlyList<Ticket>> GetAll(string owner, CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             var now = DateTimeOffset.UtcNow;
             var tickets = await session.Query<Ticket>()
                 .Where(x => x.ResourceOwner == owner && x.Created <= now && x.Expires > now)
@@ -91,7 +91,7 @@
         /// <inheritdoc />
         public async Task Clean(CancellationToken cancellationToken)
         {
-            using var session = _sessionFactory();
+            await using var session = _sessionFactory();
             session.DeleteWhere<Ticket>(t => t.Expires <= DateTimeOffset.UtcNow);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }

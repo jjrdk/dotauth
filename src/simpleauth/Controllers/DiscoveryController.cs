@@ -20,6 +20,7 @@ namespace SimpleAuth.Controllers
     using Shared.Responses;
     using System.Threading;
     using System.Threading.Tasks;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Filters;
 
     /// <summary>

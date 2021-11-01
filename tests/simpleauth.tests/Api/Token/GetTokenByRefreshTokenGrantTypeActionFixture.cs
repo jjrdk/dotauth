@@ -30,6 +30,7 @@ namespace SimpleAuth.Tests.Api.Token
     using System.Threading;
     using System.Threading.Tasks;
     using SimpleAuth.Events;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Properties;
     using SimpleAuth.Repositories;
     using SimpleAuth.Shared.Properties;

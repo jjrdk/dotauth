@@ -8,6 +8,7 @@
     using Microsoft.Extensions.Logging;
     using SimpleAuth.Api.Device;
     using SimpleAuth.Common;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Filters;
     using SimpleAuth.Shared;
     using SimpleAuth.Shared.Repositories;

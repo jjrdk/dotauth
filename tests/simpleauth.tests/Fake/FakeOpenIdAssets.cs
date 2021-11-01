@@ -21,6 +21,7 @@ namespace SimpleAuth.Tests.Fake
     using SimpleAuth;
     using System;
     using System.Collections.Generic;
+    using SimpleAuth.Extensions;
 
     public static class FakeOpenIdAssets
     {

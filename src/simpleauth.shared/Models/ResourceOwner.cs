@@ -27,9 +27,9 @@ namespace SimpleAuth.Shared.Models
         /// <summary>
         /// Get or sets the subject-identifier for the End-User at the issuer.
         /// </summary>
-        public string? Subject
+        public string Subject
         {
-            get => Claims.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value;
+            get => Claims.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value ?? "";
             set
             {
                 if (value == null)

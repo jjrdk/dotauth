@@ -25,6 +25,7 @@ namespace SimpleAuth.Tests.Api.Clients.Actions
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Shared;
     using Xunit;
 

@@ -11,6 +11,7 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Npgsql;
+    using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.UI;
