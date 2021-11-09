@@ -14,9 +14,9 @@
     </PropertyGroup>
     <Import Project="../../shared.projinfo" />
     <ItemGroup>
-        <PackageReference Include="marten" Version="4.0.3" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0-rc.2.21480.5" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0-rc.2.21480.5" />
+        <PackageReference Include="marten" Version="4.0.4" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
