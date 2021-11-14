@@ -13,7 +13,7 @@
     <Import Project="../../shared.projinfo" />
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.0.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
