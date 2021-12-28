@@ -19,18 +19,18 @@
         [Scenario]
         public void SuccessfulClientListing()
         {
-            Client[] clients = null;
+            Client[] clients = null!;
 
             "When getting all clients".x(
                 async () =>
                 {
                     var response =
-                        await _managerClient.GetAllClients(_grantedToken.AccessToken).ConfigureAwait(false) as
+                        await ManagerClient.GetAllClients(GrantedToken.AccessToken).ConfigureAwait(false) as
                             Option<Client[]>.Result;
 
                     Assert.NotNull(response);
 
-                    clients = response.Item;
+                    clients = response!.Item;
                 });
 
             "Then contains list of clients".x(() => { Assert.All(clients, x => { Assert.NotNull(x.ClientId); }); });
@@ -54,7 +54,7 @@
                         GrantTypes = new[] {GrantTypes.ClientCredentials},
                         JsonWebKeys = TestKeys.SuperSecretKey.CreateSignatureJwk().ToSet()
                     };
-                    var response = await _managerClient.AddClient(client, _grantedToken.AccessToken)
+                    var response = await ManagerClient.AddClient(client, GrantedToken.AccessToken)
                         .ConfigureAwait(false);
                 });
         }

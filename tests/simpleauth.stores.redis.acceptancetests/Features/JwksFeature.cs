@@ -21,7 +21,7 @@
         [Scenario]
         public void SuccessfulPermissionCreation()
         {
-            string jwksJson = null;
+            string jwksJson = null!;
 
             "then can download json web key set".x(
                 async () =>
@@ -43,8 +43,8 @@
         [Scenario]
         public void SuccessfulTokenValidationFromMetadata()
         {
-            GrantedTokenResponse tokenResponse = null;
-            JsonWebKeySet jwks = null;
+            GrantedTokenResponse tokenResponse = null!;
+            JsonWebKeySet jwks = null!;
 
             "And a valid token".x(
                 async () =>
@@ -59,7 +59,7 @@
 
                     Assert.NotNull(response);
 
-                    tokenResponse = response.Item;
+                    tokenResponse = response!.Item;
                 });
 
             "then can download json web key set".x(

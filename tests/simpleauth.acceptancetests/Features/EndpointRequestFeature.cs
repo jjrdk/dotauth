@@ -17,7 +17,7 @@
         [Scenario]
         public void CanCallControllerEndpoint()
         {
-            string response = null;
+            string response = null!;
 
             "When calling controller endpoint".x(async () =>
             {

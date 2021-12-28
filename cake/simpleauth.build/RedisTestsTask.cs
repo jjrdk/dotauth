@@ -1,8 +1,8 @@
 namespace SimpleAuth.Build
 {
     using Cake.Common.IO;
-    using Cake.Common.Tools.DotNetCore;
-    using Cake.Common.Tools.DotNetCore.Test;
+    using Cake.Common.Tools.DotNet;
+    using Cake.Common.Tools.DotNet.Test;
     using Cake.Core;
     using Cake.Core.Diagnostics;
     using Cake.Core.IO;
@@ -35,13 +35,13 @@ namespace SimpleAuth.Build
                 var reportName = "./artifacts/testreports/"
                                  + context.BuildVersion
                                  + "_"
-                                 + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_')
+                                 + System.IO.Path.GetFileNameWithoutExtension(project.FullPath)!.Replace('.', '_')
                                  + ".xml";
                 reportName = System.IO.Path.GetFullPath(reportName);
 
                 context.Log.Information(reportName);
 
-                var coreTestSettings = new DotNetCoreTestSettings()
+                var coreTestSettings = new DotNetTestSettings()
                 {
                     NoBuild = true,
                     NoRestore = true,
@@ -50,7 +50,7 @@ namespace SimpleAuth.Build
                     ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
                 };
 
-                context.DotNetCoreTest(project.FullPath, coreTestSettings);
+                context.DotNetTest(project.FullPath, coreTestSettings);
             }
             finally
             {

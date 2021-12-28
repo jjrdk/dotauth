@@ -22,7 +22,7 @@ namespace SimpleAuth.AcceptanceTests
 
     public class SharedContext
     {
-        private static SharedContext ctx = null;
+        private static SharedContext ctx = null!;
 
         private SharedContext()
         {

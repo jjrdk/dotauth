@@ -22,9 +22,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
 
     public class SharedContext
     {
-        private static SharedContext _ctx;
-
-        public static SharedContext Instance => _ctx ??= new SharedContext();
+        public static SharedContext Instance { get; } = new ();
 
         private SharedContext()
         {
@@ -39,7 +37,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
         public JsonWebKey ModelEncryptionKey { get; }
         public JsonWebKey SignatureKey { get; }
         public JsonWebKey ModelSignatureKey { get; }
-        public Func<HttpClient> Client { get; set; }
-        public Func<HttpMessageHandler> Handler { get; set; }
+        public Func<HttpClient> Client { get; set; } = null!;
+        public Func<HttpMessageHandler> Handler { get; set; } = null!;
     }
 }

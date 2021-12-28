@@ -20,7 +20,7 @@
         [Scenario]
         public void RejectAddResourceOwner()
         {
-            Option<AddResourceOwnerResponse>.Error response = null;
+            Option<AddResourceOwnerResponse>.Error response = null!;
 
             "When adding resource owner".x(
                 async () =>
@@ -41,7 +41,7 @@
         [Scenario]
         public void RejectUpdateResourceOwnerPassword()
         {
-            Option.Error response = null;
+            Option.Error response = null!;
 
             "When updating resource owner password".x(
                 async () =>
@@ -62,7 +62,7 @@
         [Scenario]
         public void RejectUpdateResourceOwnerClaims()
         {
-            Option.Error response = null;
+            Option.Error response = null!;
 
             "When updating resource owner password".x(
                 async () =>
@@ -87,7 +87,7 @@
         [Scenario]
         public void RejectDeleteResourceOwner()
         {
-            Option.Error response = null;
+            Option.Error response = null!;
 
             "When deleting resource owner".x(
                 async () =>
@@ -108,7 +108,7 @@
         [Scenario]
         public void RejectedListResourceOwners()
         {
-            Option<ResourceOwner[]>.Error response = null;
+            Option<ResourceOwner[]>.Error response = null!;
 
             "When listing resource owners".x(
                 async () =>

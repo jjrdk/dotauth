@@ -19,7 +19,7 @@
         [Scenario]
         public void SuccessfulLogout()
         {
-            HttpResponseMessage result = null;
+            HttpResponseMessage result = null!;
 
             "when logging out".x(
                 async () =>
@@ -36,7 +36,7 @@
         [Scenario(DisplayName = "Valid local login")]
         public void SuccessfulLocalLogin()
         {
-            HttpResponseMessage result = null;
+            HttpResponseMessage result = null!;
 
             "when posting valid local authorization credentials".x(
                 async () =>
@@ -60,7 +60,7 @@
         [Scenario(DisplayName = "Invalid local login")]
         public void InvalidLocalLogin()
         {
-            HttpResponseMessage result = null;
+            HttpResponseMessage result = null!;
 
             "when posting invalid local authorization credentials".x(
                 async () =>

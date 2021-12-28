@@ -29,11 +29,11 @@
         [Scenario]
         public void SuccessfulPermissionCreation()
         {
-            TestServerFixture fixture = null;
-            GrantedTokenResponse grantedToken = null;
-            UmaClient client = null;
-            string resourceId = null;
-            string ticketId = null;
+            TestServerFixture fixture = null!;
+            GrantedTokenResponse grantedToken = null!;
+            UmaClient client = null!;
+            string resourceId = null!;
+            string ticketId = null!;
 
             "Given a running auth server".x(() => fixture = new TestServerFixture(_outputHelper, BaseUrl))
                 .Teardown(() => fixture.Dispose());
@@ -94,11 +94,11 @@
         [Scenario]
         public void SuccessfulPermissionsCreation()
         {
-            TestServerFixture fixture = null;
-            GrantedTokenResponse grantedToken = null;
-            UmaClient client = null;
-            string resourceId = null;
-            string ticketId = null;
+            TestServerFixture fixture = null!;
+            GrantedTokenResponse grantedToken = null!;
+            UmaClient client = null!;
+            string resourceId = null!;
+            string ticketId = null!;
 
             "Given a running auth server".x(() => fixture = new TestServerFixture(_outputHelper, BaseUrl))
                 .Teardown(() => fixture.Dispose());

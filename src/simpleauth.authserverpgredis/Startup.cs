@@ -76,7 +76,7 @@ namespace SimpleAuth.AuthServerPgRedis
                 Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
                 DeviceAuthorizations = sp => new MartenDeviceAuthorizationStore(sp.GetRequiredService<IDocumentSession>),
                 JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
-                Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _options.TicketLifeTime),
+                Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _options!.TicketLifeTime),
                 Tokens =
                     sp => new RedisTokenStore(
                         sp.GetRequiredService<IDatabaseAsync>()),
@@ -109,10 +109,10 @@ namespace SimpleAuth.AuthServerPgRedis
                 {
                     var options = new SimpleAuthMartenOptions(
                         _configuration["DB:CONNECTIONSTRING"],
-                        new MartenLoggerFacade(provider.GetService<ILogger<MartenLoggerFacade>>()));
+                        new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()));
                     return new DocumentStore(options);
                 });
-            services.AddTransient(sp => sp.GetService<IDocumentStore>().LightweightSession());
+            services.AddTransient(sp => sp.GetRequiredService<IDocumentStore>().LightweightSession());
 
             services.AddSingleton(ConnectionMultiplexer.Connect(_configuration["DB:REDISCONFIG"]));
             services.AddTransient(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
@@ -186,9 +186,9 @@ namespace SimpleAuth.AuthServerPgRedis
                         new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                         assemblies: new[]
                         {
-                            (GetType().Namespace, GetType().Assembly),
-                            (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly),
-                            (typeof(IDefaultSmsUi).Namespace, typeof(IDefaultSmsUi).Assembly)
+                            (GetType().Namespace!, GetType().Assembly),
+                            (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly),
+                            (typeof(IDefaultSmsUi).Namespace!, typeof(IDefaultSmsUi).Assembly)
                         })
                     .AddSmsAuthentication(
                         new AwsSmsClient(
@@ -205,8 +205,8 @@ namespace SimpleAuth.AuthServerPgRedis
                     new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                     assemblies: new[]
                     {
-                        (GetType().Namespace, GetType().Assembly),
-                        (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
+                        (GetType().Namespace!, GetType().Assembly),
+                        (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly)
                     });
             }
         }

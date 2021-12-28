@@ -1,6 +1,6 @@
 namespace SimpleAuth.Build
 {
-    using Cake.Common.Tools.DotNetCore;
+    using Cake.Common.Tools.DotNet;
     using Cake.Frosting;
 
     [TaskName("Restore-Nuget-Packages")]
@@ -10,7 +10,7 @@ namespace SimpleAuth.Build
         /// <inheritdoc />
         public override void Run(BuildContext context)
         {
-            context.DotNetCoreRestore(context.SolutionName);
+            context.DotNetRestore(context.SolutionName);
         }
     }
 }

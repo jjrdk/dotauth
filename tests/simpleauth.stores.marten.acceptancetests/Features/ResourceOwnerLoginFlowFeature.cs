@@ -29,13 +29,13 @@
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulResourceOwnerAuthentication()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(
                     TokenCredentials.FromBasicAuthentication("client", "client"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting token".x(
@@ -55,7 +55,7 @@
                     var tokenHandler = new JwtSecurityTokenHandler();
                     var validationParameters = new TokenValidationParameters
                     {
-                        IssuerSigningKeys = _jwks.GetSigningKeys(),
+                        IssuerSigningKeys = Jwks.GetSigningKeys(),
                         ValidAudience = "client",
                         ValidIssuer = "https://localhost"
                     };
@@ -84,13 +84,13 @@
         [Scenario(DisplayName = "Successful token refresh")]
         public void SuccessfulResourceOwnerRefresh()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly token client".x(
                 () => client = new TokenClient(
                     TokenCredentials.FromBasicAuthentication("client", "client"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
@@ -99,13 +99,13 @@
                     var response = await client
                         .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid", "offline"}, "pwd"))
                         .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-                    result = response.Item;
+                    result = response!.Item;
                 });
 
             "then can get new token from refresh token".x(
                 async () =>
                 {
-                    var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken))
+                    var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken!))
                         .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
                     Assert.NotNull(response);
                 });
@@ -114,13 +114,13 @@
         [Scenario(DisplayName = "Successful token revocation")]
         public void SuccessfulResourceOwnerRevocation()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly token client".x(
                 () => client = new TokenClient(
                     TokenCredentials.FromBasicAuthentication("client", "client"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
@@ -143,13 +143,13 @@
         [Scenario(DisplayName = "Invalid client")]
         public void InvalidClientCredentials()
         {
-            TokenClient client = null;
-            Option<GrantedTokenResponse> result = null;
+            TokenClient client = null!;
+            Option<GrantedTokenResponse> result = null!;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
                     TokenCredentials.FromBasicAuthentication("xxx", "xxx"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(
@@ -166,13 +166,13 @@
         [Scenario(DisplayName = "Invalid user credentials")]
         public void InvalidUserCredentials()
         {
-            TokenClient client = null;
-            Option<GrantedTokenResponse> result = null;
+            TokenClient client = null!;
+            Option<GrantedTokenResponse> result = null!;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
                     TokenCredentials.FromBasicAuthentication("client", "client"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting auth token".x(

@@ -9,6 +9,8 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using LamarCodeGeneration;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Weasel.Core;
     using Weasel.Postgresql;
 
@@ -26,20 +28,27 @@
         /// <param name="autoCreate">Schema creation options</param>
         public SimpleAuthMartenOptions(
             string connectionString,
-            IMartenLogger logger,
+            IMartenLogger? logger = null,
             string searchPath = "",
             AutoCreate autoCreate = AutoCreate.CreateOrUpdate)
         {
             Serializer<CustomJsonSerializer>();
             Connection(connectionString);
-            Logger(logger);
+            if (logger != null)
+            {
+                Logger(logger);
+            }
             Schema.Include<SimpleAuthRegistry>();
             if (!string.IsNullOrWhiteSpace(searchPath))
             {
                 DatabaseSchemaName = searchPath;
             }
 
+            Policies.DisableInformationalFields().AllDocumentsAreMultiTenanted();
             AutoCreateSchemaObjects = autoCreate;
+            GeneratedCodeMode = TypeLoadMode.LoadFromPreBuiltAssembly;
+            Advanced.DuplicatedFieldEnumStorage = EnumStorage.AsString;
+            Advanced.DuplicatedFieldUseTimestampWithoutTimeZoneForDateTime = true;
         }
 
         private class ClaimConverter : JsonConverter<Claim>
@@ -117,7 +126,10 @@
             /// <inheritdoc />
             public T FromJson<T>(DbDataReader reader, int index)
             {
-                throw new NotImplementedException();
+                using var sr = new StringReader(reader.GetString(index));
+                using var r = new JsonTextReader(sr);
+                return _innerSerializer.Deserialize<T>(r)
+                       ?? throw new NullReferenceException("Could not deserialize from DbDataReader");
             }
 
             /// <inheritdoc />
@@ -136,7 +148,11 @@
                 int index,
                 CancellationToken cancellationToken = new())
             {
-                throw new NotImplementedException();
+                using var sr = new StringReader(reader.GetString(index));
+                using var r = new JsonTextReader(sr);
+                var item = _innerSerializer.Deserialize<T>(r)
+                           ?? throw new NullReferenceException("Could not deserialize from stream");
+                return new ValueTask<T>(item);
             }
 
             /// <inheritdoc />
@@ -151,7 +167,10 @@
             /// <inheritdoc />
             public object FromJson(Type type, DbDataReader reader, int index)
             {
-                throw new NotImplementedException();
+                using var sr = new StringReader(reader.GetString(index));
+                using var r = new JsonTextReader(sr);
+                return _innerSerializer.Deserialize(r, type)
+                       ?? throw new NullReferenceException("Could not deserialize from DbDataReader");
             }
 
             /// <inheritdoc />
@@ -171,7 +190,11 @@
                 int index,
                 CancellationToken cancellationToken = new())
             {
-                throw new NotImplementedException();
+                using var sr = new StringReader(reader.GetString(index));
+                using var r = new JsonTextReader(sr);
+                var item = _innerSerializer.Deserialize(r, type)
+                           ?? throw new NullReferenceException("Could not deserialize from stream");
+                return new ValueTask<object>(item);
             }
 
             public string ToCleanJson(object document)
@@ -182,7 +205,7 @@
             /// <inheritdoc />
             public string ToJsonWithTypes(object document)
             {
-                throw new NotImplementedException();
+                return ToJson(document);
             }
 
             public EnumStorage EnumStorage

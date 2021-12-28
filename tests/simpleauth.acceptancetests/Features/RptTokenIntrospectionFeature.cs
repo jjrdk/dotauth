@@ -22,13 +22,13 @@
         [Scenario(DisplayName = "Can use PAT token to introspect RPT token")]
         public void CanGetUserInfoFromPatToken()
         {
-            TokenClient client = null;
-            UmaClient umaClient = null;
-            string patToken = null;
-            string idToken = null;
-            string ticketId = null;
-            string rptToken = null;
-            string resourceId = null;
+            TokenClient client = null!;
+            UmaClient umaClient = null!;
+            string patToken = null!;
+            string idToken = null!;
+            string ticketId = null!;
+            string rptToken = null!;
+            string resourceId = null!;
 
             "Given a token client".x(
                 () =>

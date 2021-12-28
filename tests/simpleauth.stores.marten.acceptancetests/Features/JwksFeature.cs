@@ -20,12 +20,12 @@
         [Scenario]
         public void SuccessfulPermissionCreation()
         {
-            string jwksJson = null;
+            string jwksJson = null!;
 
             "then can download json web key set".x(
                 async () =>
                 {
-                    jwksJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    jwksJson = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
 
                     Assert.NotNull(jwksJson);
                 });
@@ -42,15 +42,15 @@
         [Scenario]
         public void SuccessfulTokenValidationFromMetadata()
         {
-            GrantedTokenResponse tokenResponse = null;
-            JsonWebKeySet jwks = null;
+            GrantedTokenResponse tokenResponse = null!;
+            JsonWebKeySet jwks = null!;
 
             "And a valid token".x(
                 async () =>
                 {
                     var tokenClient = new TokenClient(
                         TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                        _fixture.Client,
+                        Fixture.Client,
                         new Uri(WellKnownOpenidConfiguration));
                     var response =
                         await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
@@ -64,7 +64,7 @@
             "then can download json web key set".x(
                 async () =>
                 {
-                    var jwksJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    var jwksJson = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
 
                     Assert.NotNull(jwksJson);
 

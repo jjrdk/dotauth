@@ -19,13 +19,13 @@
         [Scenario]
         public void SuccessfulAuthorizationCodeGrant()
         {
-            TokenClient client = null;
-            Uri result = null;
+            TokenClient client = null!;
+            Uri result = null!;
 
             "and a properly configured auth client".x(
                 () => client = new TokenClient(
                     TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting authorization".x(
@@ -54,20 +54,20 @@
         [Scenario(DisplayName = "Scope does not match client registration")]
         public void InvalidScope()
         {
-            TokenClient client = null;
-            Option<Uri>.Error result = null;
+            TokenClient client = null!;
+            Option<Uri>.Error result = null!;
 
             "and an improperly configured authorization client".x(
                 () => client = new TokenClient(
                     TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting authorization".x(
                 async () =>
                 {
                     var pkce = CodeChallengeMethods.S256.BuildPkce();
-                    result = await client.GetAuthorization(
+                    result = (await client.GetAuthorization(
                             new AuthorizationRequest(
                                 new[] { "cheese" },
                                 new[] { ResponseTypeNames.Code },
@@ -76,7 +76,7 @@
                                 pkce.CodeChallenge,
                                 CodeChallengeMethods.S256,
                                 "abc"))
-                        .ConfigureAwait(false) as Option<Uri>.Error;
+                        .ConfigureAwait(false) as Option<Uri>.Error)!;
                 });
 
             "then has expected error message".x(() => { Assert.Equal(ErrorCodes.InvalidScope, result.Details.Title); });
@@ -85,13 +85,13 @@
         [Scenario(DisplayName = "Redirect uri does not match client registration")]
         public void InvalidRedirectUri()
         {
-            TokenClient client = null;
-            Option<Uri>.Error result = null;
+            TokenClient client = null!;
+            Option<Uri>.Error result = null!;
 
             "and an improperly configured authorization client".x(
                 () => client = new TokenClient(
                     TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration)));
 
             "when requesting authorization".x(

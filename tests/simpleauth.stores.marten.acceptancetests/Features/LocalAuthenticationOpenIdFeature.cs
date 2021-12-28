@@ -21,11 +21,11 @@
         [Scenario(DisplayName = "Invalid open id code")]
         public void InvalidOpenIdCode()
         {
-            HttpResponseMessage response = null;
-            IDataProtector dataProtector = null;
+            HttpResponseMessage response = null!;
+            IDataProtector dataProtector = null!;
 
             "and a data protector instance".x(
-                () => dataProtector = _fixture.Server.Host.Services.GetService<IDataProtectionProvider>()
+                () => dataProtector = Fixture.Server.Host.Services.GetService<IDataProtectionProvider>()
                     .CreateProtector("Request"));
 
             "When posting code to openid authentication".x(
@@ -34,7 +34,7 @@
                     var authorizationRequest = new AuthorizationRequest {client_id = "client"};
                     var code = Uri.EscapeDataString(Protect(dataProtector, authorizationRequest));
                     var request = new HttpRequestMessage(HttpMethod.Get, BaseUrl + $"/authenticate/openid?code={code}");
-                    response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                    response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "then response has status code OK".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });

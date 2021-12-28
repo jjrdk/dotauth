@@ -47,7 +47,7 @@
         [Scenario(DisplayName = "Local account subject not modified during creation")]
         public void LocalAccountSubjectNotModified()
         {
-            string subject = null;
+            string subject = null!;
 
             "When local account user is added to storage".x(
                 async () =>

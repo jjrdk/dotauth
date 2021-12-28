@@ -12,9 +12,9 @@
         private readonly ITestOutputHelper _output;
         protected const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
         protected const string BaseUrl = "http://localhost:5000";
-        protected TestServerFixture _fixture = null;
-        protected JsonWebKeySet _jwks = null;
-        private string _connectionString = null;
+        protected TestServerFixture _fixture = null!;
+        protected JsonWebKeySet _jwks = null!;
+        private string _connectionString = null!;
 
         public AuthFlowFeature(ITestOutputHelper output)
         {

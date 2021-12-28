@@ -29,12 +29,12 @@
         [Scenario(DisplayName = "Successful ticket authentication")]
         public void SuccessfulTicketAuthentication()
         {
-            GrantedTokenResponse umaToken = null;
-            AddResourceSetResponse resourceSetResponse = null;
-            UmaClient umaClient = null;
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
-            string ticketId = null;
+            GrantedTokenResponse umaToken = null!;
+            AddResourceSetResponse resourceSetResponse = null!;
+            UmaClient umaClient = null!;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
+            string ticketId = null!;
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(
@@ -172,11 +172,11 @@
         [Scenario(DisplayName = "Instance policy ticket authentication")]
         public void DefaultPolicyTicketAuthentication()
         {
-            AddResourceSetResponse resourceSetResponse = null;
-            UmaClient umaClient = null;
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
-            string ticketId = null;
+            AddResourceSetResponse resourceSetResponse = null!;
+            UmaClient umaClient = null!;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
+            string ticketId = null!;
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(
@@ -263,12 +263,12 @@
         [Scenario(DisplayName = "Unsuccessful ticket authentication")]
         public void UnsuccessfulTicketAuthentication()
         {
-            Option<GrantedTokenResponse> ticketResponse = null;
-            AddResourceSetResponse resourceSetResponse = null;
-            UmaClient umaClient = null;
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
-            string ticketId = null;
+            Option<GrantedTokenResponse> ticketResponse = null!;
+            AddResourceSetResponse resourceSetResponse = null!;
+            UmaClient umaClient = null!;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
+            string ticketId = null!;
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(

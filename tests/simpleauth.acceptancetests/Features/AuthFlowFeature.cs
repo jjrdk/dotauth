@@ -33,7 +33,7 @@
                     var keysJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
                     var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(keysJson);
 
-                    _jwks = keys;
+                    _jwks = keys!;
                     Assert.NotEmpty(_jwks?.Keys);
                 });
         }

@@ -17,15 +17,15 @@
         [Scenario]
         public void SuccessScopeLoad()
         {
-            Scope scope = null;
+            Scope scope = null!;
 
             "When requesting existing scope".x(
                 async () =>
                 {
-                    var response = await _managerClient.GetScope("test", _grantedToken.AccessToken)
+                    var response = await ManagerClient.GetScope("test", GrantedToken.AccessToken)
                         .ConfigureAwait(false) as Option<Scope>.Result;
 
-                    scope = response.Item;
+                    scope = response!.Item;
 
                     Assert.NotNull(scope);
                 });

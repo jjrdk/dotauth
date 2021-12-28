@@ -19,7 +19,7 @@
         [Scenario]
         public void SuccessfulClientListing()
         {
-            Client[] clients = null;
+            Client[] clients = null!;
 
             "When getting all clients".x(
                 async () =>

@@ -20,8 +20,8 @@
         [Scenario(DisplayName = "Can get user info for PAT token")]
         public void CanGetUserInfoFromPatToken()
         {
-            TokenClient client = null;
-            string token = null;
+            TokenClient client = null!;
+            string token = null!;
 
             "Given a token client".x(
                 () =>

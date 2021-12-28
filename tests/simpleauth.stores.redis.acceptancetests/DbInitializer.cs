@@ -1,4 +1,5 @@
-﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests
+﻿#nullable enable
+namespace SimpleAuth.Stores.Redis.AcceptanceTests
 {
     using System;
     using System.Collections.Generic;
@@ -19,10 +20,10 @@
         public static async Task<string> Init(
             ITestOutputHelper output,
             string connectionString,
-            IEnumerable<Consent> consents = null,
-            IEnumerable<ResourceOwner> users = null,
-            IEnumerable<Client> clients = null,
-            IEnumerable<Scope> scopes = null)
+            IEnumerable<Consent>? consents = null,
+            IEnumerable<ResourceOwner>? users = null,
+            IEnumerable<Client>? clients = null,
+            IEnumerable<Scope>? scopes = null)
         {
             var builder = new NpgsqlConnectionStringBuilder(connectionString);
             var connection = new NpgsqlConnection(connectionString);
@@ -63,10 +64,10 @@
         private static async Task Seed(
             string connectionString,
             string searchPath,
-            IEnumerable<Consent> consents,
-            IEnumerable<ResourceOwner> users,
-            IEnumerable<Client> clients,
-            IEnumerable<Scope> scopes)
+            IEnumerable<Consent>? consents,
+            IEnumerable<ResourceOwner>? users,
+            IEnumerable<Client>? clients,
+            IEnumerable<Scope>? scopes)
         {
             using var store = new DocumentStore(
                 new SimpleAuthMartenOptions(
@@ -94,3 +95,4 @@
         }
     }
 }
+#nullable disable

@@ -175,9 +175,9 @@ namespace SimpleAuth.AuthServer
                         new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                         assemblies: new[]
                         {
-                            (GetType().Namespace, GetType().Assembly),
-                            (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly),
-                            (typeof(IDefaultSmsUi).Namespace, typeof(IDefaultSmsUi).Assembly)
+                            (GetType().Namespace!, GetType().Assembly),
+                            (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly),
+                            (typeof(IDefaultSmsUi).Namespace!, typeof(IDefaultSmsUi).Assembly)
                         })
                     .AddSmsAuthentication(
                         new AwsSmsClient(
@@ -194,8 +194,8 @@ namespace SimpleAuth.AuthServer
                     new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                     assemblies: new[]
                     {
-                        (GetType().Namespace, GetType().Assembly),
-                        (typeof(IDefaultUi).Namespace, typeof(IDefaultUi).Assembly)
+                        (GetType().Namespace!, GetType().Assembly),
+                        (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly)
                     });
             }
         }

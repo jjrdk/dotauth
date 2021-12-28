@@ -18,11 +18,11 @@
         private readonly ITestOutputHelper _output;
         private const string BaseUrl = "http://localhost";
         private static readonly Uri WellKnownUmaConfiguration = new(BaseUrl + "/.well-known/openid-configuration");
-        private TestServerFixture _fixture = null;
-        protected ManagementClient _managerClient = null;
-        private TokenClient _tokenClient = null;
-        protected GrantedTokenResponse _grantedToken = null;
-        private string _connectionString = null;
+        private TestServerFixture _fixture = null!;
+        protected ManagementClient _managerClient = null!;
+        private TokenClient _tokenClient = null!;
+        protected GrantedTokenResponse _grantedToken = null!;
+        private string _connectionString = null!;
 
         public UnauthorizedManagementFeatureBase(ITestOutputHelper output)
         {

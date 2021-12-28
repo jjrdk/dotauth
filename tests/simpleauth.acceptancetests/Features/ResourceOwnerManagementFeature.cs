@@ -92,7 +92,7 @@
         [Scenario]
         public void CanUpdateOwnClaimsAndRefresh()
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage response = null!;
 
             "When updating user claims".x(
                 async () =>
@@ -143,9 +143,9 @@
         [Scenario]
         public void CanUpdateOwnClaimsAndLogInAgain()
         {
-            HttpResponseMessage response = null;
-            GrantedTokenResponse updatedToken = null;
-            GrantedTokenResponse newToken = null;
+            HttpResponseMessage response = null!;
+            GrantedTokenResponse updatedToken = null!;
+            GrantedTokenResponse newToken = null!;
 
             "When updating user claims".x(
                 async () =>
@@ -218,7 +218,7 @@
         [Scenario]
         public void CanUpdateOwnClaims()
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage response = null!;
 
             "When updating user claims".x(
                 async () =>
@@ -264,7 +264,7 @@
         [Scenario]
         public void CanDeleteOwnClaims()
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage response = null!;
 
             "When deleting user claims".x(
                 async () =>
@@ -302,8 +302,8 @@
         [Scenario]
         public void CannotDeleteClaimsNotPartOfScope()
         {
-            HttpResponseMessage response = null;
-            ResourceOwner resourceOwner = null;
+            HttpResponseMessage response = null!;
+            ResourceOwner resourceOwner = null!;
 
             "When deleting user claims not in scope".x(
                 async () =>
@@ -337,7 +337,7 @@
         [Scenario]
         public void CanUpdateOwnClaimsTwoTimes()
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage response = null!;
 
             "When updating user claims".x(
                 async () =>
@@ -400,7 +400,7 @@
         [Scenario]
         public void CannotUpdateOtherUsersClaims()
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage response = null!;
 
             "When updating user claims".x(
                 async () =>
@@ -430,7 +430,7 @@
         [Scenario]
         public void CanDeleteOwnAccount()
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage response = null!;
 
             "When deleting own account".x(
                 async () =>
@@ -452,7 +452,7 @@
         [Scenario]
         public void AdministratorsCanUpdateOtherUsersClaims()
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage response = null!;
 
             "When updating user claims".x(
                 async () =>

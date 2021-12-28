@@ -17,7 +17,7 @@
         [Scenario]
         public void SuccessScopeLoad()
         {
-            Scope scope = null;
+            Scope scope = null!;
 
             "When requesting existing scope".x(
                 async () =>

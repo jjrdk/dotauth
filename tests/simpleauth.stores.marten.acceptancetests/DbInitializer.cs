@@ -1,4 +1,5 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests
+﻿#nullable enable
+namespace SimpleAuth.Stores.Marten.AcceptanceTests
 {
     using System;
     using System.Collections.Generic;
@@ -18,17 +19,16 @@
         public static async Task<string> Init(
             ITestOutputHelper output,
             string connectionString,
-            IEnumerable<Consent> consents = null,
-            IEnumerable<ResourceOwner> users = null,
-            IEnumerable<Client> clients = null,
-            IEnumerable<Scope> scopes = null)
+            IEnumerable<Consent>? consents = null,
+            IEnumerable<ResourceOwner>? users = null,
+            IEnumerable<Client>? clients = null,
+            IEnumerable<Scope>? scopes = null)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 throw new ArgumentException("Connection string cannot be null or empty", nameof(connectionString));
             }
 
-            var builder = new NpgsqlConnectionStringBuilder(connectionString);
             var connection = new NpgsqlConnection(connectionString);
             await using var _ = connection.ConfigureAwait(false);
             try
@@ -53,7 +53,12 @@
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION simpleauth; ";
                 await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                builder.SearchPath = schema;
+
+                var builder = new NpgsqlConnectionStringBuilder(connectionString)
+                {
+                    Timezone = "UTC",
+                    SearchPath = schema
+                };
 
                 await Seed(builder.ConnectionString, schema, consents, users, clients, scopes).ConfigureAwait(false);
                 return builder.ConnectionString;
@@ -67,17 +72,17 @@
         private static async Task Seed(
             string connectionString,
             string searchPath,
-            IEnumerable<Consent> consents,
-            IEnumerable<ResourceOwner> users,
-            IEnumerable<Client> clients,
-            IEnumerable<Scope> scopes)
+            IEnumerable<Consent>? consents,
+            IEnumerable<ResourceOwner>? users,
+            IEnumerable<Client>? clients,
+            IEnumerable<Scope>? scopes)
         {
             using var store = new DocumentStore(
                 new SimpleAuthMartenOptions(
                     connectionString,
                     new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
                     searchPath));
-            using var session = store.LightweightSession();
+            await using var session = store.LightweightSession();
             if (consents != null) session.Store(consents.ToArray());
             if (users != null) session.Store(users.ToArray());
             if (clients != null) session.Store(clients.ToArray());
@@ -85,16 +90,25 @@
             await session.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public static async Task Drop(string connectionString)
+        public static async Task Drop(string connectionString, ITestOutputHelper outputHelper)
         {
-            NpgsqlConnection.ClearAllPools();
-            var connection = new NpgsqlConnection(connectionString);
-            await using var _ = connection.ConfigureAwait(false);
-            await connection.OpenAsync().ConfigureAwait(false);
-            var builder = new NpgsqlConnectionStringBuilder { ConnectionString = connectionString };
-            var cmd = connection.CreateCommand();
-            cmd.CommandText = $"DROP SCHEMA {builder.SearchPath} CASCADE;";
-            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            try
+            {
+                var connection = new NpgsqlConnection(connectionString);
+                NpgsqlConnection.ClearPool(connection);
+                await using var _ = connection.ConfigureAwait(false);
+                await connection.OpenAsync().ConfigureAwait(false);
+                var builder = new NpgsqlConnectionStringBuilder(connectionString);
+                var cmd = connection.CreateCommand();
+                cmd.CommandText = $"DROP SCHEMA {builder.SearchPath} CASCADE;";
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+            catch(Exception exception)
+            {
+                outputHelper.WriteLine(exception.Message);
+            }
         }
     }
 }
+#nullable disable

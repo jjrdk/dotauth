@@ -132,7 +132,7 @@ namespace SimpleAuth.JwtToken
         public async Task<Option<JwtPayload>> GenerateIdTokenPayloadForScopes(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
-            string issuerName,
+            string? issuerName,
             CancellationToken cancellationToken)
         {
             if (claimsPrincipal.Identity == null || !claimsPrincipal.IsAuthenticated())
@@ -165,7 +165,7 @@ namespace SimpleAuth.JwtToken
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
             ClaimParameter[] claimParameters,
-            string issuerName,
+            string? issuerName,
             CancellationToken cancellationToken)
         {
             if (claimsPrincipal.Identity == null || !claimsPrincipal.IsAuthenticated())
@@ -328,13 +328,12 @@ namespace SimpleAuth.JwtToken
                 var isClaimValid = ValidateClaimValue(resourceOwnerClaim?.Value, resourceOwnerClaimParameter);
                 if (!isClaimValid)
                 {
-                    var message = string.Format(Strings.TheClaimIsNotValid, resourceOwnerClaimParameter.Name);
-                    _logger.LogError(message);
+                    _logger.LogError(Strings.TheClaimIsNotValid, resourceOwnerClaimParameter.Name);
                     return new Option<JwtPayload>.Error(
                         new ErrorDetails
                         {
                             Title = ErrorCodes.InvalidGrant,
-                            Detail = message,
+                            Detail = string.Format(Strings.TheClaimIsNotValid, resourceOwnerClaimParameter.Name),
                             Status = HttpStatusCode.BadRequest
                         },
                         state);
@@ -351,14 +350,14 @@ namespace SimpleAuth.JwtToken
             AuthorizationParameter authorizationParameter,
             ClaimParameter[] claimParameters,
             ClaimsPrincipal claimsPrincipal,
-            string issuerName,
+            string? issuerName,
             CancellationToken cancellationToken)
         {
             var nonce = authorizationParameter.Nonce;
             var state = authorizationParameter.State;
             var clientId = authorizationParameter.ClientId!;
             var maxAge = authorizationParameter.MaxAge;
-            var amrValues = authorizationParameter.AmrValues;
+            //var amrValues = authorizationParameter.AmrValues;
             var cl = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
             var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Issuer);
             var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Audiences);
@@ -517,7 +516,7 @@ namespace SimpleAuth.JwtToken
         private Option<JwtPayload> CreateClaimError(string claimName, string? state)
         {
             var message = string.Format(Strings.TheClaimIsNotValid, claimName);
-            _logger.LogError(message);
+            _logger.LogError(Strings.TheClaimIsNotValid, claimName);
             return new Option<JwtPayload>.Error(
                 new ErrorDetails { Title = ErrorCodes.InvalidGrant, Detail = message, Status = HttpStatusCode.BadRequest },
                 state);

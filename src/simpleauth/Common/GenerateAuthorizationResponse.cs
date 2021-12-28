@@ -67,7 +67,7 @@ namespace SimpleAuth.Common
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,
             Client client,
-            string issuerName,
+            string? issuerName,
             CancellationToken cancellationToken)
         {
             var allowedTokenScopes = string.Empty;
@@ -317,7 +317,7 @@ namespace SimpleAuth.Common
         private async Task<Option<JwtPayload>> GenerateIdTokenPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter,
-            string issuerName,
+            string? issuerName,
             CancellationToken cancellationToken)
         {
             return authorizationParameter.Claims != null

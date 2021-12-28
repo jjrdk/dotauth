@@ -46,7 +46,7 @@
                     Title = ErrorMessages.NotFound,
                     Status = HttpStatusCode.NotFound
                 },
-                _ => request!
+                _ => request
             };
         }
 
@@ -66,7 +66,7 @@
                     Title = ErrorMessages.NotFound,
                     Status = HttpStatusCode.NotFound
                 },
-                _ => request!
+                _ => request
             };
         }
 

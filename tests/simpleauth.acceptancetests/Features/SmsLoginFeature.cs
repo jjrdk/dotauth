@@ -23,8 +23,8 @@
         [Scenario(DisplayName = "Successfully receive token using sms login")]
         public void SuccessfulSmsAuthentication()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(

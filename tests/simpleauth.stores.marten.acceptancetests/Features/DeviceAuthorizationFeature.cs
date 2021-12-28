@@ -27,7 +27,7 @@
         [Scenario(DisplayName = "Can get device authorization endpoint from discovery document")]
         public void CanGetDeviceAuthorizationEndpointFromDiscoveryDocument()
         {
-            DiscoveryInformation doc = null;
+            DiscoveryInformation doc = null!;
 
             "When requesting discovery document".x(
                 async () =>
@@ -39,7 +39,7 @@
                     };
                     request.Headers.Accept.Clear();
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                    var response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
 
                     var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -57,17 +57,17 @@
         public void ExecuteDeviceAuthorizationFlowWithUserApproval()
         {
             const string clientId = "device";
-            ITokenClient tokenClient = null;
-            DeviceAuthorizationResponse response = null;
-            GrantedTokenResponse token = null;
-            Task<Option<GrantedTokenResponse>> pollingTask = null;
+            ITokenClient tokenClient = null!;
+            DeviceAuthorizationResponse response = null!;
+            GrantedTokenResponse token = null!;
+            Task<Option<GrantedTokenResponse>> pollingTask = null!;
 
             "Given a token client".x(
                 () =>
                 {
                     tokenClient = new TokenClient(
                         TokenCredentials.AsDevice(),
-                        _fixture.Client,
+                        Fixture.Client,
                         new Uri(WellKnownOpenidConfiguration));
 
                     Assert.NotNull(tokenClient);
@@ -78,7 +78,7 @@
                 {
                     var authClient = new TokenClient(
                         TokenCredentials.FromClientCredentials(clientId, "client"),
-                        _fixture.Client,
+                        Fixture.Client,
                         new Uri(WellKnownOpenidConfiguration));
                     var tokenResponse = await authClient.GetToken(
                             TokenRequest.FromPassword("user", "password", new[] { "openid" }))
@@ -112,7 +112,7 @@
             "and user successfully posts user code".x(
                 async () =>
                 {
-                    var client = _fixture.Client();
+                    var client = Fixture.Client();
                     var msg = new HttpRequestMessage
                     {
                         Method = HttpMethod.Post,
@@ -140,17 +140,17 @@
         public void ExecuteDeviceAuthorizationFlowWithUserApprovalWhenPolledTooFast()
         {
             const string clientId = "device";
-            ITokenClient tokenClient = null;
-            DeviceAuthorizationResponse response = null;
-            GrantedTokenResponse token = null;
-            Task<Option<GrantedTokenResponse>> pollingTask = null;
+            ITokenClient tokenClient = null!;
+            DeviceAuthorizationResponse response = null!;
+            GrantedTokenResponse token = null!;
+            Task<Option<GrantedTokenResponse>> pollingTask = null!;
 
             "Given a token client".x(
                 () =>
                 {
                     tokenClient = new TokenClient(
                         TokenCredentials.AsDevice(),
-                        _fixture.Client,
+                        Fixture.Client,
                         new Uri(WellKnownOpenidConfiguration));
 
                     Assert.NotNull(tokenClient);
@@ -161,7 +161,7 @@
                 {
                     var authClient = new TokenClient(
                         TokenCredentials.FromClientCredentials(clientId, "client"),
-                        _fixture.Client,
+                        Fixture.Client,
                         new Uri(WellKnownOpenidConfiguration));
                     var tokenResponse = await authClient.GetToken(
                             TokenRequest.FromPassword("user", "password", new[] { "openid" }))
@@ -206,7 +206,7 @@
             "and user successfully posts user code".x(
                 async () =>
                 {
-                    var client = _fixture.Client();
+                    var client = Fixture.Client();
                     var msg = new HttpRequestMessage
                     {
                         Method = HttpMethod.Post,
@@ -234,15 +234,15 @@
         public void ExecuteDeviceAuthorizationAfterExpiry()
         {
             const string clientId = "device";
-            ITokenClient tokenClient = null;
-            DeviceAuthorizationResponse response = null;
+            ITokenClient tokenClient = null!;
+            DeviceAuthorizationResponse response = null!;
 
             "Given a token client".x(
                 () =>
                 {
                     tokenClient = new TokenClient(
                         TokenCredentials.AsDevice(),
-                        _fixture.Client,
+                        Fixture.Client,
                         new Uri(WellKnownOpenidConfiguration));
 
                     Assert.NotNull(tokenClient);
@@ -259,7 +259,7 @@
                     response = genericResponse.Item;
                 });
 
-            Option<GrantedTokenResponse> expiredPoll = null;
+            Option<GrantedTokenResponse> expiredPoll = null!;
 
             "and the device polls the token server after expiry".x(
                 async () =>

@@ -50,16 +50,7 @@ namespace SimpleAuth.Tests.WebSite.Authenticate
                 new NoOpPublisher(),
                 new TestOutputLogger("test", outputHelper));
         }
-
-        [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            await Assert
-                .ThrowsAsync<NullReferenceException>(
-                    () => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null, null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
+        
         [Fact]
         public async Task When_No_Resource_Owner_Is_Passed_Then_Redirect_To_Index_Page()
         {

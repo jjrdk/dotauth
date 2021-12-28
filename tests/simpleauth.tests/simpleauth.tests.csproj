@@ -6,7 +6,7 @@
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         <RootNamespace>SimpleAuth.Tests</RootNamespace>
     </PropertyGroup>
-    <Import Project="../../shared.projinfo" />
+    <!--<Import Project="../../shared.projinfo" />-->
     <ItemGroup>
         <None Include="..\..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>

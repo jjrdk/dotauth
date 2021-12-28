@@ -18,7 +18,7 @@
         [Scenario]
         public void RejectedScopeLoad()
         {
-            Option<Scope>.Error scope = null;
+            Option<Scope>.Error scope = null!;
 
             "When requesting existing scope".x(
                 async () =>
@@ -33,7 +33,7 @@
         [Scenario]
         public void RejectedAddScope()
         {
-            Option<Scope>.Error scope = null;
+            Option<Scope>.Error scope = null!;
 
             "When adding new scope".x(
                 async () =>

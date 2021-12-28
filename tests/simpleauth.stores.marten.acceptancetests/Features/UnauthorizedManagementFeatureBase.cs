@@ -14,11 +14,11 @@
         private readonly ITestOutputHelper _output;
         private const string BaseUrl = "http://localhost";
         private static readonly Uri WellKnownUmaConfiguration = new(BaseUrl + "/.well-known/openid-configuration");
-        protected TestServerFixture _fixture = null;
-        protected ManagementClient _managerClient = null;
-        protected TokenClient _tokenClient = null;
-        protected GrantedTokenResponse _grantedToken = null;
-        protected string _connectionString = null;
+        protected TestServerFixture Fixture = null!;
+        protected ManagementClient ManagerClient = null!;
+        protected TokenClient TokenClient = null!;
+        protected GrantedTokenResponse GrantedToken = null!;
+        protected string ConnectionString = null!;
 
         public UnauthorizedManagementFeatureBase(ITestOutputHelper output)
         {
@@ -33,41 +33,41 @@
                 {
                     var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false)
                         .Build();
-                    _connectionString = configuration["Db:ConnectionString"];
+                    ConnectionString = configuration["Db:ConnectionString"];
 
-                    Assert.NotNull(_connectionString);
+                    Assert.NotNull(ConnectionString);
                 });
 
             "Given a configured database".x(
                     async () =>
                     {
-                        _connectionString = await DbInitializer.Init(
+                        ConnectionString = await DbInitializer.Init(
                                 _output,
-                                _connectionString,
+                                ConnectionString,
                                 DefaultStores.Consents(),
                                 DefaultStores.Users(),
                                 DefaultStores.Clients(SharedContext.Instance),
                                 DefaultStores.Scopes())
                             .ConfigureAwait(false);
                     })
-                .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
+                .Teardown(async () => { await DbInitializer.Drop(ConnectionString, _output).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(_output, _connectionString, BaseUrl))
-                .Teardown(() => _fixture.Dispose());
+            "and a running auth server".x(() => Fixture = new TestServerFixture(_output, ConnectionString, BaseUrl))
+                .Teardown(() => Fixture.Dispose());
 
             "and a manager client".x(
                 async () =>
                 {
-                    _managerClient = await ManagementClient.Create(_fixture.Client, WellKnownUmaConfiguration)
+                    ManagerClient = await ManagementClient.Create(Fixture.Client, WellKnownUmaConfiguration)
                         .ConfigureAwait(false);
                 });
 
             "and a token client".x(
                 () =>
                 {
-                    _tokenClient = new TokenClient(
+                    TokenClient = new TokenClient(
                         TokenCredentials.FromClientCredentials("admin_client", "admin_client"),
-                        _fixture.Client,
+                        Fixture.Client,
                         WellKnownUmaConfiguration);
                 });
 
@@ -75,12 +75,12 @@
                 async () =>
                 {
                     var result =
-                        await _tokenClient.GetToken(TokenRequest.FromScopes("admin")).ConfigureAwait(false) as
+                        await TokenClient.GetToken(TokenRequest.FromScopes("admin")).ConfigureAwait(false) as
                             Option<GrantedTokenResponse>.Result;
 
                     Assert.NotNull(result.Item);
 
-                    _grantedToken = result.Item;
+                    GrantedToken = result.Item;
                 });
         }
     }

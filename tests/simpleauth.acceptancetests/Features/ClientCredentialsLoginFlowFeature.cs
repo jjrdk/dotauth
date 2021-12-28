@@ -22,8 +22,8 @@
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulClientCredentialsAuthentication()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(
@@ -69,8 +69,8 @@
         [Scenario(DisplayName = "Successful token refresh")]
         public void SuccessfulResourceOwnerRefresh()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly token client".x(
                 () => client = new TokenClient(
@@ -101,8 +101,8 @@
         [Scenario(DisplayName = "Successful token revocation")]
         public void SuccessfulResourceOwnerRevocation()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly token client".x(
                 () => client = new TokenClient(
@@ -133,8 +133,8 @@
         [Scenario(DisplayName = "Invalid client")]
         public void InvalidClientCredentials()
         {
-            TokenClient client = null;
-            Option<GrantedTokenResponse> result = null;
+            TokenClient client = null!;
+            Option<GrantedTokenResponse> result = null!;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(

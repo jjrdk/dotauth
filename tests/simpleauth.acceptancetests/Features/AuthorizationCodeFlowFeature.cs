@@ -21,8 +21,8 @@
         [Scenario]
         public void SuccessfulAuthorizationCodeGrant()
         {
-            TokenClient client = null;
-            Uri result = null;
+            TokenClient client = null!;
+            Uri result = null!;
 
             "and a properly configured auth client".x(
                 () => client = new TokenClient(
@@ -62,8 +62,8 @@
         [Scenario(DisplayName = "Scope does not match client registration")]
         public void InvalidScope()
         {
-            TokenClient client = null;
-            Option<Uri>.Error result = null;
+            TokenClient client = null!;
+            Option<Uri>.Error result = null!;
 
             "and an improperly configured authorization client".x(
                 () => client = new TokenClient(
@@ -93,8 +93,8 @@
         [Scenario(DisplayName = "Redirect uri does not match client registration")]
         public void InvalidRedirectUri()
         {
-            TokenClient client = null;
-            Option<Uri>.Error result = null;
+            TokenClient client = null!;
+            Option<Uri>.Error result = null!;
 
             "and an improperly configured authorization client".x(
                 () => client = new TokenClient(

@@ -29,15 +29,15 @@
             _martenOptions = new SimpleAuthOptions
             {
                 AdministratorRoleDefinition = default,
-                Clients = sp => new MartenClientStore(sp.GetService<Func<IDocumentSession>>()),
+                Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>()),
                 JsonWebKeys = sp =>
                 {
                     var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
-                Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
-                Consents = sp => new MartenConsentRepository(sp.GetService<Func<IDocumentSession>>()),
-                Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetService<Func<IDocumentSession>>()),
+                Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<Func<IDocumentSession>>()),
+                Consents = sp => new MartenConsentRepository(sp.GetRequiredService<Func<IDocumentSession>>()),
+                Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetRequiredService<Func<IDocumentSession>>()),
                 DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5),
                 DevicePollingInterval = TimeSpan.FromSeconds(3)
             };
@@ -61,7 +61,7 @@
             services.AddTransient<Func<IDocumentSession>>(
                 sp =>
                 {
-                    var store = sp.GetService<IDocumentStore>();
+                    var store = sp.GetRequiredService<IDocumentStore>();
                     return () => store.LightweightSession();
                 });
 

@@ -40,24 +40,7 @@
                 new NoOpPublisher(),
                 new TestOutputLogger("test", outputHelper));
         }
-
-        [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            await Assert
-                .ThrowsAsync<NullReferenceException>(
-                    () => _confirmConsentAction.Execute(null, null, null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
-        {
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                    () => _confirmConsentAction.Execute(new AuthorizationParameter(), null, null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
+        
         [Fact]
         public async Task When_No_Consent_Has_Been_Given_And_ResponseMode_Is_No_Correct_Then_Exception_Is_Thrown()
         {
@@ -86,11 +69,11 @@
             var exception = await _confirmConsentAction.Execute(
                         authorizationParameter,
                         claimsPrincipal,
-                        null,
+                        "null",
                         CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Equal(ErrorCodes.InvalidRequest, exception.Error.Title);
+            Assert.Equal(ErrorCodes.InvalidRequest, exception.Error!.Title);
             Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, exception.Error.Detail);
         }
 
@@ -129,10 +112,10 @@
                 .Callback<Consent, CancellationToken>((consent, token) => insertedConsent = consent)
                 .ReturnsAsync(true);
 
-            await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
+            await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, "null", CancellationToken.None)
                 .ConfigureAwait(false);
 
-            Assert.Contains(OpenIdClaimTypes.Subject, insertedConsent.Claims);
+            Assert.Contains(OpenIdClaimTypes.Subject, insertedConsent!.Claims);
             Assert.Equal(subject, insertedConsent.Subject);
             Assert.Equal(clientId, insertedConsent.ClientId);
         }
@@ -161,11 +144,11 @@
                 .ReturnsAsync(Array.Empty<Scope>());
 
             var result = await _confirmConsentAction
-                .Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
+                .Execute(authorizationParameter, claimsPrincipal, "null", CancellationToken.None)
                 .ConfigureAwait(false);
 
             _consentRepositoryFake.Verify(c => c.Insert(It.IsAny<Consent>(), It.IsAny<CancellationToken>()));
-            Assert.Equal(ResponseModes.Query, result.RedirectInstruction.ResponseMode);
+            Assert.Equal(ResponseModes.Query, result.RedirectInstruction!.ResponseMode);
         }
     }
 }

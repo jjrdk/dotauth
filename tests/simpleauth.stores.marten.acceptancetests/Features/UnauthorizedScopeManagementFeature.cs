@@ -18,12 +18,12 @@
         [Scenario]
         public void RejectedScopeLoad()
         {
-            Option<Scope>.Error scope = null;
+            Option<Scope>.Error scope = null!;
 
             "When requesting existing scope".x(
                 async () =>
                 {
-                    scope = await _managerClient.GetScope("test", _grantedToken.AccessToken)
+                    scope = await ManagerClient.GetScope("test", GrantedToken.AccessToken)
                         .ConfigureAwait(false) as Option<Scope>.Error;
                 });
 
@@ -33,14 +33,14 @@
         [Scenario]
         public void RejectedAddScope()
         {
-            Option<Scope>.Error scope = null;
+            Option<Scope>.Error scope = null!;
 
             "When adding new scope".x(
                 async () =>
                 {
-                    scope = await _managerClient.AddScope(
+                    scope = await ManagerClient.AddScope(
                             new Scope {Name = "test", Claims = new[] {"openid"}},
-                            _grantedToken.AccessToken)
+                            GrantedToken.AccessToken)
                         .ConfigureAwait(false) as Option<Scope>.Error;
                 });
 

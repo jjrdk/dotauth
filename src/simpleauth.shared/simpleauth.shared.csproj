@@ -2,18 +2,18 @@
 	<PropertyGroup>
 		<Description>SimpleAuth Shared Library</Description>
 		<Title>SimpleAuth Shared</Title>
-		<TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
 		<AssemblyName>simpleauth.shared</AssemblyName>
 		<PackageId>simpleauth.shared</PackageId>
 		<RootNamespace>SimpleAuth.Shared</RootNamespace>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\net5.0\$(PackageId).xml</DocumentationFile>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+		<DocumentationFile>bin\$(Configuration)\net6.0\$(PackageId).xml</DocumentationFile>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors />
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors />
 	</PropertyGroup>
@@ -21,7 +21,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.0" />
 	</ItemGroup>
 
 	<ItemGroup>

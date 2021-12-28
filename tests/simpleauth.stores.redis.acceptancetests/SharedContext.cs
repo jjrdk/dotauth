@@ -22,9 +22,7 @@ namespace SimpleAuth.Stores.Redis.AcceptanceTests
 
     public class SharedContext
     {
-        private static SharedContext _ctx;
-
-        public static SharedContext Instance => _ctx ??= new SharedContext();
+        public static SharedContext Instance { get; } = new();
 
         private SharedContext()
         {

@@ -1,7 +1,7 @@
 namespace SimpleAuth.Build
 {
-    using Cake.Common.Tools.DotNetCore;
-    using Cake.Common.Tools.DotNetCore.Publish;
+    using Cake.Common.Tools.DotNet;
+    using Cake.Common.Tools.DotNet.Publish;
     using Cake.Frosting;
 
     [TaskName("Publish-Windows-App")]
@@ -11,7 +11,7 @@ namespace SimpleAuth.Build
         /// <inheritdoc />
         public override void Run(BuildContext context)
         {
-            var winPublishSettings = new DotNetCorePublishSettings
+            var winPublishSettings = new DotNetPublishSettings
             {
                 PublishTrimmed = false,
                 Runtime = "win-x64",
@@ -20,7 +20,7 @@ namespace SimpleAuth.Build
                 OutputDirectory = "./artifacts/publish/winx64/"
             };
 
-            context.DotNetCorePublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", winPublishSettings);
+            context.DotNetPublish("./src/simpleauth.authserver/simpleauth.authserver.csproj", winPublishSettings);
         }
     }
 }

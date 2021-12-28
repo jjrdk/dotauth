@@ -25,7 +25,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
 
     public class EndpointFixture : IDisposable
     {
-        protected readonly ITestOutputHelper _outputHelper;
+        private readonly ITestOutputHelper _outputHelper;
         private const string BaseUrl = "http://localhost:5000";
         private readonly TestServerFixture _server;
         private readonly string _connectionString;
@@ -77,7 +77,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
             _server?.Dispose();
             _outputHelper.WriteLine("Dropping db with connection string");
             _outputHelper.WriteLine(_connectionString);
-            DbInitializer.Drop(_connectionString).Wait();
+            DbInitializer.Drop(_connectionString, _outputHelper).Wait();
         }
     }
 }

@@ -20,7 +20,7 @@
         [Scenario(DisplayName = "Manager created user")]
         public void ManagerCreatedUser()
         {
-            GrantedTokenResponse userToken = null;
+            GrantedTokenResponse userToken = null!;
 
             "When manager creates user".x(
                 async () =>

@@ -22,8 +22,8 @@
         [Scenario(DisplayName = "Invalid open id code")]
         public void InvalidOpenIdCode()
         {
-            HttpResponseMessage response = null;
-            IDataProtector dataProtector = null;
+            HttpResponseMessage response = null!;
+            IDataProtector dataProtector = null!;
 
             "and a data protector instance".x(
                 () => dataProtector = _fixture.Server.Host.Services.GetRequiredService<IDataProtectionProvider>()

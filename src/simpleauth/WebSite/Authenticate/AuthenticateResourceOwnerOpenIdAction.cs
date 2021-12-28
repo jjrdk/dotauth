@@ -64,9 +64,9 @@ namespace SimpleAuth.WebSite.Authenticate
         /// <returns>Action resultKind to the controller's action</returns>
         public async Task<EndpointResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal resourceOwnerPrincipal,
-            string code,
-            string issuerName,
+            ClaimsPrincipal? resourceOwnerPrincipal,
+            string? code,
+            string? issuerName,
             CancellationToken cancellationToken)
         {
             var resourceOwnerIsAuthenticated = resourceOwnerPrincipal.IsAuthenticated();
@@ -77,7 +77,7 @@ namespace SimpleAuth.WebSite.Authenticate
                 && !promptParameters.Contains(PromptParameters.Login))
             {
                 var subject = resourceOwnerPrincipal.GetSubject()!;
-                var claims = resourceOwnerPrincipal.Claims.ToArray();
+                var claims = resourceOwnerPrincipal!.Claims.ToArray();
                 return await _authenticateHelper.ProcessRedirection(
                         authorizationParameter,
                         code,

@@ -1,7 +1,9 @@
 namespace SimpleAuth.Build
 {
-    using System.Collections.Generic;
-    using Cake.Common.Tools.MSBuild;
+    using Cake.Common.Tools.DotNet;
+    using Cake.Common.Tools.DotNet.Build;
+    using Cake.Common.Tools.DotNet.MSBuild;
+    using Cake.Common.Tools.DotNetCore.MSBuild;
     using Cake.Frosting;
 
     [TaskName("Build")]
@@ -11,13 +13,31 @@ namespace SimpleAuth.Build
         /// <inheritdoc />
         public override void Run(BuildContext context)
         {
-            var buildSettings = new MSBuildSettings().SetConfiguration(context.BuildConfiguration);
-            buildSettings.Properties.Add("Version", new List<string> { context.BuildVersion });
-            buildSettings.Properties.Add("InformationalVersion", new List<string> { context.InformationalVersion });
-            //.SetVersion(context.BuildVersion)
-            //.SetInformationalVersion(context.InformationalVersion);
-            context.MSBuild(context.SolutionName);
-            //context.DotNetCoreMSBuild(context.SolutionName, buildSettings);
+            var buildSettings =
+                new DotNetBuildSettings
+                {
+                    Configuration = context.BuildConfiguration,
+                    MSBuildSettings = new DotNetMSBuildSettings
+                    {
+                        AssemblyVersion = context.InformationalVersion,
+                        Version = context.BuildVersion,
+                        FileVersion = context.InformationalVersion,
+                        InformationalVersion = context.InformationalVersion,
+                        PackageVersion = context.BuildVersion,
+                        TreatAllWarningsAs = MSBuildTreatAllWarningsAs.Error,
+                        WarningCodesAsMessage =
+                        {
+                            "618",
+                            "1701",
+                            "CS8600",
+                            "CS8602",
+                            "CS8603",
+                            "NU1608"
+                        }
+                    }
+                };
+
+            context.DotNetBuild(context.SolutionName, buildSettings);
         }
     }
 }

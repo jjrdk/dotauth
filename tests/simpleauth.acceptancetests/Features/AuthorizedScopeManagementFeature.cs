@@ -17,7 +17,7 @@
         [Scenario]
         public void SuccessScopeLoad()
         {
-            Scope scope = null;
+            Scope scope = null!;
 
             "When requesting existing scope".x(
                 async () =>
@@ -27,7 +27,7 @@
 
                     Assert.NotNull(response);
 
-                    scope = response.Item;
+                    scope = response!.Item;
                 });
 
             "then scope information is returned".x(() => { Assert.Equal("test", scope.Name); });

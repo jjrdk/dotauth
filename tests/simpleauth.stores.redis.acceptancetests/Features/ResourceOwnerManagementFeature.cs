@@ -19,7 +19,7 @@
         [Scenario]
         public void SuccessAddResourceOwner()
         {
-            string subject = null;
+            string subject = null!;
 
             "When adding resource owner".x(
                 async () =>

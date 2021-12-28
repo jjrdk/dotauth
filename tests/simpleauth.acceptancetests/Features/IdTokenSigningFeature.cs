@@ -23,8 +23,8 @@
         [Scenario]
         public void WhenClientHasNoSigningKeysThenUsesServerKey()
         {
-            TokenClient client = null;
-            GrantedTokenResponse token = null;
+            TokenClient client = null!;
+            GrantedTokenResponse token = null!;
 
             "Given a token client".x(
                 () =>

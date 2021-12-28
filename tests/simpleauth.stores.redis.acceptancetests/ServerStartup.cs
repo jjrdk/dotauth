@@ -35,22 +35,22 @@
                 AuthorizationCodes =
                     sp => new RedisAuthorizationCodeStore(
                         sp.GetRequiredService<IDatabaseAsync>(),
-                        _martenOptions.AuthorizationCodeValidityPeriod),
-                Clients = sp => new MartenClientStore(sp.GetService<Func<IDocumentSession>>()),
+                        _martenOptions!.AuthorizationCodeValidityPeriod),
+                Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>()),
                 ConfirmationCodes =
                     sp => new RedisConfirmationCodeStore(
                         sp.GetRequiredService<IDatabaseAsync>(),
-                        _martenOptions.RptLifeTime),
+                        _martenOptions!.RptLifeTime),
                 Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
                 JsonWebKeys = sp =>
                 {
                     var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
                 },
-                Scopes = sp => new MartenScopeRepository(sp.GetService<Func<IDocumentSession>>()),
-                Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetService<Func<IDocumentSession>>()),
+                Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<Func<IDocumentSession>>()),
+                Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetRequiredService<Func<IDocumentSession>>()),
                 Tickets =
-                    sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _martenOptions.TicketLifeTime),
+                    sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _martenOptions!.TicketLifeTime),
                 Tokens = sp => new RedisTokenStore(
                     sp.GetRequiredService<IDatabaseAsync>())
             };
@@ -76,7 +76,7 @@
             services.AddTransient<Func<IDocumentSession>>(
                 sp =>
                 {
-                    var store = sp.GetService<IDocumentStore>();
+                    var store = sp.GetRequiredService<IDocumentStore>();
                     return () => store.LightweightSession();
                 });
             // 1. Add the dependencies needed to enable CORS

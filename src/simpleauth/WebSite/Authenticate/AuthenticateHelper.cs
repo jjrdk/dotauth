@@ -53,10 +53,10 @@
 
         public async Task<EndpointResult> ProcessRedirection(
             AuthorizationParameter authorizationParameter,
-            string code,
+            string? code,
             string subject,
             Claim[] claims,
-            string issuerName,
+            string? issuerName,
             CancellationToken cancellationToken)
         {
             var client = authorizationParameter.ClientId == null
@@ -71,7 +71,7 @@
             // Redirect to the consent page if the prompt parameter contains "consent"
             EndpointResult result;
             var prompts = authorizationParameter.Prompt.ParsePrompts();
-            if (prompts.Contains(PromptParameters.Consent))
+            if (prompts.Contains(PromptParameters.Consent) && code != null)
             {
                 return EndpointResult.CreateAnEmptyActionResultWithRedirection(
                     SimpleAuthEndPoints.ConsentIndex,
@@ -124,7 +124,7 @@
             // If there's no consent & there's no consent prompt then redirect to the consent screen.
             return EndpointResult.CreateAnEmptyActionResultWithRedirection(
                 SimpleAuthEndPoints.ConsentIndex,
-                new Parameter("code", code));
+                new Parameter("code", code ?? ""));
         }
 
         private Option<AuthorizationFlow> GetAuthorizationFlow(string? state, params string[] responseTypes)

@@ -3,15 +3,15 @@
 	<PropertyGroup>
 		<Description>SimpleAuth Client</Description>
 		<Title>SimpleAuth Client</Title>
-		<TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
 		<AssemblyName>simpleauth.client</AssemblyName>
 		<PackageId>simpleauth.client</PackageId>
 		<RootNamespace>SimpleAuth.Client</RootNamespace>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\net5.0\$(PackageId).xml</DocumentationFile>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+		<DocumentationFile>bin\$(Configuration)\net6.0\$(PackageId).xml</DocumentationFile>
 	</PropertyGroup>
 
 	<Import Project="../../shared.projinfo" />

@@ -37,8 +37,8 @@
         [Scenario(DisplayName = "Successful authorization")]
         public void SuccessfulResourceOwnerAuthentication()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(
@@ -93,8 +93,8 @@
         [Scenario(DisplayName = "UserInfo after successful authorization")]
         public void UserinfoAfterSuccessfulResourceOwnerAuthentication()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(
@@ -144,9 +144,9 @@
         [Scenario(DisplayName = "Successful claims update")]
         public void SuccessfulResourceOwnerClaimsUpdate()
         {
-            TokenClient client = null;
-            GrantedTokenResponse tokenResponse = null;
-            HttpResponseMessage updateResponse = null;
+            TokenClient client = null!;
+            GrantedTokenResponse tokenResponse = null!;
+            HttpResponseMessage updateResponse = null!;
 
             "and a properly configured token client".x(
                 () => client = new TokenClient(
@@ -206,9 +206,9 @@
         [Scenario(DisplayName = "Successful token refresh")]
         public void SuccessfulResourceOwnerRefresh()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
-            GrantedTokenResponse refreshed = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
+            GrantedTokenResponse refreshed = null!;
 
             "and a properly token client".x(
                 () => client = new TokenClient(
@@ -248,8 +248,8 @@
         [Scenario(DisplayName = "Successful token revocation")]
         public void SuccessfulResourceOwnerRevocation()
         {
-            TokenClient client = null;
-            GrantedTokenResponse result = null;
+            TokenClient client = null!;
+            GrantedTokenResponse result = null!;
 
             "and a properly token client".x(
                 () => client = new TokenClient(
@@ -277,8 +277,8 @@
         [Scenario(DisplayName = "Invalid client")]
         public void InvalidClientCredentials()
         {
-            TokenClient client = null;
-            Option<GrantedTokenResponse> result = null;
+            TokenClient client = null!;
+            Option<GrantedTokenResponse> result = null!;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -299,8 +299,8 @@
         [Scenario(DisplayName = "Invalid user credentials")]
         public void InvalidUserCredentials()
         {
-            TokenClient client = null;
-            Option<GrantedTokenResponse> result = null;
+            TokenClient client = null!;
+            Option<GrantedTokenResponse> result = null!;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(

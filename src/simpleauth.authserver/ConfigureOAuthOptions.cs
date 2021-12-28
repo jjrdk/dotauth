@@ -22,7 +22,7 @@
                 {
                     var handler = new JwtSecurityTokenHandler();
                     var jwt = handler.ReadJwtToken(ctx.AccessToken);
-                    ctx.Identity.AddClaims(jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)));
+                    ctx.Identity!.AddClaims(jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)));
                     ctx.Success();
                     return Task.CompletedTask;
                 },

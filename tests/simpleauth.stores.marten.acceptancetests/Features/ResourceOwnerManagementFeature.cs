@@ -19,14 +19,14 @@
         [Scenario]
         public void SuccessAddResourceOwner()
         {
-            string subject = null;
+            string subject = null!;
 
             "When adding resource owner".x(
                 async () =>
                 {
-                    var response = await _managerClient.AddResourceOwner(
+                    var response = await ManagerClient.AddResourceOwner(
                             new AddResourceOwnerRequest { Password = "test", Subject = "test" },
-                            _grantedToken.AccessToken)
+                            GrantedToken.AccessToken)
                         .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
 
                     Assert.NotNull(response);
@@ -37,7 +37,7 @@
             "Then resource owner is local account".x(
                 async () =>
                 {
-                    var response = await _managerClient.GetResourceOwner("test", _grantedToken.AccessToken)
+                    var response = await ManagerClient.GetResourceOwner("test", GrantedToken.AccessToken)
                         .ConfigureAwait(false) as Option<ResourceOwner>.Result;
 
                     Assert.NotNull(response);
@@ -51,9 +51,9 @@
             "When adding resource owner".x(
                 async () =>
                 {
-                    var response = await _managerClient.AddResourceOwner(
+                    var response = await ManagerClient.AddResourceOwner(
                             new AddResourceOwnerRequest { Password = "test", Subject = "test" },
-                            _grantedToken.AccessToken)
+                            GrantedToken.AccessToken)
                         .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
 
                     Assert.NotNull(response);
@@ -62,9 +62,9 @@
             "Then can update resource owner password".x(
                 async () =>
                 {
-                    var response = await _managerClient.UpdateResourceOwnerPassword(
+                    var response = await ManagerClient.UpdateResourceOwnerPassword(
                             new UpdateResourceOwnerPasswordRequest { Subject = "test", Password = "test2" },
-                            _grantedToken.AccessToken)
+                            GrantedToken.AccessToken)
                         .ConfigureAwait(false);
 
                     Assert.IsType<Option.Success>(response);

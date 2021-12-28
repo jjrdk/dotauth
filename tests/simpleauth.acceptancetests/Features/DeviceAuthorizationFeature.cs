@@ -27,7 +27,7 @@
         [Scenario(DisplayName = "Can get device authorization endpoint from discovery document")]
         public void CanGetDeviceAuthorizationEndpointFromDiscoveryDocument()
         {
-            DiscoveryInformation doc = null;
+            DiscoveryInformation doc = null!;
 
             "When requesting discovery document".x(
                 async () =>
@@ -54,10 +54,10 @@
         public void ExecuteDeviceAuthorizationFlowWithUserApproval()
         {
             const string clientId = "device";
-            ITokenClient tokenClient = null;
-            DeviceAuthorizationResponse response = null;
-            GrantedTokenResponse token = null;
-            Task<Option<GrantedTokenResponse>> pollingTask = null;
+            ITokenClient tokenClient = null!;
+            DeviceAuthorizationResponse response = null!;
+            GrantedTokenResponse token = null!;
+            Task<Option<GrantedTokenResponse>> pollingTask = null!;
 
             "Given a token client".x(
                 () =>
@@ -137,10 +137,10 @@
         public void ExecuteDeviceAuthorizationFlowWithUserApprovalWhenPolledTooFast()
         {
             const string clientId = "device";
-            ITokenClient tokenClient = null;
-            DeviceAuthorizationResponse response = null;
-            GrantedTokenResponse token = null;
-            Task<Option<GrantedTokenResponse>> pollingTask = null;
+            ITokenClient tokenClient = null!;
+            DeviceAuthorizationResponse response = null!;
+            GrantedTokenResponse token = null!;
+            Task<Option<GrantedTokenResponse>> pollingTask = null!;
 
             "Given a token client".x(
                 () =>
@@ -231,8 +231,8 @@
         public void ExecuteDeviceAuthorizationAfterExpiry()
         {
             const string clientId = "device";
-            ITokenClient tokenClient = null;
-            DeviceAuthorizationResponse response = null;
+            ITokenClient tokenClient = null!;
+            DeviceAuthorizationResponse response = null!;
 
             "Given a token client".x(
                 () =>
@@ -256,7 +256,7 @@
                     response = genericResponse.Item;
                 });
 
-            Option<GrantedTokenResponse> expiredPoll = null;
+            Option<GrantedTokenResponse> expiredPoll = null!;
 
             "and the device polls the token server after expiry".x(
                 async () =>

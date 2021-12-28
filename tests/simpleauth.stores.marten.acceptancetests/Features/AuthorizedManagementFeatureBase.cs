@@ -14,11 +14,11 @@
         private readonly ITestOutputHelper _output;
         protected const string BaseUrl = "http://localhost";
         private static readonly Uri WellKnownUmaConfiguration = new(BaseUrl + "/.well-known/openid-configuration");
-        private string _connectionString = null;
-        protected TestServerFixture _fixture = null;
-        protected ManagementClient _managerClient = null;
-        private TokenClient _tokenClient = null;
-        protected GrantedTokenResponse _grantedToken = null;
+        private string _connectionString = null!;
+        protected TestServerFixture Fixture = null!;
+        protected ManagementClient ManagerClient = null!;
+        private TokenClient _tokenClient = null!;
+        protected GrantedTokenResponse GrantedToken = null!;
 
         public AuthorizedManagementFeatureBase(ITestOutputHelper output)
         {
@@ -52,15 +52,15 @@
 
                         Assert.NotNull(_connectionString);
                     })
-                .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
+                .Teardown(async () => { await DbInitializer.Drop(_connectionString, _output).ConfigureAwait(false); });
 
-            "and a running auth server".x(() => _fixture = new TestServerFixture(_output, _connectionString, BaseUrl))
-                .Teardown(() => _fixture.Dispose());
+            "and a running auth server".x(() => Fixture = new TestServerFixture(_output, _connectionString, BaseUrl))
+                .Teardown(() => Fixture.Dispose());
 
             "and a manager client".x(
                 async () =>
                 {
-                    _managerClient = await ManagementClient.Create(_fixture.Client, WellKnownUmaConfiguration)
+                    ManagerClient = await ManagementClient.Create(Fixture.Client, WellKnownUmaConfiguration)
                         .ConfigureAwait(false);
                 });
 
@@ -69,7 +69,7 @@
                 {
                     _tokenClient = new TokenClient(
                         TokenCredentials.FromClientCredentials("manager_client", "manager_client"),
-                        _fixture.Client,
+                        Fixture.Client,
                         WellKnownUmaConfiguration);
                 });
 
@@ -80,9 +80,9 @@
                         await _tokenClient.GetToken(TokenRequest.FromScopes("manager")).ConfigureAwait(false) as
                             Option<GrantedTokenResponse>.Result;
 
-                    Assert.NotNull(result.Item);
+                    Assert.NotNull(result!.Item);
 
-                    _grantedToken = result.Item;
+                    GrantedToken = result.Item;
                 });
         }
     }

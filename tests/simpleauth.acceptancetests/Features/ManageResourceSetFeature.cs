@@ -23,11 +23,11 @@
         [Scenario(DisplayName = "Can register a resource for a user and manage policies")]
         public void CanRegisterAResourceForUserAndManagePolicies()
         {
-            TokenClient client = null;
-            UmaClient umaClient = null;
-            GrantedTokenResponse token = null;
-            AddResourceSetResponse resourceSetResponse = null;
-            EditPolicyResponse policyRules = null;
+            TokenClient client = null!;
+            UmaClient umaClient = null!;
+            GrantedTokenResponse token = null!;
+            AddResourceSetResponse resourceSetResponse = null!;
+            EditPolicyResponse policyRules = null!;
 
             "Given a token client".x(
                 () =>

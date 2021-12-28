@@ -63,7 +63,7 @@ namespace SimpleAuth.Tests.WebSite.User
             var exception = await _getUserOperation.Execute(claimsPrincipal, CancellationToken.None)
                 .ConfigureAwait(false) as Option<ResourceOwner>.Error;
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
             Assert.Equal(Strings.TheSubjectCannotBeRetrieved, exception.Details.Detail);
         }
 

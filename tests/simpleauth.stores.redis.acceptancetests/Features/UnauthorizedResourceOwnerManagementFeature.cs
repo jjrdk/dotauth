@@ -20,7 +20,7 @@
         [Scenario]
         public void RejectAddResourceOwner()
         {
-            Option<AddResourceOwnerResponse>.Error response = null;
+            Option<AddResourceOwnerResponse>.Error response = null!;
 
             "When adding resource owner".x(
                 async () =>
@@ -41,15 +41,15 @@
         [Scenario]
         public void RejectUpdateResourceOwnerPassword()
         {
-            Option.Error response = null;
+            Option.Error response = null!;
 
             "When updating resource owner password".x(
                 async () =>
                 {
-                    response = await _managerClient.UpdateResourceOwnerPassword(
+                    response = (await _managerClient.UpdateResourceOwnerPassword(
                             new UpdateResourceOwnerPasswordRequest { Password = "blah", Subject = "administrator" },
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false) as Option.Error;
+                        .ConfigureAwait(false) as Option.Error)!;
                 });
 
             "Then response has error.".x(
@@ -62,19 +62,19 @@
         [Scenario]
         public void RejectUpdateResourceOwnerClaims()
         {
-            Option.Error response = null;
+            Option.Error response = null!;
 
             "When updating resource owner password".x(
                 async () =>
                 {
-                    response = await _managerClient.UpdateResourceOwnerClaims(
+                    response = (await _managerClient.UpdateResourceOwnerClaims(
                             new UpdateResourceOwnerClaimsRequest
                             {
                                 Claims = new[] { new ClaimData { Type = "something", Value = "else" } },
                                 Subject = "administrator"
                             },
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false) as Option.Error;
+                        .ConfigureAwait(false) as Option.Error)!;
                 });
 
             "Then response has error.".x(
@@ -87,15 +87,15 @@
         [Scenario]
         public void RejectDeleteResourceOwner()
         {
-            Option.Error response = null;
+            Option.Error response = null!;
 
             "When deleting resource owner".x(
                 async () =>
                 {
-                    response = await _managerClient.DeleteResourceOwner(
+                    response = (await _managerClient.DeleteResourceOwner(
                             "administrator",
                             _grantedToken.AccessToken)
-                        .ConfigureAwait(false) as Option.Error;
+                        .ConfigureAwait(false) as Option.Error)!;
                 });
 
             "Then response has error.".x(
@@ -108,13 +108,13 @@
         [Scenario]
         public void RejectedListResourceOwners()
         {
-            Option<ResourceOwner[]>.Error response = null;
+            Option<ResourceOwner[]>.Error response = null!;
 
             "When listing resource owners".x(
                 async () =>
                 {
-                    response = await _managerClient.GetAllResourceOwners(_grantedToken.AccessToken)
-                        .ConfigureAwait(false) as Option<ResourceOwner[]>.Error;
+                    response = (await _managerClient.GetAllResourceOwners(_grantedToken.AccessToken)
+                        .ConfigureAwait(false) as Option<ResourceOwner[]>.Error)!;
                 });
 
             "Then response has error.".x(

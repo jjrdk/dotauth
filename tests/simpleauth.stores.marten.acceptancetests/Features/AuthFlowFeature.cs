@@ -10,16 +10,16 @@
 
     public abstract class AuthFlowFeature
     {
-        protected readonly ITestOutputHelper _outputHelper;
+        protected readonly ITestOutputHelper OutputHelper;
         protected const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
         protected const string BaseUrl = "http://localhost:5000";
-        protected TestServerFixture _fixture = null;
-        protected JsonWebKeySet _jwks = null;
-        protected string _connectionString = null;
+        protected TestServerFixture Fixture = null!;
+        protected JsonWebKeySet Jwks = null!;
+        protected string ConnectionString = null!;
 
         public AuthFlowFeature(ITestOutputHelper outputHelper)
         {
-            _outputHelper = outputHelper;
+            OutputHelper = outputHelper;
             IdentityModelEventSource.ShowPII = true;
         }
 
@@ -31,40 +31,40 @@
                 {
                     var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false)
                         .Build();
-                    _connectionString = configuration["Db:ConnectionString"];
-                    _outputHelper.WriteLine(_connectionString);
-                    Assert.NotNull(_connectionString);
+                    ConnectionString = configuration["Db:ConnectionString"];
+                    OutputHelper.WriteLine(ConnectionString);
+                    Assert.NotNull(ConnectionString);
                 });
 
             "Given a configured database".x(
                     async () =>
                     {
-                        _connectionString = await DbInitializer.Init(
-                                _outputHelper,
-                                _connectionString,
+                        ConnectionString = await DbInitializer.Init(
+                                OutputHelper,
+                                ConnectionString,
                                 DefaultStores.Consents(),
                                 DefaultStores.Users(),
                                 DefaultStores.Clients(SharedContext.Instance),
                                 DefaultStores.Scopes())
                             .ConfigureAwait(false);
-                        var builder = new NpgsqlConnectionStringBuilder(_connectionString);
+                        var builder = new NpgsqlConnectionStringBuilder(ConnectionString);
 
                         Assert.False(string.IsNullOrWhiteSpace(builder.SearchPath));
-                        _outputHelper.WriteLine(_connectionString);
+                        OutputHelper.WriteLine(ConnectionString);
                     })
-                .Teardown(async () => { await DbInitializer.Drop(_connectionString).ConfigureAwait(false); });
+                .Teardown(async () => { await DbInitializer.Drop(ConnectionString, OutputHelper).ConfigureAwait(false); });
 
             "and a running auth server"
-                .x(() => _fixture = new TestServerFixture(_outputHelper, _connectionString, BaseUrl))
-                .Teardown(() => _fixture.Dispose());
+                .x(() => Fixture = new TestServerFixture(OutputHelper, ConnectionString, BaseUrl))
+                .Teardown(() => Fixture.Dispose());
 
             "And the server signing keys".x(
                 async () =>
                 {
-                    var keysJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
-                    _jwks = new JsonWebKeySet(keysJson);
+                    var keysJson = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                    Jwks = new JsonWebKeySet(keysJson);
 
-                    Assert.NotEmpty(_jwks.Keys);
+                    Assert.NotEmpty(Jwks.Keys);
                 });
         }
     }

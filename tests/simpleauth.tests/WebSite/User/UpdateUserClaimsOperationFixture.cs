@@ -39,7 +39,7 @@
                 .Execute("subject", new List<Claim>(), CancellationToken.None)
                 .ConfigureAwait(false) as Option.Error;
 
-            Assert.Equal(ErrorCodes.InternalError, exception.Details.Title);
+            Assert.Equal(ErrorCodes.InternalError, exception!.Details.Title);
             Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);
         }
 

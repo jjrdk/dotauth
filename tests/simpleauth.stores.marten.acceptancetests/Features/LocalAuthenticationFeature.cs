@@ -18,14 +18,14 @@
         [Scenario(DisplayName = "Successful logout")]
         public void SuccessfulLogout()
         {
-            HttpResponseMessage result = null;
+            HttpResponseMessage result = null!;
 
             "when logging out".x(
                 async () =>
                 {
                     var request = new HttpRequestMessage(HttpMethod.Get, new Uri(BaseUrl + "/authenticate/logout"));
 
-                    result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                    result = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "then receives redirect to login page".x(
@@ -35,7 +35,7 @@
         [Scenario(DisplayName = "Valid local login")]
         public void SuccessfulLocalLogin()
         {
-            HttpResponseMessage result = null;
+            HttpResponseMessage result = null!;
 
             "when posting valid local authorization credentials".x(
                 async () =>
@@ -50,7 +50,7 @@
                             })
                     };
 
-                    result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                    result = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
                 });
 
             "then receives auth cookie".x(() => { Assert.Equal(HttpStatusCode.Redirect, result.StatusCode); });
@@ -59,7 +59,7 @@
         [Scenario(DisplayName = "Invalid local login")]
         public void InvalidLocalLogin()
         {
-            HttpResponseMessage result = null;
+            HttpResponseMessage result = null!;
 
             "when posting invalid local authorization credentials".x(
                 async () =>
@@ -74,7 +74,7 @@
                             })
                     };
 
-                    result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                    result = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
 
                     Assert.NotNull(result);
                 });

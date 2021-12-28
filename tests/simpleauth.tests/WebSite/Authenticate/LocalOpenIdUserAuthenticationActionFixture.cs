@@ -26,29 +26,7 @@
             _outputHelper = outputHelper;
             InitializeFakeObjects();
         }
-
-        [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
-        {
-            await Assert.ThrowsAsync<NullReferenceException>(
-                    () => _localUserAuthenticationAction.Execute(null, null, null, null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task WhenPassingEmptyParameterThenErrorIsReturned()
-        {
-            var result = await _localUserAuthenticationAction.Execute(
-                    new LocalAuthenticationParameter(),
-                    null,
-                    null,
-                    null,
-                    CancellationToken.None)
-                .ConfigureAwait(false);
-
-            Assert.NotNull(result.ErrorMessage);
-        }
-
+        
         [Fact]
         public async Task When_Resource_Owner_Cannot_Be_Authenticated_Then_Error_Message_Is_Returned()
         {
@@ -65,11 +43,11 @@
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
 
-            var result = await _localUserAuthenticationAction.Execute(
+            var result = await _localUserAuthenticationAction!.Execute(
                     localAuthenticationParameter,
                     authorizationParameter,
-                    null,
-                    null,
+                    "",
+                    "",
                     CancellationToken.None)
                 .ConfigureAwait(false);
 
@@ -94,11 +72,11 @@
                 .ReturnsAsync(resourceOwner);
             InitializeFakeObjects(authenticateService.Object);
 
-            var result = await _localUserAuthenticationAction.Execute(
+            var result = await _localUserAuthenticationAction!.Execute(
                     localAuthenticationParameter,
                     authorizationParameter,
-                    null,
-                    null,
+                    "",
+                    "",
                     CancellationToken.None)
                 .ConfigureAwait(false);
 

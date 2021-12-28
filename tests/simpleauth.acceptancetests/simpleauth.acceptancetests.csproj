@@ -7,7 +7,7 @@
 
         <RootNamespace>SimpleAuth.AcceptanceTests</RootNamespace>
     </PropertyGroup>
-    <Import Project="../../shared.projinfo" />
+    <!--<Import Project="../../shared.projinfo" />-->
     <ItemGroup>
         <None Include="..\mycert.pfx" Link="mycert.pfx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -16,7 +16,7 @@
 
     <ItemGroup>
         <PackageReference Include="Divergic.Logging.Xunit" Version="3.6.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
         <PackageReference Include="xbehave" Version="2.4.1" />
         <PackageReference Include="xunit" Version="2.4.1" />
@@ -25,7 +25,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Moq" Version="4.16.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.1" />
     </ItemGroup>
 
     <ItemGroup>

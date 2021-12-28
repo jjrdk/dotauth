@@ -32,7 +32,7 @@
         /// <inheritdoc />
         public void SchemaChange(string sql)
         {
-            _logger.LogInformation("Executing DDL change: {0}", sql);
+            _logger.LogInformation("Executing DDL change: {sql}", sql);
         }
 
         /// <inheritdoc />
@@ -43,7 +43,7 @@
                 (current, npgsqlParameter) => current.Replace(
                     npgsqlParameter.ParameterName,
                     $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
-            _logger.LogInformation(entry);
+            _logger.LogInformation("{entry}", entry);
         }
 
         /// <inheritdoc />
@@ -55,20 +55,23 @@
                 (current, npgsqlParameter) => current.Replace(
                     npgsqlParameter.ParameterName,
                     $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
-            _logger.LogError(entry);
+            _logger.LogError("{entry}", entry);
         }
 
         /// <inheritdoc />
         public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
         {
             _logger.LogInformation(
-                $"Persisted {commit.Updated.Count()} updates, {commit.Inserted.Count()} inserts, and {commit.Deleted.Count()} deletions");
+                "Persisted {updateAmount} updates, {insertAmount} inserts, and {deleteAmount} deletions",
+                commit.Updated.Count(),
+                commit.Inserted.Count(),
+                commit.Deleted.Count());
         }
 
         /// <inheritdoc />
         public void OnBeforeExecute(NpgsqlCommand command)
         {
-            _logger.LogError("Before PostgreSql command: " + command.CommandText);
+            _logger.LogError("Before PostgreSql command: {commandText}", command.CommandText);
         }
     }
 }

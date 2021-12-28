@@ -38,13 +38,14 @@
                     {
                         ServerCertificateCustomValidationCallback = (msg, cert, _, __) =>
                         {
-                            var altNames = cert.GetSubjectAlternativeNames();
-                            _logger.LogInformation("Subject alt names: " + string.Join(", ", altNames));
-                            _logger.LogInformation($"Request host: {msg.RequestUri?.Host}");
-                            var allowed = altNames.Count == 0 || altNames.Contains(msg.RequestUri?.Host);
+                            var altNames = cert!.GetSubjectAlternativeNames();
+                            _logger.LogInformation("Subject alt names: {alternativeNames}", string.Join(", ", altNames));
+                            _logger.LogInformation("Request host: {requestHost}", msg.RequestUri?.Host);
+                            var allowed = altNames.Count == 0
+                                          || (msg.RequestUri?.Host != null && altNames.Contains(msg.RequestUri!.Host));
                             if (!allowed)
                             {
-                                _logger.LogWarning($"Certificate with thumbprint {cert.Thumbprint} not allowed");
+                                _logger.LogWarning("Certificate with thumbprint {thumbprint} not allowed", cert?.Thumbprint);
                             }
                             return allowed;
                         },
@@ -64,7 +65,7 @@
                 {
                     var handler = new JwtSecurityTokenHandler();
                     var jwt = handler.ReadJwtToken(ctx.AccessToken);
-                    ctx.Identity.AddClaims(jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)));
+                    ctx.Identity!.AddClaims(jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)));
                     ctx.Success();
                     return Task.CompletedTask;
                 },

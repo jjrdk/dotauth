@@ -1,8 +1,8 @@
 namespace SimpleAuth.Build
 {
-    using Cake.Common.Tools.DotNetCore;
+    using Cake.Common.Tools.DotNet;
+    using Cake.Common.Tools.DotNet.Pack;
     using Cake.Common.Tools.DotNetCore.MSBuild;
-    using Cake.Common.Tools.DotNetCore.Pack;
     using Cake.Core.Diagnostics;
     using Cake.Frosting;
 
@@ -15,7 +15,7 @@ namespace SimpleAuth.Build
         {
             context.Log.Information("Package version: " + context.BuildVersion);
 
-            var packSettings = new DotNetCorePackSettings
+            var packSettings = new DotNetPackSettings
             {
                 Configuration = context.BuildConfiguration,
                 NoBuild = false,
@@ -26,14 +26,14 @@ namespace SimpleAuth.Build
                     .SetVersion(context.BuildVersion)
             };
 
-            context.DotNetCorePack("./src/simpleauth.shared/simpleauth.shared.csproj", packSettings);
-            context.DotNetCorePack("./src/simpleauth/simpleauth.csproj", packSettings);
-            context.DotNetCorePack("./src/simpleauth.client/simpleauth.client.csproj", packSettings);
-            context.DotNetCorePack("./src/simpleauth.stores.marten/simpleauth.stores.marten.csproj", packSettings);
-            context.DotNetCorePack("./src/simpleauth.stores.redis/simpleauth.stores.redis.csproj", packSettings);
-            context.DotNetCorePack("./src/simpleauth.sms/simpleauth.sms.csproj", packSettings);
-            context.DotNetCorePack("./src/simpleauth.ui/simpleauth.ui.csproj", packSettings);
-            context.DotNetCorePack("./src/simpleauth.sms.ui/simpleauth.sms.ui.csproj", packSettings);
+            context.DotNetPack("./src/simpleauth.shared/simpleauth.shared.csproj", packSettings);
+            context.DotNetPack("./src/simpleauth/simpleauth.csproj", packSettings);
+            context.DotNetPack("./src/simpleauth.client/simpleauth.client.csproj", packSettings);
+            context.DotNetPack("./src/simpleauth.stores.marten/simpleauth.stores.marten.csproj", packSettings);
+            context.DotNetPack("./src/simpleauth.stores.redis/simpleauth.stores.redis.csproj", packSettings);
+            context.DotNetPack("./src/simpleauth.sms/simpleauth.sms.csproj", packSettings);
+            context.DotNetPack("./src/simpleauth.ui/simpleauth.ui.csproj", packSettings);
+            context.DotNetPack("./src/simpleauth.sms.ui/simpleauth.sms.ui.csproj", packSettings);
         }
     }
 }

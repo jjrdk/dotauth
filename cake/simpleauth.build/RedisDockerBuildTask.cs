@@ -1,7 +1,7 @@
 namespace SimpleAuth.Build
 {
-    using Cake.Common.Tools.DotNetCore;
-    using Cake.Common.Tools.DotNetCore.Publish;
+    using Cake.Common.Tools.DotNet;
+    using Cake.Common.Tools.DotNet.Publish;
     using Cake.Docker;
     using Cake.Frosting;
 
@@ -12,7 +12,7 @@ namespace SimpleAuth.Build
         /// <inheritdoc />
         public override void Run(BuildContext context)
         {
-            var publishSettings = new DotNetCorePublishSettings
+            var publishSettings = new DotNetPublishSettings
             {
                 PublishTrimmed = false,
                 Runtime = "linux-musl-x64",
@@ -21,7 +21,7 @@ namespace SimpleAuth.Build
                 OutputDirectory = "./artifacts/publish/pgredis/"
             };
 
-            context.DotNetCorePublish(
+            context.DotNetPublish(
                 "./src/simpleauth.authserverpgredis/simpleauth.authserverpgredis.csproj",
                 publishSettings);
             var settings = new DockerImageBuildSettings
