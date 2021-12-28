@@ -287,7 +287,7 @@ namespace SimpleAuth.Client
             request.Headers.Authorization = _authorizationValue;
 
             var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
-#if NET5_0
+#if NET6_0
             var json = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 #else
             var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);

@@ -16,6 +16,7 @@
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.UI;
     using StackExchange.Redis;
+    using Weasel.Postgresql;
     using Xunit.Abstractions;
 
     internal class ServerStartup
@@ -72,7 +73,8 @@
                     new SimpleAuthMartenOptions(
                         _connectionString,
                         new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
-                        _schemaName)));
+                        _schemaName,
+                        AutoCreate.None)));
             services.AddTransient<Func<IDocumentSession>>(
                 sp =>
                 {

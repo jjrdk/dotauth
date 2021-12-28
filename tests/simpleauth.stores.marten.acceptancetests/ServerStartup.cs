@@ -6,6 +6,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Npgsql;
     using System;
+    using System.Data;
     using System.Net.Http;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@
     using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.UI;
+    using Weasel.Postgresql;
     using Xunit.Abstractions;
 
     public class ServerStartup
@@ -57,12 +59,13 @@
                     new SimpleAuthMartenOptions(
                         _connectionString,
                         new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
-                        _schemaName)));
+                        _schemaName,
+                        AutoCreate.None)));
             services.AddTransient<Func<IDocumentSession>>(
                 sp =>
                 {
                     var store = sp.GetRequiredService<IDocumentStore>();
-                    return () => store.LightweightSession();
+                    return () => store.LightweightSession("test");
                 });
 
             services.AddCors(

@@ -14,7 +14,7 @@
     /// <summary>
     /// Defines the Marten based scope repository.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IScopeRepository" />
+    /// <seealso cref="IScopeRepository" />
     public class MartenScopeRepository : IScopeRepository
     {
         private readonly Func<IDocumentSession> _sessionFactory;
@@ -31,11 +31,6 @@
         /// <inheritdoc />
         public async Task<PagedResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
         {
-            if (parameter == null)
-            {
-                return new PagedResult<Scope>();
-            }
-
             await using var session = this._sessionFactory();
             var results = await session.Query<Scope>()
                               .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
@@ -67,11 +62,6 @@
         /// <inheritdoc />
         public async Task<Scope[]> SearchByNames(CancellationToken cancellationToken = default, params string[] names)
         {
-            if (names == null)
-            {
-                return Array.Empty<Scope>();
-            }
-
             await using var session = this._sessionFactory();
             var scopes = await session.Query<Scope>()
                              .Where(x => x.Name.IsOneOf(names))
@@ -95,11 +85,6 @@
         /// <inheritdoc />
         public async Task<bool> Insert(Scope scope, CancellationToken cancellationToken = default)
         {
-            if (scope == null)
-            {
-                return false;
-            }
-
             await using var session = _sessionFactory();
             session.Store(scope);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -109,11 +94,6 @@
         /// <inheritdoc />
         public async Task<bool> Delete(Scope scope, CancellationToken cancellationToken = default)
         {
-            if (scope == null)
-            {
-                return false;
-            }
-
             await using var session = _sessionFactory();
             session.Delete(scope.Name);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -123,11 +103,6 @@
         /// <inheritdoc />
         public async Task<bool> Update(Scope scope, CancellationToken cancellationToken = default)
         {
-            if (scope == null)
-            {
-                return false;
-            }
-
             await using var session = _sessionFactory();
             session.Update(scope);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

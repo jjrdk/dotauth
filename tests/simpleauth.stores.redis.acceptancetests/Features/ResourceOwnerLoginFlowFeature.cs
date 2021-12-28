@@ -143,8 +143,8 @@
                 async () =>
                     {
                         var response = await client.RevokeToken(RevokeTokenRequest.Create(result))
-                                           .ConfigureAwait(false) as Option.Error;
-                        Assert.Equal(HttpStatusCode.OK, response.Details.Status);
+                                           .ConfigureAwait(false);
+                        Assert.IsType<Option.Success>(response);
                     });
         }
 

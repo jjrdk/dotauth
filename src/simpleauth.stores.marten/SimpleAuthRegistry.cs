@@ -1,7 +1,7 @@
 ﻿namespace SimpleAuth.Stores.Marten
 {
     using global::Marten;
-    using global::Marten.Schema;
+    using global::Marten.Schema.Indexing.Unique;
     using NpgsqlTypes;
     using SimpleAuth.Shared.Models;
     using SimpleAuth.Shared.Requests;
@@ -17,36 +17,80 @@
         /// </summary>
         public SimpleAuthRegistry()
         {
-            For<Scope>()
-                .Identity(x => x.Name)
-                //.UniqueIndex(UniqueIndexType.Computed, s => s.Name)
+            For<Scope>().Identity(x => x.Name)
+                .Index(s => s.Name,
+                    idx =>
+                    {
+                        idx.IsUnique = true;
+                        idx.TenancyScope = TenancyScope.PerTenant;
+                        idx.IsConcurrent = true;
+                    })
                 .Duplicate(x => x.IsDisplayedInConsent, dbType: NpgsqlDbType.Boolean)
                 .Duplicate(x => x.Type, "varchar(15)")
                 .GinIndexJsonData();
             For<Filter>().Identity(x => x.Name)
                 //.UniqueIndex(UniqueIndexType.Computed, s => s.Name)
+                .Index(s => s.Name,
+                    idx =>
+                    {
+                        idx.IsUnique = true;
+                        idx.TenancyScope = TenancyScope.PerTenant;
+                        idx.IsConcurrent = true;
+                    })
                 .GinIndexJsonData();
             For<ResourceOwner>()
                 .Identity(x => x.Subject)
                 //.UniqueIndex(UniqueIndexType.Computed, s => s.Subject)
-                .Index(x => x.Claims)
-                .Index(x => x.ExternalLogins)
+                .Index(s => s.Subject,
+                    idx =>
+                    {
+                        idx.IsUnique = true;
+                        idx.TenancyScope = TenancyScope.PerTenant;
+                        idx.IsConcurrent = false;
+                    })
+                .Duplicate(x => x.Password ?? "")
+                .Index(x => x.Claims, idx => { idx.IsConcurrent = true; })
+                .Index(x => x.ExternalLogins, idx => { idx.IsConcurrent = true; })
                 .GinIndexJsonData();
             For<Consent>()
                 .Identity(x => x.Id)
                 //.UniqueIndex(UniqueIndexType.Computed, s => s.Id)
+                .Index(s => s.Id,
+                    idx =>
+                    {
+                        idx.IsUnique = true;
+                        idx.TenancyScope = TenancyScope.PerTenant;
+                        idx.IsConcurrent = true;
+                    })
                 .Duplicate(x => x.Subject)
                 .GinIndexJsonData();
-            For<Client>().Identity(x => x.ClientId).UniqueIndex(UniqueIndexType.Computed, s => s.ClientId)
-                //    .Index(x => x.AllowedScopes)
-                //    .Index(x => x.GrantTypes)
-                    .Duplicate(x => x.IdTokenEncryptedResponseAlg ?? "", "varchar(10)")
-                //    .Index(x => x.ResponseTypes)
-                //    .Index(x => x.Claims)
-                    .GinIndexJsonData();
+            For<Client>()
+                .Identity(x => x.ClientId)
+                //.UniqueIndex(UniqueIndexType.Computed, s => s.ClientId)
+                .Index(
+                    s => s.ClientId,
+                    idx =>
+                    {
+                        idx.IsUnique = true;
+                        idx.TenancyScope = TenancyScope.PerTenant;
+                        idx.IsConcurrent = true;
+                    })
+                //.Index(x => x.AllowedScopes)
+                //.Index(x => x.GrantTypes)
+                .Duplicate(x => x.IdTokenEncryptedResponseAlg ?? "", "varchar(10)")
+                //.Index(x => x.ResponseTypes)
+                //.Index(x => x.Claims)
+                .GinIndexJsonData();
             For<OwnedResourceSet>()
                 .Identity(x => x.Id)
                 //.UniqueIndex(UniqueIndexType.Computed, s => s.Id)
+                .Index(s => s.Id,
+                    idx =>
+                    {
+                        idx.IsUnique = true;
+                        idx.TenancyScope = TenancyScope.PerTenant;
+                        idx.IsConcurrent = true;
+                    })
                 .Duplicate(x => x.Owner)
                 .Duplicate(x => x.Name)
                 .Duplicate(x => x.Type)
@@ -54,6 +98,13 @@
             For<Ticket>()
                 .Identity(x => x.Id)
                 //.UniqueIndex(UniqueIndexType.Computed, s => s.Id)
+                .Index(s => s.Id,
+                    idx =>
+                    {
+                        idx.IsUnique = true;
+                        idx.TenancyScope = TenancyScope.PerTenant;
+                        idx.IsConcurrent = true;
+                    })
                 .Duplicate(x => x.Created, dbType: NpgsqlDbType.TimestampTz)
                 .Duplicate(x => x.Expires, dbType: NpgsqlDbType.TimestampTz)
                 .Duplicate(x => x.IsAuthorizedByRo, dbType: NpgsqlDbType.Boolean)
@@ -61,6 +112,13 @@
             For<AuthorizationCode>()
                 .Identity(x => x.Code)
                 //.UniqueIndex(UniqueIndexType.Computed, s => s.Code)
+                .Index(s => s.Code,
+                    idx =>
+                    {
+                        idx.IsUnique = true;
+                        idx.TenancyScope = TenancyScope.PerTenant;
+                        idx.IsConcurrent = true;
+                    })
                 .Duplicate(x => x.ClientId)
                 .GinIndexJsonData();
             For<ConfirmationCode>()

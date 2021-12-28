@@ -6,6 +6,7 @@
     using SimpleAuth.Shared.Repositories;
     using SimpleAuth.Shared.Requests;
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Net;
     using System.Threading;
@@ -83,7 +84,7 @@
             var ro = await session.Query<ResourceOwner>()
                 .FirstOrDefaultAsync(x => x.Subject == id && x.Password == hashed, cancellationToken)
                 .ConfigureAwait(false);
-
+            
             return ro;
         }
 

@@ -121,10 +121,8 @@
             "then can revoke token".x(
                 async () =>
                 {
-                    var response =
-                        await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false) as
-                            Option.Error;
-                    Assert.Equal(HttpStatusCode.OK, response.Details.Status);
+                    var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
+                    Assert.IsType<Option.Success>(response);
                 });
         }
 
@@ -132,7 +130,7 @@
         public void InvalidClientCredentials()
         {
             TokenClient client = null!;
-            Option<GrantedTokenResponse>.Result result = null!;
+            Option<GrantedTokenResponse> result = null!;
 
             "and a token client with invalid client credentials".x(
                 () => client = new TokenClient(
@@ -143,12 +141,10 @@
             "when requesting auth token".x(
                 async () =>
                 {
-                    result =
-                        await client.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false) as
-                            Option<GrantedTokenResponse>.Result;
+                    result = await client.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false);
                 });
 
-            "then does not have token".x(() => { Assert.Null(result.Item); });
+            "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
         }
     }
 }

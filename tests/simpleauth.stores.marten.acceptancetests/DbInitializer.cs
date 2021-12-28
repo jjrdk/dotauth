@@ -19,10 +19,10 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
         public static async Task<string> Init(
             ITestOutputHelper output,
             string connectionString,
-            IEnumerable<Consent>? consents = null,
-            IEnumerable<ResourceOwner>? users = null,
-            IEnumerable<Client>? clients = null,
-            IEnumerable<Scope>? scopes = null)
+            IEnumerable<Consent> consents,
+            IEnumerable<ResourceOwner> users,
+            IEnumerable<Client> clients,
+            IEnumerable<Scope> scopes)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
             {
@@ -82,7 +82,7 @@ namespace SimpleAuth.Stores.Marten.AcceptanceTests
                     connectionString,
                     new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
                     searchPath));
-            await using var session = store.LightweightSession();
+            await using var session = store.LightweightSession("test");
             if (consents != null) session.Store(consents.ToArray());
             if (users != null) session.Store(users.ToArray());
             if (clients != null) session.Store(clients.ToArray());
