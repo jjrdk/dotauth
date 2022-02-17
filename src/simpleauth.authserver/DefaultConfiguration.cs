@@ -29,9 +29,11 @@
                             new Uri("https://localhost:50001/signin-oidc"),
                             new Uri("https://localhost:5001/signin-oidc"),
                             new Uri("https://localhost:5001/callback"),
+                            new Uri("http://localhost:5000/callback"),
+                            new Uri("http://localhost/callback"),
                         },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
-                    PostLogoutRedirectUris = new[] {new Uri("http://localhost:4200/login")},
+                    PostLogoutRedirectUris = new[] {new Uri("http://localhost/login")},
                     ResponseTypes = ResponseTypeNames.All,
                     Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
@@ -46,7 +48,7 @@
 
         public static List<Scope> GetScopes()
         {
-            return new() { };
+            return new();
         }
 
         public static List<ResourceOwner> GetUsers(string salt)

@@ -11,9 +11,9 @@
         /// <inheritdoc />
         public void PostConfigure(string name, OAuthOptions options)
         {
-            options.AuthorizationEndpoint = "https://localhost:5001/authorization";
-            options.TokenEndpoint = "https://localhost:5001/token";
-            options.UserInformationEndpoint = "https://localhost:5001/userinfo";
+            options.AuthorizationEndpoint = "http://localhost/authorization";
+            options.TokenEndpoint = "http://localhost/token";
+            options.UserInformationEndpoint = "http://localhost/userinfo";
             options.UsePkce = true;
             options.CallbackPath = "/callback";
             options.Events = new OAuthEvents

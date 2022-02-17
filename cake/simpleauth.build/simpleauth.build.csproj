@@ -6,7 +6,7 @@
     <RootNamespace>SimpleAuth.Build</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GitVersion.CommandLine" Version="5.8.1">
+    <PackageReference Include="GitVersion.CommandLine" Version="5.8.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
