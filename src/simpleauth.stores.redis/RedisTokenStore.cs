@@ -62,19 +62,19 @@
             var existingScopeToken = existingScopeValue.HasValue
                 ? JsonConvert.DeserializeObject<GrantedToken[]>(existingScopeValue)!
                 : Array.Empty<GrantedToken>();
-            var scopeTokens = JsonConvert.SerializeObject(existingScopeToken.Concat(new[] {grantedToken}).ToArray());
+            var scopeTokens = JsonConvert.SerializeObject(existingScopeToken.Concat(new[] { grantedToken }).ToArray());
             var expiry = TimeSpan.FromSeconds(grantedToken.ExpiresIn);
-            var idTask = _database.StringSetAsync(grantedToken.Id, value, expiry, When.NotExists);
+            var idTask = _database.StringSetAsync(grantedToken.Id, value, expiry, when: When.NotExists);
             var scopeTokenTask = _database.StringSetAsync(
                 grantedToken.ClientId + grantedToken.Scope,
                 scopeTokens,
                 expiry,
-                When.NotExists);
-            var accessTokenTask = _database.StringSetAsync(grantedToken.AccessToken, value, expiry, When.NotExists);
+                when: When.NotExists);
+            var accessTokenTask = _database.StringSetAsync(grantedToken.AccessToken, value, expiry, when: When.NotExists);
 
             var refreshTokenTask = grantedToken.RefreshToken == null
                 ? Task.FromResult(true)
-                : _database.StringSetAsync(grantedToken.RefreshToken, value, expiry, When.NotExists);
+                : _database.StringSetAsync(grantedToken.RefreshToken, value, expiry, when: When.NotExists);
 
             if ((await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
                 .All(x => x))

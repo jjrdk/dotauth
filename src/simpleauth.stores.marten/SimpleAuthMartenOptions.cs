@@ -46,7 +46,7 @@
 
             Policies.DisableInformationalFields().AllDocumentsAreMultiTenanted();
             AutoCreateSchemaObjects = autoCreate;
-            GeneratedCodeMode = TypeLoadMode.LoadFromPreBuiltAssembly;
+            GeneratedCodeMode = TypeLoadMode.Static;
             Advanced.DuplicatedFieldEnumStorage = EnumStorage.AsString;
             Advanced.DuplicatedFieldUseTimestampWithoutTimeZoneForDateTime = true;
         }
@@ -105,8 +105,12 @@
                 _innerSerializer.Converters.Add(new ClaimConverter());
             }
 
-            public string ToJson(object document)
+            public string ToJson(object? document)
             {
+                if (document == null)
+                {
+                    return "null";
+                }
                 var sb = new StringBuilder();
                 using var writer = new StringWriter(sb);
                 _innerSerializer.Serialize(writer, document, document.GetType());
@@ -197,9 +201,9 @@
                 return new ValueTask<object>(item);
             }
 
-            public string ToCleanJson(object document)
+            public string ToCleanJson(object? document)
             {
-                return ToJson(document);
+                return document == null ? "null" : ToJson(document);
             }
 
             /// <inheritdoc />

@@ -28,7 +28,7 @@
         public Task<bool> Add(ConfirmationCode confirmationCode, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(confirmationCode);
-            return _database.StringSetAsync(confirmationCode.Value, json, _expiry, When.NotExists);
+            return _database.StringSetAsync(confirmationCode.Value, json, _expiry, when: When.NotExists);
         }
 
         public Task<bool> Remove(string code, string subject, CancellationToken cancellationToken)

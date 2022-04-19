@@ -16,7 +16,7 @@
     using SimpleAuth.Stores.Marten;
     using SimpleAuth.UI;
     using StackExchange.Redis;
-    using Weasel.Postgresql;
+    using Weasel.Core;
     using Xunit.Abstractions;
 
     internal class ServerStartup
@@ -43,7 +43,7 @@
                         sp.GetRequiredService<IDatabaseAsync>(),
                         _martenOptions!.RptLifeTime),
                 Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
-                JsonWebKeys = sp =>
+                JsonWebKeys = _ =>
                 {
                     var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
@@ -86,7 +86,7 @@
                 options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             // 2. Configure server
             services.AddSimpleAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme }, assemblyTypes: typeof(IDefaultUi));
-            services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(sp => _context.Client);
+            services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
             services.AddAuthentication(
                     cfg =>
                     {
@@ -100,7 +100,7 @@
                     JwtBearerDefaults.AuthenticationScheme,
                     cfg =>
                     {
-                        cfg.Events = new JwtBearerEvents { OnAuthenticationFailed = c => Task.CompletedTask };
+                        cfg.Events = new JwtBearerEvents { OnAuthenticationFailed = _ => Task.CompletedTask };
                         cfg.RequireHttpsMetadata = false;
                         cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                     });

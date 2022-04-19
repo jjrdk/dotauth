@@ -6,7 +6,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Npgsql;
     using System;
-    using System.Data;
     using System.Net.Http;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
@@ -14,7 +13,7 @@
     using SimpleAuth.Extensions;
     using SimpleAuth.Repositories;
     using SimpleAuth.UI;
-    using Weasel.Postgresql;
+    using Weasel.Core;
     using Xunit.Abstractions;
 
     public class ServerStartup
@@ -32,7 +31,7 @@
             {
                 AdministratorRoleDefinition = default,
                 Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>()),
-                JsonWebKeys = sp =>
+                JsonWebKeys = _ =>
                 {
                     var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                     return new InMemoryJwksRepository(keyset, keyset);
@@ -55,7 +54,7 @@
             services.AddHttpClient<HttpClient>()
                 .AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
             services.AddSingleton<IDocumentStore>(
-                provider => new DocumentStore(
+                _ => new DocumentStore(
                     new SimpleAuthMartenOptions(
                         _connectionString,
                         new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
@@ -75,7 +74,7 @@
                 _martenOptions,
                 new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme },
                 assemblyTypes: typeof(IDefaultUi));
-            services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(sp => _context.Client);
+            services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
             services.AddAuthentication(
                     cfg =>
                     {
