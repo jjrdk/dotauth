@@ -12,66 +12,65 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers
+namespace SimpleAuth.Controllers;
+
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Extensions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared;
+
+/// <summary>
+/// Defines the abstract base controller.
+/// </summary>
+/// <seealso cref="Controller" />
+public abstract class BaseController : Controller
 {
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using Extensions;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
+    /// <summary>
+    /// The authentication service
+    /// </summary>
+    protected readonly IAuthenticationService _authenticationService;
 
     /// <summary>
-    /// Defines the abstract base controller.
+    /// Initializes a new instance of the <see cref="BaseController"/> class.
     /// </summary>
-    /// <seealso cref="Controller" />
-    public abstract class BaseController : Controller
+    /// <param name="authenticationService">The authentication service.</param>
+    protected BaseController(IAuthenticationService authenticationService)
     {
-        /// <summary>
-        /// The authentication service
-        /// </summary>
-        protected readonly IAuthenticationService _authenticationService;
+        _authenticationService = authenticationService;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseController"/> class.
-        /// </summary>
-        /// <param name="authenticationService">The authentication service.</param>
-        protected BaseController(IAuthenticationService authenticationService)
+    /// <summary>
+    /// Sets the user.
+    /// </summary>
+    /// <returns></returns>
+    protected async Task<ClaimsPrincipal?> SetUser()
+    {
+        var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
+        if (authenticatedUser == null)
         {
-            _authenticationService = authenticationService;
+            return null;
         }
 
-        /// <summary>
-        /// Sets the user.
-        /// </summary>
-        /// <returns></returns>
-        protected async Task<ClaimsPrincipal?> SetUser()
-        {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
-            if (authenticatedUser == null)
-            {
-                return null;
-            }
+        var isAuthenticated = authenticatedUser.Identity is { IsAuthenticated: true };
+        ViewBag.IsAuthenticated = isAuthenticated;
+        ViewBag.Name = isAuthenticated ? authenticatedUser.GetName()! : Strings.Unknown;
 
-            var isAuthenticated = authenticatedUser.Identity is { IsAuthenticated: true };
-            ViewBag.IsAuthenticated = isAuthenticated;
-            ViewBag.Name = isAuthenticated ? authenticatedUser.GetName()! : Strings.Unknown;
+        return authenticatedUser;
 
-            return authenticatedUser;
+    }
 
-        }
-
-        /// <summary>
-        /// Handles the default error redirection request.
-        /// </summary>
-        /// <param name="message">The error message.</param>
-        /// <param name="code">The error status code.</param>
-        /// <param name="title">The error title.</param>
-        /// <returns></returns>
-        protected IActionResult SetRedirection(string message, string? code = null, string? title = null)
-        {
-            return RedirectToAction("Index", "Error", new { code, title, message });
-        }
+    /// <summary>
+    /// Handles the default error redirection request.
+    /// </summary>
+    /// <param name="message">The error message.</param>
+    /// <param name="code">The error status code.</param>
+    /// <param name="title">The error title.</param>
+    /// <returns></returns>
+    protected IActionResult SetRedirection(string message, string? code = null, string? title = null)
+    {
+        return RedirectToAction("Index", "Error", new { code, title, message });
     }
 }

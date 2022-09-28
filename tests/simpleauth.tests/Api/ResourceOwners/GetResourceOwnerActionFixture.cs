@@ -12,44 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.ResourceOwners
+namespace SimpleAuth.Tests.Api.ResourceOwners;
+
+using System.Threading;
+using System.Threading.Tasks;
+using Repositories;
+using Shared.Models;
+using Shared.Repositories;
+using Xunit;
+
+public sealed class GetResourceOwnerActionFixture
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Repositories;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Xunit;
+    private IResourceOwnerRepository _resourceOwnerRepository;
 
-    public class GetResourceOwnerActionFixture
+    [Fact]
+    public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsNull()
     {
-        private IResourceOwnerRepository _resourceOwnerRepository;
+        const string subject = "invalid_subject";
+        InitializeFakeObjects();
 
-        [Fact]
-        public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsNull()
-        {
-            const string subject = "invalid_subject";
-            InitializeFakeObjects();
+        var owner = await _resourceOwnerRepository.Get(subject, CancellationToken.None).ConfigureAwait(false);
 
-            var owner = await _resourceOwnerRepository.Get(subject, CancellationToken.None).ConfigureAwait(false);
+        Assert.Null(owner);
+    }
 
-            Assert.Null(owner);
-        }
+    [Fact]
+    public async Task When_Getting_Resource_Owner_Then_ResourceOwner_Is_Returned()
+    {
+        const string subject = "subject";
+        InitializeFakeObjects(new ResourceOwner {Subject = "subject"});
 
-        [Fact]
-        public async Task When_Getting_Resource_Owner_Then_ResourceOwner_Is_Returned()
-        {
-            const string subject = "subject";
-            InitializeFakeObjects(new ResourceOwner {Subject = "subject"});
+        var result = await _resourceOwnerRepository.Get(subject, CancellationToken.None).ConfigureAwait(false);
 
-            var result = await _resourceOwnerRepository.Get(subject, CancellationToken.None).ConfigureAwait(false);
+        Assert.NotNull(result);
+    }
 
-            Assert.NotNull(result);
-        }
-
-        private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
-        {
-            _resourceOwnerRepository = new InMemoryResourceOwnerRepository(string.Empty, resourceOwners);
-        }
+    private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
+    {
+        _resourceOwnerRepository = new InMemoryResourceOwnerRepository(string.Empty, resourceOwners);
     }
 }

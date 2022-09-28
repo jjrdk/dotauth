@@ -1,37 +1,36 @@
-﻿namespace SimpleAuth.Server.Tests
-{
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using Shared;
-    using Shared.Models;
+﻿namespace SimpleAuth.Server.Tests;
 
-    public static class DefaultStorage
+using System.Collections.Generic;
+using System.Security.Claims;
+using Shared;
+using Shared.Models;
+
+public static class DefaultStorage
+{
+    public static List<ResourceOwner> GetUsers()
     {
-        public static List<ResourceOwner> GetUsers()
+        return new()
         {
-            return new()
+            new ResourceOwner
             {
-                new ResourceOwner
+                Subject = "administrator",
+                Claims = new []
                 {
-                    Subject = "administrator",
-                    Claims = new []
-                    {
-                        new Claim(OpenIdClaimTypes.Subject, "administrator")
-                    },
-                    Password = "password",
-                    IsLocalAccount = true
+                    new Claim(OpenIdClaimTypes.Subject, "administrator")
                 },
-                new ResourceOwner
+                Password = "password",
+                IsLocalAccount = true
+            },
+            new ResourceOwner
+            {
+                Subject = "user",
+                Password = "password",
+                Claims = new []
                 {
-                    Subject = "user",
-                    Password = "password",
-                    Claims = new []
-                    {
-                        new Claim(OpenIdClaimTypes.Subject, "user")
-                    },
-                    IsLocalAccount = true
-                }
-            };
-        }
+                    new Claim(OpenIdClaimTypes.Subject, "user")
+                },
+                IsLocalAccount = true
+            }
+        };
     }
 }

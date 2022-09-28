@@ -12,60 +12,74 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.ResourceSetController
+namespace SimpleAuth.Api.ResourceSetController;
+
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+using ResourceSet = Shared.Models.ResourceSet;
+
+internal sealed class UpdateResourceSetAction
 {
-    using System.Net;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using ResourceSet = SimpleAuth.Shared.Models.ResourceSet;
+    private readonly IResourceSetRepository _resourceSetRepository;
+    private readonly ILogger _logger;
 
-    internal class UpdateResourceSetAction
+    public UpdateResourceSetAction(IResourceSetRepository resourceSetRepository, ILogger logger)
     {
-        private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly ILogger _logger;
+        _resourceSetRepository = resourceSetRepository;
+        _logger = logger;
+    }
 
-        public UpdateResourceSetAction(IResourceSetRepository resourceSetRepository, ILogger logger)
+    public async Task<Option> Execute(ResourceSet resourceSet, CancellationToken cancellationToken)
+    {
+        var checkResult = CheckResourceSetParameter(resourceSet);
+        return checkResult switch
         {
-            _resourceSetRepository = resourceSetRepository;
-            _logger = logger;
+            Option.Error => checkResult,
+            _ => await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false)
+        };
+    }
+
+    private Option CheckResourceSetParameter(ResourceSet resourceSet)
+    {
+        if (string.IsNullOrWhiteSpace(resourceSet.Id))
+        {
+            var message = string.Format(Strings.MissingParameter, "id");
+            _logger.LogError(message);
+            return new Option.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.NotFound
+                });
         }
 
-        public async Task<Option> Execute(ResourceSet resourceSet, CancellationToken cancellationToken)
+        if (string.IsNullOrWhiteSpace(resourceSet.Name))
         {
-            var checkResult = CheckResourceSetParameter(resourceSet);
-            return checkResult switch
-            {
-                Option.Error => checkResult,
-                _ => await _resourceSetRepository.Update(resourceSet, cancellationToken).ConfigureAwait(false)
-            };
+            var message = string.Format(Strings.MissingParameter, "name");
+            _logger.LogError(
+                message);
+            return new Option.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
+                });
         }
 
-        private Option CheckResourceSetParameter(ResourceSet resourceSet)
+        switch (resourceSet.Scopes.Length)
         {
-            if (string.IsNullOrWhiteSpace(resourceSet.Id))
-            {
-                var message = string.Format(Strings.MissingParameter, "id");
+            case 0:
+                var message = string.Format(Strings.MissingParameter, "scopes");
                 _logger.LogError(message);
-                return new Option.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest,
-                        Detail = message,
-                        Status = HttpStatusCode.NotFound
-                    });
-            }
-
-            if (string.IsNullOrWhiteSpace(resourceSet.Name))
-            {
-                var message = string.Format(Strings.MissingParameter, "name");
-                _logger.LogError(
-                       message);
                 return new Option.Error(
                     new ErrorDetails
                     {
@@ -73,23 +87,8 @@ namespace SimpleAuth.Api.ResourceSetController
                         Detail = message,
                         Status = HttpStatusCode.BadRequest
                     });
-            }
-
-            switch (resourceSet.Scopes.Length)
-            {
-                case 0:
-                    var message = string.Format(Strings.MissingParameter, "scopes");
-                    _logger.LogError(message);
-                    return new Option.Error(
-                        new ErrorDetails
-                        {
-                            Title = ErrorCodes.InvalidRequest,
-                            Detail = message,
-                            Status = HttpStatusCode.BadRequest
-                        });
-                default:
-                    return new Option.Success();
-            }
+            default:
+                return new Option.Success();
         }
     }
 }

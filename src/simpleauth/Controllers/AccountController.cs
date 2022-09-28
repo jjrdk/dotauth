@@ -12,108 +12,107 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers
+namespace SimpleAuth.Controllers;
+
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using SimpleAuth.ViewModels;
+
+/// <summary>
+/// Defines the account controller
+/// </summary>
+[Route("Account")]
+public sealed class AccountController : BaseController
 {
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using Microsoft.AspNetCore.Mvc.Routing;
-    using SimpleAuth.ViewModels;
+    private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
+    private readonly IActionContextAccessor _actionContextAccessor;
+    private readonly IUrlHelper _urlHelper;
 
     /// <summary>
-    /// Defines the account controller
+    /// Initializes a new instance of the <see cref="AccountController"/> class.
     /// </summary>
-    [Route("Account")]
-    public class AccountController : BaseController
+    /// <param name="authenticationService"></param>
+    /// <param name="authenticationSchemeProvider"></param>
+    /// <param name="actionContextAccessor"></param>
+    /// <param name="urlHelperFactory"></param>
+    public AccountController(
+        IAuthenticationService authenticationService,
+        IAuthenticationSchemeProvider authenticationSchemeProvider,
+        IActionContextAccessor actionContextAccessor,
+        IUrlHelperFactory urlHelperFactory)
+        : base(authenticationService)
     {
-        private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
-        private readonly IActionContextAccessor _actionContextAccessor;
-        private readonly IUrlHelper _urlHelper;
+        _authenticationSchemeProvider = authenticationSchemeProvider;
+        _actionContextAccessor = actionContextAccessor;
+        _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AccountController"/> class.
-        /// </summary>
-        /// <param name="authenticationService"></param>
-        /// <param name="authenticationSchemeProvider"></param>
-        /// <param name="actionContextAccessor"></param>
-        /// <param name="urlHelperFactory"></param>
-        public AccountController(
-            IAuthenticationService authenticationService,
-            IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IActionContextAccessor actionContextAccessor,
-            IUrlHelperFactory urlHelperFactory)
-            : base(authenticationService)
+    /// <summary>
+    /// Handles the default request.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var authenticatedUser = await SetUser().ConfigureAwait(false);
+        if (authenticatedUser is { Identity: { IsAuthenticated: true } })
         {
-            _authenticationSchemeProvider = authenticationSchemeProvider;
-            _actionContextAccessor = actionContextAccessor;
-            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
+            return RedirectToAction("Index", "User");
         }
 
-        /// <summary>
-        /// Handles the default request.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            var authenticatedUser = await SetUser().ConfigureAwait(false);
-            if (authenticatedUser is { Identity: { IsAuthenticated: true } })
-            {
-                return RedirectToAction("Index", "User");
-            }
+        return RedirectToAction("Index", "Authenticate"); //View();
+    }
 
-            return RedirectToAction("Index", "Authenticate"); //View();
+    /// <summary>
+    /// Handles the AccessDenied request.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("AccessDenied")]
+    public async Task AccessDenied()
+    {
+        _ = Request.Query.TryGetValue("ReturnUrl", out var returnUrl);
+
+        var scheme = await _authenticationSchemeProvider.GetDefaultChallengeSchemeAsync().ConfigureAwait(false);
+        var values = string.IsNullOrWhiteSpace(returnUrl) ? null : new { ReturnUrl = returnUrl };
+        var redirectUrl = _urlHelper.Action("LoginCallback", "Authenticate", values, Request.Scheme);
+
+        await _authenticationService.ChallengeAsync(
+                Request.HttpContext,
+                scheme!.Name,
+                new AuthenticationProperties { RedirectUri = redirectUrl })
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Handles the update account request.
+    /// </summary>
+    /// <param name="updateResourceOwnerViewModel">The update view model.</param>
+    /// <returns></returns>
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult> Index(UpdateResourceOwnerViewModel? updateResourceOwnerViewModel)
+    {
+        if (updateResourceOwnerViewModel == null)
+        {
+            return BadRequest();
         }
 
-        /// <summary>
-        /// Handles the AccessDenied request.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("AccessDenied")]
-        public async Task AccessDenied()
+        var authenticatedUser = await SetUser().ConfigureAwait(false);
+        if (authenticatedUser is { Identity: { IsAuthenticated: true } })
         {
-            _ = Request.Query.TryGetValue("ReturnUrl", out var returnUrl);
-
-            var scheme = await _authenticationSchemeProvider.GetDefaultChallengeSchemeAsync().ConfigureAwait(false);
-            var values = string.IsNullOrWhiteSpace(returnUrl) ? null : new { ReturnUrl = returnUrl };
-            var redirectUrl = _urlHelper.Action("LoginCallback", "Authenticate", values, Request.Scheme);
-
-            await _authenticationService.ChallengeAsync(
-                       Request.HttpContext,
-                       scheme!.Name,
-                       new AuthenticationProperties { RedirectUri = redirectUrl })
-                   .ConfigureAwait(false);
+            return RedirectToAction("Index", "User");
         }
 
-        /// <summary>
-        /// Handles the update account request.
-        /// </summary>
-        /// <param name="updateResourceOwnerViewModel">The update view model.</param>
-        /// <returns></returns>
-        [Authorize]
-        [HttpPost]
-        public async Task<ActionResult> Index(UpdateResourceOwnerViewModel? updateResourceOwnerViewModel)
-        {
-            if (updateResourceOwnerViewModel == null)
-            {
-                return BadRequest();
-            }
+        //await _resourceOwnerRepository.AddResourceOwner(new AddUserParameter
+        //{
+        //    Login = updateResourceOwnerViewModel.Login,
+        //    Password = updateResourceOwnerViewModel.Password
+        //});
 
-            var authenticatedUser = await SetUser().ConfigureAwait(false);
-            if (authenticatedUser is { Identity: { IsAuthenticated: true } })
-            {
-                return RedirectToAction("Index", "User");
-            }
-
-            //await _resourceOwnerRepository.AddResourceOwner(new AddUserParameter
-            //{
-            //    Login = updateResourceOwnerViewModel.Login,
-            //    Password = updateResourceOwnerViewModel.Password
-            //});
-
-            return RedirectToAction("Index", "Authenticate");
-        }
+        return RedirectToAction("Index", "Authenticate");
     }
 }

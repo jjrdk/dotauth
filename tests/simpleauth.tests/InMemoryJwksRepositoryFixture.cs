@@ -1,41 +1,40 @@
-﻿namespace SimpleAuth.Tests
+﻿namespace SimpleAuth.Tests;
+
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using SimpleAuth.Repositories;
+using Xunit;
+
+public sealed class InMemoryJwksRepositoryFixture
 {
-    using System.Threading.Tasks;
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Repositories;
-    using Xunit;
+    private readonly InMemoryJwksRepository _repository;
 
-    public class InMemoryJwksRepositoryFixture
+    public InMemoryJwksRepositoryFixture()
     {
-        private readonly InMemoryJwksRepository _repository;
+        _repository = new InMemoryJwksRepository();
+    }
 
-        public InMemoryJwksRepositoryFixture()
-        {
-            _repository = new InMemoryJwksRepository();
-        }
+    [Fact]
+    public async Task WhenGettingPublicKeysThenHasTwoKeys()
+    {
+        var publicKeys = await _repository.GetPublicKeys().ConfigureAwait(false);
 
-        [Fact]
-        public async Task WhenGettingPublicKeysThenHasTwoKeys()
-        {
-            var publicKeys = await _repository.GetPublicKeys().ConfigureAwait(false);
+        Assert.Equal(2, publicKeys.Keys.Count);
+    }
 
-            Assert.Equal(2, publicKeys.Keys.Count);
-        }
+    [Fact]
+    public async Task WhenGettingPublicKeysThenThereAreNoPrivateKeys()
+    {
+        var publicKeys = await _repository.GetPublicKeys().ConfigureAwait(false);
 
-        [Fact]
-        public async Task WhenGettingPublicKeysThenThereAreNoPrivateKeys()
-        {
-            var publicKeys = await _repository.GetPublicKeys().ConfigureAwait(false);
+        Assert.All(publicKeys.Keys, jwk => Assert.False(jwk.HasPrivateKey));
+    }
 
-            Assert.All(publicKeys.Keys, jwk => Assert.False(jwk.HasPrivateKey));
-        }
+    [Fact]
+    public async Task WhenGettingSigningKeyThenReturnsKey()
+    {
+        var signingKey = await _repository.GetSigningKey(SecurityAlgorithms.RsaSha256).ConfigureAwait(false);
 
-        [Fact]
-        public async Task WhenGettingSigningKeyThenReturnsKey()
-        {
-            var signingKey = await _repository.GetSigningKey(SecurityAlgorithms.RsaSha256).ConfigureAwait(false);
-
-            Assert.NotNull(signingKey);
-        }
+        Assert.NotNull(signingKey);
     }
 }

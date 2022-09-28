@@ -12,47 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client
+namespace SimpleAuth.Client;
+
+using System;
+using System.Text;
+using SimpleAuth.Shared.Models;
+
+/// <summary>
+/// Defines the PKCE builder.
+/// </summary>
+public static class PkceBuilder
 {
-    using System;
-    using System.Text;
-    using SimpleAuth.Shared.Models;
+    private static readonly Random Random = new();
 
     /// <summary>
-    /// Defines the PKCE builder.
+    /// Builds a PKCE challenge.
     /// </summary>
-    public static class PkceBuilder
+    /// <param name="method">The challenge method.</param>
+    /// <returns>A <see cref="Pkce"/> instance.</returns>
+    public static Pkce BuildPkce(this string method)
     {
-        private static readonly Random Random = new();
+        var codeVerifier = GetCodeVerifier();
+        var codeChallenge = GetCodeChallenge(codeVerifier, method);
+        return new Pkce(codeVerifier, codeChallenge);
+    }
 
-        /// <summary>
-        /// Builds a PKCE challenge.
-        /// </summary>
-        /// <param name="method">The challenge method.</param>
-        /// <returns>A <see cref="Pkce"/> instance.</returns>
-        public static Pkce BuildPkce(this string method)
+    private static string GetCodeVerifier()
+    {
+        const string possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
+        var nb = Random.Next(43, 128);
+        var buffer = new char[nb];
+        for (var i = 0; i < nb; i++)
         {
-            var codeVerifier = GetCodeVerifier();
-            var codeChallenge = GetCodeChallenge(codeVerifier, method);
-            return new Pkce(codeVerifier, codeChallenge);
+            buffer[i] = possibleChars[Random.Next(possibleChars.Length)];
         }
 
-        private static string GetCodeVerifier()
-        {
-            const string possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
-            var nb = Random.Next(43, 128);
-            var buffer = new char[nb];
-            for (var i = 0; i < nb; i++)
-            {
-                buffer[i] = possibleChars[Random.Next(possibleChars.Length)];
-            }
+        return new string(buffer);
+    }
 
-            return new string(buffer);
-        }
-
-        private static string GetCodeChallenge(string codeVerifier, string method)
-        {
-            return method == CodeChallengeMethods.Plain ? codeVerifier : codeVerifier.ToSha256SimplifiedBase64(Encoding.ASCII);
-        }
+    private static string GetCodeChallenge(string codeVerifier, string method)
+    {
+        return method == CodeChallengeMethods.Plain ? codeVerifier : codeVerifier.ToSha256SimplifiedBase64(Encoding.ASCII);
     }
 }

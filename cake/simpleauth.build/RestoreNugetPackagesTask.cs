@@ -1,16 +1,15 @@
-namespace SimpleAuth.Build
-{
-    using Cake.Common.Tools.DotNet;
-    using Cake.Frosting;
+namespace SimpleAuth.Build;
 
-    [TaskName("Restore-Nuget-Packages")]
-    [IsDependentOn(typeof(CleanTask))]
-    public class RestoreNugetPackagesTask : FrostingTask<BuildContext>
+using Cake.Common.Tools.DotNet;
+using Cake.Frosting;
+
+[TaskName("Restore-Nuget-Packages")]
+[IsDependentOn(typeof(CleanTask))]
+public sealed class RestoreNugetPackagesTask : FrostingTask<BuildContext>
+{
+    /// <inheritdoc />
+    public override void Run(BuildContext context)
     {
-        /// <inheritdoc />
-        public override void Run(BuildContext context)
-        {
-            context.DotNetRestore(context.SolutionName);
-        }
+        context.DotNetRestore(context.SolutionName);
     }
 }

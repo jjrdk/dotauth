@@ -1,8 +1,7 @@
-﻿namespace SimpleAuth.Server.Tests
+﻿namespace SimpleAuth.Server.Tests;
+
+internal static class TestKeys
 {
-    internal static class TestKeys
-    {
-        public const string SecretKey = "verysecretlongkey";
-        public const string SuperSecretKey = "verysecretlongkeyverysecretlongk";
-    }
+    public const string SecretKey = "verysecretlongkey";
+    public const string SuperSecretKey = "verysecretlongkeyverysecretlongk";
 }

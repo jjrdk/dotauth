@@ -12,84 +12,83 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.Authenticate
+namespace SimpleAuth.WebSite.Authenticate;
+
+using SimpleAuth.Extensions;
+using SimpleAuth.Parameters;
+using SimpleAuth.Results;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Repositories;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Events;
+
+internal sealed class AuthenticateResourceOwnerOpenIdAction
 {
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Events;
+    private readonly AuthenticateHelper _authenticateHelper;
 
-    internal class AuthenticateResourceOwnerOpenIdAction
+    public AuthenticateResourceOwnerOpenIdAction(
+        IAuthorizationCodeStore authorizationCodeStore,
+        ITokenStore tokenStore,
+        IScopeRepository scopeRepository,
+        IConsentRepository consentRepository,
+        IClientStore clientStore,
+        IJwksStore jwksStore,
+        IEventPublisher eventPublisher,
+        ILogger logger)
     {
-        private readonly AuthenticateHelper _authenticateHelper;
+        _authenticateHelper = new AuthenticateHelper(
+            authorizationCodeStore,
+            tokenStore,
+            scopeRepository,
+            consentRepository,
+            clientStore,
+            jwksStore,
+            eventPublisher,
+            logger);
+    }
 
-        public AuthenticateResourceOwnerOpenIdAction(
-            IAuthorizationCodeStore authorizationCodeStore,
-            ITokenStore tokenStore,
-            IScopeRepository scopeRepository,
-            IConsentRepository consentRepository,
-            IClientStore clientStore,
-            IJwksStore jwksStore,
-            IEventPublisher eventPublisher,
-            ILogger logger)
+    /// <summary>
+    /// Returns an action resultKind to the controller's action.
+    /// 1). Redirect to the consent screen if the user is authenticated AND the request doesn't contain a login prompt.
+    /// 2). Do nothing
+    /// </summary>
+    /// <param name="authorizationParameter">The parameter</param>
+    /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
+    /// <param name="code">Encrypted parameter</param>
+    /// <param name="issuerName"></param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns>Action resultKind to the controller's action</returns>
+    public async Task<EndpointResult> Execute(
+        AuthorizationParameter authorizationParameter,
+        ClaimsPrincipal? resourceOwnerPrincipal,
+        string? code,
+        string? issuerName,
+        CancellationToken cancellationToken)
+    {
+        var resourceOwnerIsAuthenticated = resourceOwnerPrincipal.IsAuthenticated();
+        var promptParameters = authorizationParameter.Prompt.ParsePrompts();
+
+        // 1).
+        if (resourceOwnerIsAuthenticated
+            && !promptParameters.Contains(PromptParameters.Login))
         {
-            _authenticateHelper = new AuthenticateHelper(
-                authorizationCodeStore,
-                tokenStore,
-                scopeRepository,
-                consentRepository,
-                clientStore,
-                jwksStore,
-                eventPublisher,
-                logger);
+            var subject = resourceOwnerPrincipal.GetSubject()!;
+            var claims = resourceOwnerPrincipal!.Claims.ToArray();
+            return await _authenticateHelper.ProcessRedirection(
+                    authorizationParameter,
+                    code,
+                    subject,
+                    claims,
+                    issuerName,
+                    cancellationToken)
+                .ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Returns an action resultKind to the controller's action.
-        /// 1). Redirect to the consent screen if the user is authenticated AND the request doesn't contain a login prompt.
-        /// 2). Do nothing
-        /// </summary>
-        /// <param name="authorizationParameter">The parameter</param>
-        /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
-        /// <param name="code">Encrypted parameter</param>
-        /// <param name="issuerName"></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns>Action resultKind to the controller's action</returns>
-        public async Task<EndpointResult> Execute(
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal? resourceOwnerPrincipal,
-            string? code,
-            string? issuerName,
-            CancellationToken cancellationToken)
-        {
-            var resourceOwnerIsAuthenticated = resourceOwnerPrincipal.IsAuthenticated();
-            var promptParameters = authorizationParameter.Prompt.ParsePrompts();
-
-            // 1).
-            if (resourceOwnerIsAuthenticated
-                && !promptParameters.Contains(PromptParameters.Login))
-            {
-                var subject = resourceOwnerPrincipal.GetSubject()!;
-                var claims = resourceOwnerPrincipal!.Claims.ToArray();
-                return await _authenticateHelper.ProcessRedirection(
-                        authorizationParameter,
-                        code,
-                        subject,
-                        claims,
-                        issuerName,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            }
-
-            // 2).
-            return EndpointResult.CreateAnEmptyActionResultWithNoEffect();
-        }
+        // 2).
+        return EndpointResult.CreateAnEmptyActionResultWithNoEffect();
     }
 }

@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Parameters
-{
-    internal record RevokeTokenParameter : GrantTypeParameter
-    {
-        public string? Token { get; init; }
+namespace SimpleAuth.Parameters;
 
-        public string? TokenTypeHint { get; init; }
-    }
+internal sealed record RevokeTokenParameter : GrantTypeParameter
+{
+    public string? Token { get; init; }
+
+    public string? TokenTypeHint { get; init; }
 }

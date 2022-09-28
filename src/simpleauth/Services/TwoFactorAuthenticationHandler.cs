@@ -12,48 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Services
+namespace SimpleAuth.Services;
+
+using Shared.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+internal sealed class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
 {
-    using Shared.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    private readonly ITwoFactorAuthenticationService[] _twoFactorServices;
 
-    internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
+    public TwoFactorAuthenticationHandler(IEnumerable<ITwoFactorAuthenticationService> twoFactorServices)
     {
-        private readonly ITwoFactorAuthenticationService[] _twoFactorServices;
+        _twoFactorServices = twoFactorServices.ToArray();
+    }
 
-        public TwoFactorAuthenticationHandler(IEnumerable<ITwoFactorAuthenticationService> twoFactorServices)
+    public ITwoFactorAuthenticationService? Get(string twoFactorAuthType)
+    {
+        if (string.IsNullOrWhiteSpace(twoFactorAuthType))
         {
-            _twoFactorServices = twoFactorServices.ToArray();
+            throw new ArgumentNullException(nameof(twoFactorAuthType));
         }
 
-        public ITwoFactorAuthenticationService? Get(string twoFactorAuthType)
-        {
-            if (string.IsNullOrWhiteSpace(twoFactorAuthType))
-            {
-                throw new ArgumentNullException(nameof(twoFactorAuthType));
-            }
+        return _twoFactorServices.FirstOrDefault(s => s.Name == twoFactorAuthType);
+    }
 
-            return _twoFactorServices.FirstOrDefault(s => s.Name == twoFactorAuthType);
+    public IEnumerable<ITwoFactorAuthenticationService> GetAll()
+    {
+        return _twoFactorServices;
+    }
+
+    public async Task<bool> SendCode(string code, string twoFactorAuthType, ResourceOwner user)
+    {
+        var service = Get(twoFactorAuthType);
+        if (service == null)
+        {
+            return false;
         }
 
-        public IEnumerable<ITwoFactorAuthenticationService> GetAll()
-        {
-            return _twoFactorServices;
-        }
-
-        public async Task<bool> SendCode(string code, string twoFactorAuthType, ResourceOwner user)
-        {
-            var service = Get(twoFactorAuthType);
-            if (service == null)
-            {
-                return false;
-            }
-
-            await service.Send(code, user).ConfigureAwait(false);
-            return true;
-        }
+        await service.Send(code, user).ConfigureAwait(false);
+        return true;
     }
 }

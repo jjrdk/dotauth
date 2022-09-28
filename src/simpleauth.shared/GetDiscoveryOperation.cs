@@ -12,66 +12,65 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared
+namespace SimpleAuth.Shared;
+
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SimpleAuth.Shared.Responses;
+
+internal sealed class GetDiscoveryOperation
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json;
-    using SimpleAuth.Shared.Responses;
+    private readonly SemaphoreSlim _semaphore = new(1);
 
-    internal class GetDiscoveryOperation
+    private readonly Dictionary<string, DiscoveryInformation> _cache = new();
+
+    private readonly Uri _discoveryDocumentationUri;
+    private readonly Func<HttpClient> _httpClient;
+
+    public GetDiscoveryOperation(Uri authority, Func<HttpClient> httpClient)
     {
-        private readonly SemaphoreSlim _semaphore = new(1);
+        var uri = new UriBuilder(
+            authority.Scheme,
+            authority.Host,
+            authority.Port,
+            "/.well-known/openid-configuration");
+        _discoveryDocumentationUri = uri.Uri;
+        _httpClient = httpClient;
+    }
 
-        private readonly Dictionary<string, DiscoveryInformation> _cache = new();
-
-        private readonly Uri _discoveryDocumentationUri;
-        private readonly Func<HttpClient> _httpClient;
-
-        public GetDiscoveryOperation(Uri authority, Func<HttpClient> httpClient)
+    public async Task<DiscoveryInformation> Execute(CancellationToken cancellationToken = default)
+    {
+        var key = _discoveryDocumentationUri.ToString();
+        try
         {
-            var uri = new UriBuilder(
-                authority.Scheme,
-                authority.Host,
-                authority.Port,
-                "/.well-known/openid-configuration");
-            _discoveryDocumentationUri = uri.Uri;
-            _httpClient = httpClient;
-        }
-
-        public async Task<DiscoveryInformation> Execute(CancellationToken cancellationToken = default)
-        {
-            var key = _discoveryDocumentationUri.ToString();
-            try
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            if (_cache.TryGetValue(key, out var doc))
             {
-                await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-                if (_cache.TryGetValue(key, out var doc))
-                {
-                    return doc;
-                }
+                return doc;
+            }
 
-                var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryDocumentationUri };
-                request.Headers.Accept.Clear();
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var response =
-                    await _httpClient().SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryDocumentationUri };
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var response =
+                await _httpClient().SendAsync(request, cancellationToken).ConfigureAwait(false);
 #if NET5_0
                 var serializedContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 #else
-                var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 #endif
-                doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent)!;
-                _cache.Add(key, doc);
-                return doc;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent)!;
+            _cache.Add(key, doc);
+            return doc;
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 }

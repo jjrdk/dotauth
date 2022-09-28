@@ -1,6 +1,5 @@
-﻿namespace SimpleAuth.UI
+﻿namespace SimpleAuth.UI;
+
+public interface IDefaultUi
 {
-    public interface IDefaultUi
-    {
-    }
 }

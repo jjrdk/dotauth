@@ -12,47 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests
+namespace SimpleAuth.Server.Tests;
+
+using System;
+using Microsoft.IdentityModel.Tokens;
+using Moq;
+using Shared;
+using SimpleAuth;
+using System.Net.Http;
+using SimpleAuth.Extensions;
+using SimpleAuth.Shared.Repositories;
+using SimpleAuth.Sms;
+
+public sealed class SharedContext
 {
-    using System;
-    using Microsoft.IdentityModel.Tokens;
-    using Moq;
-    using Shared;
-    using SimpleAuth;
-    using System.Net.Http;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Sms;
-
-    public class SharedContext
+    public SharedContext()
     {
-        public SharedContext()
-        {
-            SignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
-            ModelSignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
-            EncryptionKey = TestKeys.SecretKey.CreateEncryptionJwk();
-            ModelEncryptionKey = TestKeys.SuperSecretKey.CreateJwk(
-                JsonWebKeyUseNames.Enc,
-                KeyOperations.Decrypt,
-                KeyOperations.Encrypt);
-            ConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
-            TwilioClient = new Mock<ISmsClient>();
-        }
-
-        public JsonWebKey EncryptionKey { get; }
-
-        public JsonWebKey ModelEncryptionKey { get; }
-
-        public JsonWebKey SignatureKey { get; }
-
-        public JsonWebKey ModelSignatureKey { get; }
-
-        public Mock<IConfirmationCodeStore> ConfirmationCodeStore { get; }
-
-        public Mock<ISmsClient> TwilioClient { get; }
-
-        public Func<HttpClient> Client { get; set; }
-
-        public HttpMessageHandler ClientHandler { get; set; }
+        SignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
+        ModelSignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
+        EncryptionKey = TestKeys.SecretKey.CreateEncryptionJwk();
+        ModelEncryptionKey = TestKeys.SuperSecretKey.CreateJwk(
+            JsonWebKeyUseNames.Enc,
+            KeyOperations.Decrypt,
+            KeyOperations.Encrypt);
+        ConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
+        TwilioClient = new Mock<ISmsClient>();
     }
+
+    public JsonWebKey EncryptionKey { get; }
+
+    public JsonWebKey ModelEncryptionKey { get; }
+
+    public JsonWebKey SignatureKey { get; }
+
+    public JsonWebKey ModelSignatureKey { get; }
+
+    public Mock<IConfirmationCodeStore> ConfirmationCodeStore { get; }
+
+    public Mock<ISmsClient> TwilioClient { get; }
+
+    public Func<HttpClient> Client { get; set; }
+
+    public HttpMessageHandler ClientHandler { get; set; }
 }

@@ -1,14 +1,13 @@
-﻿namespace SimpleAuth
-{
-    using System.Threading.Tasks;
-    using SimpleAuth.Events;
-    using SimpleAuth.Shared;
+﻿namespace SimpleAuth;
 
-    internal class NoOpPublisher : IEventPublisher
+using System.Threading.Tasks;
+using SimpleAuth.Events;
+using SimpleAuth.Shared;
+
+internal sealed class NoOpPublisher : IEventPublisher
+{
+    public Task Publish<T>(T evt) where T : Event
     {
-        public Task Publish<T>(T evt) where T : Event
-        {
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

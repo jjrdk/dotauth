@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Authenticate
-{
-    using System.Security.Cryptography.X509Certificates;
+namespace SimpleAuth.Authenticate;
 
-    internal class AuthenticateInstruction
-    {
-        public string? ClientIdFromHttpRequestBody { get; set; }
-        public string? ClientSecretFromHttpRequestBody { get; set; }
-        public string? ClientIdFromAuthorizationHeader { get; set; }
-        public string? ClientSecretFromAuthorizationHeader { get; set; }
-        public string? ClientAssertionType { get; set; }
-        public string? ClientAssertion { get; set; }
-        public X509Certificate2? Certificate { get; set; }
-    }
+using System.Security.Cryptography.X509Certificates;
+
+internal sealed class AuthenticateInstruction
+{
+    public string? ClientIdFromHttpRequestBody { get; set; }
+    public string? ClientSecretFromHttpRequestBody { get; set; }
+    public string? ClientIdFromAuthorizationHeader { get; set; }
+    public string? ClientSecretFromAuthorizationHeader { get; set; }
+    public string? ClientAssertionType { get; set; }
+    public string? ClientAssertion { get; set; }
+    public X509Certificate2? Certificate { get; set; }
 }

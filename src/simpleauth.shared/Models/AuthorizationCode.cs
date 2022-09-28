@@ -12,59 +12,58 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Models
+namespace SimpleAuth.Shared.Models;
+
+using System;
+using System.IdentityModel.Tokens.Jwt;
+
+/// <summary>
+/// Defines the authorization code.
+/// </summary>
+public sealed record AuthorizationCode
 {
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
+    /// <summary>
+    /// Gets or sets the authorization code.
+    /// </summary>
+    public string Code { get; set; } = null!;
 
     /// <summary>
-    /// Defines the authorization code.
+    /// Gets or sets the redirection uri.
     /// </summary>
-    public record AuthorizationCode
-    {
-        /// <summary>
-        /// Gets or sets the authorization code.
-        /// </summary>
-        public string Code { get; set; } = null!;
+    public Uri RedirectUri { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets the redirection uri.
-        /// </summary>
-        public Uri RedirectUri { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the creation date time.
+    /// </summary>
+    public DateTimeOffset CreateDateTime { get; set; }
 
-        /// <summary>
-        /// Gets or sets the creation date time.
-        /// </summary>
-        public DateTimeOffset CreateDateTime { get; set; }
+    /// <summary>
+    /// Gets or sets the client id.
+    /// </summary>
+    public string ClientId { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets the client id.
-        /// </summary>
-        public string ClientId { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the id token payload.
+    /// </summary>
+    public JwtPayload? IdTokenPayload { get; set; }
 
-        /// <summary>
-        /// Gets or sets the id token payload.
-        /// </summary>
-        public JwtPayload? IdTokenPayload { get; set; }
+    /// <summary>
+    /// Gets or sets the user information payload.
+    /// </summary>
+    public JwtPayload? UserInfoPayLoad { get; set; }
 
-        /// <summary>
-        /// Gets or sets the user information payload.
-        /// </summary>
-        public JwtPayload? UserInfoPayLoad { get; set; }
+    /// <summary>
+    /// Gets or sets the concatenated list of scopes.
+    /// </summary>
+    public string Scopes { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets the concatenated list of scopes.
-        /// </summary>
-        public string Scopes { get; set; } = null!;
+    /// <summary>
+    /// Code challenge.
+    /// </summary>
+    public string CodeChallenge { get; set; } = null!;
 
-        /// <summary>
-        /// Code challenge.
-        /// </summary>
-        public string CodeChallenge { get; set; } = null!;
-
-        /// <summary>
-        /// Code challenge method.
-        /// </summary>
-        public string CodeChallengeMethod { get; set; } = null!;
-    }
+    /// <summary>
+    /// Code challenge method.
+    /// </summary>
+    public string CodeChallengeMethod { get; set; } = null!;
 }

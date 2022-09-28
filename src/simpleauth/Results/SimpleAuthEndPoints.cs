@@ -12,31 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Results
+namespace SimpleAuth.Results;
+
+/// <summary>
+/// Defines the SimpleAuth endpoints.
+/// </summary>
+public enum SimpleAuthEndPoints
 {
     /// <summary>
-    /// Defines the SimpleAuth endpoints.
+    /// Consent screen
     /// </summary>
-    public enum SimpleAuthEndPoints
-    {
-        /// <summary>
-        /// Consent screen
-        /// </summary>
-        ConsentIndex,
+    ConsentIndex,
 
-        /// <summary>
-        /// Authenticate screen
-        /// </summary>
-        AuthenticateIndex,
+    /// <summary>
+    /// Authenticate screen
+    /// </summary>
+    AuthenticateIndex,
 
-        /// <summary>
-        /// Form screen
-        /// </summary>
-        FormIndex,
+    /// <summary>
+    /// Form screen
+    /// </summary>
+    FormIndex,
 
-        /// <summary>
-        /// Send code screen
-        /// </summary>
-        SendCode
-    }
+    /// <summary>
+    /// Send code screen
+    /// </summary>
+    SendCode
 }

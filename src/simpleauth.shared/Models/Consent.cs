@@ -12,71 +12,70 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Models
+namespace SimpleAuth.Shared.Models;
+
+using System;
+
+/// <summary>
+/// Defines the consent content.
+/// </summary>
+public sealed record Consent
 {
-    using System;
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
+    /// <value>
+    /// The identifier.
+    /// </value>
+    public string Id { get; set; } = null!;
 
     /// <summary>
-    /// Defines the consent content.
+    /// Gets or sets the client id.
     /// </summary>
-    public record Consent
-    {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        public string Id { get; set; } = null!;
+    /// <value>
+    /// The client id.
+    /// </value>
+    public string ClientId { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets the client id.
-        /// </summary>
-        /// <value>
-        /// The client id.
-        /// </value>
-        public string ClientId { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the client name.
+    /// </summary>
+    /// <value>
+    /// The client name.
+    /// </value>
+    public string ClientName { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets the client name.
-        /// </summary>
-        /// <value>
-        /// The client name.
-        /// </value>
-        public string ClientName { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the policy <see cref="Uri"/>.
+    /// </summary>
+    public Uri? PolicyUri { get; set; }
 
-        /// <summary>
-        /// Gets or sets the policy <see cref="Uri"/>.
-        /// </summary>
-        public Uri? PolicyUri { get; set; }
+    /// <summary>
+    /// Gets or sets the terms of service <see cref="Uri"/>.
+    /// </summary>
+    public Uri? TosUri { get; set; }
 
-        /// <summary>
-        /// Gets or sets the terms of service <see cref="Uri"/>.
-        /// </summary>
-        public Uri? TosUri { get; set; }
+    /// <summary>
+    /// Gets or sets the resource owner's subject.
+    /// </summary>
+    /// <value>
+    /// The resource owner's subject.
+    /// </value>
+    public string Subject { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets the resource owner's subject.
-        /// </summary>
-        /// <value>
-        /// The resource owner's subject.
-        /// </value>
-        public string Subject { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the granted scopes.
+    /// </summary>
+    /// <value>
+    /// The granted scopes.
+    /// </value>
+    public string[] GrantedScopes { get; set; } = Array.Empty<string>();
 
-        /// <summary>
-        /// Gets or sets the granted scopes.
-        /// </summary>
-        /// <value>
-        /// The granted scopes.
-        /// </value>
-        public string[] GrantedScopes { get; set; } = Array.Empty<string>();
-
-        /// <summary>
-        /// Gets or sets the claims.
-        /// </summary>
-        /// <value>
-        /// The claims.
-        /// </value>
-        public string[] Claims { get; set; } = Array.Empty<string>();
-    }
+    /// <summary>
+    /// Gets or sets the claims.
+    /// </summary>
+    /// <value>
+    /// The claims.
+    /// </value>
+    public string[] Claims { get; set; } = Array.Empty<string>();
 }

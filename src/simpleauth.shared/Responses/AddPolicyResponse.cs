@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses
-{
-    using System.Runtime.Serialization;
+namespace SimpleAuth.Shared.Responses;
 
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the add policy response.
+/// </summary>
+[DataContract]
+public sealed record AddPolicyResponse
+{
     /// <summary>
-    /// Defines the add policy response.
+    /// Gets or sets the policy identifier.
     /// </summary>
-    [DataContract]
-    public record AddPolicyResponse
-    {
-        /// <summary>
-        /// Gets or sets the policy identifier.
-        /// </summary>
-        /// <value>
-        /// The policy identifier.
-        /// </value>
-        [DataMember(Name = "policy")]
-        public string PolicyId { get; set; } = null!;
-    }
+    /// <value>
+    /// The policy identifier.
+    /// </value>
+    [DataMember(Name = "policy")]
+    public string PolicyId { get; set; } = null!;
 }

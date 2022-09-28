@@ -1,45 +1,44 @@
-﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests
+﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests;
+
+using System;
+using System.Net.Http;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit.Abstractions;
+
+public sealed class TestServerFixture : IDisposable
 {
-    using System;
-    using System.Net.Http;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.TestHost;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Xunit.Abstractions;
+    public TestServer Server { get; }
+    public Func<HttpClient> Client { get; }
+    public SharedContext SharedCtx { get; }
 
-    public class TestServerFixture : IDisposable
+    public TestServerFixture(ITestOutputHelper outputHelper, string connectionString, params string[] urls)
     {
-        public TestServer Server { get; }
-        public Func<HttpClient> Client { get; }
-        public SharedContext SharedCtx { get; }
+        SharedCtx = SharedContext.Instance;
+        var startup = new ServerStartup(SharedCtx, connectionString, outputHelper);
+        Server = new TestServer(
+            new WebHostBuilder().UseUrls(urls)
+                .UseConfiguration(
+                    new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).AddEnvironmentVariables().Build())
+                .ConfigureServices(
+                    services =>
+                    {
+                        services.AddSingleton(SharedCtx);
+                        startup.ConfigureServices(services);
+                    })
+                .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
+                .Configure(startup.Configure));
+        Client = () => Server.CreateClient();
+        SharedCtx.Client = Client;
+        SharedCtx.Handler = () => Server.CreateHandler();
+    }
 
-        public TestServerFixture(ITestOutputHelper outputHelper, string connectionString, params string[] urls)
-        {
-            SharedCtx = SharedContext.Instance;
-            var startup = new ServerStartup(SharedCtx, connectionString, outputHelper);
-            Server = new TestServer(
-                new WebHostBuilder().UseUrls(urls)
-                    .UseConfiguration(
-                        new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).AddEnvironmentVariables().Build())
-                    .ConfigureServices(
-                        services =>
-                        {
-                            services.AddSingleton(SharedCtx);
-                            startup.ConfigureServices(services);
-                        })
-                    .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
-                    .Configure(startup.Configure));
-            Client = () => Server.CreateClient();
-            SharedCtx.Client = Client;
-            SharedCtx.Handler = () => Server.CreateHandler();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            Server.Dispose();
-            Client?.Invoke()?.Dispose();
-        }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        Server.Dispose();
+        Client?.Invoke()?.Dispose();
     }
 }

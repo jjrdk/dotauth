@@ -12,37 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared
+namespace SimpleAuth.Shared;
+
+using System;
+
+/// <summary>
+/// Defines the abstract event type.
+/// </summary>
+public abstract record Event
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Event"/> class.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="timestamp">The timestamp.</param>
+    protected Event(string id, DateTimeOffset timestamp)
+    {
+        Id = id;
+        Timestamp = timestamp;
+    }
 
     /// <summary>
-    /// Defines the abstract event type.
+    /// Identity the event
     /// </summary>
-    public abstract record Event
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Event"/> class.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="timestamp">The timestamp.</param>
-        protected Event(string id, DateTimeOffset timestamp)
-        {
-            Id = id;
-            Timestamp = timestamp;
-        }
+    public string Id { get; }
 
-        /// <summary>
-        /// Identity the event
-        /// </summary>
-        public string Id { get; }
-
-        /// <summary>
-        /// Gets the timestamp.
-        /// </summary>
-        /// <value>
-        /// The timestamp.
-        /// </value>
-        public DateTimeOffset Timestamp { get; }
-    }
+    /// <summary>
+    /// Gets the timestamp.
+    /// </summary>
+    /// <value>
+    /// The timestamp.
+    /// </value>
+    public DateTimeOffset Timestamp { get; }
 }

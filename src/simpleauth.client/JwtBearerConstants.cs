@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client
+namespace SimpleAuth.Client;
+
+internal static class JwtBearerConstants
 {
-    internal static class JwtBearerConstants
-    {
-        public const string BearerScheme = "Bearer";
-    }
+    public const string BearerScheme = "Bearer";
 }

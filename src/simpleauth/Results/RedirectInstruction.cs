@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Results
+namespace SimpleAuth.Results;
+
+using System;
+
+internal sealed record RedirectInstruction
 {
-    using System;
+    public Parameter[] Parameters { get; init; } = Array.Empty<Parameter>();
 
-    internal record RedirectInstruction
+    public SimpleAuthEndPoints Action { get; init; }
+
+    public string? ResponseMode { get; init; }
+
+    public RedirectInstruction AddParameter(string name, string? value)
     {
-        public Parameter[] Parameters { get; init; } = Array.Empty<Parameter>();
-
-        public SimpleAuthEndPoints Action { get; init; }
-
-        public string? ResponseMode { get; init; }
-
-        public RedirectInstruction AddParameter(string name, string? value)
-        {
-            var record = new Parameter(name, value ?? string.Empty);
-            var newRecords = new Parameter[Parameters.Length + 1];
-            Parameters.CopyTo(newRecords, 0);
-            newRecords[^1] = record;
-            return this with { Parameters = newRecords };
-        }
+        var record = new Parameter(name, value ?? string.Empty);
+        var newRecords = new Parameter[Parameters.Length + 1];
+        Parameters.CopyTo(newRecords, 0);
+        newRecords[^1] = record;
+        return this with { Parameters = newRecords };
     }
 }

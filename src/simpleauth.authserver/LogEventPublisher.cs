@@ -1,38 +1,37 @@
-﻿namespace SimpleAuth.AuthServer
+﻿namespace SimpleAuth.AuthServer;
+
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using SimpleAuth.Events;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Events.Logging;
+
+/// <summary>
+/// Defines the trace event publisher.
+/// </summary>
+internal sealed class LogEventPublisher : IEventPublisher
 {
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
-    using SimpleAuth.Events;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Events.Logging;
+    private readonly ILogger<LogEventPublisher> _logger;
 
-    /// <summary>
-    /// Defines the trace event publisher.
-    /// </summary>
-    internal class LogEventPublisher : IEventPublisher
+    public LogEventPublisher(ILogger<LogEventPublisher> logger)
     {
-        private readonly ILogger<LogEventPublisher> _logger;
+        _logger = logger;
+    }
 
-        public LogEventPublisher(ILogger<LogEventPublisher> logger)
+    /// <inheritdoc />
+    public Task Publish<T>(T evt)
+        where T : Event
+    {
+        var json = JsonConvert.SerializeObject(evt);
+        if (evt is SimpleAuthError)
         {
-            _logger = logger;
+            _logger.LogError(json);
         }
-
-        /// <inheritdoc />
-        public Task Publish<T>(T evt)
-            where T : Event
+        else
         {
-            var json = JsonConvert.SerializeObject(evt);
-            if (evt is SimpleAuthError)
-            {
-                _logger.LogError(json);
-            }
-            else
-            {
-                _logger.LogInformation(json);
-            }
-            return Task.CompletedTask;
+            _logger.LogInformation(json);
         }
+        return Task.CompletedTask;
     }
 }

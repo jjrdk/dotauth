@@ -12,60 +12,59 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.ResourceOwners
+namespace SimpleAuth.Tests.Api.ResourceOwners;
+
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Repositories;
+using Shared.Models;
+using Shared.Repositories;
+using SimpleAuth.Shared;
+using Xunit;
+
+public sealed class UpdateResourceOwnerClaimsActionFixture
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Repositories;
-    using Shared.Models;
-    using Shared.Repositories;
-    using SimpleAuth.Shared;
-    using Xunit;
+    private IResourceOwnerRepository _resourceOwnerRepositoryStub;
 
-    public class UpdateResourceOwnerClaimsActionFixture
+    [Fact]
+    public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
     {
-        private IResourceOwnerRepository _resourceOwnerRepositoryStub;
+        InitializeFakeObjects();
 
-        [Fact]
-        public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-        {
-            InitializeFakeObjects();
+        await Assert
+            .ThrowsAsync<ArgumentNullException>(
+                () => _resourceOwnerRepositoryStub.Update(null, CancellationToken.None))
+            .ConfigureAwait(false);
+    }
 
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _resourceOwnerRepositoryStub.Update(null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
+    [Fact]
+    public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsNull()
+    {
+        const string subject = "invalid_subject";
 
-        [Fact]
-        public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsNull()
-        {
-            const string subject = "invalid_subject";
+        InitializeFakeObjects();
 
-            InitializeFakeObjects();
+        var owner = await _resourceOwnerRepositoryStub.Get(subject, CancellationToken.None).ConfigureAwait(false);
 
-            var owner = await _resourceOwnerRepositoryStub.Get(subject, CancellationToken.None).ConfigureAwait(false);
+        Assert.Null(owner);
+    }
 
-            Assert.Null(owner);
-        }
+    [Fact]
+    public async Task When_Resource_Owner_Cannot_Be_Updated_Then_ReturnsFalse()
+    {
+        InitializeFakeObjects();
 
-        [Fact]
-        public async Task When_Resource_Owner_Cannot_Be_Updated_Then_ReturnsFalse()
-        {
-            InitializeFakeObjects();
+        var result = await _resourceOwnerRepositoryStub
+            .Update(new ResourceOwner { Subject = "blah" }, CancellationToken.None)
+            .ConfigureAwait(false);
 
-            var result = await _resourceOwnerRepositoryStub
-                .Update(new ResourceOwner { Subject = "blah" }, CancellationToken.None)
-                .ConfigureAwait(false);
+        Assert.IsType<Option.Error>(result);
+    }
 
-            Assert.IsType<Option.Error>(result);
-        }
-
-        private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
-        {
-            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(string.Empty, new List<ResourceOwner>(resourceOwners));
-        }
+    private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
+    {
+        _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(string.Empty, new List<ResourceOwner>(resourceOwners));
     }
 }

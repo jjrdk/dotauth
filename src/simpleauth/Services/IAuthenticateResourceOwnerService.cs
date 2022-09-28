@@ -12,35 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Services
+namespace SimpleAuth.Services;
+
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared.Models;
+
+/// <summary>
+/// Defines the authenticate resource owner service interface.
+/// </summary>
+public interface IAuthenticateResourceOwnerService
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
+    /// <summary>
+    /// Authenticates the resource owner.
+    /// </summary>
+    /// <param name="login">The login.</param>
+    /// <param name="password">The password.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns></returns>
+    Task<ResourceOwner?> AuthenticateResourceOwner(
+        string login,
+        string password,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Defines the authenticate resource owner service interface.
+    /// Gets the amr.
     /// </summary>
-    public interface IAuthenticateResourceOwnerService
-    {
-        /// <summary>
-        /// Authenticates the resource owner.
-        /// </summary>
-        /// <param name="login">The login.</param>
-        /// <param name="password">The password.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<ResourceOwner?> AuthenticateResourceOwner(
-            string login,
-            string password,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Gets the amr.
-        /// </summary>
-        /// <value>
-        /// The amr.
-        /// </value>
-        string Amr { get; }
-    }
+    /// <value>
+    /// The amr.
+    /// </value>
+    string Amr { get; }
 }

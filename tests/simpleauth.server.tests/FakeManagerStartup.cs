@@ -12,54 +12,53 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests
+namespace SimpleAuth.Server.Tests;
+
+using Controllers;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using SimpleAuth;
+using SimpleAuth.Repositories;
+using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SimpleAuth.UI;
+
+public sealed class FakeManagerStartup
 {
-    using Controllers;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
-    using SimpleAuth;
-    using SimpleAuth.Repositories;
-    using System.Reflection;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using SimpleAuth.UI;
+    private const string DefaultSchema = "Cookies";
 
-    public class FakeManagerStartup
+    public void ConfigureServices(IServiceCollection services)
     {
-        private const string DefaultSchema = "Cookies";
+        RegisterServices(services);
+        services.AddControllers().AddApplicationPart(typeof(ClientsController).GetTypeInfo().Assembly);
+    }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            RegisterServices(services);
-            services.AddControllers().AddApplicationPart(typeof(ClientsController).GetTypeInfo().Assembly);
-        }
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
+    }
 
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
-        }
-
-        private static void RegisterServices(IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddHttpClient();
-            serviceCollection.AddSimpleAuth(
-                new SimpleAuthOptions
-                {
-                    Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStorage.GetUsers()),
-                },
-                new[] {JwtBearerDefaults.AuthenticationScheme},
-                assemblyTypes: typeof(IDefaultUi));
-            serviceCollection.AddAuthentication(opts =>
+    private static void RegisterServices(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddHttpClient();
+        serviceCollection.AddSimpleAuth(
+            new SimpleAuthOptions
             {
-                opts.DefaultAuthenticateScheme = DefaultSchema;
-                opts.DefaultChallengeScheme = DefaultSchema;
-            });
-            serviceCollection.AddAuthorization(options =>
+                Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStorage.GetUsers()),
+            },
+            new[] {JwtBearerDefaults.AuthenticationScheme},
+            assemblyTypes: typeof(IDefaultUi));
+        serviceCollection.AddAuthentication(opts =>
+        {
+            opts.DefaultAuthenticateScheme = DefaultSchema;
+            opts.DefaultChallengeScheme = DefaultSchema;
+        });
+        serviceCollection.AddAuthorization(options =>
+        {
+            options.AddPolicy("manager", policy =>
             {
-                options.AddPolicy("manager", policy =>
-                {
-                    policy.RequireAssertion(p => true);
-                });
+                policy.RequireAssertion(p => true);
             });
-        }
+        });
     }
 }

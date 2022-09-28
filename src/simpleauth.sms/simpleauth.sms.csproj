@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>SimpleAuth SMS Authentication Library</Description>
         <Title>SimpleAuth SMS Authentication</Title>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
         <AssemblyName>simpleauth.sms</AssemblyName>
         <PackageId>simpleauth.sms</PackageId>
         <RootNamespace>SimpleAuth.Sms</RootNamespace>
@@ -12,8 +12,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-        <DocumentationFile>bin\$(Configuration)\net6.0\$(PackageId).xml</DocumentationFile>
+    <PropertyGroup>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
     </PropertyGroup>
 
     <Import Project="../../shared.projinfo" />
@@ -22,7 +22,7 @@
         <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.3.48" />
+        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.4.11" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Properties\SmsStrings.Designer.cs">

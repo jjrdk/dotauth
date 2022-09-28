@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Parameters
+namespace SimpleAuth.Parameters;
+
+internal sealed record ClientCredentialsGrantTypeParameter : GrantTypeParameter
 {
-    internal record ClientCredentialsGrantTypeParameter : GrantTypeParameter
-    {
-        /// <summary>
-        /// Gets or sets the scope
-        /// </summary>
-        public string? Scope { get; init; }
-    }
+    /// <summary>
+    /// Gets or sets the scope
+    /// </summary>
+    public string? Scope { get; init; }
 }

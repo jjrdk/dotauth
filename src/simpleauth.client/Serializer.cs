@@ -12,89 +12,88 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client
+namespace SimpleAuth.Client;
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+internal sealed class Serializer
 {
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Linq;
-    using System.Security.Claims;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
+    private readonly JsonSerializer _serializer;
 
-    internal sealed class Serializer
+    private Serializer()
     {
-        private readonly JsonSerializer _serializer;
-
-        private Serializer()
+        _serializer = new JsonSerializer
         {
-            _serializer = new JsonSerializer
+            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+            NullValueHandling = NullValueHandling.Ignore,
+            StringEscapeHandling = StringEscapeHandling.EscapeHtml
+        };
+        _serializer.Converters.Add(new ClaimConverter());
+    }
+
+    public static Serializer Default { get; } = new();
+
+    public string Serialize<T>(T item)
+    {
+        using var writer = new StringWriter();
+        _serializer.Serialize(writer, item, typeof(T));
+        writer.Flush();
+        return writer.GetStringBuilder().ToString();
+    }
+
+    public T? Deserialize<T>(string json) where T : class
+    {
+        using var reader = new StringReader(json);
+        using var jsonReader = new JsonTextReader(reader);
+        return _serializer.Deserialize<T>(jsonReader);
+    }
+
+    private sealed class ClaimConverter : JsonConverter<Claim>
+    {
+        public override void WriteJson(JsonWriter writer, [AllowNull] Claim value, JsonSerializer serializer)
+        {
+            if (value == null)
             {
-                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                NullValueHandling = NullValueHandling.Ignore,
-                StringEscapeHandling = StringEscapeHandling.EscapeHtml
-            };
-            _serializer.Converters.Add(new ClaimConverter());
+                return;
+            }
+            writer.WriteStartObject();
+            writer.WritePropertyName(value.Type);
+            writer.WriteValue(value.Value);
+            writer.WriteEndObject();
         }
 
-        public static Serializer Default { get; } = new();
-
-        public string Serialize<T>(T item)
+        public override Claim ReadJson(
+            JsonReader reader,
+            Type objectType,
+            [AllowNull] Claim existingValue,
+            bool hasExistingValue,
+            JsonSerializer serializer)
         {
-            using var writer = new StringWriter();
-            _serializer.Serialize(writer, item, typeof(T));
-            writer.Flush();
-            return writer.GetStringBuilder().ToString();
-        }
-
-        public T? Deserialize<T>(string json) where T : class
-        {
-            using var reader = new StringReader(json);
-            using var jsonReader = new JsonTextReader(reader);
-            return _serializer.Deserialize<T>(jsonReader);
-        }
-
-        private class ClaimConverter : JsonConverter<Claim>
-        {
-            public override void WriteJson(JsonWriter writer, [AllowNull] Claim value, JsonSerializer serializer)
+            var obj = serializer.Deserialize<JObject>(reader);
+            if (obj == null)
             {
-                if (value == null)
-                {
-                    return;
-                }
-                writer.WriteStartObject();
-                writer.WritePropertyName(value.Type);
-                writer.WriteValue(value.Value);
-                writer.WriteEndObject();
+                throw new Exception("Failed to read json");
+            }
+            var properties = obj.Properties().ToArray();
+            if (properties.Length == 1)
+            {
+                var type = obj.Properties().First().Name;
+                var value = obj[type];
+                return new Claim(type!, value?.ToObject<string>() ?? string.Empty);
             }
 
-            public override Claim ReadJson(
-                JsonReader reader,
-                Type objectType,
-                [AllowNull] Claim existingValue,
-                bool hasExistingValue,
-                JsonSerializer serializer)
-            {
-                var obj = serializer.Deserialize<JObject>(reader);
-                if (obj == null)
-                {
-                    throw new Exception("Failed to read json");
-                }
-                var properties = obj.Properties().ToArray();
-                if (properties.Length == 1)
-                {
-                    var type = obj.Properties().First().Name;
-                    var value = obj[type];
-                    return new Claim(type!, value?.ToObject<string>() ?? string.Empty);
-                }
-
-                return new Claim(
-                    obj["type"]!.ToObject<string>()!,
-                    obj["value"]!.ToObject<string>()!,
-                    obj["valueType"]!.ToObject<string>(),
-                    obj["issuer"]!.ToObject<string>());
-            }
+            return new Claim(
+                obj["type"]!.ToObject<string>()!,
+                obj["value"]!.ToObject<string>()!,
+                obj["valueType"]!.ToObject<string>(),
+                obj["issuer"]!.ToObject<string>());
         }
     }
 }

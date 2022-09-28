@@ -12,73 +12,72 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.WebSite.User
+namespace SimpleAuth.Tests.WebSite.User;
+
+using Moq;
+using Shared;
+using Shared.Models;
+using Shared.Repositories;
+using SimpleAuth.Shared.Errors;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Divergic.Logging.Xunit;
+using SimpleAuth.Properties;
+using SimpleAuth.WebSite.User;
+using Xunit;
+using Xunit.Abstractions;
+
+public sealed class GetUserOperationFixture
 {
-    using Moq;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
-    using SimpleAuth.Shared.Errors;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Divergic.Logging.Xunit;
-    using SimpleAuth.Properties;
-    using SimpleAuth.WebSite.User;
-    using Xunit;
-    using Xunit.Abstractions;
+    private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+    private readonly GetUserOperation _getUserOperation;
 
-    public class GetUserOperationFixture
+    public GetUserOperationFixture(ITestOutputHelper outputHelper)
     {
-        private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private readonly GetUserOperation _getUserOperation;
+        _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+        _getUserOperation = new GetUserOperation(
+            _resourceOwnerRepositoryStub.Object,
+            new TestOutputLogger("test", outputHelper));
+    }
 
-        public GetUserOperationFixture(ITestOutputHelper outputHelper)
-        {
-            _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _getUserOperation = new GetUserOperation(
-                _resourceOwnerRepositoryStub.Object,
-                new TestOutputLogger("test", outputHelper));
-        }
+    [Fact]
+    public async Task When_User_Is_Not_Authenticated_Then_Exception_Is_Thrown()
+    {
+        var emptyClaimsPrincipal = new ClaimsPrincipal();
 
-        [Fact]
-        public async Task When_User_Is_Not_Authenticated_Then_Exception_Is_Thrown()
-        {
-            var emptyClaimsPrincipal = new ClaimsPrincipal();
+        var exception = await _getUserOperation.Execute(emptyClaimsPrincipal, CancellationToken.None)
+            .ConfigureAwait(false) as Option<ResourceOwner>.Error;
 
-            var exception = await _getUserOperation.Execute(emptyClaimsPrincipal, CancellationToken.None)
-                .ConfigureAwait(false) as Option<ResourceOwner>.Error;
+        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+        Assert.Equal(Strings.TheUserNeedsToBeAuthenticated, exception.Details.Detail);
+    }
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
-            Assert.Equal(Strings.TheUserNeedsToBeAuthenticated, exception.Details.Detail);
-        }
+    [Fact]
+    public async Task When_Subject_Is_Not_Passed_Then_Exception_Is_Thrown()
+    {
+        var claimsIdentity = new ClaimsIdentity("test");
+        claimsIdentity.AddClaim(new Claim("test", "test"));
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-        [Fact]
-        public async Task When_Subject_Is_Not_Passed_Then_Exception_Is_Thrown()
-        {
-            var claimsIdentity = new ClaimsIdentity("test");
-            claimsIdentity.AddClaim(new Claim("test", "test"));
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        var exception = await _getUserOperation.Execute(claimsPrincipal, CancellationToken.None)
+            .ConfigureAwait(false) as Option<ResourceOwner>.Error;
 
-            var exception = await _getUserOperation.Execute(claimsPrincipal, CancellationToken.None)
-                .ConfigureAwait(false) as Option<ResourceOwner>.Error;
+        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
+        Assert.Equal(Strings.TheSubjectCannotBeRetrieved, exception.Details.Detail);
+    }
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
-            Assert.Equal(Strings.TheSubjectCannotBeRetrieved, exception.Details.Detail);
-        }
+    [Fact]
+    public void When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
+    {
+        var claimsIdentity = new ClaimsIdentity("test");
+        claimsIdentity.AddClaim(new Claim(OpenIdClaimTypes.Subject, "subject"));
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ResourceOwner());
 
-        [Fact]
-        public void When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
-        {
-            var claimsIdentity = new ClaimsIdentity("test");
-            claimsIdentity.AddClaim(new Claim(OpenIdClaimTypes.Subject, "subject"));
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ResourceOwner());
+        var result = _getUserOperation.Execute(claimsPrincipal, CancellationToken.None);
 
-            var result = _getUserOperation.Execute(claimsPrincipal, CancellationToken.None);
-
-            Assert.NotNull(result);
-        }
+        Assert.NotNull(result);
     }
 }

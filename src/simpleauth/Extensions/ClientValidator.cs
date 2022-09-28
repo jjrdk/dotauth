@@ -12,70 +12,69 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using System;
+using System.Linq;
+using System.Text;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Models;
+using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
+
+internal static class ClientValidator
 {
-    using System;
-    using System.Linq;
-    using System.Text;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using CodeChallengeMethods = SimpleAuth.Shared.Models.CodeChallengeMethods;
-
-    internal static class ClientValidator
+    public static Uri[] GetRedirectionUrls(this Client client, params Uri[] urls)
     {
-        public static Uri[] GetRedirectionUrls(this Client client, params Uri[] urls)
+        return client.RedirectionUrls.Length == 0
+            ? Array.Empty<Uri>()
+            : client.RedirectionUrls.Where(urls.Contains).ToArray();
+    }
+
+    public static bool CheckGrantTypes(this Client client, params string[] grantTypes)
+    {
+        if (client.GrantTypes.Length == 0)
         {
-            return client.RedirectionUrls.Length == 0
-                ? Array.Empty<Uri>()
-                : client.RedirectionUrls.Where(urls.Contains).ToArray();
+            client.GrantTypes = new[]
+            {
+                GrantTypes.AuthorizationCode
+            };
         }
 
-        public static bool CheckGrantTypes(this Client client, params string[] grantTypes)
-        {
-            if (client.GrantTypes.Length == 0)
-            {
-                client.GrantTypes = new[]
-                {
-                    GrantTypes.AuthorizationCode
-                };
-            }
+        return grantTypes.All(gt => client.GrantTypes.Contains(gt));
+    }
 
-            return grantTypes.All(gt => client.GrantTypes.Contains(gt));
+    public static bool CheckResponseTypes(this Client client, params string[] responseTypes)
+    {
+        if (client.ResponseTypes.Length == 0)
+        {
+            client.ResponseTypes = new[]
+            {
+                ResponseTypeNames.Code
+            };
         }
 
-        public static bool CheckResponseTypes(this Client client, params string[] responseTypes)
-        {
-            if (client.ResponseTypes.Length == 0)
-            {
-                client.ResponseTypes = new[]
-                {
-                    ResponseTypeNames.Code
-                };
-            }
+        return responseTypes.All(rt => client.ResponseTypes.Contains(rt));
+    }
 
-            return responseTypes.All(rt => client.ResponseTypes.Contains(rt));
+    public static bool CheckPkce(this Client client, string? codeVerifier, AuthorizationCode code)
+    {
+        if (!client.RequirePkce)
+        {
+            return true;
         }
 
-        public static bool CheckPkce(this Client client, string? codeVerifier, AuthorizationCode code)
+        if (code.CodeChallengeMethod == CodeChallengeMethods.Plain)
         {
-            if (!client.RequirePkce)
-            {
-                return true;
-            }
-
-            if (code.CodeChallengeMethod == CodeChallengeMethods.Plain)
-            {
-                return codeVerifier == code.CodeChallenge;
-            }
-
-            if (codeVerifier == null)
-            {
-                return false;
-            }
-
-            var codeChallenge = codeVerifier.ToSha256SimplifiedBase64(Encoding.ASCII);
-
-            return code.CodeChallenge == codeChallenge;
+            return codeVerifier == code.CodeChallenge;
         }
+
+        if (codeVerifier == null)
+        {
+            return false;
+        }
+
+        var codeChallenge = codeVerifier.ToSha256SimplifiedBase64(Encoding.ASCII);
+
+        return code.CodeChallenge == codeChallenge;
     }
 }

@@ -12,77 +12,76 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers
+namespace SimpleAuth.Controllers;
+
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using SimpleAuth.Extensions;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Repositories;
+using SimpleAuth.Shared.Responses;
+
+/// <summary>
+/// Defines the UMA configuration controller.
+/// </summary>
+/// <seealso cref="ControllerBase" />
+[Route(UmaConstants.RouteValues.Configuration)]
+[ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any, NoStore = false)]
+public sealed class UmaConfigurationController : ControllerBase
 {
-    using System;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Responses;
+    private readonly IScopeStore _scopeStore;
+
+    private static readonly string[] UmaProfilesSupported =
+    {
+        "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
+    };
 
     /// <summary>
-    /// Defines the UMA configuration controller.
+    /// Initializes a new instance of the <see cref="UmaConfigurationController"/> class.
     /// </summary>
-    /// <seealso cref="ControllerBase" />
-    [Route(UmaConstants.RouteValues.Configuration)]
-    [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any, NoStore = false)]
-    public class UmaConfigurationController : ControllerBase
+    /// <param name="scopeStore"></param>
+    public UmaConfigurationController(IScopeStore scopeStore)
     {
-        private readonly IScopeStore _scopeStore;
+        _scopeStore = scopeStore;
+    }
 
-        private static readonly string[] UmaProfilesSupported =
+    /// <summary>
+    /// Handles the GET configuration request.
+    /// </summary>
+    /// <returns>The configured <see cref="UmaConfiguration"/>.</returns>
+    [HttpGet]
+    public async Task<ActionResult<UmaConfiguration>> GetConfiguration(CancellationToken cancellationToken)
+    {
+        var absoluteUriWithVirtualPath = Request.GetAbsoluteUriWithVirtualPath();
+        var scopes = await _scopeStore.GetAll(cancellationToken).ConfigureAwait(false);
+        var scopeSupportedNames = scopes != null && scopes.Any()
+            ? scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray()
+            : Array.Empty<string>();
+        var result = new UmaConfiguration
         {
-            "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
+            ClaimTokenProfilesSupported = Array.Empty<string>(),
+            UmaProfilesSupported = UmaProfilesSupported,
+            ResourceRegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.ResourceSet),
+            PermissionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Permission),
+            ScopesSupported = scopeSupportedNames,
+            //PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
+            // OAUTH2.0
+            Issuer = new Uri(absoluteUriWithVirtualPath),
+            AuthorizationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Authorization),
+            TokenEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token),
+            JwksUri = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Jwks),
+            RegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Clients),
+            IntrospectionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Introspection),
+            RevocationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token + "/revoke"),
+            UiLocalesSupported = new[] { "en" },
+            GrantTypesSupported = GrantTypes.All,
+            ResponseTypesSupported = ResponseTypeNames.All
         };
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UmaConfigurationController"/> class.
-        /// </summary>
-        /// <param name="scopeStore"></param>
-        public UmaConfigurationController(IScopeStore scopeStore)
-        {
-            _scopeStore = scopeStore;
-        }
+        return new OkObjectResult(result);
 
-        /// <summary>
-        /// Handles the GET configuration request.
-        /// </summary>
-        /// <returns>The configured <see cref="UmaConfiguration"/>.</returns>
-        [HttpGet]
-        public async Task<ActionResult<UmaConfiguration>> GetConfiguration(CancellationToken cancellationToken)
-        {
-            var absoluteUriWithVirtualPath = Request.GetAbsoluteUriWithVirtualPath();
-            var scopes = await _scopeStore.GetAll(cancellationToken).ConfigureAwait(false);
-            var scopeSupportedNames = scopes != null && scopes.Any()
-                ? scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray()
-                : Array.Empty<string>();
-            var result = new UmaConfiguration
-            {
-                ClaimTokenProfilesSupported = Array.Empty<string>(),
-                UmaProfilesSupported = UmaProfilesSupported,
-                ResourceRegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.ResourceSet),
-                PermissionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Permission),
-                ScopesSupported = scopeSupportedNames,
-                //PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
-                // OAUTH2.0
-                Issuer = new Uri(absoluteUriWithVirtualPath),
-                AuthorizationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Authorization),
-                TokenEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token),
-                JwksUri = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Jwks),
-                RegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Clients),
-                IntrospectionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Introspection),
-                RevocationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token + "/revoke"),
-                UiLocalesSupported = new[] { "en" },
-                GrantTypesSupported = GrantTypes.All,
-                ResponseTypesSupported = ResponseTypeNames.All
-            };
-
-            return new OkObjectResult(result);
-
-        }
     }
 }

@@ -12,49 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.ViewModels
+namespace SimpleAuth.ViewModels;
+
+using SimpleAuth.Shared.Models;
+
+/// <summary>
+/// Defines the resource set view model.
+/// </summary>
+public sealed class ResourceSetViewModel
 {
-    using SimpleAuth.Shared.Models;
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    public string? Id { get; set; }
 
     /// <summary>
-    /// Defines the resource set view model.
+    /// Gets or sets the icon.
     /// </summary>
-    public class ResourceSetViewModel
+    public string? Icon { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the description.
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Creates a <see cref="ResourceSetViewModel"/> instance from a <see cref="ResourceSet"/> instance.
+    /// </summary>
+    /// <param name="resourceSet"></param>
+    /// <returns></returns>
+    public static ResourceSetViewModel FromResourceSet(ResourceSet resourceSet)
     {
-        /// <summary>
-        /// Gets or sets the id.
-        /// </summary>
-        public string? Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the icon.
-        /// </summary>
-        public string? Icon { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        public string? Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        public string? Description { get; set; }
-
-        /// <summary>
-        /// Creates a <see cref="ResourceSetViewModel"/> instance from a <see cref="ResourceSet"/> instance.
-        /// </summary>
-        /// <param name="resourceSet"></param>
-        /// <returns></returns>
-        public static ResourceSetViewModel FromResourceSet(ResourceSet resourceSet)
+        return new()
         {
-            return new()
-            {
-                Id = resourceSet.Id,
-                Icon = resourceSet.IconUri?.AbsoluteUri,
-                Description = resourceSet.Description,
-                Name = resourceSet.Name
-            };
-        }
+            Id = resourceSet.Id,
+            Icon = resourceSet.IconUri?.AbsoluteUri,
+            Description = resourceSet.Description,
+            Name = resourceSet.Name
+        };
     }
 }

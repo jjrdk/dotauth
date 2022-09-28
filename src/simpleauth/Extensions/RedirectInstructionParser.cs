@@ -12,53 +12,52 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Routing;
+using SimpleAuth.Results;
+
+internal static class RedirectInstructionParser
 {
-    using System.Collections.Generic;
-    using Microsoft.AspNetCore.Routing;
-    using SimpleAuth.Results;
-
-    internal static class RedirectInstructionParser
+    private static readonly Dictionary<SimpleAuthEndPoints, ActionInformation> MappingEnumToActionInformations = new()
     {
-        private static readonly Dictionary<SimpleAuthEndPoints, ActionInformation> MappingEnumToActionInformations = new()
         {
-            {
-                SimpleAuthEndPoints.ConsentIndex,
-                new ActionInformation("Consent", "Index")
-            },
-            {
-                SimpleAuthEndPoints.AuthenticateIndex,
-                new ActionInformation("Authenticate", "Index")
-            },
-            {
-                SimpleAuthEndPoints.FormIndex,
-                new ActionInformation("Form", "Index")
-            }
-        };
-
-        public static ActionInformation? GetActionInformation(this RedirectInstruction instruction)
+            SimpleAuthEndPoints.ConsentIndex,
+            new ActionInformation("Consent", "Index")
+        },
         {
-            if (!MappingEnumToActionInformations.ContainsKey(instruction.Action))
-            {
-                return null;
-            }
+            SimpleAuthEndPoints.AuthenticateIndex,
+            new ActionInformation("Authenticate", "Index")
+        },
+        {
+            SimpleAuthEndPoints.FormIndex,
+            new ActionInformation("Form", "Index")
+        }
+    };
 
-            var actionInformation = MappingEnumToActionInformations[instruction.Action];
-            var dic = GetRouteValueDictionary(instruction);
-            actionInformation.RouteValueDictionary = dic;
-            return actionInformation;
+    public static ActionInformation? GetActionInformation(this RedirectInstruction instruction)
+    {
+        if (!MappingEnumToActionInformations.ContainsKey(instruction.Action))
+        {
+            return null;
         }
 
-        public static RouteValueDictionary GetRouteValueDictionary(this RedirectInstruction instruction)
+        var actionInformation = MappingEnumToActionInformations[instruction.Action];
+        var dic = GetRouteValueDictionary(instruction);
+        actionInformation.RouteValueDictionary = dic;
+        return actionInformation;
+    }
+
+    public static RouteValueDictionary GetRouteValueDictionary(this RedirectInstruction instruction)
+    {
+        var result = new RouteValueDictionary();
+
+        foreach (var parameter in instruction.Parameters)
         {
-            var result = new RouteValueDictionary();
-
-            foreach (var parameter in instruction.Parameters)
-            {
-                result.Add(parameter.Name, parameter.Value);
-            }
-
-            return result;
+            result.Add(parameter.Name, parameter.Value);
         }
+
+        return result;
     }
 }

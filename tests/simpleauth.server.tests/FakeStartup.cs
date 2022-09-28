@@ -12,95 +12,94 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests
+namespace SimpleAuth.Server.Tests;
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Logging;
+
+using SimpleAuth.Repositories;
+using SimpleAuth.Shared.Repositories;
+
+using Stores;
+using System.Net.Http;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Logging;
+using Moq;
+
+using SimpleAuth.Server.Tests.MiddleWares;
+using SimpleAuth.Services;
+using SimpleAuth.Sms;
+using SimpleAuth.Sms.Services;
+using SimpleAuth.UI;
+using Xunit.Abstractions;
+
+public sealed class FakeStartup
 {
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.IdentityModel.Logging;
+    private readonly SharedContext _context;
+    private readonly ITestOutputHelper _testOutputHelper;
 
-    using SimpleAuth.Repositories;
-    using SimpleAuth.Shared.Repositories;
+    public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
 
-    using Stores;
-    using System.Net.Http;
-    using System.Security.Cryptography;
-    using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Hosting.Server;
-    using Microsoft.AspNetCore.TestHost;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-
-    using SimpleAuth.Server.Tests.MiddleWares;
-    using SimpleAuth.Services;
-    using SimpleAuth.Sms;
-    using SimpleAuth.Sms.Services;
-    using SimpleAuth.UI;
-    using Xunit.Abstractions;
-
-    public class FakeStartup
+    public FakeStartup(SharedContext context, ITestOutputHelper testOutputHelper)
     {
-        private readonly SharedContext _context;
-        private readonly ITestOutputHelper _testOutputHelper;
+        _context = context;
+        _testOutputHelper = testOutputHelper;
+        IdentityModelEventSource.ShowPII = true;
+    }
 
-        public const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddHttpClient();
+        services.AddCors(
+            options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-        public FakeStartup(SharedContext context, ITestOutputHelper testOutputHelper)
-        {
-            _context = context;
-            _testOutputHelper = testOutputHelper;
-            IdentityModelEventSource.ShowPII = true;
-        }
+        services.AddAuthentication(
+                opts =>
+                {
+                    opts.DefaultAuthenticateScheme = DefaultSchema;
+                    opts.DefaultChallengeScheme = DefaultSchema;
+                })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { })
+            .AddFakeCustomAuth(_ => { });
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddHttpClient();
-            services.AddCors(
-                options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+        var symmetricAlgorithm = Aes.Create();
+        symmetricAlgorithm.GenerateIV();
+        symmetricAlgorithm.GenerateKey();
+        services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
+            .AddSimpleAuth(
+                options =>
+                {
+                    options.DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm);
+                    options.AdministratorRoleDefinition = default;
+                    options.Clients = sp => new InMemoryClientRepository(
+                        sp.GetRequiredService<IHttpClientFactory>(),
+                        sp.GetRequiredService<IScopeStore>(),
+                        new Mock<ILogger<InMemoryClientRepository>>().Object,
+                        DefaultStores.Clients(_context));
+                    options.Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents());
+                    options.Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users());
+                },
+                new[] { JwtBearerDefaults.AuthenticationScheme })
+            .AddSmsAuthentication(_context.TwilioClient.Object)
+            .AddLogging(b => b.AddXunit(_testOutputHelper))
+            .AddAccountFilter()
+            .AddSingleton(_context.ConfirmationCodeStore.Object)
+            .AddSingleton(
+                sp =>
+                {
+                    var server = sp.GetRequiredService<IServer>() as TestServer;
+                    return server.CreateClient();
+                });
+        services.ConfigureOptions<JwtBearerPostConfigureOptions>();
+    }
 
-            services.AddAuthentication(
-                    opts =>
-                    {
-                        opts.DefaultAuthenticateScheme = DefaultSchema;
-                        opts.DefaultChallengeScheme = DefaultSchema;
-                    })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { })
-                .AddFakeCustomAuth(_ => { });
-
-            var symmetricAlgorithm = Aes.Create();
-            symmetricAlgorithm.GenerateIV();
-            symmetricAlgorithm.GenerateKey();
-            services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
-                .AddSimpleAuth(
-                    options =>
-                    {
-                        options.DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm);
-                        options.AdministratorRoleDefinition = default;
-                        options.Clients = sp => new InMemoryClientRepository(
-                            sp.GetRequiredService<IHttpClientFactory>(),
-                            sp.GetRequiredService<IScopeStore>(),
-                            new Mock<ILogger<InMemoryClientRepository>>().Object,
-                            DefaultStores.Clients(_context));
-                        options.Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents());
-                        options.Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users());
-                    },
-                    new[] { JwtBearerDefaults.AuthenticationScheme })
-                .AddSmsAuthentication(_context.TwilioClient.Object)
-                .AddLogging(b => b.AddXunit(_testOutputHelper))
-                .AddAccountFilter()
-                .AddSingleton(_context.ConfirmationCodeStore.Object)
-                .AddSingleton(
-                    sp =>
-                    {
-                        var server = sp.GetRequiredService<IServer>() as TestServer;
-                        return server.CreateClient();
-                    });
-            services.ConfigureOptions<JwtBearerPostConfigureOptions>();
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
-        }
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
     }
 }

@@ -12,86 +12,85 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.Authorization
+namespace SimpleAuth.Tests.Api.Authorization;
+
+using Moq;
+using Parameters;
+using Shared;
+using Shared.Models;
+using Shared.Repositories;
+using SimpleAuth.Api.Authorization;
+using System;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Events;
+using SimpleAuth.Repositories;
+using SimpleAuth.Results;
+using SimpleAuth.Services;
+using Xunit;
+
+public sealed class AuthorizationActionsFixture
 {
-    using Moq;
-    using Parameters;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
-    using SimpleAuth.Api.Authorization;
-    using System;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Events;
-    using SimpleAuth.Repositories;
-    using SimpleAuth.Results;
-    using SimpleAuth.Services;
-    using Xunit;
+    private const string OpenIdScope = "openid";
+    private const string HttpsLocalhost = "https://localhost";
+    private Mock<IEventPublisher> _eventPublisherStub;
+    private AuthorizationActions _authorizationActions;
+    private Mock<IClientStore> _clientStore;
 
-    public sealed class AuthorizationActionsFixture
+    [Fact]
+    public async Task WhenClientRequirePKCEAndNoCodeChallengeIsPassedThenAnErrorIsReturned()
     {
-        private const string OpenIdScope = "openid";
-        private const string HttpsLocalhost = "https://localhost";
-        private Mock<IEventPublisher> _eventPublisherStub;
-        private AuthorizationActions _authorizationActions;
-        private Mock<IClientStore> _clientStore;
+        const string clientId = "clientId";
+        const string scope = OpenIdScope;
 
-        [Fact]
-        public async Task WhenClientRequirePKCEAndNoCodeChallengeIsPassedThenAnErrorIsReturned()
-        {
-            const string clientId = "clientId";
-            const string scope = OpenIdScope;
-
-            var redirectUrl = new Uri(HttpsLocalhost);
-            InitializeFakeObjects(
-                new Client
-                {
-                    ResponseTypes = new[] { ResponseTypeNames.IdToken },
-                    ClientId = clientId,
-                    RequirePkce = true,
-                    RedirectionUrls = new[] { redirectUrl }
-                });
-
-            var authorizationParameter = new AuthorizationParameter
+        var redirectUrl = new Uri(HttpsLocalhost);
+        InitializeFakeObjects(
+            new Client
             {
+                ResponseTypes = new[] { ResponseTypeNames.IdToken },
                 ClientId = clientId,
-                ResponseType = ResponseTypeNames.IdToken,
-                Scope = scope,
-                RedirectUrl = redirectUrl
-            };
+                RequirePkce = true,
+                RedirectionUrls = new[] { redirectUrl }
+            });
 
-            var result = await _authorizationActions.GetAuthorization(
-                        authorizationParameter,
-                        new ClaimsPrincipal(),
-                        "",
-                        CancellationToken.None)
-                .ConfigureAwait(false);
-            Assert.Equal(ActionResultType.BadRequest, result.Type);
-        }
-
-        private void InitializeFakeObjects(Client client = null)
+        var authorizationParameter = new AuthorizationParameter
         {
-            _eventPublisherStub = new Mock<IEventPublisher>();
-            _clientStore = new Mock<IClientStore>();
-            if (client != null)
-            {
-                _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(client);
-            }
+            ClientId = clientId,
+            ResponseType = ResponseTypeNames.IdToken,
+            Scope = scope,
+            RedirectUrl = redirectUrl
+        };
 
-            _authorizationActions = new AuthorizationActions(
-                new Mock<IAuthorizationCodeStore>().Object,
-                _clientStore.Object,
-                new Mock<ITokenStore>().Object,
-                new Mock<IScopeRepository>().Object,
-                new Mock<IConsentRepository>().Object,
-                new InMemoryJwksRepository(),
-                _eventPublisherStub.Object,
-                Array.Empty<IAuthenticateResourceOwnerService>(),
-                new Mock<ILogger>().Object);
+        var result = await _authorizationActions.GetAuthorization(
+                authorizationParameter,
+                new ClaimsPrincipal(),
+                "",
+                CancellationToken.None)
+            .ConfigureAwait(false);
+        Assert.Equal(ActionResultType.BadRequest, result.Type);
+    }
+
+    private void InitializeFakeObjects(Client client = null)
+    {
+        _eventPublisherStub = new Mock<IEventPublisher>();
+        _clientStore = new Mock<IClientStore>();
+        if (client != null)
+        {
+            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(client);
         }
+
+        _authorizationActions = new AuthorizationActions(
+            new Mock<IAuthorizationCodeStore>().Object,
+            _clientStore.Object,
+            new Mock<ITokenStore>().Object,
+            new Mock<IScopeRepository>().Object,
+            new Mock<IConsentRepository>().Object,
+            new InMemoryJwksRepository(),
+            _eventPublisherStub.Object,
+            Array.Empty<IAuthenticateResourceOwnerService>(),
+            new Mock<ILogger>().Object);
     }
 }

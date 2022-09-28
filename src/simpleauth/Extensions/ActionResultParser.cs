@@ -12,34 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using Microsoft.AspNetCore.Routing;
+using SimpleAuth.Results;
+
+internal static class ActionResultParser
 {
-    using Microsoft.AspNetCore.Routing;
-    using SimpleAuth.Results;
-
-    internal static class ActionResultParser
+    public static ActionInformation? GetControllerAndActionFromRedirectionActionResult(
+        this EndpointResult endpointResult)
     {
-        public static ActionInformation? GetControllerAndActionFromRedirectionActionResult(
-            this EndpointResult endpointResult)
+        if (endpointResult.Type != ActionResultType.RedirectToAction || endpointResult.RedirectInstruction == null)
         {
-            if (endpointResult.Type != ActionResultType.RedirectToAction || endpointResult.RedirectInstruction == null)
-            {
-                return null;
-            }
-
-            return endpointResult.RedirectInstruction.GetActionInformation();
+            return null;
         }
 
-        public static RouteValueDictionary GetRedirectionParameters(this EndpointResult endpointResult)
-        {
-            if (endpointResult.Type != ActionResultType.RedirectToAction
-                && endpointResult.Type != ActionResultType.RedirectToCallBackUrl
-                || endpointResult.RedirectInstruction == null)
-            {
-                return new RouteValueDictionary();
-            }
+        return endpointResult.RedirectInstruction.GetActionInformation();
+    }
 
-            return endpointResult.RedirectInstruction.GetRouteValueDictionary();
+    public static RouteValueDictionary GetRedirectionParameters(this EndpointResult endpointResult)
+    {
+        if (endpointResult.Type != ActionResultType.RedirectToAction
+            && endpointResult.Type != ActionResultType.RedirectToCallBackUrl
+            || endpointResult.RedirectInstruction == null)
+        {
+            return new RouteValueDictionary();
         }
+
+        return endpointResult.RedirectInstruction.GetRouteValueDictionary();
     }
 }

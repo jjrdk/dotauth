@@ -12,119 +12,118 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.WebSite.Authenticate
+namespace SimpleAuth.Tests.WebSite.Authenticate;
+
+using Moq;
+using Newtonsoft.Json;
+using Parameters;
+using Results;
+using Shared;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+using SimpleAuth.WebSite.Authenticate;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Divergic.Logging.Xunit;
+using SimpleAuth.Repositories;
+using Xunit;
+using Xunit.Abstractions;
+
+public sealed class AuthenticateResourceOwnerOpenIdActionFixture
 {
-    using Moq;
-    using Newtonsoft.Json;
-    using Parameters;
-    using Results;
-    using Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.WebSite.Authenticate;
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Divergic.Logging.Xunit;
-    using SimpleAuth.Repositories;
-    using Xunit;
-    using Xunit.Abstractions;
+    private readonly AuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
 
-    public sealed class AuthenticateResourceOwnerOpenIdActionFixture
+    public AuthenticateResourceOwnerOpenIdActionFixture(ITestOutputHelper outputHelper)
     {
-        private readonly AuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
-
-        public AuthenticateResourceOwnerOpenIdActionFixture(ITestOutputHelper outputHelper)
-        {
-            var mock = new Mock<IClientStore>();
-            mock.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Client());
-            _authenticateResourceOwnerOpenIdAction = new AuthenticateResourceOwnerOpenIdAction(
-                new Mock<IAuthorizationCodeStore>().Object,
-                new Mock<ITokenStore>().Object,
-                new Mock<IScopeRepository>().Object,
-                new Mock<IConsentRepository>().Object,
-                mock.Object,
-                new InMemoryJwksRepository(),
-                new NoOpPublisher(),
-                new TestOutputLogger("test", outputHelper));
-        }
+        var mock = new Mock<IClientStore>();
+        mock.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Client());
+        _authenticateResourceOwnerOpenIdAction = new AuthenticateResourceOwnerOpenIdAction(
+            new Mock<IAuthorizationCodeStore>().Object,
+            new Mock<ITokenStore>().Object,
+            new Mock<IScopeRepository>().Object,
+            new Mock<IConsentRepository>().Object,
+            mock.Object,
+            new InMemoryJwksRepository(),
+            new NoOpPublisher(),
+            new TestOutputLogger("test", outputHelper));
+    }
         
-        [Fact]
-        public async Task When_No_Resource_Owner_Is_Passed_Then_Redirect_To_Index_Page()
+    [Fact]
+    public async Task When_No_Resource_Owner_Is_Passed_Then_Redirect_To_Index_Page()
+    {
+        var authorizationParameter = new AuthorizationParameter();
+
+        var result = await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null, CancellationToken.None)
+            .ConfigureAwait(false);
+
+        Assert.Equal(
+            JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+            JsonConvert.SerializeObject(result));
+    }
+
+    [Fact]
+    public async Task When_Resource_Owner_Is_Not_Authenticated_Then_Redirect_To_Index_Page()
+    {
+        var authorizationParameter = new AuthorizationParameter();
+        var claimsIdentity = new ClaimsIdentity();
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+        var result = await _authenticateResourceOwnerOpenIdAction
+            .Execute(authorizationParameter, claimsPrincipal, null, null, CancellationToken.None)
+            .ConfigureAwait(false);
+
+        Assert.Equal(
+            JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+            JsonConvert.SerializeObject(result));
+    }
+
+    [Fact]
+    public async Task When_Prompt_Parameter_Contains_Login_Value_Then_Redirect_To_Index_Page()
+    {
+        var authorizationParameter = new AuthorizationParameter
         {
-            var authorizationParameter = new AuthorizationParameter();
+            Prompt = "login",
+            ClientId = "client",
+            Scope = "scope"
+        };
+        var claimsIdentity = new ClaimsIdentity("authServer");
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-            var result = await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null, CancellationToken.None)
-                .ConfigureAwait(false);
+        var result = await _authenticateResourceOwnerOpenIdAction.Execute(
+                authorizationParameter,
+                claimsPrincipal,
+                null,
+                null,
+                CancellationToken.None)
+            .ConfigureAwait(false);
 
-            Assert.Equal(
-                JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
-                JsonConvert.SerializeObject(result));
-        }
+        Assert.Equal(
+            JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+            JsonConvert.SerializeObject(result));
+    }
 
-        [Fact]
-        public async Task When_Resource_Owner_Is_Not_Authenticated_Then_Redirect_To_Index_Page()
-        {
-            var authorizationParameter = new AuthorizationParameter();
-            var claimsIdentity = new ClaimsIdentity();
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+    [Fact]
+    public async Task
+        When_Prompt_Parameter_Does_Not_Contain_Login_Value_And_Resource_Owner_Is_Authenticated_Then_Helper_Is_Called()
+    {
+        const string code = "code";
+        const string subject = "subject";
+        var authorizationParameter = new AuthorizationParameter { ClientId = "abc" };
+        var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
+        var claimsIdentity = new ClaimsIdentity(claims, "authServer");
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-            var result = await _authenticateResourceOwnerOpenIdAction
-                .Execute(authorizationParameter, claimsPrincipal, null, null, CancellationToken.None)
-                .ConfigureAwait(false);
+        var result = await _authenticateResourceOwnerOpenIdAction.Execute(
+                authorizationParameter,
+                claimsPrincipal,
+                code,
+                null,
+                CancellationToken.None)
+            .ConfigureAwait(false);
 
-            Assert.Equal(
-                JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
-                JsonConvert.SerializeObject(result));
-        }
-
-        [Fact]
-        public async Task When_Prompt_Parameter_Contains_Login_Value_Then_Redirect_To_Index_Page()
-        {
-            var authorizationParameter = new AuthorizationParameter
-            {
-                Prompt = "login",
-                ClientId = "client",
-                Scope = "scope"
-            };
-            var claimsIdentity = new ClaimsIdentity("authServer");
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-            var result = await _authenticateResourceOwnerOpenIdAction.Execute(
-                    authorizationParameter,
-                    claimsPrincipal,
-                    null,
-                    null,
-                    CancellationToken.None)
-                .ConfigureAwait(false);
-
-            Assert.Equal(
-                JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
-                JsonConvert.SerializeObject(result));
-        }
-
-        [Fact]
-        public async Task
-            When_Prompt_Parameter_Does_Not_Contain_Login_Value_And_Resource_Owner_Is_Authenticated_Then_Helper_Is_Called()
-        {
-            const string code = "code";
-            const string subject = "subject";
-            var authorizationParameter = new AuthorizationParameter { ClientId = "abc" };
-            var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
-            var claimsIdentity = new ClaimsIdentity(claims, "authServer");
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-            var result = await _authenticateResourceOwnerOpenIdAction.Execute(
-                    authorizationParameter,
-                    claimsPrincipal,
-                    code,
-                    null,
-                    CancellationToken.None)
-                .ConfigureAwait(false);
-
-            Assert.NotNull(result.RedirectInstruction);
-        }
+        Assert.NotNull(result.RedirectInstruction);
     }
 }

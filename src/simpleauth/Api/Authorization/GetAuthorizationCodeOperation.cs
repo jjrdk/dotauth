@@ -12,109 +12,108 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Authorization
+namespace SimpleAuth.Api.Authorization;
+
+using System.Net;
+using Parameters;
+using Results;
+using Shared.Models;
+using SimpleAuth.Common;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Repositories;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Events;
+using SimpleAuth.Extensions;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared.Errors;
+
+internal sealed class GetAuthorizationCodeOperation
 {
-    using System.Net;
-    using Parameters;
-    using Results;
-    using Shared.Models;
-    using SimpleAuth.Common;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Events;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared.Errors;
+    private const string AuthorizationCode = "authorization_code";
+    private readonly ILogger _logger;
+    private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
+    private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
 
-    internal sealed class GetAuthorizationCodeOperation
+    public GetAuthorizationCodeOperation(
+        IAuthorizationCodeStore authorizationCodeStore,
+        ITokenStore tokenStore,
+        IScopeRepository scopeRepository,
+        IClientStore clientStore,
+        IConsentRepository consentRepository,
+        IJwksStore jwksStore,
+        IEventPublisher eventPublisher,
+        ILogger logger)
     {
-        private const string AuthorizationCode = "authorization_code";
-        private readonly ILogger _logger;
-        private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
-        private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
+        _logger = logger;
+        _processAuthorizationRequest = new ProcessAuthorizationRequest(
+            clientStore,
+            consentRepository,
+            jwksStore,
+            logger);
+        _generateAuthorizationResponse = new GenerateAuthorizationResponse(
+            authorizationCodeStore,
+            tokenStore,
+            scopeRepository,
+            clientStore,
+            consentRepository,
+            jwksStore,
+            eventPublisher,
+            logger);
+    }
 
-        public GetAuthorizationCodeOperation(
-            IAuthorizationCodeStore authorizationCodeStore,
-            ITokenStore tokenStore,
-            IScopeRepository scopeRepository,
-            IClientStore clientStore,
-            IConsentRepository consentRepository,
-            IJwksStore jwksStore,
-            IEventPublisher eventPublisher,
-            ILogger logger)
+    public async Task<EndpointResult> Execute(
+        AuthorizationParameter authorizationParameter,
+        ClaimsPrincipal principal,
+        Client client,
+        string issuerName,
+        CancellationToken cancellationToken)
+    {
+        var result = await _processAuthorizationRequest.Process(
+                authorizationParameter,
+                principal,
+                client,
+                issuerName,
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (result.Type == ActionResultType.BadRequest)
         {
-            _logger = logger;
-            _processAuthorizationRequest = new ProcessAuthorizationRequest(
-                clientStore,
-                consentRepository,
-                jwksStore,
-                logger);
-            _generateAuthorizationResponse = new GenerateAuthorizationResponse(
-                authorizationCodeStore,
-                tokenStore,
-                scopeRepository,
-                clientStore,
-                consentRepository,
-                jwksStore,
-                eventPublisher,
-                logger);
+            return result;
+        }
+        // 1. Check the client is authorized to use the authorization_code flow.
+        if (!client.CheckGrantTypes(GrantTypes.AuthorizationCode))
+        {
+            _logger.LogError(
+                string.Format(
+                    Strings.TheClientDoesntSupportTheGrantType,
+                    authorizationParameter.ClientId,
+                    AuthorizationCode));
+            return EndpointResult.CreateBadRequestResult(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = string.Format(
+                        Strings.TheClientDoesntSupportTheGrantType,
+                        authorizationParameter.ClientId,
+                        AuthorizationCode),
+                    Status = HttpStatusCode.BadRequest
+                });
         }
 
-        public async Task<EndpointResult> Execute(
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal principal,
-            Client client,
-            string issuerName,
-            CancellationToken cancellationToken)
+        if (result.Type == ActionResultType.RedirectToCallBackUrl)
         {
-            var result = await _processAuthorizationRequest.Process(
+            result = await _generateAuthorizationResponse.Generate(
+                    result,
                     authorizationParameter,
                     principal,
                     client,
                     issuerName,
-                    cancellationToken)
+                    CancellationToken.None)
                 .ConfigureAwait(false);
-            if (result.Type == ActionResultType.BadRequest)
-            {
-                return result;
-            }
-            // 1. Check the client is authorized to use the authorization_code flow.
-            if (!client.CheckGrantTypes(GrantTypes.AuthorizationCode))
-            {
-                _logger.LogError(
-                    string.Format(
-                        Strings.TheClientDoesntSupportTheGrantType,
-                        authorizationParameter.ClientId,
-                        AuthorizationCode));
-                return EndpointResult.CreateBadRequestResult(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(
-                            Strings.TheClientDoesntSupportTheGrantType,
-                            authorizationParameter.ClientId,
-                            AuthorizationCode),
-                        Status = HttpStatusCode.BadRequest
-                    });
-            }
-
-            if (result.Type == ActionResultType.RedirectToCallBackUrl)
-            {
-                result = await _generateAuthorizationResponse.Generate(
-                        result,
-                        authorizationParameter,
-                        principal,
-                        client,
-                        issuerName,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
-            }
-
-            return result;
         }
+
+        return result;
     }
 }

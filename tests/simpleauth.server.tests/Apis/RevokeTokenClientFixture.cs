@@ -12,166 +12,165 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Apis
+namespace SimpleAuth.Server.Tests.Apis;
+
+using Client;
+using Microsoft.IdentityModel.Logging;
+using Newtonsoft.Json;
+using Shared;
+using SimpleAuth.Shared.Errors;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Properties;
+using SimpleAuth.Shared.Responses;
+using Xunit;
+using Xunit.Abstractions;
+
+public sealed class RevokeTokenClientFixture
 {
-    using Client;
-    using Microsoft.IdentityModel.Logging;
-    using Newtonsoft.Json;
-    using Shared;
-    using SimpleAuth.Shared.Errors;
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Properties;
-    using SimpleAuth.Shared.Responses;
-    using Xunit;
-    using Xunit.Abstractions;
+    private const string BaseUrl = "http://localhost:5000";
+    private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
+    private readonly TestOauthServerFixture _server;
 
-    public class RevokeTokenClientFixture
+    public RevokeTokenClientFixture(ITestOutputHelper outputHelper)
     {
-        private const string BaseUrl = "http://localhost:5000";
-        private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
-        private readonly TestOauthServerFixture _server;
+        IdentityModelEventSource.ShowPII = true;
+        _server = new TestOauthServerFixture(outputHelper);
+    }
 
-        public RevokeTokenClientFixture(ITestOutputHelper outputHelper)
+    [Fact]
+    public async Task When_No_Parameters_Is_Passed_To_TokenRevoke_Edp_Then_Error_Is_Returned()
+    {
+        var httpRequest = new HttpRequestMessage
         {
-            IdentityModelEventSource.ShowPII = true;
-            _server = new TestOauthServerFixture(outputHelper);
-        }
+            Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/token/revoke")
+        };
 
-        [Fact]
-        public async Task When_No_Parameters_Is_Passed_To_TokenRevoke_Edp_Then_Error_Is_Returned()
+        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
+        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+
+        Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
+        Assert.Equal(string.Format(Strings.MissingParameter, "token"), error.Detail);
+    }
+
+    [Fact]
+    public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
+    {
+        var request = new List<KeyValuePair<string, string>> {new("invalid", "invalid")};
+        var body = new FormUrlEncodedContent(request);
+        var httpRequest = new HttpRequestMessage
         {
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/token/revoke")
-            };
+            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token/revoke")
+        };
 
-            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
+        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
-            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "token"), error.Detail);
-        }
+        Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
+        Assert.Equal(string.Format(Strings.MissingParameter, "token"), error.Detail);
+    }
 
-        [Fact]
-        public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
-        {
-            var request = new List<KeyValuePair<string, string>> {new("invalid", "invalid")};
-            var body = new FormUrlEncodedContent(request);
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token/revoke")
-            };
+    [Fact]
+    public async Task When_Revoke_Token_And_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
+    {
+        var tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
+            _server.Client,
+            new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
+            .ConfigureAwait(false) as Option.Error;
 
-            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+        Assert.Equal("invalid_client", ex.Details.Title);
+        Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Details.Detail);
+    }
 
-            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+    [Fact]
+    public async Task When_Token_Does_Not_Exist_Then_Error_Is_Returned()
+    {
+        var tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("client", "client"),
+            _server.Client,
+            new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
+            .ConfigureAwait(false) as Option.Error;
 
-            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal(string.Format(Strings.MissingParameter, "token"), error.Detail);
-        }
+        Assert.Equal("invalid_token", ex.Details.Title);
+        Assert.Equal(Strings.TheTokenDoesntExist, ex.Details.Detail);
+    }
 
-        [Fact]
-        public async Task When_Revoke_Token_And_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
-        {
-            var tokenClient = new TokenClient(
-                TokenCredentials.FromClientCredentials("invalid_client", "invalid_client"),
-                _server.Client,
-                new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
-                .ConfigureAwait(false) as Option.Error;
+    [Fact]
+    public async Task When_Revoke_Token_And_Client_Is_Different_Then_Error_Is_Returned()
+    {
+        var tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
+            _server.Client,
+            new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var result = await tokenClient
+            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var revokeClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("client", "client"),
+            _server.Client,
+            new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var ex = await revokeClient
+            .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken))
+            .ConfigureAwait(false) as Option.Error;
 
-            Assert.Equal("invalid_client", ex.Details.Title);
-            Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Details.Detail);
-        }
+        Assert.Equal("invalid_token", ex.Details.Title);
+        Assert.Equal("The token has not been issued for the given client id 'client'", ex.Details.Detail);
+    }
 
-        [Fact]
-        public async Task When_Token_Does_Not_Exist_Then_Error_Is_Returned()
-        {
-            var tokenClient = new TokenClient(
-                TokenCredentials.FromClientCredentials("client", "client"),
-                _server.Client,
-                new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var ex = await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken))
-                .ConfigureAwait(false) as Option.Error;
+    [Fact]
+    public async Task When_Revoking_AccessToken_Then_True_Is_Returned()
+    {
+        var tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("client", "client"),
+            _server.Client,
+            new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var result = await tokenClient
+            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
+            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var revoke = await tokenClient
+            .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken))
+            .ConfigureAwait(false) as Option.Success;
+        var introspectionClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var ex = await introspectionClient.Introspect(
+                IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
+            .ConfigureAwait(false);
 
-            Assert.Equal("invalid_token", ex.Details.Title);
-            Assert.Equal(Strings.TheTokenDoesntExist, ex.Details.Detail);
-        }
+        Assert.IsType<Option.Success>(revoke);
+        Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
+    }
 
-        [Fact]
-        public async Task When_Revoke_Token_And_Client_Is_Different_Then_Error_Is_Returned()
-        {
-            var tokenClient = new TokenClient(
-                TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
-                _server.Client,
-                new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
-                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-            var revokeClient = new TokenClient(
-                TokenCredentials.FromClientCredentials("client", "client"),
-                _server.Client,
-                new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var ex = await revokeClient
-                .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken))
-                .ConfigureAwait(false) as Option.Error;
+    [Fact]
+    public async Task When_Revoking_RefreshToken_Then_True_Is_Returned()
+    {
+        var tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("client", "client"),
+            _server.Client,
+            new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var result = await tokenClient
+            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim", "offline"}))
+            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var revoke = await tokenClient
+            .RevokeToken(RevokeTokenRequest.Create(result.Item.RefreshToken, TokenTypes.RefreshToken))
+            .ConfigureAwait(false);
+        var introspectClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var ex = await introspectClient.Introspect(
+                IntrospectionRequest.Create(result.Item.RefreshToken, TokenTypes.RefreshToken, "pat"))
+            .ConfigureAwait(false);
 
-            Assert.Equal("invalid_token", ex.Details.Title);
-            Assert.Equal("The token has not been issued for the given client id 'client'", ex.Details.Detail);
-        }
-
-        [Fact]
-        public async Task When_Revoking_AccessToken_Then_True_Is_Returned()
-        {
-            var tokenClient = new TokenClient(
-                TokenCredentials.FromClientCredentials("client", "client"),
-                _server.Client,
-                new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
-                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-            var revoke = await tokenClient
-                .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken))
-                .ConfigureAwait(false) as Option.Success;
-            var introspectionClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var ex = await introspectionClient.Introspect(
-                    IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
-                .ConfigureAwait(false);
-
-            Assert.IsType<Option.Success>(revoke);
-            Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
-        }
-
-        [Fact]
-        public async Task When_Revoking_RefreshToken_Then_True_Is_Returned()
-        {
-            var tokenClient = new TokenClient(
-                TokenCredentials.FromClientCredentials("client", "client"),
-                _server.Client,
-                new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var result = await tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim", "offline"}))
-                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-            var revoke = await tokenClient
-                .RevokeToken(RevokeTokenRequest.Create(result.Item.RefreshToken, TokenTypes.RefreshToken))
-                .ConfigureAwait(false);
-            var introspectClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var ex = await introspectClient.Introspect(
-                    IntrospectionRequest.Create(result.Item.RefreshToken, TokenTypes.RefreshToken, "pat"))
-                .ConfigureAwait(false);
-
-            Assert.IsType<Option.Success>(revoke);
-            Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
-        }
+        Assert.IsType<Option.Success>(revoke);
+        Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
     }
 }

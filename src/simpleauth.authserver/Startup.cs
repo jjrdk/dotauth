@@ -12,203 +12,206 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AuthServer
+namespace SimpleAuth.AuthServer;
+
+using System;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+
+using SimpleAuth;
+using SimpleAuth.Repositories;
+using SimpleAuth.Shared.Repositories;
+using System.Linq;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Text.Json;
+using Amazon;
+using Amazon.Runtime;
+using SimpleAuth.Extensions;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Sms;
+using SimpleAuth.Sms.Ui;
+using SimpleAuth.UI;
+
+internal sealed class Startup
 {
-    using System;
+    private const string SimpleAuthScheme = "simpleauth";
+    private readonly IConfiguration _configuration;
+    private readonly SimpleAuthOptions _options;
 
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Tokens;
-
-    using SimpleAuth;
-    using SimpleAuth.Repositories;
-    using SimpleAuth.Shared.Repositories;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Security.Claims;
-    using System.Text.Json;
-    using Amazon;
-    using Amazon.Runtime;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Sms;
-    using SimpleAuth.Sms.Ui;
-    using SimpleAuth.UI;
-
-    internal class Startup
+    public Startup(IConfiguration configuration)
     {
-        private const string SimpleAuthScheme = "simpleauth";
-        private readonly IConfiguration _configuration;
-        private readonly SimpleAuthOptions _options;
-
-        public Startup(IConfiguration configuration)
+        _configuration = configuration;
+        _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
+        var salt = _configuration["SALT"] ?? string.Empty;
+        _options = new SimpleAuthOptions(salt)
         {
-            _configuration = configuration;
-            _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
-            var salt = _configuration["SALT"] ?? string.Empty;
-            _options = new SimpleAuthOptions(salt)
-            {
-                AllowHttp = true,
-                RedirectToLogin = redirect,
-                ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
-                Users = sp => new InMemoryResourceOwnerRepository(salt, DefaultConfiguration.GetUsers(salt)),
-                Tickets = sp => new InMemoryTicketStore(),
-                Clients =
-                    sp => new InMemoryClientRepository(
-                        sp.GetRequiredService<IHttpClientFactory>(),
-                        sp.GetRequiredService<IScopeStore>(),
-                        sp.GetRequiredService<ILogger<InMemoryClientRepository>>(),
-                        DefaultConfiguration.GetClients()),
-                Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
-                ResourceSets =
-                    sp => new InMemoryResourceSetRepository(
-                        new[]
-                        {
-                            ("administrator",
-                                new ResourceSet
+            AllowHttp = true,
+            RedirectToLogin = redirect,
+            ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
+            Users = sp => new InMemoryResourceOwnerRepository(salt, DefaultConfiguration.GetUsers(salt)),
+            Tickets = sp => new InMemoryTicketStore(),
+            Clients =
+                sp => new InMemoryClientRepository(
+                    sp.GetRequiredService<IHttpClientFactory>(),
+                    sp.GetRequiredService<IScopeStore>(),
+                    sp.GetRequiredService<ILogger<InMemoryClientRepository>>(),
+                    DefaultConfiguration.GetClients()),
+            Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
+            ResourceSets =
+                sp => new InMemoryResourceSetRepository(
+                    new[]
+                    {
+                        ("administrator",
+                            new ResourceSet
+                            {
+                                Id = "abc",
+                                Name = "Test Resource",
+                                Type = "Content",
+                                Scopes = new[] {"read"},
+                                AuthorizationPolicies = new[]
                                 {
-                                    Id = "abc",
-                                    Name = "Test Resource",
-                                    Type = "Content",
-                                    Scopes = new[] {"read"},
-                                    AuthorizationPolicies = new[]
+                                    new PolicyRule
                                     {
-                                        new PolicyRule
+                                        Claims = new[]
                                         {
-                                            Claims = new[]
+                                            new ClaimData
                                             {
-                                                new ClaimData
-                                                {
-                                                    Type = "sub", Value = "administrator"
-                                                }
-                                            },
-                                            ClientIdsAllowed = new[] {"web"},
-                                            Scopes = new[] {"read"},
-                                            IsResourceOwnerConsentNeeded = true
-                                        }
+                                                Type = "sub", Value = "administrator"
+                                            }
+                                        },
+                                        ClientIdsAllowed = new[] {"web"},
+                                        Scopes = new[] {"read"},
+                                        IsResourceOwnerConsentNeeded = true
                                     }
-                                })
-                        }),
-                EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
-                ClaimsIncludedInUserCreation = new[]
+                                }
+                            })
+                    }),
+            EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
+            ClaimsIncludedInUserCreation = new[]
+            {
+                ClaimTypes.Name,
+                ClaimTypes.Uri,
+                ClaimTypes.Country,
+                ClaimTypes.DateOfBirth,
+                ClaimTypes.Email,
+                ClaimTypes.Gender,
+                ClaimTypes.GivenName,
+                ClaimTypes.Locality,
+                ClaimTypes.PostalCode,
+                ClaimTypes.Role,
+                ClaimTypes.StateOrProvince,
+                ClaimTypes.StreetAddress,
+                ClaimTypes.Surname
+            }
+        };
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddHttpClient()
+            .AddLogging(log =>
+            {
+                log.AddJsonConsole(
+                o =>
                 {
-                    ClaimTypes.Name,
-                    ClaimTypes.Uri,
-                    ClaimTypes.Country,
-                    ClaimTypes.DateOfBirth,
-                    ClaimTypes.Email,
-                    ClaimTypes.Gender,
-                    ClaimTypes.GivenName,
-                    ClaimTypes.Locality,
-                    ClaimTypes.PostalCode,
-                    ClaimTypes.Role,
-                    ClaimTypes.StateOrProvince,
-                    ClaimTypes.StreetAddress,
-                    ClaimTypes.Surname
-                }
-            };
+                    o.IncludeScopes = true;
+                    o.UseUtcTimestamp = true;
+                    o.JsonWriterOptions = new JsonWriterOptions { Indented = false };
+                });
+            })
+            .AddAuthentication(
+                options =>
+                {
+                    options.DefaultScheme = CookieNames.CookieName;
+                    options.DefaultChallengeScheme = SimpleAuthScheme;
+                })
+            .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
+            .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, options => { })
+            .AddJwtBearer(
+                JwtBearerDefaults.AuthenticationScheme,
+                cfg =>
+                {
+                    cfg.Authority = _configuration["OAUTH:AUTHORITY"];
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false,
+                        ValidIssuers = (_configuration["OAUTH:VALIDISSUERS"] ?? "")
+                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim())
+                            .ToArray()
+                    };
+                    cfg.RequireHttpsMetadata = false;
+                });
+        services.ConfigureOptions<ConfigureOAuthOptions>();
+
+        if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
+        {
+            services.AddAuthentication(CookieNames.ExternalCookieName)
+                .AddCookie(CookieNames.ExternalCookieName)
+                .AddGoogle(
+                    opts =>
+                    {
+                        opts.AccessType = "offline";
+                        opts.ClientId = _configuration["GOOGLE:CLIENTID"] ?? "";
+                        opts.ClientSecret = _configuration["GOOGLE:CLIENTSECRET"] ?? "";
+                        opts.SignInScheme = CookieNames.ExternalCookieName;
+                        var scopes = _configuration["GOOGLE:SCOPES"] ?? "openid,profile,email";
+                        foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                     .Select(x => x.Trim()))
+                        {
+                            opts.Scope.Add(scope);
+                        }
+                    });
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
+            && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
         {
-            services.AddHttpClient()
-                .AddLogging(log => { log.AddJsonConsole(
-                    o =>
-                    {
-                        o.IncludeScopes = true;
-                        o.UseUtcTimestamp = true;
-                        o.JsonWriterOptions = new JsonWriterOptions {Indented = false};
-                    }); })
-                .AddAuthentication(
-                    options =>
-                    {
-                        options.DefaultScheme = CookieNames.CookieName;
-                        options.DefaultChallengeScheme = SimpleAuthScheme;
-                    })
-                .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-                .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, options => { })
-                .AddJwtBearer(
-                    JwtBearerDefaults.AuthenticationScheme,
-                    cfg =>
-                    {
-                        cfg.Authority = _configuration["OAUTH:AUTHORITY"];
-                        cfg.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateAudience = false,
-                            ValidIssuers = _configuration["OAUTH:VALIDISSUERS"]
-                                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                .Select(x => x.Trim())
-                                .ToArray()
-                        };
-                        cfg.RequireHttpsMetadata = false;
-                    });
-            services.ConfigureOptions<ConfigureOAuthOptions>();
-
-            if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
-            {
-                services.AddAuthentication(CookieNames.ExternalCookieName)
-                    .AddCookie(CookieNames.ExternalCookieName)
-                    .AddGoogle(
-                        opts =>
-                        {
-                            opts.AccessType = "offline";
-                            opts.ClientId = _configuration["GOOGLE:CLIENTID"];
-                            opts.ClientSecret = _configuration["GOOGLE:CLIENTSECRET"];
-                            opts.SignInScheme = CookieNames.ExternalCookieName;
-                            var scopes = _configuration["GOOGLE:SCOPES"] ?? "openid,profile,email";
-                            foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                .Select(x => x.Trim()))
-                            {
-                                opts.Scope.Add(scope);
-                            }
-                        });
-            }
-
-            if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
-                && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
-            {
-                services.AddSimpleAuth(
-                        _options,
-                        new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
-                        assemblies: new[]
-                        {
-                            (GetType().Namespace!, GetType().Assembly),
-                            (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly),
-                            (typeof(IDefaultSmsUi).Namespace!, typeof(IDefaultSmsUi).Assembly)
-                        })
-                    .AddSmsAuthentication(
-                        new AwsSmsClient(
-                            new BasicAWSCredentials(
-                                _configuration["AMAZON:ACCESSKEY"],
-                                _configuration["AMAZON:SECRETKEY"]),
-                            RegionEndpoint.EUNorth1,
-                            Globals.ApplicationName));
-            }
-            else
-            {
-                services.AddSimpleAuth(
+            services.AddSimpleAuth(
                     _options,
                     new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
                     assemblies: new[]
                     {
                         (GetType().Namespace!, GetType().Assembly),
-                        (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly)
-                    });
-            }
+                        (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly),
+                        (typeof(IDefaultSmsUi).Namespace!, typeof(IDefaultSmsUi).Assembly)
+                    })
+                .AddSmsAuthentication(
+                    new AwsSmsClient(
+                        new BasicAWSCredentials(
+                            _configuration["AMAZON:ACCESSKEY"],
+                            _configuration["AMAZON:SECRETKEY"]),
+                        RegionEndpoint.EUNorth1,
+                        Globals.ApplicationName));
         }
-
-        public void Configure(IApplicationBuilder app)
+        else
         {
-            var pathBase = _configuration["PATHBASE"];
-            if (!string.IsNullOrWhiteSpace(pathBase))
-            {
-                app = app.UsePathBase(pathBase);
-            }
-            app.UseResponseCompression()
-                .UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
+            services.AddSimpleAuth(
+                _options,
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                assemblies: new[]
+                {
+                    (GetType().Namespace!, GetType().Assembly),
+                    (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly)
+                });
         }
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        var pathBase = _configuration["PATHBASE"];
+        if (!string.IsNullOrWhiteSpace(pathBase))
+        {
+            app = app.UsePathBase(pathBase);
+        }
+        app.UseResponseCompression()
+            .UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
     }
 }

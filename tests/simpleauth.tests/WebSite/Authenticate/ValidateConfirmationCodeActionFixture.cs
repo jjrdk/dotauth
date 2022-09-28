@@ -12,84 +12,83 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.WebSite.Authenticate
+namespace SimpleAuth.Tests.WebSite.Authenticate;
+
+using Moq;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+using SimpleAuth.WebSite.Authenticate;
+using Xunit;
+
+public sealed class ValidateConfirmationCodeActionFixture
 {
-    using Moq;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.WebSite.Authenticate;
-    using Xunit;
+    private readonly Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
+    private readonly ValidateConfirmationCodeAction _validateConfirmationCodeAction;
 
-    public class ValidateConfirmationCodeActionFixture
+    public ValidateConfirmationCodeActionFixture()
     {
-        private readonly Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
-        private readonly ValidateConfirmationCodeAction _validateConfirmationCodeAction;
+        _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
+        _validateConfirmationCodeAction = new ValidateConfirmationCodeAction(_confirmationCodeStoreStub.Object);
+    }
 
-        public ValidateConfirmationCodeActionFixture()
-        {
-            _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
-            _validateConfirmationCodeAction = new ValidateConfirmationCodeAction(_confirmationCodeStoreStub.Object);
-        }
+    [Fact]
+    public async Task When_Passing_Null_Parameter_Then_Returns_False()
+    {
+        var result = await _validateConfirmationCodeAction.Execute(null, null, CancellationToken.None)
+            .ConfigureAwait(false);
 
-        [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Returns_False()
-        {
-            var result = await _validateConfirmationCodeAction.Execute(null, null, CancellationToken.None)
-                .ConfigureAwait(false);
+        Assert.False(result);
+    }
 
-            Assert.False(result);
-        }
+    [Fact]
+    public async Task When_Passing_Empty_Parameter_Then_Returns_False()
+    {
+        var result = await _validateConfirmationCodeAction.Execute(string.Empty, string.Empty, CancellationToken.None)
+            .ConfigureAwait(false);
 
-        [Fact]
-        public async Task When_Passing_Empty_Parameter_Then_Returns_False()
-        {
-            var result = await _validateConfirmationCodeAction.Execute(string.Empty, string.Empty, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            Assert.False(result);
-        }
+        Assert.False(result);
+    }
 
 
-        [Fact]
-        public async Task When_Code_Does_Not_Exist_Then_False_Is_Returned()
-        {
-            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ConfirmationCode)null);
+    [Fact]
+    public async Task When_Code_Does_Not_Exist_Then_False_Is_Returned()
+    {
+        _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ConfirmationCode)null);
 
-            var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
-                .ConfigureAwait(false);
-            Assert.False(result);
-        }
+        var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
+            .ConfigureAwait(false);
+        Assert.False(result);
+    }
 
-        [Fact]
-        public async Task When_Code_Is_Expired_Then_False_Is_Returned()
-        {
-            var confirmationCode = new ConfirmationCode { ExpiresIn = 10, IssueAt = DateTimeOffset.UtcNow.AddDays(-2) };
-            _confirmationCodeStoreStub
-                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(confirmationCode);
+    [Fact]
+    public async Task When_Code_Is_Expired_Then_False_Is_Returned()
+    {
+        var confirmationCode = new ConfirmationCode { ExpiresIn = 10, IssueAt = DateTimeOffset.UtcNow.AddDays(-2) };
+        _confirmationCodeStoreStub
+            .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(confirmationCode);
 
-            var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
-                .ConfigureAwait(false);
+        var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
+            .ConfigureAwait(false);
 
-            Assert.False(result);
-        }
+        Assert.False(result);
+    }
 
-        [Fact]
-        public async Task When_Code_Is_Not_Expired_Then_True_Is_Returned()
-        {
-            var confirmationCode = new ConfirmationCode { ExpiresIn = 200, IssueAt = DateTimeOffset.UtcNow };
-            _confirmationCodeStoreStub
-                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(confirmationCode);
+    [Fact]
+    public async Task When_Code_Is_Not_Expired_Then_True_Is_Returned()
+    {
+        var confirmationCode = new ConfirmationCode { ExpiresIn = 200, IssueAt = DateTimeOffset.UtcNow };
+        _confirmationCodeStoreStub
+            .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(confirmationCode);
 
-            var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
-                .ConfigureAwait(false);
+        var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
+            .ConfigureAwait(false);
 
-            Assert.True(result);
-        }
+        Assert.True(result);
     }
 }

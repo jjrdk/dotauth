@@ -1,8 +1,7 @@
-﻿namespace SimpleAuth.Sms
+﻿namespace SimpleAuth.Sms;
+
+internal static class SmsConstants
 {
-    internal static class SmsConstants
-    {
-        public const string Amr = "sms";
-        public const string CodeController = "code";
-    }
+    public const string Amr = "sms";
+    public const string CodeController = "code";
 }

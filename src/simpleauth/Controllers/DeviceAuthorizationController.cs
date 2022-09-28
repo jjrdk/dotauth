@@ -1,80 +1,79 @@
-﻿namespace SimpleAuth.Controllers
+﻿namespace SimpleAuth.Controllers;
+
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Api.Device;
+using SimpleAuth.Common;
+using SimpleAuth.Extensions;
+using SimpleAuth.Filters;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Repositories;
+using SimpleAuth.Shared.Requests;
+
+/// <summary>
+/// Defines the device authorization controller.
+/// </summary>
+[Route(CoreConstants.EndPoints.DeviceAuthorization)]
+[ThrottleFilter]
+[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+public sealed class DeviceAuthorizationController : ControllerBase
 {
-    using System;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Api.Device;
-    using SimpleAuth.Common;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Filters;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
+    private readonly DeviceAuthorizationActions _actions;
 
     /// <summary>
-    /// Defines the device authorization controller.
+    /// Initializes a new instance of the <see cref="DeviceAuthorizationController"/> class.
     /// </summary>
-    [Route(CoreConstants.EndPoints.DeviceAuthorization)]
-    [ThrottleFilter]
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public class DeviceAuthorizationController : ControllerBase
+    /// <param name="settings">The runtime settings.</param>
+    /// <param name="deviceAuthorizationStore">The device authorization store.</param>
+    /// <param name="clientStore">The client store.</param>
+    /// <param name="logger">The logger.</param>
+    public DeviceAuthorizationController(
+        RuntimeSettings settings,
+        IClientStore clientStore,
+        IDeviceAuthorizationStore deviceAuthorizationStore,
+        ILogger<DeviceController> logger)
     {
-        private readonly DeviceAuthorizationActions _actions;
+        _actions = new DeviceAuthorizationActions(settings, deviceAuthorizationStore, clientStore, logger);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeviceAuthorizationController"/> class.
-        /// </summary>
-        /// <param name="settings">The runtime settings.</param>
-        /// <param name="deviceAuthorizationStore">The device authorization store.</param>
-        /// <param name="clientStore">The client store.</param>
-        /// <param name="logger">The logger.</param>
-        public DeviceAuthorizationController(
-            RuntimeSettings settings,
-            IClientStore clientStore,
-            IDeviceAuthorizationStore deviceAuthorizationStore,
-            ILogger<DeviceController> logger)
+    /// <summary>
+    /// Requests the authorization.
+    /// </summary>
+    /// <param name="request">The token request.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<IActionResult> RequestAuthorization(
+        [FromForm] TokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.client_id))
         {
-            _actions = new DeviceAuthorizationActions(settings, deviceAuthorizationStore, clientStore, logger);
+            return BadRequest();
         }
 
-        /// <summary>
-        /// Requests the authorization.
-        /// </summary>
-        /// <param name="request">The token request.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> RequestAuthorization(
-            [FromForm] TokenRequest request,
-            CancellationToken cancellationToken)
+        var scopeArray = string.IsNullOrWhiteSpace(request.scope)
+            ? Array.Empty<string>()
+            : request.scope.Split(' ', StringSplitOptions.TrimEntries).ToArray();
+        var response = await _actions.StartDeviceAuthorizationRequest(
+                request.client_id,
+                Request.GetAbsoluteUri(),
+                scopeArray,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        return response switch
         {
-            if (string.IsNullOrWhiteSpace(request.client_id))
+            Option<DeviceAuthorizationData>.Result r => Ok(r.Item.Response),
+            Option<DeviceAuthorizationData>.Error e => new ObjectResult(e.Details)
             {
-                return BadRequest();
-            }
-
-            var scopeArray = string.IsNullOrWhiteSpace(request.scope)
-                ? Array.Empty<string>()
-                : request.scope.Split(' ', StringSplitOptions.TrimEntries).ToArray();
-            var response = await _actions.StartDeviceAuthorizationRequest(
-                    request.client_id,
-                    Request.GetAbsoluteUri(),
-                    scopeArray,
-                    cancellationToken)
-                .ConfigureAwait(false);
-
-            return response switch
-            {
-                Option<DeviceAuthorizationData>.Result r => Ok(r.Item.Response),
-                Option<DeviceAuthorizationData>.Error e => new ObjectResult(e.Details)
-                {
-                    StatusCode = (int) e.Details.Status
-                },
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
+                StatusCode = (int) e.Details.Status
+            },
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }

@@ -12,46 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using System.Linq;
+using SimpleAuth.Properties;
+using SimpleAuth.Results;
+using SimpleAuth.Shared.Models;
+
+internal static class ScopeValidator
 {
-    using System.Linq;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared.Models;
-
-    internal static class ScopeValidator
+    public static ScopeValidationResult Check(this string? scope, Client client)
     {
-        public static ScopeValidationResult Check(this string? scope, Client client)
+        var scopes = scope.ParseScopes();
+        if (scopes.Length == 0)
         {
-            var scopes = scope.ParseScopes();
-            if (scopes.Length == 0)
-            {
-                return new ScopeValidationResult(Strings.TheScopesNeedToBeSpecified);
-            }
-
-            var duplicates = scopes.GroupBy(p => p)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key)
-                .ToList();
-            if (duplicates.Count > 1)
-            {
-                return new ScopeValidationResult(
-                    string.Format(Strings.DuplicateScopeValues,
-                    string.Join(",", duplicates)));
-            }
-
-            var scopeAllowed = client.AllowedScopes;
-            var scopesNotAllowedOrInvalid = scopes
-                .Where(s => !scopeAllowed.Contains(s))
-                .ToList();
-            if (scopesNotAllowedOrInvalid.Any())
-            {
-                return new ScopeValidationResult(
-                    string.Format(Strings.ScopesAreNotAllowedOrInvalid,
-                    string.Join(",", scopesNotAllowedOrInvalid)));
-            }
-
-            return new ScopeValidationResult(scopes);
+            return new ScopeValidationResult(Strings.TheScopesNeedToBeSpecified);
         }
+
+        var duplicates = scopes.GroupBy(p => p)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.Key)
+            .ToList();
+        if (duplicates.Count > 1)
+        {
+            return new ScopeValidationResult(
+                string.Format(Strings.DuplicateScopeValues,
+                    string.Join(",", duplicates)));
+        }
+
+        var scopeAllowed = client.AllowedScopes;
+        var scopesNotAllowedOrInvalid = scopes
+            .Where(s => !scopeAllowed.Contains(s))
+            .ToList();
+        if (scopesNotAllowedOrInvalid.Any())
+        {
+            return new ScopeValidationResult(
+                string.Format(Strings.ScopesAreNotAllowedOrInvalid,
+                    string.Join(",", scopesNotAllowedOrInvalid)));
+        }
+
+        return new ScopeValidationResult(scopes);
     }
 }

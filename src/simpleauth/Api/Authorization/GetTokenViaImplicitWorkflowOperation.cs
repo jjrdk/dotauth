@@ -12,122 +12,121 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Authorization
+namespace SimpleAuth.Api.Authorization;
+
+using System.Net;
+using Parameters;
+using Results;
+using Shared.Models;
+using SimpleAuth.Common;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Repositories;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Events;
+using SimpleAuth.Extensions;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared.Errors;
+
+internal sealed class GetTokenViaImplicitWorkflowOperation
 {
-    using System.Net;
-    using Parameters;
-    using Results;
-    using Shared.Models;
-    using SimpleAuth.Common;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
-    using System.Security.Claims;
-    using System.Security.Principal;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Events;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared.Errors;
+    private readonly ILogger _logger;
+    private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
+    private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
 
-    internal sealed class GetTokenViaImplicitWorkflowOperation
+    public GetTokenViaImplicitWorkflowOperation(
+        IClientStore clientStore,
+        IConsentRepository consentRepository,
+        IAuthorizationCodeStore authorizationCodeStore,
+        ITokenStore tokenStore,
+        IScopeRepository scopeRepository,
+        IJwksStore jwksStore,
+        IEventPublisher eventPublisher,
+        ILogger logger)
     {
-        private readonly ILogger _logger;
-        private readonly ProcessAuthorizationRequest _processAuthorizationRequest;
-        private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
+        _logger = logger;
+        _processAuthorizationRequest = new ProcessAuthorizationRequest(
+            clientStore,
+            consentRepository,
+            jwksStore,
+            logger);
+        _generateAuthorizationResponse = new GenerateAuthorizationResponse(
+            authorizationCodeStore,
+            tokenStore,
+            scopeRepository,
+            clientStore,
+            consentRepository,
+            jwksStore,
+            eventPublisher,
+            logger);
+    }
 
-        public GetTokenViaImplicitWorkflowOperation(
-            IClientStore clientStore,
-            IConsentRepository consentRepository,
-            IAuthorizationCodeStore authorizationCodeStore,
-            ITokenStore tokenStore,
-            IScopeRepository scopeRepository,
-            IJwksStore jwksStore,
-            IEventPublisher eventPublisher,
-            ILogger logger)
+    public async Task<EndpointResult> Execute(
+        AuthorizationParameter authorizationParameter,
+        IPrincipal principal,
+        Client client,
+        string issuerName,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
         {
-            _logger = logger;
-            _processAuthorizationRequest = new ProcessAuthorizationRequest(
-                clientStore,
-                consentRepository,
-                jwksStore,
-                logger);
-            _generateAuthorizationResponse = new GenerateAuthorizationResponse(
-                authorizationCodeStore,
-                tokenStore,
-                scopeRepository,
-                clientStore,
-                consentRepository,
-                jwksStore,
-                eventPublisher,
-                logger);
+            _logger.LogError(
+                string.Format(
+                    Strings.MissingParameter,
+                    CoreConstants.StandardAuthorizationRequestParameterNames.NonceName));
+            return EndpointResult.CreateBadRequestResult(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = string.Format(
+                        Strings.MissingParameter,
+                        CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                    Status = HttpStatusCode.BadRequest
+                });
         }
 
-        public async Task<EndpointResult> Execute(
-            AuthorizationParameter authorizationParameter,
-            IPrincipal principal,
-            Client client,
-            string issuerName,
-            CancellationToken cancellationToken)
+        if (!client.CheckGrantTypes(GrantTypes.Implicit))
         {
-            if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
-            {
-                _logger.LogError(
-                    string.Format(
-                        Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.NonceName));
-                return EndpointResult.CreateBadRequestResult(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(
-                            Strings.MissingParameter,
-                            CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
-                        Status = HttpStatusCode.BadRequest
-                    });
-            }
-
-            if (!client.CheckGrantTypes(GrantTypes.Implicit))
-            {
-                _logger.LogError(
-                    string.Format(
+            _logger.LogError(
+                string.Format(
+                    Strings.TheClientDoesntSupportTheGrantType,
+                    authorizationParameter.ClientId,
+                    "implicit"));
+            return EndpointResult.CreateBadRequestResult(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = string.Format(
                         Strings.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
-                        "implicit"));
-                return EndpointResult.CreateBadRequestResult(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest,
-                        Detail = string.Format(
-                            Strings.TheClientDoesntSupportTheGrantType,
-                            authorizationParameter.ClientId,
-                            "implicit"),
-                        Status = HttpStatusCode.BadRequest
-                    });
-            }
+                        "implicit"),
+                    Status = HttpStatusCode.BadRequest
+                });
+        }
 
-            var claimsPrincipal = (ClaimsPrincipal) principal;
-            var result = await _processAuthorizationRequest.Process(
+        var claimsPrincipal = (ClaimsPrincipal) principal;
+        var result = await _processAuthorizationRequest.Process(
+                authorizationParameter,
+                claimsPrincipal,
+                client,
+                issuerName,
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (result.Type == ActionResultType.RedirectToCallBackUrl)
+        {
+            result = await _generateAuthorizationResponse.Generate(
+                    result,
                     authorizationParameter,
                     claimsPrincipal,
                     client,
                     issuerName,
                     cancellationToken)
                 .ConfigureAwait(false);
-            if (result.Type == ActionResultType.RedirectToCallBackUrl)
-            {
-                result = await _generateAuthorizationResponse.Generate(
-                        result,
-                        authorizationParameter,
-                        claimsPrincipal,
-                        client,
-                        issuerName,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            }
-
-            return result;
         }
+
+        return result;
     }
 }

@@ -12,444 +12,427 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers
+namespace SimpleAuth.Controllers;
+
+using System;
+using System.Linq;
+using Api.ResourceSetController;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Shared.Responses;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Extensions;
+using SimpleAuth.Filters;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Requests;
+using SimpleAuth.ViewModels;
+
+/// <summary>
+/// Defines the resource set controller.
+/// </summary>
+/// <seealso cref="ControllerBase" />
+[Route(UmaConstants.RouteValues.ResourceSet)]
+[ThrottleFilter]
+public sealed class ResourceSetController : ControllerBase
 {
-    using System;
-    using System.Linq;
-    using Api.ResourceSetController;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Shared.Responses;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using System.Net;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Filters;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.ViewModels;
+    private readonly IResourceSetRepository _resourceSetRepository;
+    private readonly UpdateResourceSetAction _updateResourceSet;
 
     /// <summary>
-    /// Defines the resource set controller.
+    /// Initializes a new instance of the <see cref="ResourceSetController"/> class.
     /// </summary>
-    /// <seealso cref="ControllerBase" />
-    [Route(UmaConstants.RouteValues.ResourceSet)]
-    [ThrottleFilter]
-    public class ResourceSetController : ControllerBase
+    /// <param name="resourceSetRepository">The resource set repository.</param>
+    /// <param name="logger">The logger</param>
+    public ResourceSetController(IResourceSetRepository resourceSetRepository, ILogger<ResourceSetController> logger)
     {
-        private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly UpdateResourceSetAction _updateResourceSet;
+        _resourceSetRepository = resourceSetRepository;
+        _updateResourceSet = new UpdateResourceSetAction(resourceSetRepository, logger);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceSetController"/> class.
-        /// </summary>
-        /// <param name="resourceSetRepository">The resource set repository.</param>
-        /// <param name="logger">The logger</param>
-        public ResourceSetController(IResourceSetRepository resourceSetRepository, ILogger<ResourceSetController> logger)
+    /// <summary>
+    /// Searches the resource sets.
+    /// </summary>
+    /// <param name="searchResourceSet">The search resource set.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    [HttpPost(".search")]
+    [Authorize("UmaProtection")]
+    public async Task<ActionResult<PagedResult<ResourceSet>>> SearchResourceSets(
+        [FromBody] SearchResourceSet? searchResourceSet,
+        CancellationToken cancellationToken)
+    {
+        if (searchResourceSet == null)
         {
-            _resourceSetRepository = resourceSetRepository;
-            _updateResourceSet = new UpdateResourceSetAction(resourceSetRepository, logger);
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                Strings.NoParameterInBodyRequest,
+                HttpStatusCode.BadRequest);
         }
 
-        /// <summary>
-        /// Searches the resource sets.
-        /// </summary>
-        /// <param name="searchResourceSet">The search resource set.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        [HttpPost(".search")]
-        [Authorize("UmaProtection")]
-        public async Task<ActionResult<PagedResult<ResourceSet>>> SearchResourceSets(
-            [FromBody] SearchResourceSet? searchResourceSet,
-            CancellationToken cancellationToken)
-        {
-            if (searchResourceSet == null)
+        var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken)
+            .ConfigureAwait(false);
+        return new OkObjectResult(
+            new PagedResult<ResourceSet>
             {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.NoParameterInBodyRequest,
-                    HttpStatusCode.BadRequest);
-            }
+                Content = result.Content,
+                StartIndex = result.StartIndex,
+                TotalResults = result.TotalResults
+            });
+    }
 
-            var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken)
-                .ConfigureAwait(false);
-            return new OkObjectResult(
-                new PagedResult<ResourceSet>
+    /// <summary>
+    /// Gets the resource sets.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    [Authorize(Policy = "UmaProtection")]
+    public async Task<IActionResult> GetResourceSets([FromQuery] string ui, CancellationToken cancellationToken)
+    {
+        var owner = User.GetSubject();
+        if (string.IsNullOrWhiteSpace(owner))
+        {
+            return BadRequest();
+        }
+
+        var resourceSets = await _resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
+        var value = ui == "1"
+            ? (object)resourceSets.Select(ResourceSetViewModel.FromResourceSet).ToArray()
+            : resourceSets.Select(x => x.Id).ToArray();
+
+        return new OkObjectResult(value);
+    }
+
+    /// <summary>
+    /// Gets the resource set.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    [HttpGet("{id}")]
+    [Authorize(Policy = "UmaProtection")]
+    public async Task<IActionResult> GetResourceSet(string id, CancellationToken cancellationToken)
+    {
+        var subject = User.GetSubject();
+        if (string.IsNullOrWhiteSpace(subject))
+        {
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                Strings.TheSubjectCannotBeRetrieved,
+                HttpStatusCode.BadRequest);
+        }
+
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                Strings.TheIdentifierMustBeSpecified,
+                HttpStatusCode.BadRequest);
+        }
+
+        var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
+        if (result == null)
+        {
+            return NoContent();
+        }
+
+        return new OkObjectResult(result);
+    }
+
+    /// <summary>
+    /// Gets the access policy definition for the given resource.
+    /// </summary>
+    /// <param name="id">The resource id.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
+    /// <returns></returns>
+    [HttpGet("{id}/policy")]
+    [Authorize(Policy = "UmaProtection")]
+    public async Task<IActionResult> GetResourceSetPolicy(string id, CancellationToken cancellationToken)
+    {
+        var subject = User.GetSubject();
+        if (string.IsNullOrWhiteSpace(subject))
+        {
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                Strings.TheSubjectCannotBeRetrieved,
+                HttpStatusCode.BadRequest);
+        }
+
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                Strings.TheIdentifierMustBeSpecified,
+                HttpStatusCode.BadRequest);
+        }
+
+        var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
+        if (result == null)
+        {
+            return BadRequest();
+        }
+
+        return new OkObjectResult(
+            new EditPolicyResponse { Id = id, Rules = result.AuthorizationPolicies.Select(ToViewModel).ToArray() });
+    }
+
+    /// <summary>
+    /// Sets the access policy definition for the given resource.
+    /// </summary>
+    /// <param name="viewModel">The view model.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
+    [HttpPost("{id}/policy")]
+    [Authorize(Policy = "UmaProtection")]
+    public async Task<IActionResult> SetResourceSetPolicy(
+        EditPolicyResponse viewModel,
+        CancellationToken cancellationToken)
+    {
+        if (viewModel == null)
+        {
+            return BadRequest(
+                new ErrorDetails
                 {
-                    Content = result.Content,
-                    StartIndex = result.StartIndex,
-                    TotalResults = result.TotalResults
+                    Detail = Strings.InputMissing,
+                    Title = Strings.InputMissing,
+                    Status = HttpStatusCode.BadRequest
                 });
         }
 
-        /// <summary>
-        /// Gets the resource sets.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> GetResourceSets([FromQuery] string ui, CancellationToken cancellationToken)
+        var result = await SetResourceSetPolicy(
+                viewModel.Id,
+                viewModel.Rules.Select(ToModel).ToArray(),
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        return result is OkResult ? Ok(new object()) : result;
+    }
+
+    /// <summary>
+    /// Sets the access policy definition for the given resource.
+    /// </summary>
+    /// <param name="id">The resource id.</param>
+    /// <param name="rules">The access policy rules to set.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
+    [HttpPut("{id}/policy")]
+    [Authorize(Policy = "UmaProtection")]
+    public async Task<IActionResult> SetResourceSetPolicy(
+        string id,
+        PolicyRule[] rules,
+        CancellationToken cancellationToken)
+    {
+        var subject = User.GetSubject();
+        if (string.IsNullOrWhiteSpace(subject))
         {
-            var owner = User.GetSubject();
-            if (string.IsNullOrWhiteSpace(owner))
-            {
-                return BadRequest();
-            }
-
-            var resourceSets = await _resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
-            var value = ui == "1"
-                ? (object)resourceSets.Select(ResourceSetViewModel.FromResourceSet).ToArray()
-                : resourceSets.Select(x => x.Id).ToArray();
-
-            return new OkObjectResult(value);
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                Strings.TheSubjectCannotBeRetrieved,
+                HttpStatusCode.BadRequest);
         }
 
-        /// <summary>
-        /// Gets the resource set.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        [HttpGet("{id}")]
-        [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> GetResourceSet(string id, CancellationToken cancellationToken)
+        if (string.IsNullOrWhiteSpace(id))
         {
-            var subject = User.GetSubject();
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheSubjectCannotBeRetrieved,
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheIdentifierMustBeSpecified,
-                    HttpStatusCode.BadRequest);
-            }
-
-            var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
-            if (result == null)
-            {
-                return NoContent();
-            }
-
-            return new OkObjectResult(result);
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                Strings.TheIdentifierMustBeSpecified,
+                HttpStatusCode.BadRequest);
         }
 
-        /// <summary>
-        /// Gets the access policy definition for the given resource.
-        /// </summary>
-        /// <param name="id">The resource id.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
-        /// <returns></returns>
-        [HttpGet("{id}/policy")]
-        [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> GetResourceSetPolicy(string id, CancellationToken cancellationToken)
+        var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
+        if (result == null)
         {
-            var subject = User.GetSubject();
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheSubjectCannotBeRetrieved,
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheIdentifierMustBeSpecified,
-                    HttpStatusCode.BadRequest);
-            }
-
-            var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
-            if (result == null)
-            {
-                return BadRequest();
-            }
-
-            return new OkObjectResult(
-                new EditPolicyResponse { Id = id, Rules = result.AuthorizationPolicies.Select(ToViewModel).ToArray() });
+            return BuildError(ErrorCodes.InvalidRequest, Strings.InvalidResource, HttpStatusCode.BadRequest);
         }
 
-        /// <summary>
-        /// Sets the access policy definition for the given resource.
-        /// </summary>
-        /// <param name="viewModel">The view model.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
-        [HttpPost("{id}/policy")]
-        [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> SetResourceSetPolicy(
-            EditPolicyResponse viewModel,
-            CancellationToken cancellationToken)
+        result = result with { AuthorizationPolicies = rules };
+        var updated = await _resourceSetRepository.Update(result, cancellationToken).ConfigureAwait(false);
+
+        return updated switch
         {
-            if (viewModel == null)
-            {
-                return BadRequest(
-                    new ErrorDetails
-                    {
-                        Detail = Strings.InputMissing,
-                        Title = Strings.InputMissing,
-                        Status = HttpStatusCode.BadRequest
-                    });
-            }
+            Option.Error => Problem(),
+            _ => Ok()
+        };
+        //? Ok() : Problem();
+    }
 
-            var result = await SetResourceSetPolicy(
-                    viewModel.Id,
-                    viewModel.Rules.Select(ToModel).ToArray(),
-                    cancellationToken)
-                .ConfigureAwait(false);
-
-            return result is OkResult ? Ok(new object()) : result;
+    /// <summary>
+    /// Adds the resource set.
+    /// </summary>
+    /// <param name="resourceSet">The post resource set.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    [HttpPost]
+    [Authorize("UmaProtection")]
+    public async Task<IActionResult> AddResourceSet(
+        [FromBody] ResourceSet resourceSet,
+        CancellationToken cancellationToken)
+    {
+        var subject = User.GetSubject();
+        if (string.IsNullOrWhiteSpace(subject))
+        {
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                Strings.TheSubjectCannotBeRetrieved,
+                HttpStatusCode.BadRequest);
+        }
+            
+        if (resourceSet.IconUri != null && !resourceSet.IconUri.IsAbsoluteUri)
+        {
+            return BuildError(ErrorCodes.InvalidUri, Strings.TheUrlIsNotWellFormed, HttpStatusCode.BadRequest);
         }
 
-        /// <summary>
-        /// Sets the access policy definition for the given resource.
-        /// </summary>
-        /// <param name="id">The resource id.</param>
-        /// <param name="rules">The access policy rules to set.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async request.</param>
-        [HttpPut("{id}/policy")]
-        [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> SetResourceSetPolicy(
-            string id,
-            PolicyRule[] rules,
-            CancellationToken cancellationToken)
+        if (string.IsNullOrWhiteSpace(resourceSet.Name))
         {
-            var subject = User.GetSubject();
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheSubjectCannotBeRetrieved,
-                    HttpStatusCode.BadRequest);
-            }
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                string.Format(Strings.MissingParameter, "name"),
+                HttpStatusCode.BadRequest);
+        }
 
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheIdentifierMustBeSpecified,
-                    HttpStatusCode.BadRequest);
-            }
+        if (resourceSet.Scopes.Length == 0)
+        {
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                string.Format(Strings.MissingParameter, "scopes"),
+                HttpStatusCode.BadRequest);
+        }
 
-            var result = await _resourceSetRepository.Get(subject, id, cancellationToken).ConfigureAwait(false);
-            if (result == null)
-            {
-                return BuildError(ErrorCodes.InvalidRequest, Strings.InvalidResource, HttpStatusCode.BadRequest);
-            }
+        resourceSet = resourceSet with
+        {
+            Id = Id.Create(),
+            AuthorizationPolicies = new[] { new PolicyRule { IsResourceOwnerConsentNeeded = true } }
+        };
+        if (!await _resourceSetRepository.Add(subject, resourceSet, cancellationToken).ConfigureAwait(false))
+        {
+            return Problem();
+        }
 
-            result = result with { AuthorizationPolicies = rules };
-            var updated = await _resourceSetRepository.Update(result, cancellationToken).ConfigureAwait(false);
+        var response = new AddResourceSetResponse
+        {
+            Id = resourceSet.Id,
+            UserAccessPolicyUri =
+                $"{Request.GetAbsoluteUriWithVirtualPath()}/{UmaConstants.RouteValues.ResourceSet}/{resourceSet.Id}/policy"
+        };
 
-            return updated switch
+        return new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Created };
+    }
+
+    /// <summary>
+    /// Updates the resource set.
+    /// </summary>
+    /// <param name="resourceSet">The put resource set.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    [HttpPut]
+    [Authorize("UmaProtection")]
+    public async Task<IActionResult> UpdateResourceSet(
+        [FromBody] ResourceSet resourceSet,
+        CancellationToken cancellationToken)
+    {
+        if (resourceSet.IconUri != null && !resourceSet.IconUri.IsAbsoluteUri)
+        {
+            return BuildError(ErrorCodes.InvalidUri, Strings.TheUrlIsNotWellFormed, HttpStatusCode.BadRequest);
+        }
+
+        var resourceSetUpdated =
+            await _updateResourceSet.Execute(resourceSet, cancellationToken).ConfigureAwait(false);
+        if (resourceSetUpdated is Option.Error e)
+        {
+            return e.Details.Status switch
             {
-                Option.Error => Problem(),
-                _ => Ok()
+                HttpStatusCode.BadRequest => BadRequest(e.Details),
+                _ => new ObjectResult(e.Details) {StatusCode = (int) e.Details.Status}
             };
-            //? Ok() : Problem();
         }
-
-        /// <summary>
-        /// Adds the resource set.
-        /// </summary>
-        /// <param name="resourceSet">The post resource set.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        [HttpPost]
-        [Authorize("UmaProtection")]
-        public async Task<IActionResult> AddResourceSet(
-            [FromBody] ResourceSet resourceSet,
-            CancellationToken cancellationToken)
-        {
-            var subject = User.GetSubject();
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheSubjectCannotBeRetrieved,
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (resourceSet == null)
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.NoParameterInBodyRequest,
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (resourceSet.IconUri != null && !resourceSet.IconUri.IsAbsoluteUri)
-            {
-                return BuildError(ErrorCodes.InvalidUri, Strings.TheUrlIsNotWellFormed, HttpStatusCode.BadRequest);
-            }
-
-            if (string.IsNullOrWhiteSpace(resourceSet.Name))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.MissingParameter, "name"),
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (resourceSet.Scopes.Length == 0)
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    string.Format(Strings.MissingParameter, "scopes"),
-                    HttpStatusCode.BadRequest);
-            }
-
-            resourceSet = resourceSet with
-            {
-                Id = Id.Create(),
-                AuthorizationPolicies = new[] { new PolicyRule { IsResourceOwnerConsentNeeded = true } }
-            };
-            if (!await _resourceSetRepository.Add(subject, resourceSet, cancellationToken).ConfigureAwait(false))
-            {
-                return Problem();
-            }
-
-            var response = new AddResourceSetResponse
-            {
-                Id = resourceSet.Id,
-                UserAccessPolicyUri =
-                    $"{Request.GetAbsoluteUriWithVirtualPath()}/{UmaConstants.RouteValues.ResourceSet}/{resourceSet.Id}/policy"
-            };
-
-            return new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Created };
-        }
-
-        /// <summary>
-        /// Updates the resource set.
-        /// </summary>
-        /// <param name="resourceSet">The put resource set.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        [HttpPut]
-        [Authorize("UmaProtection")]
-        public async Task<IActionResult> UpdateResourceSet(
-            [FromBody] ResourceSet resourceSet,
-            CancellationToken cancellationToken)
-        {
-            if (resourceSet == null)
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.NoParameterInBodyRequest,
-                    HttpStatusCode.BadRequest);
-            }
-
-            if (resourceSet.IconUri != null && !resourceSet.IconUri.IsAbsoluteUri)
-            {
-                return BuildError(ErrorCodes.InvalidUri, Strings.TheUrlIsNotWellFormed, HttpStatusCode.BadRequest);
-            }
-
-            var resourceSetUpdated =
-                await _updateResourceSet.Execute(resourceSet, cancellationToken).ConfigureAwait(false);
-            if (resourceSetUpdated is Option.Error e)
-            {
-                return e.Details.Status switch
-                {
-                    HttpStatusCode.BadRequest => BadRequest(e.Details),
-                    _ => new ObjectResult(e.Details) {StatusCode = (int) e.Details.Status}
-                };
-            }
-            //if (!resourceSetUpdated)
-            //{
-            //    return GetNotUpdatedResourceSet();
-            //}
-
-            var response = new UpdateResourceSetResponse { Id = resourceSet.Id };
-
-            return new OkObjectResult(response);
-        }
-
-        /// <summary>
-        /// Deletes the resource set.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns></returns>
-        [HttpDelete("{id}")]
-        [Authorize(Policy = "UmaProtection")]
-        public async Task<IActionResult> DeleteResourceSet(string id, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    Strings.TheIdentifierMustBeSpecified,
-                    HttpStatusCode.BadRequest);
-            }
-
-            var resourceSetExists = await _resourceSetRepository.Remove(id, cancellationToken).ConfigureAwait(false);
-            return !resourceSetExists ? BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest }) : NoContent();
-        }
-
-        //private static ActionResult GetNotUpdatedResourceSet()
+        //if (!resourceSetUpdated)
         //{
-        //    var errorResponse = new ErrorDetails
-        //    {
-        //        Status = HttpStatusCode.NotFound,
-        //        Title = ErrorCodes.NotUpdated,
-        //        Detail = Strings.ResourceCannotBeUpdated
-        //    };
-
-        //    return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };
+        //    return GetNotUpdatedResourceSet();
         //}
 
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        var response = new UpdateResourceSetResponse { Id = resourceSet.Id };
+
+        return new OkObjectResult(response);
+    }
+
+    /// <summary>
+    /// Deletes the resource set.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "UmaProtection")]
+    public async Task<IActionResult> DeleteResourceSet(string id, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(id))
         {
-            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
-            return new JsonResult(error) { StatusCode = (int)statusCode };
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                Strings.TheIdentifierMustBeSpecified,
+                HttpStatusCode.BadRequest);
         }
 
-        private static PolicyRuleViewModel ToViewModel(PolicyRule rule)
-        {
-            return new()
-            {
-                Claims = rule.Claims,
-                ClientIdsAllowed = string.Join(", ", rule.ClientIdsAllowed),
-                IsResourceOwnerConsentNeeded = rule.IsResourceOwnerConsentNeeded,
-                OpenIdProvider = rule.OpenIdProvider,
-                Scopes = string.Join(", ", rule.Scopes)
-            };
-        }
+        var resourceSetExists = await _resourceSetRepository.Remove(id, cancellationToken).ConfigureAwait(false);
+        return !resourceSetExists ? BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest }) : NoContent();
+    }
 
-        private static PolicyRule ToModel(PolicyRuleViewModel viewModel)
+    //private static ActionResult GetNotUpdatedResourceSet()
+    //{
+    //    var errorResponse = new ErrorDetails
+    //    {
+    //        Status = HttpStatusCode.NotFound,
+    //        Title = ErrorCodes.NotUpdated,
+    //        Detail = Strings.ResourceCannotBeUpdated
+    //    };
+
+    //    return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };
+    //}
+
+    private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+    {
+        var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+        return new JsonResult(error) { StatusCode = (int)statusCode };
+    }
+
+    private static PolicyRuleViewModel ToViewModel(PolicyRule rule)
+    {
+        return new()
         {
-            return new()
-            {
-                Scopes =
-                    viewModel.Scopes == null
-                        ? Array.Empty<string>()
-                        : viewModel.Scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => x.Trim()!)
-                            .ToArray(),
-                Claims =
-                    viewModel.Claims.Where(
-                            x => !string.IsNullOrWhiteSpace(x.Type) && !string.IsNullOrWhiteSpace(x.Value))
+            Claims = rule.Claims,
+            ClientIdsAllowed = string.Join(", ", rule.ClientIdsAllowed),
+            IsResourceOwnerConsentNeeded = rule.IsResourceOwnerConsentNeeded,
+            OpenIdProvider = rule.OpenIdProvider,
+            Scopes = string.Join(", ", rule.Scopes)
+        };
+    }
+
+    private static PolicyRule ToModel(PolicyRuleViewModel viewModel)
+    {
+        return new()
+        {
+            Scopes =
+                viewModel.Scopes == null
+                    ? Array.Empty<string>()
+                    : viewModel.Scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim())
                         .ToArray(),
-                ClientIdsAllowed =
-                    viewModel.ClientIdsAllowed == null
-                        ? Array.Empty<string>()
-                        : viewModel.ClientIdsAllowed.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => x.Trim()!)
-                            .ToArray(),
-                IsResourceOwnerConsentNeeded = viewModel.IsResourceOwnerConsentNeeded,
-                OpenIdProvider = viewModel.OpenIdProvider
-            };
-        }
+            Claims =
+                viewModel.Claims.Where(
+                        x => !string.IsNullOrWhiteSpace(x.Type) && !string.IsNullOrWhiteSpace(x.Value))
+                    .ToArray(),
+            ClientIdsAllowed =
+                viewModel.ClientIdsAllowed == null
+                    ? Array.Empty<string>()
+                    : viewModel.ClientIdsAllowed.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim()!)
+                        .ToArray(),
+            IsResourceOwnerConsentNeeded = viewModel.IsResourceOwnerConsentNeeded,
+            OpenIdProvider = viewModel.OpenIdProvider
+        };
     }
 }

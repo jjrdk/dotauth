@@ -12,69 +12,68 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses
+namespace SimpleAuth.Shared.Responses;
+
+using System;
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the resource set response.
+/// </summary>
+[DataContract]
+public sealed record ResourceSetResponse
 {
-    using System;
-    using System.Runtime.Serialization;
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
+    /// <value>
+    /// The identifier.
+    /// </value>
+    [DataMember(Name = "_id")]
+    public string Id { get; set; } = null!;
 
     /// <summary>
-    /// Defines the resource set response.
+    /// Gets or sets the name.
     /// </summary>
-    [DataContract]
-    public record ResourceSetResponse
-    {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        [DataMember(Name = "_id")]
-        public string Id { get; set; } = null!;
+    /// <value>
+    /// The name.
+    /// </value>
+    [DataMember(Name = "name")]
+    public string? Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        [DataMember(Name = "name")]
-        public string? Name { get; set; }
+    /// <summary>
+    /// Gets or sets the URI.
+    /// </summary>
+    /// <value>
+    /// The URI.
+    /// </value>
+    [DataMember(Name = "uri")]
+    public string? Uri { get; set; }
 
-        /// <summary>
-        /// Gets or sets the URI.
-        /// </summary>
-        /// <value>
-        /// The URI.
-        /// </value>
-        [DataMember(Name = "uri")]
-        public string? Uri { get; set; }
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    /// <value>
+    /// The type.
+    /// </value>
+    [DataMember(Name = "type")]
+    public string? Type { get; set; }
 
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        /// <value>
-        /// The type.
-        /// </value>
-        [DataMember(Name = "type")]
-        public string? Type { get; set; }
+    /// <summary>
+    /// Gets or sets the scopes.
+    /// </summary>
+    /// <value>
+    /// The scopes.
+    /// </value>
+    [DataMember(Name = "scopes")]
+    public string[] Scopes { get; set; } = Array.Empty<string>();
 
-        /// <summary>
-        /// Gets or sets the scopes.
-        /// </summary>
-        /// <value>
-        /// The scopes.
-        /// </value>
-        [DataMember(Name = "scopes")]
-        public string[] Scopes { get; set; } = Array.Empty<string>();
-
-        /// <summary>
-        /// Gets or sets the icon URI.
-        /// </summary>
-        /// <value>
-        /// The icon URI.
-        /// </value>
-        [DataMember(Name = "icon_uri")]
-        public string? IconUri { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the icon URI.
+    /// </summary>
+    /// <value>
+    /// The icon URI.
+    /// </value>
+    [DataMember(Name = "icon_uri")]
+    public string? IconUri { get; set; }
 }

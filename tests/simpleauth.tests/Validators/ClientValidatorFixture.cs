@@ -12,132 +12,131 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Validators
+namespace SimpleAuth.Tests.Validators;
+
+using Shared;
+using Shared.Models;
+using SimpleAuth.Extensions;
+using System;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using Xunit;
+
+public sealed class ClientValidatorFixture
 {
-    using Shared;
-    using Shared.Models;
-    using SimpleAuth.Extensions;
-    using System;
-    using System.Linq;
-    using System.Security.Cryptography;
-    using System.Text;
-    using Xunit;
-
-    public class ClientValidatorFixture
+    [Fact]
+    public void When_Client_Does_Not_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
     {
-        [Fact]
-        public void When_Client_Does_Not_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
-        {
-            Assert.Empty(new Client().GetRedirectionUrls(null));
-            Assert.Empty(new Client().GetRedirectionUrls(new Uri("https://url")));
-            Assert.Empty(new Client().GetRedirectionUrls(new Uri("https://url")));
-        }
+        Assert.Empty(new Client().GetRedirectionUrls(null));
+        Assert.Empty(new Client().GetRedirectionUrls(new Uri("https://url")));
+        Assert.Empty(new Client().GetRedirectionUrls(new Uri("https://url")));
+    }
 
-        [Fact]
-        public void When_Checking_RedirectionUri_Then_Uri_Is_Returned()
-        {
-            var url = new Uri("https://url/");
-            var client = new Client { RedirectionUrls = new[] { url } };
+    [Fact]
+    public void When_Checking_RedirectionUri_Then_Uri_Is_Returned()
+    {
+        var url = new Uri("https://url/");
+        var client = new Client { RedirectionUrls = new[] { url } };
 
-            var result = client.GetRedirectionUrls(url);
+        var result = client.GetRedirectionUrls(url);
 
-            Assert.Equal(url, result.First());
-        }
+        Assert.Equal(url, result.First());
+    }
 
-        [Fact]
-        public void When_Client_Does_Not_Have_GrantType_Then_AuthorizationCode_Is_Assigned()
-        {
-            var client = new Client();
+    [Fact]
+    public void When_Client_Does_Not_Have_GrantType_Then_AuthorizationCode_Is_Assigned()
+    {
+        var client = new Client();
 
-            var result = client.CheckGrantTypes(GrantTypes.AuthorizationCode);
+        var result = client.CheckGrantTypes(GrantTypes.AuthorizationCode);
 
-            Assert.True(result);
-            Assert.Contains(GrantTypes.AuthorizationCode, client.GrantTypes);
-        }
+        Assert.True(result);
+        Assert.Contains(GrantTypes.AuthorizationCode, client.GrantTypes);
+    }
 
-        [Fact]
-        public void When_Checking_Client_Has_Implicit_Grant_Type_Then_True_Is_Returned()
-        {
-            var client = new Client { GrantTypes = new[] { GrantTypes.Implicit } };
+    [Fact]
+    public void When_Checking_Client_Has_Implicit_Grant_Type_Then_True_Is_Returned()
+    {
+        var client = new Client { GrantTypes = new[] { GrantTypes.Implicit } };
 
-            var result = client.CheckGrantTypes(GrantTypes.Implicit);
+        var result = client.CheckGrantTypes(GrantTypes.Implicit);
 
-            Assert.True(result);
-        }
+        Assert.True(result);
+    }
 
-        [Fact]
-        public void When_Checking_Client_Grant_Types_Then_True_Is_Returned()
-        {
-            var client = new Client { GrantTypes = new[] { GrantTypes.Implicit, GrantTypes.Password } };
+    [Fact]
+    public void When_Checking_Client_Grant_Types_Then_True_Is_Returned()
+    {
+        var client = new Client { GrantTypes = new[] { GrantTypes.Implicit, GrantTypes.Password } };
             
-            Assert.True(client.CheckGrantTypes(GrantTypes.Implicit, GrantTypes.Password));
-            Assert.True(client.CheckGrantTypes(GrantTypes.Implicit));
-        }
+        Assert.True(client.CheckGrantTypes(GrantTypes.Implicit, GrantTypes.Password));
+        Assert.True(client.CheckGrantTypes(GrantTypes.Implicit));
+    }
 
-        [Fact]
-        public void When_Checking_Client_Grant_Types_Then_False_Is_Returned()
-        {
-            var client = new Client { GrantTypes = new[] { GrantTypes.Implicit, GrantTypes.Password } };
+    [Fact]
+    public void When_Checking_Client_Grant_Types_Then_False_Is_Returned()
+    {
+        var client = new Client { GrantTypes = new[] { GrantTypes.Implicit, GrantTypes.Password } };
 
-            Assert.False(client.CheckGrantTypes(GrantTypes.RefreshToken));
-            Assert.False(client.CheckGrantTypes(GrantTypes.RefreshToken, GrantTypes.Password));
-        }
+        Assert.False(client.CheckGrantTypes(GrantTypes.RefreshToken));
+        Assert.False(client.CheckGrantTypes(GrantTypes.RefreshToken, GrantTypes.Password));
+    }
 
-        [Fact]
-        public void WhenPassingNullNullClientThenThrows()
-        {
-            Assert.Throws<NullReferenceException>(() => ((Client)null).CheckPkce(null, null));
-        }
+    [Fact]
+    public void WhenPassingNullNullClientThenThrows()
+    {
+        Assert.Throws<NullReferenceException>(() => ((Client)null).CheckPkce(null, null));
+    }
 
-        [Fact]
-        public void WhenPassingNullParametersThenReturnsFalse()
-        {
-            Assert.Throws<NullReferenceException>(() => new Client {RequirePkce = true}.CheckPkce(null, null));
-        }
+    [Fact]
+    public void WhenPassingNullParametersThenReturnsFalse()
+    {
+        Assert.Throws<NullReferenceException>(() => new Client {RequirePkce = true}.CheckPkce(null, null));
+    }
 
-        [Fact]
-        public void When_RequirePkce_Is_False_Then_True_Is_Returned()
-        {
-            var result = new Client { RequirePkce = false }.CheckPkce(null, new AuthorizationCode());
+    [Fact]
+    public void When_RequirePkce_Is_False_Then_True_Is_Returned()
+    {
+        var result = new Client { RequirePkce = false }.CheckPkce(null, new AuthorizationCode());
 
-            Assert.True(result);
-        }
+        Assert.True(result);
+    }
 
-        [Fact]
-        public void When_Plain_CodeChallenge_Is_Not_Correct_Then_False_Is_Returned()
-        {
-            var result = new Client { RequirePkce = true }.CheckPkce(
-                "invalid_code",
-                new AuthorizationCode { CodeChallenge = "code", CodeChallengeMethod = CodeChallengeMethods.Plain });
+    [Fact]
+    public void When_Plain_CodeChallenge_Is_Not_Correct_Then_False_Is_Returned()
+    {
+        var result = new Client { RequirePkce = true }.CheckPkce(
+            "invalid_code",
+            new AuthorizationCode { CodeChallenge = "code", CodeChallengeMethod = CodeChallengeMethods.Plain });
 
-            Assert.False(result);
-        }
+        Assert.False(result);
+    }
 
-        [Fact]
-        public void When_RS256_CodeChallenge_Is_Not_Correct_Then_False_Is_Returned()
-        {
-            var result = new Client { RequirePkce = true }.CheckPkce(
-                "code",
-                new AuthorizationCode { CodeChallenge = "code", CodeChallengeMethod = CodeChallengeMethods.Rs256 });
+    [Fact]
+    public void When_RS256_CodeChallenge_Is_Not_Correct_Then_False_Is_Returned()
+    {
+        var result = new Client { RequirePkce = true }.CheckPkce(
+            "code",
+            new AuthorizationCode { CodeChallenge = "code", CodeChallengeMethod = CodeChallengeMethods.Rs256 });
 
-            Assert.False(result);
-        }
+        Assert.False(result);
+    }
 
-        [Fact]
-        public void When_RS256_CodeChallenge_Is_Correct_Then_True_Is_Returned()
-        {
-            var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes("code"));
-            var codeChallenge = hashed.ToBase64Simplified();
+    [Fact]
+    public void When_RS256_CodeChallenge_Is_Correct_Then_True_Is_Returned()
+    {
+        var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes("code"));
+        var codeChallenge = hashed.ToBase64Simplified();
 
-            var result = new Client { RequirePkce = true }.CheckPkce(
-                "code",
-                new AuthorizationCode
-                {
-                    CodeChallenge = codeChallenge,
-                    CodeChallengeMethod = CodeChallengeMethods.Rs256
-                });
+        var result = new Client { RequirePkce = true }.CheckPkce(
+            "code",
+            new AuthorizationCode
+            {
+                CodeChallenge = codeChallenge,
+                CodeChallengeMethod = CodeChallengeMethods.Rs256
+            });
 
-            Assert.True(result);
-        }
+        Assert.True(result);
     }
 }

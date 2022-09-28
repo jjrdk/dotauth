@@ -12,66 +12,65 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Stores.Redis.AcceptanceTests
+namespace SimpleAuth.Stores.Redis.AcceptanceTests;
+
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Logging;
+using Xunit;
+using Xunit.Abstractions;
+
+public sealed class EndpointFixture : IDisposable
 {
-    using System;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.IdentityModel.Logging;
-    using Xunit;
-    using Xunit.Abstractions;
+    private const string BaseUrl = "http://localhost:5000";
+    private readonly TestServerFixture _server;
+    private readonly string _connectionString;
 
-    public class EndpointFixture : IDisposable
+    public EndpointFixture(ITestOutputHelper output)
     {
-        private const string BaseUrl = "http://localhost:5000";
-        private readonly TestServerFixture _server;
-        private readonly string _connectionString;
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
-        public EndpointFixture(ITestOutputHelper output)
+        IdentityModelEventSource.ShowPII = true;
+
+        _connectionString = DbInitializer.Init(
+                output,
+                configuration["Db:ConnectionString"],
+                DefaultStores.Consents(),
+                DefaultStores.Users(),
+                DefaultStores.Clients(SharedContext.Instance),
+                DefaultStores.Scopes())
+            .Result;
+
+        _server = new TestServerFixture(output, _connectionString, BaseUrl);
+    }
+
+    [Theory]
+    [InlineData("", HttpStatusCode.OK)]
+    [InlineData("error?code=404", HttpStatusCode.NotFound)]
+    [InlineData("error/404", HttpStatusCode.NotFound)]
+    [InlineData("home", HttpStatusCode.OK)]
+    [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
+    [InlineData("authenticate", HttpStatusCode.OK)]
+    [InlineData("jwks", HttpStatusCode.OK)]
+    public async Task WhenRequestingEndpointThenReturnsExpectedStatus(string path, HttpStatusCode statusCode)
+    {
+        var httpRequest = new HttpRequestMessage
         {
-            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/{path}")
+        };
 
-            IdentityModelEventSource.ShowPII = true;
+        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
-            _connectionString = DbInitializer.Init(
-                    output,
-                    configuration["Db:ConnectionString"],
-                    DefaultStores.Consents(),
-                    DefaultStores.Users(),
-                    DefaultStores.Clients(SharedContext.Instance),
-                    DefaultStores.Scopes())
-                .Result;
+        Assert.Equal(statusCode, httpResult.StatusCode);
+    }
 
-            _server = new TestServerFixture(output, _connectionString, BaseUrl);
-        }
-
-        [Theory]
-        [InlineData("", HttpStatusCode.OK)]
-        [InlineData("error?code=404", HttpStatusCode.NotFound)]
-        [InlineData("error/404", HttpStatusCode.NotFound)]
-        [InlineData("home", HttpStatusCode.OK)]
-        [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
-        [InlineData("authenticate", HttpStatusCode.OK)]
-        [InlineData("jwks", HttpStatusCode.OK)]
-        public async Task WhenRequestingEndpointThenReturnsExpectedStatus(string path, HttpStatusCode statusCode)
-        {
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/{path}")
-            };
-
-            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-
-            Assert.Equal(statusCode, httpResult.StatusCode);
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            _server?.Dispose();
-            DbInitializer.Drop(_connectionString).Wait();
-        }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _server?.Dispose();
+        DbInitializer.Drop(_connectionString).Wait();
     }
 }

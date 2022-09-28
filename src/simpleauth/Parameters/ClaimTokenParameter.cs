@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Parameters
+namespace SimpleAuth.Parameters;
+
+internal sealed record ClaimTokenParameter
 {
-    internal record ClaimTokenParameter
-    {
-        public string? Format { get; init; }
-        public string? Token { get; init; }
-    }
+    public string? Format { get; init; }
+    public string? Token { get; init; }
 }

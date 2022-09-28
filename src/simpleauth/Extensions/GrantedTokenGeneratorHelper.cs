@@ -12,122 +12,121 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared.Properties;
+
+internal static class GrantedTokenGeneratorHelper
 {
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Properties;
-
-    internal static class GrantedTokenGeneratorHelper
+    public static async Task<Option<GrantedToken>> GenerateToken(
+        this IClientStore clientStore,
+        IJwksStore jwksStore,
+        string clientId,
+        string[] scope,
+        string issuerName,
+        CancellationToken cancellationToken,
+        JwtPayload? userInformationPayload = null,
+        JwtPayload? idTokenPayload = null,
+        params Claim[] additionalClaims)
     {
-        public static async Task<Option<GrantedToken>> GenerateToken(
-            this IClientStore clientStore,
-            IJwksStore jwksStore,
-            string clientId,
-            string[] scope,
-            string issuerName,
-            CancellationToken cancellationToken,
-            JwtPayload? userInformationPayload = null,
-            JwtPayload? idTokenPayload = null,
-            params Claim[] additionalClaims)
+        if (string.IsNullOrWhiteSpace(clientId))
         {
-            if (string.IsNullOrWhiteSpace(clientId))
+            return new Option<GrantedToken>.Error(new ErrorDetails
             {
-                return new Option<GrantedToken>.Error(new ErrorDetails
-                {
-                    Title = ErrorCodes.InvalidClient,
-                    Detail = SharedStrings.TheClientDoesntExist,
-                    Status = HttpStatusCode.NotFound
-                });
-            }
-
-            var client = await clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
-            if (client == null)
-            {
-                return new Option<GrantedToken>.Error(new ErrorDetails
-                {
-                    Title = ErrorCodes.InvalidClient,
-                    Detail = SharedStrings.TheClientDoesntExist,
-                    Status = HttpStatusCode.NotFound
-                });
-            }
-
-            var token = await GenerateToken(
-                    client,
-                    jwksStore,
-                    scope,
-                    issuerName,
-                    userInformationPayload,
-                    idTokenPayload,
-                    cancellationToken,
-                    additionalClaims)
-                .ConfigureAwait(false);
-            return new Option<GrantedToken>.Result(token);
+                Title = ErrorCodes.InvalidClient,
+                Detail = SharedStrings.TheClientDoesntExist,
+                Status = HttpStatusCode.NotFound
+            });
         }
 
-        public static async Task<GrantedToken> GenerateToken(
-            this Client client,
-            IJwksStore jwksStore,
-            string[] scopes,
-            string? issuerName,
-            JwtPayload? userInformationPayload = null,
-            JwtPayload? idTokenPayload = null,
-            CancellationToken cancellationToken = default,
-            params Claim[] additionalClaims)
+        var client = await clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
+        if (client == null)
         {
-            var handler = new JwtSecurityTokenHandler();
-            var scopeString = string.Join(' ', scopes);
-            var enumerable =
-                new[]
-                    {
-                        new Claim(StandardClaimNames.Scopes, scopeString),
-                        new Claim(StandardClaimNames.Azp, client.ClientId),
-                    }.Concat(client.Claims)
-                    .Concat(additionalClaims)
-                    .GroupBy(x => x.Type)
-                    .Select(x => new Claim(x.Key, string.Join(" ", x.Select(y => y.Value))));
-
-            if (idTokenPayload is {Iss: null} && issuerName != null)
+            return new Option<GrantedToken>.Error(new ErrorDetails
             {
-                idTokenPayload.AddClaim(new Claim(StandardClaimNames.Issuer, issuerName));
-            }
+                Title = ErrorCodes.InvalidClient,
+                Detail = SharedStrings.TheClientDoesntExist,
+                Status = HttpStatusCode.NotFound
+            });
+        }
 
-            var signingCredentials = await jwksStore.GetSigningKey(client.TokenEndPointAuthSigningAlg, cancellationToken).ConfigureAwait(false);
-
-            //var tokenLifetime = scope.Contains("uma_protection", StringComparison.Ordinal) ? client.TokenLifetime
-            var accessToken = handler.CreateEncodedJwt(
+        var token = await GenerateToken(
+                client,
+                jwksStore,
+                scope,
                 issuerName,
-                client.ClientId,
-                new ClaimsIdentity(enumerable),
-                DateTime.UtcNow,
-                DateTime.UtcNow.Add(client.TokenLifetime),
-                DateTime.UtcNow,
-                signingCredentials);
+                userInformationPayload,
+                idTokenPayload,
+                cancellationToken,
+                additionalClaims)
+            .ConfigureAwait(false);
+        return new Option<GrantedToken>.Result(token);
+    }
 
-            // 3. Construct the refresh token.
-            return new GrantedToken
-            {
-                Id = Id.Create(),
-                AccessToken = accessToken,
-                RefreshToken = scopes.Contains(CoreConstants.Offline) ? Id.Create() : null,
-                ExpiresIn = (int)client.TokenLifetime.TotalSeconds,
-                TokenType = CoreConstants.StandardTokenTypes.Bearer,
-                CreateDateTime = DateTimeOffset.UtcNow,
-                // IDS
-                Scope = scopeString,
-                UserInfoPayLoad = userInformationPayload,
-                IdTokenPayLoad = idTokenPayload,
-                ClientId = client.ClientId
-            };
+    public static async Task<GrantedToken> GenerateToken(
+        this Client client,
+        IJwksStore jwksStore,
+        string[] scopes,
+        string? issuerName,
+        JwtPayload? userInformationPayload = null,
+        JwtPayload? idTokenPayload = null,
+        CancellationToken cancellationToken = default,
+        params Claim[] additionalClaims)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var scopeString = string.Join(' ', scopes);
+        var enumerable =
+            new[]
+                {
+                    new Claim(StandardClaimNames.Scopes, scopeString),
+                    new Claim(StandardClaimNames.Azp, client.ClientId),
+                }.Concat(client.Claims)
+                .Concat(additionalClaims)
+                .GroupBy(x => x.Type)
+                .Select(x => new Claim(x.Key, string.Join(" ", x.Select(y => y.Value))));
+
+        if (idTokenPayload is {Iss: null} && issuerName != null)
+        {
+            idTokenPayload.AddClaim(new Claim(StandardClaimNames.Issuer, issuerName));
         }
+
+        var signingCredentials = await jwksStore.GetSigningKey(client.TokenEndPointAuthSigningAlg, cancellationToken).ConfigureAwait(false);
+
+        //var tokenLifetime = scope.Contains("uma_protection", StringComparison.Ordinal) ? client.TokenLifetime
+        var accessToken = handler.CreateEncodedJwt(
+            issuerName,
+            client.ClientId,
+            new ClaimsIdentity(enumerable),
+            DateTime.UtcNow,
+            DateTime.UtcNow.Add(client.TokenLifetime),
+            DateTime.UtcNow,
+            signingCredentials);
+
+        // 3. Construct the refresh token.
+        return new GrantedToken
+        {
+            Id = Id.Create(),
+            AccessToken = accessToken,
+            RefreshToken = scopes.Contains(CoreConstants.Offline) ? Id.Create() : null,
+            ExpiresIn = (int)client.TokenLifetime.TotalSeconds,
+            TokenType = CoreConstants.StandardTokenTypes.Bearer,
+            CreateDateTime = DateTimeOffset.UtcNow,
+            // IDS
+            Scope = scopeString,
+            UserInfoPayLoad = userInformationPayload,
+            IdTokenPayLoad = idTokenPayload,
+            ClientId = client.ClientId
+        };
     }
 }

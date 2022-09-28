@@ -12,63 +12,62 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Authenticate
+namespace SimpleAuth.Tests.Authenticate;
+
+using Shared;
+using SimpleAuth;
+using System.Net.Http.Headers;
+using SimpleAuth.Extensions;
+using Xunit;
+
+public sealed class AuthenticateInstructionGeneratorFixture
 {
-    using Shared;
-    using SimpleAuth;
-    using System.Net.Http.Headers;
-    using SimpleAuth.Extensions;
-    using Xunit;
-
-    public class AuthenticateInstructionGeneratorFixture
+    [Fact]
+    public void When_Passing_No_Parameter_Then_Empty_Result_Is_Returned()
     {
-        [Fact]
-        public void When_Passing_No_Parameter_Then_Empty_Result_Is_Returned()
-        {
-            var header = (AuthenticationHeaderValue) null;
-            var result = header.GetAuthenticateInstruction(null);
+        var header = (AuthenticationHeaderValue) null;
+        var result = header.GetAuthenticateInstruction(null);
 
-            Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
-            Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
-        }
+        Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
+        Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
+    }
 
-        [Fact]
-        public void When_Passing_Empty_AuthenticationHeaderParameter_Then_Empty_Result_Is_Returned()
-        {
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", string.Empty);
+    [Fact]
+    public void When_Passing_Empty_AuthenticationHeaderParameter_Then_Empty_Result_Is_Returned()
+    {
+        var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", string.Empty);
 
-            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
+        var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-            Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
-            Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
-        }
+        Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
+        Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
+    }
 
-        [Fact]
-        public void When_Passing_Not_Valid_Parameter_Then_Empty_Result_Is_Returned()
-        {
-            var parameter = "parameter";
-            var encodedParameter = parameter.Base64Encode();
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
+    [Fact]
+    public void When_Passing_Not_Valid_Parameter_Then_Empty_Result_Is_Returned()
+    {
+        var parameter = "parameter";
+        var encodedParameter = parameter.Base64Encode();
+        var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", encodedParameter);
 
-            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
+        var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-            Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
-            Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
-        }
+        Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));
+        Assert.True(string.IsNullOrWhiteSpace(result.ClientSecretFromAuthorizationHeader));
+    }
 
-        [Fact]
-        public void When_Passing_Valid_Parameter_Then_Valid_AuthenticateInstruction_Is_Returned()
-        {
-            const string clientId = "clientId";
-            const string clientSecret = "clientSecret";
-            var parameter = $"{clientId}:{clientSecret}";
-            var encodedParameter = parameter.Base64Encode();
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", encodedParameter);
+    [Fact]
+    public void When_Passing_Valid_Parameter_Then_Valid_AuthenticateInstruction_Is_Returned()
+    {
+        const string clientId = "clientId";
+        const string clientSecret = "clientSecret";
+        var parameter = $"{clientId}:{clientSecret}";
+        var encodedParameter = parameter.Base64Encode();
+        var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", encodedParameter);
 
-            var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
+        var result = authenticationHeaderValue.GetAuthenticateInstruction(null);
 
-            Assert.Equal(clientId, result.ClientIdFromAuthorizationHeader);
-            Assert.Equal(clientSecret, result.ClientSecretFromAuthorizationHeader);
-        }
+        Assert.Equal(clientId, result.ClientIdFromAuthorizationHeader);
+        Assert.Equal(clientSecret, result.ClientSecretFromAuthorizationHeader);
     }
 }

@@ -1,22 +1,21 @@
-﻿namespace SimpleAuth.Filters
+﻿namespace SimpleAuth.Filters;
+
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+
+/// <inheritdoc />
+internal sealed class NoopThrottle : IRequestThrottle
 {
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
+    private NoopThrottle() { }
+
+    /// <summary>
+    /// Returns the default instance of the <see cref="NoopThrottle"/>.
+    /// </summary>
+    public static IRequestThrottle Instance { get; } = new NoopThrottle();
 
     /// <inheritdoc />
-    internal class NoopThrottle : IRequestThrottle
+    public Task<bool> Allow(HttpRequest request)
     {
-        private NoopThrottle() { }
-
-        /// <summary>
-        /// Returns the default instance of the <see cref="NoopThrottle"/>.
-        /// </summary>
-        public static IRequestThrottle Instance { get; } = new NoopThrottle();
-
-        /// <inheritdoc />
-        public Task<bool> Allow(HttpRequest request)
-        {
-            return Task.FromResult(true);
-        }
+        return Task.FromResult(true);
     }
 }

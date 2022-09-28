@@ -12,61 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Common
+namespace SimpleAuth.Common;
+
+/// <summary>
+/// Defines the revocation request.
+/// </summary>
+public sealed record RevocationRequest
 {
-    /// <summary>
-    /// Defines the revocation request.
-    /// </summary>
-    public record RevocationRequest
-    {
 #pragma warning disable IDE1006 // Naming Styles
-        /// <summary>
-        /// Gets or sets the token.
-        /// </summary>
-        /// <value>
-        /// The token.
-        /// </value>
-        public string? token { get; init; }
+    /// <summary>
+    /// Gets or sets the token.
+    /// </summary>
+    /// <value>
+    /// The token.
+    /// </value>
+    public string? token { get; init; }
 
-        /// <summary>
-        /// Gets or sets the token type hint.
-        /// </summary>
-        /// <value>
-        /// The token type hint.
-        /// </value>
-        public string? token_type_hint { get; init; }
+    /// <summary>
+    /// Gets or sets the token type hint.
+    /// </summary>
+    /// <value>
+    /// The token type hint.
+    /// </value>
+    public string? token_type_hint { get; init; }
 
-        /// <summary>
-        /// Gets or sets the client identifier.
-        /// </summary>
-        /// <value>
-        /// The client identifier.
-        /// </value>
-        public string? client_id { get; init; }
+    /// <summary>
+    /// Gets or sets the client identifier.
+    /// </summary>
+    /// <value>
+    /// The client identifier.
+    /// </value>
+    public string? client_id { get; init; }
 
-        /// <summary>
-        /// Gets or sets the client secret.
-        /// </summary>
-        /// <value>
-        /// The client secret.
-        /// </value>
-        public string? client_secret { get; init; }
+    /// <summary>
+    /// Gets or sets the client secret.
+    /// </summary>
+    /// <value>
+    /// The client secret.
+    /// </value>
+    public string? client_secret { get; init; }
 
-        /// <summary>
-        /// Gets or sets the type of the client assertion.
-        /// </summary>
-        /// <value>
-        /// The type of the client assertion.
-        /// </value>
-        public string? client_assertion_type { get; init; }
+    /// <summary>
+    /// Gets or sets the type of the client assertion.
+    /// </summary>
+    /// <value>
+    /// The type of the client assertion.
+    /// </value>
+    public string? client_assertion_type { get; init; }
 
-        /// <summary>
-        /// Gets or sets the client assertion.
-        /// </summary>
-        /// <value>
-        /// The client assertion.
-        /// </value>
-        public string? client_assertion { get; init; }
+    /// <summary>
+    /// Gets or sets the client assertion.
+    /// </summary>
+    /// <value>
+    /// The client assertion.
+    /// </value>
+    public string? client_assertion { get; init; }
 #pragma warning restore IDE1006 // Naming Styles
-    }
 }

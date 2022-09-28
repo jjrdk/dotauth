@@ -12,90 +12,88 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Results;
+using Shared.Requests;
+using System;
+using Microsoft.Extensions.Logging;
+
+internal static class ControllerExtensions
 {
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Routing;
-    using Results;
-    using Shared.Requests;
-    using System;
-    using Microsoft.Extensions.Logging;
-
-    internal static class ControllerExtensions
+    public static string? GetOriginUrl(this ControllerBase controller)
     {
-        public static string? GetOriginUrl(this ControllerBase controller)
+        if (!controller.Request.Headers.TryGetValue("Referer", out var referer))
         {
-            if (!controller.Request.Headers.ContainsKey("Referer"))
-            {
-                return null;
-            }
-
-            var referer = controller.Request.Headers["Referer"];
-            var uri = new Uri(referer);
-            return $"{uri.Scheme}://{uri.Authority}";
-        }
-
-        public static ActionResult? CreateRedirectionFromActionResult(
-            this EndpointResult endpointResult,
-            AuthorizationRequest authorizationRequest,
-            ILogger logger)
-        {
-            if (endpointResult.Type == ActionResultType.RedirectToCallBackUrl)
-            {
-                var parameters = endpointResult.GetRedirectionParameters();
-                var redirectUrl = CreateRedirectHttp(
-                    authorizationRequest.redirect_uri!,
-                    parameters,
-                    endpointResult.RedirectInstruction!.ResponseMode!).ToString();
-                logger.LogInformation("Redirection uri: {redirectUrl}", redirectUrl);
-
-                return new RedirectResult(redirectUrl);
-            }
-
-            var actionInformation = endpointResult.GetControllerAndActionFromRedirectionActionResult();
-            if (actionInformation != null)
-            {
-                var routeValueDic = actionInformation.RouteValueDictionary;
-                routeValueDic.Add("controller", actionInformation.ControllerName);
-                routeValueDic.Add("action", actionInformation.ActionName);
-                routeValueDic.Add("area", actionInformation.Area);
-                return new RedirectToRouteResult(routeValueDic);
-            }
-
             return null;
         }
 
-        public static RedirectResult CreateRedirectHttpTokenResponse(
-            this Uri uri,
-            RouteValueDictionary parameters,
-            string responseMode)
-        {
-            switch (responseMode)
-            {
-                case ResponseModes.Fragment:
-                    uri = uri.AddParametersInFragment(parameters);
-                    break;
-                case ResponseModes.Query:
-                    uri = uri.AddParametersInQuery(parameters);
-                    break;
-                case ResponseModes.None:
-                    break;
-                case ResponseModes.FormPost:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(responseMode), responseMode, null);
-            }
+        var uri = new Uri(referer!);
+        return $"{uri.Scheme}://{uri.Authority}";
+    }
 
-            return new RedirectResult(uri.AbsoluteUri);
+    public static ActionResult? CreateRedirectionFromActionResult(
+        this EndpointResult endpointResult,
+        AuthorizationRequest authorizationRequest,
+        ILogger logger)
+    {
+        if (endpointResult.Type == ActionResultType.RedirectToCallBackUrl)
+        {
+            var parameters = endpointResult.GetRedirectionParameters();
+            var redirectUrl = CreateRedirectHttp(
+                authorizationRequest.redirect_uri!,
+                parameters,
+                endpointResult.RedirectInstruction!.ResponseMode!).ToString();
+            logger.LogInformation("Redirection uri: {redirectUrl}", redirectUrl);
+
+            return new RedirectResult(redirectUrl);
         }
 
-        private static Uri CreateRedirectHttp(Uri uri, RouteValueDictionary parameters, string responseMode)
+        var actionInformation = endpointResult.GetControllerAndActionFromRedirectionActionResult();
+        if (actionInformation != null)
         {
-            return responseMode switch
-            {
-                ResponseModes.Fragment => uri.AddParametersInFragment(parameters),
-                _ => uri.AddParametersInQuery(parameters)
-            };
+            var routeValueDic = actionInformation.RouteValueDictionary;
+            routeValueDic.Add("controller", actionInformation.ControllerName);
+            routeValueDic.Add("action", actionInformation.ActionName);
+            routeValueDic.Add("area", actionInformation.Area);
+            return new RedirectToRouteResult(routeValueDic);
         }
+
+        return null;
+    }
+
+    public static RedirectResult CreateRedirectHttpTokenResponse(
+        this Uri uri,
+        RouteValueDictionary parameters,
+        string responseMode)
+    {
+        switch (responseMode)
+        {
+            case ResponseModes.Fragment:
+                uri = uri.AddParametersInFragment(parameters);
+                break;
+            case ResponseModes.Query:
+                uri = uri.AddParametersInQuery(parameters);
+                break;
+            case ResponseModes.None:
+                break;
+            case ResponseModes.FormPost:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(responseMode), responseMode, null);
+        }
+
+        return new RedirectResult(uri.AbsoluteUri);
+    }
+
+    private static Uri CreateRedirectHttp(Uri uri, RouteValueDictionary parameters, string responseMode)
+    {
+        return responseMode switch
+        {
+            ResponseModes.Fragment => uri.AddParametersInFragment(parameters),
+            _ => uri.AddParametersInQuery(parameters)
+        };
     }
 }

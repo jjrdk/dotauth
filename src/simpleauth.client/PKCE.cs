@@ -12,38 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client
+namespace SimpleAuth.Client;
+
+/// <summary>
+/// Defines the PKCE
+/// </summary>
+public sealed class Pkce
 {
     /// <summary>
-    /// Defines the PKCE
+    /// Initializes a new instance of the <see cref="Pkce"/> class.
     /// </summary>
-    public class Pkce
+    /// <param name="codeVerifier"></param>
+    /// <param name="codeChallenge"></param>
+    public Pkce(string codeVerifier, string codeChallenge)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Pkce"/> class.
-        /// </summary>
-        /// <param name="codeVerifier"></param>
-        /// <param name="codeChallenge"></param>
-        public Pkce(string codeVerifier, string codeChallenge)
-        {
-            CodeVerifier = codeVerifier;
-            CodeChallenge = codeChallenge;
-        }
-
-        /// <summary>
-        /// Gets or sets the code verifier.
-        /// </summary>
-        /// <value>
-        /// The code verifier.
-        /// </value>
-        public string CodeVerifier { get; }
-
-        /// <summary>
-        /// Gets or sets the code challenge.
-        /// </summary>
-        /// <value>
-        /// The code challenge.
-        /// </value>
-        public string CodeChallenge { get; }
+        CodeVerifier = codeVerifier;
+        CodeChallenge = codeChallenge;
     }
+
+    /// <summary>
+    /// Gets or sets the code verifier.
+    /// </summary>
+    /// <value>
+    /// The code verifier.
+    /// </value>
+    public string CodeVerifier { get; }
+
+    /// <summary>
+    /// Gets or sets the code challenge.
+    /// </summary>
+    /// <value>
+    /// The code challenge.
+    /// </value>
+    public string CodeChallenge { get; }
 }

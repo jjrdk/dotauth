@@ -12,49 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers
+namespace SimpleAuth.Controllers;
+
+using Api.Discovery;
+using Microsoft.AspNetCore.Mvc;
+using Shared.Repositories;
+using Shared.Responses;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Extensions;
+using SimpleAuth.Filters;
+
+/// <summary>
+/// Defines the discovery controller
+/// </summary>
+/// <seealso cref="ControllerBase" />
+[Route(CoreConstants.EndPoints.DiscoveryAction)]
+[ThrottleFilter]
+[ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any, NoStore = false)]
+public sealed class DiscoveryController : ControllerBase
 {
-    using Api.Discovery;
-    using Microsoft.AspNetCore.Mvc;
-    using Shared.Repositories;
-    using Shared.Responses;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Filters;
+    private readonly DiscoveryActions _discoveryActions;
 
     /// <summary>
-    /// Defines the discovery controller
+    /// Initializes a new instance of the <see cref="DiscoveryController"/> class.
     /// </summary>
-    /// <seealso cref="ControllerBase" />
-    [Route(CoreConstants.EndPoints.DiscoveryAction)]
-    [ThrottleFilter]
-    [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Any, NoStore = false)]
-    public class DiscoveryController : ControllerBase
+    /// <param name="scopeRepository">The scope repository.</param>
+    public DiscoveryController(IScopeRepository scopeRepository)
     {
-        private readonly DiscoveryActions _discoveryActions;
+        _discoveryActions = new DiscoveryActions(scopeRepository);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DiscoveryController"/> class.
-        /// </summary>
-        /// <param name="scopeRepository">The scope repository.</param>
-        public DiscoveryController(IScopeRepository scopeRepository)
-        {
-            _discoveryActions = new DiscoveryActions(scopeRepository);
-        }
+    /// <summary>
+    /// Handles the default GET request..
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<DiscoveryInformation> Get(CancellationToken cancellationToken)
+    {
+        var issuer = Request.GetAbsoluteUriWithVirtualPath();
+        var result = await _discoveryActions.CreateDiscoveryInformation(issuer, cancellationToken).ConfigureAwait(false);
 
-        /// <summary>
-        /// Handles the default GET request..
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<DiscoveryInformation> Get(CancellationToken cancellationToken)
-        {
-            var issuer = Request.GetAbsoluteUriWithVirtualPath();
-            var result = await _discoveryActions.CreateDiscoveryInformation(issuer, cancellationToken).ConfigureAwait(false);
-
-            return result;
-        }
+        return result;
     }
 }

@@ -1,11 +1,10 @@
-﻿namespace SimpleAuth.Parameters
+﻿namespace SimpleAuth.Parameters;
+
+using System;
+
+internal sealed record ClaimsParameter
 {
-    using System;
+    public ClaimParameter[] UserInfo { get; init; } = Array.Empty<ClaimParameter>();
 
-    internal record ClaimsParameter
-    {
-        public ClaimParameter[] UserInfo { get; init; } = Array.Empty<ClaimParameter>();
-
-        public ClaimParameter[] IdToken { get; init; } = Array.Empty<ClaimParameter>();
-    }
+    public ClaimParameter[] IdToken { get; init; } = Array.Empty<ClaimParameter>();
 }

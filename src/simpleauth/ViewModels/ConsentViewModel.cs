@@ -12,77 +12,76 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.ViewModels
+namespace SimpleAuth.ViewModels;
+
+using System.Collections.Generic;
+
+/// <summary>
+/// Defines the consent view model.
+/// </summary>
+public sealed class ConsentViewModel
 {
-    using System.Collections.Generic;
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
+    /// <value>
+    /// The identifier.
+    /// </value>
+    public string? Id { get; set; }
 
     /// <summary>
-    /// Defines the consent view model.
+    /// Gets or sets the display name of the client.
     /// </summary>
-    public class ConsentViewModel
-    {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        public string? Id { get; set; }
+    /// <value>
+    /// The display name of the client.
+    /// </value>
+    public string? ClientDisplayName { get; set; }
 
-        /// <summary>
-        /// Gets or sets the display name of the client.
-        /// </summary>
-        /// <value>
-        /// The display name of the client.
-        /// </value>
-        public string? ClientDisplayName { get; set; }
+    /// <summary>
+    /// Gets or sets the allowed scope descriptions.
+    /// </summary>
+    /// <value>
+    /// The allowed scope descriptions.
+    /// </value>
+    public ICollection<string> AllowedScopeDescriptions { get; set; } = new List<string>();
 
-        /// <summary>
-        /// Gets or sets the allowed scope descriptions.
-        /// </summary>
-        /// <value>
-        /// The allowed scope descriptions.
-        /// </value>
-        public ICollection<string> AllowedScopeDescriptions { get; set; } = new List<string>();
+    /// <summary>
+    /// Gets or sets the allowed individual claims.
+    /// </summary>
+    /// <value>
+    /// The allowed individual claims.
+    /// </value>
+    public ICollection<string> AllowedIndividualClaims { get; set; } = new List<string>();
 
-        /// <summary>
-        /// Gets or sets the allowed individual claims.
-        /// </summary>
-        /// <value>
-        /// The allowed individual claims.
-        /// </value>
-        public ICollection<string> AllowedIndividualClaims { get; set; } = new List<string>();
+    /// <summary>
+    /// Gets or sets the logo URI.
+    /// </summary>
+    /// <value>
+    /// The logo URI.
+    /// </value>
+    public string? LogoUri { get; set; }
 
-        /// <summary>
-        /// Gets or sets the logo URI.
-        /// </summary>
-        /// <value>
-        /// The logo URI.
-        /// </value>
-        public string? LogoUri { get; set; }
+    /// <summary>
+    /// Gets or sets the policy URI.
+    /// </summary>
+    /// <value>
+    /// The policy URI.
+    /// </value>
+    public string? PolicyUri { get; set; }
 
-        /// <summary>
-        /// Gets or sets the policy URI.
-        /// </summary>
-        /// <value>
-        /// The policy URI.
-        /// </value>
-        public string? PolicyUri { get; set; }
+    /// <summary>
+    /// Gets or sets the Terms of Service URI.
+    /// </summary>
+    /// <value>
+    /// The tos URI.
+    /// </value>
+    public string? TosUri { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Terms of Service URI.
-        /// </summary>
-        /// <value>
-        /// The tos URI.
-        /// </value>
-        public string? TosUri { get; set; }
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        /// <value>
-        /// The code.
-        /// </value>
-        public string? Code { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the code.
+    /// </summary>
+    /// <value>
+    /// The code.
+    /// </value>
+    public string? Code { get; set; }
 }

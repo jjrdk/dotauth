@@ -1,31 +1,30 @@
-﻿namespace SimpleAuth.Server.Tests
+﻿namespace SimpleAuth.Server.Tests;
+
+using System;
+using System.Net.Http;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+
+public sealed class TestManagerServerFixture : IDisposable
 {
-    using System;
-    using System.Net.Http;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.TestHost;
+    public TestServer Server { get; }
+    public Func<HttpClient> Client { get; }
 
-    public class TestManagerServerFixture : IDisposable
+    public TestManagerServerFixture()
     {
-        public TestServer Server { get; }
-        public Func<HttpClient> Client { get; }
+        var startup = new FakeManagerStartup();
+        Server = new TestServer(new WebHostBuilder()
+            .UseUrls("http://localhost:5000")
+            .ConfigureServices(startup.ConfigureServices)
+            .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeManagerStartup).Assembly.FullName)
+            .Configure(startup.Configure));
+        Client = Server.CreateClient;
+    }
 
-        public TestManagerServerFixture()
-        {
-            var startup = new FakeManagerStartup();
-            Server = new TestServer(new WebHostBuilder()
-                .UseUrls("http://localhost:5000")
-                .ConfigureServices(startup.ConfigureServices)
-                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeManagerStartup).Assembly.FullName)
-                .Configure(startup.Configure));
-            Client = Server.CreateClient;
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            Server.Dispose();
-            Client?.Invoke()?.Dispose();
-        }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        Server.Dispose();
+        Client?.Invoke()?.Dispose();
     }
 }

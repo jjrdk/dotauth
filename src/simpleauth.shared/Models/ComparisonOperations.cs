@@ -1,23 +1,22 @@
-﻿namespace SimpleAuth.Shared.Models
+﻿namespace SimpleAuth.Shared.Models;
+
+/// <summary>
+/// Defines the comparison operation types.
+/// </summary>
+public enum ComparisonOperations
 {
     /// <summary>
-    /// Defines the comparison operation types.
+    /// Equal
     /// </summary>
-    public enum ComparisonOperations
-    {
-        /// <summary>
-        /// Equal
-        /// </summary>
-        Equal,
+    Equal,
 
-        /// <summary>
-        /// Not equal
-        /// </summary>
-        NotEqual,
+    /// <summary>
+    /// Not equal
+    /// </summary>
+    NotEqual,
 
-        /// <summary>
-        /// Regular expression
-        /// </summary>
-        RegularExpression
-    }
+    /// <summary>
+    /// Regular expression
+    /// </summary>
+    RegularExpression
 }

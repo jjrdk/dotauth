@@ -12,36 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using SimpleAuth.Api.Authorization;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+
+internal static class AuthorizationFlowHelper
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using SimpleAuth.Api.Authorization;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-
-    internal static class AuthorizationFlowHelper
+    public static Option<AuthorizationFlow> GetAuthorizationFlow(this ICollection<string> responseTypes, string? state)
     {
-        public static Option<AuthorizationFlow> GetAuthorizationFlow(this ICollection<string> responseTypes, string? state)
+        var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
+            .SingleOrDefault(k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
+        if (record == null)
         {
-            var record = CoreConstants.MappingResponseTypesToAuthorizationFlows.Keys
-                .SingleOrDefault(k => k.Length == responseTypes.Count && k.All(responseTypes.Contains));
-            if (record == null)
-            {
-                return new Option<AuthorizationFlow>.Error(
-                       new ErrorDetails
-                       {
-                           Title = ErrorCodes.InvalidRequest,
-                           Detail = Strings.TheAuthorizationFlowIsNotSupported,
-                           Status = HttpStatusCode.BadRequest
-                       },
-                       state);
-            }
-
-            return new Option<AuthorizationFlow>.Result(CoreConstants.MappingResponseTypesToAuthorizationFlows[record]);
+            return new Option<AuthorizationFlow>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = Strings.TheAuthorizationFlowIsNotSupported,
+                    Status = HttpStatusCode.BadRequest
+                },
+                state);
         }
+
+        return new Option<AuthorizationFlow>.Result(CoreConstants.MappingResponseTypesToAuthorizationFlows[record]);
     }
 }

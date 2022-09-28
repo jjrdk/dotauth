@@ -1,29 +1,28 @@
-﻿namespace SimpleAuth.Events
+﻿namespace SimpleAuth.Events;
+
+using System.Linq;
+using System.Threading.Tasks;
+using SimpleAuth.Shared;
+
+/// <summary>
+/// Defines the composite event publisher.
+/// </summary>
+public sealed class CompositeEventPublisher : IEventPublisher
 {
-    using System.Linq;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared;
+    private readonly IEventPublisher[] _publishers;
 
     /// <summary>
-    /// Defines the composite event publisher.
+    /// Initializes a new instance of the <see cref="CompositeEventPublisher"/> class.
     /// </summary>
-    public class CompositeEventPublisher : IEventPublisher
+    public CompositeEventPublisher(params IEventPublisher[] publishers)
     {
-        private readonly IEventPublisher[] _publishers;
+        _publishers = publishers.ToArray();
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CompositeEventPublisher"/> class.
-        /// </summary>
-        public CompositeEventPublisher(params IEventPublisher[] publishers)
-        {
-            _publishers = publishers.ToArray();
-        }
-
-        /// <inheritdoc />
-        public Task Publish<T>(T evt)
-            where T : Event
-        {
-            return Task.WhenAll(_publishers.Select(_ => _.Publish(evt)).ToArray());
-        }
+    /// <inheritdoc />
+    public Task Publish<T>(T evt)
+        where T : Event
+    {
+        return Task.WhenAll(_publishers.Select(_ => _.Publish(evt)).ToArray());
     }
 }

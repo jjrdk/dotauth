@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Parameters
+namespace SimpleAuth.Parameters;
+
+using System;
+
+internal sealed record AuthorizationCodeGrantTypeParameter : GrantTypeParameter
 {
-    using System;
+    /// <summary>
+    /// Gets or sets the authorization code.
+    /// </summary>
+    public string? Code { get; init; }
 
-    internal record AuthorizationCodeGrantTypeParameter : GrantTypeParameter
-    {
-        /// <summary>
-        /// Gets or sets the authorization code.
-        /// </summary>
-        public string? Code { get; init; }
+    /// <summary>
+    /// Gets or sets the redirection url.
+    /// </summary>
+    public Uri? RedirectUri { get; init; }
 
-        /// <summary>
-        /// Gets or sets the redirection url.
-        /// </summary>
-        public Uri? RedirectUri { get; init; }
-
-        /// <summary>
-        /// Gets or sets the code verifier.
-        /// </summary>
-        public string? CodeVerifier { get; init; }
-    }
+    /// <summary>
+    /// Gets or sets the code verifier.
+    /// </summary>
+    public string? CodeVerifier { get; init; }
 }

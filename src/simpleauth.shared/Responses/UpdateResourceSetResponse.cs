@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses
-{
-    using System.Runtime.Serialization;
+namespace SimpleAuth.Shared.Responses;
 
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Contains the response for resource set updates.
+/// </summary>
+[DataContract]
+public sealed record UpdateResourceSetResponse
+{
     /// <summary>
-    /// Contains the response for resource set updates.
+    /// Gets or sets the identifier.
     /// </summary>
-    [DataContract]
-    public record UpdateResourceSetResponse
-    {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        [DataMember(Name = "_id")]
-        public string Id { get; set; } = null!;
-    }
+    /// <value>
+    /// The identifier.
+    /// </value>
+    [DataMember(Name = "_id")]
+    public string Id { get; set; } = null!;
 }

@@ -1,60 +1,59 @@
-namespace SimpleAuth.IntegrationTests
+namespace SimpleAuth.IntegrationTests;
+
+using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Marten;
+using Microsoft.Extensions.Logging.Abstractions;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Stores.Marten;
+
+public sealed class DbFixture : IDisposable
 {
-    using System;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using Marten;
-    using Microsoft.Extensions.Logging.Abstractions;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Stores.Marten;
+    private readonly DocumentStore _store;
 
-    public class DbFixture : IDisposable
+    public DbFixture()
     {
-        private readonly DocumentStore _store;
+        var connectionString = "Server=odin;Port=5432;Database=simpleauth;User Id=simpleauth;Password=simpleauth;";
+        _store = new DocumentStore(
+            new SimpleAuthMartenOptions(
+                connectionString,
+                new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance)));
+    }
 
-        public DbFixture()
+    public async Task<ResourceOwner> GetUser()
+    {
+        using var session = _store.OpenSession();
         {
-            var connectionString = "Server=odin;Port=5432;Database=simpleauth;User Id=simpleauth;Password=simpleauth;";
-            _store = new DocumentStore(
-                new SimpleAuthMartenOptions(
-                    connectionString,
-                    new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance)));
-        }
-
-        public async Task<ResourceOwner> GetUser()
-        {
-            using var session = _store.OpenSession();
+            var existing = new ResourceOwner
             {
-                var existing = new ResourceOwner
-                {
-                    Subject = "administrator",
-                    CreateDateTime = DateTime.UtcNow,
-                    IsLocalAccount = true,
-                    UpdateDateTime = DateTimeOffset.UtcNow,
-                    Password = "password".ToSha256Hash(string.Empty)
-                };
-                existing.Claims = existing.Claims.Concat(
-                        new[]
-                        {
-                            new Claim("scope", "manager"),
-                            new Claim("scope", "uma_protection"),
-                            new Claim("role", "administrator"),
-                        })
-                    .ToArray();
-                session.Store(existing);
-                await session.SaveChangesAsync().ConfigureAwait(false);
+                Subject = "administrator",
+                CreateDateTime = DateTime.UtcNow,
+                IsLocalAccount = true,
+                UpdateDateTime = DateTimeOffset.UtcNow,
+                Password = "password".ToSha256Hash(string.Empty)
+            };
+            existing.Claims = existing.Claims.Concat(
+                    new[]
+                    {
+                        new Claim("scope", "manager"),
+                        new Claim("scope", "uma_protection"),
+                        new Claim("role", "administrator"),
+                    })
+                .ToArray();
+            session.Store(existing);
+            await session.SaveChangesAsync().ConfigureAwait(false);
 
-                return existing;
-            }
+            return existing;
         }
+    }
 
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            _store.Dispose();
-        }
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _store.Dispose();
     }
 }

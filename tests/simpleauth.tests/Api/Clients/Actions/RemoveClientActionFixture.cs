@@ -12,47 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.Clients.Actions
+namespace SimpleAuth.Tests.Api.Clients.Actions;
+
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Repositories;
+using Shared.Models;
+using Shared.Repositories;
+using Xunit;
+
+public sealed class RemoveClientActionFixture
 {
-    using System;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-    using Repositories;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Xunit;
+    private readonly IClientRepository _clientRepositoryStub;
 
-    public class RemoveClientActionFixture
+    public RemoveClientActionFixture()
     {
-        private readonly IClientRepository _clientRepositoryStub;
+        _clientRepositoryStub = new InMemoryClientRepository(
+            new Mock<IHttpClientFactory>().Object,
+            new InMemoryScopeRepository(),
+            new Mock<ILogger<InMemoryClientRepository>>().Object,
+            Array.Empty<Client>());
+    }
 
-        public RemoveClientActionFixture()
-        {
-            _clientRepositoryStub = new InMemoryClientRepository(
-                new Mock<IHttpClientFactory>().Object,
-                new InMemoryScopeRepository(),
-                new Mock<ILogger<InMemoryClientRepository>>().Object,
-                Array.Empty<Client>());
-        }
+    [Fact]
+    public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryStub.Delete(null, CancellationToken.None))
+            .ConfigureAwait(false);
+    }
 
-        [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryStub.Delete(null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
+    [Fact]
+    public async Task When_Passing_Not_Existing_Client_Id_Then_ReturnsFalse()
+    {
+        const string clientId = "invalid_client_id";
 
-        [Fact]
-        public async Task When_Passing_Not_Existing_Client_Id_Then_ReturnsFalse()
-        {
-            const string clientId = "invalid_client_id";
+        var result = await _clientRepositoryStub.Delete(clientId, CancellationToken.None).ConfigureAwait(false);
 
-            var result = await _clientRepositoryStub.Delete(clientId, CancellationToken.None).ConfigureAwait(false);
-
-            Assert.False(result);
-        }
+        Assert.False(result);
     }
 }

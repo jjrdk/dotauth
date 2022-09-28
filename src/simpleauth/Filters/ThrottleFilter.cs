@@ -1,47 +1,46 @@
-﻿namespace SimpleAuth.Filters
+﻿namespace SimpleAuth.Filters;
+
+using System;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
+
+/// <summary>
+/// Defines the throttling filter attribute.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+public sealed class ThrottleFilter : Attribute, IFilterFactory
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Filters;
-    using Microsoft.Extensions.DependencyInjection;
+    /// <inheritdoc />
+    public bool IsReusable => true;
 
-    /// <summary>
-    /// Defines the throttling filter attribute.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    public class ThrottleFilter : Attribute, IFilterFactory
+    /// <inheritdoc />
+    public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
     {
-        /// <inheritdoc />
-        public bool IsReusable => true;
+        return new ThrottleFilterAttribute(serviceProvider.GetRequiredService<IRequestThrottle>());
+    }
 
-        /// <inheritdoc />
-        public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
+    private sealed class ThrottleFilterAttribute : IAsyncResourceFilter
+    {
+        private readonly IRequestThrottle _requestThrottle;
+
+        public ThrottleFilterAttribute(IRequestThrottle requestThrottle)
         {
-            return new ThrottleFilterAttribute(serviceProvider.GetRequiredService<IRequestThrottle>());
+            _requestThrottle = requestThrottle;
         }
 
-        private class ThrottleFilterAttribute : IAsyncResourceFilter
+        /// <inheritdoc />
+        public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
-            private readonly IRequestThrottle _requestThrottle;
-
-            public ThrottleFilterAttribute(IRequestThrottle requestThrottle)
+            if (!await _requestThrottle.Allow(context.HttpContext.Request).ConfigureAwait(false))
             {
-                _requestThrottle = requestThrottle;
+                context.Result = new StatusCodeResult((int)HttpStatusCode.TooManyRequests);
+                return;
             }
 
-            /// <inheritdoc />
-            public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
-            {
-                if (!await _requestThrottle.Allow(context.HttpContext.Request).ConfigureAwait(false))
-                {
-                    context.Result = new StatusCodeResult((int)HttpStatusCode.TooManyRequests);
-                    return;
-                }
-
-                await next().ConfigureAwait(false);
-            }
+            await next().ConfigureAwait(false);
         }
     }
 }

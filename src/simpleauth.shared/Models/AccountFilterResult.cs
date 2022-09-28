@@ -1,41 +1,40 @@
-﻿namespace SimpleAuth.Shared.Models
+﻿namespace SimpleAuth.Shared.Models;
+
+using System;
+
+/// <summary>
+/// Defines the account filtering result.
+/// </summary>
+public sealed record AccountFilterResult
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AccountFilterResult"/> class.
+    /// </summary>
+    public AccountFilterResult(bool isValid)
+        : this(isValid, Array.Empty<AccountFilterRuleResult>()) { }
 
     /// <summary>
-    /// Defines the account filtering result.
+    /// Initializes a new instance of the <see cref="AccountFilterResult"/> class.
     /// </summary>
-    public record AccountFilterResult
+    public AccountFilterResult(bool isValid, AccountFilterRuleResult[] accountFilterRules)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AccountFilterResult"/> class.
-        /// </summary>
-        public AccountFilterResult(bool isValid)
-            : this(isValid, Array.Empty<AccountFilterRuleResult>()) { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AccountFilterResult"/> class.
-        /// </summary>
-        public AccountFilterResult(bool isValid, AccountFilterRuleResult[] accountFilterRules)
-        {
-            IsValid = isValid;
-            AccountFilterRules = accountFilterRules;
-        }
-
-        /// <summary>
-        /// Returns true if account is valid.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is valid; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsValid { get; }
-
-        /// <summary>
-        /// Gets or sets the account filter rules.
-        /// </summary>
-        /// <value>
-        /// The account filter rules.
-        /// </value>
-        public AccountFilterRuleResult[] AccountFilterRules { get; }
+        IsValid = isValid;
+        AccountFilterRules = accountFilterRules;
     }
+
+    /// <summary>
+    /// Returns true if account is valid.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance is valid; otherwise, <c>false</c>.
+    /// </value>
+    public bool IsValid { get; }
+
+    /// <summary>
+    /// Gets or sets the account filter rules.
+    /// </summary>
+    /// <value>
+    /// The account filter rules.
+    /// </value>
+    public AccountFilterRuleResult[] AccountFilterRules { get; }
 }

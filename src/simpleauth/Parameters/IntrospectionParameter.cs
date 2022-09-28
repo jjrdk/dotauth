@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Parameters
+namespace SimpleAuth.Parameters;
+
+internal sealed record IntrospectionParameter
 {
-    internal record IntrospectionParameter
-    {
-        public string? Token { get; init; }
+    public string? Token { get; init; }
 
-        public string? TokenTypeHint { get; init; }
+    public string? TokenTypeHint { get; init; }
 
-        public string? ClientId { get; init; }
+    public string? ClientId { get; init; }
 
-        public string? ClientSecret { get; init; }
+    public string? ClientSecret { get; init; }
 
-        public string? ClientAssertion { get; init; }
+    public string? ClientAssertion { get; init; }
 
-        public string? ClientAssertionType { get; init; }
-    }
+    public string? ClientAssertionType { get; init; }
 }

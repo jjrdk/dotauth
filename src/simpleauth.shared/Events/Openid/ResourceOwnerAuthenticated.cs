@@ -12,44 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Events.Openid
+namespace SimpleAuth.Shared.Events.Openid;
+
+using System;
+
+/// <summary>
+/// Defines the resource owner authenticated event
+/// </summary>
+/// <seealso cref="SimpleAuth.Shared.Event" />
+public sealed record ResourceOwnerAuthenticated : Event
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ResourceOwnerAuthenticated"/> class.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="resourceOwnerId"></param>
+    /// <param name="amr"></param>
+    /// <param name="timestamp">The timestamp.</param>
+    public ResourceOwnerAuthenticated(string id, string resourceOwnerId, string? amr, DateTimeOffset timestamp)
+        : base(id, timestamp)
+    {
+        ResourceOwnerId = resourceOwnerId;
+        Amr = amr ?? string.Empty;
+    }
 
     /// <summary>
-    /// Defines the resource owner authenticated event
+    /// Gets the resource owner identifier.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Event" />
-    public record ResourceOwnerAuthenticated : Event
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceOwnerAuthenticated"/> class.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="resourceOwnerId"></param>
-        /// <param name="amr"></param>
-        /// <param name="timestamp">The timestamp.</param>
-        public ResourceOwnerAuthenticated(string id, string resourceOwnerId, string? amr, DateTimeOffset timestamp)
-            : base(id, timestamp)
-        {
-            ResourceOwnerId = resourceOwnerId;
-            Amr = amr ?? string.Empty;
-        }
+    /// <value>
+    /// The resource owner identifier.
+    /// </value>
+    public string ResourceOwnerId { get; }
 
-        /// <summary>
-        /// Gets the resource owner identifier.
-        /// </summary>
-        /// <value>
-        /// The resource owner identifier.
-        /// </value>
-        public string ResourceOwnerId { get; }
-
-        /// <summary>
-        /// Gets the amr.
-        /// </summary>
-        /// <value>
-        /// The amr.
-        /// </value>
-        public string Amr { get; }
-    }
+    /// <summary>
+    /// Gets the amr.
+    /// </summary>
+    /// <value>
+    /// The amr.
+    /// </value>
+    public string Amr { get; }
 }

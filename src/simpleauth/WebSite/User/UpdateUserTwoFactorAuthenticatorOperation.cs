@@ -1,50 +1,49 @@
-﻿namespace SimpleAuth.WebSite.User
+﻿namespace SimpleAuth.WebSite.User;
+
+using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+
+internal sealed class UpdateUserTwoFactorAuthenticatorOperation
 {
-    using System;
-    using System.Net;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    private readonly IResourceOwnerRepository _resourceOwnerRepository;
+    private readonly ILogger _logger;
 
-    internal sealed class UpdateUserTwoFactorAuthenticatorOperation
+    public UpdateUserTwoFactorAuthenticatorOperation(IResourceOwnerRepository resourceOwnerRepository, ILogger logger)
     {
-        private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly ILogger _logger;
+        _resourceOwnerRepository = resourceOwnerRepository;
+        _logger = logger;
+    }
 
-        public UpdateUserTwoFactorAuthenticatorOperation(IResourceOwnerRepository resourceOwnerRepository, ILogger logger)
+    public async Task<Option> Execute(string subject, string twoFactorAuth, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(subject))
         {
-            _resourceOwnerRepository = resourceOwnerRepository;
-            _logger = logger;
+            _logger.LogError("Subject is null");
+            throw new ArgumentNullException(nameof(subject));
         }
 
-        public async Task<Option> Execute(string subject, string twoFactorAuth, CancellationToken cancellationToken)
+        var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
+        if (resourceOwner == null)
         {
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                _logger.LogError("Subject is null");
-                throw new ArgumentNullException(nameof(subject));
-            }
-
-            var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
-            if (resourceOwner == null)
-            {
-                _logger.LogError(Strings.TheRoDoesntExist);
-                return new Option.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InternalError,
-                        Detail = Strings.TheRoDoesntExist,
-                        Status = HttpStatusCode.InternalServerError
-                    });
-            }
-
-            resourceOwner.TwoFactorAuthentication = twoFactorAuth;
-            return await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
+            _logger.LogError(Strings.TheRoDoesntExist);
+            return new Option.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InternalError,
+                    Detail = Strings.TheRoDoesntExist,
+                    Status = HttpStatusCode.InternalServerError
+                });
         }
+
+        resourceOwner.TwoFactorAuthentication = twoFactorAuth;
+        return await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
     }
 }

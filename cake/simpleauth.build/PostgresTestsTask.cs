@@ -1,69 +1,68 @@
-namespace SimpleAuth.Build
+namespace SimpleAuth.Build;
+
+using Cake.Common.IO;
+using Cake.Common.Tools.DotNet;
+using Cake.Common.Tools.DotNet.Test;
+using Cake.Core;
+using Cake.Core.Diagnostics;
+using Cake.Core.IO;
+using Cake.Docker;
+using Cake.Frosting;
+
+[TaskName("Postgres-Tests")]
+[IsDependentOn(typeof(TestsTask))]
+public sealed class PostgresTestsTask : FrostingTask<BuildContext>
 {
-    using Cake.Common.IO;
-    using Cake.Common.Tools.DotNet;
-    using Cake.Common.Tools.DotNet.Test;
-    using Cake.Core;
-    using Cake.Core.Diagnostics;
-    using Cake.Core.IO;
-    using Cake.Docker;
-    using Cake.Frosting;
-
-    [TaskName("Postgres-Tests")]
-    [IsDependentOn(typeof(TestsTask))]
-    public class PostgresTestsTask : FrostingTask<BuildContext>
+    /// <inheritdoc />
+    public override void Run(BuildContext context)
     {
-        /// <inheritdoc />
-        public override void Run(BuildContext context)
+        var dockerComposeFiles = new [] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" };
+        try
         {
-            var dockerComposeFiles = new [] { "./tests/simpleauth.stores.marten.acceptancetests/docker-compose.yml" };
-            try
+            context.Log.Information("Docker compose up");
+            context.Log.Information("Ensuring test report output");
+
+            context.EnsureDirectoryExists(context.Environment.WorkingDirectory.Combine("artifacts").Combine("testreports"));
+
+            var upsettings = new DockerComposeUpSettings
             {
-                context.Log.Information("Docker compose up");
-                context.Log.Information("Ensuring test report output");
+                DetachedMode = true,
+                Files = dockerComposeFiles
+            };
+            context.DockerComposeUp(upsettings);
 
-                context.EnsureDirectoryExists(context.Environment.WorkingDirectory.Combine("artifacts").Combine("testreports"));
+            var project = new FilePath(
+                "./tests/simpleauth.stores.marten.acceptancetests/simpleauth.stores.marten.acceptancetests.csproj");
+            context.Log.Information("Testing: " + project.FullPath);
+            var reportName = "./artifacts/testreports/"
+                             + context.BuildVersion
+                             + "_"
+                             + System.IO.Path.GetFileNameWithoutExtension(project.FullPath)!.Replace('.', '_')
+                             + ".xml";
+            reportName = System.IO.Path.GetFullPath(reportName);
 
-                var upsettings = new DockerComposeUpSettings
-                {
-                    DetachedMode = true,
-                    Files = dockerComposeFiles
-                };
-                context.DockerComposeUp(upsettings);
+            context.Log.Information(reportName);
 
-                var project = new FilePath(
-                    "./tests/simpleauth.stores.marten.acceptancetests/simpleauth.stores.marten.acceptancetests.csproj");
-                context.Log.Information("Testing: " + project.FullPath);
-                var reportName = "./artifacts/testreports/"
-                                 + context.BuildVersion
-                                 + "_"
-                                 + System.IO.Path.GetFileNameWithoutExtension(project.FullPath)!.Replace('.', '_')
-                                 + ".xml";
-                reportName = System.IO.Path.GetFullPath(reportName);
-
-                context.Log.Information(reportName);
-
-                var coreTestSettings = new DotNetTestSettings()
-                {
-                    NoBuild = true,
-                    NoRestore = true,
-                    // Set configuration as passed by command line
-                    Configuration = context.BuildConfiguration,
-                    ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
-                };
-
-                context.DotNetTest(project.FullPath, coreTestSettings);
-            }
-            finally
+            var coreTestSettings = new DotNetTestSettings()
             {
-                context.Log.Information("Docker compose down");
+                NoBuild = true,
+                NoRestore = true,
+                // Set configuration as passed by command line
+                Configuration = context.BuildConfiguration,
+                ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
+            };
 
-                var downsettings = new DockerComposeDownSettings
-                {
-                    Files = dockerComposeFiles
-                };
-                context.DockerComposeDown(downsettings);
-            }
+            context.DotNetTest(project.FullPath, coreTestSettings);
+        }
+        finally
+        {
+            context.Log.Information("Docker compose down");
+
+            var downsettings = new DockerComposeDownSettings
+            {
+                Files = dockerComposeFiles
+            };
+            context.DockerComposeDown(downsettings);
         }
     }
 }

@@ -12,32 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AuthServerPgRedis
+namespace SimpleAuth.AuthServerPgRedis;
+
+using System.Diagnostics;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
+
+public sealed class Program
 {
-    using System.Diagnostics;
-    using System.Threading.Tasks;
-
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Server.Kestrel.Core;
-    using Microsoft.Extensions.Configuration;
-
-    public class Program
+    public static async Task Main()
     {
-        public static async Task Main()
-        {
-            Trace.Listeners.Clear();
-            Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
-            await new WebHostBuilder().UseKestrel(
-                    o =>
-                    {
-                        o.AddServerHeader = false;
-                        o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
-                    })
-                .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
-                .UseStartup<Startup>()
-                .Build()
-                .RunAsync()
-                .ConfigureAwait(false);
-        }
+        Trace.Listeners.Clear();
+        Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
+        await new WebHostBuilder().UseKestrel(
+                o =>
+                {
+                    o.AddServerHeader = false;
+                    o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
+                })
+            .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
+            .UseStartup<Startup>()
+            .Build()
+            .RunAsync()
+            .ConfigureAwait(false);
     }
 }

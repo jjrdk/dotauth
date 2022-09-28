@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.MiddleWares
+namespace SimpleAuth.Server.Tests.MiddleWares;
+
+using System;
+using Microsoft.AspNetCore.Authentication;
+
+public static class FakeCustomAuthExtensions
 {
-    using System;
-    using Microsoft.AspNetCore.Authentication;
-
-    public static class FakeCustomAuthExtensions
+    public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<TestAuthenticationOptions> configureOptions)
     {
-        public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<TestAuthenticationOptions> configureOptions)
-        {
-            return builder.AddScheme<TestAuthenticationOptions, TestAuthenticationHandler>(FakeStartup.DefaultSchema, FakeStartup.DefaultSchema, configureOptions);
-        }
+        return builder.AddScheme<TestAuthenticationOptions, TestAuthenticationHandler>(FakeStartup.DefaultSchema, FakeStartup.DefaultSchema, configureOptions);
+    }
 
-        public static AuthenticationBuilder AddUmaCustomAuth(this AuthenticationBuilder builder, Action<AuthenticationSchemeOptions> configureOptions)
-        {
-            return builder.AddScheme<AuthenticationSchemeOptions, UmaAuthenticationHandler>(FakeUmaStartup.DefaultSchema, FakeUmaStartup.DefaultSchema, configureOptions);
-        }
+    public static AuthenticationBuilder AddUmaCustomAuth(this AuthenticationBuilder builder, Action<AuthenticationSchemeOptions> configureOptions)
+    {
+        return builder.AddScheme<AuthenticationSchemeOptions, UmaAuthenticationHandler>(FakeUmaStartup.DefaultSchema, FakeUmaStartup.DefaultSchema, configureOptions);
     }
 }

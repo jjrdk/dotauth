@@ -1,24 +1,23 @@
-﻿namespace SimpleAuth.ViewModels
+﻿namespace SimpleAuth.ViewModels;
+
+/// <summary>
+/// Defines the id provider view model.
+/// </summary>
+public sealed class IdProviderViewModel
 {
     /// <summary>
-    /// Defines the id provider view model.
+    /// Gets or sets the authentication scheme.
     /// </summary>
-    public class IdProviderViewModel
-    {
-        /// <summary>
-        /// Gets or sets the authentication scheme.
-        /// </summary>
-        /// <value>
-        /// The authentication scheme.
-        /// </value>
-        public string? AuthenticationScheme { get; set; }
+    /// <value>
+    /// The authentication scheme.
+    /// </value>
+    public string? AuthenticationScheme { get; set; }
 
-        /// <summary>
-        /// Gets or sets the display name.
-        /// </summary>
-        /// <value>
-        /// The display name.
-        /// </value>
-        public string? DisplayName { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the display name.
+    /// </summary>
+    /// <value>
+    /// The display name.
+    /// </value>
+    public string? DisplayName { get; set; }
 }

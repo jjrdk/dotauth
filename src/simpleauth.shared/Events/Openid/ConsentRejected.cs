@@ -12,38 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Events.Openid
+namespace SimpleAuth.Shared.Events.Openid;
+
+using System;
+
+/// <summary>
+/// Defines the consent rejected event.
+/// </summary>
+/// <seealso cref="SimpleAuth.Shared.Event" />
+public sealed record ConsentRejected : Event
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsentRejected"/> class.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="scopes">The rejected scopes.</param>
+    /// <param name="timestamp">The timestamp.</param>
+    /// <param name="clientId">The rejected client.</param>
+    public ConsentRejected(string id, string clientId, string[] scopes, DateTimeOffset timestamp)
+        : base(id, timestamp)
+    {
+        ClientId = clientId;
+        Scopes = scopes;
+    }
 
     /// <summary>
-    /// Defines the consent rejected event.
+    /// Get the rejected client id.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Event" />
-    public record ConsentRejected : Event
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConsentRejected"/> class.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="scopes">The rejected scopes.</param>
-        /// <param name="timestamp">The timestamp.</param>
-        /// <param name="clientId">The rejected client.</param>
-        public ConsentRejected(string id, string clientId, string[] scopes, DateTimeOffset timestamp)
-            : base(id, timestamp)
-        {
-            ClientId = clientId;
-            Scopes = scopes;
-        }
+    public string ClientId { get; }
 
-        /// <summary>
-        /// Get the rejected client id.
-        /// </summary>
-        public string ClientId { get; }
-
-        /// <summary>
-        /// Gets the rejected scopes.
-        /// </summary>
-        public string[] Scopes { get; }
-    }
+    /// <summary>
+    /// Gets the rejected scopes.
+    /// </summary>
+    public string[] Scopes { get; }
 }

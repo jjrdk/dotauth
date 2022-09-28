@@ -1,51 +1,50 @@
-﻿namespace SimpleAuth.Extensions
+﻿namespace SimpleAuth.Extensions;
+
+using System;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Http;
+
+internal static class HttpRequestsExtensions
 {
-    using System;
-    using System.Security.Cryptography.X509Certificates;
-    using Microsoft.AspNetCore.Http;
-
-    internal static class HttpRequestsExtensions
+    public static Uri GetAbsoluteUri(this HttpRequest requestMessage)
     {
-        public static Uri GetAbsoluteUri(this HttpRequest requestMessage)
+        var host = requestMessage.Host.Host;
+
+        var uri = new UriBuilder(requestMessage.Scheme, host);
+        if (requestMessage.Host.Port.HasValue)
         {
-            var host = requestMessage.Host.Host;
-
-            var uri = new UriBuilder(requestMessage.Scheme, host);
-            if (requestMessage.Host.Port.HasValue)
-            {
-                uri.Port = requestMessage.Host.Port.Value;
-            }
-
-            if (requestMessage.PathBase.HasValue)
-            {
-                uri.Path = requestMessage.PathBase.Value;
-            }
-
-            return uri.Uri;
+            uri.Port = requestMessage.Host.Port.Value;
         }
 
-        public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
+        if (requestMessage.PathBase.HasValue)
         {
-            return requestMessage.GetAbsoluteUri().AbsoluteUri.TrimEnd('/');
+            uri.Path = requestMessage.PathBase.Value;
         }
 
-        public static X509Certificate2? GetCertificate(this HttpRequest request)
-        {
-            const string headerName = "X-ARR-ClientCert";
-            if (!request.Headers.TryGetValue(headerName, out var header))
-            {
-                return null;
-            }
+        return uri.Uri;
+    }
 
-            try
-            {
-                var encoded = Convert.FromBase64String(header);
-                return new X509Certificate2(encoded);
-            }
-            catch
-            {
-                return null;
-            }
+    public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
+    {
+        return requestMessage.GetAbsoluteUri().AbsoluteUri.TrimEnd('/');
+    }
+
+    public static X509Certificate2? GetCertificate(this HttpRequest request)
+    {
+        const string headerName = "X-ARR-ClientCert";
+        if (!request.Headers.TryGetValue(headerName, out var header))
+        {
+            return null;
+        }
+
+        try
+        {
+            var encoded = Convert.FromBase64String(header!);
+            return new X509Certificate2(encoded);
+        }
+        catch
+        {
+            return null;
         }
     }
 }

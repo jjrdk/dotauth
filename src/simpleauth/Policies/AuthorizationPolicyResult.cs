@@ -12,48 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Policies
+namespace SimpleAuth.Policies;
+
+using System.Security.Claims;
+using Shared.Responses;
+
+/// <summary>
+/// Defines the authorization policy result.
+/// </summary>
+internal sealed class AuthorizationPolicyResult
 {
-    using System.Security.Claims;
-    using Shared.Responses;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AuthorizationPolicyResult"/> class.
+    /// </summary>
+    /// <param name="result"></param>
+    /// <param name="principal">The requesting principal.</param>
+    /// <param name="errorDetails"></param>
+    public AuthorizationPolicyResult(AuthorizationPolicyResultKind result, ClaimsPrincipal principal, object? errorDetails = null)
+    {
+        Result = result;
+        Principal = principal;
+        ErrorDetails = errorDetails;
+    }
 
     /// <summary>
-    /// Defines the authorization policy result.
+    /// Gets the result kind.
     /// </summary>
-    internal class AuthorizationPolicyResult
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthorizationPolicyResult"/> class.
-        /// </summary>
-        /// <param name="result"></param>
-        /// <param name="principal">The requesting principal.</param>
-        /// <param name="errorDetails"></param>
-        public AuthorizationPolicyResult(AuthorizationPolicyResultKind result, ClaimsPrincipal principal, object? errorDetails = null)
-        {
-            Result = result;
-            Principal = principal;
-            ErrorDetails = errorDetails;
-        }
+    /// <value>
+    /// The type.
+    /// </value>
+    public AuthorizationPolicyResultKind Result { get; }
 
-        /// <summary>
-        /// Gets the result kind.
-        /// </summary>
-        /// <value>
-        /// The type.
-        /// </value>
-        public AuthorizationPolicyResultKind Result { get; }
+    /// <summary>
+    /// Gets the requesting principal.
+    /// </summary>
+    public ClaimsPrincipal Principal { get; }
 
-        /// <summary>
-        /// Gets the requesting principal.
-        /// </summary>
-        public ClaimsPrincipal Principal { get; }
-
-        /// <summary>
-        /// Get the error details.
-        /// </summary>
-        /// <value>
-        /// The error details.
-        /// </value>
-        public object? ErrorDetails { get; }
-    }
+    /// <summary>
+    /// Get the error details.
+    /// </summary>
+    /// <value>
+    /// The error details.
+    /// </value>
+    public object? ErrorDetails { get; }
 }

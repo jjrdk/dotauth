@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses
-{
-    using System.Runtime.Serialization;
+namespace SimpleAuth.Shared.Responses;
 
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the add permission response.
+/// </summary>
+[DataContract]
+public sealed record TicketResponse
+{
     /// <summary>
-    /// Defines the add permission response.
+    /// Gets or sets the ticket identifier.
     /// </summary>
-    [DataContract]
-    public record TicketResponse
-    {
-        /// <summary>
-        /// Gets or sets the ticket identifier.
-        /// </summary>
-        /// <value>
-        /// The ticket identifier.
-        /// </value>
-        [DataMember(Name = "ticket_id")]
-        public string TicketId { get; set; } = null!;
-    }
+    /// <value>
+    /// The ticket identifier.
+    /// </value>
+    [DataMember(Name = "ticket_id")]
+    public string TicketId { get; set; } = null!;
 }

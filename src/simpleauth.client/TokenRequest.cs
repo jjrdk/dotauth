@@ -12,238 +12,237 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client
+namespace SimpleAuth.Client;
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Shared;
+
+/// <summary>
+/// Defines the token request.
+/// </summary>
+/// <seealso cref="System.Collections.Generic.IEnumerable{KeyValuePair}" />
+public record TokenRequest : IEnumerable<KeyValuePair<string?, string?>>
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using Shared;
+    private readonly Dictionary<string, string> _form;
 
     /// <summary>
-    /// Defines the token request.
+    /// Initializes a new instance of the <see cref="TokenRequest"/> record.
     /// </summary>
-    /// <seealso cref="System.Collections.Generic.IEnumerable{KeyValuePair}" />
-    public record TokenRequest : IEnumerable<KeyValuePair<string?, string?>>
+    /// <param name="form"></param>
+    protected internal TokenRequest(Dictionary<string, string> form)
     {
-        private readonly Dictionary<string, string> _form;
+        _form = form;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenRequest"/> record.
-        /// </summary>
-        /// <param name="form"></param>
-        protected internal TokenRequest(Dictionary<string, string> form)
+    /// <summary>
+    /// Creates a request from the authorization code.
+    /// </summary>
+    /// <param name="code">The code.</param>
+    /// <param name="redirectUrl">The redirect URL.</param>
+    /// <param name="codeVerifier">The code verifier.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">
+    /// code
+    /// or
+    /// redirectUrl
+    /// </exception>
+    public static TokenRequest FromAuthorizationCode(string code, string redirectUrl, string? codeVerifier = null)
+    {
+        if (string.IsNullOrWhiteSpace(code))
         {
-            _form = form;
+            throw new ArgumentNullException(nameof(code));
         }
 
-        /// <summary>
-        /// Creates a request from the authorization code.
-        /// </summary>
-        /// <param name="code">The code.</param>
-        /// <param name="redirectUrl">The redirect URL.</param>
-        /// <param name="codeVerifier">The code verifier.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// code
-        /// or
-        /// redirectUrl
-        /// </exception>
-        public static TokenRequest FromAuthorizationCode(string code, string redirectUrl, string? codeVerifier = null)
+        if (string.IsNullOrWhiteSpace(redirectUrl))
         {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                throw new ArgumentNullException(nameof(code));
-            }
-
-            if (string.IsNullOrWhiteSpace(redirectUrl))
-            {
-                throw new ArgumentNullException(nameof(redirectUrl));
-            }
-
-            var dict = new Dictionary<string, string>
-            {
-                {RequestTokenNames.Code, code},
-                {RequestTokenNames.GrantType, GrantTypes.AuthorizationCode},
-                {RequestTokenNames.RedirectUri, redirectUrl}
-            };
-            if (!string.IsNullOrWhiteSpace(codeVerifier))
-            {
-                dict.Add(RequestTokenNames.CodeVerifier, codeVerifier);
-            }
-
-            return new TokenRequest(dict);
+            throw new ArgumentNullException(nameof(redirectUrl));
         }
 
-        /// <summary>
-        /// Creates a request the ticket identifier.
-        /// </summary>
-        /// <param name="ticketId">The ticket identifier.</param>
-        /// <param name="claimToken">The claim token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">ticketId</exception>
-        public static TokenRequest FromTicketId(string ticketId, string claimToken)
+        var dict = new Dictionary<string, string>
         {
-            if (string.IsNullOrWhiteSpace(ticketId))
-            {
-                throw new ArgumentNullException(nameof(ticketId));
-            }
-
-
-            var dict = new Dictionary<string, string>
-            {
-                {RequestTokenNames.GrantType, GrantTypes.UmaTicket},
-                {"ticket", ticketId},
-                {"claim_token_format", "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"}
-            };
-
-
-            if (!string.IsNullOrWhiteSpace(claimToken))
-            {
-                dict.Add("claim_token", claimToken);
-            }
-
-            return new TokenRequest(dict);
+            {RequestTokenNames.Code, code},
+            {RequestTokenNames.GrantType, GrantTypes.AuthorizationCode},
+            {RequestTokenNames.RedirectUri, redirectUrl}
+        };
+        if (!string.IsNullOrWhiteSpace(codeVerifier))
+        {
+            dict.Add(RequestTokenNames.CodeVerifier, codeVerifier);
         }
 
-        /// <summary>
-        /// Creates a request from the scopes.
-        /// </summary>
-        /// <param name="scopes">The scopes.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">scopes</exception>
-        public static TokenRequest FromScopes(params string[] scopes)
+        return new TokenRequest(dict);
+    }
+
+    /// <summary>
+    /// Creates a request the ticket identifier.
+    /// </summary>
+    /// <param name="ticketId">The ticket identifier.</param>
+    /// <param name="claimToken">The claim token.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">ticketId</exception>
+    public static TokenRequest FromTicketId(string ticketId, string claimToken)
+    {
+        if (string.IsNullOrWhiteSpace(ticketId))
         {
-            if (scopes.Length == 0)
-            {
-                throw new ArgumentNullException(nameof(scopes));
-            }
-
-            var dict = new Dictionary<string, string>
-            {
-                {RequestTokenNames.Scope, string.Join(" ", scopes)},
-                {RequestTokenNames.GrantType, GrantTypes.ClientCredentials}
-            };
-
-            return new TokenRequest(dict);
+            throw new ArgumentNullException(nameof(ticketId));
         }
 
-        /// <summary>
-        /// Creates a request from the refresh token.
-        /// </summary>
-        /// <param name="refreshToken">The refresh token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">refreshToken</exception>
-        public static TokenRequest FromRefreshToken(string refreshToken)
+
+        var dict = new Dictionary<string, string>
         {
-            if (string.IsNullOrWhiteSpace(refreshToken))
-            {
-                throw new ArgumentNullException(nameof(refreshToken));
-            }
+            {RequestTokenNames.GrantType, GrantTypes.UmaTicket},
+            {"ticket", ticketId},
+            {"claim_token_format", "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"}
+        };
 
-            var dict = new Dictionary<string, string>
-            {
-                {RequestTokenNames.GrantType, GrantTypes.RefreshToken},
-                {RequestTokenNames.RefreshToken, refreshToken}
-            };
 
-            return new TokenRequest(dict);
+        if (!string.IsNullOrWhiteSpace(claimToken))
+        {
+            dict.Add("claim_token", claimToken);
         }
 
-        /// <summary>
-        /// Creates a request from the password.
-        /// </summary>
-        /// <param name="userName">Name of the user.</param>
-        /// <param name="password">The password.</param>
-        /// <param name="scopes">The scopes.</param>
-        /// <param name="amrValues">The amr values.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// userName
-        /// or
-        /// password
-        /// or
-        /// scopes
-        /// </exception>
-        public static TokenRequest FromPassword(string userName, string password, string[] scopes, params string[] amrValues)
+        return new TokenRequest(dict);
+    }
+
+    /// <summary>
+    /// Creates a request from the scopes.
+    /// </summary>
+    /// <param name="scopes">The scopes.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">scopes</exception>
+    public static TokenRequest FromScopes(params string[] scopes)
+    {
+        if (scopes.Length == 0)
         {
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                throw new ArgumentNullException(nameof(userName));
-            }
-
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                throw new ArgumentNullException(nameof(password));
-            }
-
-            if (scopes == null || scopes.Length == 0)
-            {
-                throw new ArgumentNullException(nameof(scopes));
-            }
-
-            var dict = new Dictionary<string, string>
-            {
-                { RequestTokenNames.Username, userName },
-                { RequestTokenNames.Password, password },
-                { RequestTokenNames.Scope, string.Join(" ", scopes) },
-                { RequestTokenNames.GrantType, GrantTypes.Password }
-            };
-            if (amrValues.Length > 0)
-            {
-                dict.Add(RequestTokenNames.AmrValues, string.Join(" ", amrValues));
-            }
-
-            return new TokenRequest(dict);
+            throw new ArgumentNullException(nameof(scopes));
         }
 
-        /// <summary>
-        /// Creates a request from the password.
-        /// </summary>
-        /// <param name="userName">Name of the user.</param>
-        /// <param name="password">The password.</param>
-        /// <param name="scopes">The scopes.</param>
-        /// <param name="amrValue">The amr value.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// userName
-        /// or
-        /// password
-        /// or
-        /// scopes
-        /// </exception>
-        public static TokenRequest FromPassword(string userName, string password, string[] scopes, string amrValue = "pwd")
+        var dict = new Dictionary<string, string>
         {
-            return FromPassword(userName, password, scopes, new[] { amrValue });
+            {RequestTokenNames.Scope, string.Join(" ", scopes)},
+            {RequestTokenNames.GrantType, GrantTypes.ClientCredentials}
+        };
+
+        return new TokenRequest(dict);
+    }
+
+    /// <summary>
+    /// Creates a request from the refresh token.
+    /// </summary>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">refreshToken</exception>
+    public static TokenRequest FromRefreshToken(string refreshToken)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            throw new ArgumentNullException(nameof(refreshToken));
         }
 
-        /// <summary>
-        /// Creates a request from the device code.
-        /// </summary>
-        /// <param name="clientId">The client id.</param>
-        /// <param name="deviceCode">The device code.</param>
-        /// <param name="interval">The polling interval.</param>
-        /// <returns>A <see cref="TokenRequest"/> instance.</returns>
-        public static TokenRequest FromDeviceCode(string clientId, string deviceCode, int interval)
+        var dict = new Dictionary<string, string>
         {
-            var dictionary = new Dictionary<string, string>
-            {
-                {RequestTokenNames.GrantType, GrantTypes.Device},
-                {"client_id", clientId},
-                {"device_code", deviceCode}
-            };
-            return new DeviceTokenRequest(dictionary, interval);
+            {RequestTokenNames.GrantType, GrantTypes.RefreshToken},
+            {RequestTokenNames.RefreshToken, refreshToken}
+        };
+
+        return new TokenRequest(dict);
+    }
+
+    /// <summary>
+    /// Creates a request from the password.
+    /// </summary>
+    /// <param name="userName">Name of the user.</param>
+    /// <param name="password">The password.</param>
+    /// <param name="scopes">The scopes.</param>
+    /// <param name="amrValues">The amr values.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">
+    /// userName
+    /// or
+    /// password
+    /// or
+    /// scopes
+    /// </exception>
+    public static TokenRequest FromPassword(string userName, string password, string[] scopes, params string[] amrValues)
+    {
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            throw new ArgumentNullException(nameof(userName));
         }
 
-        /// <inheritdoc />
-        public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
+        if (string.IsNullOrWhiteSpace(password))
         {
-            return _form.GetEnumerator();
+            throw new ArgumentNullException(nameof(password));
         }
 
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
+        if (scopes == null || scopes.Length == 0)
         {
-            return GetEnumerator();
+            throw new ArgumentNullException(nameof(scopes));
         }
+
+        var dict = new Dictionary<string, string>
+        {
+            { RequestTokenNames.Username, userName },
+            { RequestTokenNames.Password, password },
+            { RequestTokenNames.Scope, string.Join(" ", scopes) },
+            { RequestTokenNames.GrantType, GrantTypes.Password }
+        };
+        if (amrValues.Length > 0)
+        {
+            dict.Add(RequestTokenNames.AmrValues, string.Join(" ", amrValues));
+        }
+
+        return new TokenRequest(dict);
+    }
+
+    /// <summary>
+    /// Creates a request from the password.
+    /// </summary>
+    /// <param name="userName">Name of the user.</param>
+    /// <param name="password">The password.</param>
+    /// <param name="scopes">The scopes.</param>
+    /// <param name="amrValue">The amr value.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">
+    /// userName
+    /// or
+    /// password
+    /// or
+    /// scopes
+    /// </exception>
+    public static TokenRequest FromPassword(string userName, string password, string[] scopes, string amrValue = "pwd")
+    {
+        return FromPassword(userName, password, scopes, new[] { amrValue });
+    }
+
+    /// <summary>
+    /// Creates a request from the device code.
+    /// </summary>
+    /// <param name="clientId">The client id.</param>
+    /// <param name="deviceCode">The device code.</param>
+    /// <param name="interval">The polling interval.</param>
+    /// <returns>A <see cref="TokenRequest"/> instance.</returns>
+    public static TokenRequest FromDeviceCode(string clientId, string deviceCode, int interval)
+    {
+        var dictionary = new Dictionary<string, string>
+        {
+            {RequestTokenNames.GrantType, GrantTypes.Device},
+            {"client_id", clientId},
+            {"device_code", deviceCode}
+        };
+        return new DeviceTokenRequest(dictionary, interval);
+    }
+
+    /// <inheritdoc />
+    public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
+    {
+        return _form.GetEnumerator();
+    }
+
+    /// <inheritdoc />
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

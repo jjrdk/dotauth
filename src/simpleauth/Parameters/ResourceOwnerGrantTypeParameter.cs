@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Parameters
+namespace SimpleAuth.Parameters;
+
+using System;
+
+internal sealed record ResourceOwnerGrantTypeParameter : GrantTypeParameter
 {
-    using System;
+    public string? Scope { get; init; }
 
-    internal sealed record ResourceOwnerGrantTypeParameter : GrantTypeParameter
-    {
-        public string? Scope { get; init; }
+    public string? UserName { get; init; }
 
-        public string? UserName { get; init; }
+    public string? Password { get; init; }
 
-        public string? Password { get; init; }
-
-        public string[] AmrValues { get; init; } = Array.Empty<string>();
-    }
+    public string[] AmrValues { get; init; } = Array.Empty<string>();
 }

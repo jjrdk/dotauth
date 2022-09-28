@@ -12,441 +12,440 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client
+namespace SimpleAuth.Client;
+
+using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Client.Properties;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Requests;
+using SimpleAuth.Shared.Responses;
+
+/// <summary>
+/// Defines the management client.
+/// </summary>
+public sealed class ManagementClient : ClientBase, IManagementClient
 {
-    using System;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Client.Properties;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    private readonly DiscoveryInformation _discoveryInformation;
+
+    private ManagementClient(Func<HttpClient> client, DiscoveryInformation discoveryInformation)
+        : base(client)
+    {
+        _discoveryInformation = discoveryInformation;
+    }
 
     /// <summary>
-    /// Defines the management client.
+    /// Creates an instance of a management client.
     /// </summary>
-    public class ManagementClient : ClientBase, IManagementClient
+    /// <param name="client">The <see cref="HttpClient"/> to use.</param>
+    /// <param name="discoveryDocumentationUri">The <see cref="Uri"/> to the discovery document.</param>
+    /// <returns></returns>
+    public static async Task<ManagementClient> Create(Func<HttpClient> client, Uri discoveryDocumentationUri)
     {
-        private readonly DiscoveryInformation _discoveryInformation;
-
-        private ManagementClient(Func<HttpClient> client, DiscoveryInformation discoveryInformation)
-        : base(client)
+        if (!discoveryDocumentationUri.IsAbsoluteUri)
         {
-            _discoveryInformation = discoveryInformation;
+            throw new ArgumentException(
+                string.Format(ClientStrings.TheUrlIsNotWellFormed, discoveryDocumentationUri));
         }
 
-        /// <summary>
-        /// Creates an instance of a management client.
-        /// </summary>
-        /// <param name="client">The <see cref="HttpClient"/> to use.</param>
-        /// <param name="discoveryDocumentationUri">The <see cref="Uri"/> to the discovery document.</param>
-        /// <returns></returns>
-        public static async Task<ManagementClient> Create(Func<HttpClient> client, Uri discoveryDocumentationUri)
+        var operation = new GetDiscoveryOperation(discoveryDocumentationUri, client);
+        var discoveryInformation = await operation.Execute().ConfigureAwait(false);
+
+        return new ManagementClient(client, discoveryInformation);
+    }
+
+    /// <summary>
+    /// Gets the specified <see cref="Client"/> information.
+    /// </summary>
+    /// <param name="clientId">The client id.</param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<Client>> GetClient(
+        string clientId,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new HttpRequestMessage
         {
-            if (!discoveryDocumentationUri.IsAbsoluteUri)
-            {
-                throw new ArgumentException(
-                    string.Format(ClientStrings.TheUrlIsNotWellFormed, discoveryDocumentationUri));
-            }
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
+        };
+        return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
 
-            var operation = new GetDiscoveryOperation(discoveryDocumentationUri, client);
-            var discoveryInformation = await operation.Execute().ConfigureAwait(false);
-
-            return new ManagementClient(client, discoveryInformation);
+    /// <summary>
+    /// Adds the passed client.
+    /// </summary>
+    /// <param name="client">The <see cref="Client"/> to add.</param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<Client>> AddClient(
+        Client client,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        if (client == null)
+        {
+            throw new ArgumentNullException(nameof(client));
         }
 
-        /// <summary>
-        /// Gets the specified <see cref="Client"/> information.
-        /// </summary>
-        /// <param name="clientId">The client id.</param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<Client>> GetClient(
-            string clientId,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
+        var serializedJson = Serializer.Default.Serialize(client);
+        var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
+        var request = new HttpRequestMessage
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
-            };
-            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+            Method = HttpMethod.Post,
+            RequestUri = _discoveryInformation.Clients,
+            Content = body
+        };
+
+        return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Deletes the specified client.
+    /// </summary>
+    /// <param name="clientId">The client id.</param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<Client>> DeleteClient(
+        string clientId,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
+        };
+        return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Updates an existing client.
+    /// </summary>
+    /// <param name="client">The updated <see cref="Client"/>.</param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<Client>> UpdateClient(
+        Client client,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        if (client == null)
+        {
+            throw new ArgumentNullException(nameof(client));
         }
 
-        /// <summary>
-        /// Adds the passed client.
-        /// </summary>
-        /// <param name="client">The <see cref="Client"/> to add.</param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<Client>> AddClient(
-            Client client,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
+        var request = new HttpRequestMessage
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
+            Method = HttpMethod.Put,
+            RequestUri = _discoveryInformation.Clients,
+            Content = new StringContent(
+                Serializer.Default.Serialize(client),
+                Encoding.UTF8,
+                "application/json")
+        };
+        return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
 
-            var serializedJson = Serializer.Default.Serialize(client);
-            var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = _discoveryInformation.Clients,
-                Content = body
-            };
+    /// <summary>
+    /// Gets all clients.
+    /// </summary>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<Client[]>> GetAllClients(
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryInformation.Clients };
+        return GetResult<Client[]>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
 
-            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    /// <summary>
+    /// Search for clients.
+    /// </summary>
+    /// <param name="searchClientParameter">The <see cref="SearchClientsRequest"/>.</param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<PagedResult<Client>>> SearchClients(
+        SearchClientsRequest searchClientParameter,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        var serializedPostPermission = Serializer.Default.Serialize(searchClientParameter);
+        var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(_discoveryInformation.Clients + "/.search"),
+            Content = body
+        };
+        return GetResult<PagedResult<Client>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets the specified scope information.
+    /// </summary>
+    /// <param name="id">The scope id.</param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <exception cref="ArgumentException">If id is empty or whitespace.</exception>
+    /// <returns></returns>
+    public Task<Option<Scope>> GetScope(
+        string id,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            throw new ArgumentException(ErrorMessages.InvalidScopeId, nameof(id));
         }
 
-        /// <summary>
-        /// Deletes the specified client.
-        /// </summary>
-        /// <param name="clientId">The client id.</param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<Client>> DeleteClient(
-            string clientId,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
+        var request = new HttpRequestMessage
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Delete,
-                RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
-            };
-            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"{_discoveryInformation.Scopes}/{id}")
+        };
+        return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Adds the passed scope.
+    /// </summary>
+    /// <param name="scope">The <see cref="Scope"/> to add.</param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<Scope>> AddScope(
+        Scope scope,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        var serializedJson = Serializer.Default.Serialize(scope);
+        var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = _discoveryInformation.Scopes,
+            Content = body
+        };
+        return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Registers a client with the passed details.
+    /// </summary>
+    /// <param name="client">The client definition to register.</param>
+    /// <param name="accessToken">The access token for the request.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the asynchronous request.</param>
+    /// <returns>A response with success or error details.</returns>
+    public async Task<Option<Client>> Register(Client client, string accessToken, CancellationToken cancellationToken = default)
+    {
+        var json = Serializer.Default.Serialize(client);
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            Content = new StringContent(json, Encoding.UTF8, "application/json"),
+            RequestUri = _discoveryInformation.RegistrationEndPoint
+        };
+
+        return await GetResult<Client>(request, accessToken, cancellationToken: cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Adds the passed resource owner.
+    /// </summary>
+    /// <param name="resourceOwner">The <see cref="AddResourceOwnerRequest"/>.</param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<AddResourceOwnerResponse>> AddResourceOwner(
+        AddResourceOwnerRequest resourceOwner,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        if (resourceOwner == null)
+        {
+            throw new ArgumentNullException(nameof(resourceOwner));
         }
 
-        /// <summary>
-        /// Updates an existing client.
-        /// </summary>
-        /// <param name="client">The updated <see cref="Client"/>.</param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<Client>> UpdateClient(
-            Client client,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
+        var request = new HttpRequestMessage
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
+            Method = HttpMethod.Post,
+            RequestUri = _discoveryInformation.ResourceOwners,
+            Content = new StringContent(
+                Serializer.Default.Serialize(resourceOwner),
+                Encoding.UTF8,
+                "application/json")
+        };
+        return GetResult<AddResourceOwnerResponse>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
 
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Put,
-                RequestUri = _discoveryInformation.Clients,
-                Content = new StringContent(
-                        Serializer.Default.Serialize(client),
-                        Encoding.UTF8,
-                        "application/json")
-            };
-            return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    /// <summary>
+    /// Gets the specified resource owner.
+    /// </summary>
+    /// <param name="resourceOwnerId"></param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<ResourceOwner>> GetResourceOwner(
+        string resourceOwnerId,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
+        };
+        return GetResult<ResourceOwner>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Deletes the specified resource owner.
+    /// </summary>
+    /// <param name="resourceOwnerId"></param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public async Task<Option> DeleteResourceOwner(
+        string resourceOwnerId,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
+        };
+        var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        return result switch
+        {
+            Option<object>.Error e => e.Details,
+            _ => new Option.Success()
+        };
+    }
+
+    /// <summary>
+    /// Updates the password of the specified resource owner.
+    /// </summary>
+    /// <param name="updateResourceOwnerPasswordRequest">The <see cref="UpdateResourceOwnerPasswordRequest"/>.</param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public async Task<Option> UpdateResourceOwnerPassword(
+        UpdateResourceOwnerPasswordRequest updateResourceOwnerPasswordRequest,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        if (updateResourceOwnerPasswordRequest == null)
+        {
+            throw new ArgumentNullException(nameof(updateResourceOwnerPasswordRequest));
         }
 
-        /// <summary>
-        /// Gets all clients.
-        /// </summary>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<Client[]>> GetAllClients(
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
+        var serializedJson = Serializer.Default.Serialize(updateResourceOwnerPasswordRequest);
+        var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
+        var request = new HttpRequestMessage
         {
-            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryInformation.Clients };
-            return GetResult<Client[]>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+            Method = HttpMethod.Put,
+            RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/password"),
+            Content = body
+        };
+        var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+        return result switch
+        {
+            Option<object>.Error e => e.Details,
+            _ => new Option.Success()
+        };
+    }
+
+    /// <summary>
+    /// Updates the resource owner claims.
+    /// </summary>
+    /// <param name="updateResourceOwnerClaimsRequest"></param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public async Task<Option> UpdateResourceOwnerClaims(
+        UpdateResourceOwnerClaimsRequest updateResourceOwnerClaimsRequest,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        if (updateResourceOwnerClaimsRequest == null)
+        {
+            throw new ArgumentNullException(nameof(updateResourceOwnerClaimsRequest));
         }
 
-        /// <summary>
-        /// Search for clients.
-        /// </summary>
-        /// <param name="searchClientParameter">The <see cref="SearchClientsRequest"/>.</param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<PagedResult<Client>>> SearchClients(
-            SearchClientsRequest searchClientParameter,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
+        var serializedJson = Serializer.Default.Serialize(updateResourceOwnerClaimsRequest);
+        var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
+        var request = new HttpRequestMessage
         {
-            var serializedPostPermission = Serializer.Default.Serialize(searchClientParameter);
-            var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri(_discoveryInformation.Clients + "/.search"),
-                Content = body
-            };
-            return GetResult<PagedResult<Client>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
-        }
-
-        /// <summary>
-        /// Gets the specified scope information.
-        /// </summary>
-        /// <param name="id">The scope id.</param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <exception cref="ArgumentException">If id is empty or whitespace.</exception>
-        /// <returns></returns>
-        public Task<Option<Scope>> GetScope(
-            string id,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
+            Method = HttpMethod.Put,
+            RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/claims"),
+            Content = body
+        };
+        var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+        return result switch
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentException(ErrorMessages.InvalidScopeId, nameof(id));
-            }
+            Option<object>.Error e => e.Details,
+            _ => new Option.Success()
+        };
+    }
 
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"{_discoveryInformation.Scopes}/{id}")
-            };
-            return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
-        }
-
-        /// <summary>
-        /// Adds the passed scope.
-        /// </summary>
-        /// <param name="scope">The <see cref="Scope"/> to add.</param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<Scope>> AddScope(
-            Scope scope,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Gets all resource owners.
+    /// </summary>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<ResourceOwner[]>> GetAllResourceOwners(
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new HttpRequestMessage
         {
-            var serializedJson = Serializer.Default.Serialize(scope);
-            var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = _discoveryInformation.Scopes,
-                Content = body
-            };
-            return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
-        }
+            Method = HttpMethod.Get,
+            RequestUri = _discoveryInformation.ResourceOwners
+        };
+        return GetResult<ResourceOwner[]>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+    }
 
-        /// <summary>
-        /// Registers a client with the passed details.
-        /// </summary>
-        /// <param name="client">The client definition to register.</param>
-        /// <param name="accessToken">The access token for the request.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the asynchronous request.</param>
-        /// <returns>A response with success or error details.</returns>
-        public async Task<Option<Client>> Register(Client client, string accessToken, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Searches for resource owners.
+    /// </summary>
+    /// <param name="searchResourceOwnersRequest">The <see cref="SearchResourceOwnersRequest"/></param>
+    /// <param name="authorizationHeaderValue">The authorization token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    public Task<Option<PagedResult<ResourceOwner>>> SearchResourceOwners(
+        SearchResourceOwnersRequest searchResourceOwnersRequest,
+        string authorizationHeaderValue,
+        CancellationToken cancellationToken = default)
+    {
+        var serializedPostPermission = Serializer.Default.Serialize(searchResourceOwnersRequest);
+        var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
+        var request = new HttpRequestMessage
         {
-            var json = Serializer.Default.Serialize(client);
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                Content = new StringContent(json, Encoding.UTF8, "application/json"),
-                RequestUri = _discoveryInformation.RegistrationEndPoint
-            };
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(_discoveryInformation.ResourceOwners + "/.search"),
+            Content = body
+        };
 
-            return await GetResult<Client>(request, accessToken, cancellationToken: cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Adds the passed resource owner.
-        /// </summary>
-        /// <param name="resourceOwner">The <see cref="AddResourceOwnerRequest"/>.</param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<AddResourceOwnerResponse>> AddResourceOwner(
-            AddResourceOwnerRequest resourceOwner,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
-        {
-            if (resourceOwner == null)
-            {
-                throw new ArgumentNullException(nameof(resourceOwner));
-            }
-
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = _discoveryInformation.ResourceOwners,
-                Content = new StringContent(
-                    Serializer.Default.Serialize(resourceOwner),
-                    Encoding.UTF8,
-                    "application/json")
-            };
-            return GetResult<AddResourceOwnerResponse>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
-        }
-
-        /// <summary>
-        /// Gets the specified resource owner.
-        /// </summary>
-        /// <param name="resourceOwnerId"></param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<ResourceOwner>> GetResourceOwner(
-            string resourceOwnerId,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
-        {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
-            };
-            return GetResult<ResourceOwner>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
-        }
-
-        /// <summary>
-        /// Deletes the specified resource owner.
-        /// </summary>
-        /// <param name="resourceOwnerId"></param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public async Task<Option> DeleteResourceOwner(
-            string resourceOwnerId,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
-        {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Delete,
-                RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
-            };
-            var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
-
-            return result switch
-            {
-                Option<object>.Error e => e.Details,
-                _ => new Option.Success()
-            };
-        }
-
-        /// <summary>
-        /// Updates the password of the specified resource owner.
-        /// </summary>
-        /// <param name="updateResourceOwnerPasswordRequest">The <see cref="UpdateResourceOwnerPasswordRequest"/>.</param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public async Task<Option> UpdateResourceOwnerPassword(
-            UpdateResourceOwnerPasswordRequest updateResourceOwnerPasswordRequest,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
-        {
-            if (updateResourceOwnerPasswordRequest == null)
-            {
-                throw new ArgumentNullException(nameof(updateResourceOwnerPasswordRequest));
-            }
-
-            var serializedJson = Serializer.Default.Serialize(updateResourceOwnerPasswordRequest);
-            var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Put,
-                RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/password"),
-                Content = body
-            };
-            var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
-            return result switch
-                {
-                    Option<object>.Error e => e.Details,
-                    _ => new Option.Success()
-                };
-        }
-
-        /// <summary>
-        /// Updates the resource owner claims.
-        /// </summary>
-        /// <param name="updateResourceOwnerClaimsRequest"></param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public async Task<Option> UpdateResourceOwnerClaims(
-            UpdateResourceOwnerClaimsRequest updateResourceOwnerClaimsRequest,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
-        {
-            if (updateResourceOwnerClaimsRequest == null)
-            {
-                throw new ArgumentNullException(nameof(updateResourceOwnerClaimsRequest));
-            }
-
-            var serializedJson = Serializer.Default.Serialize(updateResourceOwnerClaimsRequest);
-            var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Put,
-                RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/claims"),
-                Content = body
-            };
-            var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
-            return result switch
-                {
-                    Option<object>.Error e => e.Details,
-                    _ => new Option.Success()
-                };
-        }
-
-        /// <summary>
-        /// Gets all resource owners.
-        /// </summary>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<ResourceOwner[]>> GetAllResourceOwners(
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
-        {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = _discoveryInformation.ResourceOwners
-            };
-            return GetResult<ResourceOwner[]>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
-        }
-
-        /// <summary>
-        /// Searches for resource owners.
-        /// </summary>
-        /// <param name="searchResourceOwnersRequest">The <see cref="SearchResourceOwnersRequest"/></param>
-        /// <param name="authorizationHeaderValue">The authorization token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        public Task<Option<PagedResult<ResourceOwner>>> SearchResourceOwners(
-            SearchResourceOwnersRequest searchResourceOwnersRequest,
-            string authorizationHeaderValue,
-            CancellationToken cancellationToken = default)
-        {
-            var serializedPostPermission = Serializer.Default.Serialize(searchResourceOwnersRequest);
-            var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri(_discoveryInformation.ResourceOwners + "/.search"),
-                Content = body
-            };
-
-            return GetResult<PagedResult<ResourceOwner>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
-        }
+        return GetResult<PagedResult<ResourceOwner>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
 }

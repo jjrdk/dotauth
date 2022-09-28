@@ -12,28 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Authenticate
+namespace SimpleAuth.Authenticate;
+
+using Shared.Models;
+using System;
+using System.Linq;
+
+internal static class ClientSecretBasicAuthentication
 {
-    using Shared.Models;
-    using System;
-    using System.Linq;
-
-    internal static class ClientSecretBasicAuthentication
+    public static Client? AuthenticateClient(this AuthenticateInstruction instruction, Client client)
     {
-        public static Client? AuthenticateClient(this AuthenticateInstruction instruction, Client client)
+        var clientSecrets = client.Secrets?.Where(s => s.Type == ClientSecretTypes.SharedSecret).ToArray();
+        if (clientSecrets == null || clientSecrets.Length == 0)
         {
-            var clientSecrets = client.Secrets?.Where(s => s.Type == ClientSecretTypes.SharedSecret).ToArray();
-            if (clientSecrets == null || clientSecrets.Length == 0)
-            {
-                return null;
-            }
-
-            var sameSecret = clientSecrets.Any(
-                clientSecret => string.Equals(
-                    clientSecret.Value,
-                    instruction.ClientSecretFromAuthorizationHeader,
-                    StringComparison.CurrentCulture));
-            return sameSecret ? client : null;
+            return null;
         }
+
+        var sameSecret = clientSecrets.Any(
+            clientSecret => string.Equals(
+                clientSecret.Value,
+                instruction.ClientSecretFromAuthorizationHeader,
+                StringComparison.CurrentCulture));
+        return sameSecret ? client : null;
     }
 }

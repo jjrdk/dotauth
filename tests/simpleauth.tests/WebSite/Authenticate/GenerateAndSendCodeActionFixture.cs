@@ -13,153 +13,152 @@
 // limitations under the License.
 
 
-namespace SimpleAuth.Tests.WebSite.Authenticate
+namespace SimpleAuth.Tests.WebSite.Authenticate;
+
+using Exceptions;
+using Moq;
+using Shared;
+using Shared.Models;
+using Shared.Repositories;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.WebSite.Authenticate;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Divergic.Logging.Xunit;
+using SimpleAuth.Properties;
+using SimpleAuth.Services;
+using Xunit;
+using Xunit.Abstractions;
+
+public sealed class GenerateAndSendCodeActionFixture
 {
-    using Exceptions;
-    using Moq;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.WebSite.Authenticate;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Divergic.Logging.Xunit;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Services;
-    using Xunit;
-    using Xunit.Abstractions;
+    private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+    private readonly Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
+    private readonly Mock<ITwoFactorAuthenticationHandler> _twoFactorAuthenticationHandlerStub;
+    private readonly GenerateAndSendCodeAction _generateAndSendCodeAction;
 
-    public class GenerateAndSendCodeActionFixture
+    public GenerateAndSendCodeActionFixture(ITestOutputHelper outputHelper)
     {
-        private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private readonly Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
-        private readonly Mock<ITwoFactorAuthenticationHandler> _twoFactorAuthenticationHandlerStub;
-        private readonly GenerateAndSendCodeAction _generateAndSendCodeAction;
+        _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+        _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
+        _twoFactorAuthenticationHandlerStub = new Mock<ITwoFactorAuthenticationHandler>();
+        _generateAndSendCodeAction = new GenerateAndSendCodeAction(
+            _resourceOwnerRepositoryStub.Object,
+            _confirmationCodeStoreStub.Object,
+            _twoFactorAuthenticationHandlerStub.Object,
+            new TestOutputLogger("test", outputHelper));
+    }
 
-        public GenerateAndSendCodeActionFixture(ITestOutputHelper outputHelper)
-        {
-            _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
-            _twoFactorAuthenticationHandlerStub = new Mock<ITwoFactorAuthenticationHandler>();
-            _generateAndSendCodeAction = new GenerateAndSendCodeAction(
-                _resourceOwnerRepositoryStub.Object,
-                _confirmationCodeStoreStub.Object,
-                _twoFactorAuthenticationHandlerStub.Object,
-                new TestOutputLogger("test", outputHelper));
-        }
+    [Fact]
+    public async Task WhenPassingEmptyParameterThenErrorIsReturned()
+    {
+        var error = await _generateAndSendCodeAction.Send("", CancellationToken.None)
+            .ConfigureAwait(false);
 
-        [Fact]
-        public async Task WhenPassingEmptyParameterThenErrorIsReturned()
-        {
-            var error = await _generateAndSendCodeAction.Send("", CancellationToken.None)
-                     .ConfigureAwait(false);
+        Assert.IsType<Option<string>.Error>(error);
+    }
 
-            Assert.IsType<Option<string>.Error>(error);
-        }
+    [Fact]
+    public async Task When_ResourceOwner_Does_Not_Exist_Then_Exception_Is_Thrown()
+    {
+        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ResourceOwner)null);
 
-        [Fact]
-        public async Task When_ResourceOwner_Does_Not_Exist_Then_Exception_Is_Thrown()
-        {
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ResourceOwner)null);
+        var exception = await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
+            .ConfigureAwait(false) as Option<string>.Error;
 
-            var exception = await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-                .ConfigureAwait(false) as Option<string>.Error;
+        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+        Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);
+    }
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
-            Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);
-        }
+    [Fact]
+    public async Task When_Two_Factor_Auth_Is_Not_Enabled_Then_Exception_Is_Thrown()
+    {
+        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ResourceOwner { TwoFactorAuthentication = string.Empty });
 
-        [Fact]
-        public async Task When_Two_Factor_Auth_Is_Not_Enabled_Then_Exception_Is_Thrown()
-        {
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ResourceOwner { TwoFactorAuthentication = string.Empty });
+        var exception = await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
+            .ConfigureAwait(false) as Option<string>.Error;
 
-            var exception = await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-                .ConfigureAwait(false) as Option<string>.Error;
+        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+        Assert.Equal(Strings.TwoFactorAuthenticationIsNotEnabled, exception.Details.Detail);
+    }
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
-            Assert.Equal(Strings.TwoFactorAuthenticationIsNotEnabled, exception.Details.Detail);
-        }
+    [Fact]
+    public async Task When_ResourceOwner_Does_Not_Have_The_Required_Claim_Then_Exception_Is_Thrown()
+    {
+        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(
+                Task.FromResult(
+                    new ResourceOwner
+                    {
+                        TwoFactorAuthentication = "email",
+                        Claims = new[] { new Claim("key", "value") },
+                        Subject = "subject"
+                    }));
+        var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
+        fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("claim");
+        _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
 
-        [Fact]
-        public async Task When_ResourceOwner_Does_Not_Have_The_Required_Claim_Then_Exception_Is_Thrown()
-        {
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(
-                    Task.FromResult(
-                        new ResourceOwner
-                        {
-                            TwoFactorAuthentication = "email",
-                            Claims = new[] { new Claim("key", "value") },
-                            Subject = "subject"
-                        }));
-            var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
-            fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("claim");
-            _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
+        await Assert
+            .ThrowsAsync<ClaimRequiredException>(
+                () => _generateAndSendCodeAction.Send("subject", CancellationToken.None))
+            .ConfigureAwait(false);
+    }
 
-            await Assert
-                .ThrowsAsync<ClaimRequiredException>(
-                    () => _generateAndSendCodeAction.Send("subject", CancellationToken.None))
-                .ConfigureAwait(false);
-        }
+    [Fact]
+    public async Task When_Code_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
+    {
+        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(
+                Task.FromResult(
+                    new ResourceOwner
+                    {
+                        TwoFactorAuthentication = "email",
+                        Claims = new[] { new Claim("key", "value") },
+                        Subject = "subject"
+                    }));
+        var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
+        fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
+        _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
+        _confirmationCodeStoreStub
+            .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ConfirmationCode)null);
+        _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
 
-        [Fact]
-        public async Task When_Code_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
-        {
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(
-                    Task.FromResult(
-                        new ResourceOwner
-                        {
-                            TwoFactorAuthentication = "email",
-                            Claims = new[] { new Claim("key", "value") },
-                            Subject = "subject"
-                        }));
-            var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
-            fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
-            _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
-            _confirmationCodeStoreStub
-                .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ConfirmationCode)null);
-            _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
+        var exception = await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
+            .ConfigureAwait(false) as Option<string>.Error;
 
-            var exception = await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-                .ConfigureAwait(false) as Option<string>.Error;
+        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+        Assert.Equal(Strings.TheConfirmationCodeCannotBeSaved, exception.Details.Detail);
+    }
 
-            Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
-            Assert.Equal(Strings.TheConfirmationCodeCannotBeSaved, exception.Details.Detail);
-        }
+    [Fact]
+    public async Task When_Code_Is_Generated_And_Inserted_Then_Handler_Is_Called()
+    {
+        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(
+                Task.FromResult(
+                    new ResourceOwner
+                    {
+                        TwoFactorAuthentication = "email",
+                        Claims = new[] { new Claim("key", "value") },
+                        Subject = "subject"
+                    }));
+        var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
+        fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
+        _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
+        _confirmationCodeStoreStub
+            .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ConfirmationCode)null);
+        _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
-        [Fact]
-        public async Task When_Code_Is_Generated_And_Inserted_Then_Handler_Is_Called()
-        {
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(
-                    Task.FromResult(
-                        new ResourceOwner
-                        {
-                            TwoFactorAuthentication = "email",
-                            Claims = new[] { new Claim("key", "value") },
-                            Subject = "subject"
-                        }));
-            var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
-            fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
-            _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
-            _confirmationCodeStoreStub
-                .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ConfirmationCode)null);
-            _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+        await _generateAndSendCodeAction.Send("subject", CancellationToken.None).ConfigureAwait(false);
 
-            await _generateAndSendCodeAction.Send("subject", CancellationToken.None).ConfigureAwait(false);
-
-            _twoFactorAuthenticationHandlerStub.Verify(
-                t => t.SendCode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ResourceOwner>()));
-        }
+        _twoFactorAuthenticationHandlerStub.Verify(
+            t => t.SendCode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ResourceOwner>()));
     }
 }

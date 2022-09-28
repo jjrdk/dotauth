@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Parameters
-{
-    internal record LocalAuthenticationParameter
-    {
-        public string? UserName { get; init; }
+namespace SimpleAuth.Parameters;
 
-        public string? Password { get; init; }
-    }
+internal sealed record LocalAuthenticationParameter
+{
+    public string? UserName { get; init; }
+
+    public string? Password { get; init; }
 }

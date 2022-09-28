@@ -1,20 +1,19 @@
-﻿namespace SimpleAuth.Tests.Validators
+﻿namespace SimpleAuth.Tests.Validators;
+
+using System.Net.Http;
+
+internal sealed class TestHttpClientFactory : IHttpClientFactory
 {
-    using System.Net.Http;
+    private readonly HttpClient _client;
 
-    internal class TestHttpClientFactory : IHttpClientFactory
+    public TestHttpClientFactory(HttpClient client = null)
     {
-        private readonly HttpClient _client;
+        _client = client ?? new HttpClient();
+    }
 
-        public TestHttpClientFactory(HttpClient client = null)
-        {
-            _client = client ?? new HttpClient();
-        }
-
-        /// <inheritdoc />
-        public HttpClient CreateClient(string name)
-        {
-            return _client;
-        }
+    /// <inheritdoc />
+    public HttpClient CreateClient(string name)
+    {
+        return _client;
     }
 }

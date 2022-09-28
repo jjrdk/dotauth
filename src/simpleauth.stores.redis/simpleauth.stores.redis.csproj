@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
         <RootNamespace>SimpleAuth.Stores.Redis</RootNamespace>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="StackExchange.Redis" Version="2.5.61" />
+        <PackageReference Include="StackExchange.Redis" Version="2.6.66" />
     </ItemGroup>
 
     <ItemGroup>

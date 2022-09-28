@@ -12,32 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.Introspection
+namespace SimpleAuth.Tests.Api.Introspection;
+
+using Repositories;
+using SimpleAuth.Api.Introspection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+
+public sealed class IntrospectionActionsFixture
 {
-    using Repositories;
-    using SimpleAuth.Api.Introspection;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Xunit;
+    private readonly PostIntrospectionAction _introspectionActions;
 
-    public class IntrospectionActionsFixture
+    public IntrospectionActionsFixture()
     {
-        private readonly PostIntrospectionAction _introspectionActions;
+        _introspectionActions = new PostIntrospectionAction(
+            new InMemoryTokenStore());
+    }
 
-        public IntrospectionActionsFixture()
-        {
-            _introspectionActions = new PostIntrospectionAction(
-                new InMemoryTokenStore());
-        }
-
-        [Fact]
-        public async Task When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
-        {
-            await Assert
-                .ThrowsAsync<NullReferenceException>(
-                    () => _introspectionActions.Execute(null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
+    [Fact]
+    public async Task When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
+    {
+        await Assert
+            .ThrowsAsync<NullReferenceException>(
+                () => _introspectionActions.Execute(null, CancellationToken.None))
+            .ConfigureAwait(false);
     }
 }

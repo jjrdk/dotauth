@@ -12,35 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.ViewModels
+namespace SimpleAuth.ViewModels;
+
+/// <summary>
+/// Defines the error view model.
+/// </summary>
+public sealed class ErrorViewModel
 {
     /// <summary>
-    /// Defines the error view model.
+    /// Gets or sets the code.
     /// </summary>
-    public class ErrorViewModel
-    {
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        /// <value>
-        /// The code.
-        /// </value>
-        public int Code { get; set; }
+    /// <value>
+    /// The code.
+    /// </value>
+    public int Code { get; set; }
 
-        /// <summary>
-        /// Gets or sets the title.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
-        public string Title { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the title.
+    /// </summary>
+    /// <value>
+    /// The title.
+    /// </value>
+    public string Title { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets the message.
-        /// </summary>
-        /// <value>
-        /// The message.
-        /// </value>
-        public string Message { get; set; } = null!;
-    }
+    /// <summary>
+    /// Gets or sets the message.
+    /// </summary>
+    /// <value>
+    /// The message.
+    /// </value>
+    public string Message { get; set; } = null!;
 }

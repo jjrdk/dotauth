@@ -12,130 +12,129 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Policies
+namespace SimpleAuth.Policies;
+
+using Parameters;
+using Shared.Events.Uma;
+using Shared.Models;
+using Shared.Responses;
+using SimpleAuth.Shared.Repositories;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Events;
+using SimpleAuth.Extensions;
+
+internal sealed class AuthorizationPolicyValidator
 {
-    using Parameters;
-    using Shared.Events.Uma;
-    using Shared.Models;
-    using Shared.Responses;
-    using SimpleAuth.Shared.Repositories;
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Events;
-    using SimpleAuth.Extensions;
+    private readonly IAuthorizationPolicy _authorizationPolicy;
+    private readonly IJwksStore _jwksStore;
+    private readonly IResourceSetRepository _resourceSetRepository;
+    private readonly IEventPublisher _eventPublisher;
 
-    internal class AuthorizationPolicyValidator
+    public AuthorizationPolicyValidator(
+        IJwksStore jwksStore,
+        IResourceSetRepository resourceSetRepository,
+        IEventPublisher eventPublisher)
     {
-        private readonly IAuthorizationPolicy _authorizationPolicy;
-        private readonly IJwksStore _jwksStore;
-        private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly IEventPublisher _eventPublisher;
+        _authorizationPolicy = new DefaultAuthorizationPolicy();
+        _jwksStore = jwksStore;
+        _resourceSetRepository = resourceSetRepository;
+        _eventPublisher = eventPublisher;
+    }
 
-        public AuthorizationPolicyValidator(
-            IJwksStore jwksStore,
-            IResourceSetRepository resourceSetRepository,
-            IEventPublisher eventPublisher)
+    public async Task<AuthorizationPolicyResult> IsAuthorized(
+        Ticket validTicket,
+        Client client,
+        ClaimTokenParameter claimTokenParameter,
+        CancellationToken cancellationToken)
+    {
+        if (validTicket.Lines.Length == 0)
         {
-            _authorizationPolicy = new DefaultAuthorizationPolicy();
-            _jwksStore = jwksStore;
-            _resourceSetRepository = resourceSetRepository;
-            _eventPublisher = eventPublisher;
+            throw new ArgumentException(nameof(validTicket.Lines));
+        }
+        var handler = new JwtSecurityTokenHandler();
+        var validationParameters = await client.CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
+        var requester = handler.ValidateToken(claimTokenParameter.Token, validationParameters, out _);
+
+        var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId).ToArray();
+        var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
+        if (resources.Length == 0 || resources.Length != resourceIds.Length)
+        {
+            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
         }
 
-        public async Task<AuthorizationPolicyResult> IsAuthorized(
-            Ticket validTicket,
-            Client client,
-            ClaimTokenParameter claimTokenParameter,
-            CancellationToken cancellationToken)
+        AuthorizationPolicyResult? validationResult = null;
+
+        foreach (var ticketLine in validTicket.Lines)
         {
-            if (validTicket.Lines.Length == 0)
+            var ticketLineParameter = new TicketLineParameter(
+                client.ClientId,
+                ticketLine.Scopes,
+                validTicket.IsAuthorizedByRo);
+            var resource = resources.First(r => r.Id == ticketLine.ResourceSetId);
+            validationResult = await Validate(
+                    ticketLineParameter,
+                    resource,
+                    claimTokenParameter.Format,
+                    requester,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            switch (validationResult.Result)
             {
-                throw new ArgumentException(nameof(validTicket.Lines));
-            }
-            var handler = new JwtSecurityTokenHandler();
-            var validationParameters = await client.CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
-            var requester = handler.ValidateToken(claimTokenParameter.Token, validationParameters, out _);
+                case AuthorizationPolicyResultKind.RequestSubmitted:
+                    await _eventPublisher.Publish(
+                            new AuthorizationRequestSubmitted(
+                                Id.Create(),
+                                validTicket.Id,
+                                client.ClientId,
+                                requester.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
+                                DateTimeOffset.UtcNow))
+                        .ConfigureAwait(false);
 
-            var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId).ToArray();
-            var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
-            if (resources.Length == 0 || resources.Length != resourceIds.Length)
-            {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
-            }
-
-            AuthorizationPolicyResult? validationResult = null;
-
-            foreach (var ticketLine in validTicket.Lines)
-            {
-                var ticketLineParameter = new TicketLineParameter(
-                    client.ClientId,
-                    ticketLine.Scopes,
-                    validTicket.IsAuthorizedByRo);
-                var resource = resources.First(r => r.Id == ticketLine.ResourceSetId);
-                validationResult = await Validate(
-                        ticketLineParameter,
-                        resource,
-                        claimTokenParameter.Format,
-                        requester,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-
-                switch (validationResult.Result)
+                    return validationResult;
+                case AuthorizationPolicyResultKind.Authorized:
+                    break;
+                case AuthorizationPolicyResultKind.NotAuthorized:
+                case AuthorizationPolicyResultKind.NeedInfo:
+                default:
                 {
-                    case AuthorizationPolicyResultKind.RequestSubmitted:
-                        await _eventPublisher.Publish(
-                                new AuthorizationRequestSubmitted(
-                                    Id.Create(),
-                                    validTicket.Id,
-                                    client.ClientId,
-                                    requester.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
-                                    DateTimeOffset.UtcNow))
-                            .ConfigureAwait(false);
+                    await _eventPublisher.Publish(
+                            new AuthorizationPolicyNotAuthorized(
+                                Id.Create(),
+                                validTicket.Id,
+                                DateTimeOffset.UtcNow))
+                        .ConfigureAwait(false);
 
-                        return validationResult;
-                    case AuthorizationPolicyResultKind.Authorized:
-                        break;
-                    case AuthorizationPolicyResultKind.NotAuthorized:
-                    case AuthorizationPolicyResultKind.NeedInfo:
-                    default:
-                        {
-                            await _eventPublisher.Publish(
-                                    new AuthorizationPolicyNotAuthorized(
-                                        Id.Create(),
-                                        validTicket.Id,
-                                        DateTimeOffset.UtcNow))
-                                .ConfigureAwait(false);
-
-                            return validationResult;
-                        }
+                    return validationResult;
                 }
             }
-
-            return validationResult!;
         }
 
-        private async Task<AuthorizationPolicyResult> Validate(
-            TicketLineParameter ticketLineParameter,
-            ResourceSet resource,
-            string? claimTokenFormat,
-            ClaimsPrincipal requester,
-            CancellationToken cancellationToken)
+        return validationResult!;
+    }
+
+    private async Task<AuthorizationPolicyResult> Validate(
+        TicketLineParameter ticketLineParameter,
+        ResourceSet resource,
+        string? claimTokenFormat,
+        ClaimsPrincipal requester,
+        CancellationToken cancellationToken)
+    {
+        if (resource.AuthorizationPolicies.Length == 0)
         {
-            if (resource.AuthorizationPolicies.Length == 0)
-            {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted, requester);
-            }
-
-            return await _authorizationPolicy.Execute(
-                    ticketLineParameter,
-                    claimTokenFormat,
-                    requester,
-                    cancellationToken, resource.AuthorizationPolicies)
-                .ConfigureAwait(false);
+            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted, requester);
         }
+
+        return await _authorizationPolicy.Execute(
+                ticketLineParameter,
+                claimTokenFormat,
+                requester,
+                cancellationToken, resource.AuthorizationPolicies)
+            .ConfigureAwait(false);
     }
 }

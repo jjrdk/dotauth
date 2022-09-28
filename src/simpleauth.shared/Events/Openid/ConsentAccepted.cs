@@ -12,59 +12,58 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Events.Openid
+namespace SimpleAuth.Shared.Events.Openid;
+
+using System;
+using System.Linq;
+
+/// <summary>
+/// Defines the consent accepted event.
+/// </summary>
+/// <seealso cref="SimpleAuth.Shared.Event" />
+public sealed record ConsentAccepted : Event
 {
-    using System;
-    using System.Linq;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsentAccepted"/> class.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="scope">The accepted scope.</param>
+    /// <param name="timestamp">The timestamp.</param>
+    /// <param name="subject">The accepting subject.</param>
+    /// <param name="clientId">The accepted client.</param>
+    public ConsentAccepted(string id, string subject, string clientId, string scope, DateTimeOffset timestamp)
+        : this(id, subject, clientId, scope.Split(' ', ','), timestamp)
+    {
+    }
 
     /// <summary>
-    /// Defines the consent accepted event.
+    /// Initializes a new instance of the <see cref="ConsentAccepted"/> class.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Event" />
-    public record ConsentAccepted : Event
+    /// <param name="id">The identifier.</param>
+    /// <param name="scope">The accepted scope.</param>
+    /// <param name="timestamp">The timestamp.</param>
+    /// <param name="subject">The accepting subject.</param>
+    /// <param name="clientId">The accepted client.</param>
+    public ConsentAccepted(string id, string subject, string clientId, string[] scope, DateTimeOffset timestamp)
+        : base(id, timestamp)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConsentAccepted"/> class.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="scope">The accepted scope.</param>
-        /// <param name="timestamp">The timestamp.</param>
-        /// <param name="subject">The accepting subject.</param>
-        /// <param name="clientId">The accepted client.</param>
-        public ConsentAccepted(string id, string subject, string clientId, string scope, DateTimeOffset timestamp)
-            : this(id, subject, clientId, scope.Split(' ', ','), timestamp)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConsentAccepted"/> class.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="scope">The accepted scope.</param>
-        /// <param name="timestamp">The timestamp.</param>
-        /// <param name="subject">The accepting subject.</param>
-        /// <param name="clientId">The accepted client.</param>
-        public ConsentAccepted(string id, string subject, string clientId, string[] scope, DateTimeOffset timestamp)
-            : base(id, timestamp)
-        {
-            Subject = subject;
-            ClientId = clientId;
-            Scope = scope.ToArray();
-        }
-
-        /// <summary>
-        /// The accepting subject.
-        /// </summary>
-        public string Subject { get; }
-
-        /// <summary>
-        /// The consented client.
-        /// </summary>
-        public string ClientId { get; }
-
-        /// <summary>
-        /// The consented scope.
-        /// </summary>
-        public string[] Scope { get; }
+        Subject = subject;
+        ClientId = clientId;
+        Scope = scope.ToArray();
     }
+
+    /// <summary>
+    /// The accepting subject.
+    /// </summary>
+    public string Subject { get; }
+
+    /// <summary>
+    /// The consented client.
+    /// </summary>
+    public string ClientId { get; }
+
+    /// <summary>
+    /// The consented scope.
+    /// </summary>
+    public string[] Scope { get; }
 }

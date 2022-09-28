@@ -12,43 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.Authenticate
+namespace SimpleAuth.WebSite.Authenticate;
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared.Repositories;
+
+internal sealed class ValidateConfirmationCodeAction
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Repositories;
+    private readonly IConfirmationCodeStore _confirmationCodeStore;
 
-    internal class ValidateConfirmationCodeAction
+    public ValidateConfirmationCodeAction(IConfirmationCodeStore confirmationCodeStore)
     {
-        private readonly IConfirmationCodeStore _confirmationCodeStore;
+        _confirmationCodeStore = confirmationCodeStore;
+    }
 
-        public ValidateConfirmationCodeAction(IConfirmationCodeStore confirmationCodeStore)
+    public async Task<bool> Execute(string code, string subject, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(code))
         {
-            _confirmationCodeStore = confirmationCodeStore;
-        }
-
-        public async Task<bool> Execute(string code, string subject, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                return false;
-            }
-
-            var confirmationCode = await _confirmationCodeStore.Get(code, subject, cancellationToken).ConfigureAwait(false);
-            if (confirmationCode == null)
-            {
-                return false;
-            }
-
-            var expirationDateTime = confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn);
-            if (DateTimeOffset.UtcNow < expirationDateTime)
-            {
-                return true;
-            }
-
-            await _confirmationCodeStore.Remove(code, subject, cancellationToken).ConfigureAwait(false);
             return false;
         }
+
+        var confirmationCode = await _confirmationCodeStore.Get(code, subject, cancellationToken).ConfigureAwait(false);
+        if (confirmationCode == null)
+        {
+            return false;
+        }
+
+        var expirationDateTime = confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn);
+        if (DateTimeOffset.UtcNow < expirationDateTime)
+        {
+            return true;
+        }
+
+        await _confirmationCodeStore.Remove(code, subject, cancellationToken).ConfigureAwait(false);
+        return false;
     }
 }

@@ -1,6 +1,5 @@
-﻿namespace SimpleAuth.Sms.Ui
+﻿namespace SimpleAuth.Sms.Ui;
+
+public interface IDefaultSmsUi
 {
-    public interface IDefaultSmsUi
-    {
-    }
 }

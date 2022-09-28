@@ -3,19 +3,24 @@
     <PropertyGroup>
         <Description>SimpleAuth Marten Stores</Description>
         <Title>SimpleAuth Marten Stores</Title>
-        <TargetFrameworks>net6.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
         <AssemblyName>simpleauth.stores.marten</AssemblyName>
         <PackageId>simpleauth.stores.marten</PackageId>
         <RootNamespace>SimpleAuth.Stores.Marten</RootNamespace>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-        <DocumentationFile>bin\$(Configuration)\net6.0\$(PackageId).xml</DocumentationFile>
+    <PropertyGroup>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
     </PropertyGroup>
     <Import Project="../../shared.projinfo" />
-    <ItemGroup>
-        <PackageReference Include="marten" Version="5.1.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+    <ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
+        <PackageReference Include="marten" Version="5.10.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-rc.1.22426.10" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0-rc.1.22426.10" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
+        <PackageReference Include="marten" Version="5.10.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>

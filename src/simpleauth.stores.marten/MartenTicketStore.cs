@@ -1,99 +1,98 @@
-﻿namespace SimpleAuth.Stores.Marten
+﻿namespace SimpleAuth.Stores.Marten;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using global::Marten;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+
+/// <summary>
+/// Defines the marten based ticket store.
+/// </summary>
+/// <seealso cref="ITicketStore" />
+public sealed class MartenTicketStore : ITicketStore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using global::Marten;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    private readonly Func<IDocumentSession> _sessionFactory;
 
     /// <summary>
-    /// Defines the marten based ticket store.
+    /// Initializes a new instance of the <see cref="MartenScopeRepository"/> class.
     /// </summary>
-    /// <seealso cref="ITicketStore" />
-    public class MartenTicketStore : ITicketStore
+    /// <param name="sessionFactory">The session factory.</param>
+    public MartenTicketStore(Func<IDocumentSession> sessionFactory)
     {
-        private readonly Func<IDocumentSession> _sessionFactory;
+        _sessionFactory = sessionFactory;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MartenScopeRepository"/> class.
-        /// </summary>
-        /// <param name="sessionFactory">The session factory.</param>
-        public MartenTicketStore(Func<IDocumentSession> sessionFactory)
+    /// <inheritdoc />
+    public async Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
+    {
+        await using var session = _sessionFactory();
+        session.Store(ticket);
+        await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async Task<(bool success, ClaimData[] requester)> ApproveAccess(
+        string ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        await using var session = _sessionFactory();
+        var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
+        if (ticket == null)
         {
-            _sessionFactory = sessionFactory;
+            return (false, Array.Empty<ClaimData>());
         }
 
-        /// <inheritdoc />
-        public async Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
+        if (!ticket.IsAuthorizedByRo)
         {
-            await using var session = _sessionFactory();
+            ticket = ticket with { IsAuthorizedByRo = true };
             session.Store(ticket);
             await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return true;
         }
 
-        /// <inheritdoc />
-        public async Task<(bool success, ClaimData[] requester)> ApproveAccess(
-            string ticketId,
-            CancellationToken cancellationToken = default)
-        {
-            await using var session = _sessionFactory();
-            var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
-            if (ticket == null)
-            {
-                return (false, Array.Empty<ClaimData>());
-            }
+        return (true, ticket.Requester);
+    }
 
-            if (!ticket.IsAuthorizedByRo)
-            {
-                ticket = ticket with { IsAuthorizedByRo = true };
-                session.Store(ticket);
-                await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            }
+    /// <inheritdoc />
+    public async Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
+    {
+        await using var session = _sessionFactory();
+        session.Delete<Ticket>(ticketId);
+        await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return true;
+    }
 
-            return (true, ticket.Requester);
-        }
+    /// <inheritdoc />
+    public async Task<Ticket?> Get(string ticketId, CancellationToken cancellationToken)
+    {
+        await using var session = _sessionFactory();
+        var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
 
-        /// <inheritdoc />
-        public async Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
-        {
-            await using var session = _sessionFactory();
-            session.Delete<Ticket>(ticketId);
-            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return true;
-        }
+        return ticket;
+    }
 
-        /// <inheritdoc />
-        public async Task<Ticket?> Get(string ticketId, CancellationToken cancellationToken)
-        {
-            await using var session = _sessionFactory();
-            var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Ticket>> GetAll(string owner, CancellationToken cancellationToken)
+    {
+        await using var session = _sessionFactory();
+        var now = DateTimeOffset.UtcNow;
+        var tickets = await session.Query<Ticket>()
+            .Where(x => x.ResourceOwner == owner && x.Created <= now && x.Expires > now)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
 
-            return ticket;
-        }
+        return tickets;
+    }
 
-        /// <inheritdoc />
-        public async Task<IReadOnlyList<Ticket>> GetAll(string owner, CancellationToken cancellationToken)
-        {
-            await using var session = _sessionFactory();
-            var now = DateTimeOffset.UtcNow;
-            var tickets = await session.Query<Ticket>()
-                .Where(x => x.ResourceOwner == owner && x.Created <= now && x.Expires > now)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            return tickets;
-        }
-
-        /// <inheritdoc />
-        public async Task Clean(CancellationToken cancellationToken)
-        {
-            await using var session = _sessionFactory();
-            session.DeleteWhere<Ticket>(t => t.Expires <= DateTimeOffset.UtcNow);
-            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
+    /// <inheritdoc />
+    public async Task Clean(CancellationToken cancellationToken)
+    {
+        await using var session = _sessionFactory();
+        session.DeleteWhere<Ticket>(t => t.Expires <= DateTimeOffset.UtcNow);
+        await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 }

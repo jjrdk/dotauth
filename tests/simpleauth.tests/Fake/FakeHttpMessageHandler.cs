@@ -1,49 +1,48 @@
-﻿namespace SimpleAuth.Tests.Fake
+﻿namespace SimpleAuth.Tests.Fake;
+
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class FakeHttpMessageHandler : HttpMessageHandler
 {
-    using System.IO;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
+    private readonly HttpResponseMessage _response;
 
-    public class FakeHttpMessageHandler : HttpMessageHandler
+    public static HttpMessageHandler GetHttpMessageHandler(string content, HttpStatusCode httpStatusCode)
     {
-        private readonly HttpResponseMessage _response;
+        var memStream = new MemoryStream();
 
-        public static HttpMessageHandler GetHttpMessageHandler(string content, HttpStatusCode httpStatusCode)
+        var sw = new StreamWriter(memStream);
+        sw.Write(content);
+        sw.Flush();
+        memStream.Position = 0;
+
+        var httpContent = new StreamContent(memStream);
+
+        var response = new HttpResponseMessage()
         {
-            var memStream = new MemoryStream();
+            StatusCode = httpStatusCode,
+            Content = httpContent
+        };
 
-            var sw = new StreamWriter(memStream);
-            sw.Write(content);
-            sw.Flush();
-            memStream.Position = 0;
+        var messageHandler = new FakeHttpMessageHandler(response);
 
-            var httpContent = new StreamContent(memStream);
+        return messageHandler;
+    }
 
-            var response = new HttpResponseMessage()
-            {
-                StatusCode = httpStatusCode,
-                Content = httpContent
-            };
+    public FakeHttpMessageHandler(HttpResponseMessage response)
+    {
+        _response = response;
+    }
 
-            var messageHandler = new FakeHttpMessageHandler(response);
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        var tcs = new TaskCompletionSource<HttpResponseMessage>();
 
-            return messageHandler;
-        }
+        tcs.SetResult(_response);
 
-        public FakeHttpMessageHandler(HttpResponseMessage response)
-        {
-            _response = response;
-        }
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var tcs = new TaskCompletionSource<HttpResponseMessage>();
-
-            tcs.SetResult(_response);
-
-            return tcs.Task;
-        }
+        return tcs.Task;
     }
 }

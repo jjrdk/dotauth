@@ -12,53 +12,52 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers
+namespace SimpleAuth.Controllers;
+
+using Microsoft.AspNetCore.Mvc;
+using SimpleAuth.Filters;
+using SimpleAuth.ViewModels;
+
+/// <summary>
+/// Defines the form controller.
+/// </summary>
+[ThrottleFilter]
+public sealed class FormController : Controller
 {
-    using Microsoft.AspNetCore.Mvc;
-    using SimpleAuth.Filters;
-    using SimpleAuth.ViewModels;
-
     /// <summary>
-    /// Defines the form controller.
+    /// Populates the return form.
     /// </summary>
-    [ThrottleFilter]
-    public class FormController : Controller
+    /// <returns></returns>
+    public ActionResult Index()
     {
-        /// <summary>
-        /// Populates the return form.
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Index()
+        var queryStringValue = Request.QueryString.Value ?? string.Empty;
+        var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(queryStringValue);
+        var viewModel = new FormViewModel();
+        if (queryString.ContainsKey(StandardAuthorizationResponseNames.AccessTokenName))
         {
-            var queryStringValue = Request.QueryString.Value ?? string.Empty;
-            var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(queryStringValue);
-            var viewModel = new FormViewModel();
-            if (queryString.ContainsKey(StandardAuthorizationResponseNames.AccessTokenName))
-            {
-                viewModel.AccessToken = queryString[StandardAuthorizationResponseNames.AccessTokenName];
-            }
-
-            if (queryString.ContainsKey(StandardAuthorizationResponseNames.AuthorizationCodeName))
-            {
-                viewModel.AuthorizationCode = queryString[StandardAuthorizationResponseNames.AuthorizationCodeName];
-            }
-
-            if (queryString.ContainsKey(StandardAuthorizationResponseNames.IdTokenName))
-            {
-                viewModel.IdToken = queryString[StandardAuthorizationResponseNames.IdTokenName];
-            }
-
-            if (queryString.ContainsKey(StandardAuthorizationResponseNames.StateName))
-            {
-                viewModel.State = queryString[StandardAuthorizationResponseNames.StateName];
-            }
-
-            if (queryString.ContainsKey("redirect_uri"))
-            {
-                viewModel.RedirectUri = queryString["redirect_uri"];
-            }
-
-            return Ok(viewModel);
+            viewModel.AccessToken = queryString[StandardAuthorizationResponseNames.AccessTokenName];
         }
+
+        if (queryString.ContainsKey(StandardAuthorizationResponseNames.AuthorizationCodeName))
+        {
+            viewModel.AuthorizationCode = queryString[StandardAuthorizationResponseNames.AuthorizationCodeName];
+        }
+
+        if (queryString.ContainsKey(StandardAuthorizationResponseNames.IdTokenName))
+        {
+            viewModel.IdToken = queryString[StandardAuthorizationResponseNames.IdTokenName];
+        }
+
+        if (queryString.ContainsKey(StandardAuthorizationResponseNames.StateName))
+        {
+            viewModel.State = queryString[StandardAuthorizationResponseNames.StateName];
+        }
+
+        if (queryString.ContainsKey("redirect_uri"))
+        {
+            viewModel.RedirectUri = queryString["redirect_uri"];
+        }
+
+        return Ok(viewModel);
     }
 }

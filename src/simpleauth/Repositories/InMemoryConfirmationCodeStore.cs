@@ -1,58 +1,57 @@
-﻿namespace SimpleAuth.Repositories
+﻿namespace SimpleAuth.Repositories;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+
+internal sealed class InMemoryConfirmationCodeStore : IConfirmationCodeStore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    private readonly ICollection<ConfirmationCode> _confirmationCodes;
 
-    internal sealed class InMemoryConfirmationCodeStore : IConfirmationCodeStore
+    public InMemoryConfirmationCodeStore()
     {
-        private readonly ICollection<ConfirmationCode> _confirmationCodes;
+        _confirmationCodes = new List<ConfirmationCode>();
+    }
 
-        public InMemoryConfirmationCodeStore()
+    public Task<bool> Add(ConfirmationCode confirmationCode, CancellationToken cancellationToken)
+    {
+        if (confirmationCode == null)
         {
-            _confirmationCodes = new List<ConfirmationCode>();
+            throw new ArgumentNullException(nameof(confirmationCode));
         }
 
-        public Task<bool> Add(ConfirmationCode confirmationCode, CancellationToken cancellationToken)
-        {
-            if (confirmationCode == null)
-            {
-                throw new ArgumentNullException(nameof(confirmationCode));
-            }
+        _confirmationCodes.Add(confirmationCode);
+        return Task.FromResult(true);
+    }
 
-            _confirmationCodes.Add(confirmationCode);
-            return Task.FromResult(true);
+    public Task<ConfirmationCode?> Get(string code, string subject, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            throw new ArgumentNullException(nameof(code));
         }
 
-        public Task<ConfirmationCode?> Get(string code, string subject, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                throw new ArgumentNullException(nameof(code));
-            }
+        return Task.FromResult(_confirmationCodes.FirstOrDefault(c => c.Value == code));
+    }
 
-            return Task.FromResult(_confirmationCodes.FirstOrDefault(c => c.Value == code));
+    public Task<bool> Remove(string code, string subject, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            throw new ArgumentNullException(nameof(code));
         }
 
-        public Task<bool> Remove(string code, string subject, CancellationToken cancellationToken)
+        var confirmationCode = _confirmationCodes.FirstOrDefault(c => c.Value == code);
+        if (confirmationCode == null)
         {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                throw new ArgumentNullException(nameof(code));
-            }
-
-            var confirmationCode = _confirmationCodes.FirstOrDefault(c => c.Value == code);
-            if (confirmationCode == null)
-            {
-                return Task.FromResult(false);
-            }
-
-            _confirmationCodes.Remove(confirmationCode);
-            return Task.FromResult(true);
+            return Task.FromResult(false);
         }
+
+        _confirmationCodes.Remove(confirmationCode);
+        return Task.FromResult(true);
     }
 }

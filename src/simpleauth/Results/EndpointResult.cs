@@ -12,103 +12,102 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Results
+namespace SimpleAuth.Results;
+
+using SimpleAuth.Shared.Models;
+
+/// <summary>
+/// Represents an endpoint resultKind value.
+/// </summary>
+internal sealed record EndpointResult
 {
-    using SimpleAuth.Shared.Models;
+    /// <summary>
+    /// Gets or sets the type of action resultKind.
+    /// </summary>
+    public ActionResultType Type { get; init; }
 
     /// <summary>
-    /// Represents an endpoint resultKind value.
+    /// Gets or sets the redirect instruction.
     /// </summary>
-    internal record EndpointResult
+    /// <value>
+    /// The redirect instruction.
+    /// </value>
+    public RedirectInstruction? RedirectInstruction { get; init; }
+
+    /// <summary>
+    /// Gets or sets the process identifier.
+    /// </summary>
+    /// <value>
+    /// The process identifier.
+    /// </value>
+    public string? ProcessId { get; init; }
+
+    /// <summary>
+    /// Gets or sets the amr.
+    /// </summary>
+    /// <value>
+    /// The amr.
+    /// </value>
+    public string? Amr { get; init; }
+
+    /// <summary>
+    /// Gets any error details for the request.
+    /// </summary>
+    public ErrorDetails? Error { get; init; }
+
+    /// <summary>
+    /// Creates an empty action resultKind with redirection
+    /// </summary>
+    /// <returns>Empty action resultKind with redirection</returns>
+    public static EndpointResult CreateAnEmptyActionResultWithRedirection(SimpleAuthEndPoints action, params Parameter[] parameters)
     {
-        /// <summary>
-        /// Gets or sets the type of action resultKind.
-        /// </summary>
-        public ActionResultType Type { get; init; }
-
-        /// <summary>
-        /// Gets or sets the redirect instruction.
-        /// </summary>
-        /// <value>
-        /// The redirect instruction.
-        /// </value>
-        public RedirectInstruction? RedirectInstruction { get; init; }
-
-        /// <summary>
-        /// Gets or sets the process identifier.
-        /// </summary>
-        /// <value>
-        /// The process identifier.
-        /// </value>
-        public string? ProcessId { get; init; }
-
-        /// <summary>
-        /// Gets or sets the amr.
-        /// </summary>
-        /// <value>
-        /// The amr.
-        /// </value>
-        public string? Amr { get; init; }
-
-        /// <summary>
-        /// Gets any error details for the request.
-        /// </summary>
-        public ErrorDetails? Error { get; init; }
-
-        /// <summary>
-        /// Creates an empty action resultKind with redirection
-        /// </summary>
-        /// <returns>Empty action resultKind with redirection</returns>
-        public static EndpointResult CreateAnEmptyActionResultWithRedirection(SimpleAuthEndPoints action, params Parameter[] parameters)
+        return new()
         {
-            return new()
-            {
-                RedirectInstruction = new RedirectInstruction { Action = action, Parameters = parameters },
-                Type = ActionResultType.RedirectToAction
-            };
-        }
+            RedirectInstruction = new RedirectInstruction { Action = action, Parameters = parameters },
+            Type = ActionResultType.RedirectToAction
+        };
+    }
 
-        public static EndpointResult CreateBadRequestResult(ErrorDetails error)
-        {
-            return new() {Type = ActionResultType.BadRequest, Error = error};
-        }
+    public static EndpointResult CreateBadRequestResult(ErrorDetails error)
+    {
+        return new() {Type = ActionResultType.BadRequest, Error = error};
+    }
 
-        /// <summary>
-        /// Creates an empty action resultKind with output
-        /// </summary>
-        /// <returns>Empty action resultKind with output</returns>
-        public static EndpointResult CreateAnEmptyActionResultWithOutput()
+    /// <summary>
+    /// Creates an empty action resultKind with output
+    /// </summary>
+    /// <returns>Empty action resultKind with output</returns>
+    public static EndpointResult CreateAnEmptyActionResultWithOutput()
+    {
+        return new()
         {
-            return new()
-            {
-                RedirectInstruction = null,
-                Type = ActionResultType.Output
-            };
-        }
+            RedirectInstruction = null,
+            Type = ActionResultType.Output
+        };
+    }
 
-        /// <summary>
-        /// Creates an empty action resultKind with no effect
-        /// </summary>
-        /// <returns>Empty action resultKind with no effect</returns>
-        public static EndpointResult CreateAnEmptyActionResultWithNoEffect()
+    /// <summary>
+    /// Creates an empty action resultKind with no effect
+    /// </summary>
+    /// <returns>Empty action resultKind with no effect</returns>
+    public static EndpointResult CreateAnEmptyActionResultWithNoEffect()
+    {
+        return new()
         {
-            return new()
-            {
-                Type = ActionResultType.None
-            };
-        }
+            Type = ActionResultType.None
+        };
+    }
 
-        /// <summary>
-        /// Creates an empty action resultKind with redirection to callbackurl.
-        /// </summary>
-        /// <returns>Empty action with redirection to callbackurl</returns>
-        public static EndpointResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl()
+    /// <summary>
+    /// Creates an empty action resultKind with redirection to callbackurl.
+    /// </summary>
+    /// <returns>Empty action with redirection to callbackurl</returns>
+    public static EndpointResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl()
+    {
+        return new()
         {
-            return new()
-            {
-                Type = ActionResultType.RedirectToCallBackUrl,
-                RedirectInstruction = new RedirectInstruction()
-            };
-        }
+            Type = ActionResultType.RedirectToCallBackUrl,
+            RedirectInstruction = new RedirectInstruction()
+        };
     }
 }

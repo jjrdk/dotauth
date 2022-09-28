@@ -1,12 +1,11 @@
-﻿namespace SimpleAuth
-{
-    using System;
+﻿namespace SimpleAuth;
 
-    internal static class Id
+using System;
+
+internal static class Id
+{
+    public static string Create()
     {
-        public static string Create()
-        {
-            return BitConverter.ToString(Guid.NewGuid().ToByteArray()).Replace("-", string.Empty);
-        }
+        return BitConverter.ToString(Guid.NewGuid().ToByteArray()).Replace("-", string.Empty);
     }
 }

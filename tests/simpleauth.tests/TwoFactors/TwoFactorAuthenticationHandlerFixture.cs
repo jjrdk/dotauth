@@ -12,40 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.TwoFactors
+namespace SimpleAuth.Tests.TwoFactors;
+
+using System;
+using System.Threading.Tasks;
+using Moq;
+using Services;
+using Xunit;
+
+public sealed class TwoFactorAuthenticationHandlerFixture
 {
-    using System;
-    using System.Threading.Tasks;
-    using Moq;
-    using Services;
-    using Xunit;
+    private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
-    public class TwoFactorAuthenticationHandlerFixture
+    public TwoFactorAuthenticationHandlerFixture()
     {
-        private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
+        _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(new[] { new Mock<ITwoFactorAuthenticationService>().Object, });
+    }
 
-        public TwoFactorAuthenticationHandlerFixture()
-        {
-            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(new[] { new Mock<ITwoFactorAuthenticationService>().Object, });
-        }
-
-        [Fact]
-        public async Task When_Passing_Null_Parameter_To_SendCode_Then_Exception_Is_Thrown()
-        {
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, null, null))
-                .ConfigureAwait(false);
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _twoFactorAuthenticationHandler.SendCode(string.Empty, null, null))
-                .ConfigureAwait(false);
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", null, null))
-                .ConfigureAwait(false);
-            await Assert
-                .ThrowsAsync<ArgumentNullException>(
-                    () => _twoFactorAuthenticationHandler.SendCode("code", string.Empty, null))
-                .ConfigureAwait(false);
-        }
+    [Fact]
+    public async Task When_Passing_Null_Parameter_To_SendCode_Then_Exception_Is_Thrown()
+    {
+        await Assert
+            .ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, null, null))
+            .ConfigureAwait(false);
+        await Assert
+            .ThrowsAsync<ArgumentNullException>(
+                () => _twoFactorAuthenticationHandler.SendCode(string.Empty, null, null))
+            .ConfigureAwait(false);
+        await Assert
+            .ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", null, null))
+            .ConfigureAwait(false);
+        await Assert
+            .ThrowsAsync<ArgumentNullException>(
+                () => _twoFactorAuthenticationHandler.SendCode("code", string.Empty, null))
+            .ConfigureAwait(false);
     }
 }

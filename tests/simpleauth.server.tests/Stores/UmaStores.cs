@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Stores
-{
-    using System.Collections.Generic;
-    using SimpleAuth.Shared.Models;
+namespace SimpleAuth.Server.Tests.Stores;
 
-    public static class UmaStores
+using System.Collections.Generic;
+using SimpleAuth.Shared.Models;
+
+public static class UmaStores
+{
+    public static List<(string,ResourceSet)> GetResources()
     {
-        public static List<(string,ResourceSet)> GetResources()
+        return new()
         {
-            return new()
-            {
-                ("tester", new ResourceSet {Id = "bad180b5-4a96-422d-a088-c71a9f7c7afc", Name = "Resources"}),
-                ("tester", new ResourceSet {Id = "67c50eac-23ef-41f0-899c-dffc03add961", Name = "Apis"})
-            };
-        }
+            ("tester", new ResourceSet {Id = "bad180b5-4a96-422d-a088-c71a9f7c7afc", Name = "Resources"}),
+            ("tester", new ResourceSet {Id = "67c50eac-23ef-41f0-899c-dffc03add961", Name = "Apis"})
+        };
     }
 }

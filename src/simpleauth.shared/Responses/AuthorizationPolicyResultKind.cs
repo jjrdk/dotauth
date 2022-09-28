@@ -1,10 +1,9 @@
-﻿namespace SimpleAuth.Shared.Responses
+﻿namespace SimpleAuth.Shared.Responses;
+
+internal enum AuthorizationPolicyResultKind
 {
-    internal enum AuthorizationPolicyResultKind
-    {
-        NotAuthorized,
-        NeedInfo, // default : Not supported yet
-        RequestSubmitted,
-        Authorized
-    }
+    NotAuthorized,
+    NeedInfo, // default : Not supported yet
+    RequestSubmitted,
+    Authorized
 }

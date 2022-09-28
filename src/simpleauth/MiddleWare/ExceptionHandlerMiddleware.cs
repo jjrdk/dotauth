@@ -12,98 +12,97 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.MiddleWare
+namespace SimpleAuth.MiddleWare;
+
+using Microsoft.AspNetCore.Http;
+using SimpleAuth.Shared.Events.Logging;
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Events;
+using SimpleAuth.Shared.Errors;
+
+internal sealed class ExceptionHandlerMiddleware
 {
-    using Microsoft.AspNetCore.Http;
-    using SimpleAuth.Shared.Events.Logging;
-    using System;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http.Features;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Events;
-    using SimpleAuth.Shared.Errors;
+    private readonly RequestDelegate _next;
+    private readonly IEventPublisher _publisher;
+    private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
-    internal class ExceptionHandlerMiddleware
+    public ExceptionHandlerMiddleware(
+        RequestDelegate next,
+        IEventPublisher publisher,
+        ILogger<ExceptionHandlerMiddleware> logger)
     {
-        private readonly RequestDelegate _next;
-        private readonly IEventPublisher _publisher;
-        private readonly ILogger<ExceptionHandlerMiddleware> _logger;
+        _next = next ?? throw new ArgumentNullException(nameof(next));
+        _publisher = publisher;
+        _logger = logger;
+    }
 
-        public ExceptionHandlerMiddleware(
-            RequestDelegate next,
-            IEventPublisher publisher,
-            ILogger<ExceptionHandlerMiddleware> logger)
+    public async Task Invoke(HttpContext context)
+    {
+        try
         {
-            _next = next ?? throw new ArgumentNullException(nameof(next));
-            _publisher = publisher;
-            _logger = logger;
+            await _next(context).ConfigureAwait(false);
         }
-
-        public async Task Invoke(HttpContext context)
+        catch (Exception exception)
         {
-            try
+            context.Response.Clear();
+
+            switch (exception)
             {
-                await _next(context).ConfigureAwait(false);
+                case AggregateException aggregateException:
+                {
+                    foreach (var ex in aggregateException.InnerExceptions)
+                    {
+                        await PublishError(ex).ConfigureAwait(false);
+                        _logger.LogError(ex.StackTrace);
+                    }
+
+                    SetRedirection(context, exception);
+                    break;
+                }
+                default:
+                {
+                    await PublishError(exception).ConfigureAwait(false);
+                    _logger.LogError(exception.StackTrace);
+
+                    SetRedirection(context, exception);
+                    break;
+                }
             }
-            catch (Exception exception)
+
+            if (context.Features[typeof(IEndpointFeature)] is not IEndpointFeature endpointFeature)
             {
                 context.Response.Clear();
-
-                switch (exception)
-                {
-                    case AggregateException aggregateException:
-                        {
-                            foreach (var ex in aggregateException.InnerExceptions)
-                            {
-                                await PublishError(ex).ConfigureAwait(false);
-                                _logger.LogError(ex.StackTrace);
-                            }
-
-                            SetRedirection(context, exception);
-                            break;
-                        }
-                    default:
-                        {
-                            await PublishError(exception).ConfigureAwait(false);
-                            _logger.LogError(exception.StackTrace);
-
-                            SetRedirection(context, exception);
-                            break;
-                        }
-                }
-
-                if (context.Features[typeof(IEndpointFeature)] is not IEndpointFeature endpointFeature)
-                {
-                    context.Response.Clear();
-                    context.Response.StatusCode = 500;
-                    return;
-                }
-
-                endpointFeature.Endpoint = null;
-                await Invoke(context).ConfigureAwait(false);
+                context.Response.StatusCode = 500;
+                return;
             }
-        }
 
-        private async Task PublishError(Exception exception)
-        {
-            await _publisher
-                .Publish(
-                    new SimpleAuthError(
-                        Id.Create(),
-                        exception.GetType().Name,
-                        exception.Message,
-                        string.Empty,
-                        DateTimeOffset.UtcNow))
-                .ConfigureAwait(false);
+            endpointFeature.Endpoint = null;
+            await Invoke(context).ConfigureAwait(false);
         }
+    }
 
-        private static void SetRedirection(HttpContext context, Exception exception, string? code = null, string? title = null)
-        {
-            context.Request.Path = "/error";
-            context.Request.QueryString = new QueryString()
-                .Add("code", code ?? "500")
-                .Add("title", title ?? ErrorCodes.UnhandledExceptionCode)
-                .Add("message", exception.Message);
-        }
+    private async Task PublishError(Exception exception)
+    {
+        await _publisher
+            .Publish(
+                new SimpleAuthError(
+                    Id.Create(),
+                    exception.GetType().Name,
+                    exception.Message,
+                    string.Empty,
+                    DateTimeOffset.UtcNow))
+            .ConfigureAwait(false);
+    }
+
+    private static void SetRedirection(HttpContext context, Exception exception, string? code = null, string? title = null)
+    {
+        context.Request.Path = "/error";
+        context.Request.QueryString = new QueryString()
+            .Add("code", code ?? "500")
+            .Add("title", title ?? ErrorCodes.UnhandledExceptionCode)
+            .Add("message", exception.Message);
     }
 }

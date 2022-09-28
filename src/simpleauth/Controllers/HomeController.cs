@@ -1,52 +1,51 @@
-﻿namespace SimpleAuth.Controllers
+﻿namespace SimpleAuth.Controllers;
+
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Filters;
+
+/// <summary>
+/// Defines the home controller.
+/// </summary>
+/// <seealso cref="BaseController" />
+[ThrottleFilter]
+public sealed class HomeController : BaseController
 {
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Mvc;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Filters;
+    private readonly RuntimeSettings _settings;
+    private readonly ILogger<HomeController> _logger;
 
     /// <summary>
-    /// Defines the home controller.
+    /// Initializes a new instance of the <see cref="HomeController"/> class.
     /// </summary>
-    /// <seealso cref="BaseController" />
-    [ThrottleFilter]
-    public class HomeController : BaseController
+    /// <param name="authenticationService">The authentication service.</param>
+    /// <param name="settings"></param>
+    /// <param name="logger"></param>
+    public HomeController(
+        IAuthenticationService authenticationService,
+        RuntimeSettings settings,
+        ILogger<HomeController> logger)
+        : base(authenticationService)
     {
-        private readonly RuntimeSettings _settings;
-        private readonly ILogger<HomeController> _logger;
+        _settings = settings;
+        _logger = logger;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HomeController"/> class.
-        /// </summary>
-        /// <param name="authenticationService">The authentication service.</param>
-        /// <param name="settings"></param>
-        /// <param name="logger"></param>
-        public HomeController(
-            IAuthenticationService authenticationService,
-            RuntimeSettings settings,
-            ILogger<HomeController> logger)
-            : base(authenticationService)
+    /// <summary>
+    /// Handle the default GET request.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        await SetUser().ConfigureAwait(false);
+        if (_settings.RedirectToLogin)
         {
-            _settings = settings;
-            _logger = logger;
+            _logger.LogDebug("Redirecting to login page");
+            return RedirectToAction("Index", "Authenticate");
         }
 
-        /// <summary>
-        /// Handle the default GET request.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            await SetUser().ConfigureAwait(false);
-            if (_settings.RedirectToLogin)
-            {
-                _logger.LogDebug("Redirecting to login page");
-                return RedirectToAction("Index", "Authenticate");
-            }
-
-            return Ok(new object());
-        }
+        return Ok(new object());
     }
 }

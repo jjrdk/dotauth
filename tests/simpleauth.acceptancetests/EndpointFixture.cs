@@ -12,46 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AcceptanceTests
+namespace SimpleAuth.AcceptanceTests;
+
+using Microsoft.IdentityModel.Logging;
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Xunit;
+using Xunit.Abstractions;
+
+public sealed class EndpointFixture
 {
-    using Microsoft.IdentityModel.Logging;
-    using System;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using Xunit;
-    using Xunit.Abstractions;
+    private const string BaseUrl = "http://localhost:5000";
+    private readonly TestServerFixture _server;
 
-    public class EndpointFixture
+    public EndpointFixture(ITestOutputHelper outputHelper)
     {
-        private const string BaseUrl = "http://localhost:5000";
-        private readonly TestServerFixture _server;
+        IdentityModelEventSource.ShowPII = true;
+        _server = new TestServerFixture(outputHelper, BaseUrl);
+    }
 
-        public EndpointFixture(ITestOutputHelper outputHelper)
+    [Theory]
+    [InlineData("", HttpStatusCode.OK)]
+    [InlineData("error?code=404", HttpStatusCode.NotFound)]
+    [InlineData("error/404", HttpStatusCode.NotFound)]
+    [InlineData("home", HttpStatusCode.OK)]
+    [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
+    [InlineData("authenticate", HttpStatusCode.OK)]
+    [InlineData("jwks", HttpStatusCode.OK)]
+    public async Task WhenRequestingEndpointThenReturnsExpectedStatus(string path, HttpStatusCode statusCode)
+    {
+        var httpRequest = new HttpRequestMessage
         {
-            IdentityModelEventSource.ShowPII = true;
-            _server = new TestServerFixture(outputHelper, BaseUrl);
-        }
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"{BaseUrl}/{path}")
+        };
 
-        [Theory]
-        [InlineData("", HttpStatusCode.OK)]
-        [InlineData("error?code=404", HttpStatusCode.NotFound)]
-        [InlineData("error/404", HttpStatusCode.NotFound)]
-        [InlineData("home", HttpStatusCode.OK)]
-        [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
-        [InlineData("authenticate", HttpStatusCode.OK)]
-        [InlineData("jwks", HttpStatusCode.OK)]
-        public async Task WhenRequestingEndpointThenReturnsExpectedStatus(string path, HttpStatusCode statusCode)
-        {
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"{BaseUrl}/{path}")
-            };
+        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
 
-            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-
-            Assert.Equal(statusCode, httpResult.StatusCode);
-        }
+        Assert.Equal(statusCode, httpResult.StatusCode);
     }
 }

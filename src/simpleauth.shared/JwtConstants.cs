@@ -12,74 +12,73 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared
+namespace SimpleAuth.Shared;
+
+using System.Collections.Generic;
+using System.Security.Claims;
+
+internal sealed class JwtConstants
 {
-    using System.Collections.Generic;
-    using System.Security.Claims;
-
-    internal class JwtConstants
+    public static readonly string[] NotEditableResourceOwnerClaimNames =
     {
-        public static readonly string[] NotEditableResourceOwnerClaimNames =
-        {
-            OpenIdClaimTypes.Subject,
-            OpenIdClaimTypes.EmailVerified,
-            OpenIdClaimTypes.PhoneNumberVerified,
-            OpenIdClaimTypes.UpdatedAt,
-        };
+        OpenIdClaimTypes.Subject,
+        OpenIdClaimTypes.EmailVerified,
+        OpenIdClaimTypes.PhoneNumberVerified,
+        OpenIdClaimTypes.UpdatedAt,
+    };
 
-        public static readonly string[] AllStandardResourceOwnerClaimNames =
-        {
-            OpenIdClaimTypes.Subject,
-            OpenIdClaimTypes.Address,
-            OpenIdClaimTypes.BirthDate,
-            OpenIdClaimTypes.Email,
-            OpenIdClaimTypes.EmailVerified,
-            OpenIdClaimTypes.FamilyName,
-            OpenIdClaimTypes.Gender,
-            OpenIdClaimTypes.GivenName,
-            OpenIdClaimTypes.Locale,
-            OpenIdClaimTypes.MiddleName,
-            OpenIdClaimTypes.Name,
-            OpenIdClaimTypes.NickName,
-            OpenIdClaimTypes.PhoneNumber,
-            OpenIdClaimTypes.PhoneNumberVerified,
-            OpenIdClaimTypes.Picture,
-            OpenIdClaimTypes.PreferredUserName,
-            OpenIdClaimTypes.Profile,
-            OpenIdClaimTypes.Role,
-            OpenIdClaimTypes.UpdatedAt,
-            OpenIdClaimTypes.WebSite,
-            OpenIdClaimTypes.ZoneInfo
-        };
+    public static readonly string[] AllStandardResourceOwnerClaimNames =
+    {
+        OpenIdClaimTypes.Subject,
+        OpenIdClaimTypes.Address,
+        OpenIdClaimTypes.BirthDate,
+        OpenIdClaimTypes.Email,
+        OpenIdClaimTypes.EmailVerified,
+        OpenIdClaimTypes.FamilyName,
+        OpenIdClaimTypes.Gender,
+        OpenIdClaimTypes.GivenName,
+        OpenIdClaimTypes.Locale,
+        OpenIdClaimTypes.MiddleName,
+        OpenIdClaimTypes.Name,
+        OpenIdClaimTypes.NickName,
+        OpenIdClaimTypes.PhoneNumber,
+        OpenIdClaimTypes.PhoneNumberVerified,
+        OpenIdClaimTypes.Picture,
+        OpenIdClaimTypes.PreferredUserName,
+        OpenIdClaimTypes.Profile,
+        OpenIdClaimTypes.Role,
+        OpenIdClaimTypes.UpdatedAt,
+        OpenIdClaimTypes.WebSite,
+        OpenIdClaimTypes.ZoneInfo
+    };
 
-        public static readonly string[] AllStandardClaimNames =
-        {
-            StandardClaimNames.Acr,
-            StandardClaimNames.Amr,
-            StandardClaimNames.Audiences,
-            StandardClaimNames.AuthenticationTime,
-            StandardClaimNames.Azp,
-            StandardClaimNames.ExpirationTime,
-            StandardClaimNames.Iat,
-            StandardClaimNames.Issuer,
-            StandardClaimNames.Jti,
-            StandardClaimNames.Nonce,
-            StandardClaimNames.Subject
-        };
+    public static readonly string[] AllStandardClaimNames =
+    {
+        StandardClaimNames.Acr,
+        StandardClaimNames.Amr,
+        StandardClaimNames.Audiences,
+        StandardClaimNames.AuthenticationTime,
+        StandardClaimNames.Azp,
+        StandardClaimNames.ExpirationTime,
+        StandardClaimNames.Iat,
+        StandardClaimNames.Issuer,
+        StandardClaimNames.Jti,
+        StandardClaimNames.Nonce,
+        StandardClaimNames.Subject
+    };
 
-        public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new()
-        {
-            {ClaimTypes.Name, OpenIdClaimTypes.Name},
-            {ClaimTypes.GivenName, OpenIdClaimTypes.GivenName},
-            {ClaimTypes.Webpage, OpenIdClaimTypes.WebSite},
-            {ClaimTypes.Email, OpenIdClaimTypes.Email},
-            {ClaimTypes.Gender, OpenIdClaimTypes.Gender},
-            {ClaimTypes.DateOfBirth, OpenIdClaimTypes.BirthDate},
-            {ClaimTypes.Locality, OpenIdClaimTypes.Locale},
-            {ClaimTypes.HomePhone, OpenIdClaimTypes.PhoneNumber},
-            {ClaimTypes.MobilePhone, OpenIdClaimTypes.PhoneNumberVerified},
-            {ClaimTypes.StreetAddress, OpenIdClaimTypes.Address},
-            {ClaimTypes.Role, OpenIdClaimTypes.Role}
-        };
-    }
+    public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new()
+    {
+        {ClaimTypes.Name, OpenIdClaimTypes.Name},
+        {ClaimTypes.GivenName, OpenIdClaimTypes.GivenName},
+        {ClaimTypes.Webpage, OpenIdClaimTypes.WebSite},
+        {ClaimTypes.Email, OpenIdClaimTypes.Email},
+        {ClaimTypes.Gender, OpenIdClaimTypes.Gender},
+        {ClaimTypes.DateOfBirth, OpenIdClaimTypes.BirthDate},
+        {ClaimTypes.Locality, OpenIdClaimTypes.Locale},
+        {ClaimTypes.HomePhone, OpenIdClaimTypes.PhoneNumber},
+        {ClaimTypes.MobilePhone, OpenIdClaimTypes.PhoneNumberVerified},
+        {ClaimTypes.StreetAddress, OpenIdClaimTypes.Address},
+        {ClaimTypes.Role, OpenIdClaimTypes.Role}
+    };
 }

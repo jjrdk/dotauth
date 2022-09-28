@@ -12,63 +12,62 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client
+namespace SimpleAuth.Client;
+
+using SimpleAuth.Shared.Responses;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+/// <summary>
+/// Defines the revoke token request.
+/// </summary>
+/// <seealso cref="IEnumerable{KeyValuePair}" />
+public sealed record RevokeTokenRequest : IEnumerable<KeyValuePair<string?, string?>>
 {
-    using SimpleAuth.Shared.Responses;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
+    private readonly Dictionary<string, string> _form;
+
+    private RevokeTokenRequest(Dictionary<string, string> form)
+    {
+        _form = form;
+    }
 
     /// <summary>
-    /// Defines the revoke token request.
+    /// Creates the request.
     /// </summary>
-    /// <seealso cref="IEnumerable{KeyValuePair}" />
-    public record RevokeTokenRequest : IEnumerable<KeyValuePair<string?, string?>>
+    /// <param name="tokenResponse">The token response.</param>
+    /// <returns></returns>
+    public static RevokeTokenRequest Create(GrantedTokenResponse tokenResponse)
     {
-        private readonly Dictionary<string, string> _form;
+        return Create(tokenResponse.AccessToken, tokenResponse.TokenType);
+    }
 
-        private RevokeTokenRequest(Dictionary<string, string> form)
+    /// <summary>
+    /// Creates the request.
+    /// </summary>
+    /// <param name="token">The token.</param>
+    /// <param name="tokenType">Type of the token.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">token</exception>
+    public static RevokeTokenRequest Create(string token, string tokenType)
+    {
+        var dict = new Dictionary<string, string>
         {
-            _form = form;
-        }
+            {"token", token},
+            {"token_type_hint", tokenType}
+        };
+        return new RevokeTokenRequest(dict);
+    }
 
-        /// <summary>
-        /// Creates the request.
-        /// </summary>
-        /// <param name="tokenResponse">The token response.</param>
-        /// <returns></returns>
-        public static RevokeTokenRequest Create(GrantedTokenResponse tokenResponse)
-        {
-            return Create(tokenResponse.AccessToken, tokenResponse.TokenType);
-        }
+    /// <inheritdoc />
+    public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
+    {
+        return _form.GetEnumerator();
+    }
 
-        /// <summary>
-        /// Creates the request.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="tokenType">Type of the token.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">token</exception>
-        public static RevokeTokenRequest Create(string token, string tokenType)
-        {
-            var dict = new Dictionary<string, string>
-            {
-                {"token", token},
-                {"token_type_hint", tokenType}
-            };
-            return new RevokeTokenRequest(dict);
-        }
-
-        /// <inheritdoc />
-        public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
-        {
-            return _form.GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+    /// <inheritdoc />
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

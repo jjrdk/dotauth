@@ -12,61 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client
+namespace SimpleAuth.Client;
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+/// <summary>
+/// Defines the introspection request.
+/// </summary>
+/// <seealso cref="IEnumerable{KeyValuePair}" />
+public sealed record IntrospectionRequest : IEnumerable<KeyValuePair<string?, string?>>
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
+    private readonly Dictionary<string, string> _form;
+
+    private IntrospectionRequest(Dictionary<string, string> form, string patToken)
+    {
+        PatToken = patToken;
+        _form = form;
+    }
 
     /// <summary>
-    /// Defines the introspection request.
+    /// Gets the PAT token of the request.
     /// </summary>
-    /// <seealso cref="IEnumerable{KeyValuePair}" />
-    public record IntrospectionRequest : IEnumerable<KeyValuePair<string?, string?>>
+    internal string PatToken { get; }
+
+    /// <summary>
+    /// Creates the specified request.
+    /// </summary>
+    /// <param name="rptToken">The rpt token to introspect.</param>
+    /// <param name="tokenType">Type of the rptToken.</param>
+    /// <param name="patToken">The PAT authorization token for the request.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">rptToken</exception>
+    public static IntrospectionRequest Create(string rptToken, string tokenType, string patToken)
     {
-        private readonly Dictionary<string, string> _form;
-
-        private IntrospectionRequest(Dictionary<string, string> form, string patToken)
+        if (string.IsNullOrWhiteSpace(rptToken))
         {
-            PatToken = patToken;
-            _form = form;
+            throw new ArgumentNullException(nameof(rptToken));
         }
 
-        /// <summary>
-        /// Gets the PAT token of the request.
-        /// </summary>
-        internal string PatToken { get; }
+        var dict = new Dictionary<string, string> { { "token", rptToken }, { "token_type_hint", tokenType } };
 
-        /// <summary>
-        /// Creates the specified request.
-        /// </summary>
-        /// <param name="rptToken">The rpt token to introspect.</param>
-        /// <param name="tokenType">Type of the rptToken.</param>
-        /// <param name="patToken">The PAT authorization token for the request.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">rptToken</exception>
-        public static IntrospectionRequest Create(string rptToken, string tokenType, string patToken)
-        {
-            if (string.IsNullOrWhiteSpace(rptToken))
-            {
-                throw new ArgumentNullException(nameof(rptToken));
-            }
+        return new IntrospectionRequest(dict, patToken);
+    }
 
-            var dict = new Dictionary<string, string> { { "token", rptToken }, { "token_type_hint", tokenType } };
+    /// <inheritdoc />
+    public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
+    {
+        return _form.GetEnumerator();
+    }
 
-            return new IntrospectionRequest(dict, patToken);
-        }
-
-        /// <inheritdoc />
-        public IEnumerator<KeyValuePair<string?, string?>> GetEnumerator()
-        {
-            return _form.GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+    /// <inheritdoc />
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

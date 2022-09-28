@@ -12,35 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Requests
+namespace SimpleAuth.Shared.Requests;
+
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the add permission request.
+/// </summary>
+[DataContract]
+public sealed record PermissionRequest
 {
-    using System.Runtime.Serialization;
+    /// <summary>
+    /// Gets or sets the resource set identifier.
+    /// </summary>
+    /// <value>
+    /// The resource set identifier.
+    /// </value>
+    [DataMember(Name = "resource_set_id")]
+    public string? ResourceSetId { get; set; }
 
     /// <summary>
-    /// Defines the add permission request.
+    /// Gets or sets the requested scopes.
     /// </summary>
-    [DataContract]
-    public record PermissionRequest
-    {
-        /// <summary>
-        /// Gets or sets the resource set identifier.
-        /// </summary>
-        /// <value>
-        /// The resource set identifier.
-        /// </value>
-        [DataMember(Name = "resource_set_id")]
-        public string? ResourceSetId { get; set; }
+    [DataMember(Name = "scopes")]
+    public string[]? Scopes { get; set; }
 
-        /// <summary>
-        /// Gets or sets the requested scopes.
-        /// </summary>
-        [DataMember(Name = "scopes")]
-        public string[]? Scopes { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id token of the ticket requester.
-        /// </summary>
-        [DataMember(Name = "id_token")]
-        public string? IdToken { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the id token of the ticket requester.
+    /// </summary>
+    [DataMember(Name = "id_token")]
+    public string? IdToken { get; set; }
 }

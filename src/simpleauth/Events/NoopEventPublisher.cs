@@ -1,17 +1,16 @@
-﻿namespace SimpleAuth.Events
-{
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared;
+﻿namespace SimpleAuth.Events;
 
-    /// <summary>
-    /// Defines the default event publisher.
-    /// </summary>
-    public class NoopEventPublisher : IEventPublisher
+using System.Threading.Tasks;
+using SimpleAuth.Shared;
+
+/// <summary>
+/// Defines the default event publisher.
+/// </summary>
+public sealed class NoopEventPublisher : IEventPublisher
+{
+    /// <inheritdoc />
+    public Task Publish<T>(T evt) where T : Event
     {
-        /// <inheritdoc />
-        public Task Publish<T>(T evt) where T : Event
-        {
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

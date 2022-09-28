@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses
-{
-    using System;
-    using System.Runtime.Serialization;
+namespace SimpleAuth.Shared.Responses;
 
+using System;
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the OAuth introspection response.
+/// </summary>
+public sealed record OauthIntrospectionResponse : IntrospectionResponse
+{
     /// <summary>
-    /// Defines the OAuth introspection response.
+    /// Gets or sets a list of scopes
     /// </summary>
-    public record OauthIntrospectionResponse : IntrospectionResponse
-    {
-        /// <summary>
-        /// Gets or sets a list of scopes
-        /// </summary>
-        [DataMember(Name = "scope")]
-        public string[] Scope { get; set; } = Array.Empty<string>();
-    }
+    [DataMember(Name = "scope")]
+    public string[] Scope { get; set; } = Array.Empty<string>();
 }

@@ -1,29 +1,28 @@
-﻿namespace SimpleAuth.Shared.Requests
+﻿namespace SimpleAuth.Shared.Requests;
+
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the request to update a resource owner password.
+/// </summary>
+[DataContract]
+public sealed record UpdateResourceOwnerPasswordRequest
 {
-    using System.Runtime.Serialization;
+    /// <summary>
+    /// Gets or sets the subject.
+    /// </summary>
+    /// <value>
+    /// The login.
+    /// </value>
+    [DataMember(Name = "sub")]
+    public string? Subject { get; set; }
 
     /// <summary>
-    /// Defines the request to update a resource owner password.
+    /// Gets or sets the password.
     /// </summary>
-    [DataContract]
-    public record UpdateResourceOwnerPasswordRequest
-    {
-        /// <summary>
-        /// Gets or sets the subject.
-        /// </summary>
-        /// <value>
-        /// The login.
-        /// </value>
-        [DataMember(Name = "sub")]
-        public string? Subject { get; set; }
-
-        /// <summary>
-        /// Gets or sets the password.
-        /// </summary>
-        /// <value>
-        /// The password.
-        /// </value>
-        [DataMember(Name = "password")]
-        public string? Password { get; set; }
-    }
+    /// <value>
+    /// The password.
+    /// </value>
+    [DataMember(Name = "password")]
+    public string? Password { get; set; }
 }

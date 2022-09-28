@@ -12,58 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using System;
+using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
+using SimpleAuth.Authenticate;
+using SimpleAuth.Parameters;
+using SimpleAuth.Shared;
+
+internal static class AuthenticationHeaderValueExtensions
 {
-    using System;
-    using System.Net.Http.Headers;
-    using System.Security.Cryptography.X509Certificates;
-    using SimpleAuth.Authenticate;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared;
-
-    internal static class AuthenticationHeaderValueExtensions
+    public static AuthenticateInstruction GetAuthenticateInstruction(
+        this AuthenticationHeaderValue? authenticationHeaderValue,
+        GrantTypeParameter? grantTypeParameter,
+        X509Certificate2? certificate = null)
     {
-        public static AuthenticateInstruction GetAuthenticateInstruction(
-            this AuthenticationHeaderValue? authenticationHeaderValue,
-            GrantTypeParameter? grantTypeParameter,
-            X509Certificate2? certificate = null)
+        var result = grantTypeParameter == null
+            ? new AuthenticateInstruction { Certificate = certificate }
+            : new AuthenticateInstruction
+            {
+                ClientAssertion = grantTypeParameter.ClientAssertion,
+                ClientAssertionType = grantTypeParameter.ClientAssertionType,
+                ClientIdFromHttpRequestBody = grantTypeParameter.ClientId,
+                ClientSecretFromHttpRequestBody = grantTypeParameter.ClientSecret,
+                Certificate = certificate
+            };
+        if (authenticationHeaderValue == null)
         {
-            var result = grantTypeParameter == null
-                ? new AuthenticateInstruction { Certificate = certificate }
-                : new AuthenticateInstruction
-                {
-                    ClientAssertion = grantTypeParameter.ClientAssertion,
-                    ClientAssertionType = grantTypeParameter.ClientAssertionType,
-                    ClientIdFromHttpRequestBody = grantTypeParameter.ClientId,
-                    ClientSecretFromHttpRequestBody = grantTypeParameter.ClientSecret,
-                    Certificate = certificate
-                };
-            if (authenticationHeaderValue == null)
-            {
-                return result;
-            }
-            if (!string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter) && string.Equals(authenticationHeaderValue.Scheme, "Basic", StringComparison.OrdinalIgnoreCase))
-            {
-                var parameters = GetParameters(authenticationHeaderValue.Parameter);
-                if (parameters.Length == 2)
-                {
-                    result.ClientIdFromAuthorizationHeader = parameters[0];
-                    result.ClientSecretFromAuthorizationHeader = parameters[1];
-                }
-            }
-
             return result;
         }
-
-        private static string[] GetParameters(string authorizationHeaderValue)
+        if (!string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter) && string.Equals(authenticationHeaderValue.Scheme, "Basic", StringComparison.OrdinalIgnoreCase))
         {
-            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
+            var parameters = GetParameters(authenticationHeaderValue.Parameter);
+            if (parameters.Length == 2)
             {
-                return Array.Empty<string>();
+                result.ClientIdFromAuthorizationHeader = parameters[0];
+                result.ClientSecretFromAuthorizationHeader = parameters[1];
             }
-
-            var decodedParameter = authorizationHeaderValue.Base64Decode();
-            return decodedParameter.Split(':');
         }
+
+        return result;
+    }
+
+    private static string[] GetParameters(string authorizationHeaderValue)
+    {
+        if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
+        {
+            return Array.Empty<string>();
+        }
+
+        var decodedParameter = authorizationHeaderValue.Base64Decode();
+        return decodedParameter.Split(':');
     }
 }

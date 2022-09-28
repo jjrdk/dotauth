@@ -1,72 +1,71 @@
-﻿namespace SimpleAuth.Sms
+﻿namespace SimpleAuth.Sms;
+
+using Amazon;
+using Amazon.Runtime;
+using Amazon.SimpleNotificationService;
+using Amazon.SimpleNotificationService.Model;
+using System;
+using System.Threading.Tasks;
+
+/// <summary>
+/// Defines the AWS SMS client.
+/// </summary>
+/// <seealso cref="ISmsClient" />
+public sealed class AwsSmsClient : ISmsClient
 {
-    using Amazon;
-    using Amazon.Runtime;
-    using Amazon.SimpleNotificationService;
-    using Amazon.SimpleNotificationService.Model;
-    using System;
-    using System.Threading.Tasks;
+    private readonly string _sender;
+    private readonly AmazonSimpleNotificationServiceClient _client;
 
     /// <summary>
-    /// Defines the AWS SMS client.
+    /// Initializes a new instance of the <see cref="AwsSmsClient"/> class.
     /// </summary>
-    /// <seealso cref="ISmsClient" />
-    public class AwsSmsClient : ISmsClient
+    /// <param name="credentials">The credentials.</param>
+    /// <param name="region">The region.</param>
+    /// <param name="sender">The sender.</param>
+    public AwsSmsClient(AWSCredentials credentials, RegionEndpoint region, string sender)
     {
-        private readonly string _sender;
-        private readonly AmazonSimpleNotificationServiceClient _client;
+        _client = new AmazonSimpleNotificationServiceClient(credentials, region);
+        _sender = sender;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AwsSmsClient"/> class.
-        /// </summary>
-        /// <param name="credentials">The credentials.</param>
-        /// <param name="region">The region.</param>
-        /// <param name="sender">The sender.</param>
-        public AwsSmsClient(AWSCredentials credentials, RegionEndpoint region, string sender)
+    /// <summary>
+    /// Sends the message.
+    /// </summary>
+    /// <param name="toPhoneNumber">To phone number.</param>
+    /// <param name="message">The message.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">
+    /// toPhoneNumber
+    /// or
+    /// message
+    /// </exception>
+    public async Task<(bool, string?)> SendMessage(string toPhoneNumber, string message)
+    {
+        if (string.IsNullOrWhiteSpace(toPhoneNumber))
         {
-            _client = new AmazonSimpleNotificationServiceClient(credentials, region);
-            _sender = sender;
+            throw new ArgumentException(nameof(toPhoneNumber));
         }
 
-        /// <summary>
-        /// Sends the message.
-        /// </summary>
-        /// <param name="toPhoneNumber">To phone number.</param>
-        /// <param name="message">The message.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException">
-        /// toPhoneNumber
-        /// or
-        /// message
-        /// </exception>
-        public async Task<(bool, string?)> SendMessage(string toPhoneNumber, string message)
+        if (string.IsNullOrWhiteSpace(message))
         {
-            if (string.IsNullOrWhiteSpace(toPhoneNumber))
-            {
-                throw new ArgumentException(nameof(toPhoneNumber));
-            }
-
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                throw new ArgumentException(nameof(message));
-            }
-
-            var pubRequest = new PublishRequest
-            {
-                Message = message,
-                PhoneNumber = toPhoneNumber,
-                MessageAttributes =
-                {
-                    ["AWS.SNS.SMS.SenderID"] =
-                        new MessageAttributeValue {StringValue = _sender, DataType = "String"},
-                    ["AWS.SNS.SMS.SMSType"] =
-                        new MessageAttributeValue {StringValue = "Transactional", DataType = "String"}
-                }
-            };
-
-            var pubResponse = await _client.PublishAsync(pubRequest).ConfigureAwait(false);
-
-            return ((int) pubResponse.HttpStatusCode < 400, pubResponse.MessageId);
+            throw new ArgumentException(nameof(message));
         }
+
+        var pubRequest = new PublishRequest
+        {
+            Message = message,
+            PhoneNumber = toPhoneNumber,
+            MessageAttributes =
+            {
+                ["AWS.SNS.SMS.SenderID"] =
+                    new MessageAttributeValue {StringValue = _sender, DataType = "String"},
+                ["AWS.SNS.SMS.SMSType"] =
+                    new MessageAttributeValue {StringValue = "Transactional", DataType = "String"}
+            }
+        };
+
+        var pubResponse = await _client.PublishAsync(pubRequest).ConfigureAwait(false);
+
+        return ((int) pubResponse.HttpStatusCode < 400, pubResponse.MessageId);
     }
 }

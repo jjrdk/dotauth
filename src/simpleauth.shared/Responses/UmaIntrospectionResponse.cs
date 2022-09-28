@@ -1,9 +1,8 @@
-﻿namespace SimpleAuth.Shared.Responses
+﻿namespace SimpleAuth.Shared.Responses;
+
+/// <summary>
+/// Defines the UMA introspection response.
+/// </summary>
+public sealed record UmaIntrospectionResponse : IntrospectionResponse
 {
-    /// <summary>
-    /// Defines the UMA introspection response.
-    /// </summary>
-    public record UmaIntrospectionResponse : IntrospectionResponse
-    {
-    }
 }

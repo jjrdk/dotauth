@@ -12,46 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests
+namespace SimpleAuth.Server.Tests;
+
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Xunit.Abstractions;
+
+public sealed class TestUmaServer : IDisposable
 {
-    using System;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.TestHost;
-    using Xunit.Abstractions;
+    public TestServer Server { get; }
+    public Func<HttpClient> Client { get; }
+    public SharedUmaContext SharedUmaCtx { get; }
 
-    public class TestUmaServer : IDisposable
+    public TestUmaServer(ITestOutputHelper outputHelper)
     {
-        public TestServer Server { get; }
-        public Func<HttpClient> Client { get; }
-        public SharedUmaContext SharedUmaCtx { get; }
-
-        public TestUmaServer(ITestOutputHelper outputHelper)
-        {
-            SharedUmaCtx = new SharedUmaContext();
-            var startup = new FakeUmaStartup(outputHelper);
-            Server = new TestServer(new WebHostBuilder()
-                .UseUrls("http://localhost:5000")
-                .ConfigureServices(services =>
-                {
-                    startup.ConfigureServices(services);
-                })
-                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).Assembly.FullName)
-                .Configure(startup.Configure));
-            Client = () =>
+        SharedUmaCtx = new SharedUmaContext();
+        var startup = new FakeUmaStartup(outputHelper);
+        Server = new TestServer(new WebHostBuilder()
+            .UseUrls("http://localhost:5000")
+            .ConfigureServices(services =>
             {
-                var c = Server.CreateClient();
-                c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                return c;
-            };
-        }
-
-        public void Dispose()
+                startup.ConfigureServices(services);
+            })
+            .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).Assembly.FullName)
+            .Configure(startup.Configure));
+        Client = () =>
         {
-            GC.SuppressFinalize(this);
-            Server.Dispose();
-            Client?.Invoke()?.Dispose();
-        }
+            var c = Server.CreateClient();
+            c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return c;
+        };
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        Server.Dispose();
+        Client?.Invoke()?.Dispose();
     }
 }

@@ -1,34 +1,33 @@
-﻿namespace SimpleAuth.Results
+﻿namespace SimpleAuth.Results;
+
+/// <summary>
+/// Defines the types of action results.
+/// </summary>
+public enum ActionResultType
 {
+
     /// <summary>
-    /// Defines the types of action results.
+    /// None
     /// </summary>
-    public enum ActionResultType
-    {
+    None = 0,
 
-        /// <summary>
-        /// None
-        /// </summary>
-        None = 0,
+    /// <summary>
+    /// Redirect to action
+    /// </summary>
+    RedirectToAction = 1,
 
-        /// <summary>
-        /// Redirect to action
-        /// </summary>
-        RedirectToAction = 1,
+    /// <summary>
+    /// Redirect to call back URL
+    /// </summary>
+    RedirectToCallBackUrl = 2,
 
-        /// <summary>
-        /// Redirect to call back URL
-        /// </summary>
-        RedirectToCallBackUrl = 2,
+    /// <summary>
+    /// Output
+    /// </summary>
+    Output = 3,
 
-        /// <summary>
-        /// Output
-        /// </summary>
-        Output = 3,
-
-        /// <summary>
-        /// Bad request
-        /// </summary>
-        BadRequest = 4
-    }
+    /// <summary>
+    /// Bad request
+    /// </summary>
+    BadRequest = 4
 }

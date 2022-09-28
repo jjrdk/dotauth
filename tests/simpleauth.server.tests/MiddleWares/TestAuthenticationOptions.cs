@@ -1,9 +1,8 @@
-﻿namespace SimpleAuth.Server.Tests.MiddleWares
+﻿namespace SimpleAuth.Server.Tests.MiddleWares;
+
+using Microsoft.AspNetCore.Authentication;
+
+public sealed class TestAuthenticationOptions : AuthenticationSchemeOptions
 {
-    using Microsoft.AspNetCore.Authentication;
 
-    public class TestAuthenticationOptions : AuthenticationSchemeOptions
-    {
-
-    }
 }

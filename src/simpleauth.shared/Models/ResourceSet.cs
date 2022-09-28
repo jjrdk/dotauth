@@ -12,69 +12,68 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Models
+namespace SimpleAuth.Shared.Models;
+
+using System;
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the update resource set request.
+/// </summary>
+[DataContract]
+public record ResourceSet
 {
-    using System;
-    using System.Runtime.Serialization;
+    /// <summary>
+    /// Gets or sets the id of the resource set.
+    /// </summary>
+    [DataMember(Name = "_id")]
+    public string Id { get; set; } = null!;
 
     /// <summary>
-    /// Defines the update resource set request.
+    /// Gets or sets the name.
     /// </summary>
-    [DataContract]
-    public record ResourceSet
-    {
-        /// <summary>
-        /// Gets or sets the id of the resource set.
-        /// </summary>
-        [DataMember(Name = "_id")]
-        public string Id { get; set; } = null!;
+    /// <value>
+    /// The name.
+    /// </value>
+    [DataMember(Name = "name")]
+    public string Name { get; set; } = "";
 
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        [DataMember(Name = "name")]
-        public string Name { get; set; } = "";
+    /// <summary>
+    /// Gets or sets the resource description.
+    /// </summary>
+    [DataMember(Name = "description")]
+    public string Description { get; set; } = "";
 
-        /// <summary>
-        /// Gets or sets the resource description.
-        /// </summary>
-        [DataMember(Name = "description")]
-        public string Description { get; set; } = "";
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    /// <value>
+    /// The type.
+    /// </value>
+    [DataMember(Name = "type")]
+    public string Type { get; set; } = "";
 
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        /// <value>
-        /// The type.
-        /// </value>
-        [DataMember(Name = "type")]
-        public string Type { get; set; } = "";
+    /// <summary>
+    /// Gets or sets the scopes.
+    /// </summary>
+    /// <value>
+    /// The scopes.
+    /// </value>
+    [DataMember(Name = "resource_scopes")]
+    public string[] Scopes { get; set; } = Array.Empty<string>();
 
-        /// <summary>
-        /// Gets or sets the scopes.
-        /// </summary>
-        /// <value>
-        /// The scopes.
-        /// </value>
-        [DataMember(Name = "resource_scopes")]
-        public string[] Scopes { get; set; } = Array.Empty<string>();
+    /// <summary>
+    /// Gets or sets the icon URI.
+    /// </summary>
+    /// <value>
+    /// The icon URI.
+    /// </value>
+    [DataMember(Name = "icon_uri")]
+    public Uri? IconUri { get; set; }
 
-        /// <summary>
-        /// Gets or sets the icon URI.
-        /// </summary>
-        /// <value>
-        /// The icon URI.
-        /// </value>
-        [DataMember(Name = "icon_uri")]
-        public Uri? IconUri { get; set; }
-
-        /// <summary>
-        /// Gets or sets the authorization policies for the resource.
-        /// </summary>
-        [DataMember(Name = "authorization_policies")]
-        public PolicyRule[] AuthorizationPolicies { get; set; } = Array.Empty<PolicyRule>();
-    }
+    /// <summary>
+    /// Gets or sets the authorization policies for the resource.
+    /// </summary>
+    [DataMember(Name = "authorization_policies")]
+    public PolicyRule[] AuthorizationPolicies { get; set; } = Array.Empty<PolicyRule>();
 }

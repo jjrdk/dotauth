@@ -12,53 +12,52 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Parameters;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+
+internal static class ConsentHelper
 {
-    using System;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-
-    internal static class ConsentHelper
+    public static async Task<Consent?> GetConfirmedConsents(
+        this IConsentRepository consentRepository,
+        string subject,
+        AuthorizationParameter authorizationParameter,
+        CancellationToken cancellationToken)
     {
-        public static async Task<Consent?> GetConfirmedConsents(
-            this IConsentRepository consentRepository,
-            string subject,
-            AuthorizationParameter authorizationParameter,
-            CancellationToken cancellationToken)
+        var consents =
+            (await consentRepository.GetConsentsForGivenUser(subject, cancellationToken).ConfigureAwait(false))
+            ?.ToArray()
+            ?? Array.Empty<Consent>();
+        Consent? confirmedConsent = null;
+        if (consents.Length > 0)
         {
-            var consents =
-                (await consentRepository.GetConsentsForGivenUser(subject, cancellationToken).ConfigureAwait(false))
-                ?.ToArray()
-                ?? Array.Empty<Consent>();
-            Consent? confirmedConsent = null;
-            if (consents.Length > 0)
+            var claimsParameter = authorizationParameter.Claims;
+            if (claimsParameter.IsAnyUserInfoClaimParameter() || claimsParameter.IsAnyIdentityTokenClaimParameter())
             {
-                var claimsParameter = authorizationParameter.Claims;
-                if (claimsParameter.IsAnyUserInfoClaimParameter() || claimsParameter.IsAnyIdentityTokenClaimParameter())
-                {
-                    var expectedClaims = claimsParameter.GetClaimNames();
-                    confirmedConsent = consents.FirstOrDefault(
-                        c => c.ClientId == authorizationParameter.ClientId
-                             && c.Claims.Length > 0
-                             && expectedClaims.Length == c.Claims.Length
-                             && expectedClaims.All(cl => c.Claims.Contains(cl)));
-                }
-                else
-                {
-                    var scopeNames = authorizationParameter.Scope.ParseScopes();
-                    confirmedConsent = consents.FirstOrDefault(
-                        c => c.ClientId == authorizationParameter.ClientId
-                             && c.GrantedScopes.Length > 0
-                             && scopeNames.Length == c.GrantedScopes.Length
-                             && c.GrantedScopes.All(g => scopeNames.Contains(g)));
-                }
+                var expectedClaims = claimsParameter.GetClaimNames();
+                confirmedConsent = consents.FirstOrDefault(
+                    c => c.ClientId == authorizationParameter.ClientId
+                         && c.Claims.Length > 0
+                         && expectedClaims.Length == c.Claims.Length
+                         && expectedClaims.All(cl => c.Claims.Contains(cl)));
             }
-
-            return confirmedConsent;
+            else
+            {
+                var scopeNames = authorizationParameter.Scope.ParseScopes();
+                confirmedConsent = consents.FirstOrDefault(
+                    c => c.ClientId == authorizationParameter.ClientId
+                         && c.GrantedScopes.Length > 0
+                         && scopeNames.Length == c.GrantedScopes.Length
+                         && c.GrantedScopes.All(g => scopeNames.Contains(g)));
+            }
         }
+
+        return confirmedConsent;
     }
 }

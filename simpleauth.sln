@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Servers", "Servers", "{4E750A65-E3DF-4030-ACC0-C47FBDAA615C}"
 EndProject
@@ -154,7 +154,7 @@ Global
 		{29F320F7-C227-410E-8788-AC8451F67AEA} = {6E546AD0-8248-45A6-AA58-F4FED3C7396F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_PrefixTranslations = False
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}
+		RESX_PrefixTranslations = False
 	EndGlobalSection
 EndGlobal

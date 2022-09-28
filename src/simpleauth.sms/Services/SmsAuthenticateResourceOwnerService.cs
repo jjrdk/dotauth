@@ -1,60 +1,59 @@
-﻿namespace SimpleAuth.Sms.Services
+﻿namespace SimpleAuth.Sms.Services;
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Services;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+
+internal sealed class SmsAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Services;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    private readonly IResourceOwnerRepository _resourceOwnerRepository;
+    private readonly IConfirmationCodeStore _confirmationCodeStore;
 
-    internal sealed class SmsAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
+    public SmsAuthenticateResourceOwnerService(
+        IResourceOwnerRepository resourceOwnerRepository,
+        IConfirmationCodeStore confirmationCodeStore)
     {
-        private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IConfirmationCodeStore _confirmationCodeStore;
+        _resourceOwnerRepository = resourceOwnerRepository;
+        _confirmationCodeStore = confirmationCodeStore;
+    }
 
-        public SmsAuthenticateResourceOwnerService(
-            IResourceOwnerRepository resourceOwnerRepository,
-            IConfirmationCodeStore confirmationCodeStore)
+    public string Amr
+    {
+        get { return SmsConstants.Amr; }
+    }
+
+    public async Task<ResourceOwner?> AuthenticateResourceOwner(
+        string login,
+        string password,
+        CancellationToken cancellationToken)
+    {
+        var confirmationCode =
+            await _confirmationCodeStore.Get(password, login, cancellationToken).ConfigureAwait(false);
+        if (confirmationCode == null || confirmationCode.Subject != login)
         {
-            _resourceOwnerRepository = resourceOwnerRepository;
-            _confirmationCodeStore = confirmationCodeStore;
+            return null;
         }
 
-        public string Amr
+        if (confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn) <= DateTimeOffset.UtcNow)
         {
-            get { return SmsConstants.Amr; }
+            return null;
         }
 
-        public async Task<ResourceOwner?> AuthenticateResourceOwner(
-            string login,
-            string password,
-            CancellationToken cancellationToken)
+        var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(
+                OpenIdClaimTypes.PhoneNumber,
+                login,
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (resourceOwner != null)
         {
-            var confirmationCode =
-                await _confirmationCodeStore.Get(password, login, cancellationToken).ConfigureAwait(false);
-            if (confirmationCode == null || confirmationCode.Subject != login)
-            {
-                return null;
-            }
-
-            if (confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn) <= DateTimeOffset.UtcNow)
-            {
-                return null;
-            }
-
-            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(
-                    OpenIdClaimTypes.PhoneNumber,
-                    login,
-                    cancellationToken)
+            await _confirmationCodeStore.Remove(password, resourceOwner.Subject!, cancellationToken)
                 .ConfigureAwait(false);
-            if (resourceOwner != null)
-            {
-                await _confirmationCodeStore.Remove(password, resourceOwner.Subject!, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-
-            return resourceOwner;
         }
+
+        return resourceOwner;
     }
 }

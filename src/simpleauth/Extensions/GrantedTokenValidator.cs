@@ -12,95 +12,94 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using SimpleAuth.Properties;
+using SimpleAuth.Results;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+
+internal static class GrantedTokenValidator
 {
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Results;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-
-    internal static class GrantedTokenValidator
+    public static async Task<GrantedTokenValidationResult> CheckGrantedToken(this GrantedToken grantedToken, IJwksStore jwksStore, CancellationToken cancellationToken = default)
     {
-        public static async Task<GrantedTokenValidationResult> CheckGrantedToken(this GrantedToken grantedToken, IJwksStore jwksStore, CancellationToken cancellationToken = default)
+        if (grantedToken == null)
         {
-            if (grantedToken == null)
+            return new GrantedTokenValidationResult
             {
-                return new GrantedTokenValidationResult
-                {
-                    MessageErrorCode = ErrorCodes.InvalidToken,
-                    MessageErrorDescription = Strings.TheTokenIsNotValid,
-                    IsValid = false
-                };
-            }
-
-            var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
-            var tokenIsExpired = DateTimeOffset.UtcNow > expirationDateTime;
-            if (tokenIsExpired)
-            {
-                return new GrantedTokenValidationResult
-                {
-                    MessageErrorCode = ErrorCodes.InvalidToken,
-                    MessageErrorDescription = Strings.TheTokenIsExpired,
-                    IsValid = false
-                };
-            }
-
-            var publicKeys = await jwksStore.GetPublicKeys(cancellationToken).ConfigureAwait(false);
-            var handler = new JwtSecurityTokenHandler();
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateActor = false,
-                ValidAudience = grantedToken.ClientId,
-                ValidateIssuer = false,
-                IssuerSigningKeys = publicKeys.Keys
+                MessageErrorCode = ErrorCodes.InvalidToken,
+                MessageErrorDescription = Strings.TheTokenIsNotValid,
+                IsValid = false
             };
-
-            try
-            {
-                handler.ValidateToken(grantedToken.AccessToken, validationParameters, out _);
-
-                return new GrantedTokenValidationResult { IsValid = true };
-            }
-            catch (Exception exception)
-            {
-                return new GrantedTokenValidationResult
-                {
-                    IsValid = false,
-                    MessageErrorCode = exception.Message,
-                    MessageErrorDescription = exception.Message
-                };
-            }
         }
 
-        public static async Task<GrantedToken?> GetValidGrantedToken(
-            this ITokenStore tokenStore,
-            IJwksStore jwksStore,
-            string scopes,
-            string clientId,
-            CancellationToken cancellationToken = default,
-            JwtPayload? idTokenJwsPayload = null,
-            JwtPayload? userInfoJwsPayload = null)
+        var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
+        var tokenIsExpired = DateTimeOffset.UtcNow > expirationDateTime;
+        if (tokenIsExpired)
         {
-            var token = await tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload, cancellationToken)
-                .ConfigureAwait(false);
-            if (token == null)
+            return new GrantedTokenValidationResult
             {
-                return null;
-            }
+                MessageErrorCode = ErrorCodes.InvalidToken,
+                MessageErrorDescription = Strings.TheTokenIsExpired,
+                IsValid = false
+            };
+        }
 
-            if ((await token.CheckGrantedToken(jwksStore, cancellationToken).ConfigureAwait(false)).IsValid)
+        var publicKeys = await jwksStore.GetPublicKeys(cancellationToken).ConfigureAwait(false);
+        var handler = new JwtSecurityTokenHandler();
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateActor = false,
+            ValidAudience = grantedToken.ClientId,
+            ValidateIssuer = false,
+            IssuerSigningKeys = publicKeys.Keys
+        };
+
+        try
+        {
+            handler.ValidateToken(grantedToken.AccessToken, validationParameters, out _);
+
+            return new GrantedTokenValidationResult { IsValid = true };
+        }
+        catch (Exception exception)
+        {
+            return new GrantedTokenValidationResult
             {
-                return token;
-            }
+                IsValid = false,
+                MessageErrorCode = exception.Message,
+                MessageErrorDescription = exception.Message
+            };
+        }
+    }
 
-            await tokenStore.RemoveAccessToken(token.AccessToken, cancellationToken).ConfigureAwait(false);
+    public static async Task<GrantedToken?> GetValidGrantedToken(
+        this ITokenStore tokenStore,
+        IJwksStore jwksStore,
+        string scopes,
+        string clientId,
+        CancellationToken cancellationToken = default,
+        JwtPayload? idTokenJwsPayload = null,
+        JwtPayload? userInfoJwsPayload = null)
+    {
+        var token = await tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload, cancellationToken)
+            .ConfigureAwait(false);
+        if (token == null)
+        {
             return null;
         }
+
+        if ((await token.CheckGrantedToken(jwksStore, cancellationToken).ConfigureAwait(false)).IsValid)
+        {
+            return token;
+        }
+
+        await tokenStore.RemoveAccessToken(token.AccessToken, cancellationToken).ConfigureAwait(false);
+        return null;
     }
 }

@@ -1,19 +1,18 @@
-﻿namespace SimpleAuth.Sms.ViewModels
-{
-    using System.ComponentModel.DataAnnotations;
+﻿namespace SimpleAuth.Sms.ViewModels;
 
+using System.ComponentModel.DataAnnotations;
+
+/// <summary>
+/// Defines the SMS authentication view model.
+/// </summary>
+public sealed class SmsAuthenticationViewModel
+{
     /// <summary>
-    /// Defines the SMS authentication view model.
+    /// Gets or sets the phone number.
     /// </summary>
-    public class SmsAuthenticationViewModel
-    {
-        /// <summary>
-        /// Gets or sets the phone number.
-        /// </summary>
-        /// <value>
-        /// The phone number.
-        /// </value>
-        [Required]
-        public string? PhoneNumber { get; set; }
-    }
+    /// <value>
+    /// The phone number.
+    /// </value>
+    [Required]
+    public string? PhoneNumber { get; set; }
 }

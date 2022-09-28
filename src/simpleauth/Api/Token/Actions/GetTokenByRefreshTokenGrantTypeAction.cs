@@ -12,173 +12,172 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Token.Actions
+namespace SimpleAuth.Api.Token.Actions;
+
+using Authenticate;
+using JwtToken;
+using Parameters;
+using Shared;
+using Shared.Models;
+using SimpleAuth.Extensions;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Repositories;
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Events;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared.Events.OAuth;
+
+internal sealed class GetTokenByRefreshTokenGrantTypeAction
 {
-    using Authenticate;
-    using JwtToken;
-    using Parameters;
-    using Shared;
-    using Shared.Models;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Repositories;
-    using System;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http.Headers;
-    using System.Security.Claims;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Events;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared.Events.OAuth;
+    private readonly IEventPublisher _eventPublisher;
+    private readonly ITokenStore _tokenStore;
+    private readonly IJwksStore _jwksRepository;
+    private readonly IResourceOwnerRepository _resourceOwnerRepository;
+    private readonly IClientStore _clientStore;
+    private readonly AuthenticateClient _authenticateClient;
 
-    internal sealed class GetTokenByRefreshTokenGrantTypeAction
+    public GetTokenByRefreshTokenGrantTypeAction(
+        IEventPublisher eventPublisher,
+        ITokenStore tokenStore,
+        IJwksStore jwksRepository,
+        IResourceOwnerRepository resourceOwnerRepository,
+        IClientStore clientStore)
     {
-        private readonly IEventPublisher _eventPublisher;
-        private readonly ITokenStore _tokenStore;
-        private readonly IJwksStore _jwksRepository;
-        private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IClientStore _clientStore;
-        private readonly AuthenticateClient _authenticateClient;
+        _eventPublisher = eventPublisher;
+        _tokenStore = tokenStore;
+        _jwksRepository = jwksRepository;
+        _resourceOwnerRepository = resourceOwnerRepository;
+        _clientStore = clientStore;
+        _authenticateClient = new AuthenticateClient(clientStore, jwksRepository);
+    }
 
-        public GetTokenByRefreshTokenGrantTypeAction(
-            IEventPublisher eventPublisher,
-            ITokenStore tokenStore,
-            IJwksStore jwksRepository,
-            IResourceOwnerRepository resourceOwnerRepository,
-            IClientStore clientStore)
+    public async Task<Option<GrantedToken>> Execute(
+        RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
+        AuthenticationHeaderValue? authenticationHeaderValue,
+        X509Certificate2? certificate,
+        string issuerName,
+        CancellationToken cancellationToken)
+    {
+        // 1. Try to authenticate the client
+        var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
+            refreshTokenGrantTypeParameter,
+            certificate);
+        var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
+            .ConfigureAwait(false);
+        var client = authResult.Client;
+        if (client == null)
         {
-            _eventPublisher = eventPublisher;
-            _tokenStore = tokenStore;
-            _jwksRepository = jwksRepository;
-            _resourceOwnerRepository = resourceOwnerRepository;
-            _clientStore = clientStore;
-            _authenticateClient = new AuthenticateClient(clientStore, jwksRepository);
+            return new ErrorDetails
+            {
+                Status = HttpStatusCode.BadRequest,
+                Title = ErrorCodes.InvalidClient,
+                Detail = authResult.ErrorMessage!
+            };
         }
 
-        public async Task<Option<GrantedToken>> Execute(
-            RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
-            AuthenticationHeaderValue? authenticationHeaderValue,
-            X509Certificate2? certificate,
-            string issuerName,
-            CancellationToken cancellationToken)
+        // 2. Check client
+        if (client.GrantTypes.All(x => x != GrantTypes.RefreshToken))
         {
-            // 1. Try to authenticate the client
-            var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
-                refreshTokenGrantTypeParameter,
-                certificate);
-            var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
-                .ConfigureAwait(false);
-            var client = authResult.Client;
-            if (client == null)
+            return new ErrorDetails
             {
-                return new ErrorDetails
-                {
-                    Status = HttpStatusCode.BadRequest,
-                    Title = ErrorCodes.InvalidClient,
-                    Detail = authResult.ErrorMessage!
-                };
-            }
-
-            // 2. Check client
-            if (client.GrantTypes.All(x => x != GrantTypes.RefreshToken))
-            {
-                return new ErrorDetails
-                {
-                    Status = HttpStatusCode.BadRequest,
-                    Title = ErrorCodes.InvalidGrant,
-                    Detail = string.Format(
-                        Strings.TheClientDoesntSupportTheGrantType,
-                        client.ClientId,
-                        GrantTypes.RefreshToken)
-                };
-            }
-
-            // 3. Validate parameters
-            var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter, cancellationToken)
-                .ConfigureAwait(false);
-            if (grantedToken?.ClientId != client.ClientId)
-            {
-                return new ErrorDetails
-                {
-                    Status = HttpStatusCode.BadRequest,
-                    Title = ErrorCodes.InvalidGrant,
-                    Detail = Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer
-                };
-            }
-
-            var sub = grantedToken.UserInfoPayLoad?.Sub;
-            var additionalClaims = Array.Empty<Claim>();
-            if (sub != null)
-            {
-                var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
-                additionalClaims = resourceOwner?.Claims
-                                       .Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
-                                       .ToArray()
-                                   ?? Array.Empty<Claim>();
-            }
-
-            // 4. Generate a new access token & insert it
-            var option = await _clientStore.GenerateToken(
-                    _jwksRepository,
-                    grantedToken.ClientId,
-                    grantedToken.Scope.Split(' ', StringSplitOptions.TrimEntries),
-                    issuerName,
-                    cancellationToken,
-                    userInformationPayload: grantedToken.UserInfoPayLoad,
-                    idTokenPayload: grantedToken.IdTokenPayLoad,
-                    additionalClaims)
-                .ConfigureAwait(false);
-            if (option is Option<GrantedToken>.Error e)
-            {
-                return e;
-            }
-            var generatedToken = ((Option<GrantedToken>.Result)option).Item with
-            {
-                ParentTokenId = grantedToken.Id
+                Status = HttpStatusCode.BadRequest,
+                Title = ErrorCodes.InvalidGrant,
+                Detail = string.Format(
+                    Strings.TheClientDoesntSupportTheGrantType,
+                    client.ClientId,
+                    GrantTypes.RefreshToken)
             };
-            // 5. Fill-in the id token
-            if (generatedToken.IdTokenPayLoad != null)
+        }
+
+        // 3. Validate parameters
+        var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter, cancellationToken)
+            .ConfigureAwait(false);
+        if (grantedToken?.ClientId != client.ClientId)
+        {
+            return new ErrorDetails
             {
-                generatedToken = generatedToken with
-                {
-                    IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(
+                Status = HttpStatusCode.BadRequest,
+                Title = ErrorCodes.InvalidGrant,
+                Detail = Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer
+            };
+        }
+
+        var sub = grantedToken.UserInfoPayLoad?.Sub;
+        var additionalClaims = Array.Empty<Claim>();
+        if (sub != null)
+        {
+            var resourceOwner = await _resourceOwnerRepository.Get(sub, cancellationToken).ConfigureAwait(false);
+            additionalClaims = resourceOwner?.Claims
+                                   .Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                                   .ToArray()
+                               ?? Array.Empty<Claim>();
+        }
+
+        // 4. Generate a new access token & insert it
+        var option = await _clientStore.GenerateToken(
+                _jwksRepository,
+                grantedToken.ClientId,
+                grantedToken.Scope.Split(' ', StringSplitOptions.TrimEntries),
+                issuerName,
+                cancellationToken,
+                userInformationPayload: grantedToken.UserInfoPayLoad,
+                idTokenPayload: grantedToken.IdTokenPayLoad,
+                additionalClaims)
+            .ConfigureAwait(false);
+        if (option is Option<GrantedToken>.Error e)
+        {
+            return e;
+        }
+        var generatedToken = ((Option<GrantedToken>.Result)option).Item with
+        {
+            ParentTokenId = grantedToken.Id
+        };
+        // 5. Fill-in the id token
+        if (generatedToken.IdTokenPayLoad != null)
+        {
+            generatedToken = generatedToken with
+            {
+                IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(
                     generatedToken.IdTokenPayLoad,
                     authResult.Client?.TokenLifetime),
-                    IdToken = await _clientStore.GenerateIdToken(
+                IdToken = await _clientStore.GenerateIdToken(
                         generatedToken.ClientId,
                         generatedToken.IdTokenPayLoad,
                         _jwksRepository,
                         cancellationToken)
                     .ConfigureAwait(false)
-                };
-            }
-
-            await _tokenStore.AddToken(generatedToken, cancellationToken).ConfigureAwait(false);
-            await _eventPublisher.Publish(
-                        new TokenGranted(
-                            Id.Create(),
-                            generatedToken.UserInfoPayLoad?.Sub,
-                            generatedToken.ClientId,
-                            generatedToken.Scope,
-                            GrantTypes.RefreshToken,
-                            DateTimeOffset.UtcNow))
-                    .ConfigureAwait(false);
-            return generatedToken;
+            };
         }
 
-        private async Task<GrantedToken?> ValidateParameter(
-            RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
-            CancellationToken cancellationToken)
-        {
-            var grantedToken = refreshTokenGrantTypeParameter.RefreshToken == null
-                ? null
-                : await _tokenStore.GetRefreshToken(refreshTokenGrantTypeParameter.RefreshToken, cancellationToken)
-                    .ConfigureAwait(false);
+        await _tokenStore.AddToken(generatedToken, cancellationToken).ConfigureAwait(false);
+        await _eventPublisher.Publish(
+                new TokenGranted(
+                    Id.Create(),
+                    generatedToken.UserInfoPayLoad?.Sub,
+                    generatedToken.ClientId,
+                    generatedToken.Scope,
+                    GrantTypes.RefreshToken,
+                    DateTimeOffset.UtcNow))
+            .ConfigureAwait(false);
+        return generatedToken;
+    }
 
-            return grantedToken;
-        }
+    private async Task<GrantedToken?> ValidateParameter(
+        RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
+        CancellationToken cancellationToken)
+    {
+        var grantedToken = refreshTokenGrantTypeParameter.RefreshToken == null
+            ? null
+            : await _tokenStore.GetRefreshToken(refreshTokenGrantTypeParameter.RefreshToken, cancellationToken)
+                .ConfigureAwait(false);
+
+        return grantedToken;
     }
 }

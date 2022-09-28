@@ -12,33 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Events.OAuth
+namespace SimpleAuth.Shared.Events.OAuth;
+
+using System;
+
+/// <summary>
+/// Defines the token revoked event.
+/// </summary>
+/// <seealso cref="SimpleAuth.Shared.Event" />
+public sealed record TokenRevoked : Event
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TokenRevoked"/> class.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="token">The revoked token</param>
+    /// <param name="timestamp">The timestamp.</param>
+    public TokenRevoked(string id, string token, DateTimeOffset timestamp) : base(id, timestamp)
+    {
+        Token = token;
+    }
 
     /// <summary>
-    /// Defines the token revoked event.
+    /// Gets the token.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Event" />
-    public record TokenRevoked : Event
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenRevoked"/> class.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="token">The revoked token</param>
-        /// <param name="timestamp">The timestamp.</param>
-        public TokenRevoked(string id, string token, DateTimeOffset timestamp) : base(id, timestamp)
-        {
-            Token = token;
-        }
-
-        /// <summary>
-        /// Gets the token.
-        /// </summary>
-        /// <value>
-        /// The token.
-        /// </value>
-        public string Token { get; }
-    }
+    /// <value>
+    /// The token.
+    /// </value>
+    public string Token { get; }
 }

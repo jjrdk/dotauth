@@ -3,22 +3,18 @@
 	<PropertyGroup>
 		<Description>SimpleAuth Client</Description>
 		<Title>SimpleAuth Client</Title>
-		<TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<AssemblyName>simpleauth.client</AssemblyName>
 		<PackageId>simpleauth.client</PackageId>
 		<RootNamespace>SimpleAuth.Client</RootNamespace>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\net6.0\$(PackageId).xml</DocumentationFile>
+	<PropertyGroup>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
 	</PropertyGroup>
 
 	<Import Project="../../shared.projinfo" />
-
-	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />

@@ -1,37 +1,36 @@
-namespace SimpleAuth.IntegrationTests
+namespace SimpleAuth.IntegrationTests;
+
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using SimpleAuth.Client;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Responses;
+using Xunit;
+
+public sealed class TokenTests : IClassFixture<DbFixture>
 {
-    using System;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using SimpleAuth.Client;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
-    using Xunit;
+    private readonly DbFixture _fixture;
 
-    public class TokenTests : IClassFixture<DbFixture>
+    public TokenTests(DbFixture fixture)
     {
-        private readonly DbFixture _fixture;
+        _fixture = fixture;
+    }
 
-        public TokenTests(DbFixture fixture)
+    [Fact]
+    public async Task CanGetToken()
+    {
+        var client = new TokenClient(
+            TokenCredentials.FromClientCredentials("client", "secret"),
+            () => new HttpClient(),
+            new Uri("http://localhost:8080/.well-known/openid-configuration"));
+        await _fixture.GetUser().ConfigureAwait(false);
+        for (var i = 0; i < 100; i++)
         {
-            _fixture = fixture;
-        }
+            var token = await client.GetToken(TokenRequest.FromPassword("user", "password", new[] { "read" }))
+                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
 
-        [Fact]
-        public async Task CanGetToken()
-        {
-            var client = new TokenClient(
-                TokenCredentials.FromClientCredentials("client", "secret"),
-                () => new HttpClient(),
-                new Uri("http://localhost:8080/.well-known/openid-configuration"));
-            await _fixture.GetUser().ConfigureAwait(false);
-            for (var i = 0; i < 100; i++)
-            {
-                var token = await client.GetToken(TokenRequest.FromPassword("user", "password", new[] { "read" }))
-                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-
-                Assert.NotNull(token.Item);
-            }
+            Assert.NotNull(token.Item);
         }
     }
 }

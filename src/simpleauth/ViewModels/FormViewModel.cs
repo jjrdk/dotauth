@@ -12,36 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.ViewModels
+namespace SimpleAuth.ViewModels;
+
+/// <summary>
+/// Defines the form view model.
+/// </summary>
+public sealed class FormViewModel
 {
     /// <summary>
-    /// Defines the form view model.
+    /// Gets or sets the id token.
     /// </summary>
-    public class FormViewModel
-    {
-        /// <summary>
-        /// Gets or sets the id token.
-        /// </summary>
-        public string? IdToken { get; set; }
+    public string? IdToken { get; set; }
 
-        /// <summary>
-        /// Gets or sets the access token.
-        /// </summary>
-        public string? AccessToken { get; set; }
+    /// <summary>
+    /// Gets or sets the access token.
+    /// </summary>
+    public string? AccessToken { get; set; }
 
-        /// <summary>
-        /// Gets or sets the authorization code.
-        /// </summary>
-        public string? AuthorizationCode { get; set; }
+    /// <summary>
+    /// Gets or sets the authorization code.
+    /// </summary>
+    public string? AuthorizationCode { get; set; }
 
-        /// <summary>
-        /// Gets or sets the state.
-        /// </summary>
-        public string? State { get; set; }
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public string? State { get; set; }
 
-        /// <summary>
-        /// Gets or sets the redirect uri.
-        /// </summary>
-        public string? RedirectUri { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the redirect uri.
+    /// </summary>
+    public string? RedirectUri { get; set; }
 }

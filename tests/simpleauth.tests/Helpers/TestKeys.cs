@@ -1,7 +1,6 @@
-﻿namespace SimpleAuth.Tests.Helpers
+﻿namespace SimpleAuth.Tests.Helpers;
+
+internal static class TestKeys
 {
-    internal static class TestKeys
-    {
-        public const string SecretKey = "verylongsecretkey";
-    }
+    public const string SecretKey = "verylongsecretkey";
 }

@@ -12,63 +12,62 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Models
+namespace SimpleAuth.Shared.Models;
+
+using System;
+
+/// <summary>
+/// Defines the ticket content.
+/// </summary>
+public sealed record Ticket
 {
-    using System;
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
+    /// <value>
+    /// The identifier.
+    /// </value>
+    public string Id { get; set; } = null!;
 
     /// <summary>
-    /// Defines the ticket content.
+    /// Gets or sets the owner of the resource that the ticket relates to.
     /// </summary>
-    public record Ticket
-    {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        public string Id { get; set; } = null!;
+    public string ResourceOwner { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets the owner of the resource that the ticket relates to.
-        /// </summary>
-        public string ResourceOwner { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is authorized by ro.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance is authorized by ro; otherwise, <c>false</c>.
+    /// </value>
+    public bool IsAuthorizedByRo { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is authorized by ro.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is authorized by ro; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsAuthorizedByRo { get; set; }
+    /// <summary>
+    /// Gets or sets the expiration date time.
+    /// </summary>
+    /// <value>
+    /// The expiration date time.
+    /// </value>
+    public DateTimeOffset Expires { get; set; }
 
-        /// <summary>
-        /// Gets or sets the expiration date time.
-        /// </summary>
-        /// <value>
-        /// The expiration date time.
-        /// </value>
-        public DateTimeOffset Expires { get; set; }
+    /// <summary>
+    /// Gets or sets the create date time.
+    /// </summary>
+    /// <value>
+    /// The create date time.
+    /// </value>
+    public DateTimeOffset Created { get; set; }
 
-        /// <summary>
-        /// Gets or sets the create date time.
-        /// </summary>
-        /// <value>
-        /// The create date time.
-        /// </value>
-        public DateTimeOffset Created { get; set; }
+    /// <summary>
+    /// Gets or sets the lines.
+    /// </summary>
+    /// <value>
+    /// The lines.
+    /// </value>
+    public TicketLine[] Lines { get; set; } = Array.Empty<TicketLine>();
 
-        /// <summary>
-        /// Gets or sets the lines.
-        /// </summary>
-        /// <value>
-        /// The lines.
-        /// </value>
-        public TicketLine[] Lines { get; set; } = Array.Empty<TicketLine>();
-
-        /// <summary>
-        /// Gets or sets the claims associated with the requester.
-        /// </summary>
-        public ClaimData[] Requester { get; set; } = Array.Empty<ClaimData>();
-    }
+    /// <summary>
+    /// Gets or sets the claims associated with the requester.
+    /// </summary>
+    public ClaimData[] Requester { get; set; } = Array.Empty<ClaimData>();
 }

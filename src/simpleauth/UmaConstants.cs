@@ -12,33 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth
+namespace SimpleAuth;
+
+internal static class UmaConstants
 {
-    internal static class UmaConstants
+    public static string IdTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#IDToken";
+
+    public static class RptClaims
     {
-        public static string IdTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#IDToken";
+        public const string Ticket = "ticket";
+        //public const string Scopes = "scopes";
+        //public const string ResourceSetId = "resource_id";
+        public const string Permissions = "permissions";
+    }
 
-        public static class RptClaims
-        {
-            public const string Ticket = "ticket";
-            //public const string Scopes = "scopes";
-            //public const string ResourceSetId = "resource_id";
-            public const string Permissions = "permissions";
-        }
+    public static class AddPermissionNames
+    {
+        public const string ResourceSetId = "resource_set_id";
+        public const string Scopes = "scopes";
+    }
 
-        public static class AddPermissionNames
-        {
-            public const string ResourceSetId = "resource_set_id";
-            public const string Scopes = "scopes";
-        }
-
-        public static class RouteValues
-        {
-            public const string Configuration = ".well-known/uma2-configuration";
-            public const string ResourceSet = "resource_set";
-            public const string Permission = "perm";
-            public const string Introspection = "umaintrospect";
-            public const string Token = "token";
-        }
+    public static class RouteValues
+    {
+        public const string Configuration = ".well-known/uma2-configuration";
+        public const string ResourceSet = "resource_set";
+        public const string Permission = "perm";
+        public const string Introspection = "umaintrospect";
+        public const string Token = "token";
     }
 }

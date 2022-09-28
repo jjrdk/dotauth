@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.ViewModels
+namespace SimpleAuth.ViewModels;
+
+/// <summary>
+/// Defines the authorize OpenID view model.
+/// </summary>
+/// <seealso cref="IdProviderAuthorizeViewModel" />
+public class AuthorizeOpenIdViewModel : IdProviderAuthorizeViewModel
 {
     /// <summary>
-    /// Defines the authorize OpenID view model.
+    /// Gets or sets the code.
     /// </summary>
-    /// <seealso cref="SimpleAuth.ViewModels.IdProviderAuthorizeViewModel" />
-    public class AuthorizeOpenIdViewModel : IdProviderAuthorizeViewModel
-    {
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        /// <value>
-        /// The code.
-        /// </value>
-        public string? Code { get; set; }
-    }
+    /// <value>
+    /// The code.
+    /// </value>
+    public string? Code { get; set; }
 }

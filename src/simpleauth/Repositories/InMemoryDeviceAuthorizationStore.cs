@@ -1,71 +1,70 @@
-﻿namespace SimpleAuth.Repositories
+﻿namespace SimpleAuth.Repositories;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+using SimpleAuth.Shared.Requests;
+using SimpleAuth.Shared.Responses;
+
+internal sealed class InMemoryDeviceAuthorizationStore : IDeviceAuthorizationStore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    private readonly List<DeviceAuthorizationData> _requests = new();
 
-    internal sealed class InMemoryDeviceAuthorizationStore : IDeviceAuthorizationStore
+    /// <inheritdoc />
+    public Task<Option<DeviceAuthorizationResponse>> Get(string userCode, CancellationToken cancellationToken = default)
     {
-        private readonly List<DeviceAuthorizationData> _requests = new();
+        var result = _requests.First(x => x.Response.UserCode == userCode);
 
-        /// <inheritdoc />
-        public Task<Option<DeviceAuthorizationResponse>> Get(string userCode, CancellationToken cancellationToken = default)
+        return Task.FromResult<Option<DeviceAuthorizationResponse>>(result.Response);
+    }
+
+    /// <inheritdoc />
+    public Task<Option<DeviceAuthorizationData>> Get(string clientId, string deviceCode, CancellationToken cancellationToken = default)
+    {
+        var result = _requests.First(x => x.ClientId == clientId && x.DeviceCode == deviceCode);
+
+        return Task.FromResult<Option<DeviceAuthorizationData>>(result);
+    }
+
+    /// <inheritdoc />
+    public Task<Option> Approve(string userCode, CancellationToken cancellationToken = default)
+    {
+        var result = _requests.FirstOrDefault(x => x.Response.UserCode == userCode);
+        if (result == null)
         {
-            var result = _requests.First(x => x.Response.UserCode == userCode);
-
-            return Task.FromResult<Option<DeviceAuthorizationResponse>>(result.Response);
+            return Task.FromResult<Option>(
+                new Option.Error(
+                    new ErrorDetails
+                    {
+                        Title = ErrorCodes.InvalidRequest,
+                        Detail = Strings.RequestIsNotValid,
+                        Status = HttpStatusCode.BadRequest
+                    }));
         }
+        result.Approved = true;
 
-        /// <inheritdoc />
-        public Task<Option<DeviceAuthorizationData>> Get(string clientId, string deviceCode, CancellationToken cancellationToken = default)
-        {
-            var result = _requests.First(x => x.ClientId == clientId && x.DeviceCode == deviceCode);
+        return Task.FromResult<Option>(new Option.Success());
+    }
 
-            return Task.FromResult<Option<DeviceAuthorizationData>>(result);
-        }
+    /// <inheritdoc />
+    public Task<Option> Save(DeviceAuthorizationData request, CancellationToken cancellationToken = default)
+    {
+        _requests.Add(request);
+        return Task.FromResult<Option>(new Option.Success());
+    }
 
-        /// <inheritdoc />
-        public Task<Option> Approve(string userCode, CancellationToken cancellationToken = default)
-        {
-            var result = _requests.FirstOrDefault(x => x.Response.UserCode == userCode);
-            if (result == null)
-            {
-                return Task.FromResult<Option>(
-                    new Option.Error(
-                        new ErrorDetails
-                        {
-                            Title = ErrorCodes.InvalidRequest,
-                            Detail = Strings.RequestIsNotValid,
-                            Status = HttpStatusCode.BadRequest
-                        }));
-            }
-            result.Approved = true;
-
-            return Task.FromResult<Option>(new Option.Success());
-        }
-
-        /// <inheritdoc />
-        public Task<Option> Save(DeviceAuthorizationData request, CancellationToken cancellationToken = default)
-        {
-            _requests.Add(request);
-            return Task.FromResult<Option>(new Option.Success());
-        }
-
-        /// <inheritdoc />
-        public Task<Option> Remove(DeviceAuthorizationData authRequest, CancellationToken cancellationToken)
-        {
-            _requests.Remove(authRequest);
-            return Task.FromResult<Option>(new Option.Success());
-        }
+    /// <inheritdoc />
+    public Task<Option> Remove(DeviceAuthorizationData authRequest, CancellationToken cancellationToken)
+    {
+        _requests.Remove(authRequest);
+        return Task.FromResult<Option>(new Option.Success());
     }
 }

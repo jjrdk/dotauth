@@ -1,11 +1,10 @@
-﻿namespace SimpleAuth.Results
+﻿namespace SimpleAuth.Results;
+
+internal sealed record GrantedTokenValidationResult
 {
-    internal record GrantedTokenValidationResult
-    {
-        public bool IsValid { get; init; }
+    public bool IsValid { get; init; }
 
-        public string? MessageErrorCode { get; init; }
+    public string? MessageErrorCode { get; init; }
 
-        public string? MessageErrorDescription { get; init; }
-    }
+    public string? MessageErrorDescription { get; init; }
 }

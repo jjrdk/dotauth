@@ -12,36 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using Microsoft.AspNetCore.DataProtection;
+using Shared;
+using System;
+using System.Text;
+using Newtonsoft.Json;
+
+internal static class DataProtectorExtensions
 {
-    using Microsoft.AspNetCore.DataProtection;
-    using Shared;
-    using System;
-    using System.Text;
-    using Newtonsoft.Json;
-
-    internal static class DataProtectorExtensions
+    public static T Unprotect<T>(this IDataProtector dataProtector, string encoded)
     {
-        public static T Unprotect<T>(this IDataProtector dataProtector, string encoded)
-        {
-            var unprotected = Unprotect(dataProtector, encoded);
-            return JsonConvert.DeserializeObject<T>(unprotected)!;
-        }
+        var unprotected = Unprotect(dataProtector, encoded);
+        return JsonConvert.DeserializeObject<T>(unprotected)!;
+    }
 
-        private static string Unprotect(this IDataProtector dataProtector, string encoded)
-        {
-            var bytes = encoded.Base64DecodeBytes();
-            var unprotectedBytes = dataProtector.Unprotect(bytes);
-            return Encoding.ASCII.GetString(unprotectedBytes);
-        }
+    private static string Unprotect(this IDataProtector dataProtector, string encoded)
+    {
+        var bytes = encoded.Base64DecodeBytes();
+        var unprotectedBytes = dataProtector.Unprotect(bytes);
+        return Encoding.ASCII.GetString(unprotectedBytes);
+    }
 
-        public static string Protect<T>(this IDataProtector dataProtector, T toEncode)
-        {
-            var serialized = JsonConvert.SerializeObject(toEncode);
+    public static string Protect<T>(this IDataProtector dataProtector, T toEncode)
+    {
+        var serialized = JsonConvert.SerializeObject(toEncode);
 
-            var bytes = Encoding.ASCII.GetBytes(serialized);
-            var protectedBytes = dataProtector.Protect(bytes);
-            return Convert.ToBase64String(protectedBytes);
-        }
+        var bytes = Encoding.ASCII.GetBytes(serialized);
+        var protectedBytes = dataProtector.Protect(bytes);
+        return Convert.ToBase64String(protectedBytes);
     }
 }

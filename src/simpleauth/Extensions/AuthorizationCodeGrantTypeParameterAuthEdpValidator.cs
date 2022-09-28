@@ -12,222 +12,221 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Parameters;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+
+internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
 {
-    using System.Linq;
-    using System.Net;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    private readonly IClientStore _clientRepository;
+    private readonly ILogger _logger;
 
-    internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
+    public AuthorizationCodeGrantTypeParameterAuthEdpValidator(IClientStore clientRepository, ILogger logger)
     {
-        private readonly IClientStore _clientRepository;
-        private readonly ILogger _logger;
+        _clientRepository = clientRepository;
+        _logger = logger;
+    }
 
-        public AuthorizationCodeGrantTypeParameterAuthEdpValidator(IClientStore clientRepository, ILogger logger)
+    public async Task<Option<Client>> Validate(
+        AuthorizationParameter parameter,
+        CancellationToken cancellationToken)
+    {
+        // Check the required parameters. Read this RFC : http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+        if (string.IsNullOrWhiteSpace(parameter.Scope))
         {
-            _clientRepository = clientRepository;
-            _logger = logger;
+            var message = string.Format(
+                Strings.MissingParameter,
+                CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName);
+            _logger.LogError(message);
+            return new Option<Client>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                parameter.State);
         }
 
-        public async Task<Option<Client>> Validate(
-            AuthorizationParameter parameter,
-            CancellationToken cancellationToken)
+        if (string.IsNullOrWhiteSpace(parameter.ClientId))
         {
-            // Check the required parameters. Read this RFC : http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
-            if (string.IsNullOrWhiteSpace(parameter.Scope))
-            {
-                var message = string.Format(
-                    Strings.MissingParameter,
-                    CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName);
-                _logger.LogError(message);
-                return new Option<Client>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    parameter.State);
-            }
-
-            if (string.IsNullOrWhiteSpace(parameter.ClientId))
-            {
-                var message = string.Format(
-                    Strings.MissingParameter,
-                    CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName);
-                _logger.LogError(message);
-                return new Option<Client>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    parameter.State);
-            }
-
-            if (parameter.RedirectUrl == null)
-            {
-                var message = string.Format(
-                    Strings.MissingParameter,
-                    CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName);
-                _logger.LogError(message);
-                return new Option<Client>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    parameter.State);
-            }
-
-            if (string.IsNullOrWhiteSpace(parameter.ResponseType))
-            {
-                var message = string.Format(
-                    Strings.MissingParameter,
-                    CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName);
-                _logger.LogError(message);
-                return new Option<Client>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    parameter.State);
-            }
-
-            var validationResult = ValidateResponseTypeParameter(parameter.ResponseType, parameter.State);
-            if (validationResult is Option.Error e)
-            {
-                return new Option<Client>.Error(e.Details, e.State);
-            }
-
-            validationResult = ValidatePromptParameter(parameter.Prompt, parameter.State);
-            if (validationResult is Option.Error e2)
-            {
-                return new Option<Client>.Error(e2.Details, e2.State);
-            }
-
-            // With this instruction
-            // The redirect_uri is considered well-formed according to the RFC-3986
-            var redirectUrlIsCorrect = parameter.RedirectUrl.IsAbsoluteUri;
-            if (!redirectUrlIsCorrect)
-            {
-                var message = Strings.TheRedirectionUriIsNotWellFormed;
-                _logger.LogError(message);
-                return new Option<Client>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    parameter.State);
-            }
-
-            var client = await _clientRepository.GetById(parameter.ClientId, cancellationToken).ConfigureAwait(false);
-            if (client == null)
-            {
-                var message = string.Format(Strings.ClientIsNotValid, parameter.ClientId);
-                _logger.LogError(message);
-                return new Option<Client>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    parameter.State);
-            }
-
-            if (!client.GetRedirectionUrls(parameter.RedirectUrl).Any())
-            {
-                var message = string.Format(Strings.RedirectUrlIsNotValid, parameter.RedirectUrl);
-                _logger.LogError(message);
-                return new Option<Client>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    parameter.State);
-            }
-
-            return new Option<Client>.Result(client);
+            var message = string.Format(
+                Strings.MissingParameter,
+                CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName);
+            _logger.LogError(message);
+            return new Option<Client>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                parameter.State);
         }
 
-        /// <summary>
-        /// Validate the response type parameter.
-        /// Returns an exception if at least one response_type parameter is not supported
-        /// </summary>
-        /// <param name="responseType"></param>
-        /// <param name="state"></param>
-        private Option ValidateResponseTypeParameter(string responseType, string? state)
+        if (parameter.RedirectUrl == null)
         {
-            if (string.IsNullOrWhiteSpace(responseType))
-            {
-                return new Option.Success();
-            }
+            var message = string.Format(
+                Strings.MissingParameter,
+                CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName);
+            _logger.LogError(message);
+            return new Option<Client>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                parameter.State);
+        }
 
-            //var responseTypeNames = Enum.GetNames(typeof(string));
-            var atLeastOneResonseTypeIsNotSupported = responseType.Split(' ')
-                .Any(r => !string.IsNullOrWhiteSpace(r) && !ResponseTypeNames.All.Contains(r));
-            if (atLeastOneResonseTypeIsNotSupported)
-            {
-                var message = Strings.AtLeastOneResponseTypeIsNotSupported;
-                _logger.LogError(message);
-                return new Option.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    state);
-            }
+        if (string.IsNullOrWhiteSpace(parameter.ResponseType))
+        {
+            var message = string.Format(
+                Strings.MissingParameter,
+                CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName);
+            _logger.LogError(message);
+            return new Option<Client>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                parameter.State);
+        }
 
+        var validationResult = ValidateResponseTypeParameter(parameter.ResponseType, parameter.State);
+        if (validationResult is Option.Error e)
+        {
+            return new Option<Client>.Error(e.Details, e.State);
+        }
+
+        validationResult = ValidatePromptParameter(parameter.Prompt, parameter.State);
+        if (validationResult is Option.Error e2)
+        {
+            return new Option<Client>.Error(e2.Details, e2.State);
+        }
+
+        // With this instruction
+        // The redirect_uri is considered well-formed according to the RFC-3986
+        var redirectUrlIsCorrect = parameter.RedirectUrl.IsAbsoluteUri;
+        if (!redirectUrlIsCorrect)
+        {
+            var message = Strings.TheRedirectionUriIsNotWellFormed;
+            _logger.LogError(message);
+            return new Option<Client>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                parameter.State);
+        }
+
+        var client = await _clientRepository.GetById(parameter.ClientId, cancellationToken).ConfigureAwait(false);
+        if (client == null)
+        {
+            var message = string.Format(Strings.ClientIsNotValid, parameter.ClientId);
+            _logger.LogError(message);
+            return new Option<Client>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                parameter.State);
+        }
+
+        if (!client.GetRedirectionUrls(parameter.RedirectUrl).Any())
+        {
+            var message = string.Format(Strings.RedirectUrlIsNotValid, parameter.RedirectUrl);
+            _logger.LogError(message);
+            return new Option<Client>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                parameter.State);
+        }
+
+        return new Option<Client>.Result(client);
+    }
+
+    /// <summary>
+    /// Validate the response type parameter.
+    /// Returns an exception if at least one response_type parameter is not supported
+    /// </summary>
+    /// <param name="responseType"></param>
+    /// <param name="state"></param>
+    private Option ValidateResponseTypeParameter(string responseType, string? state)
+    {
+        if (string.IsNullOrWhiteSpace(responseType))
+        {
             return new Option.Success();
         }
 
-        /// <summary>
-        /// Validate the prompt parameter.
-        /// </summary>
-        /// <param name="prompt"></param>
-        /// <param name="state"></param>
-        private Option ValidatePromptParameter(string? prompt, string? state)
+        //var responseTypeNames = Enum.GetNames(typeof(string));
+        var atLeastOneResonseTypeIsNotSupported = responseType.Split(' ')
+            .Any(r => !string.IsNullOrWhiteSpace(r) && !ResponseTypeNames.All.Contains(r));
+        if (atLeastOneResonseTypeIsNotSupported)
         {
-            if (string.IsNullOrWhiteSpace(prompt))
-            {
-                return new Option.Success();
-            }
+            var message = Strings.AtLeastOneResponseTypeIsNotSupported;
+            _logger.LogError(message);
+            return new Option.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                state);
+        }
 
-            var promptNames = PromptParameters.All(); //Enum.GetNames(typeof(PromptParameter));
-            var atLeastOnePromptIsNotSupported = prompt.Split(' ')
-                .Any(r => !string.IsNullOrWhiteSpace(r) && !promptNames.Contains(r));
-            if (atLeastOnePromptIsNotSupported)
-            {
-                var message = Strings.AtLeastOnePromptIsNotSupported;
-                _logger.LogError(message);
-                return new Option.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    state);
-            }
+        return new Option.Success();
+    }
 
-            var prompts = prompt.ParsePrompts();
-            if (prompts.Contains(PromptParameters.None)
-                && (prompts.Contains(PromptParameters.Login)
-                    || prompts.Contains(PromptParameters.Consent)
-                    || prompts.Contains(PromptParameters.SelectAccount)))
-            {
-                var message = Strings.PromptParameterShouldHaveOnlyNoneValue;
-                _logger.LogError(message);
-                return new Option.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
-                    },
-                    state);
-            }
-
+    /// <summary>
+    /// Validate the prompt parameter.
+    /// </summary>
+    /// <param name="prompt"></param>
+    /// <param name="state"></param>
+    private Option ValidatePromptParameter(string? prompt, string? state)
+    {
+        if (string.IsNullOrWhiteSpace(prompt))
+        {
             return new Option.Success();
         }
+
+        var promptNames = PromptParameters.All(); //Enum.GetNames(typeof(PromptParameter));
+        var atLeastOnePromptIsNotSupported = prompt.Split(' ')
+            .Any(r => !string.IsNullOrWhiteSpace(r) && !promptNames.Contains(r));
+        if (atLeastOnePromptIsNotSupported)
+        {
+            var message = Strings.AtLeastOnePromptIsNotSupported;
+            _logger.LogError(message);
+            return new Option.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                state);
+        }
+
+        var prompts = prompt.ParsePrompts();
+        if (prompts.Contains(PromptParameters.None)
+            && (prompts.Contains(PromptParameters.Login)
+                || prompts.Contains(PromptParameters.Consent)
+                || prompts.Contains(PromptParameters.SelectAccount)))
+        {
+            var message = Strings.PromptParameterShouldHaveOnlyNoneValue;
+            _logger.LogError(message);
+            return new Option.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                },
+                state);
+        }
+
+        return new Option.Success();
     }
 }

@@ -12,40 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Repositories
+namespace SimpleAuth.Shared.Repositories;
+
+using System.Threading;
+using System.Threading.Tasks;
+using Models;
+
+/// <summary>
+/// Defines the scope repository interface.
+/// </summary>
+/// <seealso cref="SimpleAuth.Shared.Repositories.IScopeStore" />
+public interface IScopeRepository : IScopeStore
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Models;
+    /// <summary>
+    /// Inserts the specified scope.
+    /// </summary>
+    /// <param name="scope">The scope.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns></returns>
+    Task<bool> Insert(Scope scope, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Defines the scope repository interface.
+    /// Deletes the specified scope.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IScopeStore" />
-    public interface IScopeRepository : IScopeStore
-    {
-        /// <summary>
-        /// Inserts the specified scope.
-        /// </summary>
-        /// <param name="scope">The scope.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<bool> Insert(Scope scope, CancellationToken cancellationToken);
+    /// <param name="scope">The scope.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns></returns>
+    Task<bool> Delete(Scope scope, CancellationToken cancellationToken);
 
-        /// <summary>
-        /// Deletes the specified scope.
-        /// </summary>
-        /// <param name="scope">The scope.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<bool> Delete(Scope scope, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Updates the specified scope.
-        /// </summary>
-        /// <param name="scope">The scope.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<bool> Update(Scope scope, CancellationToken cancellationToken);
-    }
+    /// <summary>
+    /// Updates the specified scope.
+    /// </summary>
+    /// <param name="scope">The scope.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns></returns>
+    Task<bool> Update(Scope scope, CancellationToken cancellationToken);
 }

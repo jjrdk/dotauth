@@ -1,141 +1,140 @@
-﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests.Features
+﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests.Features;
+
+using System;
+using System.Threading;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+
+using SimpleAuth.Client;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Requests;
+using SimpleAuth.Shared.Responses;
+
+using Xbehave;
+
+using Xunit;
+using Xunit.Abstractions;
+
+public sealed class AddPermissionFeature : AuthorizedManagementFeatureBase
 {
-    using System;
-    using System.Threading;
-    using Microsoft.IdentityModel.Logging;
-    using Microsoft.IdentityModel.Tokens;
+    private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
 
-    using SimpleAuth.Client;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
-
-    using Xbehave;
-
-    using Xunit;
-    using Xunit.Abstractions;
-
-    public class AddPermissionFeature : AuthorizedManagementFeatureBase
+    public AddPermissionFeature(ITestOutputHelper output) : base(output)
     {
-        private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
+        IdentityModelEventSource.ShowPII = true;
+    }
 
-        public AddPermissionFeature(ITestOutputHelper output) : base(output)
-        {
-            IdentityModelEventSource.ShowPII = true;
-        }
+    [Scenario(DisplayName = "Successful Permission Creation")]
+    public void SuccessfulPermissionCreation()
+    {
+        GrantedTokenResponse grantedToken = null!;
+        UmaClient client = null!;
+        JsonWebKeySet jwks = null!;
+        string resourceId = null!;
+        string ticketId = null!;
 
-        [Scenario(DisplayName = "Successful Permission Creation")]
-        public void SuccessfulPermissionCreation()
-        {
-            GrantedTokenResponse grantedToken = null!;
-            UmaClient client = null!;
-            JsonWebKeySet jwks = null!;
-            string resourceId = null!;
-            string ticketId = null!;
+        "and the server's signing key".x(
+            async () =>
+            {
+                var json = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                jwks = new JsonWebKeySet(json);
 
-            "and the server's signing key".x(
-                async () =>
-                {
-                    var json = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
-                    jwks = new JsonWebKeySet(json);
+                Assert.NotEmpty(jwks.Keys);
+            });
 
-                    Assert.NotEmpty(jwks.Keys);
-                });
+        "and a valid UMA token".x(
+            async () =>
+            {
+                var tokenClient = new TokenClient(
+                    TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                    _fixture.Client,
+                    new Uri(WellKnownUmaConfiguration));
+                var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
+                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                grantedToken = token!.Item;
+            });
 
-            "and a valid UMA token".x(
-                async () =>
-                {
-                    var tokenClient = new TokenClient(
-                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                        _fixture.Client,
-                        new Uri(WellKnownUmaConfiguration));
-                    var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
-                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-                    grantedToken = token!.Item;
-                });
+        "and a properly configured uma client".x(
+            () => client = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration)));
 
-            "and a properly configured uma client".x(
-                () => client = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration)));
+        "when registering resource".x(
+            async () =>
+            {
+                var resource = await client.AddResource(
+                        new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                        grantedToken.AccessToken)
+                    .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+                resourceId = resource.Item.Id;
+            });
 
-            "when registering resource".x(
-                async () =>
-                {
-                    var resource = await client.AddResource(
-                            new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
-                            grantedToken.AccessToken)
-                        .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
-                    resourceId = resource.Item.Id;
-                });
+        "and adding permission".x(
+            async () =>
+            {
+                var response = await client.RequestPermission(
+                        grantedToken.AccessToken,
+                        requests: new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
+                    .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-            "and adding permission".x(
-                async () =>
-                {
-                    var response = await client.RequestPermission(
-                            grantedToken.AccessToken,
-                            requests: new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
-                        .ConfigureAwait(false) as Option<TicketResponse>.Result;
+                ticketId = response!.Item.TicketId;
+            });
 
-                    ticketId = response!.Item.TicketId;
-                });
-
-            "then returns ticket id".x(() => { Assert.NotNull(ticketId); });
-        }
+        "then returns ticket id".x(() => { Assert.NotNull(ticketId); });
+    }
 
 
-        [Scenario(DisplayName = "Successful Multiple Permissions Creation")]
-        public void SuccessfulMultiplePermissionsCreation()
-        {
-            GrantedTokenResponse grantedToken = null!;
-            UmaClient client = null!;
-            string resourceId = null!;
-            string ticketId = null!;
+    [Scenario(DisplayName = "Successful Multiple Permissions Creation")]
+    public void SuccessfulMultiplePermissionsCreation()
+    {
+        GrantedTokenResponse grantedToken = null!;
+        UmaClient client = null!;
+        string resourceId = null!;
+        string ticketId = null!;
 
-            "and a valid UMA token".x(
-                async () =>
-                {
-                    var tokenClient = new TokenClient(
-                        TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                        _fixture.Client,
-                        new Uri(WellKnownUmaConfiguration));
-                    var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
-                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-                    grantedToken = token!.Item;
+        "and a valid UMA token".x(
+            async () =>
+            {
+                var tokenClient = new TokenClient(
+                    TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+                    _fixture.Client,
+                    new Uri(WellKnownUmaConfiguration));
+                var token = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
+                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                grantedToken = token!.Item;
 
-                    Assert.NotNull(grantedToken);
-                });
+                Assert.NotNull(grantedToken);
+            });
 
-            "and a properly configured uma client".x(
-                () => client = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration)));
+        "and a properly configured uma client".x(
+            () => client = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration)));
 
-            "when registering resource".x(
-                async () =>
-                {
-                    var resource = await client.AddResource(
-                            new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
-                            grantedToken.AccessToken)
-                        .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
-                    resourceId = resource!.Item.Id;
+        "when registering resource".x(
+            async () =>
+            {
+                var resource = await client.AddResource(
+                        new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
+                        grantedToken.AccessToken)
+                    .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+                resourceId = resource!.Item.Id;
 
-                    Assert.NotNull(resourceId);
-                });
+                Assert.NotNull(resourceId);
+            });
 
-            "and adding permission".x(
-                async () =>
-                {
-                    var response = await client.RequestPermission(
-                            grantedToken.AccessToken,
-                            CancellationToken.None,
-                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
-                            new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
-                        .ConfigureAwait(false) as Option<TicketResponse>.Result;
+        "and adding permission".x(
+            async () =>
+            {
+                var response = await client.RequestPermission(
+                        grantedToken.AccessToken,
+                        CancellationToken.None,
+                        new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "write" } },
+                        new PermissionRequest { ResourceSetId = resourceId, Scopes = new[] { "read" } })
+                    .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
-                    ticketId = response!.Item.TicketId;
+                ticketId = response!.Item.TicketId;
 
-                    Assert.NotNull(ticketId);
-                });
+                Assert.NotNull(ticketId);
+            });
 
-            "then returns ticket id".x(() => { Assert.NotNull(ticketId); });
-        }
+        "then returns ticket id".x(() => { Assert.NotNull(ticketId); });
     }
 }

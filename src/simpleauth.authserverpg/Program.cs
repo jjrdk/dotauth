@@ -12,32 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AuthServerPg
-{
-    using Microsoft.AspNetCore.Hosting;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Server.Kestrel.Core;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.IdentityModel.Logging;
+namespace SimpleAuth.AuthServerPg;
 
-    public class Program
+using Microsoft.AspNetCore.Hosting;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Logging;
+
+public sealed class Program
+{
+    public static async Task Main()
     {
-        public static async Task Main()
-        {
 #if DEBUG
-            IdentityModelEventSource.ShowPII = true;
+        IdentityModelEventSource.ShowPII = true;
 #endif
-            await new WebHostBuilder().UseKestrel(
-                    o =>
-                    {
-                        o.AddServerHeader = false;
-                        o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
-                    })
-                .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
-                .UseStartup<Startup>()
-                .Build()
-                .RunAsync()
-                .ConfigureAwait(false);
-        }
+        await new WebHostBuilder().UseKestrel(
+                o =>
+                {
+                    o.AddServerHeader = false;
+                    o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
+                })
+            .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
+            .UseStartup<Startup>()
+            .Build()
+            .RunAsync()
+            .ConfigureAwait(false);
     }
 }

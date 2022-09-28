@@ -12,100 +12,99 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.ViewModels
+namespace SimpleAuth.ViewModels;
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using SimpleAuth.Properties;
+
+/// <summary>
+/// Defines the code view model.
+/// </summary>
+[ExcludeFromCodeCoverage]
+public sealed class CodeViewModel
 {
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using Microsoft.AspNetCore.Mvc.ModelBinding;
-    using SimpleAuth.Properties;
+    /// <summary>
+    /// The resend action
+    /// </summary>
+    public const string ResendAction = "resend";
+    /// <summary>
+    /// The submit action
+    /// </summary>
+    public const string SubmitAction = "submit";
 
     /// <summary>
-    /// Defines the code view model.
+    /// Gets or sets the code.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    public class CodeViewModel
+    /// <value>
+    /// The code.
+    /// </value>
+    public string? Code { get; set; }
+
+    /// <summary>
+    /// Gets or sets the authentication request code.
+    /// </summary>
+    /// <value>
+    /// The authentication request code.
+    /// </value>
+    public string? AuthRequestCode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the claim.
+    /// </summary>
+    /// <value>
+    /// The name of the claim.
+    /// </value>
+    public string? ClaimName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the claim value.
+    /// </summary>
+    /// <value>
+    /// The claim value.
+    /// </value>
+    public string? ClaimValue { get; set; }
+
+    /// <summary>
+    /// Gets or sets the action.
+    /// </summary>
+    /// <value>
+    /// The action.
+    /// </value>
+    public string? Action { get; set; }
+
+    /// <summary>
+    /// Validates the specified model state.
+    /// </summary>
+    /// <param name="modelState">State of the model.</param>
+    /// <exception cref="ArgumentNullException">modelState</exception>
+    public void Validate(ModelStateDictionary modelState)
     {
-        /// <summary>
-        /// The resend action
-        /// </summary>
-        public const string ResendAction = "resend";
-        /// <summary>
-        /// The submit action
-        /// </summary>
-        public const string SubmitAction = "submit";
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        /// <value>
-        /// The code.
-        /// </value>
-        public string? Code { get; set; }
-
-        /// <summary>
-        /// Gets or sets the authentication request code.
-        /// </summary>
-        /// <value>
-        /// The authentication request code.
-        /// </value>
-        public string? AuthRequestCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the claim.
-        /// </summary>
-        /// <value>
-        /// The name of the claim.
-        /// </value>
-        public string? ClaimName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the claim value.
-        /// </summary>
-        /// <value>
-        /// The claim value.
-        /// </value>
-        public string? ClaimValue { get; set; }
-
-        /// <summary>
-        /// Gets or sets the action.
-        /// </summary>
-        /// <value>
-        /// The action.
-        /// </value>
-        public string? Action { get; set; }
-
-        /// <summary>
-        /// Validates the specified model state.
-        /// </summary>
-        /// <param name="modelState">State of the model.</param>
-        /// <exception cref="ArgumentNullException">modelState</exception>
-        public void Validate(ModelStateDictionary modelState)
+        if (string.IsNullOrWhiteSpace(ClaimName))
         {
-            if (string.IsNullOrWhiteSpace(ClaimName))
+            modelState.AddModelError(nameof(ClaimName), Strings.TheClaimMustBeSpecified);
+        }
+
+        switch (Action)
+        {
+            case ResendAction:
             {
-                modelState.AddModelError(nameof(ClaimName), Strings.TheClaimMustBeSpecified);
+                if (string.IsNullOrWhiteSpace(ClaimValue))
+                {
+                    modelState.AddModelError(nameof(ClaimValue), Strings.TheClaimMustBeSpecified);
+                }
+
+                break;
             }
-
-            switch (Action)
+            case SubmitAction:
             {
-                case ResendAction:
-                    {
-                        if (string.IsNullOrWhiteSpace(ClaimValue))
-                        {
-                            modelState.AddModelError(nameof(ClaimValue), Strings.TheClaimMustBeSpecified);
-                        }
+                if (string.IsNullOrWhiteSpace(Code))
+                {
+                    modelState.AddModelError(nameof(Code), Strings.TheConfirmationCodeMustBeSpecified);
+                }
 
-                        break;
-                    }
-                case SubmitAction:
-                    {
-                        if (string.IsNullOrWhiteSpace(Code))
-                        {
-                            modelState.AddModelError(nameof(Code), Strings.TheConfirmationCodeMustBeSpecified);
-                        }
-
-                        break;
-                    }
+                break;
             }
         }
     }

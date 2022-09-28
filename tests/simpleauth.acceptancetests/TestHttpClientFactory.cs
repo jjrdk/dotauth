@@ -1,20 +1,19 @@
-﻿namespace SimpleAuth.AcceptanceTests
+﻿namespace SimpleAuth.AcceptanceTests;
+
+using System.Net.Http;
+
+internal sealed class TestHttpClientFactory : IHttpClientFactory
 {
-    using System.Net.Http;
+    private readonly HttpClient _client;
 
-    internal class TestHttpClientFactory : IHttpClientFactory
+    public TestHttpClientFactory(HttpClient client)
     {
-        private readonly HttpClient _client;
+        _client = client;
+    }
 
-        public TestHttpClientFactory(HttpClient client)
-        {
-            _client = client;
-        }
-
-        /// <inheritdoc />
-        public HttpClient CreateClient(string name)
-        {
-            return _client;
-        }
+    /// <inheritdoc />
+    public HttpClient CreateClient(string name)
+    {
+        return _client;
     }
 }

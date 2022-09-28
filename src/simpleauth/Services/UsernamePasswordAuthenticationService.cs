@@ -12,56 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Services
+namespace SimpleAuth.Services;
+
+using System;
+using Shared.Models;
+using Shared.Repositories;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Events;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared.Events.Logging;
+
+internal sealed class UsernamePasswordAuthenticationService : IAuthenticateResourceOwnerService
 {
-    using System;
-    using Shared.Models;
-    using Shared.Repositories;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Events;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared.Events.Logging;
+    private readonly IResourceOwnerStore _resourceOwnerRepository;
+    private readonly ILogger<IAuthenticateResourceOwnerService> _logger;
+    private readonly IEventPublisher _eventPublisher;
 
-    internal class UsernamePasswordAuthenticationService : IAuthenticateResourceOwnerService
+    public UsernamePasswordAuthenticationService(
+        IResourceOwnerStore resourceOwnerRepository,
+        ILogger<IAuthenticateResourceOwnerService> logger,
+        IEventPublisher eventPublisher)
     {
-        private readonly IResourceOwnerStore _resourceOwnerRepository;
-        private readonly ILogger<IAuthenticateResourceOwnerService> _logger;
-        private readonly IEventPublisher _eventPublisher;
+        _resourceOwnerRepository = resourceOwnerRepository;
+        _logger = logger;
+        _eventPublisher = eventPublisher;
+    }
 
-        public UsernamePasswordAuthenticationService(
-            IResourceOwnerStore resourceOwnerRepository,
-            ILogger<IAuthenticateResourceOwnerService> logger,
-            IEventPublisher eventPublisher)
+    public string Amr => "pwd";
+
+    public async Task<ResourceOwner?> AuthenticateResourceOwner(
+        string login,
+        string password,
+        CancellationToken cancellationToken = default)
+    {
+        var resourceOwner =
+            await _resourceOwnerRepository.Get(login, password, cancellationToken).ConfigureAwait(false);
+        if (resourceOwner == null)
         {
-            _resourceOwnerRepository = resourceOwnerRepository;
-            _logger = logger;
-            _eventPublisher = eventPublisher;
+            _logger.LogError(Strings.LogCouldNotAuthenticate, login);
+        }
+        else
+        {
+            await _eventPublisher.Publish(
+                    new ResourceOwnerAuthenticated(Id.Create(), resourceOwner.Subject!, DateTimeOffset.UtcNow))
+                .ConfigureAwait(false);
+            _logger.LogInformation(Strings.LogAuthenticated, resourceOwner.Subject);
         }
 
-        public string Amr => "pwd";
-
-        public async Task<ResourceOwner?> AuthenticateResourceOwner(
-            string login,
-            string password,
-            CancellationToken cancellationToken = default)
-        {
-            var resourceOwner =
-                await _resourceOwnerRepository.Get(login, password, cancellationToken).ConfigureAwait(false);
-            if (resourceOwner == null)
-            {
-                _logger.LogError(Strings.LogCouldNotAuthenticate, login);
-            }
-            else
-            {
-                await _eventPublisher.Publish(
-                        new ResourceOwnerAuthenticated(Id.Create(), resourceOwner.Subject!, DateTimeOffset.UtcNow))
-                    .ConfigureAwait(false);
-                _logger.LogInformation(Strings.LogAuthenticated, resourceOwner.Subject);
-            }
-
-            return resourceOwner;
-        }
+        return resourceOwner;
     }
 }

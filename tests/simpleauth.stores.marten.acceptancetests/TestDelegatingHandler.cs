@@ -1,11 +1,10 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests
-{
-    using System.Net.Http;
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests;
 
-    internal class TestDelegatingHandler : DelegatingHandler
+using System.Net.Http;
+
+internal sealed class TestDelegatingHandler : DelegatingHandler
+{
+    public TestDelegatingHandler(HttpMessageHandler innerHandler) : base(innerHandler)
     {
-        public TestDelegatingHandler(HttpMessageHandler innerHandler) : base(innerHandler)
-        {
-        }
     }
 }

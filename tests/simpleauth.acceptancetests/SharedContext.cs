@@ -12,34 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AcceptanceTests
+namespace SimpleAuth.AcceptanceTests;
+
+using System.Net.Http;
+using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using SimpleAuth;
+using SimpleAuth.Extensions;
+
+public sealed class SharedContext
 {
-    using System.Net.Http;
-    using System.Security.Cryptography;
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth;
-    using SimpleAuth.Extensions;
+    private static SharedContext ctx = null!;
 
-    public class SharedContext
+    private SharedContext()
     {
-        private static SharedContext ctx = null!;
-
-        private SharedContext()
-        {
-            using var rsa = new RSACryptoServiceProvider(2048);
-            SignatureKey = rsa.CreateSignatureJwk("1", true);
-            ModelSignatureKey = rsa.CreateSignatureJwk("2", true);
-            EncryptionKey = rsa.CreateEncryptionJwk("3", true);
-            ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
-        }
-
-        public static SharedContext Instance => ctx ??= new SharedContext();
-
-        public JsonWebKey EncryptionKey { get; }
-        public JsonWebKey ModelEncryptionKey { get; }
-        public JsonWebKey SignatureKey { get; }
-        public JsonWebKey ModelSignatureKey { get; }
-        public HttpClient Client { get; set; }
-        public HttpMessageHandler Handler { get; set; }
+        using var rsa = new RSACryptoServiceProvider(2048);
+        SignatureKey = rsa.CreateSignatureJwk("1", true);
+        ModelSignatureKey = rsa.CreateSignatureJwk("2", true);
+        EncryptionKey = rsa.CreateEncryptionJwk("3", true);
+        ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
     }
+
+    public static SharedContext Instance => ctx ??= new SharedContext();
+
+    public JsonWebKey EncryptionKey { get; }
+    public JsonWebKey ModelEncryptionKey { get; }
+    public JsonWebKey SignatureKey { get; }
+    public JsonWebKey ModelSignatureKey { get; }
+    public HttpClient Client { get; set; }
+    public HttpMessageHandler Handler { get; set; }
 }

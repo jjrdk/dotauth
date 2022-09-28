@@ -1,99 +1,98 @@
-﻿namespace SimpleAuth.Client
+﻿namespace SimpleAuth.Client;
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Requests;
+using SimpleAuth.Shared.Responses;
+
+/// <summary>
+/// Defines the resource client interface.
+/// </summary>
+public interface IResourceClient
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    /// <summary>
+    /// Updates the resource.
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <param name="token">The token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">
+    /// request
+    /// or
+    /// token
+    /// </exception>
+    Task<Option<UpdateResourceSetResponse>> UpdateResource(
+        ResourceSet request,
+        string token,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Defines the resource client interface.
+    /// Adds the resource.
     /// </summary>
-    public interface IResourceClient
-    {
-        /// <summary>
-        /// Updates the resource.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="token">The token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// token
-        /// </exception>
-        Task<Option<UpdateResourceSetResponse>> UpdateResource(
-            ResourceSet request,
-            string token,
-            CancellationToken cancellationToken = default);
+    /// <param name="request">The request.</param>
+    /// <param name="token">The token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">
+    /// request
+    /// or
+    /// token
+    /// </exception>
+    Task<Option<AddResourceSetResponse>> AddResource(ResourceSet request, string token, CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// Adds the resource.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="token">The token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// request
-        /// or
-        /// token
-        /// </exception>
-        Task<Option<AddResourceSetResponse>> AddResource(ResourceSet request, string token, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Deletes the resource.
+    /// </summary>
+    /// <param name="resourceSetId">The resource set identifier.</param>
+    /// <param name="token">The authorization header value.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">
+    /// resourceSetId
+    /// or
+    /// authorizationHeaderValue
+    /// </exception>
+    Task<Option> DeleteResource(string resourceSetId, string token, CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// Deletes the resource.
-        /// </summary>
-        /// <param name="resourceSetId">The resource set identifier.</param>
-        /// <param name="token">The authorization header value.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// resourceSetId
-        /// or
-        /// authorizationHeaderValue
-        /// </exception>
-        Task<Option> DeleteResource(string resourceSetId, string token, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Gets all resources.
+    /// </summary>
+    /// <param name="token">The authorization header value.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">authorizationHeaderValue</exception>
+    Task<Option<string[]>> GetAllResources(string token, CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// Gets all resources.
-        /// </summary>
-        /// <param name="token">The authorization header value.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">authorizationHeaderValue</exception>
-        Task<Option<string[]>> GetAllResources(string token, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Gets the resource.
+    /// </summary>
+    /// <param name="resourceSetId">The resource set identifier.</param>
+    /// <param name="token">The authorization header value.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">
+    /// resourceSetId
+    /// or
+    /// authorizationHeaderValue
+    /// </exception>
+    Task<Option<ResourceSet>> GetResource(
+        string resourceSetId,
+        string token,
+        CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// Gets the resource.
-        /// </summary>
-        /// <param name="resourceSetId">The resource set identifier.</param>
-        /// <param name="token">The authorization header value.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// resourceSetId
-        /// or
-        /// authorizationHeaderValue
-        /// </exception>
-        Task<Option<ResourceSet>> GetResource(
-            string resourceSetId,
-            string token,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Searches the resources.
-        /// </summary>
-        /// <param name="parameter">The parameter.</param>
-        /// <param name="token">The authorization header value.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        Task<Option<PagedResult<ResourceSet>>> SearchResources(
-            SearchResourceSet parameter,
-            string? token = null,
-            CancellationToken cancellationToken = default);
-    }
+    /// <summary>
+    /// Searches the resources.
+    /// </summary>
+    /// <param name="parameter">The parameter.</param>
+    /// <param name="token">The authorization header value.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    Task<Option<PagedResult<ResourceSet>>> SearchResources(
+        SearchResourceSet parameter,
+        string? token = null,
+        CancellationToken cancellationToken = default);
 }

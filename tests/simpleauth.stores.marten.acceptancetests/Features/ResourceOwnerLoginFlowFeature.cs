@@ -1,188 +1,187 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features
+﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features;
+
+using Microsoft.IdentityModel.Tokens;
+using SimpleAuth.Client;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Responses;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using SimpleAuth.Extensions;
+using Xbehave;
+using Xunit;
+using Xunit.Abstractions;
+
+// In order to secure access to a resource
+// As a resource owner
+// I want to log in using resource owner flow
+
+// In order to secure access to a resource
+// As a resource owner
+// I want to log in using resource owner flow
+public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
 {
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Client;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Responses;
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Net;
-    using SimpleAuth.Extensions;
-    using Xbehave;
-    using Xunit;
-    using Xunit.Abstractions;
-
-    // In order to secure access to a resource
-    // As a resource owner
-    // I want to log in using resource owner flow
-
-    // In order to secure access to a resource
-    // As a resource owner
-    // I want to log in using resource owner flow
-    public class ResourceOwnerLoginFlowFeature : AuthFlowFeature
+    public ResourceOwnerLoginFlowFeature(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
-        public ResourceOwnerLoginFlowFeature(ITestOutputHelper outputHelper)
-            : base(outputHelper)
-        {
-        }
+    }
 
-        [Scenario(DisplayName = "Successful authorization")]
-        public void SuccessfulResourceOwnerAuthentication()
-        {
-            TokenClient client = null!;
-            GrantedTokenResponse result = null!;
+    [Scenario(DisplayName = "Successful authorization")]
+    public void SuccessfulResourceOwnerAuthentication()
+    {
+        TokenClient client = null!;
+        GrantedTokenResponse result = null!;
 
-            "and a properly configured token client".x(
-                () => client = new TokenClient(
-                    TokenCredentials.FromBasicAuthentication("client", "client"),
-                    Fixture.Client,
-                    new Uri(WellKnownOpenidConfiguration)));
+        "and a properly configured token client".x(
+            () => client = new TokenClient(
+                TokenCredentials.FromBasicAuthentication("client", "client"),
+                Fixture.Client,
+                new Uri(WellKnownOpenidConfiguration)));
 
-            "when requesting token".x(
-                async () =>
+        "when requesting token".x(
+            async () =>
+            {
+                var response = await client
+                    .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid", "offline"}))
+                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                result = response.Item;
+
+                Assert.NotNull(result);
+            });
+
+        "then has valid access token".x(
+            () =>
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var validationParameters = new TokenValidationParameters
                 {
-                    var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid", "offline"}))
-                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-                    result = response.Item;
+                    IssuerSigningKeys = Jwks.GetSigningKeys(),
+                    ValidAudience = "client",
+                    ValidIssuer = "https://localhost"
+                };
+                tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
 
-                    Assert.NotNull(result);
-                });
+                Assert.NotEmpty(((JwtSecurityToken) token).Claims);
+            });
 
-            "then has valid access token".x(
-                () =>
+        "and has valid id token".x(
+            () =>
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var validationParameters = new TokenValidationParameters
                 {
-                    var tokenHandler = new JwtSecurityTokenHandler();
-                    var validationParameters = new TokenValidationParameters
-                    {
-                        IssuerSigningKeys = Jwks.GetSigningKeys(),
-                        ValidAudience = "client",
-                        ValidIssuer = "https://localhost"
-                    };
-                    tokenHandler.ValidateToken(result.AccessToken, validationParameters, out var token);
+                    IssuerSigningKey = TestKeys.SecretKey.CreateJwk(
+                        JsonWebKeyUseNames.Sig,
+                        KeyOperations.Sign,
+                        KeyOperations.Verify),
+                    ValidAudience = "client",
+                    ValidIssuer = "https://localhost"
+                };
+                tokenHandler.ValidateToken(result.IdToken, validationParameters, out _);
+            });
+    }
 
-                    Assert.NotEmpty(((JwtSecurityToken) token).Claims);
-                });
+    [Scenario(DisplayName = "Successful token refresh")]
+    public void SuccessfulResourceOwnerRefresh()
+    {
+        TokenClient client = null!;
+        GrantedTokenResponse result = null!;
 
-            "and has valid id token".x(
-                () =>
-                {
-                    var tokenHandler = new JwtSecurityTokenHandler();
-                    var validationParameters = new TokenValidationParameters
-                    {
-                        IssuerSigningKey = TestKeys.SecretKey.CreateJwk(
-                            JsonWebKeyUseNames.Sig,
-                            KeyOperations.Sign,
-                            KeyOperations.Verify),
-                        ValidAudience = "client",
-                        ValidIssuer = "https://localhost"
-                    };
-                    tokenHandler.ValidateToken(result.IdToken, validationParameters, out _);
-                });
-        }
+        "and a properly token client".x(
+            () => client = new TokenClient(
+                TokenCredentials.FromBasicAuthentication("client", "client"),
+                Fixture.Client,
+                new Uri(WellKnownOpenidConfiguration)));
 
-        [Scenario(DisplayName = "Successful token refresh")]
-        public void SuccessfulResourceOwnerRefresh()
-        {
-            TokenClient client = null!;
-            GrantedTokenResponse result = null!;
+        "when requesting auth token".x(
+            async () =>
+            {
+                var response = await client
+                    .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid", "offline"}, "pwd"))
+                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                result = response!.Item;
+            });
 
-            "and a properly token client".x(
-                () => client = new TokenClient(
-                    TokenCredentials.FromBasicAuthentication("client", "client"),
-                    Fixture.Client,
-                    new Uri(WellKnownOpenidConfiguration)));
+        "then can get new token from refresh token".x(
+            async () =>
+            {
+                var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken!))
+                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                Assert.NotNull(response);
+            });
+    }
 
-            "when requesting auth token".x(
-                async () =>
-                {
-                    var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid", "offline"}, "pwd"))
-                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-                    result = response!.Item;
-                });
+    [Scenario(DisplayName = "Successful token revocation")]
+    public void SuccessfulResourceOwnerRevocation()
+    {
+        TokenClient client = null!;
+        GrantedTokenResponse result = null!;
 
-            "then can get new token from refresh token".x(
-                async () =>
-                {
-                    var response = await client.GetToken(TokenRequest.FromRefreshToken(result.RefreshToken!))
-                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-                    Assert.NotNull(response);
-                });
-        }
+        "and a properly token client".x(
+            () => client = new TokenClient(
+                TokenCredentials.FromBasicAuthentication("client", "client"),
+                Fixture.Client,
+                new Uri(WellKnownOpenidConfiguration)));
 
-        [Scenario(DisplayName = "Successful token revocation")]
-        public void SuccessfulResourceOwnerRevocation()
-        {
-            TokenClient client = null!;
-            GrantedTokenResponse result = null!;
+        "when requesting auth token".x(
+            async () =>
+            {
+                var response = await client
+                    .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
+                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+                result = response.Item;
+            });
 
-            "and a properly token client".x(
-                () => client = new TokenClient(
-                    TokenCredentials.FromBasicAuthentication("client", "client"),
-                    Fixture.Client,
-                    new Uri(WellKnownOpenidConfiguration)));
+        "then can revoke token".x(
+            async () =>
+            {
+                var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
+                Assert.IsType<Option.Success>(response);
+            });
+    }
 
-            "when requesting auth token".x(
-                async () =>
-                {
-                    var response = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
-                        .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-                    result = response.Item;
-                });
+    [Scenario(DisplayName = "Invalid client")]
+    public void InvalidClientCredentials()
+    {
+        TokenClient client = null!;
+        Option<GrantedTokenResponse> result = null!;
 
-            "then can revoke token".x(
-                async () =>
-                {
-                    var response = await client.RevokeToken(RevokeTokenRequest.Create(result)).ConfigureAwait(false);
-                    Assert.IsType<Option.Success>(response);
-                });
-        }
+        "and a token client with invalid client credentials".x(
+            () => client = new TokenClient(
+                TokenCredentials.FromBasicAuthentication("xxx", "xxx"),
+                Fixture.Client,
+                new Uri(WellKnownOpenidConfiguration)));
 
-        [Scenario(DisplayName = "Invalid client")]
-        public void InvalidClientCredentials()
-        {
-            TokenClient client = null!;
-            Option<GrantedTokenResponse> result = null!;
+        "when requesting auth token".x(
+            async () =>
+            {
+                result = await client
+                    .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
+                    .ConfigureAwait(false);
+            });
 
-            "and a token client with invalid client credentials".x(
-                () => client = new TokenClient(
-                    TokenCredentials.FromBasicAuthentication("xxx", "xxx"),
-                    Fixture.Client,
-                    new Uri(WellKnownOpenidConfiguration)));
+        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
+    }
 
-            "when requesting auth token".x(
-                async () =>
-                {
-                    result = await client
-                        .GetToken(TokenRequest.FromPassword("user", "password", new[] {"openid"}, "pwd"))
-                        .ConfigureAwait(false);
-                });
+    [Scenario(DisplayName = "Invalid user credentials")]
+    public void InvalidUserCredentials()
+    {
+        TokenClient client = null!;
+        Option<GrantedTokenResponse> result = null!;
 
-            "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
-        }
+        "and a token client with invalid client credentials".x(
+            () => client = new TokenClient(
+                TokenCredentials.FromBasicAuthentication("client", "client"),
+                Fixture.Client,
+                new Uri(WellKnownOpenidConfiguration)));
 
-        [Scenario(DisplayName = "Invalid user credentials")]
-        public void InvalidUserCredentials()
-        {
-            TokenClient client = null!;
-            Option<GrantedTokenResponse> result = null!;
+        "when requesting auth token".x(
+            async () =>
+            {
+                result = await client.GetToken(TokenRequest.FromPassword("someone", "xxx", new[] {"openid"}, "pwd"))
+                    .ConfigureAwait(false);
+            });
 
-            "and a token client with invalid client credentials".x(
-                () => client = new TokenClient(
-                    TokenCredentials.FromBasicAuthentication("client", "client"),
-                    Fixture.Client,
-                    new Uri(WellKnownOpenidConfiguration)));
-
-            "when requesting auth token".x(
-                async () =>
-                {
-                    result = await client.GetToken(TokenRequest.FromPassword("someone", "xxx", new[] {"openid"}, "pwd"))
-                        .ConfigureAwait(false);
-                });
-
-            "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
-        }
+        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
     }
 }

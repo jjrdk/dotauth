@@ -12,75 +12,74 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Models
+namespace SimpleAuth.Shared.Models;
+
+using System;
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the scope.
+/// </summary>
+[DataContract]
+public sealed record Scope
 {
-    using System;
-    using System.Runtime.Serialization;
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    /// <value>
+    /// The name.
+    /// </value>
+    [DataMember(Name = "name")]
+    public string Name { get; set; } = null!;
 
     /// <summary>
-    /// Defines the scope.
+    /// Gets or sets the icon uri.
     /// </summary>
-    [DataContract]
-    public record Scope
-    {
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        [DataMember(Name = "name")]
-        public string Name { get; set; } = null!;
+    [DataMember(Name = "icon_uri")]
+    public Uri? IconUri { get; set; }
 
-        /// <summary>
-        /// Gets or sets the icon uri.
-        /// </summary>
-        [DataMember(Name = "icon_uri")]
-        public Uri? IconUri { get; set; }
+    /// <summary>
+    /// Gets or sets the description.
+    /// </summary>
+    /// <value>
+    /// The description.
+    /// </value>
+    [DataMember(Name = "description")]
+    public string Description { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        /// <value>
-        /// The description.
-        /// </value>
-        [DataMember(Name = "description")]
-        public string Description { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is displayed in consent.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance is displayed in consent; otherwise, <c>false</c>.
+    /// </value>
+    [DataMember(Name = "is_displayed_in_consent")]
+    public bool IsDisplayedInConsent { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is displayed in consent.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is displayed in consent; otherwise, <c>false</c>.
-        /// </value>
-        [DataMember(Name = "is_displayed_in_consent")]
-        public bool IsDisplayedInConsent { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is exposed.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance is exposed; otherwise, <c>false</c>.
+    /// </value>
+    [DataMember(Name = "is_exposed")]
+    public bool IsExposed { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is exposed.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is exposed; otherwise, <c>false</c>.
-        /// </value>
-        [DataMember(Name = "is_exposed")]
-        public bool IsExposed { get; set; }
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    /// <value>
+    /// The type.
+    /// </value>
+    [DataMember(Name = "type")]
+    public string Type { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        /// <value>
-        /// The type.
-        /// </value>
-        [DataMember(Name = "type")]
-        public string Type { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the claims.
-        /// </summary>
-        /// <value>
-        /// The claims.
-        /// </value>
-        [DataMember(Name = "claims")]
-        public string[] Claims { get; set; } = Array.Empty<string>();
-    }
+    /// <summary>
+    /// Gets or sets the claims.
+    /// </summary>
+    /// <value>
+    /// The claims.
+    /// </value>
+    [DataMember(Name = "claims")]
+    public string[] Claims { get; set; } = Array.Empty<string>();
 }

@@ -12,81 +12,80 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Apis
+namespace SimpleAuth.Server.Tests.Apis;
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Moq;
+using SimpleAuth.Api.ResourceSetController;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+using Xunit;
+
+public sealed class UpdateResourceSetActionFixture
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-    using SimpleAuth.Api.ResourceSetController;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
-    using Xunit;
+    private readonly Mock<IResourceSetRepository> _resourceSetRepositoryStub;
+    private readonly UpdateResourceSetAction _updateResourceSetAction;
 
-    public class UpdateResourceSetActionFixture
+    public UpdateResourceSetActionFixture()
     {
-        private readonly Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private readonly UpdateResourceSetAction _updateResourceSetAction;
+        _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
+        _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Option.Success());
+        _updateResourceSetAction = new UpdateResourceSetAction(_resourceSetRepositoryStub.Object, new Mock<ILogger>().Object);
+    }
 
-        public UpdateResourceSetActionFixture()
+    [Fact]
+    public async Task When_Passing_No_Parameter_Then_Exception_Is_Thrown()
+    {
+        await Assert
+            .ThrowsAsync<NullReferenceException>(
+                () => _updateResourceSetAction.Execute(null, CancellationToken.None))
+            .ConfigureAwait(false);
+    }
+
+    [Fact]
+    public async Task When_ResourceSet_Cannot_Be_Updated_Then_Returns_False()
+    {
+        const string id = "id";
+        var udpateResourceSetParameter = new ResourceSet
         {
-            _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Option.Success());
-            _updateResourceSetAction = new UpdateResourceSetAction(_resourceSetRepositoryStub.Object, new Mock<ILogger>().Object);
-        }
+            Id = id,
+            Name = "blah",
+            Scopes = new[] { "scope" }
+        };
+        var resourceSet = new Shared.Models.ResourceSet { Id = id };
+        _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(resourceSet);
+        _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
+            .Returns(() => Task.FromResult<Option>(new Option.Error(new ErrorDetails())));
 
-        [Fact]
-        public async Task When_Passing_No_Parameter_Then_Exception_Is_Thrown()
+        var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None).ConfigureAwait(false);
+        Assert.IsType<Option.Error>(result);
+    }
+
+    [Fact]
+    public async Task When_A_ResourceSet_Is_Updated_Then_True_Is_Returned()
+    {
+        const string id = "id";
+        var udpateResourceSetParameter = new ResourceSet
         {
-            await Assert
-                .ThrowsAsync<NullReferenceException>(
-                    () => _updateResourceSetAction.Execute(null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
+            Id = id,
+            Name = "blah",
+            Scopes = new[] { "scope" }
+        };
+        var resourceSet = new Shared.Models.ResourceSet { Id = id };
+        _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(resourceSet);
+        _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Option.Success());
 
-        [Fact]
-        public async Task When_ResourceSet_Cannot_Be_Updated_Then_Returns_False()
-        {
-            const string id = "id";
-            var udpateResourceSetParameter = new ResourceSet
-            {
-                Id = id,
-                Name = "blah",
-                Scopes = new[] { "scope" }
-            };
-            var resourceSet = new Shared.Models.ResourceSet { Id = id };
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(resourceSet);
-            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult<Option>(new Option.Error(new ErrorDetails())));
+        var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)
+            .ConfigureAwait(false);
 
-            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None).ConfigureAwait(false);
-            Assert.IsType<Option.Error>(result);
-        }
-
-        [Fact]
-        public async Task When_A_ResourceSet_Is_Updated_Then_True_Is_Returned()
-        {
-            const string id = "id";
-            var udpateResourceSetParameter = new ResourceSet
-            {
-                Id = id,
-                Name = "blah",
-                Scopes = new[] { "scope" }
-            };
-            var resourceSet = new Shared.Models.ResourceSet { Id = id };
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(resourceSet);
-            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Option.Success());
-
-            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            Assert.IsType<Option.Success>(result);
-        }
+        Assert.IsType<Option.Success>(result);
     }
 }

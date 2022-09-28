@@ -1,36 +1,35 @@
-﻿namespace SimpleAuth.Stores.Marten
+﻿namespace SimpleAuth.Stores.Marten;
+
+using System;
+using SimpleAuth.Shared.Repositories;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using global::Marten;
+using SimpleAuth.Shared.Models;
+
+/// <summary>
+/// Defines the Marten based filter repository.
+/// </summary>
+/// <seealso cref="SimpleAuth.Shared.Repositories.IFilterStore" />
+public sealed class MartenFilterStore : IFilterStore
 {
-    using System;
-    using SimpleAuth.Shared.Repositories;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using global::Marten;
-    using SimpleAuth.Shared.Models;
+    private readonly Func<IDocumentSession> _sessionFactory;
 
     /// <summary>
-    /// Defines the Marten based filter repository.
+    /// Initializes a new instance of the <see cref="MartenFilterStore"/> class.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IFilterStore" />
-    public class MartenFilterStore : IFilterStore
+    /// <param name="sessionFactory">The session factory.</param>
+    public MartenFilterStore(Func<IDocumentSession> sessionFactory)
     {
-        private readonly Func<IDocumentSession> _sessionFactory;
+        _sessionFactory = sessionFactory;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MartenFilterStore"/> class.
-        /// </summary>
-        /// <param name="sessionFactory">The session factory.</param>
-        public MartenFilterStore(Func<IDocumentSession> sessionFactory)
-        {
-            _sessionFactory = sessionFactory;
-        }
-
-        /// <inheritdoc />
-        public async Task<Filter[]> GetAll(CancellationToken cancellationToken = default)
-        {
-            await using var session = _sessionFactory();
-            var filters = await session.Query<Filter>().ToListAsync(token: cancellationToken).ConfigureAwait(false);
-            return filters.ToArray();
-        }
+    /// <inheritdoc />
+    public async Task<Filter[]> GetAll(CancellationToken cancellationToken = default)
+    {
+        await using var session = _sessionFactory();
+        var filters = await session.Query<Filter>().ToListAsync(token: cancellationToken).ConfigureAwait(false);
+        return filters.ToArray();
     }
 }

@@ -12,58 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using Microsoft.AspNetCore.Routing;
+
+/// <summary>
+/// Defines the action information.
+/// </summary>
+internal sealed class ActionInformation
 {
-    using Microsoft.AspNetCore.Routing;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ActionInformation"/> class.
+    /// </summary>
+    /// <param name="controllerName">Name of the controller.</param>
+    /// <param name="actionName">Name of the action.</param>
+    /// <param name="area">The area.</param>
+    public ActionInformation(string controllerName, string actionName, string? area = null)
+    {
+        ControllerName = controllerName;
+        ActionName = actionName;
+        Area = area;
+    }
 
     /// <summary>
-    /// Defines the action information.
+    /// Gets the name of the controller.
     /// </summary>
-    internal class ActionInformation
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ActionInformation"/> class.
-        /// </summary>
-        /// <param name="controllerName">Name of the controller.</param>
-        /// <param name="actionName">Name of the action.</param>
-        /// <param name="area">The area.</param>
-        public ActionInformation(string controllerName, string actionName, string? area = null)
-        {
-            ControllerName = controllerName;
-            ActionName = actionName;
-            Area = area;
-        }
+    /// <value>
+    /// The name of the controller.
+    /// </value>
+    public string ControllerName { get; }
 
-        /// <summary>
-        /// Gets the name of the controller.
-        /// </summary>
-        /// <value>
-        /// The name of the controller.
-        /// </value>
-        public string ControllerName { get; }
+    /// <summary>
+    /// Gets the name of the action.
+    /// </summary>
+    /// <value>
+    /// The name of the action.
+    /// </value>
+    public string ActionName { get; }
 
-        /// <summary>
-        /// Gets the name of the action.
-        /// </summary>
-        /// <value>
-        /// The name of the action.
-        /// </value>
-        public string ActionName { get; }
+    /// <summary>
+    /// Gets the area.
+    /// </summary>
+    /// <value>
+    /// The area.
+    /// </value>
+    public string? Area { get; }
 
-        /// <summary>
-        /// Gets the area.
-        /// </summary>
-        /// <value>
-        /// The area.
-        /// </value>
-        public string? Area { get; }
-
-        /// <summary>
-        /// Gets or sets the route value dictionary.
-        /// </summary>
-        /// <value>
-        /// The route value dictionary.
-        /// </value>
-        public RouteValueDictionary RouteValueDictionary { get; set; } = new();
-    }
+    /// <summary>
+    /// Gets or sets the route value dictionary.
+    /// </summary>
+    /// <value>
+    /// The route value dictionary.
+    /// </value>
+    public RouteValueDictionary RouteValueDictionary { get; set; } = new();
 }

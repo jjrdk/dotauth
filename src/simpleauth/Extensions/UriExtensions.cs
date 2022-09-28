@@ -12,59 +12,58 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Primitives;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+internal static class UriExtensions
 {
-    using Microsoft.AspNetCore.Routing;
-    using Microsoft.Extensions.Primitives;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    internal static class UriExtensions
+    /// <summary>
+    /// Add the given parameter in the query string.
+    /// </summary>
+    /// <param name="uri"></param>
+    /// <param name="dic"></param>
+    /// <returns></returns>
+    public static Uri AddParametersInQuery(this Uri uri, RouteValueDictionary dic)
     {
-        /// <summary>
-        /// Add the given parameter in the query string.
-        /// </summary>
-        /// <param name="uri"></param>
-        /// <param name="dic"></param>
-        /// <returns></returns>
-        public static Uri AddParametersInQuery(this Uri uri, RouteValueDictionary dic)
+        var uriBuilder = new UriBuilder(uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
+        foreach (var (key, value) in dic)
         {
-            var uriBuilder = new UriBuilder(uri);
-            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
-            foreach (var (key, value) in dic)
-            {
-                query[key] = value!.ToString();
-            }
-
-            uriBuilder.Query = ConcatQueryStrings(query);
-            return uriBuilder.Uri;
+            query[key] = value!.ToString();
         }
 
-        /// <summary>
-        /// Add the given parameters in the fragment.
-        /// </summary>
-        /// <param name="uri"></param>
-        /// <param name="dic"></param>
-        /// <returns></returns>
-        public static Uri AddParametersInFragment(this Uri uri, RouteValueDictionary dic)
-        {
-            var uriBuilder = new UriBuilder(uri);
-            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
-            foreach (var (key, value) in dic)
-            {
-                query[key] = value!.ToString();
-            }
+        uriBuilder.Query = ConcatQueryStrings(query);
+        return uriBuilder.Uri;
+    }
 
-            uriBuilder.Fragment = ConcatQueryStrings(query);
-            return uriBuilder.Uri;
+    /// <summary>
+    /// Add the given parameters in the fragment.
+    /// </summary>
+    /// <param name="uri"></param>
+    /// <param name="dic"></param>
+    /// <returns></returns>
+    public static Uri AddParametersInFragment(this Uri uri, RouteValueDictionary dic)
+    {
+        var uriBuilder = new UriBuilder(uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
+        foreach (var (key, value) in dic)
+        {
+            query[key] = value!.ToString();
         }
 
-        private static string ConcatQueryStrings(IDictionary<string, StringValues> queryStrings)
-        {
-            var lst = queryStrings.Select(keyValuePair => $"{keyValuePair.Key}={keyValuePair.Value}");
+        uriBuilder.Fragment = ConcatQueryStrings(query);
+        return uriBuilder.Uri;
+    }
 
-            return string.Join("&", lst);
-        }
+    private static string ConcatQueryStrings(IDictionary<string, StringValues> queryStrings)
+    {
+        var lst = queryStrings.Select(keyValuePair => $"{keyValuePair.Key}={keyValuePair.Value}");
+
+        return string.Join("&", lst);
     }
 }

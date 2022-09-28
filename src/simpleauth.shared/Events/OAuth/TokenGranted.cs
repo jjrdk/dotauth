@@ -12,52 +12,51 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Events.OAuth
+namespace SimpleAuth.Shared.Events.OAuth;
+
+using System;
+
+/// <summary>
+/// Defines the toke granted event.
+/// </summary>
+/// <seealso cref="Event" />
+public sealed record TokenGranted : Event
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TokenGranted"/> class.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="subject">The subject of the token.</param>
+    /// <param name="clientId">The authorized client.</param>
+    /// <param name="scopes">The granted scopes</param>
+    /// <param name="grantType">The used grant type.</param>
+    /// <param name="timestamp">The timestamp.</param>
+    public TokenGranted(string id, string? subject, string clientId, string scopes, string grantType, DateTimeOffset timestamp)
+        : base(id, timestamp)
+    {
+        Subject = subject;
+        ClientId = clientId;
+        Scopes = scopes.Split(' ', ',');
+        GrantType = grantType;
+    }
 
     /// <summary>
-    /// Defines the toke granted event.
+    /// The subject of the token.
     /// </summary>
-    /// <seealso cref="Event" />
-    public record TokenGranted : Event
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenGranted"/> class.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="subject">The subject of the token.</param>
-        /// <param name="clientId">The authorized client.</param>
-        /// <param name="scopes">The granted scopes</param>
-        /// <param name="grantType">The used grant type.</param>
-        /// <param name="timestamp">The timestamp.</param>
-        public TokenGranted(string id, string? subject, string clientId, string scopes, string grantType, DateTimeOffset timestamp)
-        : base(id, timestamp)
-        {
-            Subject = subject;
-            ClientId = clientId;
-            Scopes = scopes.Split(' ', ',');
-            GrantType = grantType;
-        }
+    public string? Subject { get; }
 
-        /// <summary>
-        /// The subject of the token.
-        /// </summary>
-        public string? Subject { get; }
+    /// <summary>
+    /// The authorized client.
+    /// </summary>
+    public string ClientId { get; }
 
-        /// <summary>
-        /// The authorized client.
-        /// </summary>
-        public string ClientId { get; }
+    /// <summary>
+    /// The granted scopes.
+    /// </summary>
+    public string[] Scopes { get; }
 
-        /// <summary>
-        /// The granted scopes.
-        /// </summary>
-        public string[] Scopes { get; }
-
-        /// <summary>
-        /// The grant type when issuing the token.
-        /// </summary>
-        public string GrantType { get; }
-    }
+    /// <summary>
+    /// The grant type when issuing the token.
+    /// </summary>
+    public string GrantType { get; }
 }

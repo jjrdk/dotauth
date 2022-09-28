@@ -12,32 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses
+namespace SimpleAuth.Shared.Responses;
+
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the add resource set response.
+/// </summary>
+[DataContract]
+public sealed record AddResourceSetResponse
 {
-    using System.Runtime.Serialization;
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
+    /// <value>
+    /// The identifier.
+    /// </value>
+    [DataMember(Name = "_id")]
+    public string Id { get; set; } = null!;
 
     /// <summary>
-    /// Defines the add resource set response.
+    /// Gets or sets the user access policy URI.
     /// </summary>
-    [DataContract]
-    public record AddResourceSetResponse
-    {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        [DataMember(Name = "_id")]
-        public string Id { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the user access policy URI.
-        /// </summary>
-        /// <value>
-        /// The user access policy URI.
-        /// </value>
-        [DataMember(Name = "user_access_policy_uri")]
-        public string UserAccessPolicyUri { get; set; } = null!;
-    }
+    /// <value>
+    /// The user access policy URI.
+    /// </value>
+    [DataMember(Name = "user_access_policy_uri")]
+    public string UserAccessPolicyUri { get; set; } = null!;
 }

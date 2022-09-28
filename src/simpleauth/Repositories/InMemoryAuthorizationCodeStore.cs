@@ -1,58 +1,57 @@
-﻿namespace SimpleAuth.Repositories
+﻿namespace SimpleAuth.Repositories;
+
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+
+internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    private static readonly Dictionary<string, AuthorizationCode> MappingStringToAuthCodes;
 
-    internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
+    static InMemoryAuthorizationCodeStore()
     {
-        private static readonly Dictionary<string, AuthorizationCode> MappingStringToAuthCodes;
+        MappingStringToAuthCodes = new Dictionary<string, AuthorizationCode>();
+    }
 
-        static InMemoryAuthorizationCodeStore()
+    public Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken)
+    {
+        return !MappingStringToAuthCodes.ContainsKey(code)
+            ? Task.FromResult<AuthorizationCode?>(null)
+            : Task.FromResult<AuthorizationCode?>(MappingStringToAuthCodes[code]);
+    }
+
+    public Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken)
+    {
+        if (authorizationCode == null)
         {
-            MappingStringToAuthCodes = new Dictionary<string, AuthorizationCode>();
+            throw new ArgumentNullException(nameof(authorizationCode));
         }
 
-        public Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken)
+        if (MappingStringToAuthCodes.ContainsKey(authorizationCode.Code))
         {
-            return !MappingStringToAuthCodes.ContainsKey(code)
-                ? Task.FromResult<AuthorizationCode?>(null)
-                : Task.FromResult<AuthorizationCode?>(MappingStringToAuthCodes[code]);
+            return Task.FromResult(false);
         }
 
-        public Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken)
+        MappingStringToAuthCodes.Add(authorizationCode.Code, authorizationCode);
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> Remove(string authorizationCode, CancellationToken cancellationToken)
+    {
+        if (authorizationCode == null)
         {
-            if (authorizationCode == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationCode));
-            }
-
-            if (MappingStringToAuthCodes.ContainsKey(authorizationCode.Code))
-            {
-                return Task.FromResult(false);
-            }
-
-            MappingStringToAuthCodes.Add(authorizationCode.Code, authorizationCode);
-            return Task.FromResult(true);
+            throw new ArgumentNullException(nameof(authorizationCode));
         }
 
-        public Task<bool> Remove(string authorizationCode, CancellationToken cancellationToken)
+        if (!MappingStringToAuthCodes.ContainsKey(authorizationCode))
         {
-            if (authorizationCode == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationCode));
-            }
-
-            if (!MappingStringToAuthCodes.ContainsKey(authorizationCode))
-            {
-                return Task.FromResult(false);
-            }
-
-            MappingStringToAuthCodes.Remove(authorizationCode);
-            return Task.FromResult(true);
+            return Task.FromResult(false);
         }
+
+        MappingStringToAuthCodes.Remove(authorizationCode);
+        return Task.FromResult(true);
     }
 }

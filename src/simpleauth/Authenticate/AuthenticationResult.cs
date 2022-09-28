@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Authenticate
+namespace SimpleAuth.Authenticate;
+
+using Shared.Models;
+
+internal sealed class AuthenticationResult
 {
-    using Shared.Models;
-
-    internal class AuthenticationResult
+    public AuthenticationResult(Client? client, string? errorMessage)
     {
-        public AuthenticationResult(Client? client, string? errorMessage)
-        {
-            Client = client;
-            ErrorMessage = errorMessage;
-        }
-
-        public Client? Client { get; }
-
-        public string? ErrorMessage { get; }
+        Client = client;
+        ErrorMessage = errorMessage;
     }
+
+    public Client? Client { get; }
+
+    public string? ErrorMessage { get; }
 }

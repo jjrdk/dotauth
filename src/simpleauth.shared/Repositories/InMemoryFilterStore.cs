@@ -1,31 +1,30 @@
-﻿namespace SimpleAuth.Shared.Repositories
+﻿namespace SimpleAuth.Shared.Repositories;
+
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared.Models;
+
+/// <summary>
+/// Defines the in-memory filter store.
+/// </summary>
+public sealed class InMemoryFilterStore : IFilterStore
 {
-    using System;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Models;
+    private readonly Filter[] _filters;
 
     /// <summary>
-    /// Defines the in-memory filter store.
+    /// Initializes a new instance of the <see cref="InMemoryFilterStore"/> class.
     /// </summary>
-    public sealed class InMemoryFilterStore : IFilterStore
+    /// <param name="filters"></param>
+    public InMemoryFilterStore(params Filter[] filters)
     {
-        private readonly Filter[] _filters;
+        _filters = filters ?? Array.Empty<Filter>();
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InMemoryFilterStore"/> class.
-        /// </summary>
-        /// <param name="filters"></param>
-        public InMemoryFilterStore(params Filter[] filters)
-        {
-            _filters = filters ?? Array.Empty<Filter>();
-        }
-
-        /// <inheritdoc />
-        public Task<Filter[]> GetAll(CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(_filters.ToArray());
-        }
+    /// <inheritdoc />
+    public Task<Filter[]> GetAll(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(_filters.ToArray());
     }
 }

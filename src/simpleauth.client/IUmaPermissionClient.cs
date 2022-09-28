@@ -12,44 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client
+namespace SimpleAuth.Client;
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Requests;
+using SimpleAuth.Shared.Responses;
+
+/// <summary>
+/// Defines the UMA permission client interface.
+/// </summary>
+public interface IUmaPermissionClient
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    /// <summary>
+    /// Gets the <see cref="Uri"/> of the UMA authority.
+    /// </summary>
+    Uri Authority { get; }
 
     /// <summary>
-    /// Defines the UMA permission client interface.
+    /// Adds the permissions.
     /// </summary>
-    public interface IUmaPermissionClient
-    {
-        /// <summary>
-        /// Gets the <see cref="Uri"/> of the UMA authority.
-        /// </summary>
-        Uri Authority { get; }
+    /// <param name="token">The token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <param name="requests">The requests.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">
+    /// requests
+    /// or
+    /// token
+    /// </exception>
+    Task<Option<TicketResponse>> RequestPermission(string token, CancellationToken cancellationToken = default, params PermissionRequest[] requests);
 
-        /// <summary>
-        /// Adds the permissions.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <param name="requests">The requests.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// requests
-        /// or
-        /// token
-        /// </exception>
-        Task<Option<TicketResponse>> RequestPermission(string token, CancellationToken cancellationToken = default, params PermissionRequest[] requests);
-
-        /// <summary>
-        /// Gets the <see cref="UmaConfiguration"/>.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns></returns>
-        Task<UmaConfiguration> GetUmaDocument(CancellationToken cancellationToken = default);
-    }
+    /// <summary>
+    /// Gets the <see cref="UmaConfiguration"/>.
+    /// </summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns></returns>
+    Task<UmaConfiguration> GetUmaDocument(CancellationToken cancellationToken = default);
 }

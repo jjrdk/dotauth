@@ -12,33 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses
+namespace SimpleAuth.Shared.Responses;
+
+using System;
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the policy response.
+/// </summary>
+[DataContract]
+public sealed record PolicyResponse
 {
-    using System;
-    using System.Runtime.Serialization;
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
+    /// <value>
+    /// The identifier.
+    /// </value>
+    [DataMember(Name = "id")]
+    public string Id { get; set; } = null!;
 
     /// <summary>
-    /// Defines the policy response.
+    /// Gets or sets the rules.
     /// </summary>
-    [DataContract]
-    public record PolicyResponse
-    {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        [DataMember(Name = "id")]
-        public string Id { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the rules.
-        /// </summary>
-        /// <value>
-        /// The rules.
-        /// </value>
-        [DataMember(Name = "rules")]
-        public PolicyRuleResponse[] Rules { get; set; } = Array.Empty<PolicyRuleResponse>();
-    }
+    /// <value>
+    /// The rules.
+    /// </value>
+    [DataMember(Name = "rules")]
+    public PolicyRuleResponse[] Rules { get; set; } = Array.Empty<PolicyRuleResponse>();
 }

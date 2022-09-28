@@ -12,32 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Repositories
+namespace SimpleAuth.Shared.Repositories;
+
+using Models;
+using System.Threading;
+using System.Threading.Tasks;
+
+/// <summary>
+/// Defines the consent repository.
+/// </summary>
+/// <seealso cref="SimpleAuth.Shared.Repositories.IConsentStore" />
+public interface IConsentRepository : IConsentStore
 {
-    using Models;
-    using System.Threading;
-    using System.Threading.Tasks;
+    /// <summary>
+    /// Inserts the specified record.
+    /// </summary>
+    /// <param name="record">The record.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns></returns>
+    Task<bool> Insert(Consent record, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Defines the consent repository.
+    /// Deletes the specified record.
     /// </summary>
-    /// <seealso cref="SimpleAuth.Shared.Repositories.IConsentStore" />
-    public interface IConsentRepository : IConsentStore
-    {
-        /// <summary>
-        /// Inserts the specified record.
-        /// </summary>
-        /// <param name="record">The record.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<bool> Insert(Consent record, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Deletes the specified record.
-        /// </summary>
-        /// <param name="record">The record.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<bool> Delete(Consent record, CancellationToken cancellationToken);
-    }
+    /// <param name="record">The record.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns></returns>
+    Task<bool> Delete(Consent record, CancellationToken cancellationToken);
 }

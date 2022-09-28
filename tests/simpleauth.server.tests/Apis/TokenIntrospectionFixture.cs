@@ -12,118 +12,117 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Apis
+namespace SimpleAuth.Server.Tests.Apis;
+
+using Client;
+using Newtonsoft.Json;
+using Shared;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using SimpleAuth.Shared.Responses;
+using Xunit;
+using Xunit.Abstractions;
+
+public sealed class TokenIntrospectionFixture
 {
-    using Client;
-    using Newtonsoft.Json;
-    using Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Responses;
-    using Xunit;
-    using Xunit.Abstractions;
+    private const string BaseUrl = "http://localhost:5000";
+    private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
+    private readonly TestOauthServerFixture _server;
 
-    public class TokenIntrospectionFixture
+    public TokenIntrospectionFixture(ITestOutputHelper outputHelper)
     {
-        private const string BaseUrl = "http://localhost:5000";
-        private const string WellKnownOpenidConfiguration = "/.well-known/openid-configuration";
-        private readonly TestOauthServerFixture _server;
+        _server = new TestOauthServerFixture(outputHelper);
+    }
 
-        public TokenIntrospectionFixture(ITestOutputHelper outputHelper)
+    [Fact]
+    public async Task When_No_Parameters_Is_Passed_To_Introspection_Edp_Then_Error_Is_Returned()
+    {
+        var httpRequest = new HttpRequestMessage
         {
-            _server = new TestOauthServerFixture(outputHelper);
-        }
+            Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/introspect")
+        };
 
-        [Fact]
-        public async Task When_No_Parameters_Is_Passed_To_Introspection_Edp_Then_Error_Is_Returned()
+        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
+        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
+        Assert.Equal("no parameter in body request", error.Detail);
+    }
+
+    [Fact]
+    public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
+    {
+        var request = new List<KeyValuePair<string, string>> {new("invalid", "invalid")};
+        var body = new FormUrlEncodedContent(request);
+        var httpRequest = new HttpRequestMessage
         {
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/introspect")
-            };
+            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/introspect")
+        };
 
-            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
+        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
-            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("no parameter in body request", error.Detail);
-        }
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
+        Assert.Equal("no parameter in body request", error.Detail);
+    }
 
-        [Fact]
-        public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
-        {
-            var request = new List<KeyValuePair<string, string>> {new("invalid", "invalid")};
-            var body = new FormUrlEncodedContent(request);
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/introspect")
-            };
+    [Fact]
+    public async Task WhenIntrospectingAndTokenDoesNotExistThenResponseShowsInactiveToken()
+    {
+        var tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("client", "client"),
+            _server.Client,
+            new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var introspection = await tokenClient.Introspect(
+                IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken, "pat"))
+            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+        Assert.False(introspection.Item.Active);
+    }
 
-            var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
-            Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
-            Assert.Equal("no parameter in body request", error.Detail);
-        }
-
-        [Fact]
-        public async Task WhenIntrospectingAndTokenDoesNotExistThenResponseShowsInactiveToken()
-        {
-            var tokenClient = new TokenClient(
-                TokenCredentials.FromClientCredentials("client", "client"),
-                _server.Client,
-                new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var introspection = await tokenClient.Introspect(
-                    IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken, "pat"))
-                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
-
-            Assert.False(introspection.Item.Active);
-        }
-
-        [Fact]
-        public async Task When_Introspecting_AccessToken_Then_Information_Are_Returned()
-        {
-            var tokenClient = new TokenClient(
-                TokenCredentials.FromClientCredentials("client", "client"),
-                _server.Client,
-                new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var result =
-                await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
-                    .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-            var introspection = await tokenClient.Introspect(
-                    IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
-                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
-
-            Assert.Single(introspection.Item.Scope);
-            Assert.Equal("scim", introspection.Item.Scope.First());
-        }
-
-        [Fact]
-        public async Task When_Introspecting_RefreshToken_Then_Information_Are_Returned()
-        {
-            var tokenClient = new TokenClient(
-                TokenCredentials.FromClientCredentials("client", "client"),
-                _server.Client,
-                new Uri(BaseUrl + WellKnownOpenidConfiguration));
-            var result = await tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] {"scim", "offline"}))
+    [Fact]
+    public async Task When_Introspecting_AccessToken_Then_Information_Are_Returned()
+    {
+        var tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("client", "client"),
+            _server.Client,
+            new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var result =
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
                 .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var introspection = await tokenClient.Introspect(
+                IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
+            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            var introspection = await tokenClient.Introspect(
-                    IntrospectionRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken, "pat"))
-                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+        Assert.Single(introspection.Item.Scope);
+        Assert.Equal("scim", introspection.Item.Scope.First());
+    }
 
-            Assert.Equal(2, introspection.Item.Scope.Length);
-            Assert.Equal("scim", introspection.Item.Scope.First());
-        }
+    [Fact]
+    public async Task When_Introspecting_RefreshToken_Then_Information_Are_Returned()
+    {
+        var tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("client", "client"),
+            _server.Client,
+            new Uri(BaseUrl + WellKnownOpenidConfiguration));
+        var result = await tokenClient.GetToken(
+                TokenRequest.FromPassword("administrator", "password", new[] {"scim", "offline"}))
+            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+
+        var introspection = await tokenClient.Introspect(
+                IntrospectionRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken, "pat"))
+            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+
+        Assert.Equal(2, introspection.Item.Scope.Length);
+        Assert.Equal("scim", introspection.Item.Scope.First());
     }
 }

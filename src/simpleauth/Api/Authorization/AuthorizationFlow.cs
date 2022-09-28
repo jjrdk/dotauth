@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Authorization
+namespace SimpleAuth.Api.Authorization;
+
+internal enum AuthorizationFlow
 {
-    internal enum AuthorizationFlow
-    {
-        AuthorizationCodeFlow,
-        ImplicitFlow,
-        HybridFlow
-    }
+    AuthorizationCodeFlow,
+    ImplicitFlow,
+    HybridFlow
 }

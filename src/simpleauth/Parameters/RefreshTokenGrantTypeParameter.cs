@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Parameters
+namespace SimpleAuth.Parameters;
+
+internal sealed record RefreshTokenGrantTypeParameter : GrantTypeParameter
 {
-    internal sealed record RefreshTokenGrantTypeParameter : GrantTypeParameter
-    {
-        public string? RefreshToken { get; init; }
-    }
+    public string? RefreshToken { get; init; }
 }

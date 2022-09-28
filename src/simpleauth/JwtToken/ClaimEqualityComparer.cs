@@ -1,25 +1,24 @@
-﻿namespace SimpleAuth.JwtToken
+﻿namespace SimpleAuth.JwtToken;
+
+using System.Collections.Generic;
+using System.Security.Claims;
+
+internal sealed class ClaimEqualityComparer : IEqualityComparer<Claim>
 {
-    using System.Collections.Generic;
-    using System.Security.Claims;
-
-    internal class ClaimEqualityComparer : IEqualityComparer<Claim>
+    /// <inheritdoc />
+    public bool Equals(Claim? x, Claim? y)
     {
-        /// <inheritdoc />
-        public bool Equals(Claim? x, Claim? y)
+        if (x == null)
         {
-            if (x == null)
-            {
-                return y == null;
-            }
-
-            return y != null && x.ToString().Equals(y.ToString());
+            return y == null;
         }
 
-        /// <inheritdoc />
-        public int GetHashCode(Claim obj)
-        {
-            return obj.ToString().GetHashCode();
-        }
+        return y != null && x.ToString().Equals(y.ToString());
+    }
+
+    /// <inheritdoc />
+    public int GetHashCode(Claim obj)
+    {
+        return obj.ToString().GetHashCode();
     }
 }

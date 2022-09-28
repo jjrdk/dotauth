@@ -12,90 +12,85 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Models
+namespace SimpleAuth.Shared.Models;
+
+using System;
+using System.Data;
+using System.Linq;
+using System.Security.Claims;
+
+/// <summary>
+/// Defines the resource owner content.
+/// </summary>
+public sealed class ResourceOwner
 {
-    using System;
-    using System.Data;
-    using System.Linq;
-    using System.Security.Claims;
+    /// <summary>
+    /// Get or sets the subject-identifier for the End-User at the issuer.
+    /// </summary>
+    public string Subject
+    {
+        get => Claims.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value ?? "";
+        set
+        {
+            if (value == null)
+            {
+                throw new NoNullAllowedException();
+            }
+            var claim = new Claim(OpenIdClaimTypes.Subject, value);
+
+            Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.Subject).Concat(new[] { claim }).ToArray();
+        }
+    }
 
     /// <summary>
-    /// Defines the resource owner content.
+    /// Gets or sets the password
     /// </summary>
-    public class ResourceOwner
+    public string? Password { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of claims.
+    /// </summary>
+    public Claim[] Claims { get; set; } = Array.Empty<Claim>();
+
+    /// <summary>
+    /// Gets or sets the two factor authentications
+    /// </summary>
+    public string? TwoFactorAuthentication { get; set; }
+
+    /// <summary>
+    /// Gets or sets if the resource owner is local or external
+    /// </summary>
+    public bool IsLocalAccount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the create datetime.
+    /// </summary>
+    public DateTimeOffset CreateDateTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the update datetime.
+    /// </summary>
+    public DateTimeOffset UpdateDateTime
     {
-        /// <summary>
-        /// Get or sets the subject-identifier for the End-User at the issuer.
-        /// </summary>
-        public string Subject
+        get
         {
-            get => Claims.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value ?? "";
-            set
-            {
-                if (value == null)
-                {
-                    throw new NoNullAllowedException();
-                }
-                var claim = new Claim(OpenIdClaimTypes.Subject, value);
-
-                Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.Subject).Concat(new[] { claim }).ToArray();
-            }
+            var unix = Claims?.FirstOrDefault(x => x.Type == OpenIdClaimTypes.UpdatedAt)?.Value;
+            return unix?.ConvertFromUnixTimestamp() ?? DateTimeOffset.MinValue;
         }
-
-        /// <summary>
-        /// Gets or sets the password
-        /// </summary>
-        public string? Password { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of claims.
-        /// </summary>
-        public Claim[] Claims { get; set; } = Array.Empty<Claim>();
-
-        /// <summary>
-        /// Gets or sets the two factor authentications
-        /// </summary>
-        public string? TwoFactorAuthentication { get; set; }
-
-        /// <summary>
-        /// Gets or sets if the resource owner is local or external
-        /// </summary>
-        public bool IsLocalAccount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the create datetime.
-        /// </summary>
-        public DateTimeOffset CreateDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the update datetime.
-        /// </summary>
-        public DateTimeOffset UpdateDateTime
+        set
         {
-            get
-            {
-                var unix = Claims?.FirstOrDefault(x => x.Type == OpenIdClaimTypes.UpdatedAt)?.Value;
-                return unix?.ConvertFromUnixTimestamp() ?? DateTimeOffset.MinValue;
-            }
-            set
-            {
-                var unix = value.ConvertToUnixTimestamp();
-                var claim = new Claim(OpenIdClaimTypes.UpdatedAt, unix.ToString());
-                if (Claims == null)
-                {
-                    Claims = new[] { claim };
-                }
-
-                Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.UpdatedAt).Concat(new[] { claim }).ToArray();
-            }
+            var unix = value.ConvertToUnixTimestamp();
+            var claim = new Claim(OpenIdClaimTypes.UpdatedAt, unix.ToString());
+            
+            Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.UpdatedAt).Concat(Enumerable.Repeat(claim, 1)).ToArray();
         }
-
-        /// <summary>
-        /// Gets or sets the external logins.
-        /// </summary>
-        /// <value>
-        /// The external logins.
-        /// </value>
-        public ExternalAccountLink[] ExternalLogins { get; set; } = Array.Empty<ExternalAccountLink>();
     }
+
+    /// <summary>
+    /// Gets or sets the external logins.
+    /// </summary>
+    /// <value>
+    /// The external logins.
+    /// </value>
+    public ExternalAccountLink[] ExternalLogins { get; set; } = Array.Empty<ExternalAccountLink>();
 }

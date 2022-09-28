@@ -12,31 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Parameters
-{
-    using System;
+namespace SimpleAuth.Parameters;
 
-    internal sealed record AuthorizationParameter
-    {
-        public string? ClientId { get; init; }
-        public string? Scope { get; init; }
-        public string[] AmrValues { get; init; } = Array.Empty<string>();
-        public string? ResponseType { get; init; }
-        public Uri? RedirectUrl { get; init; }
-        public string? State { get; init; }
-        public string ResponseMode { get; init; } = null!;
-        public string? Nonce { get; init; }
-        public string? Prompt { get; init; }
-        public double MaxAge { get; init; }
-        public string? UiLocales { get; init; }
-        public string? IdTokenHint { get; init; }
-        public string? LoginHint { get; init; }
-        public string? AcrValues { get; init; }
-        public ClaimsParameter? Claims { get; init; }
-        public string? CodeChallenge { get; init; }
-        public string? CodeChallengeMethod { get; init; }
-        public string? ProcessId { get; init; }
-        public string? OriginUrl { get; init; }
-        public string? SessionId { get; init; }
-    }
+using System;
+
+internal sealed record AuthorizationParameter
+{
+    public string? ClientId { get; init; }
+    public string? Scope { get; init; }
+    public string[] AmrValues { get; init; } = Array.Empty<string>();
+    public string? ResponseType { get; init; }
+    public Uri? RedirectUrl { get; init; }
+    public string? State { get; init; }
+    public string ResponseMode { get; init; } = null!;
+    public string? Nonce { get; init; }
+    public string? Prompt { get; init; }
+    public double MaxAge { get; init; }
+    public string? UiLocales { get; init; }
+    public string? IdTokenHint { get; init; }
+    public string? LoginHint { get; init; }
+    public string? AcrValues { get; init; }
+    public ClaimsParameter? Claims { get; init; }
+    public string? CodeChallenge { get; init; }
+    public string? CodeChallengeMethod { get; init; }
+    public string? ProcessId { get; init; }
+    public string? OriginUrl { get; init; }
+    public string? SessionId { get; init; }
 }

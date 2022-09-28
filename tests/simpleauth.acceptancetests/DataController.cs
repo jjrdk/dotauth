@@ -1,49 +1,48 @@
-﻿namespace SimpleAuth.AcceptanceTests
+﻿namespace SimpleAuth.AcceptanceTests;
+
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using SimpleAuth.Client;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Requests;
+using SimpleAuth.Shared.Responses;
+
+[Route("[controller]")]
+public sealed class DataController : ControllerBase
 {
-    using System.Linq;
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Net.Http.Headers;
-    using SimpleAuth.Client;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Requests;
-    using SimpleAuth.Shared.Responses;
+    private readonly UmaClient _umaClient;
 
-    [Route("[controller]")]
-    public class DataController : ControllerBase
+    public DataController(UmaClient umaClient)
     {
-        private readonly UmaClient _umaClient;
+        _umaClient = umaClient;
+    }
 
-        public DataController(UmaClient umaClient)
+    [HttpGet("{id}")]
+    [Authorize]
+    public async Task<IActionResult> Index(string id, CancellationToken cancellationToken)
+    {
+        var userIdentity = User.Identity as ClaimsIdentity;
+        if (userIdentity.TryGetUmaTickets(out var permissions) && permissions.Any(x => x.ResourceSetId == id))
         {
-            _umaClient = umaClient;
+            return Ok("Hello");
         }
 
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<IActionResult> Index(string id, CancellationToken cancellationToken)
-        {
-            var userIdentity = User.Identity as ClaimsIdentity;
-            if (userIdentity.TryGetUmaTickets(out var permissions) && permissions.Any(x => x.ResourceSetId == id))
-            {
-                return Ok("Hello");
-            }
+        var token = await HttpContext.GetTokenAsync("access_token").ConfigureAwait(false);
+        var request = new PermissionRequest {ResourceSetId = id, Scopes = new[] {"api1"}};
+        var ticket =
+            await _umaClient.RequestPermission(token, cancellationToken, request).ConfigureAwait(false) as
+                Option<TicketResponse>.Result;
+        Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+        Response.Headers[HeaderNames.WWWAuthenticate] =
+            $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket.Item.TicketId}\"";
 
-            var token = await HttpContext.GetTokenAsync("access_token").ConfigureAwait(false);
-            var request = new PermissionRequest {ResourceSetId = id, Scopes = new[] {"api1"}};
-            var ticket =
-                await _umaClient.RequestPermission(token, cancellationToken, request).ConfigureAwait(false) as
-                    Option<TicketResponse>.Result;
-            Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-            Response.Headers[HeaderNames.WWWAuthenticate] =
-                $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket.Item.TicketId}\"";
-
-            return StatusCode((int) HttpStatusCode.Unauthorized);
-        }
+        return StatusCode((int) HttpStatusCode.Unauthorized);
     }
 }

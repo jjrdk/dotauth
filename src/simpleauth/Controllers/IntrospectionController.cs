@@ -12,86 +12,85 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers
+namespace SimpleAuth.Controllers;
+
+using System;
+using Api.Introspection;
+using Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Shared.Requests;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using SimpleAuth.Filters;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Repositories;
+using SimpleAuth.Shared.Responses;
+
+/// <summary>
+/// Defines the introspection controller.
+/// </summary>
+/// <seealso cref="ControllerBase" />
+[Route(CoreConstants.EndPoints.Introspection)]
+[ThrottleFilter]
+public sealed class IntrospectionController : ControllerBase
 {
-    using System;
-    using Api.Introspection;
-    using Extensions;
-    using Microsoft.AspNetCore.Mvc;
-    using Shared.Requests;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using System.Net;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authorization;
-    using SimpleAuth.Filters;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
-    using SimpleAuth.Shared.Responses;
+    private readonly PostIntrospectionAction _introspectionActions;
 
     /// <summary>
-    /// Defines the introspection controller.
+    /// Initializes a new instance of the <see cref="IntrospectionController"/> class.
     /// </summary>
-    /// <seealso cref="ControllerBase" />
-    [Route(CoreConstants.EndPoints.Introspection)]
-    [ThrottleFilter]
-    public class IntrospectionController : ControllerBase
+    /// <param name="tokenStore">The token store.</param>
+    public IntrospectionController(ITokenStore tokenStore)
     {
-        private readonly PostIntrospectionAction _introspectionActions;
+        _introspectionActions = new PostIntrospectionAction(tokenStore);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IntrospectionController"/> class.
-        /// </summary>
-        /// <param name="tokenStore">The token store.</param>
-        public IntrospectionController(ITokenStore tokenStore)
+    /// <summary>
+    /// Handles the specified introspection request.
+    /// </summary>
+    /// <param name="introspectionRequest">The introspection request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns></returns>
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> Post(
+        [FromForm] IntrospectionRequest introspectionRequest,
+        CancellationToken cancellationToken)
+    {
+        if (introspectionRequest?.token == null)
         {
-            _introspectionActions = new PostIntrospectionAction(tokenStore);
+            return BuildError(
+                ErrorCodes.InvalidRequest,
+                "no parameter in body request",
+                HttpStatusCode.BadRequest);
         }
 
-        /// <summary>
-        /// Handles the specified introspection request.
-        /// </summary>
-        /// <param name="introspectionRequest">The introspection request.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Post(
-            [FromForm] IntrospectionRequest introspectionRequest,
-            CancellationToken cancellationToken)
+        var result = await _introspectionActions.Execute(
+                introspectionRequest.ToParameter(),
+                cancellationToken)
+            .ConfigureAwait(false);
+        return result switch
         {
-            if (introspectionRequest?.token == null)
-            {
-                return BuildError(
-                    ErrorCodes.InvalidRequest,
-                    "no parameter in body request",
-                    HttpStatusCode.BadRequest);
-            }
+            Option<OauthIntrospectionResponse>.Result r => Ok(r.Item),
+            Option<OauthIntrospectionResponse>.Error e => BadRequest(e.Details),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
 
-            var result = await _introspectionActions.Execute(
-                    introspectionRequest.ToParameter(),
-                    cancellationToken)
-                .ConfigureAwait(false);
-            return result switch
-            {
-                Option<OauthIntrospectionResponse>.Result r => Ok(r.Item),
-                Option<OauthIntrospectionResponse>.Error e => BadRequest(e.Details),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-
-        /// <summary>
-        /// Build the JSON error message.
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="message"></param>
-        /// <param name="statusCode"></param>
-        /// <returns></returns>
-        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
-        {
-            var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
-            return new JsonResult(error) { StatusCode = (int)statusCode };
-        }
+    /// <summary>
+    /// Build the JSON error message.
+    /// </summary>
+    /// <param name="code"></param>
+    /// <param name="message"></param>
+    /// <param name="statusCode"></param>
+    /// <returns></returns>
+    private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+    {
+        var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+        return new JsonResult(error) { StatusCode = (int)statusCode };
     }
 }

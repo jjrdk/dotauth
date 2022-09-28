@@ -1,24 +1,23 @@
-﻿namespace SimpleAuth.Shared.Responses
+﻿namespace SimpleAuth.Shared.Responses;
+
+using System;
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the view model for editing policies.
+/// </summary>
+[DataContract]
+public sealed record EditPolicyResponse
 {
-    using System;
-    using System.Runtime.Serialization;
+    /// <summary>
+    /// Gets or sets the resource id.
+    /// </summary>
+    [DataMember(Name = "id")]
+    public string Id { get; set; } = null!;
 
     /// <summary>
-    /// Defines the view model for editing policies.
+    /// Gets or sets the authorization policies.
     /// </summary>
-    [DataContract]
-    public record EditPolicyResponse
-    {
-        /// <summary>
-        /// Gets or sets the resource id.
-        /// </summary>
-        [DataMember(Name = "id")]
-        public string Id { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the authorization policies.
-        /// </summary>
-        [DataMember(Name = "rules")]
-        public PolicyRuleViewModel[] Rules { get; set; } = Array.Empty<PolicyRuleViewModel>();
-    }
+    [DataMember(Name = "rules")]
+    public PolicyRuleViewModel[] Rules { get; set; } = Array.Empty<PolicyRuleViewModel>();
 }

@@ -12,102 +12,101 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared
+namespace SimpleAuth.Shared;
+
+using System;
+using System.Security.Cryptography;
+using System.Text;
+
+/// <summary>
+/// Implementation of base64 encoding &amp; decoding according to the RFC
+/// https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#appendix-C
+/// </summary>
+public static class StringExtensions
 {
-    using System;
-    using System.Security.Cryptography;
-    using System.Text;
+    /// <summary>
+    /// Converts to sha256hash.
+    /// </summary>
+    /// <param name="entry">The entry.</param>
+    /// <param name="salt">The hash salt.</param>
+    /// <returns>The salted hashed value as a hex string.</returns>
+    public static string ToSha256Hash(this string entry, string salt)
+    {
+        using var sha256 = SHA256.Create();
+        var entryBytes = Encoding.UTF8.GetBytes(entry + salt);
+        var hash = sha256.ComputeHash(entryBytes);
+        return BitConverter.ToString(hash).Replace("-", string.Empty);
+    }
 
     /// <summary>
-    /// Implementation of base64 encoding &amp; decoding according to the RFC
-    /// https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#appendix-C
+    /// Converts to sha256 as simplified base64.
     /// </summary>
-    public static class StringExtensions
+    /// <param name="entry">The entry.</param>
+    /// <param name="encoding">The encoding.</param>
+    /// <returns></returns>
+    public static string ToSha256SimplifiedBase64(this string entry, Encoding? encoding = null)
     {
-        /// <summary>
-        /// Converts to sha256hash.
-        /// </summary>
-        /// <param name="entry">The entry.</param>
-        /// <param name="salt">The hash salt.</param>
-        /// <returns>The salted hashed value as a hex string.</returns>
-        public static string ToSha256Hash(this string entry, string salt)
-        {
-            using var sha256 = SHA256.Create();
-            var entryBytes = Encoding.UTF8.GetBytes(entry + salt);
-            var hash = sha256.ComputeHash(entryBytes);
-            return BitConverter.ToString(hash).Replace("-", string.Empty);
-        }
+        var enc = encoding ?? Encoding.UTF8;
+        using var sha256 = SHA256.Create();
+        var entryBytes = enc.GetBytes(entry);
+        var hash = sha256.ComputeHash(entryBytes);
+        return hash.ToBase64Simplified();
+    }
 
-        /// <summary>
-        /// Converts to sha256 as simplified base64.
-        /// </summary>
-        /// <param name="entry">The entry.</param>
-        /// <param name="encoding">The encoding.</param>
-        /// <returns></returns>
-        public static string ToSha256SimplifiedBase64(this string entry, Encoding? encoding = null)
-        {
-            var enc = encoding ?? Encoding.UTF8;
-            using var sha256 = SHA256.Create();
-            var entryBytes = enc.GetBytes(entry);
-            var hash = sha256.ComputeHash(entryBytes);
-            return hash.ToBase64Simplified();
-        }
+    /// <summary>
+    /// Base64 encode the passed string.
+    /// </summary>
+    /// <param name="plainText"></param>
+    /// <returns></returns>
+    public static string Base64Encode(this string plainText)
+    {
+        var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+        return ToBase64Simplified(plainTextBytes);
+    }
 
-        /// <summary>
-        /// Base64 encode the passed string.
-        /// </summary>
-        /// <param name="plainText"></param>
-        /// <returns></returns>
-        public static string Base64Encode(this string plainText)
-        {
-            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-            return ToBase64Simplified(plainTextBytes);
-        }
+    /// <summary>
+    /// Create simplified base64 encoding.
+    /// </summary>
+    /// <param name="bytes">The bytes to encode.</param>
+    /// <returns></returns>
+    public static string ToBase64Simplified(this byte[]? bytes)
+    {
+        return bytes == null
+            ? string.Empty
+            : Convert.ToBase64String(bytes).Split('=')[0].Replace('+', '-').Replace('/', '_');
+    }
 
-        /// <summary>
-        /// Create simplified base64 encoding.
-        /// </summary>
-        /// <param name="bytes">The bytes to encode.</param>
-        /// <returns></returns>
-        public static string ToBase64Simplified(this byte[]? bytes)
-        {
-            return bytes == null
-                ? string.Empty
-                : Convert.ToBase64String(bytes).Split('=')[0].Replace('+', '-').Replace('/', '_');
-        }
+    /// <summary>
+    /// Base64 decode.
+    /// </summary>
+    /// <param name="base64EncodedData">The base64 encoded data.</param>
+    /// <returns></returns>
+    public static string Base64Decode(this string base64EncodedData)
+    {
+        var decodeBytes = base64EncodedData.Base64DecodeBytes();
+        return Encoding.UTF8.GetString(decodeBytes);
+    }
 
-        /// <summary>
-        /// Base64 decode.
-        /// </summary>
-        /// <param name="base64EncodedData">The base64 encoded data.</param>
-        /// <returns></returns>
-        public static string Base64Decode(this string base64EncodedData)
+    /// <summary>
+    /// Base64 decode.
+    /// </summary>
+    /// <param name="base64EncodedData">The base64 encoded data.</param>
+    /// <returns></returns>
+    public static byte[] Base64DecodeBytes(this string base64EncodedData)
+    {
+        var s = base64EncodedData.Trim().Replace(" ", "+").Replace('-', '+').Replace('_', '/');
+        switch (s.Length % 4)
         {
-            var decodeBytes = base64EncodedData.Base64DecodeBytes();
-            return Encoding.UTF8.GetString(decodeBytes);
-        }
-
-        /// <summary>
-        /// Base64 decode.
-        /// </summary>
-        /// <param name="base64EncodedData">The base64 encoded data.</param>
-        /// <returns></returns>
-        public static byte[] Base64DecodeBytes(this string base64EncodedData)
-        {
-            var s = base64EncodedData.Trim().Replace(" ", "+").Replace('-', '+').Replace('_', '/');
-            switch (s.Length % 4)
-            {
-                case 0:
-                    return Convert.FromBase64String(s);
-                case 2:
-                    s += "==";
-                    goto case 0;
-                case 3:
-                    s += "=";
-                    goto case 0;
-                default:
-                    throw new InvalidOperationException("Illegal base64url string!");
-            }
+            case 0:
+                return Convert.FromBase64String(s);
+            case 2:
+                s += "==";
+                goto case 0;
+            case 3:
+                s += "=";
+                goto case 0;
+            default:
+                throw new InvalidOperationException("Illegal base64url string!");
         }
     }
 }

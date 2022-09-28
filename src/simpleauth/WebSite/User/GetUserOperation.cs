@@ -12,74 +12,73 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.User
+namespace SimpleAuth.WebSite.User;
+
+using System.Net;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Properties;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Errors;
+using SimpleAuth.Shared.Models;
+using SimpleAuth.Shared.Repositories;
+
+internal sealed class GetUserOperation
 {
-    using System.Net;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Errors;
-    using SimpleAuth.Shared.Models;
-    using SimpleAuth.Shared.Repositories;
+    private readonly IResourceOwnerRepository _resourceOwnerRepository;
+    private readonly ILogger _logger;
 
-    internal class GetUserOperation
+    public GetUserOperation(IResourceOwnerRepository resourceOwnerRepository, ILogger logger)
     {
-        private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly ILogger _logger;
+        _resourceOwnerRepository = resourceOwnerRepository;
+        _logger = logger;
+    }
 
-        public GetUserOperation(IResourceOwnerRepository resourceOwnerRepository, ILogger logger)
+    public async Task<Option<ResourceOwner>> Execute(
+        ClaimsPrincipal claimsPrincipal,
+        CancellationToken cancellationToken)
+    {
+        var claimsIdentity = claimsPrincipal.Identity as ClaimsIdentity;
+        if (claimsIdentity?.IsAuthenticated != true)
         {
-            _resourceOwnerRepository = resourceOwnerRepository;
-            _logger = logger;
+            _logger.LogError(Strings.TheUserNeedsToBeAuthenticated);
+            return new Option<ResourceOwner>.Error(
+                new ErrorDetails
+                {
+                    Title = ErrorCodes.UnhandledExceptionCode,
+                    Detail = Strings.TheUserNeedsToBeAuthenticated,
+                    Status = HttpStatusCode.InternalServerError
+                });
         }
 
-        public async Task<Option<ResourceOwner>> Execute(
-            ClaimsPrincipal claimsPrincipal,
-            CancellationToken cancellationToken)
+        var subject = claimsPrincipal.GetSubject();
+        if (string.IsNullOrWhiteSpace(subject))
         {
-            var claimsIdentity = claimsPrincipal.Identity as ClaimsIdentity;
-            if (claimsIdentity?.IsAuthenticated != true)
-            {
-                _logger.LogError(Strings.TheUserNeedsToBeAuthenticated);
-                return new Option<ResourceOwner>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.UnhandledExceptionCode,
-                        Detail = Strings.TheUserNeedsToBeAuthenticated,
-                        Status = HttpStatusCode.InternalServerError
-                    });
-            }
-
-            var subject = claimsPrincipal.GetSubject();
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                _logger.LogError(Strings.TheSubjectCannotBeRetrieved);
-                return new Option<ResourceOwner>.Error(
-                    new ErrorDetails
-                    {
-                        Title = ErrorCodes.UnhandledExceptionCode,
-                        Detail = Strings.TheSubjectCannotBeRetrieved,
-                        Status = HttpStatusCode.InternalServerError
-                    });
-            }
-
-            var ro = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
-            if (ro is not null)
-            {
-                return new Option<ResourceOwner>.Result(ro);
-            }
-
             _logger.LogError(Strings.TheSubjectCannotBeRetrieved);
             return new Option<ResourceOwner>.Error(
                 new ErrorDetails
                 {
                     Title = ErrorCodes.UnhandledExceptionCode,
-                    Detail = Strings.TheRoDoesntExist,
+                    Detail = Strings.TheSubjectCannotBeRetrieved,
                     Status = HttpStatusCode.InternalServerError
                 });
         }
+
+        var ro = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
+        if (ro is not null)
+        {
+            return new Option<ResourceOwner>.Result(ro);
+        }
+
+        _logger.LogError(Strings.TheSubjectCannotBeRetrieved);
+        return new Option<ResourceOwner>.Error(
+            new ErrorDetails
+            {
+                Title = ErrorCodes.UnhandledExceptionCode,
+                Detail = Strings.TheRoDoesntExist,
+                Status = HttpStatusCode.InternalServerError
+            });
     }
 }

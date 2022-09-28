@@ -1,20 +1,19 @@
-﻿namespace SimpleAuth.Tests.Validators
+﻿namespace SimpleAuth.Tests.Validators;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+internal static class ObjectExtensions
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
+    private static readonly JsonConverter[] Converters = { new StringEnumConverter() };
 
-    internal static class ObjectExtensions
+    public static string SerializeWithJavascript(this object parameter)
     {
-        private static readonly JsonConverter[] Converters = { new StringEnumConverter() };
+        return JsonConvert.SerializeObject(parameter, Converters);
+    }
 
-        public static string SerializeWithJavascript(this object parameter)
-        {
-            return JsonConvert.SerializeObject(parameter, Converters);
-        }
-
-        public static T DeserializeWithJavascript<T>(this string parameter)
-        {
-            return JsonConvert.DeserializeObject<T>(parameter, Converters);
-        }
+    public static T DeserializeWithJavascript<T>(this string parameter)
+    {
+        return JsonConvert.DeserializeObject<T>(parameter, Converters);
     }
 }

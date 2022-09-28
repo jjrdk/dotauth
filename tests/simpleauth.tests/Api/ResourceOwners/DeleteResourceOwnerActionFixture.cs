@@ -12,46 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.ResourceOwners
+namespace SimpleAuth.Tests.Api.ResourceOwners;
+
+using System.Threading;
+using System.Threading.Tasks;
+using Repositories;
+using Shared.Models;
+using Shared.Repositories;
+using Xunit;
+
+public sealed class DeleteResourceOwnerActionFixture
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Repositories;
-    using Shared.Models;
-    using Shared.Repositories;
-    using Xunit;
+    private IResourceOwnerRepository _resourceOwnerRepositoryStub;
 
-    public class DeleteResourceOwnerActionFixture
+    [Fact]
+    public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsFalse()
     {
-        private IResourceOwnerRepository _resourceOwnerRepositoryStub;
+        const string subject = "invalid_subject";
+        InitializeFakeObjects();
 
-        [Fact]
-        public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsFalse()
-        {
-            const string subject = "invalid_subject";
-            InitializeFakeObjects();
+        var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None)
+            .ConfigureAwait(false);
 
-            var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None)
-                .ConfigureAwait(false);
+        Assert.False(result);
+    }
 
-            Assert.False(result);
-        }
+    [Fact]
+    public async Task When_Cannot_Delete_Resource_Owner_Then_ReturnsFalse()
+    {
+        const string subject = "subject";
+        InitializeFakeObjects(new ResourceOwner());
 
-        [Fact]
-        public async Task When_Cannot_Delete_Resource_Owner_Then_ReturnsFalse()
-        {
-            const string subject = "subject";
-            InitializeFakeObjects(new ResourceOwner());
+        var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None)
+            .ConfigureAwait(false);
 
-            var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None)
-                .ConfigureAwait(false);
+        Assert.False(result);
+    }
 
-            Assert.False(result);
-        }
-
-        private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
-        {
-            _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(string.Empty, resourceOwners);
-        }
+    private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
+    {
+        _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(string.Empty, resourceOwners);
     }
 }

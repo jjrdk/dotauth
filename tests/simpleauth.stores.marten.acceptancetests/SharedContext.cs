@@ -12,32 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Stores.Marten.AcceptanceTests
+namespace SimpleAuth.Stores.Marten.AcceptanceTests;
+
+using System;
+using System.Net.Http;
+using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using SimpleAuth.Extensions;
+
+public sealed class SharedContext
 {
-    using System;
-    using System.Net.Http;
-    using System.Security.Cryptography;
-    using Microsoft.IdentityModel.Tokens;
-    using SimpleAuth.Extensions;
+    public static SharedContext Instance { get; } = new ();
 
-    public class SharedContext
+    private SharedContext()
     {
-        public static SharedContext Instance { get; } = new ();
-
-        private SharedContext()
-        {
-            using var rsa = new RSACryptoServiceProvider(2048);
-            SignatureKey = rsa.CreateSignatureJwk("1", true);
-            ModelSignatureKey = rsa.CreateSignatureJwk("2", true);
-            EncryptionKey = rsa.CreateEncryptionJwk("3", true);
-            ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
-        }
-
-        public JsonWebKey EncryptionKey { get; }
-        public JsonWebKey ModelEncryptionKey { get; }
-        public JsonWebKey SignatureKey { get; }
-        public JsonWebKey ModelSignatureKey { get; }
-        public Func<HttpClient> Client { get; set; } = null!;
-        public Func<HttpMessageHandler> Handler { get; set; } = null!;
+        using var rsa = new RSACryptoServiceProvider(2048);
+        SignatureKey = rsa.CreateSignatureJwk("1", true);
+        ModelSignatureKey = rsa.CreateSignatureJwk("2", true);
+        EncryptionKey = rsa.CreateEncryptionJwk("3", true);
+        ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
     }
+
+    public JsonWebKey EncryptionKey { get; }
+    public JsonWebKey ModelEncryptionKey { get; }
+    public JsonWebKey SignatureKey { get; }
+    public JsonWebKey ModelSignatureKey { get; }
+    public Func<HttpClient> Client { get; set; } = null!;
+    public Func<HttpMessageHandler> Handler { get; set; } = null!;
 }

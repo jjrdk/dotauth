@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses
-{
-    using System.Runtime.Serialization;
+namespace SimpleAuth.Shared.Responses;
 
+using System.Runtime.Serialization;
+
+/// <summary>
+/// Defines the authorization response.
+/// </summary>
+[DataContract]
+public sealed record AuthorizationResponse
+{
     /// <summary>
-    /// Defines the authorization response.
+    /// Gets or sets the RPT.
     /// </summary>
-    [DataContract]
-    public record AuthorizationResponse
-    {
-        /// <summary>
-        /// Gets or sets the RPT.
-        /// </summary>
-        /// <value>
-        /// The RPT.
-        /// </value>
-        [DataMember(Name = "rpt")]
-        public string Rpt { get; set; } = null!;
-    }
+    /// <value>
+    /// The RPT.
+    /// </value>
+    [DataMember(Name = "rpt")]
+    public string Rpt { get; set; } = null!;
 }

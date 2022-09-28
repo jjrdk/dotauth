@@ -14,189 +14,188 @@
 
 using SimpleAuth.Shared.Repositories;
 
-namespace SimpleAuth.Tests.Api.Introspection.Actions
+namespace SimpleAuth.Tests.Api.Introspection.Actions;
+
+using Moq;
+using Parameters;
+using Shared;
+using Shared.Models;
+using SimpleAuth;
+using SimpleAuth.Api.Introspection;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Shared.Responses;
+using Xunit;
+
+public sealed class PostIntrospectionActionFixture
 {
-    using Moq;
-    using Parameters;
-    using Shared;
-    using Shared.Models;
-    using SimpleAuth;
-    using SimpleAuth.Api.Introspection;
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Shared.Responses;
-    using Xunit;
+    private readonly Mock<ITokenStore> _tokenStoreStub;
+    private readonly PostIntrospectionAction _postIntrospectionAction;
 
-    public class PostIntrospectionActionFixture
+    public PostIntrospectionActionFixture()
     {
-        private readonly Mock<ITokenStore> _tokenStoreStub;
-        private readonly PostIntrospectionAction _postIntrospectionAction;
+        _tokenStoreStub = new Mock<ITokenStore>();
+        _postIntrospectionAction = new PostIntrospectionAction(_tokenStoreStub.Object);
+    }
 
-        public PostIntrospectionActionFixture()
+    [Fact]
+    public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+    {
+        await Assert
+            .ThrowsAsync<NullReferenceException>(
+                () => _postIntrospectionAction.Execute(null, CancellationToken.None))
+            .ConfigureAwait(false);
+    }
+
+    [Fact]
+    public async Task WhenAccessTokenCannotBeExtractedThenTokenIsInactive()
+    {
+        var parameter = new IntrospectionParameter
         {
-            _tokenStoreStub = new Mock<ITokenStore>();
-            _postIntrospectionAction = new PostIntrospectionAction(_tokenStoreStub.Object);
-        }
+            ClientId = "test",
+            ClientSecret = "test",
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
+            Token = "token"
+        };
 
-        [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() => null);
+
+        var response = await _postIntrospectionAction.Execute(parameter, CancellationToken.None)
+            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+
+        Assert.False(response.Item.Active);
+    }
+
+    [Fact]
+    public async Task When_Passing_Expired_RefreshToken_Then_Result_Should_Be_Returned()
+    {
+        var parameter = new IntrospectionParameter
         {
-            await Assert
-                .ThrowsAsync<NullReferenceException>(
-                    () => _postIntrospectionAction.Execute(null, CancellationToken.None))
-                .ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task WhenAccessTokenCannotBeExtractedThenTokenIsInactive()
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+        };
+        var grantedToken = new GrantedToken
         {
-            var parameter = new IntrospectionParameter
+            Scope = "scope",
+            ClientId = "client_id",
+            IdTokenPayLoad = new JwtPayload
             {
-                ClientId = "test",
-                ClientSecret = "test",
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
-                Token = "token"
-            };
+                {OpenIdClaimTypes.Subject, "tester"}, {StandardClaimNames.Audiences, new[] {"audience"}}
+            },
+            CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
+            ExpiresIn = 0
+        };
+        _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() => grantedToken);
 
-            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => null);
+        var response = await _postIntrospectionAction
+            .Execute(parameter, CancellationToken.None)
+            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            var response = await _postIntrospectionAction.Execute(parameter, CancellationToken.None)
-                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+        var result = response.Item;
+        Assert.False(result.Active);
+    }
 
-            Assert.False(response.Item.Active);
-        }
-
-        [Fact]
-        public async Task When_Passing_Expired_RefreshToken_Then_Result_Should_Be_Returned()
+    [Fact]
+    public async Task When_Passing_Active_RefreshToken_Then_Result_Should_Be_Returned()
+    {
+        const string clientId = "client_id";
+        const string subject = "subject";
+        const string audience = "audience";
+        var audiences = new[] {audience};
+        var parameter = new IntrospectionParameter
         {
-            var parameter = new IntrospectionParameter
-            {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
-            };
-            var grantedToken = new GrantedToken
-            {
-                Scope = "scope",
-                ClientId = "client_id",
-                IdTokenPayLoad = new JwtPayload
-                {
-                    {OpenIdClaimTypes.Subject, "tester"}, {StandardClaimNames.Audiences, new[] {"audience"}}
-                },
-                CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
-                ExpiresIn = 0
-            };
-            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => grantedToken);
-
-            var response = await _postIntrospectionAction
-                .Execute(parameter, CancellationToken.None)
-                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
-
-            var result = response.Item;
-            Assert.False(result.Active);
-        }
-
-        [Fact]
-        public async Task When_Passing_Active_RefreshToken_Then_Result_Should_Be_Returned()
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+        };
+        var grantedToken = new GrantedToken
         {
-            const string clientId = "client_id";
-            const string subject = "subject";
-            const string audience = "audience";
-            var audiences = new[] {audience};
-            var parameter = new IntrospectionParameter
+            Scope = "scope",
+            ClientId = clientId,
+            IdTokenPayLoad = new JwtPayload
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
-            };
-            var grantedToken = new GrantedToken
-            {
-                Scope = "scope",
-                ClientId = clientId,
-                IdTokenPayLoad = new JwtPayload
-                {
-                    {OpenIdClaimTypes.Subject, subject}, {StandardClaimNames.Audiences, audiences}
-                },
-                CreateDateTime = DateTimeOffset.UtcNow,
-                ExpiresIn = 20000
-            };
+                {OpenIdClaimTypes.Subject, subject}, {StandardClaimNames.Audiences, audiences}
+            },
+            CreateDateTime = DateTimeOffset.UtcNow,
+            ExpiresIn = 20000
+        };
 
-            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(grantedToken));
+        _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(() => Task.FromResult(grantedToken));
 
-            var response = await _postIntrospectionAction
-                .Execute(parameter, CancellationToken.None)
-                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+        var response = await _postIntrospectionAction
+            .Execute(parameter, CancellationToken.None)
+            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            var result = response.Item;
-            Assert.True(result.Active);
-            Assert.Equal(audience, result.Audience);
-            Assert.Equal(subject, result.Subject);
-        }
+        var result = response.Item;
+        Assert.True(result.Active);
+        Assert.Equal(audience, result.Audience);
+        Assert.Equal(subject, result.Subject);
+    }
 
-        [Fact]
-        public async Task When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
+    [Fact]
+    public async Task When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
+    {
+        var parameter = new IntrospectionParameter
         {
-            var parameter = new IntrospectionParameter
-            {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
-            };
-            var grantedToken = new GrantedToken
-            {
-                Scope = "scope",
-                ClientId = "client_id",
-                IdTokenPayLoad = new JwtPayload
-                {
-                    {OpenIdClaimTypes.Subject, "tester"}, {StandardClaimNames.Audiences, new[] {"audience"}}
-                },
-                CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
-                ExpiresIn = 0
-            };
-            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => grantedToken);
-
-            var response = await _postIntrospectionAction
-                .Execute(parameter, CancellationToken.None)
-                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
-
-            var result = response.Item;
-            Assert.False(result.Active);
-        }
-
-        [Fact]
-        public async Task When_Passing_Active_AccessToken_Then_Result_Should_Be_Returned()
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
+        };
+        var grantedToken = new GrantedToken
         {
-            const string clientId = "client_id";
-            const string subject = "subject";
-            const string audience = "audience";
-            var audiences = new[] {audience};
-            var parameter = new IntrospectionParameter
+            Scope = "scope",
+            ClientId = "client_id",
+            IdTokenPayLoad = new JwtPayload
             {
-                TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
-            };
-            var grantedToken = new GrantedToken
+                {OpenIdClaimTypes.Subject, "tester"}, {StandardClaimNames.Audiences, new[] {"audience"}}
+            },
+            CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
+            ExpiresIn = 0
+        };
+        _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() => grantedToken);
+
+        var response = await _postIntrospectionAction
+            .Execute(parameter, CancellationToken.None)
+            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+
+        var result = response.Item;
+        Assert.False(result.Active);
+    }
+
+    [Fact]
+    public async Task When_Passing_Active_AccessToken_Then_Result_Should_Be_Returned()
+    {
+        const string clientId = "client_id";
+        const string subject = "subject";
+        const string audience = "audience";
+        var audiences = new[] {audience};
+        var parameter = new IntrospectionParameter
+        {
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
+        };
+        var grantedToken = new GrantedToken
+        {
+            Scope = "scope",
+            ClientId = clientId,
+            IdTokenPayLoad = new JwtPayload
             {
-                Scope = "scope",
-                ClientId = clientId,
-                IdTokenPayLoad = new JwtPayload
-                {
-                    {OpenIdClaimTypes.Subject, subject}, {StandardClaimNames.Audiences, audiences}
-                },
-                CreateDateTime = DateTimeOffset.UtcNow,
-                ExpiresIn = 20000
-            };
+                {OpenIdClaimTypes.Subject, subject}, {StandardClaimNames.Audiences, audiences}
+            },
+            CreateDateTime = DateTimeOffset.UtcNow,
+            ExpiresIn = 20000
+        };
 
-            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(grantedToken));
+        _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(() => Task.FromResult(grantedToken));
 
-            var response = await _postIntrospectionAction
-                .Execute(parameter, CancellationToken.None)
-                .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+        var response = await _postIntrospectionAction
+            .Execute(parameter, CancellationToken.None)
+            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
 
-            var result = response.Item;
-            Assert.True(result.Active);
-            Assert.Equal(audience, result.Audience);
-            Assert.Equal(subject, result.Subject);
-        }
+        var result = response.Item;
+        Assert.True(result.Active);
+        Assert.Equal(audience, result.Audience);
+        Assert.Equal(subject, result.Subject);
     }
 }

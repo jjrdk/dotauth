@@ -1,34 +1,33 @@
-﻿namespace SimpleAuth.Server.Tests.Apis
+﻿namespace SimpleAuth.Server.Tests.Apis;
+
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Xunit;
+using Xunit.Abstractions;
+
+public sealed class SessionApiFixture
 {
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using Xunit;
-    using Xunit.Abstractions;
+    private const string BaseUrl = "http://localhost:5000";
+    private readonly TestOauthServerFixture _server;
 
-    public class SessionApiFixture
+    public SessionApiFixture(ITestOutputHelper outputHelper)
     {
-        private const string BaseUrl = "http://localhost:5000";
-        private readonly TestOauthServerFixture _server;
+        _server = new TestOauthServerFixture(outputHelper);
+    }
 
-        public SessionApiFixture(ITestOutputHelper outputHelper)
+    [Fact]
+    public async Task When_Check_Session_Then_Ok_Is_Returned()
+    {
+        var httpRequest = new HttpRequestMessage
         {
-            _server = new TestOauthServerFixture(outputHelper);
-        }
+            Method = HttpMethod.Get,
+            RequestUri = new System.Uri($"{BaseUrl}/check_session")
+        };
 
-        [Fact]
-        public async Task When_Check_Session_Then_Ok_Is_Returned()
-        {
-            var httpRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new System.Uri($"{BaseUrl}/check_session")
-            };
+        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
+        _ = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-            _ = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
-        }
+        Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
     }
 }

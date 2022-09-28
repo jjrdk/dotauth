@@ -32,7 +32,7 @@
 
 //namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 //{
-//    public class GetTokenByClientCredentialsGrantTypeActionFixture
+//    public sealed class GetTokenByClientCredentialsGrantTypeActionFixture
 //    {
 //        private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
 //        private Mock<IAuthenticateClient> _authenticateClientStub;

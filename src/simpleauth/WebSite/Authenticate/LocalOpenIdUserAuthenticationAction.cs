@@ -12,105 +12,104 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.Authenticate
+namespace SimpleAuth.WebSite.Authenticate;
+
+using SimpleAuth.Extensions;
+using SimpleAuth.Parameters;
+using SimpleAuth.Shared;
+using SimpleAuth.Shared.Repositories;
+using System;
+using System.Globalization;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SimpleAuth.Events;
+using SimpleAuth.Properties;
+using SimpleAuth.Services;
+
+internal sealed class LocalOpenIdUserAuthenticationAction
 {
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Parameters;
-    using SimpleAuth.Shared;
-    using SimpleAuth.Shared.Repositories;
-    using System;
-    using System.Globalization;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using SimpleAuth.Events;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Services;
+    private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
+    private readonly AuthenticateHelper _authenticateHelper;
 
-    internal class LocalOpenIdUserAuthenticationAction
+    public LocalOpenIdUserAuthenticationAction(
+        IAuthorizationCodeStore authorizationCodeStore,
+        IAuthenticateResourceOwnerService[] resourceOwnerServices,
+        IConsentRepository consentRepository,
+        ITokenStore tokenStore,
+        IScopeRepository scopeRepository,
+        IClientStore clientStore,
+        IJwksStore jwksStore,
+        IEventPublisher eventPublisher,
+        ILogger logger)
     {
-        private readonly IAuthenticateResourceOwnerService[] _resourceOwnerServices;
-        private readonly AuthenticateHelper _authenticateHelper;
+        _resourceOwnerServices = resourceOwnerServices;
+        _authenticateHelper = new AuthenticateHelper(
+            authorizationCodeStore,
+            tokenStore,
+            scopeRepository,
+            consentRepository,
+            clientStore,
+            jwksStore,
+            eventPublisher,
+            logger);
+    }
 
-        public LocalOpenIdUserAuthenticationAction(
-            IAuthorizationCodeStore authorizationCodeStore,
-            IAuthenticateResourceOwnerService[] resourceOwnerServices,
-            IConsentRepository consentRepository,
-            ITokenStore tokenStore,
-            IScopeRepository scopeRepository,
-            IClientStore clientStore,
-            IJwksStore jwksStore,
-            IEventPublisher eventPublisher,
-            ILogger logger)
+    /// <summary>
+    /// Authenticate local user account.
+    /// </summary>
+    /// <param name="localAuthenticationParameter">User's credentials</param>
+    /// <param name="authorizationParameter">Authorization parameters</param>
+    /// <param name="code">Encrypted &amp; signed authorization parameters</param>
+    /// <param name="issuerName"></param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns>Consent screen or redirect to the Index page.</returns>
+    public async Task<LocalOpenIdAuthenticationResult> Execute(
+        LocalAuthenticationParameter localAuthenticationParameter,
+        AuthorizationParameter authorizationParameter,
+        string code,
+        string issuerName,
+        CancellationToken cancellationToken)
+    {
+        var resourceOwner =
+            (localAuthenticationParameter.UserName == null || localAuthenticationParameter.Password == null)
+                ? null
+                : await _resourceOwnerServices.Authenticate(
+                        localAuthenticationParameter.UserName,
+                        localAuthenticationParameter.Password,
+                        cancellationToken,
+                        authorizationParameter.AmrValues)
+                    .ConfigureAwait(false);
+        if (resourceOwner == null)
         {
-            _resourceOwnerServices = resourceOwnerServices;
-            _authenticateHelper = new AuthenticateHelper(
-                authorizationCodeStore,
-                tokenStore,
-                scopeRepository,
-                consentRepository,
-                clientStore,
-                jwksStore,
-                eventPublisher,
-                logger);
-        }
-
-        /// <summary>
-        /// Authenticate local user account.
-        /// </summary>
-        /// <param name="localAuthenticationParameter">User's credentials</param>
-        /// <param name="authorizationParameter">Authorization parameters</param>
-        /// <param name="code">Encrypted &amp; signed authorization parameters</param>
-        /// <param name="issuerName"></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
-        /// <returns>Consent screen or redirect to the Index page.</returns>
-        public async Task<LocalOpenIdAuthenticationResult> Execute(
-            LocalAuthenticationParameter localAuthenticationParameter,
-            AuthorizationParameter authorizationParameter,
-            string code,
-            string issuerName,
-            CancellationToken cancellationToken)
-        {
-            var resourceOwner =
-                (localAuthenticationParameter.UserName == null || localAuthenticationParameter.Password == null)
-                    ? null
-                    : await _resourceOwnerServices.Authenticate(
-                            localAuthenticationParameter.UserName,
-                            localAuthenticationParameter.Password,
-                            cancellationToken,
-                            authorizationParameter.AmrValues)
-                        .ConfigureAwait(false);
-            if (resourceOwner == null)
-            {
-                return new LocalOpenIdAuthenticationResult
-                {
-                    ErrorMessage = Strings.TheResourceOwnerCredentialsAreNotCorrect
-                };
-            }
-
-            var claims = new[]
-            {
-                new Claim(
-                    ClaimTypes.AuthenticationInstant,
-                    DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
-                    ClaimValueTypes.Integer)
-            }.Add(resourceOwner.Claims);
-
             return new LocalOpenIdAuthenticationResult
             {
-                EndpointResult =
-                    await _authenticateHelper.ProcessRedirection(
-                            authorizationParameter,
-                            code,
-                            resourceOwner.Subject!,
-                            claims,
-                            issuerName,
-                            cancellationToken)
-                        .ConfigureAwait(false),
-                Claims = claims,
-                TwoFactor = resourceOwner.TwoFactorAuthentication
+                ErrorMessage = Strings.TheResourceOwnerCredentialsAreNotCorrect
             };
         }
+
+        var claims = new[]
+        {
+            new Claim(
+                ClaimTypes.AuthenticationInstant,
+                DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
+                ClaimValueTypes.Integer)
+        }.Add(resourceOwner.Claims);
+
+        return new LocalOpenIdAuthenticationResult
+        {
+            EndpointResult =
+                await _authenticateHelper.ProcessRedirection(
+                        authorizationParameter,
+                        code,
+                        resourceOwner.Subject!,
+                        claims,
+                        issuerName,
+                        cancellationToken)
+                    .ConfigureAwait(false),
+            Claims = claims,
+            TwoFactor = resourceOwner.TwoFactorAuthentication
+        };
     }
 }

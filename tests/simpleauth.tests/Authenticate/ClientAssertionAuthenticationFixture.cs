@@ -1,183 +1,182 @@
-﻿namespace SimpleAuth.Tests.Authenticate
+﻿namespace SimpleAuth.Tests.Authenticate;
+
+using Microsoft.IdentityModel.Tokens;
+using Moq;
+using Shared;
+using Shared.Models;
+using Shared.Repositories;
+using SimpleAuth.Authenticate;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Threading;
+using System.Threading.Tasks;
+using SimpleAuth.Extensions;
+using SimpleAuth.Properties;
+using SimpleAuth.Repositories;
+using Xunit;
+
+public sealed class ClientAssertionAuthenticationFixture
 {
-    using Microsoft.IdentityModel.Tokens;
-    using Moq;
-    using Shared;
-    using Shared.Models;
-    using Shared.Repositories;
-    using SimpleAuth.Authenticate;
-    using System;
-    using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SimpleAuth.Extensions;
-    using SimpleAuth.Properties;
-    using SimpleAuth.Repositories;
-    using Xunit;
+    private readonly JwtSecurityTokenHandler _handler = new();
+    private readonly Mock<IClientStore> _clientRepositoryStub;
+    private readonly ClientAssertionAuthentication _clientAssertionAuthentication;
 
-    public class ClientAssertionAuthenticationFixture
+    public static IEnumerable<object[]> InvalidPayloads()
     {
-        private readonly JwtSecurityTokenHandler _handler = new();
-        private readonly Mock<IClientStore> _clientRepositoryStub;
-        private readonly ClientAssertionAuthentication _clientAssertionAuthentication;
-
-        public static IEnumerable<object[]> InvalidPayloads()
+        return new[]
         {
-            return new[]
+            new[]
             {
-                new[]
+                new JwtPayload
                 {
-                    new JwtPayload
-                    {
-                        {StandardClaimNames.Issuer, "issuer"},
-                        {StandardClaimNames.Subject, "issuer"},
-                        {StandardClaimNames.Audiences, "audience"}
-                    }
-                },
-                new[]
+                    {StandardClaimNames.Issuer, "issuer"},
+                    {StandardClaimNames.Subject, "issuer"},
+                    {StandardClaimNames.Audiences, "audience"}
+                }
+            },
+            new[]
+            {
+                new JwtPayload
                 {
-                    new JwtPayload
-                    {
-                        {StandardClaimNames.Issuer, "issuer"},
-                        {StandardClaimNames.Subject, "issuer"},
-                        {StandardClaimNames.Audiences, "audience"}
-                    }
-                },
-                new[]
+                    {StandardClaimNames.Issuer, "issuer"},
+                    {StandardClaimNames.Subject, "issuer"},
+                    {StandardClaimNames.Audiences, "audience"}
+                }
+            },
+            new[]
+            {
+                new JwtPayload
                 {
-                    new JwtPayload
+                    {StandardClaimNames.Issuer, "issuer"},
+                    {StandardClaimNames.Subject, "issuer"},
+                    {StandardClaimNames.Audiences, "audience"},
                     {
-                        {StandardClaimNames.Issuer, "issuer"},
-                        {StandardClaimNames.Subject, "issuer"},
-                        {StandardClaimNames.Audiences, "audience"},
-                        {
-                            StandardClaimNames.ExpirationTime,
-                            DateTime.Now.AddDays(-2).ConvertToUnixTimestamp()
-                        }
+                        StandardClaimNames.ExpirationTime,
+                        DateTime.Now.AddDays(-2).ConvertToUnixTimestamp()
                     }
                 }
-            };
-        }
+            }
+        };
+    }
 
-        public ClientAssertionAuthenticationFixture()
+    public ClientAssertionAuthenticationFixture()
+    {
+        _clientRepositoryStub = new Mock<IClientStore>();
+        _clientAssertionAuthentication = new ClientAssertionAuthentication(
+            _clientRepositoryStub.Object,
+            new InMemoryJwksRepository());
+    }
+
+    [Fact]
+    public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+    {
+        await Assert.ThrowsAsync<NullReferenceException>(
+                () => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(
+                    null,
+                    null,
+                    CancellationToken.None))
+            .ConfigureAwait(false);
+    }
+
+    [Fact]
+    public async Task When_A_Not_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
+    {
+        var instruction = new AuthenticateInstruction {ClientAssertion = "invalid_header.invalid_payload"};
+        var result = await _clientAssertionAuthentication
+            .AuthenticateClientWithPrivateKeyJwt(instruction, null, CancellationToken.None)
+            .ConfigureAwait(false);
+
+        Assert.Null(result.Client);
+        Assert.Equal(Strings.TheClientAssertionIsNotAJwsToken, result.ErrorMessage);
+    }
+
+    [Theory]
+    [MemberData(nameof(InvalidPayloads))]
+    public async Task WhenInvalidJwtIsPassedThenReturnsNullClient(JwtPayload jwsPayload)
+    {
+        var jwks = CreateJwt(jwsPayload, out var jwt);
+        var instruction = new AuthenticateInstruction
         {
-            _clientRepositoryStub = new Mock<IClientStore>();
-            _clientAssertionAuthentication = new ClientAssertionAuthentication(
-                _clientRepositoryStub.Object,
-                new InMemoryJwksRepository());
-        }
+            ClientAssertion = jwt // "invalid_header.invalid_payload"
+        };
+        var client = new Client {JsonWebKeys = jwks};
 
-        [Fact]
-        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-        {
-            await Assert.ThrowsAsync<NullReferenceException>(
-                    () => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(
-                        null,
-                        null,
-                        CancellationToken.None))
-                .ConfigureAwait(false);
-        }
+        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(client);
 
-        [Fact]
-        public async Task When_A_Not_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
-        {
-            var instruction = new AuthenticateInstruction {ClientAssertion = "invalid_header.invalid_payload"};
-            var result = await _clientAssertionAuthentication
-                .AuthenticateClientWithPrivateKeyJwt(instruction, null, CancellationToken.None)
-                .ConfigureAwait(false);
+        var result = await _clientAssertionAuthentication
+            .AuthenticateClientWithPrivateKeyJwt(instruction, "invalid_issuer", CancellationToken.None)
+            .ConfigureAwait(false);
 
-            Assert.Null(result.Client);
-            Assert.Equal(Strings.TheClientAssertionIsNotAJwsToken, result.ErrorMessage);
-        }
+        Assert.Null(result.Client);
+        Assert.NotNull(result.ErrorMessage);
+    }
 
-        [Theory]
-        [MemberData(nameof(InvalidPayloads))]
-        public async Task WhenInvalidJwtIsPassedThenReturnsNullClient(JwtPayload jwsPayload)
-        {
-            var jwks = CreateJwt(jwsPayload, out var jwt);
-            var instruction = new AuthenticateInstruction
-            {
-                ClientAssertion = jwt // "invalid_header.invalid_payload"
-            };
-            var client = new Client {JsonWebKeys = jwks};
-
-            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(client);
-
-            var result = await _clientAssertionAuthentication
-                .AuthenticateClientWithPrivateKeyJwt(instruction, "invalid_issuer", CancellationToken.None)
-                .ConfigureAwait(false);
-
-            Assert.Null(result.Client);
-            Assert.NotNull(result.ErrorMessage);
-        }
-
-        private JsonWebKeySet CreateJwt(JwtPayload jwsPayload, out string jwt)
-        {
-            var jwks = "verylongsecretkey".CreateSignatureJwk().ToSet();
+    private JsonWebKeySet CreateJwt(JwtPayload jwsPayload, out string jwt)
+    {
+        var jwks = "verylongsecretkey".CreateSignatureJwk().ToSet();
             
-            var token = new JwtSecurityToken(
-                new JwtHeader(new SigningCredentials(jwks.Keys[0], SecurityAlgorithms.HmacSha256)),
-                jwsPayload);
-            jwt = _handler.WriteToken(token);
-            return jwks;
-        }
+        var token = new JwtSecurityToken(
+            new JwtHeader(new SigningCredentials(jwks.Keys[0], SecurityAlgorithms.HmacSha256)),
+            jwsPayload);
+        jwt = _handler.WriteToken(token);
+        return jwks;
+    }
 
-        [Fact]
-        public async Task
-            When_A_Valid_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Client_Is_Returned()
+    [Fact]
+    public async Task
+        When_A_Valid_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Client_Is_Returned()
+    {
+        var jwsPayload = new JwtPayload
         {
-            var jwsPayload = new JwtPayload
-            {
-                {StandardClaimNames.Issuer, "issuer"},
-                {StandardClaimNames.Subject, "issuer"},
-                {StandardClaimNames.Audiences, "audience"},
-                {StandardClaimNames.ExpirationTime, DateTimeOffset.UtcNow.AddDays(2).ConvertToUnixTimestamp()}
-            };
-            var jwks = CreateJwt(jwsPayload, out var jwt);
-            var instruction = new AuthenticateInstruction
-            {
-                ClientAssertion = jwt //"invalid_header.invalid_payload"
-            };
-            var client = new Client {JsonWebKeys = jwks};
+            {StandardClaimNames.Issuer, "issuer"},
+            {StandardClaimNames.Subject, "issuer"},
+            {StandardClaimNames.Audiences, "audience"},
+            {StandardClaimNames.ExpirationTime, DateTimeOffset.UtcNow.AddDays(2).ConvertToUnixTimestamp()}
+        };
+        var jwks = CreateJwt(jwsPayload, out var jwt);
+        var instruction = new AuthenticateInstruction
+        {
+            ClientAssertion = jwt //"invalid_header.invalid_payload"
+        };
+        var client = new Client {JsonWebKeys = jwks};
 
-            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(client);
+        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(client);
 
-            var result = await _clientAssertionAuthentication
-                .AuthenticateClientWithPrivateKeyJwt(instruction, "audience", CancellationToken.None)
-                .ConfigureAwait(false);
+        var result = await _clientAssertionAuthentication
+            .AuthenticateClientWithPrivateKeyJwt(instruction, "audience", CancellationToken.None)
+            .ConfigureAwait(false);
 
-            Assert.NotNull(result.Client);
-        }
+        Assert.NotNull(result.Client);
+    }
         
-        [Fact]
-        public async Task When_Decrypt_Valid_Client_Secret_Jwt_Then_Client_Is_Returned()
+    [Fact]
+    public async Task When_Decrypt_Valid_Client_Secret_Jwt_Then_Client_Is_Returned()
+    {
+        var jwsPayload = new JwtPayload
         {
-            var jwsPayload = new JwtPayload
-            {
-                {StandardClaimNames.Issuer, "issuer"},
-                {StandardClaimNames.Subject, "issuer"},
-                {StandardClaimNames.Audiences, new[] {"audience"}},
-                {StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(2).ConvertToUnixTimestamp()}
-            };
+            {StandardClaimNames.Issuer, "issuer"},
+            {StandardClaimNames.Subject, "issuer"},
+            {StandardClaimNames.Audiences, new[] {"audience"}},
+            {StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(2).ConvertToUnixTimestamp()}
+        };
 
-            var jwks = CreateJwt(jwsPayload, out var jwt);
-            var instruction = new AuthenticateInstruction
-            {
-                ClientAssertion = jwt // "valid_header.valid.valid.valid.valid"
-            };
-            var client = new Client {JsonWebKeys = jwks};
+        var jwks = CreateJwt(jwsPayload, out var jwt);
+        var instruction = new AuthenticateInstruction
+        {
+            ClientAssertion = jwt // "valid_header.valid.valid.valid.valid"
+        };
+        var client = new Client {JsonWebKeys = jwks};
 
-            _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(client);
+        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(client);
 
-            var result = await _clientAssertionAuthentication
-                .AuthenticateClientWithClientSecretJwt(instruction, CancellationToken.None)
-                .ConfigureAwait(false);
+        var result = await _clientAssertionAuthentication
+            .AuthenticateClientWithClientSecretJwt(instruction, CancellationToken.None)
+            .ConfigureAwait(false);
 
-            Assert.NotNull(result);
-        }
+        Assert.NotNull(result);
     }
 }

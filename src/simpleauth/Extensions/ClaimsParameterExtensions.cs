@@ -12,71 +12,70 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions
+namespace SimpleAuth.Extensions;
+
+using Parameters;
+using Shared;
+using System.Collections.Generic;
+using System.Linq;
+
+internal static class ClaimsParameterExtensions
 {
-    using Parameters;
-    using Shared;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    internal static class ClaimsParameterExtensions
+    /// <summary>
+    /// Gets all the standard claim names from the ClaimsParameter
+    /// </summary>
+    /// <param name="parameter"></param>
+    /// <returns></returns>
+    public static string[] GetClaimNames(this ClaimsParameter? parameter)
     {
-        /// <summary>
-        /// Gets all the standard claim names from the ClaimsParameter
-        /// </summary>
-        /// <param name="parameter"></param>
-        /// <returns></returns>
-        public static string[] GetClaimNames(this ClaimsParameter? parameter)
+        var result = new List<string>();
+        if (parameter?.IdToken != null)
         {
-            var result = new List<string>();
-            if (parameter?.IdToken != null)
+            foreach (var claimParameter in parameter.IdToken)
             {
-                foreach (var claimParameter in parameter.IdToken)
+                if (IsStandardClaim(claimParameter.Name))
                 {
-                    if (IsStandardClaim(claimParameter.Name))
-                    {
-                        result.Add(claimParameter.Name);
-                    }
+                    result.Add(claimParameter.Name);
                 }
             }
-            if (parameter?.UserInfo != null)
+        }
+        if (parameter?.UserInfo != null)
+        {
+            foreach (var claimParameter in parameter.UserInfo)
             {
-                foreach (var claimParameter in parameter.UserInfo)
+                if (IsStandardClaim(claimParameter.Name))
                 {
-                    if (IsStandardClaim(claimParameter.Name))
-                    {
-                        result.Add(claimParameter.Name);
-                    }
+                    result.Add(claimParameter.Name);
                 }
             }
-
-            return result.ToArray();
         }
 
-        /// <summary>
-        /// Return a boolean which indicates if the ClaimsParameter contains at least one user-info claim parameter
-        /// </summary>
-        /// <param name="parameter"></param>
-        /// <returns></returns>
-        public static bool IsAnyUserInfoClaimParameter(this ClaimsParameter? parameter)
-        {
-            return parameter?.UserInfo != null && parameter.UserInfo.Any();
-        }
+        return result.ToArray();
+    }
 
-        /// <summary>
-        /// Returns a boolean which indicates if the ClaimsParameter contains at least one identity-token claim parameter
-        /// </summary>
-        /// <param name="parameter"></param>
-        /// <returns></returns>
-        public static bool IsAnyIdentityTokenClaimParameter(this ClaimsParameter? parameter)
-        {
-            return parameter?.IdToken != null && parameter.IdToken.Any();
-        }
+    /// <summary>
+    /// Return a boolean which indicates if the ClaimsParameter contains at least one user-info claim parameter
+    /// </summary>
+    /// <param name="parameter"></param>
+    /// <returns></returns>
+    public static bool IsAnyUserInfoClaimParameter(this ClaimsParameter? parameter)
+    {
+        return parameter?.UserInfo != null && parameter.UserInfo.Any();
+    }
 
-        private static bool IsStandardClaim(string claimName)
-        {
-            return JwtConstants.AllStandardResourceOwnerClaimNames.Contains(claimName) ||
-                JwtConstants.AllStandardClaimNames.Contains(claimName);
-        }
+    /// <summary>
+    /// Returns a boolean which indicates if the ClaimsParameter contains at least one identity-token claim parameter
+    /// </summary>
+    /// <param name="parameter"></param>
+    /// <returns></returns>
+    public static bool IsAnyIdentityTokenClaimParameter(this ClaimsParameter? parameter)
+    {
+        return parameter?.IdToken != null && parameter.IdToken.Any();
+    }
+
+    private static bool IsStandardClaim(string claimName)
+    {
+        return JwtConstants.AllStandardResourceOwnerClaimNames.Contains(claimName) ||
+               JwtConstants.AllStandardClaimNames.Contains(claimName);
     }
 }
