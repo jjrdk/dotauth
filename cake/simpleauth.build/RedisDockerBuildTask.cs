@@ -13,7 +13,7 @@ public sealed class RedisDockerBuildTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         var publishSettings = new DotNetPublishSettings
-        {
+        { 
             PublishTrimmed = false,
             Runtime = "linux-musl-x64",
             SelfContained = true,

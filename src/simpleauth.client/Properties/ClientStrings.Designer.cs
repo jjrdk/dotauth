@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SimpleAuth.Client.Properties {
+namespace SimpleAuth.TokenClient.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SimpleAuth.Client.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SimpleAuth.Client.Properties.ClientStrings", typeof(ClientStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SimpleAuth.TokenClient.Properties.ClientStrings", typeof(ClientStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

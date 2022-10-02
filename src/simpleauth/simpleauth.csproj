@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
+        <ProjectReference Include="..\simpleauth.shared\simpleauth.abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

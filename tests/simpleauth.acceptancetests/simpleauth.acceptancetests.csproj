@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.client.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.tokenclient.csproj" />
         <ProjectReference Include="..\..\src\simpleauth.sms.ui\simpleauth.sms.ui.csproj" />
         <ProjectReference Include="..\..\src\simpleauth.sms\simpleauth.sms.csproj" />
         <ProjectReference Include="..\..\src\simpleauth.ui\simpleauth.ui.csproj" />

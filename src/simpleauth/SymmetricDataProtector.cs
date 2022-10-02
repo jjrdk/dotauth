@@ -11,11 +11,11 @@ using Microsoft.AspNetCore.DataProtection;
 
 internal sealed class SymmetricDataProtector : IDataProtector
 {
-    private readonly SymmetricAlgorithm _algo;
+    private readonly SymmetricAlgorithm _algorithm;
 
-    public SymmetricDataProtector(SymmetricAlgorithm algo)
+    public SymmetricDataProtector(SymmetricAlgorithm algorithm)
     {
-        _algo = algo;
+        _algorithm = algorithm;
     }
 
     /// <inheritdoc />
@@ -28,7 +28,7 @@ internal sealed class SymmetricDataProtector : IDataProtector
     public byte[] Protect(byte[] plaintext)
     {
         using var ms = new MemoryStream();
-        using var cs = new CryptoStream(ms, _algo.CreateEncryptor(), CryptoStreamMode.Write);
+        using var cs = new CryptoStream(ms, _algorithm.CreateEncryptor(), CryptoStreamMode.Write);
         cs.Write(plaintext);
         cs.Flush();
         cs.FlushFinalBlock();
@@ -39,7 +39,7 @@ internal sealed class SymmetricDataProtector : IDataProtector
     public byte[] Unprotect(byte[] protectedData)
     {
         using var ms = new MemoryStream(protectedData);
-        using var cs = new CryptoStream(ms, _algo.CreateDecryptor(), CryptoStreamMode.Read);
+        using var cs = new CryptoStream(ms, _algorithm.CreateDecryptor(), CryptoStreamMode.Read);
         List<byte>? list = null;
         const int bufferLength = 4096;
         var buffer = ArrayPool<byte>.Shared.Rent(bufferLength);

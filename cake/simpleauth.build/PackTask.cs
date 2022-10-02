@@ -1,6 +1,7 @@
 namespace SimpleAuth.Build;
 
 using Cake.Common.Tools.DotNet;
+using Cake.Common.Tools.DotNet.MSBuild;
 using Cake.Common.Tools.DotNet.Pack;
 using Cake.Common.Tools.DotNetCore.MSBuild;
 using Cake.Core.Diagnostics;
@@ -22,7 +23,7 @@ public sealed class PackTask : FrostingTask<BuildContext>
             NoRestore = true,
             OutputDirectory = "./artifacts/packages",
             IncludeSymbols = true,
-            MSBuildSettings = new DotNetCoreMSBuildSettings().SetConfiguration(context.BuildConfiguration)
+            MSBuildSettings = new DotNetMSBuildSettings().SetConfiguration(context.BuildConfiguration)
                 .SetVersion(context.BuildVersion)
         };
 

@@ -24,6 +24,6 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\simpleauth.shared\simpleauth.shared.csproj" />
+        <ProjectReference Include="..\simpleauth.shared\simpleauth.abstractions.csproj" />
     </ItemGroup>
 </Project>
