@@ -10,8 +10,8 @@ using DotAuth.Shared.Models;
 public sealed record UmaRequestApproved : UmaTicketEvent
 {
     /// <inheritdoc />
-    public UmaRequestApproved(string id, string ticketid, string clientId, string approverSubject, ClaimData[] requesterClaims, DateTimeOffset timestamp)
-        : base(id, ticketid, clientId, null, timestamp)
+    public UmaRequestApproved(string id, string ticketId, string clientId, string approverSubject, ClaimData[] requesterClaims, DateTimeOffset timestamp)
+        : base(id, ticketId, clientId, null, timestamp)
     {
         ApproverSubject = approverSubject;
         RequesterClaims = requesterClaims;

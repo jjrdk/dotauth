@@ -25,7 +25,7 @@ public static class X509Certificate2Extensions
     /// <returns>A <see cref="HashSet{T}"/> instance with all alternate names.</returns>
     public static HashSet<string> GetSubjectAlternativeNames(this X509Certificate2 cert)
     {
-        var subjectAlternativeName = cert.Extensions.Cast<X509Extension>()
+        var subjectAlternativeName = cert.Extensions
             .Where(n => n.Oid!.Value == SubjectAlternateNameOid)
             .Select(n => new AsnEncodedData(n.Oid, n.RawData))
             .Select(n => n.Format(true))

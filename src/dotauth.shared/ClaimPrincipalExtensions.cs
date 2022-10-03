@@ -36,7 +36,7 @@ public static class ClaimPrincipalExtensions
     public static bool TryGetUmaTickets(this ClaimsIdentity identity, out Permission[] tickets)
     {
         Permission[] t = Array.Empty<Permission>();
-        var result = identity?.Claims.TryGetUmaTickets(out t);
+        var result = identity.Claims.TryGetUmaTickets(out t);
         tickets = t;
         return result == true;
     }
@@ -96,7 +96,7 @@ public static class ClaimPrincipalExtensions
     /// </summary>
     /// <param name="principal">The user principal.</param>
     /// <returns>the user's client.</returns>
-    public static string? GetClientId(this ClaimsPrincipal? principal)
+    public static string GetClientId(this ClaimsPrincipal? principal)
     {
         if (principal?.Identity == null || !principal.Identity.IsAuthenticated)
         {

@@ -5,18 +5,18 @@ using System.Linq;
 
 internal static class ArrayExtensions
 {
-    public static T[] Add<T>(this T[] array, params T[] items)
+    public static T[] Add<T>(this IEnumerable<T> array, params T[] items)
     {
-        return items == null ? array : array.Concat(items).ToArray();
+        return array.Concat(items).ToArray();
     }
 
     public static T[] Add<T>(this T[] array, IEnumerable<T> items)
     {
-        return items == null ? array : array.Concat(items).ToArray();
+        return array.Concat(items).ToArray();
     }
 
     public static T[] Remove<T>(this T[] array, params T[] items)
     {
-        return items == null ? array : array.Except(items).ToArray();
+        return array.Except(items).ToArray();
     }
 }

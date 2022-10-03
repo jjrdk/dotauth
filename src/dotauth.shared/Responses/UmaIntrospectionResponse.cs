@@ -3,6 +3,4 @@
 /// <summary>
 /// Defines the UMA introspection response.
 /// </summary>
-public sealed record UmaIntrospectionResponse : IntrospectionResponse
-{
-}
+public sealed record UmaIntrospectionResponse : IntrospectionResponse;

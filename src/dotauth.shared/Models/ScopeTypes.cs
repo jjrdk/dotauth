@@ -8,10 +8,16 @@ public static class ScopeTypes
     /// <summary>
     /// The protected API scope type.
     /// </summary>
-    public static string ProtectedApi => "ProtectedApi";
+    public static string ProtectedApi
+    {
+        get { return "ProtectedApi"; }
+    }
 
     /// <summary>
     /// The resource owner scope type.
     /// </summary>
-    public static string ResourceOwner => "ResourceOwner";
+    public static string ResourceOwner
+    {
+        get { return "ResourceOwner"; }
+    }
 }

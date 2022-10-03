@@ -29,7 +29,7 @@ public sealed class ResourceOwner
     /// </summary>
     public string Subject
     {
-        get => Claims.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value ?? "";
+        get { return Claims.FirstOrDefault(x => x.Type == OpenIdClaimTypes.Subject)?.Value ?? ""; }
         set
         {
             if (value == null)
@@ -74,7 +74,7 @@ public sealed class ResourceOwner
     {
         get
         {
-            var unix = Claims?.FirstOrDefault(x => x.Type == OpenIdClaimTypes.UpdatedAt)?.Value;
+            var unix = Claims.FirstOrDefault(x => x.Type == OpenIdClaimTypes.UpdatedAt)?.Value;
             return unix?.ConvertFromUnixTimestamp() ?? DateTimeOffset.MinValue;
         }
         set

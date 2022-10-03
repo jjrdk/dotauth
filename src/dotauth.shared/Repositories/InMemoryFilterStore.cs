@@ -19,7 +19,7 @@ public sealed class InMemoryFilterStore : IFilterStore
     /// <param name="filters"></param>
     public InMemoryFilterStore(params Filter[] filters)
     {
-        _filters = filters ?? Array.Empty<Filter>();
+        _filters = filters;
     }
 
     /// <inheritdoc />
