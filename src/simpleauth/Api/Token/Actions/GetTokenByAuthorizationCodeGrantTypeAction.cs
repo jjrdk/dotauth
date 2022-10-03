@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Token.Actions;
+namespace DotAuth.Api.Token.Actions;
 
-using Authenticate;
-using JwtToken;
-using Parameters;
-using Shared;
-using Shared.Models;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Linq;
 using System.Net;
@@ -29,11 +22,17 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Events;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Events.OAuth;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Authenticate;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.JwtToken;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.OAuth;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 
 internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
 {
@@ -135,7 +134,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
                     JwtGenerator.UpdatePayloadDate(
                         grantedToken.IdTokenPayLoad,
                         result.Client.TokenLifetime),
-                    IdToken = await result!.Client.GenerateIdToken(
+                    IdToken = await result.Client.GenerateIdToken(
                             grantedToken.IdTokenPayLoad,
                             _jwksStore,
                             cancellationToken)

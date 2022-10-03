@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Policies;
+namespace DotAuth.Policies;
 
-using Parameters;
-using Shared.Events.Uma;
-using Shared.Models;
-using Shared.Responses;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Shared.Events.Uma;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
 
 internal sealed class AuthorizationPolicyValidator
 {

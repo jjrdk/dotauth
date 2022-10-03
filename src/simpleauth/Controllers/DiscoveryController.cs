@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
-using Api.Discovery;
-using Microsoft.AspNetCore.Mvc;
-using Shared.Repositories;
-using Shared.Responses;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Extensions;
-using SimpleAuth.Filters;
+using DotAuth.Api.Discovery;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
+using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
 /// Defines the discovery controller

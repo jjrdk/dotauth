@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.Clients.Actions;
+namespace DotAuth.Tests.Api.Clients.Actions;
 
-using Helpers;
-using Moq;
-using Repositories;
-using Shared.Models;
-using Shared.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Extensions;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Tests.Helpers;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
+using Moq;
 using Xunit;
 
 public sealed class UpdateClientActionFixture

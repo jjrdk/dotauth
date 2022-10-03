@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Shared.Repositories;
+﻿namespace DotAuth.Shared.Repositories;
 
-using Models;
-using SimpleAuth.Shared.Requests;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the scope store interface.

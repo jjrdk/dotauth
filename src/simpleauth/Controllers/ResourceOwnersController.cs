@@ -12,16 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using Shared.Requests;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.WebSite.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,16 +22,24 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Token.Actions;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.Logging;
+using DotAuth.Shared.Events.OAuth;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
+using DotAuth.WebSite.User;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
-using Shared.Events.Logging;
-using SimpleAuth.Api.Token.Actions;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.Filters;
-using SimpleAuth.Parameters;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Events.OAuth;
-using SimpleAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the resource owner controller.

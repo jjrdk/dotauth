@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Sms.ViewModels;
+﻿namespace DotAuth.Sms.ViewModels;
 
 using System.ComponentModel.DataAnnotations;
 

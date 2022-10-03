@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Client;
+﻿namespace DotAuth.Client;
 
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Shared;
+using DotAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the introspection client interface.

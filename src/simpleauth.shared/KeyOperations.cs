@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared;
+﻿namespace DotAuth.Shared;
 
 /// <summary>
 /// Identifies the operation(s) that the key is intended to be user for.

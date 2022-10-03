@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.Token;
+namespace DotAuth.Tests.Api.Token;
 
-using Moq;
-using Parameters;
-using Shared.Models;
-using SimpleAuth.Api.Token.Actions;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Token.Actions;
+using DotAuth.Controllers;
+using DotAuth.Parameters;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Controllers;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Repositories;
+using Moq;
 using Xunit;
 
 public sealed class RevokeTokenActionFixture

@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Extensions;
+﻿namespace DotAuth.Extensions;
 
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Shared;
+using DotAuth.Shared;
 
 internal static class ClaimsExtensions
 {

@@ -1,24 +1,5 @@
-﻿namespace SimpleAuth.Sms.Controllers;
+﻿namespace DotAuth.Sms.Controllers;
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleAuth;
-using SimpleAuth.Controllers;
-using SimpleAuth.Exceptions;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Events.Logging;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Sms.Actions;
-using SimpleAuth.Sms.ViewModels;
-using SimpleAuth.ViewModels;
-using SimpleAuth.WebSite.Authenticate;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,13 +7,32 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth;
+using DotAuth.Controllers;
+using DotAuth.Events;
+using DotAuth.Exceptions;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.Properties;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.Logging;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.Sms.Actions;
+using DotAuth.Sms.Properties;
+using DotAuth.Sms.ViewModels;
+using DotAuth.ViewModels;
+using DotAuth.WebSite.Authenticate;
+using DotAuth.WebSite.User;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Filters;
-using SimpleAuth.Properties;
-using SimpleAuth.Services;
-using SimpleAuth.Sms.Properties;
-using SimpleAuth.WebSite.User;
 
 /// <summary>
 /// Defines the authenticate controller.
@@ -193,8 +193,8 @@ public sealed class AuthenticateController : BaseAuthenticateController
             if (option is Option<ResourceOwner>.Error e)
             {
                 await _eventPublisher.Publish(
-                        new SimpleAuthError(
-                            Id.Create(),
+                        new DotAuthError(
+                            DotAuth.Id.Create(),
                             e.Details.Title,
                             e.Details.Detail,
                             string.Empty,
@@ -222,8 +222,8 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 catch (Exception ex)
                 {
                     await _eventPublisher.Publish(
-                            new SimpleAuthError(
-                                Id.Create(),
+                            new DotAuthError(
+                                DotAuth.Id.Create(),
                                 ex.Message,
                                 ex.Message,
                                 string.Empty,
@@ -370,12 +370,12 @@ public sealed class AuthenticateController : BaseAuthenticateController
             var result = actionResult.CreateRedirectionFromActionResult(request, _logger);
             if (result != null)
             {
-                await LogAuthenticateUser(resourceOwner!.Subject!, actionResult.Amr!).ConfigureAwait(false);
+                await LogAuthenticateUser(resourceOwner.Subject, actionResult.Amr!).ConfigureAwait(false);
                 return result;
             }
         }
 
-        await SetLocalCookie(authenticatedUserClaims, Id.Create())
+        await SetLocalCookie(authenticatedUserClaims, DotAuth.Id.Create())
             .ConfigureAwait(false); // Authenticate the resource owner
         var modelCode = string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)
             ? confirmCodeViewModel.ConfirmationCode
@@ -433,8 +433,8 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 if (option is Option<ResourceOwner>.Error ex)
                 {
                     await _eventPublisher.Publish(
-                            new SimpleAuthError(
-                                Id.Create(),
+                            new DotAuthError(
+                                DotAuth.Id.Create(),
                                 ex.Details.Title,
                                 ex.Details.Detail,
                                 string.Empty,
@@ -463,8 +463,8 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 catch (Exception ex)
                 {
                     await _eventPublisher.Publish(
-                            new SimpleAuthError(
-                                Id.Create(),
+                            new DotAuthError(
+                                DotAuth.Id.Create(),
                                 ex.Message,
                                 ex.Message,
                                 string.Empty,

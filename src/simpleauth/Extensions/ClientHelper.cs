@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -23,6 +21,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Tokens;
 
 internal static class ClientHelper

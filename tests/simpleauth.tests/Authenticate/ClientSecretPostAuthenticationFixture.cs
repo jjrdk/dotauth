@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Tests.Authenticate;
+﻿namespace DotAuth.Tests.Authenticate;
 
-using Shared.Models;
-using SimpleAuth.Authenticate;
 using System;
+using DotAuth.Authenticate;
+using DotAuth.Shared.Models;
 using Xunit;
 
 public sealed class ClientSecretPostAuthenticationFixture

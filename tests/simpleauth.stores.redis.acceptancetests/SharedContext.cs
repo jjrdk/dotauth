@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Stores.Redis.AcceptanceTests;
+namespace DotAuth.Stores.Redis.AcceptanceTests;
 
 using System;
 using System.Net.Http;
 using System.Security.Cryptography;
+using DotAuth.Extensions;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Extensions;
 
 public sealed class SharedContext
 {

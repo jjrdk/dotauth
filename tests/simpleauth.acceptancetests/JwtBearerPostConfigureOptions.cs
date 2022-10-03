@@ -1,8 +1,7 @@
-﻿namespace SimpleAuth.AcceptanceTests;
+﻿namespace DotAuth.AcceptanceTests;
 
 using System;
 using System.Net.Http;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;

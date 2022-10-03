@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AuthServerPgRedis;
+﻿namespace DotAuth.AuthServerPgRedis;
 
 using System;
 using System.Diagnostics;

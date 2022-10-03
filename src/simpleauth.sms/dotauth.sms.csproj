@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <Description>SimpleAuth SMS Authentication Library</Description>
-        <Title>SimpleAuth SMS Authentication</Title>
+        <Description>DotAuth SMS Authentication Library</Description>
+        <Title>DotAuth SMS Authentication</Title>
         <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-        <AssemblyName>simpleauth.sms</AssemblyName>
-        <PackageId>simpleauth.sms</PackageId>
-        <RootNamespace>SimpleAuth.Sms</RootNamespace>
+        <AssemblyName>dotauth.sms</AssemblyName>
+        <PackageId>dotauth.sms</PackageId>
+        <RootNamespace>DotAuth.Sms</RootNamespace>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
         <Nullable>enable</Nullable>
@@ -19,7 +19,7 @@
     <Import Project="../../shared.projinfo" />
 
     <ItemGroup>
-        <ProjectReference Include="..\simpleauth\simpleauth.csproj" />
+        <ProjectReference Include="..\simpleauth\dotauth.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.4.11" />

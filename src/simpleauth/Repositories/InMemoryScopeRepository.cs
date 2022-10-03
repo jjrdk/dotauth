@@ -1,15 +1,15 @@
-﻿namespace SimpleAuth.Repositories;
+﻿namespace DotAuth.Repositories;
 
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Shared.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Properties;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the in-memory scope repository.

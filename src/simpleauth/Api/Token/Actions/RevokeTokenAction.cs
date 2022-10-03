@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Shared.Repositories;
-
-namespace SimpleAuth.Api.Token.Actions;
+namespace DotAuth.Api.Token.Actions;
 
 using System.Net;
-using Authenticate;
-using Parameters;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Authenticate;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
 
 internal sealed class RevokeTokenAction
 {

@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Validators;
+namespace DotAuth.Tests.Validators;
 
-using Shared;
-using Shared.Models;
-using SimpleAuth.Extensions;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
 using Xunit;
 
 public sealed class ClientValidatorFixture

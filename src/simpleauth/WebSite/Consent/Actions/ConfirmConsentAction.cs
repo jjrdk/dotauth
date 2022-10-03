@@ -12,17 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.Consent.Actions;
+namespace DotAuth.WebSite.Consent.Actions;
 
-using Api.Authorization;
-using Common;
-using Extensions;
-using Parameters;
-using Results;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,10 +21,19 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Authorization;
+using DotAuth.Common;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Results;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.Openid;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Events.Openid;
 
 internal sealed class ConfirmConsentAction
 {

@@ -1,29 +1,29 @@
-﻿namespace SimpleAuth.AcceptanceTests;
+﻿namespace DotAuth.AcceptanceTests;
 
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using SimpleAuth;
-using SimpleAuth.Repositories;
-using SimpleAuth.Sms;
 using System;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
+using DotAuth;
+using DotAuth.Extensions;
+using DotAuth.Repositories;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Sms;
+using DotAuth.Sms.Ui;
+using DotAuth.UI;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Sms.Ui;
-using SimpleAuth.UI;
+using Moq;
 using Xunit.Abstractions;
 
 public sealed class ServerStartup
 {
-    private readonly SimpleAuthOptions _options;
+    private readonly DotAuthOptions _options;
     private readonly SharedContext _context;
     private readonly ITestOutputHelper _outputHelper;
 
@@ -47,7 +47,7 @@ public sealed class ServerStartup
         var symmetricAlgorithm = Aes.Create();
         symmetricAlgorithm.GenerateIV();
         symmetricAlgorithm.GenerateKey();
-        _options = new SimpleAuthOptions
+        _options = new DotAuthOptions
         {
             DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm),
             AdministratorRoleDefinition = default,
@@ -83,7 +83,7 @@ public sealed class ServerStartup
 
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-        services.AddSimpleAuth(
+        services.AddDotAuth(
                 _options,
                 new[]
                 {
@@ -113,6 +113,6 @@ public sealed class ServerStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
     }
 }

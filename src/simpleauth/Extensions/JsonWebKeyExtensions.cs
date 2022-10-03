@@ -1,13 +1,13 @@
-﻿namespace SimpleAuth.Extensions;
+﻿namespace DotAuth.Extensions;
 
 using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using DotAuth.Properties;
+using DotAuth.Shared;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
 
 /// <summary>
 /// Defines the JWK extension methods.

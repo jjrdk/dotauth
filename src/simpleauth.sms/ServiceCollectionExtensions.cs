@@ -1,9 +1,10 @@
-﻿namespace SimpleAuth.Sms;
+﻿namespace DotAuth.Sms;
 
 using System;
+using DotAuth;
+using DotAuth.Services;
+using DotAuth.Sms.Services;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleAuth.Services;
-using SimpleAuth.Sms.Services;
 
 /// <summary>
 /// Defines the service collection extensions.

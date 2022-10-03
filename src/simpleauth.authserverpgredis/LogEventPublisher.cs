@@ -1,13 +1,11 @@
-﻿namespace SimpleAuth.AuthServerPgRedis;
+﻿namespace DotAuth.AuthServerPgRedis;
 
 using System.Threading.Tasks;
-
+using DotAuth.Events;
+using DotAuth.Shared;
+using DotAuth.Shared.Events.Logging;
 using Microsoft.Extensions.Logging;
-
 using Newtonsoft.Json;
-using SimpleAuth.Events;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Events.Logging;
 
 /// <summary>
 /// Defines the trace event publisher.
@@ -31,7 +29,7 @@ public sealed class LogEventPublisher : IEventPublisher
         }
 
         var json = JsonConvert.SerializeObject(evt);
-        if (typeof(SimpleAuthError).IsAssignableFrom(typeof(T)))
+        if (typeof(DotAuthError).IsAssignableFrom(typeof(T)))
         {
             _logger.LogError(json);
         }

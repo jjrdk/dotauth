@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Description>SimpleAuth Server</Description>
-        <Title>SimpleAuth Server</Title>
+        <Description>DotAuth Server</Description>
+        <Title>DotAuth Server</Title>
         <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-        <AssemblyName>simpleauth</AssemblyName>
-        <PackageId>simpleauth</PackageId>
-        <RootNamespace>SimpleAuth</RootNamespace>
+        <AssemblyName>dotauth</AssemblyName>
+        <PackageId>dotauth</PackageId>
+        <RootNamespace>DotAuth</RootNamespace>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\simpleauth.shared\simpleauth.abstractions.csproj" />
+        <ProjectReference Include="..\simpleauth.shared\dotauth.shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>

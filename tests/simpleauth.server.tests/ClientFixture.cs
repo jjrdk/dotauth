@@ -1,15 +1,15 @@
-﻿namespace SimpleAuth.Server.Tests;
+﻿namespace DotAuth.Server.Tests;
 
-using Shared;
-using Shared.Models;
-using Shared.Requests;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Threading.Tasks;
-using SimpleAuth.Client;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Properties;
+using DotAuth.Client;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Requests;
 using Xunit;
 
 public sealed class ClientFixture : IDisposable
@@ -103,7 +103,7 @@ public sealed class ClientFixture : IDisposable
     {
         var newClient = await _openidClients.DeleteClient("unknown_client", "token").ConfigureAwait(false);
 
-        Assert.IsType<Option<Client>.Error>(newClient);
+        Assert.IsType<Option.Error>(newClient);
     }
 
     [Fact]

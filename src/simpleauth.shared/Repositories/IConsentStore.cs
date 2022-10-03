@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Shared.Repositories;
+﻿namespace DotAuth.Shared.Repositories;
 
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the consent store interface.

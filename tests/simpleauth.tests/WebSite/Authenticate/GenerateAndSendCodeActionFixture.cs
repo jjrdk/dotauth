@@ -13,21 +13,21 @@
 // limitations under the License.
 
 
-namespace SimpleAuth.Tests.WebSite.Authenticate;
+namespace DotAuth.Tests.WebSite.Authenticate;
 
-using Exceptions;
-using Moq;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.WebSite.Authenticate;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
-using SimpleAuth.Properties;
-using SimpleAuth.Services;
+using DotAuth.Exceptions;
+using DotAuth.Properties;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.Authenticate;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -56,7 +56,7 @@ public sealed class GenerateAndSendCodeActionFixture
         var error = await _generateAndSendCodeAction.Send("", CancellationToken.None)
             .ConfigureAwait(false);
 
-        Assert.IsType<Option<string>.Error>(error);
+        Assert.IsType<Option.Error>(error);
     }
 
     [Fact]

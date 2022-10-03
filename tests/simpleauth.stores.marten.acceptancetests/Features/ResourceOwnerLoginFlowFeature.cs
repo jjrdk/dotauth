@@ -1,13 +1,12 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features;
+﻿namespace DotAuth.Stores.Marten.AcceptanceTests.Features;
 
-using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using SimpleAuth.Extensions;
+using DotAuth.Client;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Responses;
+using Microsoft.IdentityModel.Tokens;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;
@@ -160,7 +159,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
     }
 
     [Scenario(DisplayName = "Invalid user credentials")]
@@ -182,6 +181,6 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
     }
 }

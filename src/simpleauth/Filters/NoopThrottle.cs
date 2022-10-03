@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Filters;
+﻿namespace DotAuth.Filters;
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;

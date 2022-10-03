@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SimpleAuth.Properties {
+namespace DotAuth.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SimpleAuth.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SimpleAuth.Properties.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotAuth.Properties.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -799,11 +799,11 @@ namespace SimpleAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The identity token does not contain SimpleAuth in the audience.
+        ///   Looks up a localized string similar to The identity token does not contain DotAuth in the audience.
         /// </summary>
-        internal static string TheIdentityTokenDoesntContainSimpleAuthAsAudience {
+        internal static string TheIdentityTokenDoesntContainDotAuthAsAudience {
             get {
-                return ResourceManager.GetString("TheIdentityTokenDoesntContainSimpleAuthAsAudience", resourceCulture);
+                return ResourceManager.GetString("TheIdentityTokenDoesntContainDotAuthAsAudience", resourceCulture);
             }
         }
         

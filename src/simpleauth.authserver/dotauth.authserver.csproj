@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>simpleauth.authserver</AssemblyName>
+    <AssemblyName>dotauth.authserver</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>simpleauth.authserver</PackageId>
-    <StartupObject>SimpleAuth.AuthServer.Program</StartupObject>
-    <RootNamespace>SimpleAuth.AuthServer</RootNamespace>
-    <UserSecretsId>simpleauth-authserver</UserSecretsId>
+    <PackageId>dotauth.authserver</PackageId>
+    <StartupObject>DotAuth.AuthServer.Program</StartupObject>
+    <RootNamespace>DotAuth.AuthServer</RootNamespace>
+    <UserSecretsId>dotauth-authserver</UserSecretsId>
   </PropertyGroup>
   <Import Project="../../shared.projinfo" />
 
@@ -20,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\simpleauth.sms.ui\simpleauth.sms.ui.csproj" />
-    <ProjectReference Include="..\simpleauth.sms\simpleauth.sms.csproj" />
-    <ProjectReference Include="..\simpleauth.ui\simpleauth.ui.csproj" />
+    <ProjectReference Include="..\simpleauth.sms.ui\dotauth.sms.ui.csproj" />
+    <ProjectReference Include="..\simpleauth.sms\dotauth.sms.csproj" />
+    <ProjectReference Include="..\simpleauth.ui\dotauth.ui.csproj" />
   </ItemGroup>
 
   <ItemGroup>

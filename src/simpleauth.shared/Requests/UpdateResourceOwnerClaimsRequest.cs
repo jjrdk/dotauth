@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Shared.Requests;
+﻿namespace DotAuth.Shared.Requests;
 
 using System;
 using System.Runtime.Serialization;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the request to update resource owner claims.

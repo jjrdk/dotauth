@@ -1,15 +1,11 @@
-﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests.Features;
+﻿namespace DotAuth.Stores.Redis.AcceptanceTests.Features;
 
 using System;
-
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Responses;
 using Microsoft.Extensions.Configuration;
-
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
-
 using Xbehave;
-
 using Xunit;
 using Xunit.Abstractions;
 

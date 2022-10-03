@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.WebSite.User;
+namespace DotAuth.Tests.WebSite.User;
 
-using Moq;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Shared.Errors;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
-using SimpleAuth.Properties;
-using SimpleAuth.WebSite.User;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.User;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 

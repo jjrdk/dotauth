@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth;
+﻿namespace DotAuth;
 
 using System.Threading.Tasks;
-using SimpleAuth.Events;
-using SimpleAuth.Shared;
+using DotAuth.Events;
+using DotAuth.Shared;
 
 internal sealed class NoOpPublisher : IEventPublisher
 {

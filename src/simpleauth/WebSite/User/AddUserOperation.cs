@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.User;
+namespace DotAuth.WebSite.User;
 
 using System;
 using System.Collections.Generic;
@@ -20,12 +20,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Events;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Events.Logging;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
+using DotAuth.Events;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Events.Logging;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 
 internal sealed class AddUserOperation
 {

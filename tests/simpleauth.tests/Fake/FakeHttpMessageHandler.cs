@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Tests.Fake;
+﻿namespace DotAuth.Tests.Fake;
 
 using System.IO;
 using System.Net;

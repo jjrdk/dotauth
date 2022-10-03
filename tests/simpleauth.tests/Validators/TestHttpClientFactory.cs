@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Tests.Validators;
+﻿namespace DotAuth.Tests.Validators;
 
 using System.Net.Http;
 

@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
 using System;
-using Api.Introspection;
-using Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Shared.Requests;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Introspection;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
-using SimpleAuth.Filters;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Responses;
+using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
 /// Defines the introspection controller.

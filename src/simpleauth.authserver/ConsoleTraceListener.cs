@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AuthServer;
+﻿namespace DotAuth.AuthServer;
 
 using System;
 using System.Diagnostics;

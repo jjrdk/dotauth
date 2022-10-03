@@ -12,19 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Shared.Repositories;
-using System.Collections.Generic;
+namespace DotAuth.Api.Token.Actions;
 
-namespace SimpleAuth.Api.Token.Actions;
-
-using Authenticate;
-using JwtToken;
-using Parameters;
-using Shared;
-using Shared.Models;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared.Errors;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
@@ -33,11 +24,19 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Authenticate;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.JwtToken;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.OAuth;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Properties;
-using SimpleAuth.Services;
-using SimpleAuth.Shared.Events.OAuth;
 
 internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
 {
@@ -155,7 +154,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
 
         // 5. Generate the user information payload and store it.
         var claims = resourceOwner.Claims;
-        var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
+        var claimsIdentity = new ClaimsIdentity(claims, "DotAuth");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var authorizationParameter = new AuthorizationParameter
         {

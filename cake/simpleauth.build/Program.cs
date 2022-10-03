@@ -1,6 +1,6 @@
 using System;
 using Cake.Frosting;
-using SimpleAuth.Build;
+using DotAuth.Build;
 
 return new CakeHost()
     .InstallTool(new Uri("nuget:?package=GitVersion.CommandLine&version=5.10.3"))

@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.Shared.Events.Openid;
+﻿namespace DotAuth.Shared.Events.Openid;
 
 using System;
-using Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the external user created event.
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Event" />
+/// <seealso cref="Event" />
 public sealed record ExternalUserCreated : Event
 {
     /// <summary>

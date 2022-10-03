@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Stores.Redis.AcceptanceTests;
+namespace DotAuth.Stores.Redis.AcceptanceTests;
 
 using System;
 using System.Net;

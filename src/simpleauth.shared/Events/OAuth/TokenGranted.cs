@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Events.OAuth;
+namespace DotAuth.Shared.Events.OAuth;
 
 using System;
 

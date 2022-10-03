@@ -1,14 +1,14 @@
-﻿namespace SimpleAuth.Tests.Authenticate;
+﻿namespace DotAuth.Tests.Authenticate;
 
-using Moq;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Authenticate;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Properties;
+using DotAuth.Authenticate;
+using DotAuth.Repositories;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
+using Moq;
 using Xunit;
 
 public sealed class AuthenticateClientFixture

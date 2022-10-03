@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Tests.Helpers;
+﻿namespace DotAuth.Tests.Helpers;
 
 internal static class TestKeys
 {

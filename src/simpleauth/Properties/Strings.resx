@@ -345,8 +345,8 @@
   <data name="TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken" xml:space="preserve">
     <value>The current authenticated user doesn't match with the identity token</value>
   </data>
-  <data name="TheIdentityTokenDoesntContainSimpleAuthAsAudience" xml:space="preserve">
-    <value>The identity token does not contain SimpleAuth in the audience</value>
+  <data name="TheIdentityTokenDoesntContainDotAuthAsAudience" xml:space="preserve">
+    <value>The identity token does not contain DotAuth in the audience</value>
   </data>
   <data name="TheIdTokenHintParameterIsNotAValidToken" xml:space="preserve">
     <value>The id_token_hint parameter is not a valid token</value>

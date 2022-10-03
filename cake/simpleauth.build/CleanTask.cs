@@ -1,4 +1,4 @@
-namespace SimpleAuth.Build;
+namespace DotAuth.Build;
 
 using Cake.Common.IO;
 using Cake.Core.Diagnostics;

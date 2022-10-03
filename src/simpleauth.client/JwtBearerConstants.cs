@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client;
+namespace DotAuth.Client;
 
 internal static class JwtBearerConstants
 {

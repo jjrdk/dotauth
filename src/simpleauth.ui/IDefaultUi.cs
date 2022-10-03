@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.UI;
+﻿namespace DotAuth.UI;
 
 public interface IDefaultUi
 {

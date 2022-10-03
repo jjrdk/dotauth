@@ -1,14 +1,15 @@
-﻿namespace SimpleAuth.Sms.Actions;
+﻿namespace DotAuth.Sms.Actions;
 
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth;
+using DotAuth.Events;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.User;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.WebSite.User;
 
 internal sealed class SmsAuthenticationOperation
 {
@@ -65,7 +66,7 @@ internal sealed class SmsAuthenticationOperation
             new Claim(OpenIdClaimTypes.PhoneNumberVerified, "false")
         };
         var id = await _subjectBuilder.BuildSubject(claims, cancellationToken).ConfigureAwait(false);
-        var record = new ResourceOwner { Subject = id, Password = Id.Create().ToSha256Hash(_salt), Claims = claims };
+        var record = new ResourceOwner { Subject = id, Password = DotAuth.Id.Create().ToSha256Hash(_salt), Claims = claims };
 
         // 3.2 Add user.
         await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);

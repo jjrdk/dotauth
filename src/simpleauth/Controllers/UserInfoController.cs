@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
 using System;
 using System.Collections.Generic;
@@ -21,14 +21,14 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Filters;
+using DotAuth.Properties;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
-using SimpleAuth.Filters;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 
 /// <summary>
 /// Endpoint for user info introspection requests.

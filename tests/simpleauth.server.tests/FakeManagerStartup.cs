@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests;
+namespace DotAuth.Server.Tests;
 
-using Controllers;
+using System.Reflection;
+using DotAuth;
+using DotAuth.Controllers;
+using DotAuth.Repositories;
+using DotAuth.UI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleAuth;
-using SimpleAuth.Repositories;
-using System.Reflection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using SimpleAuth.UI;
 
 public sealed class FakeManagerStartup
 {
@@ -35,14 +35,14 @@ public sealed class FakeManagerStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
     }
 
     private static void RegisterServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddHttpClient();
-        serviceCollection.AddSimpleAuth(
-            new SimpleAuthOptions
+        serviceCollection.AddDotAuth(
+            new DotAuthOptions
             {
                 Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStorage.GetUsers()),
             },

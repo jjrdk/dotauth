@@ -1,15 +1,15 @@
-﻿namespace SimpleAuth.Server.Tests.Sms;
+﻿namespace DotAuth.Server.Tests.Sms;
 
-using Moq;
-using SimpleAuth.Client;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 

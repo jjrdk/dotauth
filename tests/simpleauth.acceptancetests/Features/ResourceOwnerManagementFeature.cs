@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -8,13 +8,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Newtonsoft.Json;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
 using System;
 using System.Linq;
 using System.Text;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
 using CodeChallengeMethods = Shared.Models.CodeChallengeMethods;
 
 internal static class ClientValidator

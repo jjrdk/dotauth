@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Services;
+namespace DotAuth.Services;
 
 using System;
-using Shared.Models;
-using Shared.Repositories;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Events;
+using DotAuth.Properties;
+using DotAuth.Shared.Events.Logging;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Events.Logging;
 
 internal sealed class UsernamePasswordAuthenticationService : IAuthenticateResourceOwnerService
 {
@@ -56,7 +56,7 @@ internal sealed class UsernamePasswordAuthenticationService : IAuthenticateResou
         else
         {
             await _eventPublisher.Publish(
-                    new ResourceOwnerAuthenticated(Id.Create(), resourceOwner.Subject!, DateTimeOffset.UtcNow))
+                    new ResourceOwnerAuthenticated(Id.Create(), resourceOwner.Subject, DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             _logger.LogInformation(Strings.LogAuthenticated, resourceOwner.Subject);
         }

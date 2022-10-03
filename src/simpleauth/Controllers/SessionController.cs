@@ -1,18 +1,18 @@
-﻿namespace SimpleAuth.Controllers;
+﻿namespace DotAuth.Controllers;
 
-using Extensions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Shared;
-using Shared.Repositories;
-using Shared.Requests;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Filters;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 /// <summary>
 /// Defines the session controller

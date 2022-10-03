@@ -12,37 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth;
+namespace DotAuth;
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleAuth.Policies;
-using SimpleAuth.Repositories;
-using SimpleAuth.Services;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using DotAuth.Controllers;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.MiddleWare;
+using DotAuth.Policies;
+using DotAuth.Repositories;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using SimpleAuth.Controllers;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.Filters;
-using SimpleAuth.MiddleWare;
 
 /// <summary>
 /// Defines the service collection extensions.
@@ -147,7 +147,7 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds SimpleAuth type registrations.
+    /// Adds DotAuth type registrations.
     /// </summary>
     /// <param name="services">The services.</param>
     /// <param name="configuration">The configuration.</param>
@@ -155,21 +155,21 @@ public static class ServiceCollectionExtensions
     /// <param name="requestThrottle">The rate limiter.</param>
     /// <param name="authPolicies"></param>
     /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
-    public static IMvcBuilder AddSimpleAuth(
+    public static IMvcBuilder AddDotAuth(
         this IServiceCollection services,
-        Action<SimpleAuthOptions> configuration,
+        Action<DotAuthOptions> configuration,
         string[] authPolicies,
         Action<MvcOptions>? mvcConfig = null,
         IRequestThrottle? requestThrottle = null)
     {
-        var options = new SimpleAuthOptions();
+        var options = new DotAuthOptions();
         configuration(options);
 
-        return AddSimpleAuth(services, options, authPolicies, mvcConfig, requestThrottle, Array.Empty<Type>());
+        return AddDotAuth(services, options, authPolicies, mvcConfig, requestThrottle, Array.Empty<Type>());
     }
 
     /// <summary>
-    /// Adds SimpleAuth type registrations.
+    /// Adds DotAuth type registrations.
     /// </summary>
     /// <param name="services">The services.</param>
     /// <param name="options">The options.</param>
@@ -179,15 +179,15 @@ public static class ServiceCollectionExtensions
     /// <param name="assemblyTypes">Assemblies with additional application parts.</param>
     /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
     /// <exception cref="ArgumentNullException">options</exception>
-    public static IMvcBuilder AddSimpleAuth(
+    public static IMvcBuilder AddDotAuth(
         this IServiceCollection services,
-        SimpleAuthOptions options,
+        DotAuthOptions options,
         string[] authPolicies,
         Action<MvcOptions>? mvcConfig = null,
         IRequestThrottle? requestThrottle = null,
         params Type[] assemblyTypes)
     {
-        return AddSimpleAuth(
+        return AddDotAuth(
             services,
             options,
             authPolicies,
@@ -197,7 +197,7 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds SimpleAuth type registrations.
+    /// Adds DotAuth type registrations.
     /// </summary>
     /// <param name="services">The services.</param>
     /// <param name="options">The options.</param>
@@ -207,9 +207,9 @@ public static class ServiceCollectionExtensions
     /// <param name="assemblies">Assemblies with additional application parts.</param>
     /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
     /// <exception cref="ArgumentNullException">options</exception>
-    public static IMvcBuilder AddSimpleAuth(
+    public static IMvcBuilder AddDotAuth(
         this IServiceCollection services,
-        SimpleAuthOptions options,
+        DotAuthOptions options,
         string[] authPolicies,
         Action<MvcOptions>? mvcConfig = null,
         IRequestThrottle? requestThrottle = null,
@@ -311,30 +311,30 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers the mvc routes for a SimpleAuth server.
+    /// Registers the mvc routes for a DotAuth server.
     /// </summary>
     /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
     /// <param name="forwardedHeaderConfiguration">Configuration action for handling proxy setup.</param>
     /// <param name="applicationTypes">Additional types to discover view assemblies.</param>
     /// <returns></returns>
-    public static IApplicationBuilder UseSimpleAuthMvc(
+    public static IApplicationBuilder UseDotAuthMvc(
         this IApplicationBuilder app,
         Action<ForwardedHeadersOptions>? forwardedHeaderConfiguration = null,
         params Type[] applicationTypes)
     {
-        return app.UseSimpleAuthMvc(
+        return app.UseDotAuthMvc(
             forwardedHeaderConfiguration,
             applicationTypes.Select(type => (type.Namespace ?? string.Empty, type.Assembly)).ToArray());
     }
 
     /// <summary>
-    /// Registers the mvc routes for a SimpleAuth server.
+    /// Registers the mvc routes for a DotAuth server.
     /// </summary>
     /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
     /// <param name="forwardedHeaderConfiguration">Configuration action for handling proxy setup.</param>
     /// <param name="assemblies">Additional view assemblies.</param>
     /// <returns></returns>
-    public static IApplicationBuilder UseSimpleAuthMvc(
+    public static IApplicationBuilder UseDotAuthMvc(
         this IApplicationBuilder app,
         Action<ForwardedHeadersOptions>? forwardedHeaderConfiguration = null,
         params (string defaultNamespace, Assembly assembly)[] assemblies)
@@ -373,7 +373,7 @@ public static class ServiceCollectionExtensions
                 });
     }
 
-    private static RuntimeSettings GetRuntimeConfig(SimpleAuthOptions options)
+    private static RuntimeSettings GetRuntimeConfig(DotAuthOptions options)
     {
         return new(
             options.Salt,

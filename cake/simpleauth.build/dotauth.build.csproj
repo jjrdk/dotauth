@@ -3,7 +3,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <RunWorkingDirectory>$(MSBuildProjectDirectory)</RunWorkingDirectory>
-    <RootNamespace>SimpleAuth.Build</RootNamespace>
+    <RootNamespace>DotAuth.Build</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GitVersion.CommandLine" Version="5.10.3">

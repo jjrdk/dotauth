@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -25,7 +21,11 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
 
 internal static class GrantedTokenGeneratorHelper
 {

@@ -12,23 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
-using Exceptions;
-using Extensions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Shared;
-using Shared.Events.Openid;
-using Shared.Models;
-using Shared.Repositories;
-using Shared.Requests;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.WebSite.Authenticate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,12 +21,27 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Events;
+using DotAuth.Exceptions;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.Openid;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.ViewModels;
+using DotAuth.WebSite.Authenticate;
+using DotAuth.WebSite.User;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Properties;
-using SimpleAuth.Services;
-using SimpleAuth.WebSite.User;
-using ViewModels;
 
 /// <summary>
 /// Defines the base authentication controller.

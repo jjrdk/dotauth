@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests;
+namespace DotAuth.Server.Tests;
 
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
+using DotAuth;
+using DotAuth.Repositories;
+using DotAuth.Server.Tests.MiddleWares;
+using DotAuth.Server.Tests.Stores;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
+using DotAuth.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SimpleAuth;
-using SimpleAuth.Repositories;
-using SimpleAuth.Server.Tests.MiddleWares;
-using SimpleAuth.Server.Tests.Stores;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.UI;
 using Xunit.Abstractions;
 
 public sealed class FakeUmaStartup
@@ -80,8 +79,8 @@ public sealed class FakeUmaStartup
             .AddRazorRuntimeCompilation()
             .AddApplicationPart(typeof(CoreConstants).Assembly);
         services.AddRazorPages();
-        services.AddSimpleAuth(
-            new SimpleAuthOptions
+        services.AddDotAuth(
+            new DotAuthOptions
             {
                 Clients = sp => new InMemoryClientRepository(
                     new Mock<IHttpClientFactory>().Object,
@@ -121,6 +120,6 @@ public sealed class FakeUmaStartup
                 await next.Invoke().ConfigureAwait(false);
             });
 
-        app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
     }
 }

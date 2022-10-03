@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
 using System;
 using System.Collections.Generic;

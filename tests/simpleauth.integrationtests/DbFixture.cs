@@ -1,14 +1,14 @@
-namespace SimpleAuth.IntegrationTests;
+namespace DotAuth.IntegrationTests;
 
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Stores.Marten;
 using Marten;
 using Microsoft.Extensions.Logging.Abstractions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Stores.Marten;
 
 public sealed class DbFixture : IDisposable
 {
@@ -18,7 +18,7 @@ public sealed class DbFixture : IDisposable
     {
         var connectionString = "Server=odin;Port=5432;Database=simpleauth;User Id=simpleauth;Password=simpleauth;";
         _store = new DocumentStore(
-            new SimpleAuthMartenOptions(
+            new DotAuthMartenOptions(
                 connectionString,
                 new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance)));
     }

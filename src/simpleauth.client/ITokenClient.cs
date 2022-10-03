@@ -1,13 +1,13 @@
-﻿namespace SimpleAuth.Client;
+﻿namespace DotAuth.Client;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the token client interface.

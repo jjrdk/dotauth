@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Results;
+namespace DotAuth.Results;
 
 using System;
 
@@ -20,7 +20,7 @@ internal sealed record RedirectInstruction
 {
     public Parameter[] Parameters { get; init; } = Array.Empty<Parameter>();
 
-    public SimpleAuthEndPoints Action { get; init; }
+    public DotAuthEndPoints Action { get; init; }
 
     public string? ResponseMode { get; init; }
 

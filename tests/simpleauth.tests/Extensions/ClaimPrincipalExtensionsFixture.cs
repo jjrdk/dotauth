@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Tests.Extensions;
+﻿namespace DotAuth.Tests.Extensions;
 
-using Shared;
 using System.Collections.Generic;
 using System.Security.Claims;
+using DotAuth.Shared;
 using Xunit;
 
 public sealed class ClaimPrincipalExtensionsFixture

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AuthServerPgRedis;
+namespace DotAuth.AuthServerPgRedis;
 
 using System;
 using System.IO.Compression;
@@ -22,8 +22,14 @@ using System.Security.Claims;
 using Amazon;
 using Amazon.Runtime;
 using Baseline;
+using DotAuth;
+using DotAuth.Extensions;
+using DotAuth.Sms;
+using DotAuth.Sms.Ui;
+using DotAuth.Stores.Marten;
+using DotAuth.Stores.Redis;
+using DotAuth.UI;
 using Marten;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -32,23 +38,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-
-using SimpleAuth;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Sms;
-using SimpleAuth.Sms.Ui;
-using SimpleAuth.Stores.Marten;
-using SimpleAuth.Stores.Redis;
-using SimpleAuth.UI;
 using StackExchange.Redis;
 
 internal sealed class Startup
 {
-    private const string SimpleAuthScheme = "simpleauth";
+    private const string DotAuthScheme = "simpleauth";
     private const string DefaultGoogleScopes = "openid,profile,email";
     private readonly IConfiguration _configuration;
-    private readonly SimpleAuthOptions _options;
+    private readonly DotAuthOptions _options;
 
     public Startup(IConfiguration configuration)
     {
@@ -56,11 +53,11 @@ internal sealed class Startup
         _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
         var salt = _configuration["SALT"] ?? string.Empty;
         var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
-        _options = new SimpleAuthOptions(salt)
+        _options = new DotAuthOptions(salt)
         {
             AllowHttp = allowHttp,
             RedirectToLogin = redirect,
-            ApplicationName = _configuration["SERVER:NAME"] ?? "SimpleAuth",
+            ApplicationName = _configuration["SERVER:NAME"] ?? "DotAuth",
             Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
             Clients =
                 sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
@@ -108,7 +105,7 @@ internal sealed class Startup
         services.AddSingleton<IDocumentStore>(
             provider =>
             {
-                var options = new SimpleAuthMartenOptions(
+                var options = new DotAuthMartenOptions(
                     _configuration["DB:CONNECTIONSTRING"] ?? "",
                     new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()));
                 return new DocumentStore(options);
@@ -137,10 +134,10 @@ internal sealed class Startup
                 options =>
                 {
                     options.DefaultScheme = CookieNames.CookieName;
-                    options.DefaultChallengeScheme = SimpleAuthScheme;
+                    options.DefaultChallengeScheme = DotAuthScheme;
                 })
             .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-            .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, options => { })
+            .AddOAuth(DotAuthScheme, '_' + DotAuthScheme, options => { })
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
                 cfg =>
@@ -182,9 +179,9 @@ internal sealed class Startup
         if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
             && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
         {
-            services.AddSimpleAuth(
+            services.AddDotAuth(
                     _options,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                     assemblies: new[]
                     {
                         (GetType().Namespace!, GetType().Assembly),
@@ -201,9 +198,9 @@ internal sealed class Startup
         }
         else
         {
-            services.AddSimpleAuth(
+            services.AddDotAuth(
                 _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                 assemblies: new[]
                 {
                     (GetType().Namespace!, GetType().Assembly),
@@ -230,7 +227,7 @@ internal sealed class Startup
             app = app.UsePathBase(pathBase);
         }
         app.UseResponseCompression()
-            .UseSimpleAuthMvc(
+            .UseDotAuthMvc(
                 x => { x.KnownProxies.AddRange(knownProxies); },
                 applicationTypes: typeof(IDefaultUi));
     }

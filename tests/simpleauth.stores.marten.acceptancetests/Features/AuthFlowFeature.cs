@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features;
+﻿namespace DotAuth.Stores.Marten.AcceptanceTests.Features;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;

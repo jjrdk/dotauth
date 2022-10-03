@@ -1,6 +1,5 @@
-﻿namespace SimpleAuth.Shared;
+﻿namespace DotAuth.Shared;
 
-using Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +7,9 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 
 /// <summary>
 /// Defines the account filtering.

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Services;
+namespace DotAuth.Services;
 
-using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
 
 internal sealed class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
 {

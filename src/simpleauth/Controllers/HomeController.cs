@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth.Controllers;
+﻿namespace DotAuth.Controllers;
 
+using System.Threading.Tasks;
+using DotAuth.Filters;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Filters;
 
 /// <summary>
 /// Defines the home controller.

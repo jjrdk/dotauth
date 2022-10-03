@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Extensions;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
 
 /// <summary>
 /// Defines the abstract base controller.

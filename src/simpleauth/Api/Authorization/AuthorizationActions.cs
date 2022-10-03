@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Authorization;
+namespace DotAuth.Api.Authorization;
 
-using Parameters;
-using Results;
-using Shared.Events.OAuth;
-using Shared.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,14 +21,18 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Results;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.OAuth;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Services;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
 
 internal sealed class AuthorizationActions
 {

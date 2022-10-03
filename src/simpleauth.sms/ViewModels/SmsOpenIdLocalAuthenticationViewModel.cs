@@ -1,7 +1,7 @@
-﻿namespace SimpleAuth.Sms.ViewModels;
+﻿namespace DotAuth.Sms.ViewModels;
 
 using System.ComponentModel.DataAnnotations;
-using SimpleAuth.ViewModels;
+using DotAuth.ViewModels;
 
 /// <summary>
 /// Defines the SMS OpenID local authentication view model.

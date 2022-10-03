@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Shared.Events.Uma;
+﻿namespace DotAuth.Shared.Events.Uma;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the UMA request not authorized event.

@@ -1,24 +1,24 @@
-﻿namespace SimpleAuth.WebSite.Authenticate;
+﻿namespace DotAuth.WebSite.Authenticate;
 
-using SimpleAuth.Api.Authorization;
-using SimpleAuth.Common;
-using SimpleAuth.Parameters;
-using SimpleAuth.Results;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Authorization;
+using DotAuth.Common;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Results;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Properties;
 
 internal sealed class AuthenticateHelper
 {
@@ -74,7 +74,7 @@ internal sealed class AuthenticateHelper
         if (prompts.Contains(PromptParameters.Consent) && code != null)
         {
             return EndpointResult.CreateAnEmptyActionResultWithRedirection(
-                SimpleAuthEndPoints.ConsentIndex,
+                DotAuthEndPoints.ConsentIndex,
                 new Parameter("code", code));
         }
 
@@ -85,7 +85,7 @@ internal sealed class AuthenticateHelper
         // If there's already one consent then redirect to the callback
         if (assignedConsent != null)
         {
-            var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuth");
+            var claimsIdentity = new ClaimsIdentity(claims, "DotAuth");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             result = await _generateAuthorizationResponse.Generate(
                     EndpointResult.CreateAnEmptyActionResultWithRedirectionToCallBackUrl(),
@@ -123,7 +123,7 @@ internal sealed class AuthenticateHelper
 
         // If there's no consent & there's no consent prompt then redirect to the consent screen.
         return EndpointResult.CreateAnEmptyActionResultWithRedirection(
-            SimpleAuthEndPoints.ConsentIndex,
+            DotAuthEndPoints.ConsentIndex,
             new Parameter("code", code ?? ""));
     }
 

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;

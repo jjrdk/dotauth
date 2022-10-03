@@ -1,12 +1,11 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
-using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Client;
-using SimpleAuth.Shared.Responses;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using SimpleAuth.Shared;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Responses;
+using Microsoft.IdentityModel.Tokens;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;
@@ -145,6 +144,6 @@ public sealed class ClientCredentialsLoginFlowFeature : AuthFlowFeature
         "when requesting auth token".x(
             async () => { result = await client.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false); });
 
-        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
     }
 }

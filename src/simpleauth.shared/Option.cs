@@ -1,7 +1,7 @@
-namespace SimpleAuth.Shared;
+namespace DotAuth.Shared;
 
 using System;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the generic option type.

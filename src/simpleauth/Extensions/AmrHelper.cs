@@ -1,11 +1,11 @@
-﻿namespace SimpleAuth.Extensions;
+﻿namespace DotAuth.Extensions;
 
 using System.Linq;
 using System.Net;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
 
 internal static class AmrHelper
 {

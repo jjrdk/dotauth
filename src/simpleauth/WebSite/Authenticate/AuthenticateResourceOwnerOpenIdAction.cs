@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.Authenticate;
+namespace DotAuth.WebSite.Authenticate;
 
-using SimpleAuth.Extensions;
-using SimpleAuth.Parameters;
-using SimpleAuth.Results;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Repositories;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Results;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
 
 internal sealed class AuthenticateResourceOwnerOpenIdAction
 {

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Extensions;
+﻿namespace DotAuth.Extensions;
 
 internal static class JwtSecurityTokenExtensions
 {

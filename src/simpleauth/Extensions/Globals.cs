@@ -1,4 +1,4 @@
-namespace SimpleAuth.Extensions
+namespace DotAuth.Extensions
 {
     /// <summary>
     /// Defines the global values.
@@ -11,6 +11,6 @@ namespace SimpleAuth.Extensions
         /// <value>
         /// The name of the application.
         /// </value>
-        public static string ApplicationName { get; set; } = "SimpleAuth";
+        public static string ApplicationName { get; set; } = "DotAuth";
     }
 }

@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Stores;
+namespace DotAuth.Server.Tests.Stores;
 
-using Microsoft.IdentityModel.Tokens;
-using Shared;
-using Shared.Models;
-using SimpleAuth;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-using SimpleAuth.Extensions;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using Microsoft.IdentityModel.Tokens;
 
 public static class DefaultStores
 {

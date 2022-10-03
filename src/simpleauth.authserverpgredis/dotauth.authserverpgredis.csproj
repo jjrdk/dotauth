@@ -3,11 +3,11 @@
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<PreserveCompilationContext>true</PreserveCompilationContext>
-		<AssemblyName>simpleauth.authserverpgredis</AssemblyName>
+		<AssemblyName>dotauth.authserverpgredis</AssemblyName>
 		<OutputType>Exe</OutputType>
-		<StartupObject>SimpleAuth.AuthServerPgRedis.Program</StartupObject>
-		<RootNamespace>SimpleAuth.AuthServerPgRedis</RootNamespace>
-		<UserSecretsId>simpleauth-authserver</UserSecretsId>
+		<StartupObject>DotAuth.AuthServerPgRedis.Program</StartupObject>
+		<RootNamespace>DotAuth.AuthServerPgRedis</RootNamespace>
+		<UserSecretsId>dotauth-authserver</UserSecretsId>
 	</PropertyGroup>
 	<Import Project="../../shared.projinfo" />
 
@@ -20,11 +20,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\simpleauth.sms.ui\simpleauth.sms.ui.csproj" />
-		<ProjectReference Include="..\simpleauth.sms\simpleauth.sms.csproj" />
-		<ProjectReference Include="..\simpleauth.stores.redis\simpleauth.stores.redis.csproj" />
-		<ProjectReference Include="..\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
-		<ProjectReference Include="..\simpleauth.ui\simpleauth.ui.csproj" />
+		<ProjectReference Include="..\simpleauth.sms.ui\dotauth.sms.ui.csproj" />
+		<ProjectReference Include="..\simpleauth.sms\dotauth.sms.csproj" />
+		<ProjectReference Include="..\simpleauth.stores.redis\dotauth.stores.redis.csproj" />
+		<ProjectReference Include="..\simpleauth.stores.marten\dotauth.stores.marten.csproj" />
+		<ProjectReference Include="..\simpleauth.ui\dotauth.ui.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

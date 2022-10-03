@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.Server.Tests.Apis;
+﻿namespace DotAuth.Server.Tests.Apis;
 
-using Client;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Client;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Responses;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -46,7 +46,7 @@ public sealed class UserInfoClientFixture
         var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
         var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
 
-        Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
+        Assert.IsType<Option<GrantedTokenResponse>.Result>(getUserInfoResult);
     }
 
     [Fact]

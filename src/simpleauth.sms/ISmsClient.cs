@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Sms;
+﻿namespace DotAuth.Sms;
 
 using System.Threading.Tasks;
 

@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Authorization;
+namespace DotAuth.Api.Authorization;
 
 using System.Net;
-using Parameters;
-using Results;
-using Shared.Models;
-using SimpleAuth.Common;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Repositories;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Common;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Results;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Errors;
 
 internal sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation
 {

@@ -1,14 +1,13 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
-using global::Marten;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Requests;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using global::Marten;
 using global::Marten.Pagination;
 
 /// <summary>

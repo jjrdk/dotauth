@@ -12,31 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests;
+namespace DotAuth.Server.Tests;
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Logging;
-
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Repositories;
-
-using Stores;
 using System.Net.Http;
 using System.Security.Cryptography;
+using DotAuth;
+using DotAuth.Repositories;
+using DotAuth.Server.Tests.MiddleWares;
+using DotAuth.Server.Tests.Stores;
+using DotAuth.Services;
+using DotAuth.Shared.Repositories;
+using DotAuth.Sms;
+using DotAuth.Sms.Services;
+using DotAuth.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using Moq;
-
-using SimpleAuth.Server.Tests.MiddleWares;
-using SimpleAuth.Services;
-using SimpleAuth.Sms;
-using SimpleAuth.Sms.Services;
-using SimpleAuth.UI;
 using Xunit.Abstractions;
+using ServiceCollectionExtensions = DotAuth.ServiceCollectionExtensions;
 
 public sealed class FakeStartup
 {
@@ -70,8 +69,8 @@ public sealed class FakeStartup
         var symmetricAlgorithm = Aes.Create();
         symmetricAlgorithm.GenerateIV();
         symmetricAlgorithm.GenerateKey();
-        services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
-            .AddSimpleAuth(
+        ServiceCollectionExtensions.AddDotAuth(
+                services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>(),
                 options =>
                 {
                     options.DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm);
@@ -100,6 +99,6 @@ public sealed class FakeStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
     }
 }

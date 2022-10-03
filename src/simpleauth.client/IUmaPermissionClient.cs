@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client;
+namespace DotAuth.Client;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Shared;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the UMA permission client interface.

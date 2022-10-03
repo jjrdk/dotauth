@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SimpleAuth.TokenClient.Properties {
-    using System;
-    
-    
+namespace DotAuth.Client.Properties {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -39,7 +36,7 @@ namespace SimpleAuth.TokenClient.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SimpleAuth.TokenClient.Properties.ClientStrings", typeof(ClientStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotAuth.Client.Properties.ClientStrings", typeof(ClientStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

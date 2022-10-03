@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.JwtToken;
+namespace DotAuth.JwtToken;
 
-using Extensions;
-using Microsoft.IdentityModel.Tokens;
-using Parameters;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -32,8 +25,15 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Properties;
+using Microsoft.IdentityModel.Tokens;
 
 internal sealed class JwtGenerator
 {

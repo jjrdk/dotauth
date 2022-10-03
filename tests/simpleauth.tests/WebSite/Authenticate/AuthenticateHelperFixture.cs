@@ -1,19 +1,19 @@
-﻿namespace SimpleAuth.Tests.WebSite.Authenticate;
+﻿namespace DotAuth.Tests.WebSite.Authenticate;
 
-using Moq;
-using Parameters;
-using Results;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.WebSite.Authenticate;
 using System;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
-using SimpleAuth.Events;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Properties;
+using DotAuth.Events;
+using DotAuth.Parameters;
+using DotAuth.Repositories;
+using DotAuth.Results;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.Authenticate;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -91,7 +91,7 @@ public sealed class AuthenticateHelperFixture
                 CancellationToken.None)
             .ConfigureAwait(false);
 
-        Assert.Equal(SimpleAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
+        Assert.Equal(DotAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
         Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
     }
 
@@ -107,7 +107,7 @@ public sealed class AuthenticateHelperFixture
             Scope = "scope",
             Prompt = "none",
             RedirectUrl = new Uri("https://localhost"),
-            ResponseMode = ResponseModes.FormPost
+            ResponseMode = DotAuth.ResponseModes.FormPost
         };
         _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Client());
@@ -130,7 +130,7 @@ public sealed class AuthenticateHelperFixture
                 CancellationToken.None)
             .ConfigureAwait(false);
 
-        Assert.Equal(ResponseModes.FormPost, actionResult.RedirectInstruction.ResponseMode);
+        Assert.Equal(DotAuth.ResponseModes.FormPost, actionResult.RedirectInstruction.ResponseMode);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public sealed class AuthenticateHelperFixture
                 CancellationToken.None)
             .ConfigureAwait(false);
 
-        Assert.Equal(SimpleAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
+        Assert.Equal(DotAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
         Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
     }
 }

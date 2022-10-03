@@ -1,13 +1,13 @@
-﻿namespace SimpleAuth.Repositories;
+﻿namespace DotAuth.Repositories;
 
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Repositories;
 
 internal sealed class InMemoryJwksRepository : IJwksRepository
 {

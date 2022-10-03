@@ -1,12 +1,11 @@
-﻿namespace SimpleAuth.Shared.Events.Logging;
+﻿namespace DotAuth.Shared.Events.Logging;
 
 using System;
-using SimpleAuth.Shared;
 
 /// <summary>
 /// Defines the failure message event.
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Event" />
+/// <seealso cref="Event" />
 public sealed record FilterValidationFailure : Event
 {
     /// <summary>

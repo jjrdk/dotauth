@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.Introspection;
+namespace DotAuth.Tests.Api.Introspection;
 
-using Repositories;
-using SimpleAuth.Api.Introspection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Introspection;
+using DotAuth.Repositories;
 using Xunit;
 
 public sealed class IntrospectionActionsFixture

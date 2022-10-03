@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared;
+﻿namespace DotAuth.Shared;
 
 using System.Collections.Generic;
 using System.Linq;

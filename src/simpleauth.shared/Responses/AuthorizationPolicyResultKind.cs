@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.Responses;
+﻿namespace DotAuth.Shared.Responses;
 
 internal enum AuthorizationPolicyResultKind
 {

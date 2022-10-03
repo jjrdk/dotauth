@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Server.Tests;
+﻿namespace DotAuth.Server.Tests;
 
 using System.Collections.Generic;
 using System.Security.Claims;
-using Shared;
-using Shared.Models;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
 
 public static class DefaultStorage
 {

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Authenticate;
+namespace DotAuth.Authenticate;
 
-using Shared.Models;
+using DotAuth.Shared.Models;
 
 internal sealed class AuthenticationResult
 {

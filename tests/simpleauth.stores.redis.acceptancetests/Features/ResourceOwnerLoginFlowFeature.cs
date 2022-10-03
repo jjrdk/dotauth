@@ -1,18 +1,13 @@
-﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests.Features;
+﻿namespace DotAuth.Stores.Redis.AcceptanceTests.Features;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-
+using DotAuth.Client;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
-
-using SimpleAuth.Client;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
-
 using Xbehave;
-
 using Xunit;
 using Xunit.Abstractions;
 
@@ -168,7 +163,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
     }
 
     [Scenario(DisplayName = "Invalid user credentials")]
@@ -191,6 +186,6 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
     }
 }

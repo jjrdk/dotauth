@@ -1,10 +1,12 @@
-﻿namespace SimpleAuth.Controllers;
+﻿namespace DotAuth.Controllers;
 
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -15,8 +17,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.ViewModels;
 
 internal sealed class RazorOutputFormatter : TextOutputFormatter
 {

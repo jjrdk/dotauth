@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Filters;
+﻿namespace DotAuth.Filters;
 
 using System;
 using System.Net;

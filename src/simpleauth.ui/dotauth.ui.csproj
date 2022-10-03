@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-    <RootNamespace>SimpleAuth.UI</RootNamespace>
+    <RootNamespace>DotAuth.UI</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.ViewModels;
+namespace DotAuth.ViewModels;
 
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the resource set view model.

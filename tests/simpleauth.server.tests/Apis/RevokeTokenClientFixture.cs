@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Apis;
+namespace DotAuth.Server.Tests.Apis;
 
-using Client;
-using Microsoft.IdentityModel.Logging;
-using Newtonsoft.Json;
-using Shared;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Properties;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Client;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Responses;
+using Microsoft.IdentityModel.Logging;
+using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -149,7 +149,7 @@ public sealed class RevokeTokenClientFixture
             .ConfigureAwait(false);
 
         Assert.IsType<Option.Success>(revoke);
-        Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
+        Assert.IsType<Option.Error>(ex);
     }
 
     [Fact]
@@ -171,6 +171,6 @@ public sealed class RevokeTokenClientFixture
             .ConfigureAwait(false);
 
         Assert.IsType<Option.Success>(revoke);
-        Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
+        Assert.IsType<Option.Error>(ex);
     }
 }

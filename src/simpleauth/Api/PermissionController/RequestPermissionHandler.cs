@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.PermissionController;
+namespace DotAuth.Api.PermissionController;
 
-using Shared;
-using Shared.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Requests;
 
 internal sealed class RequestPermissionHandler
 {

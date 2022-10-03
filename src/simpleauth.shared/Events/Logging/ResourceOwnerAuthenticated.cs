@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.Events.Logging;
+﻿namespace DotAuth.Shared.Events.Logging;
 
 using System;
 

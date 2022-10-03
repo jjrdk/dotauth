@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Policies;
+namespace DotAuth.Server.Tests.Policies;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Events;
+using DotAuth.Parameters;
+using DotAuth.Policies;
+using DotAuth.Repositories;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;
 using Moq;
-using SimpleAuth.Events;
-using SimpleAuth.Parameters;
-using SimpleAuth.Policies;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Responses;
 using Xunit;
 
 public sealed class AuthorizationPolicyValidatorFixture
@@ -86,7 +86,7 @@ public sealed class AuthorizationPolicyValidatorFixture
         var result = await _authorizationPolicyValidator.IsAuthorized(
                 ticket,
                 new Client { ClientId = "client_id" },
-                new ClaimTokenParameter { Format = UmaConstants.IdTokenType, Token = token },
+                new ClaimTokenParameter { Format = DotAuth.UmaConstants.IdTokenType, Token = token },
                 CancellationToken.None)
             .ConfigureAwait(false);
 
@@ -162,7 +162,7 @@ public sealed class AuthorizationPolicyValidatorFixture
         var result = await _authorizationPolicyValidator.IsAuthorized(
                 ticket,
                 new Client { ClientId = "client_id" },
-                new ClaimTokenParameter { Token = token, Format = UmaConstants.IdTokenType },
+                new ClaimTokenParameter { Token = token, Format = DotAuth.UmaConstants.IdTokenType },
                 CancellationToken.None)
             .ConfigureAwait(false);
 

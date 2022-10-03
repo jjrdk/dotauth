@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Authenticate;
+namespace DotAuth.Authenticate;
 
-using Shared.Models;
-using Shared.Repositories;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Properties;
+using DotAuth.Properties;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
 
 /// <summary>
 /// Defines the authenticate client.

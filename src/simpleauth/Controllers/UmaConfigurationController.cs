@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the UMA configuration controller.

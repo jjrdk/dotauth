@@ -1,15 +1,15 @@
-﻿namespace SimpleAuth.WebSite.User;
+﻿namespace DotAuth.WebSite.User;
 
 using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 
 internal sealed class UpdateUserTwoFactorAuthenticatorOperation
 {

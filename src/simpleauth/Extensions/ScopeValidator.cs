@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
 using System.Linq;
-using SimpleAuth.Properties;
-using SimpleAuth.Results;
-using SimpleAuth.Shared.Models;
+using DotAuth.Properties;
+using DotAuth.Results;
+using DotAuth.Shared.Models;
 
 internal static class ScopeValidator
 {

@@ -68,7 +68,7 @@
 //            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
 //                .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
-//            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+//            //            var exception = await Assert.ThrowsAsync<DotAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
 //        }
@@ -94,7 +94,7 @@
 //            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
 //                .ReturnsAsync(client));
 
-//            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+//            //            var exception = await Assert.ThrowsAsync<DotAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
 //            Assert.True(exception.Message == string.Format(Strings.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantTypes.client_credentials));
@@ -125,7 +125,7 @@
 //            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
 //                .ReturnsAsync(client));
 
-//            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+//            //            var exception = await Assert.ThrowsAsync<DotAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.Equal(ErrorCodes.InvalidClient, exception.Code);
 //            Assert.True(exception.Message == string.Format(Strings.TheClientDoesntSupportTheResponseType, client.Client.ClientId, ResponseType.token));
@@ -163,7 +163,7 @@
 //                    ErrorMessage = messageDescription
 //                });
 
-//            //            var exception = await Assert.ThrowsAsync<SimpleAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
+//            //            var exception = await Assert.ThrowsAsync<DotAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
 //            Assert.Equal(ErrorCodes.InvalidScope, exception.Code);
 //            Assert.True(exception.Message == messageDescription);

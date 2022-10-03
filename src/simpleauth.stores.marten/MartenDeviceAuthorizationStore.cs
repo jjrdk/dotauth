@@ -1,17 +1,17 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
 using System;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using global::Marten;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the Marten device authorization store.

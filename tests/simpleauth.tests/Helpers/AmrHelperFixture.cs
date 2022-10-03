@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth.Tests.Helpers;
+﻿namespace DotAuth.Tests.Helpers;
 
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
 using System;
-using SimpleAuth.Properties;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
 using Xunit;
 
 public sealed class AmrHelperFixture

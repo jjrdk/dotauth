@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
+using System;
+using DotAuth.Results;
+using DotAuth.Shared.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Results;
-using Shared.Requests;
-using System;
 using Microsoft.Extensions.Logging;
 
 internal static class ControllerExtensions

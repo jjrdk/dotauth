@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.JwtToken;
+﻿namespace DotAuth.JwtToken;
 
 using System.Collections.Generic;
 using System.Security.Claims;

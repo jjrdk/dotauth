@@ -12,16 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Apis;
+namespace DotAuth.Server.Tests.Apis;
 
-using Client;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using Shared;
-using SimpleAuth;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -31,10 +23,17 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Properties;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Client;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Responses;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 

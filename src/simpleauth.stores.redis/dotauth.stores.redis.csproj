@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-        <RootNamespace>SimpleAuth.Stores.Redis</RootNamespace>
+        <RootNamespace>DotAuth.Stores.Redis</RootNamespace>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\simpleauth.shared\simpleauth.abstractions.csproj" />
+        <ProjectReference Include="..\simpleauth.shared\dotauth.shared.csproj" />
     </ItemGroup>
 
 </Project>

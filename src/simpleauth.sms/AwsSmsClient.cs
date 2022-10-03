@@ -1,11 +1,11 @@
-﻿namespace SimpleAuth.Sms;
+﻿namespace DotAuth.Sms;
 
+using System;
+using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
-using System;
-using System.Threading.Tasks;
 
 /// <summary>
 /// Defines the AWS SMS client.

@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.MiddleWare;
+namespace DotAuth.MiddleWare;
 
-using Microsoft.AspNetCore.Http;
-using SimpleAuth.Shared.Events.Logging;
 using System;
 using System.Threading.Tasks;
+using DotAuth.Events;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.Logging;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Shared.Errors;
 
 internal sealed class ExceptionHandlerMiddleware
 {
@@ -88,7 +88,7 @@ internal sealed class ExceptionHandlerMiddleware
     {
         await _publisher
             .Publish(
-                new SimpleAuthError(
+                new DotAuthError(
                     Id.Create(),
                     exception.GetType().Name,
                     exception.Message,

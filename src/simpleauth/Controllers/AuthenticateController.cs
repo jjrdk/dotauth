@@ -1,19 +1,5 @@
-﻿namespace SimpleAuth.Controllers;
+﻿namespace DotAuth.Controllers;
 
-using Exceptions;
-using Extensions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Parameters;
-using Shared;
-using Shared.Repositories;
-using Shared.Requests;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Events.Logging;
-using SimpleAuth.WebSite.Authenticate;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,12 +7,26 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Events;
+using DotAuth.Exceptions;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.Logging;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.ViewModels;
+using DotAuth.WebSite.Authenticate;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Filters;
-using SimpleAuth.Properties;
-using SimpleAuth.Services;
-using ViewModels;
 
 /// <summary>
 /// Defines the authentication controller.
@@ -218,7 +218,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
             catch (ClaimRequiredException cre)
             {
                 await _eventPublisher.Publish(
-                        new SimpleAuthError(
+                        new DotAuthError(
                             Id.Create(),
                             cre.Code,
                             cre.Message,
@@ -230,7 +230,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
             catch (Exception ex)
             {
                 await _eventPublisher.Publish(
-                        new SimpleAuthError(
+                        new DotAuthError(
                             Id.Create(),
                             "misconfigured_2fa",
                             ex.Message,
@@ -243,7 +243,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         catch (Exception exception)
         {
             await _eventPublisher.Publish(
-                    new SimpleAuthError(
+                    new DotAuthError(
                         Id.Create(),
                         InvalidCredentials,
                         exception.Message,
@@ -323,7 +323,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 catch (ClaimRequiredException cre)
                 {
                     await _eventPublisher.Publish(
-                            new SimpleAuthError(
+                            new DotAuthError(
                                 Id.Create(),
                                 cre.Code,
                                 cre.Message,
@@ -335,7 +335,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 catch (Exception ex)
                 {
                     await _eventPublisher.Publish(
-                            new SimpleAuthError(
+                            new DotAuthError(
                                 Id.Create(),
                                 ex.Message,
                                 ex.Message,
@@ -365,7 +365,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         else
         {
             await _eventPublisher.Publish(
-                    new SimpleAuthError(
+                    new DotAuthError(
                         Id.Create(),
                         ErrorCodes.InvalidRequest,
                         actionResult.ErrorMessage,

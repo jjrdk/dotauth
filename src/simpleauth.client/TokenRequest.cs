@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client;
+namespace DotAuth.Client;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Shared;
+using DotAuth.Shared;
 
 /// <summary>
 /// Defines the token request.

@@ -1,14 +1,14 @@
-﻿namespace SimpleAuth.Server.Tests.MiddleWares;
+﻿namespace DotAuth.Server.Tests.MiddleWares;
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using SimpleAuth.Shared;
+using DotAuth.Shared;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 public sealed class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>
 {

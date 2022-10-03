@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Authorization;
+namespace DotAuth.Api.Authorization;
 
-using Extensions;
-using Parameters;
-using Results;
-using Shared.Models;
-using Shared.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -27,10 +22,15 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Results;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
 
 internal sealed class ProcessAuthorizationRequest
 {
@@ -110,7 +110,7 @@ internal sealed class ProcessAuthorizationRequest
         // TODO: Investigate
         //if (!scopeValidationResult.Scopes.Contains(CoreConstants.StandardScopes.OpenId.Name))
         //{
-        //    throw new SimpleAuthExceptionWithState(
+        //    throw new DotAuthExceptionWithState(
         //        ErrorCodes.InvalidScope,
         //        string.Format(Strings.TheScopesNeedToBeSpecified, CoreConstants.StandardScopes.OpenId.Name),
         //        authorizationParameter.State);
@@ -159,7 +159,7 @@ internal sealed class ProcessAuthorizationRequest
                 var authenticationDateTime = long.Parse(authenticationDateTimeClaim.Value);
                 if (maxAge < currentDateTimeUtc - authenticationDateTime)
                 {
-                    result = EndpointResult.CreateAnEmptyActionResultWithRedirection(SimpleAuthEndPoints.AuthenticateIndex);
+                    result = EndpointResult.CreateAnEmptyActionResultWithRedirection(DotAuthEndPoints.AuthenticateIndex);
                 }
             }
         }
@@ -236,12 +236,12 @@ internal sealed class ProcessAuthorizationRequest
 
         if (jwsPayload?.Aud == null || !jwsPayload.Aud.Contains(issuerName))
         {
-            _logger.LogError(Strings.TheIdentityTokenDoesntContainSimpleAuthAsAudience);
+            _logger.LogError(Strings.TheIdentityTokenDoesntContainDotAuthAsAudience);
             return new Option.Error(
                 new ErrorDetails
                 {
                     Title = ErrorCodes.InvalidRequest,
-                    Detail = Strings.TheIdentityTokenDoesntContainSimpleAuthAsAudience,
+                    Detail = Strings.TheIdentityTokenDoesntContainDotAuthAsAudience,
                     Status = HttpStatusCode.BadRequest
                 });
         }
@@ -324,14 +324,14 @@ internal sealed class ProcessAuthorizationRequest
         // The user is not authenticated AND the prompt authorizationParameter is different from "none"
         if (prompts.Contains(PromptParameters.Login))
         {
-            var result = EndpointResult.CreateAnEmptyActionResultWithRedirection(SimpleAuthEndPoints.AuthenticateIndex);
+            var result = EndpointResult.CreateAnEmptyActionResultWithRedirection(DotAuthEndPoints.AuthenticateIndex);
             return result;
         }
 
         if (prompts.Contains(PromptParameters.Consent))
         {
             return EndpointResult.CreateAnEmptyActionResultWithRedirection(
-                endUserIsAuthenticated ? SimpleAuthEndPoints.ConsentIndex : SimpleAuthEndPoints.AuthenticateIndex);
+                endUserIsAuthenticated ? DotAuthEndPoints.ConsentIndex : DotAuthEndPoints.AuthenticateIndex);
         }
 
         var message = string.Format(Strings.ThePromptParameterIsNotSupported, string.Join(",", prompts));

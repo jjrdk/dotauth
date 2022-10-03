@@ -1,18 +1,18 @@
-﻿namespace SimpleAuth.AcceptanceTests;
+﻿namespace DotAuth.AcceptanceTests;
 
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
 
 [Route("[controller]")]
 public sealed class DataController : ControllerBase

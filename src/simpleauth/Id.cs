@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth;
+﻿namespace DotAuth;
 
 using System;
 

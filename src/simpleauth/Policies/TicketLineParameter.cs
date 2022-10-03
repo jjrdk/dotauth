@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Policies;
+﻿namespace DotAuth.Policies;
 
 using System;
 using System.Collections.Generic;

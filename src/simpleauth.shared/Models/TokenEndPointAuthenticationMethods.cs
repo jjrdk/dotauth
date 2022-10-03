@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.Models;
+﻿namespace DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the token endpoint authentication methods.

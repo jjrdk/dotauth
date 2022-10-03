@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Exceptions;
+﻿namespace DotAuth.Exceptions;
 
 using System;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Errors;
+using DotAuth.Properties;
+using DotAuth.Shared.Errors;
 
 /// <summary>
 /// Defines the claim required exception.

@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client;
+namespace DotAuth.Client;
 
-using Shared.Responses;
-using SimpleAuth.Shared;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,11 +24,13 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Client.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Client.Properties;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the token client.

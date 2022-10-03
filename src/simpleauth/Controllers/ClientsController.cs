@@ -12,30 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Shared.Models;
-using Shared.Repositories;
-using Shared.Requests;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Filters;
+using DotAuth.Properties;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.ViewModels;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Repositories;
 using Newtonsoft.Json;
-using SimpleAuth.Filters;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Properties;
-using SimpleAuth.ViewModels;
 
 /// <summary>
 /// Defines the client controller.

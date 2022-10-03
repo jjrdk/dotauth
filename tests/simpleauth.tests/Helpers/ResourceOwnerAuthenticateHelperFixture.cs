@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth.Tests.Helpers;
+﻿namespace DotAuth.Tests.Helpers;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Extensions;
-using SimpleAuth.Services;
+using DotAuth.Extensions;
+using DotAuth.Services;
 using Xunit;
 
 public sealed class ResourceOwnerAuthenticateHelperFixture

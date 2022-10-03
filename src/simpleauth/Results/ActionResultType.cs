@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Results;
+﻿namespace DotAuth.Results;
 
 /// <summary>
 /// Defines the types of action results.

@@ -12,7 +12,7 @@
                     <div class="col l12 s12">
                         <table class="bordered">
                             <colgroup>
-                                @if (Model is SimpleAuth.ViewModels.ResourceSetViewModel[])
+                                @if (Model is DotAuth.ViewModels.ResourceSetViewModel[])
                                 {
                                     <col style="width: 16.6%;" />
                                     <col style="width: 25%;" />
@@ -27,7 +27,7 @@
                             </colgroup>
                             <thead>
                                 <tr>
-                                    @if (Model is SimpleAuth.ViewModels.ResourceSetViewModel[])
+                                    @if (Model is DotAuth.ViewModels.ResourceSetViewModel[])
                                     {
                                         <th>Icon</th>
                                         <th>Name</th>
@@ -44,7 +44,7 @@
                             <tbody>
                                 @switch (Model)
                                 {
-                                    case SimpleAuth.ViewModels.ResourceSetViewModel[] viewModels:
+                                    case DotAuth.ViewModels.ResourceSetViewModel[] viewModels:
                                         foreach (var vm in viewModels)
                                         {
                                             <tr>

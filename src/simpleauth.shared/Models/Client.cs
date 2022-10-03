@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Models;
+namespace DotAuth.Shared.Models;
 
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Runtime.Serialization;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using Microsoft.IdentityModel.Tokens;
 
 /// <summary>
 /// Defines the client.

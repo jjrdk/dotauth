@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AuthServerPg;
+﻿namespace DotAuth.AuthServerPg;
 
 internal static class ConfigurationValues
 {

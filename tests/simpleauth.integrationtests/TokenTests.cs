@@ -1,11 +1,11 @@
-namespace SimpleAuth.IntegrationTests;
+namespace DotAuth.IntegrationTests;
 
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Responses;
 using Xunit;
 
 public sealed class TokenTests : IClassFixture<DbFixture>

@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.Clients.Actions;
+namespace DotAuth.Tests.Api.Clients.Actions;
 
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Repositories;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Repositories;
-using Shared.Models;
-using Shared.Repositories;
 using Xunit;
 
 public sealed class RemoveClientActionFixture

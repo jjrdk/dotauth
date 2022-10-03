@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SimpleAuth.Abstractions.Properties {
+namespace DotAuth.Shared.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SimpleAuth.Abstractions.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SimpleAuth.Abstractions.Properties.SharedStrings", typeof(SharedStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotAuth.Shared.Properties.SharedStrings", typeof(SharedStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

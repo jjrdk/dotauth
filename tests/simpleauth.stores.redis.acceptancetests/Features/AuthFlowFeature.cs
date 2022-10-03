@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests.Features;
+﻿namespace DotAuth.Stores.Redis.AcceptanceTests.Features;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;

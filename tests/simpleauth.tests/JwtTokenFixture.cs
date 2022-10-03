@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Tests;
+﻿namespace DotAuth.Tests;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;

@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Policies;
+namespace DotAuth.Policies;
 
-using Shared.Models;
-using Shared.Responses;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -23,6 +21,8 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Responses;
 using Newtonsoft.Json;
 
 internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy

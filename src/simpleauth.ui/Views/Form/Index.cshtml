@@ -2,7 +2,7 @@
     ViewBag.Title = "Form";
 }
 
-@model SimpleAuth.ViewModels.FormViewModel
+@model DotAuth.ViewModels.FormViewModel
 
 <form method="post" action="@Model.RedirectUri" id="form">
     @if (!string.IsNullOrWhiteSpace(Model.State))

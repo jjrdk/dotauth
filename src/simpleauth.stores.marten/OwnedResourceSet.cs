@@ -1,7 +1,7 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
 using System.Runtime.Serialization;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the owned resource set.

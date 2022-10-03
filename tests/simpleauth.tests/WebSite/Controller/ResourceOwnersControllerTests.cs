@@ -1,18 +1,19 @@
-﻿namespace SimpleAuth.Tests.WebSite.Controller;
+﻿namespace DotAuth.Tests.WebSite.Controller;
 
 using System;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Controllers;
+using DotAuth;
+using DotAuth.Controllers;
+using DotAuth.Repositories;
+using DotAuth.Services;
+using DotAuth.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Repositories;
-using Services;
-using Shared;
 using Xunit;
 
 public static class ResourceOwnersControllerTests

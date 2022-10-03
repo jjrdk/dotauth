@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Results;
+﻿namespace DotAuth.Results;
 
 internal sealed record GrantedTokenValidationResult
 {

@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Events;
+﻿namespace DotAuth.Events;
 
 using System.Linq;
 using System.Threading.Tasks;
-using SimpleAuth.Shared;
+using DotAuth.Shared;
 
 /// <summary>
 /// Defines the composite event publisher.

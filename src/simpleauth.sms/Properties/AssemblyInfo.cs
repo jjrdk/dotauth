@@ -14,5 +14,5 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("simpleauth.tests")]
-[assembly: InternalsVisibleTo("simpleauth.server.tests")]
+[assembly: InternalsVisibleTo("dotauth.tests")]
+[assembly: InternalsVisibleTo("dotauth.server.tests")]

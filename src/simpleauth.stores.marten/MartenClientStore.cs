@@ -1,19 +1,18 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
-using global::Marten;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Requests;
 using System;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using global::Marten;
 using global::Marten.Pagination;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Properties;
 
 /// <summary>
 /// Defines the marten based client store.

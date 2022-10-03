@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.AcceptanceTests;
+﻿namespace DotAuth.AcceptanceTests;
 
+using DotAuth.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SimpleAuth.Shared;
 
 [Route("[controller]")]
 public sealed class TestController : ControllerBase

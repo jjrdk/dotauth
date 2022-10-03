@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.Registration;
+namespace DotAuth.Tests.Api.Registration;
 
-using Helpers;
-using Microsoft.IdentityModel.Tokens;
-using Repositories;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth;
-using SimpleAuth.Shared.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Extensions;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.Tests.Helpers;
+using DotAuth.Tests.Validators;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Moq;
-using SimpleAuth.Extensions;
-using SimpleAuth.Tests.Validators;
 using Xunit;
 
 public sealed class DefaultClientRepositoryFixture

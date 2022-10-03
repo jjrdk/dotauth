@@ -12,7 +12,7 @@
    </div>
    <div class="card-content">
 	<div class="card-title">
-					@if (@Model is SimpleAuth.ViewModels.ErrorViewModel)
+					@if (@Model is DotAuth.ViewModels.ErrorViewModel)
 					{
 		 <span>Error</span>
 					}
@@ -22,7 +22,7 @@
 					}
 	</div>
 	<div>
-					@if (@Model is SimpleAuth.ViewModels.ErrorViewModel)
+					@if (@Model is DotAuth.ViewModels.ErrorViewModel)
 					{
 		 <div>@Model.Message</div>
 					}

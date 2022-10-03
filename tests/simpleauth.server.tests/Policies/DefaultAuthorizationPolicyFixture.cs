@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Policies;
+namespace DotAuth.Server.Tests.Policies;
 
 using System;
 using System.Collections.Generic;
@@ -20,10 +20,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Policies;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Responses;
 using Newtonsoft.Json;
-using SimpleAuth.Policies;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Responses;
 using Xunit;
 
 public sealed class DefaultAuthorizationPolicyFixture
@@ -103,7 +103,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             var result = await _authorizationPolicy.Execute(
                     new TicketLineParameter("Test", ticketLine.Scopes, ticket.IsAuthorizedByRo),
-                    UmaConstants.IdTokenType,
+                    DotAuth.UmaConstants.IdTokenType,
                     new ClaimsPrincipal(new ClaimsIdentity(ticket.Requester.Select(c => new Claim(c.Type, c.Value)))),
                     CancellationToken.None,
                     resourceSet!.AuthorizationPolicies)
@@ -124,7 +124,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         await Assert.ThrowsAsync<NullReferenceException>(
                 () => _authorizationPolicy.Execute(
                     null,
-                    UmaConstants.IdTokenType,
+                    DotAuth.UmaConstants.IdTokenType,
                     new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     new PolicyRule()))
@@ -140,7 +140,7 @@ public sealed class DefaultAuthorizationPolicyFixture
 
         var result = await _authorizationPolicy.Execute(
                 ticket,
-                UmaConstants.IdTokenType,
+                DotAuth.UmaConstants.IdTokenType,
                 null,
                 CancellationToken.None,
                 authorizationPolicy)
@@ -442,7 +442,7 @@ public sealed class DefaultAuthorizationPolicyFixture
 
         var result = await _authorizationPolicy.Execute(
                 ticket,
-                UmaConstants.IdTokenType,
+                DotAuth.UmaConstants.IdTokenType,
                 new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                 CancellationToken.None,
                 authorizationPolicy)
@@ -468,7 +468,7 @@ public sealed class DefaultAuthorizationPolicyFixture
 
         var result = await _authorizationPolicy.Execute(
                 ticket,
-                UmaConstants.IdTokenType,
+                DotAuth.UmaConstants.IdTokenType,
                 new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                 CancellationToken.None,
                 authorizationPolicy)

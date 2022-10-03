@@ -1,17 +1,17 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
 using System;
-using SimpleAuth.Shared.Repositories;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using global::Marten;
-using SimpleAuth.Shared.Models;
 
 /// <summary>
 /// Defines the Marten based filter repository.
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Repositories.IFilterStore" />
+/// <seealso cref="IFilterStore" />
 public sealed class MartenFilterStore : IFilterStore
 {
     private readonly Func<IDocumentSession> _sessionFactory;

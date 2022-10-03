@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Parameters;
+﻿namespace DotAuth.Parameters;
 
 internal sealed record GetTokenViaTicketIdParameter : GrantTypeParameter
 {

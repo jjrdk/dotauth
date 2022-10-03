@@ -1,4 +1,4 @@
-namespace SimpleAuth.Shared;
+namespace DotAuth.Shared;
 
 internal static class RequestTokenNames
 {

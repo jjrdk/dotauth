@@ -1,16 +1,15 @@
-﻿namespace SimpleAuth.AuthServerPgRedis;
+﻿namespace DotAuth.AuthServerPgRedis;
 
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SimpleAuth.Shared;
 
 internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions>
 {

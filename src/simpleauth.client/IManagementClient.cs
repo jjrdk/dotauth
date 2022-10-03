@@ -1,11 +1,11 @@
-﻿namespace SimpleAuth.Client;
+﻿namespace DotAuth.Client;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the management client interface.

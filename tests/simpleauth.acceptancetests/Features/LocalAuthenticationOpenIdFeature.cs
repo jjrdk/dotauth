@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using DotAuth.Shared.Requests;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleAuth.Shared.Requests;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;

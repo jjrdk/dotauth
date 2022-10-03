@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Discovery;
+namespace DotAuth.Api.Discovery;
 
-using Authorization;
-using Microsoft.IdentityModel.Tokens;
-using Shared;
-using Shared.Repositories;
-using Shared.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Authorization;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
+using Microsoft.IdentityModel.Tokens;
 
 internal sealed class DiscoveryActions
 {

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Parameters;
+﻿namespace DotAuth.Parameters;
 
 internal abstract record GrantTypeParameter
 {

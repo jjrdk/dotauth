@@ -1,7 +1,7 @@
-﻿namespace SimpleAuth.Tests.Api.Authorization;
+﻿namespace DotAuth.Tests.Api.Authorization;
 
-using Parameters;
 using System;
+using DotAuth.Parameters;
 using Xunit;
 
 public sealed class ProcessAuthorizationRequestFixture
@@ -55,7 +55,7 @@ public sealed class ProcessAuthorizationRequestFixture
                     var resultKind = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
                     Assert.NotNull(resultKind);
-        Assert.True(resultKind.RedirectInstruction.Action.Equals(SimpleAuthEndPoints.AuthenticateIndex));
+        Assert.True(resultKind.RedirectInstruction.Action.Equals(DotAuthEndPoints.AuthenticateIndex));
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public sealed class ProcessAuthorizationRequestFixture
                     var resultKind = _processAuthorizationRequest.Process(authorizationParameter, null);
 
                     Assert.NotNull(resultKind);
-        Assert.True(resultKind.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.AuthenticateIndex));
+        Assert.True(resultKind.RedirectInstruction.Action.Equals(Core.Results.DotAuthEndPoints.AuthenticateIndex));
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public sealed class ProcessAuthorizationRequestFixture
                     var resultKind = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
                     Assert.NotNull(resultKind);
-        Assert.True(resultKind.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.ConsentIndex));
+        Assert.True(resultKind.RedirectInstruction.Action.Equals(Core.Results.DotAuthEndPoints.ConsentIndex));
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public sealed class ProcessAuthorizationRequestFixture
                     var resultKind = _processAuthorizationRequest.Process(authorizationParameter, null);
 
                     Assert.NotNull(resultKind);
-        Assert.True(resultKind.RedirectInstruction.Action.Equals(Core.Results.SimpleAuthEndPoints.AuthenticateIndex));
+        Assert.True(resultKind.RedirectInstruction.Action.Equals(Core.Results.DotAuthEndPoints.AuthenticateIndex));
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public sealed class ProcessAuthorizationRequestFixture
                     var resultKind = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
                     Assert.NotNull(resultKind);
-        Assert.True(resultKind.RedirectInstruction.Action.Equals(SimpleAuthEndPoints.AuthenticateIndex));
+        Assert.True(resultKind.RedirectInstruction.Action.Equals(DotAuthEndPoints.AuthenticateIndex));
         _simpleIdentityServerEventSource.Verify(s => s.StartProcessingAuthorizationRequest(jsonAuthorizationParameter));
         _simpleIdentityServerEventSource.Verify(s => s.EndProcessingAuthorizationRequest(jsonAuthorizationParameter, "RedirectToAction", "AuthenticateIndex"));
     }

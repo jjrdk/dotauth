@@ -1,18 +1,18 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
-using global::Marten;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using global::Marten;
 
 /// <summary>
 /// Defines the Marten based token store.
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Repositories.ITokenStore" />
+/// <seealso cref="ITokenStore" />
 public sealed class MartenTokenStore : ITokenStore
 {
     private readonly Func<IDocumentSession> _sessionFactory;

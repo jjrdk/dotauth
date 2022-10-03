@@ -1,11 +1,11 @@
-﻿namespace SimpleAuth.Tests.Api.Discovery;
+﻿namespace DotAuth.Tests.Api.Discovery;
 
-using Moq;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Api.Discovery;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Discovery;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using Moq;
 using Xunit;
 
 public sealed class CreateDiscoveryDocumentationActionFixture

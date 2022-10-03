@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Parameters;
-using Shared.Models;
-using Shared.Requests;
-using Shared.Responses;
-using SimpleAuth.Common;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using DotAuth.Common;
+using DotAuth.Parameters;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 internal static class MappingExtensions
 {

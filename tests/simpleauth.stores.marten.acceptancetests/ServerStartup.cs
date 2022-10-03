@@ -1,25 +1,27 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests;
+﻿namespace DotAuth.Stores.Marten.AcceptanceTests;
 
-using global::Marten;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 using System;
 using System.Net.Http;
+using DotAuth;
+using DotAuth.Extensions;
+using DotAuth.Repositories;
+using DotAuth.Stores.Marten;
+using DotAuth.UI;
+using global::Marten;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using SimpleAuth.Extensions;
-using SimpleAuth.Repositories;
-using SimpleAuth.UI;
+using Npgsql;
 using Weasel.Core;
 using Xunit.Abstractions;
 
 public sealed class ServerStartup
 {
     private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
-    private readonly SimpleAuthOptions _martenOptions;
+    private readonly DotAuthOptions _martenOptions;
     private readonly SharedContext _context;
     private readonly string _connectionString;
     private readonly ITestOutputHelper _outputHelper;
@@ -27,7 +29,7 @@ public sealed class ServerStartup
 
     public ServerStartup(SharedContext context, string connectionString, ITestOutputHelper outputHelper)
     {
-        _martenOptions = new SimpleAuthOptions
+        _martenOptions = new DotAuthOptions
         {
             AdministratorRoleDefinition = default,
             Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>()),
@@ -55,7 +57,7 @@ public sealed class ServerStartup
             .AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
         services.AddSingleton<IDocumentStore>(
             _ => new DocumentStore(
-                new SimpleAuthMartenOptions(
+                new DotAuthMartenOptions(
                     _connectionString,
                     new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
                     _schemaName,
@@ -70,7 +72,7 @@ public sealed class ServerStartup
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-        services.AddSimpleAuth(
+        services.AddDotAuth(
             _martenOptions,
             new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme },
             assemblyTypes: typeof(IDefaultUi));
@@ -95,6 +97,6 @@ public sealed class ServerStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
     }
 }

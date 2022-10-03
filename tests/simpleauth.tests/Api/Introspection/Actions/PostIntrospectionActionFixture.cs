@@ -12,21 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using SimpleAuth.Shared.Repositories;
+namespace DotAuth.Tests.Api.Introspection.Actions;
 
-namespace SimpleAuth.Tests.Api.Introspection.Actions;
-
-using Moq;
-using Parameters;
-using Shared;
-using Shared.Models;
-using SimpleAuth;
-using SimpleAuth.Api.Introspection;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Api.Introspection;
+using DotAuth.Parameters;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
+using Moq;
 using Xunit;
 
 public sealed class PostIntrospectionActionFixture
@@ -56,7 +54,7 @@ public sealed class PostIntrospectionActionFixture
         {
             ClientId = "test",
             ClientSecret = "test",
-            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
+            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.AccessToken,
             Token = "token"
         };
 
@@ -74,7 +72,7 @@ public sealed class PostIntrospectionActionFixture
     {
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
         };
         var grantedToken = new GrantedToken
         {
@@ -107,7 +105,7 @@ public sealed class PostIntrospectionActionFixture
         var audiences = new[] {audience};
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
         };
         var grantedToken = new GrantedToken
         {
@@ -139,7 +137,7 @@ public sealed class PostIntrospectionActionFixture
     {
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
+            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
         };
         var grantedToken = new GrantedToken
         {
@@ -172,7 +170,7 @@ public sealed class PostIntrospectionActionFixture
         var audiences = new[] {audience};
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
+            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
         };
         var grantedToken = new GrantedToken
         {

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.Responses;
+﻿namespace DotAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the UMA introspection response.

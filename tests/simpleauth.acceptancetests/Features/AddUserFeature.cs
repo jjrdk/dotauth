@@ -1,13 +1,14 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
-using Moq;
-using SimpleAuth.Services;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using System.Threading;
-using SimpleAuth.Events;
-using SimpleAuth.WebSite.User;
+using DotAuth;
+using DotAuth.Events;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.User;
+using Moq;
 using Xbehave;
 using Xunit;
 

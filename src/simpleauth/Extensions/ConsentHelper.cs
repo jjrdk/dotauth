@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Parameters;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
+using DotAuth.Parameters;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 
 internal static class ConsentHelper
 {

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
-using Microsoft.AspNetCore.DataProtection;
-using Shared;
 using System;
 using System.Text;
+using DotAuth.Shared;
+using Microsoft.AspNetCore.DataProtection;
 using Newtonsoft.Json;
 
 internal static class DataProtectorExtensions

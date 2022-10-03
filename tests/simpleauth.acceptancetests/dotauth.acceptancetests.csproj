@@ -5,7 +5,7 @@
 
         <IsPackable>false</IsPackable>
 
-        <RootNamespace>SimpleAuth.AcceptanceTests</RootNamespace>
+        <RootNamespace>DotAuth.AcceptanceTests</RootNamespace>
     </PropertyGroup>
     <!--<Import Project="../../shared.projinfo" />-->
     <ItemGroup>
@@ -29,11 +29,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.tokenclient.csproj" />
-        <ProjectReference Include="..\..\src\simpleauth.sms.ui\simpleauth.sms.ui.csproj" />
-        <ProjectReference Include="..\..\src\simpleauth.sms\simpleauth.sms.csproj" />
-        <ProjectReference Include="..\..\src\simpleauth.ui\simpleauth.ui.csproj" />
-        <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.client\dotauth.client.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.sms.ui\dotauth.sms.ui.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.sms\dotauth.sms.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.ui\dotauth.ui.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth\dotauth.csproj" />
     </ItemGroup>
 
 </Project>

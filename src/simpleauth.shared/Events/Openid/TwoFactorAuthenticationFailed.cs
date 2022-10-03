@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.Events.Openid;
+﻿namespace DotAuth.Shared.Events.Openid;
 
 using System;
 

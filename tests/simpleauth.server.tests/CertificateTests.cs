@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Server.Tests;
+﻿namespace DotAuth.Server.Tests;
 
 using System.Security.Cryptography.X509Certificates;
+using DotAuth.Extensions;
+using DotAuth.Shared;
 using Microsoft.IdentityModel.Tokens;
-using Shared;
-using SimpleAuth.Extensions;
 using Xunit;
 
 public sealed class CertificateTests

@@ -1,21 +1,20 @@
-﻿namespace SimpleAuth.Tests.Validators;
+﻿namespace DotAuth.Tests.Validators;
 
-using Fake;
-using Helpers;
-using Microsoft.IdentityModel.Tokens;
-using Repositories;
-using Shared;
-using Shared.Models;
-using SimpleAuth;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Tests.Fake;
+using DotAuth.Tests.Helpers;
+using Microsoft.IdentityModel.Tokens;
 using Xunit;
 using Xunit.Abstractions;
 

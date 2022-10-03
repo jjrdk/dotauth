@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Responses;
+namespace DotAuth.Shared.Responses;
 
 using System;
 using System.Runtime.Serialization;

@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <IsPackable>false</IsPackable>
-        <RootNamespace>SimpleAuth.Stores.Marten.AcceptanceTests</RootNamespace>
+        <RootNamespace>DotAuth.Stores.Redis.AcceptanceTests</RootNamespace>
     </PropertyGroup>
     <!--<Import Project="../../shared.projinfo" />-->
     <ItemGroup>
@@ -26,10 +26,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\simpleauth.client\simpleauth.tokenclient.csproj" />
-        <ProjectReference Include="..\..\src\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
-        <ProjectReference Include="..\..\src\simpleauth.ui\simpleauth.ui.csproj" />
-        <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.client\dotauth.client.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.stores.marten\dotauth.stores.marten.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.stores.redis\dotauth.stores.redis.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.ui\dotauth.ui.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth\dotauth.csproj" />
     </ItemGroup>
 
 </Project>

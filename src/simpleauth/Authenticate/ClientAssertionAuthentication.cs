@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Authenticate;
+namespace DotAuth.Authenticate;
 
-using Microsoft.IdentityModel.Tokens;
-using Shared.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Logging;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
+using Microsoft.IdentityModel.Tokens;
 
 internal sealed class ClientAssertionAuthentication
 {

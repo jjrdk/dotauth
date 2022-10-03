@@ -1,14 +1,14 @@
-﻿namespace SimpleAuth.Tests.Helpers;
+﻿namespace DotAuth.Tests.Helpers;
 
-using Moq;
-using Parameters;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using Moq;
 using Xunit;
 
 public sealed class ConsentHelperFixture

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Results;
+namespace DotAuth.Results;
 
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Represents an endpoint resultKind value.
@@ -59,7 +59,7 @@ internal sealed record EndpointResult
     /// Creates an empty action resultKind with redirection
     /// </summary>
     /// <returns>Empty action resultKind with redirection</returns>
-    public static EndpointResult CreateAnEmptyActionResultWithRedirection(SimpleAuthEndPoints action, params Parameter[] parameters)
+    public static EndpointResult CreateAnEmptyActionResultWithRedirection(DotAuthEndPoints action, params Parameter[] parameters)
     {
         return new()
         {

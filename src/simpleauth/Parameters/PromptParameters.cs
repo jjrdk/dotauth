@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Parameters;
+﻿namespace DotAuth.Parameters;
 
 internal static class PromptParameters
 {

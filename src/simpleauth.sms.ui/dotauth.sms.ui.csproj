@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-    <RootNamespace>SimpleAuth.Sms.Ui</RootNamespace>
+    <RootNamespace>DotAuth.Sms.Ui</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

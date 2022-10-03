@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server.Tests.Apis;
+﻿namespace DotAuth.Server.Tests.Apis;
 
 using System.Net;
 using System.Net.Http;

@@ -1,20 +1,20 @@
-﻿namespace SimpleAuth.Server.Tests;
+﻿namespace DotAuth.Server.Tests;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using DotAuth.Client;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Client;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
 using Xunit;
 using Xunit.Abstractions;
 

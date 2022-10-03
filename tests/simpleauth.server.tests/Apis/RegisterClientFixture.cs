@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Apis;
+namespace DotAuth.Server.Tests.Apis;
 
-using Client;
-using Newtonsoft.Json;
-using Shared.Models;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Client;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Responses;
+using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
-using TokenRequest = Client.TokenRequest;
 
 public sealed class RegisterClientFixture : IDisposable
 {

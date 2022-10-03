@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
 using System.Net.Http;
 using System.Net.Http.Headers;

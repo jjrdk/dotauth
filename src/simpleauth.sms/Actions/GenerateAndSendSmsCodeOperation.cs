@@ -1,15 +1,15 @@
-﻿namespace SimpleAuth.Sms.Actions;
+﻿namespace DotAuth.Sms.Actions;
 
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Sms.Properties;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Sms.Properties;
 
 internal sealed class GenerateAndSendSmsCodeOperation
 {

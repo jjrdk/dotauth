@@ -1,14 +1,14 @@
-﻿namespace SimpleAuth.Tests.Api.Sms.Services;
+﻿namespace DotAuth.Tests.Api.Sms.Services;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Sms.Services;
 using Moq;
-using SimpleAuth.Services;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Sms.Services;
 using Xunit;
 
 public sealed class SmsAuthenticateResourceOwnerServiceFixture

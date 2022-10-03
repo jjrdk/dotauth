@@ -1,7 +1,7 @@
-﻿namespace SimpleAuth;
+﻿namespace DotAuth;
 
 using System;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the runtime settings.

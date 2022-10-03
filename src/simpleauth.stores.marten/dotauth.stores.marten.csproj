@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Description>SimpleAuth Marten Stores</Description>
-        <Title>SimpleAuth Marten Stores</Title>
+        <Description>DotAuth Marten Stores</Description>
+        <Title>DotAuth Marten Stores</Title>
         <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-        <AssemblyName>simpleauth.stores.marten</AssemblyName>
-        <PackageId>simpleauth.stores.marten</PackageId>
-        <RootNamespace>SimpleAuth.Stores.Marten</RootNamespace>
+        <AssemblyName>dotauth.stores.marten</AssemblyName>
+        <PackageId>dotauth.stores.marten</PackageId>
+        <RootNamespace>DotAuth.Stores.Marten</RootNamespace>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <PropertyGroup>
@@ -24,6 +24,6 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\simpleauth.shared\simpleauth.abstractions.csproj" />
+        <ProjectReference Include="..\simpleauth.shared\dotauth.shared.csproj" />
     </ItemGroup>
 </Project>

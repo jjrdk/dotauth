@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Shared.Repositories;
+﻿namespace DotAuth.Shared.Repositories;
 
-using Microsoft.IdentityModel.Tokens;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
 /// <summary>
 /// Defines the JSON Web Key Set repository interface

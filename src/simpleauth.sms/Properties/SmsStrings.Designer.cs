@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SimpleAuth.Sms.Properties {
+namespace DotAuth.Sms.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SimpleAuth.Sms.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SimpleAuth.Sms.Properties.SmsStrings", typeof(SmsStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotAuth.Sms.Properties.SmsStrings", typeof(SmsStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -1,4 +1,4 @@
-namespace SimpleAuth.Shared;
+namespace DotAuth.Shared;
 
 /// <summary>
 /// Defines the grant type names.

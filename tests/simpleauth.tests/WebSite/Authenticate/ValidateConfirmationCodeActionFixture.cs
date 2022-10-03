@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.WebSite.Authenticate;
+namespace DotAuth.Tests.WebSite.Authenticate;
 
-using Moq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.WebSite.Authenticate;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.Authenticate;
+using Moq;
 using Xunit;
 
 public sealed class ValidateConfirmationCodeActionFixture

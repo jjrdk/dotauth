@@ -1,18 +1,18 @@
-﻿namespace SimpleAuth.Tests.WebSite.User;
+﻿namespace DotAuth.Tests.WebSite.User;
 
-using Moq;
-using Shared.Models;
-using Shared.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.WebSite.User;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.User;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Shared.Repositories;
+﻿namespace DotAuth.Shared.Repositories;
 
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the device authorization store interface.

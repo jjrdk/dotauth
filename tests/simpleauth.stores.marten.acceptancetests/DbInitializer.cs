@@ -1,15 +1,16 @@
 ﻿#nullable enable
-namespace SimpleAuth.Stores.Marten.AcceptanceTests;
+namespace DotAuth.Stores.Marten.AcceptanceTests;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Stores.Marten;
 using global::Marten;
 using Microsoft.Extensions.Logging.Abstractions;
 using Npgsql;
-using SimpleAuth.Shared.Models;
 using Xunit.Abstractions;
 
 public static class DbInitializer
@@ -78,7 +79,7 @@ public static class DbInitializer
         IEnumerable<Scope>? scopes)
     {
         using var store = new DocumentStore(
-            new SimpleAuthMartenOptions(
+            new DotAuthMartenOptions(
                 connectionString,
                 new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
                 searchPath));

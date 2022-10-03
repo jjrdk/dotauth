@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
 using System;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Responses;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;

@@ -12,24 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests;
+namespace DotAuth.Server.Tests;
 
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using SimpleAuth.Client;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Client;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Xunit;
 using Xunit.Abstractions;
+using Serializer = DotAuth.Client.Serializer;
 
 public sealed class ResourceFixture : IDisposable
 {
@@ -189,7 +191,7 @@ public sealed class ResourceFixture : IDisposable
         await _umaClient.DeleteResource(resources.Item.First(), "header").ConfigureAwait(false);
         var information = await _umaClient.GetResource(resources.Item.First(), "header").ConfigureAwait(false);
 
-        Assert.IsType<Option<ResourceSet>.Error>(information);
+        Assert.IsType<Option.Error>(information);
     }
 
     [Fact]

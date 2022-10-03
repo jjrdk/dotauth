@@ -1,7 +1,5 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
-using global::Marten;
-using Newtonsoft.Json;
 using System;
 using System.Data.Common;
 using System.IO;
@@ -9,24 +7,23 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using LamarCodeGeneration;
-using Microsoft.Extensions.Logging.Abstractions;
+using global::Marten;
+using Newtonsoft.Json;
 using Weasel.Core;
-using Weasel.Postgresql;
 
 /// <summary>
-/// Defines the marten options for SimpleAuth.
+/// Defines the marten options for DotAuth.
 /// </summary>
-public sealed class SimpleAuthMartenOptions : StoreOptions
+public sealed class DotAuthMartenOptions : StoreOptions
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="SimpleAuthMartenOptions"/> class.
+    /// Initializes a new instance of the <see cref="DotAuthMartenOptions"/> class.
     /// </summary>
     /// <param name="connectionString">The connection string</param>
     /// <param name="logger">The logger.</param>
     /// <param name="searchPath">The schema name</param>
     /// <param name="autoCreate">Schema creation options</param>
-    public SimpleAuthMartenOptions(
+    public DotAuthMartenOptions(
         string connectionString,
         IMartenLogger? logger = null,
         string searchPath = "",
@@ -38,7 +35,7 @@ public sealed class SimpleAuthMartenOptions : StoreOptions
         {
             Logger(logger);
         }
-        Schema.Include<SimpleAuthRegistry>();
+        Schema.Include<DotAuthRegistry>();
         if (!string.IsNullOrWhiteSpace(searchPath))
         {
             DatabaseSchemaName = searchPath;

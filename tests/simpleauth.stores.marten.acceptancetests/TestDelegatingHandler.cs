@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests;
+﻿namespace DotAuth.Stores.Marten.AcceptanceTests;
 
 using System.Net.Http;
 

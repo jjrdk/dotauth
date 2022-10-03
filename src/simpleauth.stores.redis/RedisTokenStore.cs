@@ -1,13 +1,13 @@
-﻿namespace SimpleAuth.Stores.Redis;
+﻿namespace DotAuth.Stores.Redis;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Newtonsoft.Json;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using StackExchange.Redis;
 
 public sealed class RedisTokenStore : ITokenStore

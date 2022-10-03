@@ -1,13 +1,13 @@
-﻿namespace SimpleAuth.Server.Tests.MiddleWares;
+﻿namespace DotAuth.Server.Tests.MiddleWares;
 
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SimpleAuth.Shared;
 
 internal sealed class UmaAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {

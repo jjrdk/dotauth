@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // ReSharper disable InconsistentNaming
-namespace SimpleAuth.Shared.Requests;
+namespace DotAuth.Shared.Requests;
 
 using System;
 using System.Collections.Generic;

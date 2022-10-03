@@ -4,13 +4,13 @@
 
 ## Description
 
-SimpleAuth is an authorization server SDK. The simplest way consume it is as a ready build container at [Docker Hub](https://hub.docker.com/r/jjrdk/simpleauth).
+DotAuth is an authorization server SDK. The simplest way consume it is as a ready build container at [Docker Hub](https://hub.docker.com/r/jjrdk/simpleauth).
 
-You can also use the SDK to create an authorization server and add more custom configurations. See the different [server examples](https://github.com/jjrdk/SimpleAuth/tree/master/src) on how to get started.
+You can also use the SDK to create an authorization server and add more custom configurations. See the different [server examples](https://github.com/jjrdk/DotAuth/tree/master/src) on how to get started.
 
 ## Origin
 
-SimpleAuth is based on the [SimpleIdentityServer](https://github.com/thabart/SimpleIdentityServer) project, but has been reduced and adjusted to make it more cloud friendly.
+DotAuth is based on the [SimpleIdentityServer](https://github.com/thabart/SimpleIdentityServer) project, but has been reduced and adjusted to make it more cloud friendly.
 
 Most features have been merged into the simpleauth project.
 
@@ -30,9 +30,9 @@ The support for SCIM has been removed.
 
 ## Building the Project
 
-To build the project, run the build script (build.ps1 on Windows, build.sh on Linux/Mac). This will generate a set of nuget packages which can be used to integrate SimpleAuth into an ASP.NET Core server project.
+To build the project, run the build script (build.ps1 on Windows, build.sh on Linux/Mac). This will generate a set of nuget packages which can be used to integrate DotAuth into an ASP.NET Core server project.
 
-See the example [Auth Server project](https://github.com/jjrdk/SimpleAuth/tree/master/src/simpleauth.authserver) for an example of how to use SimpleAuth as an auth server.
+See the example [Auth Server project](https://github.com/jjrdk/DotAuth/tree/master/src/simpleauth.authserver) for an example of how to use DotAuth as an auth server.
 
 ## Configuration Values for Demo Servers
 
@@ -43,7 +43,7 @@ Note that some environment variables use double underscore ```__```. This is to 
 |Environment Variable|Type|Description|
 |---|---|---|
 |SALT|string|Defines a hashing salt to be used. Default value is ```string.Empty```.|
-|SERVER__NAME|string|Defines a custom name to display as the application name in UI headers. Default value is ```SimpleAuth```|
+|SERVER__NAME|string|Defines a custom name to display as the application name in UI headers. Default value is ```DotAuth```|
 |SERVER__REDIRECT|bool|When set to ```true``` then requests for ```/``` or ```/home``` are redirected to ```/authenticate```. This effectively hides the default home page.|
 |SERVER__ALLOWSELFSIGNEDCERT|bool|When set to ```true``` then allows self signed certificates and certificates whose root certificate is not trusted. The certificate must still be issued to a valid host.|
 |SERVER__ALLOWHTTP|bool|When set to ```true``` then allows downloading OAuth metadata over HTTP. This option should only be set in development environments. Default value is ```false```|

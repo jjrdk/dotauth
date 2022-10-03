@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features;
+﻿namespace DotAuth.Stores.Marten.AcceptanceTests.Features;
 
 using System;
 using System.Collections.Generic;
@@ -6,12 +6,12 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Newtonsoft.Json;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;
@@ -272,7 +272,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
         "then error shows request expiry".x(
             async () =>
             {
-                Assert.IsType<Option<GrantedTokenResponse>.Error>(expiredPoll);
+                Assert.IsType<Option.Error>(expiredPoll);
                 Assert.Equal(ErrorCodes.ExpiredToken, (expiredPoll as Option<GrantedTokenResponse>.Error).Details.Title);
             });
     }

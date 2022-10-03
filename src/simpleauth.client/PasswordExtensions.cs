@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client;
+namespace DotAuth.Client;
 
 using System.Security.Cryptography;
 using System.Text;
-using SimpleAuth.Shared;
+using DotAuth.Shared;
 
 internal static class PasswordExtensions
 {

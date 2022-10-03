@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.Repositories;
+﻿namespace DotAuth.Repositories;
 
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 
 internal sealed class InMemoryTokenStore : ITokenStore, ICleanable
 {

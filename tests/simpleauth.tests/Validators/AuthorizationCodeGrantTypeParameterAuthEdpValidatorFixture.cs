@@ -1,18 +1,17 @@
-﻿namespace SimpleAuth.Tests.Validators;
+﻿namespace DotAuth.Tests.Validators;
 
-using Moq;
-using Parameters;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -50,7 +49,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
                     Title = ErrorCodes.InvalidRequest,
                     Detail = string.Format(
                         Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName)
+                        DotAuth.CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName)
                 },
                 state),
             exception);
@@ -74,7 +73,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
                     Title = ErrorCodes.InvalidRequest,
                     Detail = string.Format(
                         Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName)
+                        DotAuth.CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName)
                 },
                 state),
             exception);
@@ -101,7 +100,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
                     Title = ErrorCodes.InvalidRequest,
                     Detail = string.Format(
                         Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)
+                        DotAuth.CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)
                 },
                 state),
             exception);
@@ -128,7 +127,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
                     Title = ErrorCodes.InvalidRequest,
                     Detail = string.Format(
                         Strings.MissingParameter,
-                        CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName)
+                        DotAuth.CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName)
                 },
                 state),
             exception);

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Sms;
+﻿namespace DotAuth.Sms;
 
 internal static class SmsConstants
 {

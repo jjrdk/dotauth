@@ -1,13 +1,13 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using global::Marten;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 
 /// <summary>
 /// Defines the Marten based consent repository.

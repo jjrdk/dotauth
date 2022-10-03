@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Apis;
+namespace DotAuth.Server.Tests.Apis;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.ResourceSetController;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SimpleAuth.Api.ResourceSetController;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using Xunit;
 
 public sealed class UpdateResourceSetActionFixture

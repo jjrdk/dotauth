@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.Controllers;
+﻿namespace DotAuth.Controllers;
 
+using System.Threading;
+using System.Threading.Tasks;
+using DotAuth.Filters;
+using DotAuth.Shared.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Shared.Repositories;
-using System.Threading;
-using System.Threading.Tasks;
-using SimpleAuth.Filters;
 
 /// <summary>
 /// Defines the JwksController.

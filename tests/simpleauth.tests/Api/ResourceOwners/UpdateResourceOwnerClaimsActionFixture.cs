@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Api.ResourceOwners;
+namespace DotAuth.Tests.Api.ResourceOwners;
 
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Repositories;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Shared;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Xunit;
 
 public sealed class UpdateResourceOwnerClaimsActionFixture

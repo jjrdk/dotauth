@@ -5,7 +5,7 @@
 
 		<IsPackable>false</IsPackable>
 
-		<RootNamespace>SimpleAuth.IntegrationTests</RootNamespace>
+		<RootNamespace>DotAuth.IntegrationTests</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -17,8 +17,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="xunit" Version="2.4.2" />
-		<ProjectReference Include="..\..\src\simpleauth.client\simpleauth.tokenclient.csproj" />
-		<ProjectReference Include="..\..\src\simpleauth.stores.marten\simpleauth.stores.marten.csproj" />
+		<ProjectReference Include="..\..\src\simpleauth.client\dotauth.client.csproj" />
+		<ProjectReference Include="..\..\src\simpleauth.stores.marten\dotauth.stores.marten.csproj" />
 	</ItemGroup>
 
 </Project>

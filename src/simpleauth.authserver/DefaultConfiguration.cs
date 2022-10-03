@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.AuthServer;
+﻿namespace DotAuth.AuthServer;
 
-using Microsoft.IdentityModel.Tokens;
-using Shared;
-using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using Microsoft.IdentityModel.Tokens;
 
 public static class DefaultConfiguration
 {

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.ViewModels;
+﻿namespace DotAuth.ViewModels;
 
 /// <summary>
 /// Defines the local authentication view model

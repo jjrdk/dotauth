@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth.Stores.Marten.AcceptanceTests.Features;
+﻿namespace DotAuth.Stores.Marten.AcceptanceTests.Features;
 
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
 using System.Net;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;

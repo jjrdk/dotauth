@@ -1,8 +1,14 @@
-﻿namespace SimpleAuth.Stores.Redis.AcceptanceTests;
+﻿namespace DotAuth.Stores.Redis.AcceptanceTests;
 
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DotAuth;
+using DotAuth.Extensions;
+using DotAuth.Repositories;
+using DotAuth.Stores.Marten;
+using DotAuth.Stores.Redis;
+using DotAuth.UI;
 using global::Marten;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,10 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
-using SimpleAuth.Extensions;
-using SimpleAuth.Repositories;
-using SimpleAuth.Stores.Marten;
-using SimpleAuth.UI;
 using StackExchange.Redis;
 using Weasel.Core;
 using Xunit.Abstractions;
@@ -22,7 +24,7 @@ using Xunit.Abstractions;
 internal sealed class ServerStartup
 {
     private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
-    private readonly SimpleAuthOptions _martenOptions;
+    private readonly DotAuthOptions _martenOptions;
     private readonly SharedContext _context;
     private readonly string _connectionString;
     private readonly ITestOutputHelper _outputHelper;
@@ -30,7 +32,7 @@ internal sealed class ServerStartup
 
     public ServerStartup(SharedContext context, string connectionString, ITestOutputHelper outputHelper)
     {
-        _martenOptions = new SimpleAuthOptions
+        _martenOptions = new DotAuthOptions
         {
             AdministratorRoleDefinition = default,
             AuthorizationCodes =
@@ -70,7 +72,7 @@ internal sealed class ServerStartup
         services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase(db));
         services.AddSingleton<IDocumentStore>(
             provider => new DocumentStore(
-                new SimpleAuthMartenOptions(
+                new DotAuthMartenOptions(
                     _connectionString,
                     new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
                     _schemaName,
@@ -85,7 +87,7 @@ internal sealed class ServerStartup
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         // 2. Configure server
-        services.AddSimpleAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme }, assemblyTypes: typeof(IDefaultUi));
+        services.AddDotAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme }, assemblyTypes: typeof(IDefaultUi));
         services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
         services.AddAuthentication(
                 cfg =>
@@ -117,6 +119,6 @@ internal sealed class ServerStartup
                 var disposable = app.ApplicationServices.GetService<ConnectionMultiplexer>();
                 disposable?.Dispose();
             });
-        app.UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
     }
 }

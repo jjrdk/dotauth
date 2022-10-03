@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AuthServer;
+﻿namespace DotAuth.AuthServer;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;

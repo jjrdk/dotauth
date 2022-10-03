@@ -12,17 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Token;
+namespace DotAuth.Api.Token;
 
-using Actions;
-using Authenticate;
-using Parameters;
-using Shared;
-using Shared.Events.OAuth;
-using Shared.Models;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -32,10 +23,19 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Token.Actions;
+using DotAuth.Authenticate;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.OAuth;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Properties;
-using SimpleAuth.Services;
 
 internal sealed class TokenActions
 {

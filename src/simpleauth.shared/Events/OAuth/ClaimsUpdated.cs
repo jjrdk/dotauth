@@ -1,7 +1,7 @@
-﻿namespace SimpleAuth.Shared.Events.OAuth;
+﻿namespace DotAuth.Shared.Events.OAuth;
 
 using System;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the claims updated event.

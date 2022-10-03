@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Shared.Requests;
+﻿namespace DotAuth.Shared.Requests;
 
 using System.Runtime.Serialization;
 

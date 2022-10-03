@@ -12,26 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
 using System.Collections.Generic;
+using DotAuth.Results;
 using Microsoft.AspNetCore.Routing;
-using SimpleAuth.Results;
 
 internal static class RedirectInstructionParser
 {
-    private static readonly Dictionary<SimpleAuthEndPoints, ActionInformation> MappingEnumToActionInformations = new()
+    private static readonly Dictionary<DotAuthEndPoints, ActionInformation> MappingEnumToActionInformations = new()
     {
         {
-            SimpleAuthEndPoints.ConsentIndex,
+            DotAuthEndPoints.ConsentIndex,
             new ActionInformation("Consent", "Index")
         },
         {
-            SimpleAuthEndPoints.AuthenticateIndex,
+            DotAuthEndPoints.AuthenticateIndex,
             new ActionInformation("Authenticate", "Index")
         },
         {
-            SimpleAuthEndPoints.FormIndex,
+            DotAuthEndPoints.FormIndex,
             new ActionInformation("Form", "Index")
         }
     };

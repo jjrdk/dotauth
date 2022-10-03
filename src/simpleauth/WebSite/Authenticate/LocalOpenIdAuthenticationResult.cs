@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.WebSite.Authenticate;
+﻿namespace DotAuth.WebSite.Authenticate;
 
 using System;
 using System.Security.Claims;
-using SimpleAuth.Results;
+using DotAuth.Results;
 
 /// <summary>
 /// Defines the local OpenId authentication resultKind.

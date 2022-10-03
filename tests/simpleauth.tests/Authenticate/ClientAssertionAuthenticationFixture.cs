@@ -1,19 +1,19 @@
-﻿namespace SimpleAuth.Tests.Authenticate;
+﻿namespace DotAuth.Tests.Authenticate;
 
-using Microsoft.IdentityModel.Tokens;
-using Moq;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Authenticate;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Repositories;
+using DotAuth.Authenticate;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using Microsoft.IdentityModel.Tokens;
+using Moq;
 using Xunit;
 
 public sealed class ClientAssertionAuthenticationFixture

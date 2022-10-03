@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Tests.Extensions;
+﻿namespace DotAuth.Tests.Extensions;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -6,12 +6,12 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Extensions;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using Xunit;
 
 public sealed class GrantedTokenValidatorTests

@@ -1,19 +1,19 @@
-﻿namespace SimpleAuth.Tests.Api.Authorization;
+﻿namespace DotAuth.Tests.Api.Authorization;
 
-using Moq;
-using Parameters;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth;
-using SimpleAuth.Api.Authorization;
 using System;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth;
+using DotAuth.Api.Authorization;
+using DotAuth.Parameters;
+using DotAuth.Repositories;
+using DotAuth.Results;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging.Abstractions;
-using SimpleAuth.Repositories;
-using SimpleAuth.Results;
+using Moq;
 using Xunit;
 
 //using Client = Shared.Models.Client;

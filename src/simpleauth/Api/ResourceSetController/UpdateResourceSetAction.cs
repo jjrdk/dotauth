@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.ResourceSetController;
+namespace DotAuth.Api.ResourceSetController;
 
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using ResourceSet = Shared.Models.ResourceSet;
 
 internal sealed class UpdateResourceSetAction

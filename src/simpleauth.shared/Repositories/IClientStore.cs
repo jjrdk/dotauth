@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Shared.Repositories;
+﻿namespace DotAuth.Shared.Repositories;
 
 using System.Threading;
 using System.Threading.Tasks;
-using Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the client store interface.

@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.Sms.Services;
+﻿namespace DotAuth.Sms.Services;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Services;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 
 internal sealed class SmsAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
 {

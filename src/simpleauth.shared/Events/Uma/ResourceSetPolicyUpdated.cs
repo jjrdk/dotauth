@@ -1,7 +1,7 @@
-﻿namespace SimpleAuth.Shared.Events.Uma;
+﻿namespace DotAuth.Shared.Events.Uma;
 
 using System;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the resource set policy updated event.

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.TwoFactors;
+namespace DotAuth.Tests.TwoFactors;
 
 using System;
 using System.Threading.Tasks;
+using DotAuth.Services;
 using Moq;
-using Services;
 using Xunit;
 
 public sealed class TwoFactorAuthenticationHandlerFixture

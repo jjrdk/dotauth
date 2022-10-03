@@ -1,7 +1,7 @@
-﻿namespace SimpleAuth.Services;
+﻿namespace DotAuth.Services;
 
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the two factor authentication service.

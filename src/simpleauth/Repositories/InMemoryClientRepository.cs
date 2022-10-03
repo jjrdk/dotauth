@@ -1,8 +1,5 @@
-﻿namespace SimpleAuth.Repositories;
+﻿namespace DotAuth.Repositories;
 
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Shared.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +7,14 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Properties;
 
 /// <summary>
 /// Defines the in-memory client repository.

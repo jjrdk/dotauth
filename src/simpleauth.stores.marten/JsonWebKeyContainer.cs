@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
 using System;
 using Microsoft.IdentityModel.Tokens;

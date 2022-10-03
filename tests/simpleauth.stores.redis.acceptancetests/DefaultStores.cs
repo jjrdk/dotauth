@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Stores.Redis.AcceptanceTests;
+namespace DotAuth.Stores.Redis.AcceptanceTests;
 
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
 
 public static class DefaultStores
 {

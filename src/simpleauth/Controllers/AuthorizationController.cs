@@ -12,18 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
-using Api.Authorization;
-using Extensions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
-using Parameters;
-using Results;
-using Shared.Repositories;
-using Shared.Requests;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -32,13 +22,23 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Authorization;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Results;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Filters;
-using SimpleAuth.Properties;
-using SimpleAuth.Services;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
 
 /// <summary>
 /// Defines the authorization controller.
@@ -146,11 +146,11 @@ public sealed class AuthorizationController : ControllerBase
             }
             case ActionResultType.RedirectToAction:
             {
-                if (actionResult.RedirectInstruction!.Action == SimpleAuthEndPoints.AuthenticateIndex
-                    || actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.ConsentIndex)
+                if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
+                    || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
                 {
                     // Force the resource owner to be re-authenticated
-                    if (actionResult.RedirectInstruction.Action == SimpleAuthEndPoints.AuthenticateIndex)
+                    if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
                     {
                         authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
                     }
@@ -211,22 +211,22 @@ public sealed class AuthorizationController : ControllerBase
     private static string GetRedirectionUrl(
         Microsoft.AspNetCore.Http.HttpRequest request,
         string? amr,
-        SimpleAuthEndPoints simpleAuthEndPoints)
+        DotAuthEndPoints simpleAuthEndPoints)
     {
         var uri = request.GetAbsoluteUriWithVirtualPath();
         var partialUri = simpleAuthEndPoints switch
         {
-            SimpleAuthEndPoints.AuthenticateIndex => "/Authenticate/OpenId",
-            SimpleAuthEndPoints.ConsentIndex => "/Consent",
-            SimpleAuthEndPoints.FormIndex => "/Form",
-            SimpleAuthEndPoints.SendCode => "/Code",
+            DotAuthEndPoints.AuthenticateIndex => "/Authenticate/OpenId",
+            DotAuthEndPoints.ConsentIndex => "/Consent",
+            DotAuthEndPoints.FormIndex => "/Form",
+            DotAuthEndPoints.SendCode => "/Code",
             _ => throw new ArgumentOutOfRangeException(nameof(simpleAuthEndPoints), simpleAuthEndPoints, null)
         };
 
 
         if (!string.IsNullOrWhiteSpace(amr)
-            && simpleAuthEndPoints != SimpleAuthEndPoints.ConsentIndex
-            && simpleAuthEndPoints != SimpleAuthEndPoints.FormIndex)
+            && simpleAuthEndPoints != DotAuthEndPoints.ConsentIndex
+            && simpleAuthEndPoints != DotAuthEndPoints.FormIndex)
         {
             partialUri = "/" + amr + partialUri;
         }

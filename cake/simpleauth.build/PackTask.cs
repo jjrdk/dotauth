@@ -1,9 +1,8 @@
-namespace SimpleAuth.Build;
+namespace DotAuth.Build;
 
 using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.MSBuild;
 using Cake.Common.Tools.DotNet.Pack;
-using Cake.Common.Tools.DotNetCore.MSBuild;
 using Cake.Core.Diagnostics;
 using Cake.Frosting;
 

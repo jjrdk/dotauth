@@ -1,13 +1,13 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using DotAuth.Client;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Client;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;

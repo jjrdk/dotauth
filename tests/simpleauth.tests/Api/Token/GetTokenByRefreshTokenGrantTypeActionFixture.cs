@@ -12,29 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Shared.Repositories;
-using System.Net.Http.Headers;
+namespace DotAuth.Tests.Api.Token;
 
-namespace SimpleAuth.Tests.Api.Token;
-
-using Moq;
-using Parameters;
-using Shared;
-using Shared.Models;
-using SimpleAuth;
-using SimpleAuth.Api.Token.Actions;
-using SimpleAuth.Shared.Errors;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Properties;
-using SimpleAuth.Tests.Helpers;
+using DotAuth.Api.Token.Actions;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
+using DotAuth.Tests.Helpers;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Moq;
 using Xunit;
 
 public sealed class GetTokenByRefreshTokenGrantTypeActionFixture

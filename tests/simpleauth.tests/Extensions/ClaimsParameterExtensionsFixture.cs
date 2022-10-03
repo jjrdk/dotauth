@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Tests.Extensions;
+﻿namespace DotAuth.Tests.Extensions;
 
-using Parameters;
-using Shared;
-using SimpleAuth.Extensions;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Shared;
 using Xunit;
 
 public sealed class ClaimsParameterExtensionsFixture

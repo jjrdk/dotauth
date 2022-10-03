@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -8,12 +8,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;
@@ -256,7 +256,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                 var response = await client.GetToken(TokenRequest.FromTicketId(ticketId, result.IdToken))
                     .ConfigureAwait(false);
 
-                Assert.IsType<Option<GrantedTokenResponse>.Error>(response);
+                Assert.IsType<Option.Error>(response);
             });
     }
 
@@ -357,6 +357,6 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then has error".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(ticketResponse); });
+        "then has error".x(() => { Assert.IsType<Option.Error>(ticketResponse); });
     }
 }

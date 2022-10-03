@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Apis;
+namespace DotAuth.Server.Tests.Apis;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,15 +21,16 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
+using DotAuth;
+using DotAuth.Api.PermissionController;
+using DotAuth.Properties;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
 using Moq;
-using SimpleAuth.Api.PermissionController;
-using SimpleAuth.Properties;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Requests;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -49,7 +50,7 @@ public sealed class AddPermissionActionFixture
     [Fact]
     public async Task When_RequiredParameter_ResourceSetId_Is_Not_Specified_Then_Exception_Is_Thrown()
     {
-        InitializeFakeObjects(new ResourceSet { Id = Id.Create(), Name = "resource" });
+        InitializeFakeObjects(new ResourceSet { Id = DotAuth.Id.Create(), Name = "resource" });
         var addPermissionParameter = new PermissionRequest();
 
         var exception = await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
@@ -58,14 +59,14 @@ public sealed class AddPermissionActionFixture
         Assert.Equal(
             string.Format(
                 Strings.MissingParameter,
-                UmaConstants.AddPermissionNames.ResourceSetId),
+                DotAuth.UmaConstants.AddPermissionNames.ResourceSetId),
             exception.Details.Detail);
     }
 
     [Fact]
     public async Task When_RequiredParameter_Scopes_Is_Not_Specified_Then_Exception_Is_Thrown()
     {
-        InitializeFakeObjects(new ResourceSet { Id = Id.Create(), Name = "resource" });
+        InitializeFakeObjects(new ResourceSet { Id = DotAuth.Id.Create(), Name = "resource" });
         var addPermissionParameter = new PermissionRequest { ResourceSetId = "resource_set_id" };
 
         var exception =
@@ -73,7 +74,7 @@ public sealed class AddPermissionActionFixture
                 .ConfigureAwait(false) as Option<Ticket>.Error;
         Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
         Assert.Equal(
-            string.Format(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes),
+            string.Format(Strings.MissingParameter, DotAuth.UmaConstants.AddPermissionNames.Scopes),
             exception.Details.Detail);
     }
 
@@ -81,7 +82,7 @@ public sealed class AddPermissionActionFixture
     public async Task When_ResourceSet_Does_Not_Exist_Then_Exception_Is_Thrown()
     {
         const string resourceSetId = "resource_set_id";
-        InitializeFakeObjects(new ResourceSet { Id = Id.Create(), Name = "resource" });
+        InitializeFakeObjects(new ResourceSet { Id = DotAuth.Id.Create(), Name = "resource" });
         var addPermissionParameter =
             new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
 

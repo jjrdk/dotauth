@@ -1,11 +1,11 @@
-﻿namespace SimpleAuth.AuthServer;
+﻿namespace DotAuth.AuthServer;
 
 using System.Threading.Tasks;
+using DotAuth.Events;
+using DotAuth.Shared;
+using DotAuth.Shared.Events.Logging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SimpleAuth.Events;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Events.Logging;
 
 /// <summary>
 /// Defines the trace event publisher.
@@ -24,7 +24,7 @@ internal sealed class LogEventPublisher : IEventPublisher
         where T : Event
     {
         var json = JsonConvert.SerializeObject(evt);
-        if (evt is SimpleAuthError)
+        if (evt is DotAuthError)
         {
             _logger.LogError(json);
         }

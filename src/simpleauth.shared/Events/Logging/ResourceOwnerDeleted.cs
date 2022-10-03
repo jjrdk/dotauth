@@ -1,7 +1,7 @@
-﻿namespace SimpleAuth.Shared.Events.Logging;
+﻿namespace DotAuth.Shared.Events.Logging;
 
 using System;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the resource owner added event.

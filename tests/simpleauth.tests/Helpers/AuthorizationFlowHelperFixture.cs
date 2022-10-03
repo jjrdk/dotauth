@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.Tests.Helpers;
+﻿namespace DotAuth.Tests.Helpers;
 
-using Shared;
-using SimpleAuth.Api.Authorization;
 using System.Collections.Generic;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
+using DotAuth.Api.Authorization;
+using DotAuth.Extensions;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
 using Xunit;
 
 public sealed class AuthorizationFlowHelperFixture

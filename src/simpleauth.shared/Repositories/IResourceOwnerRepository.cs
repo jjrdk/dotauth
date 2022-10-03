@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Repositories;
+namespace DotAuth.Shared.Repositories;
 
-using Models;
-using SimpleAuth.Shared.Requests;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the resource owner repository.
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Repositories.IResourceOwnerStore" />
+/// <seealso cref="IResourceOwnerStore" />
 public interface IResourceOwnerRepository : IResourceOwnerStore
 {
     /// <summary>

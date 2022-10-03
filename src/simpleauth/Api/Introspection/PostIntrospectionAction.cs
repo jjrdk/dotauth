@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Introspection;
+namespace DotAuth.Api.Introspection;
 
-using Parameters;
-using Shared;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
 
 internal sealed class PostIntrospectionAction
 {

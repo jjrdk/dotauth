@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Tests;
+﻿namespace DotAuth.Tests;
 
 using System.Threading.Tasks;
+using DotAuth.Repositories;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Repositories;
 using Xunit;
 
 public sealed class InMemoryJwksRepositoryFixture

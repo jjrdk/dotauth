@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Client;
+﻿namespace DotAuth.Client;
 
 using System;
 using System.Net;
@@ -7,8 +7,8 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the base client for interacting with an authorization server.

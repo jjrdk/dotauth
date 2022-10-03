@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Server.Tests.MiddleWares;
+﻿namespace DotAuth.Server.Tests.MiddleWares;
 
 using System;
 

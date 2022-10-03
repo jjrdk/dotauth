@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleAuth.Parameters;
-using SimpleAuth.Shared;
+using DotAuth.Parameters;
+using DotAuth.Shared;
 
 internal static class ParameterParserHelper
 {

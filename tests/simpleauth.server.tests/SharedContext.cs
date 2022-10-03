@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests;
+namespace DotAuth.Server.Tests;
 
 using System;
+using System.Net.Http;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
+using DotAuth.Sms;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
-using Shared;
-using SimpleAuth;
-using System.Net.Http;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Sms;
 
 public sealed class SharedContext
 {

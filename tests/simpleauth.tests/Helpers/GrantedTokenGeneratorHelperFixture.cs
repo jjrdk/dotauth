@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Helpers;
+namespace DotAuth.Tests.Helpers;
 
-using Microsoft.IdentityModel.Tokens;
-using Moq;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Properties;
+using DotAuth.Extensions;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Properties;
+using DotAuth.Shared.Repositories;
+using Microsoft.IdentityModel.Tokens;
+using Moq;
 using Xunit;
 
 public sealed class GrantedTokenGeneratorHelperFixture
@@ -49,7 +49,7 @@ public sealed class GrantedTokenGeneratorHelperFixture
                 userInformationPayload: null)
             .ConfigureAwait(false);
 
-        Assert.IsType<Option<GrantedToken>.Error>(result);
+        Assert.IsType<Option.Error>(result);
     }
 
     [Fact]

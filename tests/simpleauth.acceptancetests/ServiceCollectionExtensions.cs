@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.AcceptanceTests;
+﻿namespace DotAuth.AcceptanceTests;
 
 using System;
 using System.Net.Http;
+using DotAuth.Client;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleAuth.Client;
 
 /// <summary>
 /// Defines extensions to <see cref="IServiceCollection"/>.

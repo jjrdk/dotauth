@@ -1,15 +1,5 @@
-﻿namespace SimpleAuth.Api.Token;
+﻿namespace DotAuth.Api.Token;
 
-using Authenticate;
-using JwtToken;
-using Parameters;
-using Policies;
-using Shared;
-using Shared.Events.Uma;
-using Shared.Models;
-using Shared.Responses;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -18,10 +8,20 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Authenticate;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.JwtToken;
+using DotAuth.Parameters;
+using DotAuth.Policies;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.Uma;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
 
 internal sealed class UmaTokenActions
 {

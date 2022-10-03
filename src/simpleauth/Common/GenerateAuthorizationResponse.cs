@@ -12,26 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Common;
+namespace DotAuth.Common;
 
-using Extensions;
-using JwtToken;
-using Parameters;
-using Results;
-using Shared;
-using Shared.Models;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Authorization;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.JwtToken;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Results;
+using DotAuth.Shared;
+using DotAuth.Shared.Events.OAuth;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Api.Authorization;
-using SimpleAuth.Events;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared.Events.OAuth;
 
 internal sealed class GenerateAuthorizationResponse
 {
@@ -263,7 +263,7 @@ internal sealed class GenerateAuthorizationResponse
                             "redirect_uri",
                             authorizationParameter.RedirectUrl?.AbsoluteUri) with
                         {
-                            Action = SimpleAuthEndPoints.FormIndex
+                            Action = DotAuthEndPoints.FormIndex
                         }
                 };
             }

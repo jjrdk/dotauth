@@ -1,18 +1,17 @@
-﻿namespace SimpleAuth.AuthServerPg;
+﻿namespace DotAuth.AuthServerPg;
 
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SimpleAuth.Shared;
 
 internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions>
 {

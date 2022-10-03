@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Client;
+﻿namespace DotAuth.Client;
 
 /// <summary>
 /// Defines the add resource owner response.

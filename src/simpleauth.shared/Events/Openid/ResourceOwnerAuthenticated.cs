@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Events.Openid;
+namespace DotAuth.Shared.Events.Openid;
 
 using System;
 
 /// <summary>
 /// Defines the resource owner authenticated event
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Event" />
+/// <seealso cref="Event" />
 public sealed record ResourceOwnerAuthenticated : Event
 {
     /// <summary>

@@ -1,19 +1,19 @@
-﻿namespace SimpleAuth.Api.Token.Actions;
+﻿namespace DotAuth.Api.Token.Actions;
 
 using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.JwtToken;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Events.OAuth;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.JwtToken;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Events.OAuth;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Requests;
 
 internal sealed class GetTokenByDeviceAuthorizationTypeAction
 {

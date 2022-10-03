@@ -1,13 +1,5 @@
-﻿namespace SimpleAuth.Controllers;
+﻿namespace DotAuth.Controllers;
 
-using Api.Token;
-using Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Shared;
-using Shared.Models;
-using SimpleAuth.Common;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +8,20 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Token;
+using DotAuth.Common;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.Properties;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using SimpleAuth.Events;
-using SimpleAuth.Filters;
-using SimpleAuth.Properties;
-using SimpleAuth.Services;
 
 /// <summary>
 /// Defines the token controller.

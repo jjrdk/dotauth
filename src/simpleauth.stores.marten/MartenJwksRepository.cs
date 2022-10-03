@@ -1,14 +1,15 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
-using global::Marten;
-using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Repositories;
 using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
+using global::Marten;
+using Marten;
+using Microsoft.IdentityModel.Tokens;
 
 /// <summary>
 /// Defines the marten based jwks repository.

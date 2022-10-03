@@ -1,11 +1,11 @@
-﻿namespace SimpleAuth.Shared.Events.Uma;
+﻿namespace DotAuth.Shared.Events.Uma;
 
 using System;
 
 /// <summary>
 /// Defines the authorization policy not authorized event.
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Event" />
+/// <seealso cref="Event" />
 public sealed record AuthorizationPolicyNotAuthorized : Event
 {
     /// <summary>

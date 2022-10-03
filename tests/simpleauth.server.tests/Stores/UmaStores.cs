@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Server.Tests.Stores;
+namespace DotAuth.Server.Tests.Stores;
 
 using System.Collections.Generic;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 public static class UmaStores
 {
-    public static List<(string,ResourceSet)> GetResources()
+    public static List<(string, ResourceSet)> GetResources()
     {
         return new()
         {

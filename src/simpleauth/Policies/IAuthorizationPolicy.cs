@@ -1,9 +1,9 @@
-﻿namespace SimpleAuth.Policies;
+﻿namespace DotAuth.Policies;
 
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Shared.Models;
+using DotAuth.Shared.Models;
 
 internal interface IAuthorizationPolicy
 {

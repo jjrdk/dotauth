@@ -1,15 +1,15 @@
-﻿namespace SimpleAuth.Tests.Api.Sms.Actions;
+﻿namespace DotAuth.Tests.Api.Sms.Actions;
 
-using Moq;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Sms;
-using SimpleAuth.Sms.Actions;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Sms;
+using DotAuth.Sms.Actions;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -38,7 +38,7 @@ public sealed class GenerateAndSendSmsCodeOperationFixture
         var exception = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
             .ConfigureAwait(false) as Option<string>.Error;
 
-        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
         Assert.Equal("The SMS account is not properly configured", exception.Details.Detail);
     }
 
@@ -53,7 +53,7 @@ public sealed class GenerateAndSendSmsCodeOperationFixture
         var exception = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
             .ConfigureAwait(false) as Option<string>.Error;
 
-        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
+        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
         Assert.Equal("The confirmation code cannot be saved", exception.Details.Detail);
     }
 

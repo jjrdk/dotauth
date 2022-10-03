@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.WebSite.Authenticate;
+namespace DotAuth.WebSite.Authenticate;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Repositories;
+using DotAuth.Shared.Repositories;
 
 internal sealed class ValidateConfirmationCodeAction
 {

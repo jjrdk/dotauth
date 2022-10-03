@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Sms;
+﻿namespace DotAuth.Sms;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// Defines the Twilio SMS client.
 /// </summary>
-/// <seealso cref="SimpleAuth.Sms.ISmsClient" />
+/// <seealso cref="ISmsClient" />
 public sealed class TwilioSmsClient : ISmsClient
 {
     private readonly IHttpClientFactory _client;

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Repositories;
+namespace DotAuth.Shared.Repositories;
 
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the resource set repository interface.

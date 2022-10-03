@@ -1,24 +1,23 @@
-﻿using SimpleAuth.Shared;
+﻿namespace DotAuth.Tests.WebSite.Consent;
 
-namespace SimpleAuth.Tests.WebSite.Consent;
-
-using Microsoft.IdentityModel.Tokens;
-using Moq;
-using Parameters;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.WebSite.Consent.Actions;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.Properties;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Errors;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.Consent.Actions;
+using Microsoft.IdentityModel.Tokens;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -89,7 +88,7 @@ public sealed class DisplayConsentActionFixture
         {
             ClientId = clientid,
             Scope = scope,
-            ResponseMode = ResponseModes.Fragment
+            ResponseMode = DotAuth.ResponseModes.Fragment
         };
 
         _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -100,7 +99,7 @@ public sealed class DisplayConsentActionFixture
             .Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
             .ConfigureAwait(false);
 
-        Assert.Equal(ResponseModes.Fragment, result.EndpointResult.RedirectInstruction.ResponseMode);
+        Assert.Equal(DotAuth.ResponseModes.Fragment, result.EndpointResult.RedirectInstruction.ResponseMode);
     }
 
     [Fact]
@@ -117,7 +116,7 @@ public sealed class DisplayConsentActionFixture
             Scope = "scope",
             ClientId = clientId,
             State = state,
-            ResponseMode = ResponseModes.None // No response mode is defined
+            ResponseMode = DotAuth.ResponseModes.None // No response mode is defined
         };
         var consent = new Consent
         {

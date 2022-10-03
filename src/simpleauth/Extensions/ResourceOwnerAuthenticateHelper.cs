@@ -1,12 +1,12 @@
-﻿namespace SimpleAuth.Extensions;
+﻿namespace DotAuth.Extensions;
 
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Services;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
 
 internal static class ResourceOwnerAuthenticateHelper
 {

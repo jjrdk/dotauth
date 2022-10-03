@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Policies;
+namespace DotAuth.Policies;
 
 using System.Security.Claims;
-using Shared.Responses;
+using DotAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the authorization policy result.

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.ViewModels;
+﻿namespace DotAuth.ViewModels;
 
 /// <summary>
 /// View model to handle updates to two-factor authentication

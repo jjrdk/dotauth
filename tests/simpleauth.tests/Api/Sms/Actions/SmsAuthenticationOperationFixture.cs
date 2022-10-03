@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Tests.Api.Sms.Actions;
+﻿namespace DotAuth.Tests.Api.Sms.Actions;
 
 using System;
 using System.Collections.Generic;
@@ -6,11 +6,12 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
+using DotAuth;
+using DotAuth.Events;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
+using DotAuth.Sms.Actions;
 using Moq;
-using SimpleAuth.Events;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Sms.Actions;
 using Xunit;
 using Xunit.Abstractions;
 

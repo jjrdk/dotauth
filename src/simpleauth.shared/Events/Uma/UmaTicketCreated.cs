@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Shared.Events.Uma;
+﻿namespace DotAuth.Shared.Events.Uma;
 
 using System;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the UMA ticket created event.

@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Shared.Events.Uma;
+﻿namespace DotAuth.Shared.Events.Uma;
 
 using System;
 using System.Collections.Generic;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the authorization request submitted event.

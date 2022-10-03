@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Repositories;
+namespace DotAuth.Shared.Repositories;
 
-using Models;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the consent repository.
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Repositories.IConsentStore" />
+/// <seealso cref="IConsentStore" />
 public interface IConsentRepository : IConsentStore
 {
     /// <summary>

@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.WebSite.User;
+namespace DotAuth.Tests.WebSite.User;
 
-using Moq;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.Services;
-using SimpleAuth.Shared.Events.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Events;
-using SimpleAuth.WebSite.User;
+using DotAuth;
+using DotAuth.Events;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Events.Logging;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.User;
+using Moq;
 using Xunit;
 
 public sealed class AddUserOperationFixture

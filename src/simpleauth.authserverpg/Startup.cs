@@ -12,15 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AuthServerPg;
+namespace DotAuth.AuthServerPg;
 
 using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using SimpleAuth;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
@@ -29,25 +23,30 @@ using System.Security.Cryptography;
 using Amazon;
 using Amazon.Runtime;
 using Baseline;
+using DotAuth;
+using DotAuth.Extensions;
+using DotAuth.Sms;
+using DotAuth.Sms.Ui;
+using DotAuth.Stores.Marten;
+using DotAuth.UI;
 using Marten;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Sms;
-using SimpleAuth.Sms.Ui;
-using SimpleAuth.Stores.Marten;
-using SimpleAuth.UI;
 using Aes = System.Security.Cryptography.Aes;
 
 public sealed class Startup
 {
-    private const string SimpleAuthScheme = "simpleauth";
+    private const string DotAuthScheme = "simpleauth";
     private const string DefaultGoogleScopes = "openid,profile,email";
     private readonly IConfiguration _configuration;
-    private readonly SimpleAuthOptions _options;
+    private readonly DotAuthOptions _options;
 
     public Startup(IConfiguration configuration)
     {
@@ -68,7 +67,7 @@ public sealed class Startup
         : null;
         _options =
             new
-                SimpleAuthOptions(
+                DotAuthOptions(
                     salt,
                     ticketLifetime: TimeSpan.FromDays(7),
                     claimsIncludedInUserCreation: new[]
@@ -91,7 +90,7 @@ public sealed class Startup
                 DataProtector = dataProtector,
                 AllowHttp = allowHttp,
                 RedirectToLogin = redirect,
-                ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "SimpleAuth",
+                ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "DotAuth",
                 Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
                 Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
                 Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
@@ -117,7 +116,7 @@ public sealed class Startup
         services.AddSingleton<IDocumentStore>(
                 provider =>
                 {
-                    var options = new SimpleAuthMartenOptions(
+                    var options = new DotAuthMartenOptions(
                         _configuration[ConfigurationValues.ConnectionString] ?? "",
                         new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()));
                     return new DocumentStore(options);
@@ -148,10 +147,10 @@ public sealed class Startup
                 options =>
                 {
                     options.DefaultScheme = CookieNames.CookieName;
-                    options.DefaultChallengeScheme = SimpleAuthScheme;
+                    options.DefaultChallengeScheme = DotAuthScheme;
                 })
             .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-            .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, _ => { })
+            .AddOAuth(DotAuthScheme, '_' + DotAuthScheme, _ => { })
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
                 cfg =>
@@ -195,9 +194,9 @@ public sealed class Startup
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonAccessKey])
             && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonSecretKey]))
         {
-            services.AddSimpleAuth(
+            services.AddDotAuth(
                     _options,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                     assemblyTypes: new[] { GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi) })
                 .AddSmsAuthentication(
                     new AwsSmsClient(
@@ -209,9 +208,9 @@ public sealed class Startup
         }
         else
         {
-            services.AddSimpleAuth(
+            services.AddDotAuth(
                 _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                 assemblyTypes: new[] { GetType(), typeof(IDefaultUi) });
         }
     }
@@ -234,7 +233,7 @@ public sealed class Startup
         }
 
         app.UseResponseCompression()
-            .UseSimpleAuthMvc(x => { x.KnownProxies.AddRange(knownProxies); }, applicationTypes: typeof(IDefaultUi))
+            .UseDotAuthMvc(x => { x.KnownProxies.AddRange(knownProxies); }, applicationTypes: typeof(IDefaultUi))
             .UseEndpoints(endpoint => { endpoint.MapHealthChecks("/health"); });
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Sms.ViewModels;
+﻿namespace DotAuth.Sms.ViewModels;
 
 /// <summary>
 /// Defines the confirm code view model.

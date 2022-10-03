@@ -12,10 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.AuthServer;
+namespace DotAuth.AuthServer;
 
 using System;
-
+using System.Linq;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Text.Json;
+using Amazon;
+using Amazon.Runtime;
+using DotAuth;
+using DotAuth.Extensions;
+using DotAuth.Repositories;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Sms;
+using DotAuth.Sms.Ui;
+using DotAuth.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -23,38 +36,22 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-using SimpleAuth;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Repositories;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Text.Json;
-using Amazon;
-using Amazon.Runtime;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Sms;
-using SimpleAuth.Sms.Ui;
-using SimpleAuth.UI;
-
 internal sealed class Startup
 {
-    private const string SimpleAuthScheme = "simpleauth";
+    private const string DotAuthScheme = "simpleauth";
     private readonly IConfiguration _configuration;
-    private readonly SimpleAuthOptions _options;
+    private readonly DotAuthOptions _options;
 
     public Startup(IConfiguration configuration)
     {
         _configuration = configuration;
         _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
         var salt = _configuration["SALT"] ?? string.Empty;
-        _options = new SimpleAuthOptions(salt)
+        _options = new DotAuthOptions(salt)
         {
             AllowHttp = true,
             RedirectToLogin = redirect,
-            ApplicationName = _configuration["SERVER_NAME"] ?? "SimpleAuth",
+            ApplicationName = _configuration["SERVER_NAME"] ?? "DotAuth",
             Users = sp => new InMemoryResourceOwnerRepository(salt, DefaultConfiguration.GetUsers(salt)),
             Tickets = sp => new InMemoryTicketStore(),
             Clients =
@@ -130,10 +127,10 @@ internal sealed class Startup
                 options =>
                 {
                     options.DefaultScheme = CookieNames.CookieName;
-                    options.DefaultChallengeScheme = SimpleAuthScheme;
+                    options.DefaultChallengeScheme = DotAuthScheme;
                 })
             .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-            .AddOAuth(SimpleAuthScheme, '_' + SimpleAuthScheme, options => { })
+            .AddOAuth(DotAuthScheme, '_' + DotAuthScheme, options => { })
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
                 cfg =>
@@ -174,9 +171,9 @@ internal sealed class Startup
         if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
             && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
         {
-            services.AddSimpleAuth(
+            services.AddDotAuth(
                     _options,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                     assemblies: new[]
                     {
                         (GetType().Namespace!, GetType().Assembly),
@@ -193,9 +190,9 @@ internal sealed class Startup
         }
         else
         {
-            services.AddSimpleAuth(
+            services.AddDotAuth(
                 _options,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, SimpleAuthScheme },
+                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                 assemblies: new[]
                 {
                     (GetType().Namespace!, GetType().Assembly),
@@ -212,6 +209,6 @@ internal sealed class Startup
             app = app.UsePathBase(pathBase);
         }
         app.UseResponseCompression()
-            .UseSimpleAuthMvc(applicationTypes: typeof(IDefaultUi));
+            .UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
     }
 }

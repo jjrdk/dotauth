@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth;
+namespace DotAuth;
 
-using Api.Authorization;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
 using System.Collections.Generic;
+using DotAuth.Api.Authorization;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
 
 internal static class CoreConstants
 {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared.Events.Openid;
+namespace DotAuth.Shared.Events.Openid;
 
 using System;
 using System.Linq;
@@ -20,7 +20,7 @@ using System.Linq;
 /// <summary>
 /// Defines the consent accepted event.
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Event" />
+/// <seealso cref="Event" />
 public sealed record ConsentAccepted : Event
 {
     /// <summary>

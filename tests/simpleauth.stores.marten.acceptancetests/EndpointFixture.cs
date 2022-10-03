@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Stores.Marten.AcceptanceTests;
+namespace DotAuth.Stores.Marten.AcceptanceTests;
 
-using Microsoft.IdentityModel.Logging;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Logging;
 using Xunit;
 using Xunit.Abstractions;
 

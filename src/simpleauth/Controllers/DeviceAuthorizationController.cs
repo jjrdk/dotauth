@@ -1,18 +1,18 @@
-﻿namespace SimpleAuth.Controllers;
+﻿namespace DotAuth.Controllers;
 
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Api.Device;
+using DotAuth.Common;
+using DotAuth.Extensions;
+using DotAuth.Filters;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Api.Device;
-using SimpleAuth.Common;
-using SimpleAuth.Extensions;
-using SimpleAuth.Filters;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the device authorization controller.

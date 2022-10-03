@@ -1,15 +1,14 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
 using System;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
-using SimpleAuth.Shared.Responses;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;
-using IntrospectionRequest = Client.IntrospectionRequest;
 
 public sealed class RptTokenIntrospectionFeature : AuthFlowFeature
 {
@@ -131,10 +130,10 @@ public sealed class RptTokenIntrospectionFeature : AuthFlowFeature
             async () =>
             {
                 var introspectResult = await umaClient
-                    .Introspect(IntrospectionRequest.Create(rptToken, "access_token", patToken))
+                    .Introspect(DotAuth.Client.IntrospectionRequest.Create(rptToken, "access_token", patToken))
                     .ConfigureAwait(false);
 
-                Assert.IsType<Option<UmaIntrospectionResponse>.Result>(introspectResult);
+                Assert.IsType<Option<OauthIntrospectionResponse>.Result>(introspectResult);
             });
     }
 }

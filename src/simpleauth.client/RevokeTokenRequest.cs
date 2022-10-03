@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Client;
+namespace DotAuth.Client;
 
-using SimpleAuth.Shared.Responses;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DotAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the revoke token request.

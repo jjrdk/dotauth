@@ -1,15 +1,15 @@
-﻿namespace SimpleAuth.Tests;
+﻿namespace DotAuth.Tests;
 
-using Moq;
-using Shared;
-using Shared.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using Moq;
 using Xunit;
 
 public sealed class AccountFilterFixture

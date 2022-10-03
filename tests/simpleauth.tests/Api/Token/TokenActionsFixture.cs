@@ -1,24 +1,24 @@
-﻿using SimpleAuth.Shared.Repositories;
-using System.Net.Http.Headers;
+﻿namespace DotAuth.Tests.Api.Token;
 
-namespace SimpleAuth.Tests.Api.Token;
-
-using Microsoft.IdentityModel.Tokens;
-using Moq;
-using Parameters;
-using Shared;
-using Shared.Models;
-using SimpleAuth;
-using SimpleAuth.Api.Token;
 using System;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth;
+using DotAuth.Api.Token;
+using DotAuth.Controllers;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Repositories;
+using DotAuth.Services;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Controllers;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.Repositories;
-using SimpleAuth.Services;
+using Microsoft.IdentityModel.Tokens;
+using Moq;
 using Xunit;
 
 public sealed class TokenActionsFixture

@@ -1,4 +1,4 @@
-namespace SimpleAuth.Extensions;
+namespace DotAuth.Extensions;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;

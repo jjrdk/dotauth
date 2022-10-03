@@ -1,20 +1,21 @@
-﻿namespace SimpleAuth.Tests.WebSite.Consent;
+﻿namespace DotAuth.Tests.WebSite.Consent;
 
-using Moq;
-using Parameters;
-using Shared;
-using Shared.Models;
-using Shared.Repositories;
-using SimpleAuth.WebSite.Consent.Actions;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
-using SimpleAuth.Properties;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Errors;
+using DotAuth;
+using DotAuth.Parameters;
+using DotAuth.Properties;
+using DotAuth.Repositories;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.WebSite.Consent.Actions;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -51,11 +52,11 @@ public sealed class ConfirmConsentFixture
             ClientId = "clientId",
             Claims = null,
             Scope = "profile",
-            ResponseMode = ResponseModes.None,
+            ResponseMode = DotAuth.ResponseModes.None,
             State = state
         };
         var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
-        var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
+        var claimsIdentity = new ClaimsIdentity(claims, "DotAuthServer");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var client = new Client { ClientId = "clientId" };
 
@@ -96,7 +97,7 @@ public sealed class ConfirmConsentFixture
             Scope = "profile"
         };
         var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
-        var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
+        var claimsIdentity = new ClaimsIdentity(claims, "DotAuthServer");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var client = new Client { ClientId = clientId };
 
@@ -130,10 +131,10 @@ public sealed class ConfirmConsentFixture
             ResponseType = "code",
             Claims = null,
             Scope = "profile",
-            ResponseMode = ResponseModes.None
+            ResponseMode = DotAuth.ResponseModes.None
         };
         var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
-        var claimsIdentity = new ClaimsIdentity(claims, "SimpleAuthServer");
+        var claimsIdentity = new ClaimsIdentity(claims, "DotAuthServer");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var client = new Client { ClientId = "clientId" };
         _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -148,6 +149,6 @@ public sealed class ConfirmConsentFixture
             .ConfigureAwait(false);
 
         _consentRepositoryFake.Verify(c => c.Insert(It.IsAny<Consent>(), It.IsAny<CancellationToken>()));
-        Assert.Equal(ResponseModes.Query, result.RedirectInstruction!.ResponseMode);
+        Assert.Equal(DotAuth.ResponseModes.Query, result.RedirectInstruction!.ResponseMode);
     }
 }

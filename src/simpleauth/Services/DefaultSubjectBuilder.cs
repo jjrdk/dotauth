@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Services;
+﻿namespace DotAuth.Services;
 
 using System.Collections.Generic;
 using System.Security.Claims;

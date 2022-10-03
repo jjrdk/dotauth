@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.ViewModels;
+﻿namespace DotAuth.ViewModels;
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

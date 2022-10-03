@@ -1,16 +1,16 @@
-﻿namespace SimpleAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
 using global::Marten;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
 
 /// <summary>
 /// Defines the marten based confirmation code store.
 /// </summary>
-/// <seealso cref="SimpleAuth.Shared.Repositories.IConfirmationCodeStore" />
+/// <seealso cref="IConfirmationCodeStore" />
 public sealed class MartenConfirmationCodeStore : IConfirmationCodeStore
 {
     private readonly Func<IDocumentSession> _sessionFactory;

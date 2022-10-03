@@ -1,10 +1,10 @@
-﻿namespace SimpleAuth.ViewModels;
+﻿namespace DotAuth.ViewModels;
 
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using DotAuth.Properties;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using SimpleAuth.Properties;
 
 /// <summary>
 /// Defines the update resource owner credentials view model.

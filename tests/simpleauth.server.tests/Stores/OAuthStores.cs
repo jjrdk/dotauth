@@ -1,11 +1,11 @@
-﻿namespace SimpleAuth.Server.Tests.Stores;
+﻿namespace DotAuth.Server.Tests.Stores;
 
 using System;
 using System.Collections.Generic;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
 
 public static class OAuthStores
 {

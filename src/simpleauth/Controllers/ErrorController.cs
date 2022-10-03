@@ -1,10 +1,10 @@
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
-using Microsoft.AspNetCore.Mvc;
-using SimpleAuth.Shared.Models;
 using System;
 using System.Net;
-using SimpleAuth.Properties;
+using DotAuth.Properties;
+using DotAuth.Shared.Models;
+using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
 /// Defines the error controller

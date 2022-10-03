@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Shared.Responses;
+﻿namespace DotAuth.Shared.Responses;
 
 using System;
 using System.Runtime.Serialization;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the update policy response.

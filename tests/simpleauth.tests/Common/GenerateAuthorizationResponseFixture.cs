@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Common;
+namespace DotAuth.Tests.Common;
 
-using Moq;
-using Parameters;
-using Results;
-using Shared;
-using Shared.Models;
-using SimpleAuth;
-using SimpleAuth.Common;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -28,14 +21,20 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
+using DotAuth.Common;
+using DotAuth.Events;
+using DotAuth.Extensions;
+using DotAuth.Parameters;
+using DotAuth.Repositories;
+using DotAuth.Results;
+using DotAuth.Shared;
+using DotAuth.Shared.Events.OAuth;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Tests.Helpers;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Events;
-using SimpleAuth.Extensions;
-using SimpleAuth.Repositories;
-using SimpleAuth.Shared.Events.OAuth;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Tests.Helpers;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -138,7 +137,7 @@ public sealed class GenerateAuthorizationResponseFixture
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
-            p => p.Name == StandardAuthorizationResponseNames.IdTokenName);
+            p => p.Name == DotAuth.StandardAuthorizationResponseNames.IdTokenName);
     }
 
     [Fact]
@@ -176,7 +175,7 @@ public sealed class GenerateAuthorizationResponseFixture
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
-            p => p.Name == StandardAuthorizationResponseNames.AccessTokenName);
+            p => p.Name == DotAuth.StandardAuthorizationResponseNames.AccessTokenName);
         _tokenStore.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
         _eventPublisher.Verify(e => e.Publish(It.IsAny<TokenGranted>()));
     }
@@ -236,7 +235,7 @@ public sealed class GenerateAuthorizationResponseFixture
         Assert.Equal(
             grantedToken.AccessToken,
             actionResult.RedirectInstruction!.Parameters
-                .First(x => x.Name == StandardAuthorizationResponseNames.AccessTokenName)
+                .First(x => x.Name == DotAuth.StandardAuthorizationResponseNames.AccessTokenName)
                 .Value);
     }
 
@@ -276,7 +275,7 @@ public sealed class GenerateAuthorizationResponseFixture
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
-            p => p.Name == StandardAuthorizationResponseNames.AuthorizationCodeName);
+            p => p.Name == DotAuth.StandardAuthorizationResponseNames.AuthorizationCodeName);
         _authorizationCodeRepositoryFake.Verify(a => a.Add(It.IsAny<AuthorizationCode>(), It.IsAny<CancellationToken>()));
         _eventPublisher.Verify(s => s.Publish(It.IsAny<AuthorizationGranted>()));
     }
@@ -295,7 +294,7 @@ public sealed class GenerateAuthorizationResponseFixture
             ClientId = clientId,
             Scope = scope,
             ResponseType = responseType,
-            ResponseMode = ResponseModes.None
+            ResponseMode = DotAuth.ResponseModes.None
         };
 
         var actionResult = await _generateAuthorizationResponse.Generate(
@@ -311,6 +310,6 @@ public sealed class GenerateAuthorizationResponseFixture
                 CancellationToken.None)
             .ConfigureAwait(false);
 
-        Assert.Equal(ResponseModes.Fragment, actionResult.RedirectInstruction!.ResponseMode);
+        Assert.Equal(DotAuth.ResponseModes.Fragment, actionResult.RedirectInstruction!.ResponseMode);
     }
 }

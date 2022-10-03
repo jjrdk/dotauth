@@ -1,20 +1,20 @@
-﻿namespace SimpleAuth.AcceptanceTests.Features;
+﻿namespace DotAuth.AcceptanceTests.Features;
 
-using Microsoft.IdentityModel.Tokens;
-using SimpleAuth.Client;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Responses;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using DotAuth.Client;
+using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using SimpleAuth.Extensions;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Requests;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;
@@ -293,7 +293,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
     }
 
     [Scenario(DisplayName = "Invalid user credentials")]
@@ -315,6 +315,6 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
     }
 }

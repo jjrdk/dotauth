@@ -1,21 +1,22 @@
-namespace SimpleAuth.Sms.Controllers;
+namespace DotAuth.Sms.Controllers;
 
-using Microsoft.AspNetCore.Mvc;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
-using SimpleAuth.Shared.Repositories;
-using SimpleAuth.Sms.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth;
+using DotAuth.Events;
+using DotAuth.Filters;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.Sms.Actions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SimpleAuth.Events;
-using SimpleAuth.Filters;
-using SimpleAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the code controller.

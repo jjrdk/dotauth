@@ -1,8 +1,7 @@
-﻿namespace SimpleAuth.Shared.Models;
+﻿namespace DotAuth.Shared.Models;
 
 using System;
 using System.Runtime.Serialization;
-using SimpleAuth.Shared.Requests;
 
 /// <summary>
 /// Defines the resource permission.

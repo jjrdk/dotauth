@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Shared;
+namespace DotAuth.Shared;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using DotAuth.Shared.Models;
 using Newtonsoft.Json;
-using SimpleAuth.Shared.Models;
 
 /// <summary>
 /// Defines the ClaimPrincipal extensions.

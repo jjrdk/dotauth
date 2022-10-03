@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.Services;
+﻿namespace DotAuth.Services;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the two factor authentication handler interface.

@@ -1,14 +1,14 @@
-﻿namespace SimpleAuth.Server.Tests;
+﻿namespace DotAuth.Server.Tests;
 
-using Shared.Requests;
-using SimpleAuth.Shared.Errors;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SimpleAuth.Client;
-using SimpleAuth.Properties;
-using SimpleAuth.Shared;
-using SimpleAuth.Shared.Models;
+using DotAuth.Client;
+using DotAuth.Properties;
+using DotAuth.Shared;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
 using Xunit;
 
 public sealed class ResourceOwnerFixture : IDisposable

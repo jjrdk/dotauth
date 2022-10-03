@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Controllers;
+﻿namespace DotAuth.Controllers;
 
 using System;
 using System.Threading.Tasks;

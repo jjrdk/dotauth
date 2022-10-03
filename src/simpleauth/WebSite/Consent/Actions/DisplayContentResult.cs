@@ -1,8 +1,8 @@
-﻿namespace SimpleAuth.WebSite.Consent.Actions;
+﻿namespace DotAuth.WebSite.Consent.Actions;
 
 using System.Collections.Generic;
-using Results;
-using Shared.Models;
+using DotAuth.Results;
+using DotAuth.Shared.Models;
 
 internal sealed class DisplayContentResult
 {

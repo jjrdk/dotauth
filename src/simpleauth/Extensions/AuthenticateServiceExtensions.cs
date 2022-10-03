@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth.Extensions;
+﻿namespace DotAuth.Extensions;
 
 using System;
 using System.Security.Claims;

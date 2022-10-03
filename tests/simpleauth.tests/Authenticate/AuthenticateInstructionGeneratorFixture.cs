@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Tests.Authenticate;
+namespace DotAuth.Tests.Authenticate;
 
-using Shared;
-using SimpleAuth;
 using System.Net.Http.Headers;
-using SimpleAuth.Extensions;
+using DotAuth.Extensions;
+using DotAuth.Shared;
 using Xunit;
 
 public sealed class AuthenticateInstructionGeneratorFixture

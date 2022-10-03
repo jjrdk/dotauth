@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Api.Authorization;
+namespace DotAuth.Api.Authorization;
 
 internal enum AuthorizationFlow
 {

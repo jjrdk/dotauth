@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Controllers;
+namespace DotAuth.Controllers;
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Shared.Repositories;
-using Shared.Requests;
-using SimpleAuth.Shared.Errors;
-using SimpleAuth.Shared.Models;
 using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Filters;
-using SimpleAuth.Properties;
+using DotAuth.Filters;
+using DotAuth.Properties;
+using DotAuth.Shared.Errors;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
 /// Defines the scopes controller.

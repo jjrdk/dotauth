@@ -2,9 +2,9 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <AssemblyName>simpleauth.tests</AssemblyName>
+        <AssemblyName>dotauth.tests</AssemblyName>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-        <RootNamespace>SimpleAuth.Tests</RootNamespace>
+        <RootNamespace>DotAuth.Tests</RootNamespace>
     </PropertyGroup>
     <!--<Import Project="../../shared.projinfo" />-->
     <ItemGroup>
@@ -29,8 +29,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\simpleauth.sms\simpleauth.sms.csproj" />
-        <ProjectReference Include="..\..\src\simpleauth\simpleauth.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth.sms\dotauth.sms.csproj" />
+        <ProjectReference Include="..\..\src\simpleauth\dotauth.csproj" />
     </ItemGroup>
 
 </Project>

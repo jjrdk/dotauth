@@ -1,7 +1,7 @@
-﻿namespace SimpleAuth.Events;
+﻿namespace DotAuth.Events;
 
 using System.Threading.Tasks;
-using SimpleAuth.Shared;
+using DotAuth.Shared;
 
 /// <summary>
 /// Defines the default event publisher.

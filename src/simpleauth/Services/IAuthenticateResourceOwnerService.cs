@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace SimpleAuth.Services;
+namespace DotAuth.Services;
 
 using System.Threading;
 using System.Threading.Tasks;
-using SimpleAuth.Shared.Models;
+using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the authenticate resource owner service interface.

@@ -1,4 +1,4 @@
-﻿namespace SimpleAuth;
+﻿namespace DotAuth;
 
 internal static class StandardAuthorizationResponseNames
 {
