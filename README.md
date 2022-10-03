@@ -1,4 +1,4 @@
-# Simple Auth
+# Dot Auth
 
 ![GitHub CI](https://github.com/jjrdk/dotauth/actions/workflows/github.yml/badge.svg)
 
