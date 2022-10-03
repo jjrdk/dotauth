@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Description>DotAuth Client</Description>
+		<Title>DotAuth Client</Title>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<AssemblyName>dotauth.client</AssemblyName>
+		<PackageId>dotauth.client</PackageId>
+		<RootNamespace>DotAuth.Client</RootNamespace>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+	</PropertyGroup>
+
+	<Import Project="../../shared.projinfo" />
+
+	<ItemGroup>
+	  <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Properties\ClientStrings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ClientStrings.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\ClientStrings.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>ClientStrings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+</Project>

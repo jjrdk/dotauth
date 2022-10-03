@@ -1,10 +1,10 @@
 # Simple Auth
 
-![GitHub CI](https://github.com/jjrdk/simpleauth/actions/workflows/github.yml/badge.svg)
+![GitHub CI](https://github.com/jjrdk/dotauth/actions/workflows/github.yml/badge.svg)
 
 ## Description
 
-DotAuth is an authorization server SDK. The simplest way consume it is as a ready build container at [Docker Hub](https://hub.docker.com/r/jjrdk/simpleauth).
+DotAuth is an authorization server SDK. The simplest way consume it is as a ready build container at [Docker Hub](https://hub.docker.com/r/jjrdk/dotauth).
 
 You can also use the SDK to create an authorization server and add more custom configurations. See the different [server examples](https://github.com/jjrdk/DotAuth/tree/master/src) on how to get started.
 
@@ -12,7 +12,7 @@ You can also use the SDK to create an authorization server and add more custom c
 
 DotAuth is based on the [SimpleIdentityServer](https://github.com/thabart/SimpleIdentityServer) project, but has been reduced and adjusted to make it more cloud friendly.
 
-Most features have been merged into the simpleauth project.
+Most features have been merged into the dotauth project.
 
 All EntityFramework dependencies have been stripped away. It is up to you to provide your own implementation of repositories.
 
@@ -32,7 +32,7 @@ The support for SCIM has been removed.
 
 To build the project, run the build script (build.ps1 on Windows, build.sh on Linux/Mac). This will generate a set of nuget packages which can be used to integrate DotAuth into an ASP.NET Core server project.
 
-See the example [Auth Server project](https://github.com/jjrdk/DotAuth/tree/master/src/simpleauth.authserver) for an example of how to use DotAuth as an auth server.
+See the example [Auth Server project](https://github.com/jjrdk/DotAuth/tree/master/src/dotauth.authserver) for an example of how to use DotAuth as an auth server.
 
 ## Configuration Values for Demo Servers
 

@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+		<AssemblyName>dotauth.authserverpgredis</AssemblyName>
+		<OutputType>Exe</OutputType>
+		<StartupObject>DotAuth.AuthServerPgRedis.Program</StartupObject>
+		<RootNamespace>DotAuth.AuthServerPgRedis</RootNamespace>
+		<UserSecretsId>dotauth-authserver</UserSecretsId>
+	</PropertyGroup>
+	<Import Project="../../shared.projinfo" />
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.0-rc.1.22427.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0-rc.1.22426.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.0-rc.1.22427.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0-rc.1.22427.2" />
+		<!--<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />-->
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\dotauth.sms.ui\dotauth.sms.ui.csproj" />
+		<ProjectReference Include="..\dotauth.sms\dotauth.sms.csproj" />
+		<ProjectReference Include="..\dotauth.stores.redis\dotauth.stores.redis.csproj" />
+		<ProjectReference Include="..\dotauth.stores.marten\dotauth.stores.marten.csproj" />
+		<ProjectReference Include="..\dotauth.ui\dotauth.ui.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<TrimmerRootAssembly Include="System.Runtime" />
+		<TrimmerRootAssembly Include="System.Private.CoreLib" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Properties\" />
+	</ItemGroup>
+
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/phraseapp" />
+		</VisualStudio>
+	</ProjectExtensions>
+
+</Project>

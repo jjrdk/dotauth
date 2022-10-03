@@ -9,8 +9,8 @@
 		<Copyright>Thierry Habart, Reimers.dk © 2018-2022</Copyright>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<RepositoryType>git</RepositoryType>
-		<PackageProjectUrl>https://github.com/jjrdk/simpleauth</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/jjrdk/simpleauth</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/jjrdk/dotauth</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/jjrdk/dotauth</RepositoryUrl>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>

@@ -221,8 +221,8 @@ log-*.txt
 secrets.json
 appsettings.json
 launchSettings.json
-simpleauth.authserver.exe
-/src/simpleauth.authserver/simpleauth.authserver
+dotauth.authserver.exe
+/src/dotauth.authserver/dotauth.authserver
 docker-compose.yml
 .vscode
 kubernetes_*.yml

@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <AssemblyName>dotauth.server.tests</AssemblyName>
+        <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+        <RootNamespace>DotAuth.Server.Tests</RootNamespace>
+    </PropertyGroup>
+    <!--<Import Project="../../shared.projinfo" />-->
+
+    <ItemGroup>
+        <None Include="..\testCert.pfx" Link="testCert.pfx">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\mycert.pfx" Link="mycert.pfx">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="appsettings.json;testCert.pfx;mycert.pfx">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\dotauth.sms\dotauth.sms.csproj" />
+        <ProjectReference Include="..\..\src\dotauth.ui\dotauth.ui.csproj" />
+        <ProjectReference Include="..\..\src\dotauth\dotauth.csproj" />
+        <ProjectReference Include="..\..\src\dotauth.client\dotauth.client.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.9" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.1" />
+        <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
+        <PackageReference Include="Moq" Version="4.18.2" />
+        <PackageReference Include="xunit" Version="2.4.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.9" />
+    </ItemGroup>
+
+</Project>

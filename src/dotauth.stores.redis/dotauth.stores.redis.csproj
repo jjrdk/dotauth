@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+        <RootNamespace>DotAuth.Stores.Redis</RootNamespace>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="StackExchange.Redis" Version="2.6.66" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-dotnet run --project ./cake/simpleauth.build/simpleauth.build.csproj -- "$@"
+dotnet run --project ./cake/dotauth.build/dotauth.build.csproj -- "$@"

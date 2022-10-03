@@ -1,2 +1,2 @@
-dotnet run --project cake/simpleauth.build/simpleauth.build.csproj -- $args
+dotnet run --project cake/dotauth.build/dotauth.build.csproj -- $args
 exit $LASTEXITCODE;
