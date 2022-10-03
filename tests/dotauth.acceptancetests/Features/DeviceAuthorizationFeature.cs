@@ -269,7 +269,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
         "then error shows request expiry".x(
             async () =>
             {
-                Assert.IsType<Option.Error>(expiredPoll);
+                Assert.IsType<Option<GrantedTokenResponse>.Error>(expiredPoll);
                 Assert.Equal(
                     ErrorCodes.ExpiredToken,
                     (expiredPoll as Option<GrantedTokenResponse>.Error).Details.Title);

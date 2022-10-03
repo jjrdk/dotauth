@@ -133,7 +133,7 @@ public sealed class RptTokenIntrospectionFeature : AuthFlowFeature
                     .Introspect(DotAuth.Client.IntrospectionRequest.Create(rptToken, "access_token", patToken))
                     .ConfigureAwait(false);
 
-                Assert.IsType<Option<OauthIntrospectionResponse>.Result>(introspectResult);
+                Assert.IsType<Option<UmaIntrospectionResponse>.Result>(introspectResult);
             });
     }
 }

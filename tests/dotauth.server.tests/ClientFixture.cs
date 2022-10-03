@@ -103,7 +103,7 @@ public sealed class ClientFixture : IDisposable
     {
         var newClient = await _openidClients.DeleteClient("unknown_client", "token").ConfigureAwait(false);
 
-        Assert.IsType<Option.Error>(newClient);
+        Assert.IsType<Option<Client>.Error>(newClient);
     }
 
     [Fact]

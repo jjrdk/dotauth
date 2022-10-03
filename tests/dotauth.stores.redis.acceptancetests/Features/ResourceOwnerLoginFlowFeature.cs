@@ -163,7 +163,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
     }
 
     [Scenario(DisplayName = "Invalid user credentials")]
@@ -186,6 +186,6 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
     }
 }

@@ -256,7 +256,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                 var response = await client.GetToken(TokenRequest.FromTicketId(ticketId, result.IdToken))
                     .ConfigureAwait(false);
 
-                Assert.IsType<Option.Error>(response);
+                Assert.IsType<Option<GrantedTokenResponse>.Error>(response);
             });
     }
 
@@ -357,6 +357,6 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                     .ConfigureAwait(false);
             });
 
-        "then has error".x(() => { Assert.IsType<Option.Error>(ticketResponse); });
+        "then has error".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(ticketResponse); });
     }
 }

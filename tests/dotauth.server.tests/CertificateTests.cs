@@ -13,7 +13,7 @@ public sealed class CertificateTests
     {
         var jwk = new X509Certificate2(
                 "mycert.pfx",
-                "dotauth",
+                "simpleauth",
                 X509KeyStorageFlags.Exportable)
             .CreateJwk(
                 JsonWebKeyUseNames.Sig,

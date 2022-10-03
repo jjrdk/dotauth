@@ -139,6 +139,6 @@ public sealed class ClientCredentialsLoginFlowFeature : AuthFlowFeature
                 result = await client.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false);
             });
 
-        "then does not have token".x(() => { Assert.IsType<Option.Error>(result); });
+        "then does not have token".x(() => { Assert.IsType<Option<GrantedTokenResponse>.Error>(result); });
     }
 }

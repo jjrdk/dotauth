@@ -49,7 +49,7 @@ public sealed class GrantedTokenGeneratorHelperFixture
                 userInformationPayload: null)
             .ConfigureAwait(false);
 
-        Assert.IsType<Option.Error>(result);
+        Assert.IsType<Option<GrantedToken>.Error>(result);
     }
 
     [Fact]

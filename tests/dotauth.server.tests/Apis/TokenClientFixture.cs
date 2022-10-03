@@ -625,7 +625,7 @@ public sealed class TokenClientFixture
     [Fact(Skip = "solve certificate problem")]
     public async Task When_Using_Client_Certificate_Then_AccessToken_Is_Returned()
     {
-        var certificate = new X509Certificate2("mycert.pfx", "dotauth", X509KeyStorageFlags.Exportable);
+        var certificate = new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable);
 
         var tokenClient = new TokenClient(
             TokenCredentials.FromCertificate("certificate_client", certificate),

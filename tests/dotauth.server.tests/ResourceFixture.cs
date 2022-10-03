@@ -191,7 +191,7 @@ public sealed class ResourceFixture : IDisposable
         await _umaClient.DeleteResource(resources.Item.First(), "header").ConfigureAwait(false);
         var information = await _umaClient.GetResource(resources.Item.First(), "header").ConfigureAwait(false);
 
-        Assert.IsType<Option.Error>(information);
+        Assert.IsType<Option<ResourceSet>.Error>(information);
     }
 
     [Fact]

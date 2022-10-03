@@ -56,7 +56,7 @@ public sealed class GenerateAndSendCodeActionFixture
         var error = await _generateAndSendCodeAction.Send("", CancellationToken.None)
             .ConfigureAwait(false);
 
-        Assert.IsType<Option.Error>(error);
+        Assert.IsType<Option<string>.Error>(error);
     }
 
     [Fact]

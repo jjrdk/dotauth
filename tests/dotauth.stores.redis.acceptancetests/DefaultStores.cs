@@ -414,10 +414,10 @@ public static class DefaultStores
                 JsonWebKeys =
                     new JsonWebKeySet()
                         .AddKey(
-                            new X509Certificate2("mycert.pfx", "dotauth", X509KeyStorageFlags.Exportable)
+                            new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable)
                                 .CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify))
                         .AddKey(
-                            new X509Certificate2("mycert.pfx", "dotauth", X509KeyStorageFlags.Exportable)
+                            new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable)
                                 .CreateJwk(JsonWebKeyUseNames.Enc, KeyOperations.Encrypt, KeyOperations.Decrypt)),
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.TlsClientAuth,
                 //LogoUri = null,

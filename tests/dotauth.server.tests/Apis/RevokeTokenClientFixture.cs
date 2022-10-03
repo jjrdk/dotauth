@@ -149,7 +149,7 @@ public sealed class RevokeTokenClientFixture
             .ConfigureAwait(false);
 
         Assert.IsType<Option.Success>(revoke);
-        Assert.IsType<Option.Error>(ex);
+        Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
     }
 
     [Fact]
@@ -171,6 +171,6 @@ public sealed class RevokeTokenClientFixture
             .ConfigureAwait(false);
 
         Assert.IsType<Option.Success>(revoke);
-        Assert.IsType<Option.Error>(ex);
+        Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
     }
 }

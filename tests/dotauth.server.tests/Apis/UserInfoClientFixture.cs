@@ -46,7 +46,7 @@ public sealed class UserInfoClientFixture
         var result = await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
         var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
 
-        Assert.IsType<Option<GrantedTokenResponse>.Result>(getUserInfoResult);
+        Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
     }
 
     [Fact]
