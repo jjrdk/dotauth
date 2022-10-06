@@ -19,6 +19,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using Amazon;
 using Amazon.Runtime;
 using Baseline;
@@ -32,6 +33,7 @@ using DotAuth.UI;
 using Marten;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
@@ -53,9 +55,21 @@ internal sealed class Startup
         _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
         var salt = _configuration["SALT"] ?? string.Empty;
         var allowHttp = bool.TryParse(_configuration["SERVER:ALLOWHTTP"], out var ah) && ah;
+        Func<IServiceProvider, IDataProtector>? dataProtector =
+            !string.IsNullOrWhiteSpace(_configuration["IV"]) && !string.IsNullOrWhiteSpace(_configuration["KEY"])
+                ? _ =>
+                {
+                    var symmetricAlgorithm = Aes.Create();
+                    symmetricAlgorithm.IV = Convert.FromBase64String(_configuration["IV"] ?? "");
+                    symmetricAlgorithm.Key = Convert.FromBase64String(_configuration["KEY"] ?? "");
+                    symmetricAlgorithm.Padding = PaddingMode.ISO10126;
+                    return new SymmetricDataProtector(symmetricAlgorithm);
+                }
+                : null;
         _options = new DotAuthOptions(salt)
         {
             AllowHttp = allowHttp,
+            DataProtector = dataProtector,
             RedirectToLogin = redirect,
             ApplicationName = _configuration["SERVER:NAME"] ?? "DotAuth",
             Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),

@@ -138,14 +138,6 @@ public sealed class PermissionsController : BaseController
         [FromBody] PermissionRequest permissionRequest,
         CancellationToken cancellationToken)
     {
-        if (permissionRequest == null)
-        {
-            return BuildError(
-                ErrorCodes.InvalidRequest,
-                Strings.NoParameterInBodyRequest,
-                HttpStatusCode.BadRequest);
-        }
-
         if (string.IsNullOrWhiteSpace(permissionRequest.ResourceSetId))
         {
             return BuildError(

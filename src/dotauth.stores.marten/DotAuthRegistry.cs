@@ -48,7 +48,9 @@ public sealed class DotAuthRegistry : MartenRegistry
                     idx.TenancyScope = TenancyScope.PerTenant;
                     idx.IsConcurrent = false;
                 })
+#pragma warning disable CS8603
             .Duplicate(x => x.Password)
+#pragma warning restore CS8603
             .Index(x => x.Claims, idx => { idx.IsConcurrent = true; })
             .Index(x => x.ExternalLogins, idx => { idx.IsConcurrent = true; })
             .GinIndexJsonData();
@@ -77,7 +79,9 @@ public sealed class DotAuthRegistry : MartenRegistry
                 })
             //.Index(x => x.AllowedScopes)
             //.Index(x => x.GrantTypes)
+#pragma warning disable CS8603
             .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)")
+#pragma warning restore CS8603
             //.Index(x => x.ResponseTypes)
             //.Index(x => x.Claims)
             .GinIndexJsonData();
@@ -133,9 +137,11 @@ public sealed class DotAuthRegistry : MartenRegistry
             .Duplicate(x => x.ClientId)
             .Duplicate(x => x.CreateDateTime, dbType: NpgsqlDbType.TimestampTz)
             .Duplicate(x => x.ExpiresIn, dbType: NpgsqlDbType.Integer)
+#pragma warning disable CS8603
             .Duplicate(x => x.IdToken, dbType: NpgsqlDbType.Varchar)
             .Duplicate(x => x.ParentTokenId, dbType: NpgsqlDbType.Varchar)
             .Duplicate(x => x.RefreshToken, dbType: NpgsqlDbType.Varchar)
+#pragma warning restore CS8603
             .Duplicate(x => x.TokenType, "character(10)")
             .GinIndexJsonData();
         For<JsonWebKeyContainer>()

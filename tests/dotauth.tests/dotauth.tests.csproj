@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <AssemblyName>dotauth.tests</AssemblyName>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         <RootNamespace>DotAuth.Tests</RootNamespace>
@@ -19,7 +19,7 @@
 
     <ItemGroup>
         <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0-preview-20221003-04" />
         <PackageReference Include="Moq" Version="4.18.2" />
         <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">

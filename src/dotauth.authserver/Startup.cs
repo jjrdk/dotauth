@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Amazon;
 using Amazon.Runtime;
@@ -51,18 +52,19 @@ internal sealed class Startup
         {
             AllowHttp = true,
             RedirectToLogin = redirect,
+            DataProtector = sp => new SymmetricDataProtector(Aes.Create()),
             ApplicationName = _configuration["SERVER_NAME"] ?? "DotAuth",
-            Users = sp => new InMemoryResourceOwnerRepository(salt, DefaultConfiguration.GetUsers(salt)),
-            Tickets = sp => new InMemoryTicketStore(),
+            Users = _ => new InMemoryResourceOwnerRepository(salt, DefaultConfiguration.GetUsers(salt)),
+            Tickets = _ => new InMemoryTicketStore(),
             Clients =
                 sp => new InMemoryClientRepository(
                     sp.GetRequiredService<IHttpClientFactory>(),
                     sp.GetRequiredService<IScopeStore>(),
                     sp.GetRequiredService<ILogger<InMemoryClientRepository>>(),
                     DefaultConfiguration.GetClients()),
-            Scopes = sp => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
+            Scopes = _ => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
             ResourceSets =
-                sp => new InMemoryResourceSetRepository(
+                _ => new InMemoryResourceSetRepository(
                     new[]
                     {
                         ("administrator",
@@ -130,7 +132,7 @@ internal sealed class Startup
                     options.DefaultChallengeScheme = DotAuthScheme;
                 })
             .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-            .AddOAuth(DotAuthScheme, '_' + DotAuthScheme, options => { })
+            .AddOAuth(DotAuthScheme, '_' + DotAuthScheme, _ => { })
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
                 cfg =>

@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<Description>DotAuth Client</Description>
 		<Title>DotAuth Client</Title>
-		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;netstandard2.1</TargetFrameworks>
 		<AssemblyName>dotauth.client</AssemblyName>
 		<PackageId>dotauth.client</PackageId>
 		<RootNamespace>DotAuth.Client</RootNamespace>

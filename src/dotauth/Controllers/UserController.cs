@@ -269,7 +269,7 @@ public sealed class UserController : BaseController
     {
         if (!string.IsNullOrWhiteSpace(error))
         {
-            _logger.LogError(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+            _logger.LogError(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
             return SetRedirection(
                 string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error),
                 "500",
@@ -343,7 +343,7 @@ public sealed class UserController : BaseController
             .ConfigureAwait(false);
         if (externalClaims?.Identity == null
             || !externalClaims.Identity.IsAuthenticated
-            || !(externalClaims.Identity is ClaimsIdentity))
+            || externalClaims.Identity is not ClaimsIdentity)
         {
             return RedirectToAction("Profile", "User");
         }

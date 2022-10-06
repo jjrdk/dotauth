@@ -9,12 +9,12 @@ internal static class ArrayExtensions
     {
         return array.Concat(items).ToArray();
     }
-
-    public static T[] Add<T>(this T[] array, IEnumerable<T> items)
+    
+    public static T[] Add<T>(this IEnumerable<T> array, IEnumerable<T> items)
     {
         return array.Concat(items).ToArray();
     }
-
+    
     public static T[] Remove<T>(this T[] array, params T[] items)
     {
         return array.Except(items).ToArray();
