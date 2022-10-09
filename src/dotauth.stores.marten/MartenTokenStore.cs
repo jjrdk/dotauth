@@ -43,9 +43,7 @@ public sealed class MartenTokenStore : ITokenStore
         var options = await session.Query<GrantedToken>()
             .Where(
                 x => x.ClientId == clientId
-                     && x.Scope == scopes
-                     && x.IdTokenPayLoad != null
-                     && x.UserInfoPayLoad != null)
+                     && x.Scope == scopes)
             .ToListAsync(token: cancellationToken)
             .ConfigureAwait(false);
         return options!.FirstOrDefault(x =>
