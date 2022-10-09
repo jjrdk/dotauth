@@ -23,11 +23,6 @@ public sealed class LogEventPublisher : IEventPublisher
     public Task Publish<T>(T evt)
         where T : Event
     {
-        if (evt == null)
-        {
-            return Task.CompletedTask;
-        }
-
         var json = JsonConvert.SerializeObject(evt);
         if (typeof(DotAuthError).IsAssignableFrom(typeof(T)))
         {

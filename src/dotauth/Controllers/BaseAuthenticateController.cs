@@ -305,7 +305,7 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
         if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
         {
-            _logger.LogError(Strings.TwoFactorAuthenticationCannotBePerformed);
+            _logger.LogError("{error}", Strings.TwoFactorAuthenticationCannotBePerformed);
             return SetRedirection(
                 Strings.TwoFactorAuthenticationCannotBePerformed,
                 Strings.InternalServerError,
@@ -370,7 +370,7 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
         if (authenticatedUser?.Identity?.IsAuthenticated != true)
         {
-            _logger.LogError(Strings.TwoFactorAuthenticationCannotBePerformed);
+            _logger.LogError("{error}", Strings.TwoFactorAuthenticationCannotBePerformed);
             return BadRequest(
                 new ErrorDetails
                 {
@@ -411,7 +411,10 @@ public abstract class BaseAuthenticateController : BaseController
                 .ConfigureAwait(false))
         {
             _logger.LogError(
-                $"Two factor authentication failed for subject: {subject}, auth request: {codeViewModel.AuthRequestCode}, code: {codeViewModel.Code}");
+                "Two factor authentication failed for subject: {subject}, auth request: {authRequestCode}, code: {code}",
+                subject,
+                codeViewModel.AuthRequestCode,
+                codeViewModel.Code);
             await _eventPublisher.Publish(
                 new TwoFactorAuthenticationFailed(
                     Id.Create(),
@@ -578,7 +581,7 @@ public abstract class BaseAuthenticateController : BaseController
         var request = Request.Cookies[cookieName];
         if (request == null)
         {
-            _logger.LogError(Strings.TheRequestCannotBeExtractedFromTheCookie);
+            _logger.LogError("{error}", Strings.TheRequestCannotBeExtractedFromTheCookie);
             return SetRedirection(
                 Strings.TheRequestCannotBeExtractedFromTheCookie,
                 Strings.InternalServerError,
@@ -608,9 +611,9 @@ public abstract class BaseAuthenticateController : BaseController
         var authenticatedUser = await _authenticationService
             .GetAuthenticatedUser(this)
             .ConfigureAwait(false);
-        if (authenticatedUser?.Identity?.IsAuthenticated != true || !(authenticatedUser.Identity is ClaimsIdentity))
+        if (authenticatedUser?.Identity?.IsAuthenticated != true || authenticatedUser.Identity is not ClaimsIdentity)
         {
-            _logger.LogError(Strings.TheUserNeedsToBeAuthenticated);
+            _logger.LogError("{msg}", Strings.TheUserNeedsToBeAuthenticated);
             return SetRedirection(Strings.TheUserNeedsToBeAuthenticated, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
         }
 
@@ -788,7 +791,7 @@ public abstract class BaseAuthenticateController : BaseController
         ClaimsPrincipal authenticatedUser,
         CancellationToken cancellationToken)
     {
-        var externalClaims = authenticatedUser.Claims.ToArray();
+        var externalClaims = authenticatedUser.Claims.Where(c => !string.IsNullOrWhiteSpace(c.Value)).ToArray();
         var userClaims = _runtimeSettings.ClaimsIncludedInUserCreation
             .Except(externalClaims.Select(x => x.Type).ToOpenIdClaimType())
             .Select(x => new Claim(x, string.Empty))
@@ -799,6 +802,7 @@ public abstract class BaseAuthenticateController : BaseController
 
         var record = new ResourceOwner
         {
+            Subject = Id.Create(),
             ExternalLogins =
                 new[]
                 {
@@ -818,14 +822,13 @@ public abstract class BaseAuthenticateController : BaseController
         };
 
         var (success, subject) = await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);
-        if (!success)
+        if (success)
         {
-            return (null, (int)HttpStatusCode.Conflict, Strings.FailedToAddUser);
+            record.Password = string.Empty;
+            await _eventPublisher.Publish(new ExternalUserCreated(Id.Create(), record, DateTimeOffset.UtcNow))
+                .ConfigureAwait(false);
         }
 
-        record.Password = string.Empty;
-        await _eventPublisher.Publish(new ExternalUserCreated(Id.Create(), record, DateTimeOffset.UtcNow))
-            .ConfigureAwait(false);
         return (subject, null, null);
     }
 }

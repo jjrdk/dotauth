@@ -1150,7 +1150,7 @@ namespace DotAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to two factor authentication cannot be performed.
+        ///   Looks up a localized string similar to Two factor authentication cannot be performed.
         /// </summary>
         internal static string TwoFactorAuthenticationCannotBePerformed {
             get {
@@ -1159,7 +1159,7 @@ namespace DotAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to two factor authentication is not enabled.
+        ///   Looks up a localized string similar to Two factor authentication is not enabled.
         /// </summary>
         internal static string TwoFactorAuthenticationIsNotEnabled {
             get {

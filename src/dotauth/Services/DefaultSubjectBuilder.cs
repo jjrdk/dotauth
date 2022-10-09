@@ -1,9 +1,14 @@
 ﻿namespace DotAuth.Services;
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 
 /// <summary>
 /// Defines the default subject builder type.
@@ -18,6 +23,14 @@ public sealed class DefaultSubjectBuilder : ISubjectBuilder
     /// <returns>A subject as a <see cref="string"/>.</returns>
     public Task<string> BuildSubject(IEnumerable<Claim> claims, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Id.Create());
+        var subject = claims.GetSubject() ?? claims.GetEmail();
+        if (subject == null)
+        {
+            return Task.FromResult(Id.Create());
+        }
+
+        var sha = SHA256.HashData(Encoding.UTF8.GetBytes(subject));
+        var id = BitConverter.ToString(sha).Replace("-", "");
+        return Task.FromResult(id);
     }
 }

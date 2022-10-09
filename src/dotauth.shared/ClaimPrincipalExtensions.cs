@@ -86,9 +86,20 @@ public static class ClaimPrincipalExtensions
     /// <returns>User's subject</returns>
     public static string? GetSubject(this ClaimsPrincipal? principal)
     {
-        var claim = principal?.FindFirst(OpenIdClaimTypes.Subject)
-                    ?? principal?.FindFirst(ClaimTypes.NameIdentifier);
-        return claim?.Value;
+        return principal?.Identities.SelectMany(x => x.Claims).GetSubject();
+    }
+
+    /// <summary>
+    /// Returns the subject from a set of claims
+    /// Otherwise returns null.
+    /// </summary>
+    /// <param name="claims">The claims to check</param>
+    /// <returns>User's subject</returns>
+    public static string? GetSubject(this IEnumerable<Claim> claims)
+    {
+        // ReSharper disable once PossibleMultipleEnumeration
+        return (claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.Subject)
+                ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier))?.Value;
     }
 
     /// <summary>
@@ -129,6 +140,18 @@ public static class ClaimPrincipalExtensions
     {
         return GetClaimValue(principal, OpenIdClaimTypes.Email)
                ?? GetClaimValue(principal, ClaimTypes.Email);
+    }
+    
+    /// <summary>
+    /// Returns the email claim value from a set of claims.
+    /// Otherwise returns null.
+    /// </summary>
+    /// <param name="claims">The claims to check</param>
+    /// <returns>User's email</returns>
+    public static string? GetEmail(this IEnumerable<Claim> claims)
+    {
+        // ReSharper disable once PossibleMultipleEnumeration
+        return claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.Email)?.Value;
     }
 
     private static string? GetClaimValue(ClaimsPrincipal? principal, string claimName)

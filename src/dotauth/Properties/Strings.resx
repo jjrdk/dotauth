@@ -457,10 +457,10 @@
     <value>The user needs to give his consent</value>
   </data>
   <data name="TwoFactorAuthenticationCannotBePerformed" xml:space="preserve">
-    <value>two factor authentication cannot be performed</value>
+    <value>Two factor authentication cannot be performed</value>
   </data>
   <data name="TwoFactorAuthenticationIsNotEnabled" xml:space="preserve">
-    <value>two factor authentication is not enabled</value>
+    <value>Two factor authentication is not enabled</value>
   </data>
   <data name="TheConfirmationCodeCannotBeSaved" xml:space="preserve">
     <value>The confirmation code cannot be saved</value>

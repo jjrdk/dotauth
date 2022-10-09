@@ -49,7 +49,7 @@ internal sealed class AddUserOperation
         _eventPublisher = eventPublisher;
     }
 
-    public async Task<(bool success, string? subject)> Execute(
+    public async Task<(bool success, string subject)> Execute(
         ResourceOwner resourceOwner, CancellationToken cancellationToken)
     {
         if (!resourceOwner.IsLocalAccount || string.IsNullOrWhiteSpace(resourceOwner.Subject))
@@ -60,10 +60,11 @@ internal sealed class AddUserOperation
         }
 
         // 1. Check if the resource owner already exists.
-        if (await _resourceOwnerRepository.Get(resourceOwner.Subject, cancellationToken).ConfigureAwait(false) !=
-            null)
+        var ro = await _resourceOwnerRepository.Get(resourceOwner.Subject, cancellationToken).ConfigureAwait(false);
+        if (ro != null)
         {
-            return (false, null);
+            // TODO: Update with new external claim values.
+            return (false, resourceOwner.Subject);
         }
 
         var additionalClaims = _settings.ClaimsIncludedInUserCreation
@@ -75,47 +76,45 @@ internal sealed class AddUserOperation
         _settings.OnResourceOwnerCreated(resourceOwner);
 
         var now = DateTimeOffset.UtcNow;
-        if (_accountFilters != null)
+
+        var isFilterValid = true;
+        foreach (var resourceOwnerFilter in _accountFilters)
         {
-            var isFilterValid = true;
-            foreach (var resourceOwnerFilter in _accountFilters)
+            var userFilterResult = await resourceOwnerFilter.Check(resourceOwner.Claims, cancellationToken)
+                .ConfigureAwait(false);
+            if (userFilterResult.IsValid)
             {
-                var userFilterResult = await resourceOwnerFilter.Check(resourceOwner.Claims, cancellationToken)
+                continue;
+            }
+
+            isFilterValid = false;
+            foreach (var ruleResult in userFilterResult.AccountFilterRules.Where(x => !x.IsValid))
+            {
+                await _eventPublisher.Publish(
+                        new FilterValidationFailure(
+                            Id.Create(),
+                            string.Format(Strings.TheFilterRuleFailed, ruleResult.RuleName),
+                            now))
                     .ConfigureAwait(false);
-                if (userFilterResult.IsValid)
+                foreach (var errorMessage in ruleResult.ErrorMessages)
                 {
-                    continue;
-                }
-
-                isFilterValid = false;
-                foreach (var ruleResult in userFilterResult.AccountFilterRules.Where(x => !x.IsValid))
-                {
-                    await _eventPublisher.Publish(
-                            new FilterValidationFailure(
-                                Id.Create(),
-                                string.Format(Strings.TheFilterRuleFailed, ruleResult.RuleName),
-                                now))
+                    await _eventPublisher
+                        .Publish(new FilterValidationFailure(Id.Create(), errorMessage, now))
                         .ConfigureAwait(false);
-                    foreach (var errorMessage in ruleResult.ErrorMessages)
-                    {
-                        await _eventPublisher
-                            .Publish(new FilterValidationFailure(Id.Create(), errorMessage, now))
-                            .ConfigureAwait(false);
-                    }
                 }
             }
+        }
 
-            if (!isFilterValid)
-            {
-                return (false, null);
-            }
+        if (!isFilterValid)
+        {
+            return (false, resourceOwner.Subject);
         }
 
         resourceOwner.UpdateDateTime = now;
         resourceOwner.CreateDateTime = now;
         if (!await _resourceOwnerRepository.Insert(resourceOwner, cancellationToken).ConfigureAwait(false))
         {
-            return (false, null);
+            return (false, resourceOwner.Subject);
         }
 
         await _eventPublisher.Publish(
@@ -123,10 +122,10 @@ internal sealed class AddUserOperation
                     Id.Create(),
                     resourceOwner.Subject,
                     resourceOwner.Claims.Select(claim => new ClaimData
-                        {
-                            Type = claim.Type,
-                            Value = claim.Value
-                        })
+                    {
+                        Type = claim.Type,
+                        Value = claim.Value
+                    })
                         .ToArray(),
                     now))
             .ConfigureAwait(false);
