@@ -33,12 +33,14 @@ using Marten;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 public sealed class Startup
 {
@@ -232,6 +234,16 @@ public sealed class Startup
         }
 
         app.UseResponseCompression()
+            .Use(
+                async (ctx, next) =>
+                {
+                var logger = ctx.RequestServices.GetRequiredService<ILogger<HttpRequest>>();
+                var headers = JsonConvert.SerializeObject(
+                    ctx.Request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
+                    Formatting.None);
+                logger.LogInformation("Request headers: {headers}", headers);
+        await next(ctx).ConfigureAwait(false);
+    })
             .UseDotAuthMvc(x => { x.KnownProxies.AddRange(knownProxies); }, applicationTypes: typeof(IDefaultUi))
             .UseEndpoints(endpoint => { endpoint.MapHealthChecks("/health"); });
     }

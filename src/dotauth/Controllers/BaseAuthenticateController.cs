@@ -676,8 +676,8 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
 
         // 7. Store claims into new cookie
-        if (actionResult != null)
-        {
+        //if (actionResult != null)
+        //{
             await SetLocalCookie(claims.ToOpenidClaims(), authorizationRequest.session_id!).ConfigureAwait(false);
             await _authenticationService.SignOutAsync(
                     HttpContext,
@@ -686,9 +686,9 @@ public abstract class BaseAuthenticateController : BaseController
                 .ConfigureAwait(false);
             await LogAuthenticateUser(subject, actionResult.Amr!).ConfigureAwait(false);
             return actionResult.CreateRedirectionFromActionResult(authorizationRequest, _logger)!;
-        }
+        //}
 
-        return RedirectToAction("OpenId", "Authenticate", new { code });
+        //return RedirectToAction("OpenId", "Authenticate", new { code });
     }
 
     /// <summary>

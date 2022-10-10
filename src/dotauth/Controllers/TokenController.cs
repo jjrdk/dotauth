@@ -56,7 +56,7 @@ public sealed class TokenController : ControllerBase
         RuntimeSettings settings,
         IAuthorizationCodeStore authorizationCodeStore,
         IClientStore clientStore,
-        IScopeRepository scopeRepository,
+        IScopeStore scopeRepository,
         IResourceOwnerRepository resourceOwnerRepository,
         IEnumerable<IAuthenticateResourceOwnerService> authenticateResourceOwnerServices,
         ITokenStore tokenStore,

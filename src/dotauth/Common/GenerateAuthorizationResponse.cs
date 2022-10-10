@@ -67,7 +67,7 @@ internal sealed class GenerateAuthorizationResponse
         AuthorizationParameter authorizationParameter,
         ClaimsPrincipal claimsPrincipal,
         Client client,
-        string? issuerName,
+        string issuerName,
         CancellationToken cancellationToken)
     {
         var allowedTokenScopes = string.Empty;

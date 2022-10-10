@@ -66,7 +66,7 @@ internal sealed class AuthenticateResourceOwnerOpenIdAction
         AuthorizationParameter authorizationParameter,
         ClaimsPrincipal? resourceOwnerPrincipal,
         string? code,
-        string? issuerName,
+        string issuerName,
         CancellationToken cancellationToken)
     {
         var resourceOwnerIsAuthenticated = resourceOwnerPrincipal.IsAuthenticated();

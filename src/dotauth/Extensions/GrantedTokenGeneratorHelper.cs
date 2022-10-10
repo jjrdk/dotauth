@@ -78,7 +78,7 @@ internal static class GrantedTokenGeneratorHelper
         this Client client,
         IJwksStore jwksStore,
         string[] scopes,
-        string? issuerName,
+        string issuerName,
         JwtPayload? userInformationPayload = null,
         JwtPayload? idTokenPayload = null,
         CancellationToken cancellationToken = default,
@@ -96,7 +96,7 @@ internal static class GrantedTokenGeneratorHelper
                 .GroupBy(x => x.Type)
                 .Select(x => new Claim(x.Key, string.Join(" ", x.Select(y => y.Value))));
 
-        if (idTokenPayload is {Iss: null} && issuerName != null)
+        if (idTokenPayload is {Iss: null})
         {
             idTokenPayload.AddClaim(new Claim(StandardClaimNames.Issuer, issuerName));
         }

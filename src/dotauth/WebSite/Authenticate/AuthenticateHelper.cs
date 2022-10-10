@@ -56,7 +56,7 @@ internal sealed class AuthenticateHelper
         string? code,
         string subject,
         Claim[] claims,
-        string? issuerName,
+        string issuerName,
         CancellationToken cancellationToken)
     {
         var client = authorizationParameter.ClientId == null
