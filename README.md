@@ -18,7 +18,7 @@ All EntityFramework dependencies have been stripped away. It is up to you to pro
 
 ## Runtime Environment
 
-The project runs under .NET 5.
+The project runs under .NET 6 & .NET 7.
 
 This project has been tested to run in Docker, AWS Lambda and as a simple process, in both Windows and Linux.
 
@@ -54,12 +54,6 @@ Note that some environment variables use double underscore ```__```. This is to 
 |AMAZON__ACCESSKEY|string|When set then the server will configure sms authentication.|
 |AMAZON__SECRETKEY|string|When set then the server will configure sms authentication.|
 |KNOWN_PROXIES|comma separated string|Sets the list of known proxy IP addresses.|
-|RSA_PEM|string|(optional) Sets the path to the CA RSA certificate in PEM format. If the value is missing the application cannot start.|
-|RSA_KEY|string|(optional) Set the path to the CA RSA key file.|
-|ECDSA_PEM|string|(optional) Sets the path to the CA ECDSA certificate in PEM format. If the value is missing the application cannot start.|
-|ECDSA_KEY|string|(optional) Set the path to the CA RSA key file.|
-|WEB_PEM|string|(optional) Sets the path to the PEM certificate to use to secure the web server.|
-|WEB_KEY|string|(optional) Set the path to the web server's PEM key.|
 
 ## Reporting Issues and Bugs
 
