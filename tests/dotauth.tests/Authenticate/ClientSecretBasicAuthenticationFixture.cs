@@ -30,14 +30,12 @@ public sealed class ClientSecretBasicAuthenticationFixture
         {
             ClientSecretFromAuthorizationHeader = "notCorrectClientSecret"
         };
-        var firstClient = new Client {Secrets = null};
-        var secondClient = new Client
+        var client = new Client
         {
             Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.X509Thumbprint}}
         };
 
-        Assert.Null(authenticateInstruction.AuthenticateClient(firstClient));
-        Assert.Null(authenticateInstruction.AuthenticateClient(secondClient));
+        Assert.Null(authenticateInstruction.AuthenticateClient(client));
     }
 
     [Fact]

@@ -294,8 +294,8 @@ internal sealed class TokenActions
             await _eventPublisher.Publish(
                     new TokenGranted(
                         Id.Create(),
-                        grantedToken?.UserInfoPayLoad?.Sub,
-                        grantedToken!.ClientId,
+                        grantedToken.UserInfoPayLoad?.Sub,
+                        grantedToken.ClientId,
                         grantedToken.Scope,
                         GrantTypes.ClientCredentials,
                         DateTimeOffset.UtcNow))

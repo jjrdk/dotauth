@@ -22,8 +22,8 @@ internal static class ClientSecretBasicAuthentication
 {
     public static Client? AuthenticateClient(this AuthenticateInstruction instruction, Client client)
     {
-        var clientSecrets = client.Secrets?.Where(s => s.Type == ClientSecretTypes.SharedSecret).ToArray();
-        if (clientSecrets == null || clientSecrets.Length == 0)
+        var clientSecrets = client.Secrets.Where(s => s.Type == ClientSecretTypes.SharedSecret).ToArray();
+        if (clientSecrets.Length == 0)
         {
             return null;
         }

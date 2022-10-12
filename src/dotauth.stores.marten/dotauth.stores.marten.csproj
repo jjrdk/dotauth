@@ -15,8 +15,8 @@
     <Import Project="../../shared.projinfo" />
     <ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
         <PackageReference Include="marten" Version="5.10.1" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-rc.1.22426.10" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0-rc.1.22426.10" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-rc.2.22472.3" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0-rc.2.22472.3" />
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
         <PackageReference Include="marten" Version="5.10.1" />
