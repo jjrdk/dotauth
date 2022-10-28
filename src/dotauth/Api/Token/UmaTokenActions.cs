@@ -108,7 +108,7 @@ internal sealed class UmaTokenActions
         var ticket = await _ticketStore.Get(parameter.Ticket, cancellationToken).ConfigureAwait(false);
         if (ticket == null)
         {
-            _logger.LogError($"Ticket {parameter.Ticket} not found");
+            _logger.LogError("Ticket {ticket} not found", parameter.Ticket);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,

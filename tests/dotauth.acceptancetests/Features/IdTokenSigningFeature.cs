@@ -39,7 +39,7 @@ public sealed class IdTokenSigningFeature : AuthFlowFeature
             async () =>
             {
                 var response = await client
-                    .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"api"}))
+                    .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "api" }))
                     .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
                 token = response.Item;
 

@@ -6,6 +6,8 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
+using Microsoft.AspNetCore.WebUtilities;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;
@@ -58,7 +60,7 @@ public sealed class AuthorizationCodeFlowFeature : AuthFlowFeature
 
         "then has authorization uri".x(() => { Assert.NotNull(result); });
     }
-
+    
     [Scenario(DisplayName = "Scope does not match client registration")]
     public void InvalidScope()
     {

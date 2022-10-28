@@ -261,7 +261,7 @@ public sealed class Client
     /// Client require PKCE.
     /// </summary>
     [DataMember(Name = "require_pkce")]
-    public bool RequirePkce { get; set; } = true;
+    public bool RequirePkce { get; set; }
 
     /// <summary>
     /// Get or sets the post logout redirect uris.

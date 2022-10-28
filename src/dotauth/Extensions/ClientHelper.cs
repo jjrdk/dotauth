@@ -21,6 +21,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Tokens;
@@ -72,13 +73,15 @@ internal static class ClientHelper
         var handler = new JwtSecurityTokenHandler();
         var signingCredentials =
             await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
+        var claimsIdentity = new ClaimsIdentity(jwsPayload.Claims.Where(c => OpenIdClaimTypes.All.Contains(c.Type)));
+        var now = DateTime.UtcNow;
         var jwt = handler.CreateEncodedJwt(
             jwsPayload.Iss,
-            client.ClientName,
-            new ClaimsIdentity(jwsPayload.Claims),
-            DateTime.UtcNow,
-            DateTime.UtcNow.Add(client.TokenLifetime),
-            DateTime.UtcNow,
+            client.ClientId,
+            claimsIdentity,
+            now,
+            now.Add(client.TokenLifetime),
+            now,
             signingCredentials.First());
 
         return jwt;

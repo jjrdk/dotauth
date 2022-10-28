@@ -101,21 +101,13 @@ public sealed class DotAuthRegistry : MartenRegistry
             .GinIndexJsonData();
         For<Ticket>()
             .Identity(x => x.Id)
-            //.UniqueIndex(UniqueIndexType.Computed, s => s.Id)
-            .Index(s => s.Id,
-                idx =>
-                {
-                    idx.IsUnique = true;
-                    idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
-                })
-            .Duplicate(x => x.Created, dbType: NpgsqlDbType.TimestampTz)
-            .Duplicate(x => x.Expires, dbType: NpgsqlDbType.TimestampTz)
+            .Duplicate(x => x.ResourceOwner)
+            .Duplicate(x => x.Created)
+            .Duplicate(x => x.Expires)
             .Duplicate(x => x.IsAuthorizedByRo, dbType: NpgsqlDbType.Boolean)
             .GinIndexJsonData();
         For<AuthorizationCode>()
             .Identity(x => x.Code)
-            //.UniqueIndex(UniqueIndexType.Computed, s => s.Code)
             .Index(s => s.Code,
                 idx =>
                 {
@@ -127,16 +119,14 @@ public sealed class DotAuthRegistry : MartenRegistry
             .GinIndexJsonData();
         For<ConfirmationCode>()
             .Identity(x => x.Value)
-            //.UniqueIndex(UniqueIndexType.Computed, s => s.Value)
             .GinIndexJsonData();
         For<GrantedToken>()
             .Identity(x => x.Id)
-            //.UniqueIndex(UniqueIndexType.Computed, s => s.Id)
             .Duplicate(x => x.Scope)
             .Duplicate(x => x.AccessToken)
             .Duplicate(x => x.ClientId)
-            .Duplicate(x => x.CreateDateTime, dbType: NpgsqlDbType.TimestampTz)
-            .Duplicate(x => x.ExpiresIn, dbType: NpgsqlDbType.Integer)
+            .Duplicate(x => x.CreateDateTime)
+            .Duplicate(x => x.ExpiresIn)
 #pragma warning disable CS8603
             .Duplicate(x => x.IdToken, dbType: NpgsqlDbType.Varchar)
             .Duplicate(x => x.ParentTokenId, dbType: NpgsqlDbType.Varchar)

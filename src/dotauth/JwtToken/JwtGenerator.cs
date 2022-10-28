@@ -74,9 +74,7 @@ internal sealed class JwtGenerator
             throw new ArgumentNullException(nameof(jwsPayload));
         }
 
-        var timeKeyValuePair = GetExpirationAndIssuedTime(duration);
-        var expirationInSeconds = timeKeyValuePair.Key;
-        var issuedAtTime = timeKeyValuePair.Value;
+        var (expirationInSeconds, issuedAtTime) = GetExpirationAndIssuedTime(duration);
         jwsPayload.Remove(StandardClaimNames.Iat);
         jwsPayload.Remove(StandardClaimNames.ExpirationTime);
         jwsPayload.AddClaim(
