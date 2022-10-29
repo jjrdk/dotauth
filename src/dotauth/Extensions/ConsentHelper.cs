@@ -35,27 +35,29 @@ internal static class ConsentHelper
             ?.ToArray()
             ?? Array.Empty<Consent>();
         Consent? confirmedConsent = null;
-        if (consents.Length > 0)
+        if (consents.Length <= 0)
         {
-            var claimsParameter = authorizationParameter.Claims;
-            if (claimsParameter.IsAnyUserInfoClaimParameter() || claimsParameter.IsAnyIdentityTokenClaimParameter())
-            {
-                var expectedClaims = claimsParameter.GetClaimNames();
-                confirmedConsent = consents.FirstOrDefault(
-                    c => c.ClientId == authorizationParameter.ClientId
-                         && c.Claims.Length > 0
-                         && expectedClaims.Length == c.Claims.Length
-                         && expectedClaims.All(cl => c.Claims.Contains(cl)));
-            }
-            else
-            {
-                var scopeNames = authorizationParameter.Scope.ParseScopes();
-                confirmedConsent = consents.FirstOrDefault(
-                    c => c.ClientId == authorizationParameter.ClientId
-                         && c.GrantedScopes.Length > 0
-                         && scopeNames.Length == c.GrantedScopes.Length
-                         && c.GrantedScopes.All(g => scopeNames.Contains(g)));
-            }
+            return confirmedConsent;
+        }
+
+        var claimsParameter = authorizationParameter.Claims;
+        if (claimsParameter.IsAnyUserInfoClaimParameter() || claimsParameter.IsAnyIdentityTokenClaimParameter())
+        {
+            var expectedClaims = claimsParameter.GetClaimNames();
+            confirmedConsent = consents.FirstOrDefault(
+                c => c.ClientId == authorizationParameter.ClientId
+                     && c.Claims.Length > 0
+                     && expectedClaims.Length == c.Claims.Length
+                     && expectedClaims.All(cl => c.Claims.Contains(cl)));
+        }
+        else
+        {
+            var scopeNames = authorizationParameter.Scope.ParseScopes();
+            confirmedConsent = consents.FirstOrDefault(
+                c => c.ClientId == authorizationParameter.ClientId
+                     && c.GrantedScopes.Length > 0
+                     && scopeNames.Length == c.GrantedScopes.Length
+                     && c.GrantedScopes.All(g => scopeNames.Contains(g)));
         }
 
         return confirmedConsent;

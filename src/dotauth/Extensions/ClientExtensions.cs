@@ -14,9 +14,13 @@
 
 namespace DotAuth.Extensions;
 
+using System.IdentityModel.Tokens.Jwt;
+using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Tokens;
@@ -35,7 +39,7 @@ internal static class ClientExtensions
         }
         var parameters = new TokenValidationParameters
         {
-            IssuerSigningKeys = signingKeys.Select(x => x.Key).ToList(),
+            IssuerSigningKeys = signingKeys.Select(x => x.Key).ToArray(),
             TokenDecryptionKeys = encryptionKeys
         };
         if (audience != null)
@@ -57,4 +61,61 @@ internal static class ClientExtensions
 
         return parameters;
     }
-}
+
+    public static async Task<string?> GenerateIdToken(
+        this IClientStore clientStore,
+        string clientId,
+        JwtPayload jwsPayload,
+        IJwksStore jwksStore,
+        CancellationToken cancellationToken)
+    {
+        var client = await clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false);
+        return client == null
+            ? null
+            : await GenerateIdToken(client, jwsPayload, jwksStore, cancellationToken).ConfigureAwait(false);
+    }
+
+    public static async Task<SigningCredentials[]> GetSigningCredentials(
+        this Client client,
+        IJwksStore jwksStore,
+        CancellationToken cancellationToken = default)
+    {
+        var signingKeys = client.JsonWebKeys.Keys.Where(key => key.Use == JsonWebKeyUseNames.Sig)
+            .Select(key => new SigningCredentials(key, key.Alg))
+            .ToArray();
+        if (signingKeys.Length != 0)
+        {
+            return signingKeys;
+        }
+
+        var keys = await (client.IdTokenSignedResponseAlg == null
+                ? jwksStore.GetDefaultSigningKey(cancellationToken)
+                : jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken))
+            .ConfigureAwait(false);
+
+        return new[] { keys };
+    }
+
+    public static async Task<string> GenerateIdToken(
+        this Client client,
+        JwtPayload jwsPayload,
+        IJwksStore jwksStore,
+        CancellationToken cancellationToken)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var signingCredentials =
+            await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
+        var claimsIdentity = new ClaimsIdentity(jwsPayload.Claims.Where(c => OpenIdClaimTypes.All.Contains(c.Type)));
+        var now = DateTime.UtcNow;
+        var jwt = handler.CreateEncodedJwt(
+            jwsPayload.Iss,
+            client.ClientId,
+            claimsIdentity,
+            now,
+            now.Add(client.TokenLifetime),
+            now,
+            signingCredentials[0]);
+
+        return jwt;
+    }
+ }

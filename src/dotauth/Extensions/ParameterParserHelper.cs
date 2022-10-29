@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DotAuth.Parameters;
 using DotAuth.Shared;
+using Microsoft.AspNetCore.WebUtilities;
 
 internal static class ParameterParserHelper
 {
