@@ -160,7 +160,11 @@ public sealed class TokenClient : ClientBase, ITokenClient
             },
             >= 300 and < 400 => response.Headers.Location!,
             _ => Serializer.Default.Deserialize<ErrorDetails>(
+#if NETSTANDARD2_1
                 await response.Content.ReadAsStringAsync().ConfigureAwait(false))!
+#else
+                await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false))!
+#endif
         };
     }
 
@@ -185,19 +189,17 @@ public sealed class TokenClient : ClientBase, ITokenClient
         return (int)response.StatusCode switch
         {
             < 300 => Serializer.Default.Deserialize<DeviceAuthorizationResponse>(
-#if NET5_0
-                    await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
+#if NETSTANDARD2_1
+                await response.Content.ReadAsStringAsync().ConfigureAwait(false))!,
 #else
-                await response.Content.ReadAsStringAsync().ConfigureAwait(false)
+                await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false))!,
 #endif
-            )!,
             _ => Serializer.Default.Deserialize<ErrorDetails>(
-#if NET5_0
-                    await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)
+#if NETSTANDARD2_1
+                await response.Content.ReadAsStringAsync().ConfigureAwait(false))!,
 #else
-                await response.Content.ReadAsStringAsync().ConfigureAwait(false)
+                await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false))!,
 #endif
-            )!,
         };
     }
 
@@ -209,10 +211,10 @@ public sealed class TokenClient : ClientBase, ITokenClient
         request.Headers.Accept.Clear();
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
         var response = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
-#if NET5_0
-            var keyJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-#else
+#if NETSTANDARD2_1
         var keyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+#else
+        var keyJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 #endif
         return JsonWebKeySet.Create(keyJson);
     }
@@ -241,10 +243,10 @@ public sealed class TokenClient : ClientBase, ITokenClient
         req.Headers.Authorization = _authorizationValue;
 
         var result = await _client().SendAsync(req, cancellationToken).ConfigureAwait(false);
-#if NET5_0
-            var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-#else
+#if NETSTANDARD2_1
         var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+#else
+        var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 #endif
         if (!result.IsSuccessStatusCode)
         {
@@ -282,10 +284,10 @@ public sealed class TokenClient : ClientBase, ITokenClient
         request.Headers.Authorization = _authorizationValue;
 
         var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
-#if NET6_0
-            var json = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-#else
+#if NETSTANDARD2_1
         var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+#else
+        var json = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 #endif
         if (!result.IsSuccessStatusCode)
         {

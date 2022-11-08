@@ -16,16 +16,17 @@ public sealed class VersionTask : FrostingTask<BuildContext>
         {
             context.BuildVersion =
                 versionInfo.CommitsSinceVersionSource is > 0
-                    ? $"{versionInfo.MajorMinorPatch}-beta{versionInfo.CommitsSinceVersionSource.Value}"
+                    ? $"{versionInfo.MajorMinorPatch}-beta.{versionInfo.CommitsSinceVersionSource.Value}"
                     : versionInfo.MajorMinorPatch;
         }
         else
         {
-            context.BuildVersion = versionInfo.MajorMinorPatch
-                                   + "-"
-                                   + versionInfo.BranchName.Replace("features/", "").Replace("_", "")
-                                   + "."
-                                   + versionInfo.CommitsSinceVersionSource;
+            context.BuildVersion = string.Concat(
+                versionInfo.MajorMinorPatch,
+                "-",
+                versionInfo.BranchName.Replace("features/", "").Replace("_", ""),
+                ".",
+                versionInfo.CommitsSinceVersionSource);
         }
 
         if (versionInfo.BranchName == "master")

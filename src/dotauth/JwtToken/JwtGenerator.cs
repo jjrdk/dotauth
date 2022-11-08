@@ -267,14 +267,19 @@ internal sealed class JwtGenerator
         var subject = claimsPrincipal.GetSubject();
         jwsPayload.Add(OpenIdClaimTypes.Subject, subject);
 
-        if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
+        if (string.IsNullOrWhiteSpace(authorizationParameter.Scope))
         {
-            var scopes = authorizationParameter.Scope.ParseScopes();
-            var claims = await GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes).ConfigureAwait(false);
-            foreach (var claim in claims.GroupBy(c => c.Type).Where(x => x.Key != OpenIdClaimTypes.Subject))
-            {
-                jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
-            }
+            return jwsPayload;
+        }
+
+        var scopes = authorizationParameter.Scope.ParseScopes();
+        var claims = await GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes)
+            .ConfigureAwait(false);
+        foreach (var claim in claims
+                     .GroupBy(c => c.Type)
+                     .Where(x => x.Key != OpenIdClaimTypes.Subject))
+        {
+            jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
         }
 
         return jwsPayload;
@@ -286,8 +291,6 @@ internal sealed class JwtGenerator
         ClaimsPrincipal claimsPrincipal,
         AuthorizationParameter authorizationParameter)
     {
-        var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
-
         // 1. Fill-In the subject - set the subject as an essential claim
         if (claimParameters.All(c => c.Name != OpenIdClaimTypes.Subject))
         {
@@ -311,8 +314,8 @@ internal sealed class JwtGenerator
 
         var resourceOwnerClaimParameters = claimParameters
             .Where(c => Shared.JwtConstants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
-            .ToList();
-        if (!resourceOwnerClaimParameters.Any())
+            .ToArray();
+        if (resourceOwnerClaimParameters.Length == 0)
         {
             return new Option<JwtPayload>.Result(jwsPayload);
         }
@@ -334,7 +337,7 @@ internal sealed class JwtGenerator
                         Detail = string.Format(Strings.TheClaimIsNotValid, resourceOwnerClaimParameter.Name),
                         Status = HttpStatusCode.BadRequest
                     },
-                    state);
+                    authorizationParameter.State);
             }
 
             jwsPayload.Add(resourceOwnerClaim!.Type, resourceOwnerClaim.Value);
@@ -376,15 +379,20 @@ internal sealed class JwtGenerator
         var azp = string.Empty;
 
         var clients = await _clientRepository.GetAll(cancellationToken).ConfigureAwait(false);
-        var audiences = (from client in clients
-            let isClientSupportIdTokenResponseType = client.CheckResponseTypes(ResponseTypeNames.IdToken)
-            where isClientSupportIdTokenResponseType || client.ClientId == authorizationParameter.ClientId
-            select client.ClientId).ToList();
+        var stringComparer = StringComparer.OrdinalIgnoreCase;
+        var audiences = clients
+            .Select(client => (client.ClientId, client.CheckResponseTypes(ResponseTypeNames.IdToken)))
+            .Where(
+                t => t.Item2
+                     || t.ClientId == authorizationParameter.ClientId)
+            .Select(t => t.ClientId)
+            .Where(c => !string.IsNullOrWhiteSpace(c))
+            .Distinct(stringComparer).ToArray();
 
         // The identity token can be reused by the identity server.
-        if (!string.IsNullOrWhiteSpace(issuerName))
+        if (!string.IsNullOrWhiteSpace(issuerName) && !audiences.Contains(issuerName, stringComparer))
         {
-            audiences.Add(issuerName);
+            audiences = audiences.Add(issuerName);
         }
 
         var authenticationInstant = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.AuthenticationInstant).MaxBy(x => x.Value);
@@ -399,7 +407,7 @@ internal sealed class JwtGenerator
             }
         }
 
-        if (audiences.Count > 1 || (audiences.Count == 1 && audiences[0] != clientId))
+        if (audiences.Length > 1 || (audiences.Length == 1 && audiences[0] != clientId))
         {
             azp = clientId;
         }
@@ -426,7 +434,7 @@ internal sealed class JwtGenerator
 
         if (issuedAtTimeClaimParameter != null)
         {
-            var issuedAtTimeIsValid = ValidateClaimValue(issuedAtTime.ToString(), issuedAtTimeClaimParameter);
+            var issuedAtTimeIsValid = ValidateClaimValue(issuedAtTime.ToString(CultureInfo.InvariantCulture), issuedAtTimeClaimParameter);
             if (!issuedAtTimeIsValid)
             {
                 return CreateClaimError(StandardClaimNames.Iat, state);
@@ -487,7 +495,7 @@ internal sealed class JwtGenerator
         jwsPayload.Add(StandardClaimNames.Iat, issuedAtTime);
 
         // Set the auth_time if it's requested as an essential claim OR the max_age request is specified
-        if (((authenticationTimeParameter != null && authenticationTimeParameter.Essential)
+        if ((authenticationTimeParameter is { Essential: true }
              || !maxAge.Equals(default))
             && !string.IsNullOrWhiteSpace(authenticationInstantValue))
         {
@@ -600,13 +608,13 @@ internal sealed class JwtGenerator
 
     private static string HashWithSha384(string parameter)
     {
-        var sha384 = SHA384.Create();
+        using var sha384 = SHA384.Create();
         return GetFirstPart(parameter, sha384);
     }
 
     private static string HashWithSha512(string parameter)
     {
-        var sha512 = SHA512.Create();
+        using var sha512 = SHA512.Create();
         return GetFirstPart(parameter, sha512);
     }
 

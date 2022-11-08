@@ -20,7 +20,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Tokens;
@@ -75,7 +74,7 @@ internal static class ClientExtensions
             : await GenerateIdToken(client, jwsPayload, jwksStore, cancellationToken).ConfigureAwait(false);
     }
 
-    public static async Task<SigningCredentials[]> GetSigningCredentials(
+    private static async Task<SigningCredentials[]> GetSigningCredentials(
         this Client client,
         IJwksStore jwksStore,
         CancellationToken cancellationToken = default)
@@ -105,7 +104,8 @@ internal static class ClientExtensions
         var handler = new JwtSecurityTokenHandler();
         var signingCredentials =
             await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
-        var claimsIdentity = new ClaimsIdentity(jwsPayload.Claims.Where(c => OpenIdClaimTypes.All.Contains(c.Type)));
+        var claimsIdentity = new ClaimsIdentity(jwsPayload.Claims);
+            //.Where(c => !string.IsNullOrWhiteSpace(c.Value)).Where(c => OpenIdClaimTypes.All.Contains(c.Type)));
         var now = DateTime.UtcNow;
         var jwt = handler.CreateEncodedJwt(
             jwsPayload.Iss,
@@ -118,4 +118,4 @@ internal static class ClientExtensions
 
         return jwt;
     }
- }
+}

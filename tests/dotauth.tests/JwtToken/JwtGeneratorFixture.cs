@@ -131,7 +131,7 @@ public sealed class JwtGeneratorFixture
         const string issuerName = "IssuerName";
         var clientId = FakeOpenIdAssets.GetClients().First().ClientId;
         const string subject = "john.doe@email.com";
-        var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
+        var claims = new Claim[] { new(OpenIdClaimTypes.Subject, subject) };
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
@@ -158,7 +158,7 @@ public sealed class JwtGeneratorFixture
         const string issuerName = "IssuerName";
         const string clientId = "clientId";
         const string subject = "john.doe@email.com";
-        var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
+        var claims = new Claim[] { new(OpenIdClaimTypes.Subject, subject) };
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
