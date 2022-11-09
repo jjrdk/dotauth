@@ -17,7 +17,7 @@ namespace DotAuth.Client;
 /// <summary>
 /// Defines the PKCE
 /// </summary>
-public sealed class Pkce
+public readonly struct Pkce
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Pkce"/> class.
