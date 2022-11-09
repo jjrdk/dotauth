@@ -2,7 +2,7 @@ namespace DotAuth.Build;
 
 using Cake.Common.IO;
 using Cake.Common.Tools.DotNet;
-using Cake.Common.Tools.DotNetCore.Test;
+using Cake.Common.Tools.DotNet.Test;
 using Cake.Core;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
@@ -33,7 +33,7 @@ public sealed class TestsTask : FrostingTask<BuildContext>
 
             context.Log.Information(reportName);
 
-            var coreTestSettings = new DotNetCoreTestSettings()
+            var coreTestSettings = new DotNetTestSettings()
             {
                 NoBuild = true,
                 NoRestore = true,

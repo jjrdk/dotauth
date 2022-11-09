@@ -3,7 +3,6 @@ namespace DotAuth.Build;
 using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.Build;
 using Cake.Common.Tools.DotNet.MSBuild;
-using Cake.Common.Tools.DotNetCore.MSBuild;
 using Cake.Frosting;
 
 [TaskName("Build")]
