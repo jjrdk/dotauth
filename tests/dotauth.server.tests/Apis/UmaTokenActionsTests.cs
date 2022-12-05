@@ -32,8 +32,8 @@ public class UmaTokenActionsTests
                     Expires = DateTimeOffset.MaxValue,
                     Id = "ticket",
                     IsAuthorizedByRo = false,
-                    Lines = new TicketLine[0],
-                    Requester = new ClaimData[0],
+                    Lines = Array.Empty<TicketLine>(),
+                    Requester = Array.Empty<ClaimData>(),
                     ResourceOwner = "ro"
                 });
         ticketStore.Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);

@@ -65,7 +65,7 @@ public class RequestPermission : IDisposable
             _fixture.Client,
             new Uri(WellKnownUmaConfiguration));
     }
-    
+
     [Given(@"a valid UMA token")]
     public async Task GivenAValidUmaToken()
     {
@@ -82,7 +82,7 @@ public class RequestPermission : IDisposable
     {
         _client = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration));
     }
-    
+
     [When(@"registering resource")]
     public async Task WhenRegisteringResource()
     {
@@ -91,6 +91,30 @@ public class RequestPermission : IDisposable
                 _grantedToken.AccessToken)
             .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result)!;
         _resourceId = resource.Item.Id;
+    }
+
+    [When(@"updating policy")]
+    public async Task WhenSettingSettingPolicy()
+    {
+        var option = await _client.UpdateResource(
+            new ResourceSet
+            {
+                Id = _resourceId,
+                Name = "picture",
+                Scopes = new[] { "read", "write" },
+                AuthorizationPolicies = new[]
+                {
+                    new PolicyRule
+                    {
+                        ClientIdsAllowed = new[] { "clientCredentials" },
+                        Scopes = new[] { "read" },
+                        IsResourceOwnerConsentNeeded = false
+                    }
+                }
+            },
+            _grantedToken.AccessToken);
+
+        Assert.IsType<Option<UpdateResourceSetResponse>.Result>(option);
     }
 
     [When(@"requesting permission")]
@@ -130,8 +154,22 @@ public class RequestPermission : IDisposable
     [Then(@"can get access token for resource")]
     public async Task ThenCanGetAccessTokenForResource()
     {
-        var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _grantedToken.IdToken));
+        var option = await _tokenClient.GetToken(
+            TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }),
+            CancellationToken.None);
 
-        Assert.IsType<Option<GrantedTokenResponse>.Result>(rpt);
+        switch (option)
+        {
+            case Option<GrantedTokenResponse>.Result result:
+                {
+                    var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, result.Item.IdToken));
+
+                    Assert.IsType<Option<GrantedTokenResponse>.Result>(rpt);
+                    break;
+                }
+            case Option<GrantedTokenResponse>.Error error:
+                Assert.Fail(error.Details.Title);
+                break;
+        }
     }
 }
