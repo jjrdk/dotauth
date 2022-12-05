@@ -20,7 +20,7 @@ public sealed class AuthorizationCodeFlowFeature : AuthFlowFeature
     {
     }
 
-    [Scenario]
+    [Scenario(DisplayName = "Successful authorization code grant")]
     public void SuccessfulAuthorizationCodeGrant()
     {
         TokenClient client = null!;

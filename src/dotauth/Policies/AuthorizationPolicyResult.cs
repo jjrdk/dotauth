@@ -20,7 +20,7 @@ using DotAuth.Shared.Responses;
 /// <summary>
 /// Defines the authorization policy result.
 /// </summary>
-internal sealed class AuthorizationPolicyResult
+public sealed class AuthorizationPolicyResult
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthorizationPolicyResult"/> class.

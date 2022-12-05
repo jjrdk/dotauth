@@ -121,7 +121,7 @@ internal sealed class RequestPermissionHandler
                 var message = string.Format(
                     Strings.MissingParameter,
                     UmaConstants.AddPermissionNames.ResourceSetId);
-                _logger.LogError(message);
+                _logger.LogError(Strings.MissingParameter, UmaConstants.AddPermissionNames.ResourceSetId);
                 return new Option.Error(
                     new ErrorDetails
                     {
@@ -134,7 +134,7 @@ internal sealed class RequestPermissionHandler
             if (addPermissionParameter.Scopes == null || !addPermissionParameter.Scopes.Any())
             {
                 var message = string.Format(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes);
-                _logger.LogError(message);
+                _logger.LogError(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes);
                 return new Option.Error(
                     new ErrorDetails
                     {
@@ -155,7 +155,7 @@ internal sealed class RequestPermissionHandler
                 var message = string.Format(
                     Strings.TheResourceSetDoesntExist,
                     addPermissionParameter.ResourceSetId);
-                _logger.LogError(message);
+                _logger.LogError(Strings.TheResourceSetDoesntExist, addPermissionParameter.ResourceSetId);
                 return new Option.Error(
                     new ErrorDetails
                     {

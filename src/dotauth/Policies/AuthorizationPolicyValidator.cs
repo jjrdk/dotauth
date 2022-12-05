@@ -28,7 +28,7 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;
 
-internal sealed class AuthorizationPolicyValidator
+internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
 {
     private readonly IAuthorizationPolicy _authorizationPolicy;
     private readonly IJwksStore _jwksStore;

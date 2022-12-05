@@ -27,7 +27,7 @@ internal sealed class UmaTokenActions
 {
     private readonly ITicketStore _ticketStore;
     private readonly RuntimeSettings _configurationService;
-    private readonly AuthorizationPolicyValidator _authorizationPolicyValidator;
+    private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
     private readonly AuthenticateClient _authenticateClient;
     private readonly JwtGenerator _jwtGenerator;
     private readonly ITokenStore _tokenStore;
@@ -40,17 +40,14 @@ internal sealed class UmaTokenActions
         IClientStore clientStore,
         IScopeStore scopeRepository,
         ITokenStore tokenStore,
-        IResourceSetRepository resourceSetRepository,
         IJwksStore jwksStore,
+        IAuthorizationPolicyValidator authorizationPolicyValidator,
         IEventPublisher eventPublisher,
         ILogger logger)
     {
         _ticketStore = ticketStore;
         _configurationService = configurationService;
-        _authorizationPolicyValidator = new AuthorizationPolicyValidator(
-            jwksStore,
-            resourceSetRepository,
-            eventPublisher);
+        _authorizationPolicyValidator = authorizationPolicyValidator;
         _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
         _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore, logger);
         _tokenStore = tokenStore;

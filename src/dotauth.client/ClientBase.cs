@@ -71,7 +71,11 @@ public abstract class ClientBase
     {
         request = PrepareRequest(request, token, certificate);
         var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
+#if NETSTANDARD2_1
         var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+#else
+        var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#endif
         if (result.IsSuccessStatusCode && result.StatusCode != HttpStatusCode.NoContent)
         {
             return Serializer.Default.Deserialize<T>(content)!;

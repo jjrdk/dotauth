@@ -14,8 +14,18 @@
 
 namespace DotAuth.Parameters;
 
-internal sealed record ClaimTokenParameter
+/// <summary>
+/// Defines the claim token parameter
+/// </summary>
+public sealed record ClaimTokenParameter
 {
+    /// <summary>
+    /// Gets the token format.
+    /// </summary>
     public string? Format { get; init; }
+
+    /// <summary>
+    /// Gets the token.
+    /// </summary>
     public string? Token { get; init; }
 }

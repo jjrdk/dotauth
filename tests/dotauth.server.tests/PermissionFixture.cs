@@ -114,7 +114,7 @@ public sealed class PermissionFixture : IDisposable
     }
 
     [Fact]
-    public async Task When_Adding_Permissions_Then_TicketIds_Is_Returned()
+    public async Task WhenRequestingPermissionsThenTicketIdsAreReturned()
     {
         var resource = await _umaClient.AddResource(
                 new ResourceSet {Name = "picture", Scopes = new[] {"read"}},

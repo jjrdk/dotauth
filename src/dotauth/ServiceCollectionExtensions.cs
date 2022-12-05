@@ -268,6 +268,7 @@ public static class ServiceCollectionExtensions
         var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
             .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
             .ConfigureOptions<ConfigureMvcNewtonsoftJsonOptions>()
+            .AddSingleton<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>()
             .AddSingleton(runtimeConfig)
             .AddSingleton(requestThrottle ?? NoopThrottle.Instance)
             .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
@@ -384,7 +385,7 @@ public static class ServiceCollectionExtensions
             patLifeTime: options.PatLifeTime,
             ticketLifeTime: options.TicketLifeTime,
             devicePollingInterval: options.DevicePollingInterval,
-            deviceAuthorizationLifetime:options.DeviceAuthorizationLifetime,
+            deviceAuthorizationLifetime: options.DeviceAuthorizationLifetime,
             allowHttp: options.AllowHttp,
             redirectToLogin: options.RedirectToLogin);
     }

@@ -16,6 +16,7 @@ namespace DotAuth;
 
 using System;
 using DotAuth.Events;
+using DotAuth.Policies;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
@@ -171,6 +172,14 @@ public sealed class DotAuthOptions
     /// The event publisher.
     /// </value>
     public Func<IServiceProvider, IEventPublisher>? EventPublisher { get; set; }
+
+    /// <summary>
+    /// Gets or sets the authorization policy validator.
+    /// </summary>
+    /// <value>
+    /// The event publisher.
+    /// </value>
+    public Func<IServiceProvider, IAuthorizationPolicyValidator>? AuthorizationPolicyValidator { get; set; }
 
     /// <summary>
     /// Gets or sets the subject builder.

@@ -1,0 +1,137 @@
+namespace DotAuth.AcceptanceTests.Features;
+
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Threading;
+using System.Threading.Tasks;
+using DotAuth.Client;
+using DotAuth.Shared;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+using TechTalk.SpecFlow;
+using Xunit;
+using Xunit.Abstractions;
+
+[Binding]
+public class RequestPermission : IDisposable
+{
+    private const string BaseUrl = "http://localhost:5000";
+    private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
+
+    private readonly ITestOutputHelper _outputHelper;
+    private TestServerFixture _fixture;
+    private GrantedTokenResponse _grantedToken = null!;
+    private UmaClient _client = null!;
+    private TokenClient _tokenClient = null!;
+    private string _resourceId = null!;
+    private string _ticketId = null!;
+
+    public RequestPermission(ITestOutputHelper outputHelper)
+    {
+        _outputHelper = outputHelper;
+        IdentityModelEventSource.ShowPII = true;
+    }
+
+    [Given(@"a running auth server")]
+    public void GivenARunningAuthServer()
+    {
+        _fixture = new TestServerFixture(_outputHelper, BaseUrl);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _fixture?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
+    [Given(@"the server's signing key")]
+    public async Task GivenTheServersSigningKey()
+    {
+        var json = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+        var jwks = new JsonWebKeySet(json);
+
+        Assert.NotEmpty(jwks.Keys);
+    }
+
+    [Given(@"a properly configured token client")]
+    public void GivenAProperlyConfiguredTokenClient()
+    {
+        _tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
+            _fixture.Client,
+            new Uri(WellKnownUmaConfiguration));
+    }
+    
+    [Given(@"a valid UMA token")]
+    public async Task GivenAValidUmaToken()
+    {
+        var token = (await _tokenClient.GetToken(TokenRequest.FromScopes("uma_protection"))
+            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result)!;
+        var handler = new JwtSecurityTokenHandler();
+        var principal = handler.ReadJwtToken(token.Item.AccessToken);
+        Assert.NotNull(principal.Issuer);
+        _grantedToken = token.Item;
+    }
+
+    [Given(@"a properly configured uma client")]
+    public void GivenAProperlyConfiguredUmaClient()
+    {
+        _client = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration));
+    }
+    
+    [When(@"registering resource")]
+    public async Task WhenRegisteringResource()
+    {
+        var resource = (await _client.AddResource(
+                new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
+                _grantedToken.AccessToken)
+            .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result)!;
+        _resourceId = resource.Item.Id;
+    }
+
+    [When(@"requesting permission")]
+    public async Task WhenRequestingPermission()
+    {
+        var response = await _client.RequestPermission(
+                _grantedToken.AccessToken,
+                requests: new PermissionRequest { IdToken = _grantedToken.IdToken, ResourceSetId = _resourceId, Scopes = new[] { "read" } })
+            .ConfigureAwait(false) as Option<TicketResponse>.Result;
+
+        Assert.NotNull(response);
+
+        _ticketId = response.Item.TicketId;
+    }
+
+    [When(@"requesting permissions")]
+    public async Task WhenRequestingPermissions()
+    {
+        var response = await _client.RequestPermission(
+                _grantedToken.AccessToken,
+                CancellationToken.None,
+                new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "write" } },
+                new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "read" } })
+            .ConfigureAwait(false);
+
+        Assert.IsType<Option<TicketResponse>.Result>(response);
+
+        _ticketId = ((Option<TicketResponse>.Result)response).Item.TicketId;
+    }
+
+    [Then(@"returns ticket id")]
+    public void ThenReturnsTicketId()
+    {
+        Assert.NotNull(_ticketId);
+    }
+
+    [Then(@"can get access token for resource")]
+    public async Task ThenCanGetAccessTokenForResource()
+    {
+        var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _grantedToken.IdToken));
+
+        Assert.IsType<Option<GrantedTokenResponse>.Result>(rpt);
+    }
+}

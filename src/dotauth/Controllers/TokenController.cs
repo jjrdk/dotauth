@@ -13,6 +13,7 @@ using DotAuth.Common;
 using DotAuth.Events;
 using DotAuth.Extensions;
 using DotAuth.Filters;
+using DotAuth.Policies;
 using DotAuth.Properties;
 using DotAuth.Services;
 using DotAuth.Shared;
@@ -48,7 +49,7 @@ public sealed class TokenController : ControllerBase
     /// <param name="tokenStore">The token store.</param>
     /// <param name="ticketStore">The ticket store.</param>
     /// <param name="jwksStore"></param>
-    /// <param name="resourceSetRepository">The resource set repository.</param>
+    /// <param name="authorizationPolicyValidator">The authorization policy validator.</param>
     /// <param name="deviceAuthorizationStore">The device authorization store.</param>
     /// <param name="eventPublisher">The event publisher.</param>
     /// <param name="logger">The logger.</param>
@@ -62,7 +63,7 @@ public sealed class TokenController : ControllerBase
         ITokenStore tokenStore,
         ITicketStore ticketStore,
         IJwksStore jwksStore,
-        IResourceSetRepository resourceSetRepository,
+        IAuthorizationPolicyValidator authorizationPolicyValidator,
         IDeviceAuthorizationStore deviceAuthorizationStore,
         IEventPublisher eventPublisher,
         ILogger<TokenController> logger)
@@ -86,8 +87,8 @@ public sealed class TokenController : ControllerBase
             clientStore,
             scopeRepository,
             tokenStore,
-            resourceSetRepository,
             jwksStore,
+            authorizationPolicyValidator,
             eventPublisher,
             logger);
     }
@@ -208,7 +209,7 @@ public sealed class TokenController : ControllerBase
                         issuerName,
                         cancellationToken)
                     .ConfigureAwait(false);
-            case GrantTypes.ValidateBearer:
+            //case GrantTypes.ValidateBearer:
             //return null;
             default:
                 throw new ArgumentOutOfRangeException(nameof(tokenRequest));

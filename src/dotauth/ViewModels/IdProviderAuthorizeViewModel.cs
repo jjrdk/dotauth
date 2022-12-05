@@ -10,18 +10,10 @@ using System.Diagnostics.CodeAnalysis;
 public abstract class IdProviderAuthorizeViewModel
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="IdProviderAuthorizeViewModel"/> class.
-    /// </summary>
-    protected IdProviderAuthorizeViewModel()
-    {
-        IdProviders = Array.Empty<IdProviderViewModel>();
-    }
-
-    /// <summary>
     /// Gets or sets the identifier providers.
     /// </summary>
     /// <value>
     /// The identifier providers.
     /// </value>
-    public IdProviderViewModel[] IdProviders { get; set; }
+    public IdProviderViewModel[] IdProviders { get; set; } = Array.Empty<IdProviderViewModel>();
 }
