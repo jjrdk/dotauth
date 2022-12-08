@@ -49,9 +49,10 @@
                                             else
                                             {
                                                 <td>
-                                                    @foreach (var claim in Model[i].Requester)
+                                                    @foreach (var claim in Model[i].Requester.Where(c => c.Type != "sub"))
                                                     {
-                                                        <span>@claim.Type: @claim.Value</span><br />
+                                                        <span><b>@claim.Type:</b> @claim.Value</span>
+                                                        <br />
                                                     }
                                                 </td>
                                             }
@@ -66,7 +67,14 @@
                                             <td>@Model[i].Created</td>
                                             <td>@Model[i].Expires</td>
                                             <td>
-                                                <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Approve</button>
+                                                @if (Model[i].IsAuthorizedByRo == false)
+                                                {
+                                                    <button type="submit" class="waves-effect waves-light btn blue darken-3 right">Approve</button>
+                                                }
+                                                else
+                                                {
+                                                    <span>Approved</span>
+                                                }
                                             </td>
                                         }
                                     </tr>
@@ -76,7 +84,6 @@
                     </div>
                     <div class="row">
                         <div class="col s12 m12">
-
                         </div>
                     </div>
                 </div>

@@ -89,7 +89,7 @@ public sealed class PermissionsController : BaseController
         var owner = User.GetSubject()!;
         var tickets = await _ticketStore.GetAll(owner, cancellationToken).ConfigureAwait(false);
 
-        return Ok(tickets.Where(x => x.IsAuthorizedByRo == false).ToArray());
+        return Ok(tickets);
     }
 
     /// <summary>
