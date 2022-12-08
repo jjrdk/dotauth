@@ -19,4 +19,8 @@
     <EmbeddedResource Include="**\*.woff2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />
+  </ItemGroup>
+
 </Project>

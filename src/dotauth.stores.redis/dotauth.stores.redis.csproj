@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="StackExchange.Redis" Version="2.6.70" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="StackExchange.Redis" Version="2.6.80" />
     </ItemGroup>
 
     <ItemGroup>

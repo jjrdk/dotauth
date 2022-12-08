@@ -72,13 +72,13 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
         cancellationToken.ThrowIfCancellationRequested();
 
         // 1. Check can access to the scope
-        if (ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
+        if (ticketLineParameter.Scopes.Length == 0 || ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
         {
             return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
         }
 
         // 2. Check clients are correct
-        var clientAuthorizationResult = authorizationPolicy.ClientIdsAllowed.Contains(ticketLineParameter.ClientId);
+        var clientAuthorizationResult = authorizationPolicy.ClientIdsAllowed.Length == 0 || authorizationPolicy.ClientIdsAllowed.Contains(ticketLineParameter.ClientId);
         if (!clientAuthorizationResult)
         {
             return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);

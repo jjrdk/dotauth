@@ -102,16 +102,16 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
                 case AuthorizationPolicyResultKind.NotAuthorized:
                 case AuthorizationPolicyResultKind.NeedInfo:
                 default:
-                {
-                    await _eventPublisher.Publish(
-                            new AuthorizationPolicyNotAuthorized(
-                                Id.Create(),
-                                validTicket.Id,
-                                DateTimeOffset.UtcNow))
-                        .ConfigureAwait(false);
+                    {
+                        await _eventPublisher.Publish(
+                                new AuthorizationPolicyNotAuthorized(
+                                    Id.Create(),
+                                    validTicket.Id,
+                                    DateTimeOffset.UtcNow))
+                            .ConfigureAwait(false);
 
-                    return validationResult;
-                }
+                        return validationResult;
+                    }
             }
         }
 
