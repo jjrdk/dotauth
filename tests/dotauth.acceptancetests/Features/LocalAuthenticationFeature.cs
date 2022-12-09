@@ -26,7 +26,7 @@ public sealed class LocalAuthenticationFeature : AuthFlowFeature
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, new Uri(BaseUrl + "/authenticate/logout"));
 
-                result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                result = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "then receives redirect to login page".x(
@@ -51,7 +51,7 @@ public sealed class LocalAuthenticationFeature : AuthFlowFeature
                         })
                 };
 
-                result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                result = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "then receives auth cookie".x(() => { Assert.Equal(HttpStatusCode.Redirect, result.StatusCode); });
@@ -75,7 +75,7 @@ public sealed class LocalAuthenticationFeature : AuthFlowFeature
                         })
                 };
 
-                result = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                result = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
 
                 Assert.NotNull(result);
             });

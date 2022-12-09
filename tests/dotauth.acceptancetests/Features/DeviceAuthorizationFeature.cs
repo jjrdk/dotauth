@@ -36,7 +36,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
                     new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(WellKnownOpenidConfiguration) };
                 request.Headers.Accept.Clear();
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                var response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
 
                 var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -64,7 +64,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
             {
                 tokenClient = new TokenClient(
                     TokenCredentials.AsDevice(),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
 
                 Assert.NotNull(tokenClient);
@@ -75,7 +75,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
             {
                 var authClient = new TokenClient(
                     TokenCredentials.FromClientCredentials(clientId, "client"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
                 var tokenResponse = await authClient.GetToken(
                         TokenRequest.FromPassword("user", "password", new[] { "openid" }))
@@ -109,7 +109,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
         "and user successfully posts user code".x(
             async () =>
             {
-                var client = _fixture.Client();
+                var client = Fixture.Client();
                 var msg = new HttpRequestMessage
                 {
                     Method = HttpMethod.Post,
@@ -147,7 +147,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
             {
                 tokenClient = new TokenClient(
                     TokenCredentials.AsDevice(),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
 
                 Assert.NotNull(tokenClient);
@@ -158,7 +158,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
             {
                 var authClient = new TokenClient(
                     TokenCredentials.FromClientCredentials(clientId, "client"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
                 var tokenResponse = await authClient.GetToken(
                         TokenRequest.FromPassword("user", "password", new[] { "openid" }))
@@ -203,7 +203,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
         "and user successfully posts user code".x(
             async () =>
             {
-                var client = _fixture.Client();
+                var client = Fixture.Client();
                 var msg = new HttpRequestMessage
                 {
                     Method = HttpMethod.Post,
@@ -239,7 +239,7 @@ public sealed class DeviceAuthorizationFeature : AuthFlowFeature
             {
                 tokenClient = new TokenClient(
                     TokenCredentials.AsDevice(),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
 
                 Assert.NotNull(tokenClient);

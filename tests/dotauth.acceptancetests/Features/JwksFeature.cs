@@ -26,7 +26,7 @@ public sealed class JwksFeature : AuthFlowFeature
         "then can download json web key set".x(
             async () =>
             {
-                jwksJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                jwksJson = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
 
                 Assert.NotNull(jwksJson);
             });
@@ -51,7 +51,7 @@ public sealed class JwksFeature : AuthFlowFeature
             {
                 var tokenClient = new TokenClient(
                     TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
                 var response =
                     await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
@@ -65,7 +65,7 @@ public sealed class JwksFeature : AuthFlowFeature
         "then can download json web key set".x(
             async () =>
             {
-                var jwksJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                var jwksJson = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
 
                 Assert.NotNull(jwksJson);
 

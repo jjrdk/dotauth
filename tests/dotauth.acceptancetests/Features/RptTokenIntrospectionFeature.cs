@@ -34,11 +34,11 @@ public sealed class RptTokenIntrospectionFeature : AuthFlowFeature
             {
                 client = new TokenClient(
                     TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
             });
 
-        "and a UMA client".x(() => { umaClient = new UmaClient(_fixture.Client, new Uri(BaseUrl)); });
+        "and a UMA client".x(() => { umaClient = new UmaClient(Fixture.Client, new Uri(BaseUrl)); });
 
         "and a PAT token".x(
             async () =>

@@ -109,12 +109,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    RequestUri = new Uri(Fixture.Server.BaseAddress + "resource_owners/claims")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
@@ -162,12 +162,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    RequestUri = new Uri(Fixture.Server.BaseAddress + "resource_owners/claims")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
@@ -235,12 +235,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    RequestUri = new Uri(Fixture.Server.BaseAddress + "resource_owners/claims")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
@@ -273,12 +273,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 {
                     Method = HttpMethod.Delete,
                     RequestUri = new Uri(
-                        _fixture.Server.BaseAddress + "resource_owners/claims?type=acceptance_test")
+                        Fixture.Server.BaseAddress + "resource_owners/claims?type=acceptance_test")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
@@ -312,12 +312,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 {
                     Method = HttpMethod.Delete,
                     RequestUri = new Uri(
-                        _fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
+                        Fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
@@ -325,7 +325,7 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
         "And when getting resource owner from store".x(
             async () =>
             {
-                var store = (IResourceOwnerStore) _fixture.Server.Host.Services.GetService(
+                var store = (IResourceOwnerStore) Fixture.Server.Host.Services.GetService(
                     typeof(IResourceOwnerStore));
                 resourceOwner = await store.Get("administrator", CancellationToken.None).ConfigureAwait(false);
             });
@@ -354,12 +354,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    RequestUri = new Uri(Fixture.Server.BaseAddress + "resource_owners/claims")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then is ok response".x(
@@ -386,12 +386,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    RequestUri = new Uri(Fixture.Server.BaseAddress + "resource_owners/claims")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then is also ok response".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
@@ -416,12 +416,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    RequestUri = new Uri(Fixture.Server.BaseAddress + "resource_owners/claims")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then is bad request".x(() => { Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode); });
@@ -438,12 +438,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 var request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners")
+                    RequestUri = new Uri(Fixture.Server.BaseAddress + "resource_owners")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then response is OK".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });
@@ -475,12 +475,12 @@ public sealed class ResourceOwnerManagementFeature : AuthorizedManagementFeature
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Put,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    RequestUri = new Uri(Fixture.Server.BaseAddress + "resource_owners/claims")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     "Bearer",
                     _administratorToken.AccessToken);
-                response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "Then is ok request".x(() => { Assert.Equal(HttpStatusCode.OK, response.StatusCode); });

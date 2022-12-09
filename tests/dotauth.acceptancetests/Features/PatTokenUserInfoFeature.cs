@@ -28,7 +28,7 @@ public sealed class PatTokenUserInfoFeature : AuthFlowFeature
             {
                 client = new TokenClient(
                     TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
             });
 

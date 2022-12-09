@@ -39,7 +39,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
         "and a properly configured token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromClientCredentials("post_client", "post_client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting token".x(
@@ -57,7 +57,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKeys = _jwks.GetSigningKeys(),
+                    IssuerSigningKeys = ServerKeyset.GetSigningKeys(),
                     ValidAudience = "post_client",
                     ValidIssuer = "https://localhost"
                 };
@@ -70,7 +70,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
             () =>
             {
                 umaClient = new UmaClient(
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri("https://localhost/.well-known/uma2-configuration"));
             });
 
@@ -127,7 +127,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
-                var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                var response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
 
                 Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
                 var httpHeaderValueCollection = response.Headers.WwwAuthenticate;
@@ -161,7 +161,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     umaToken.TokenType,
                     umaToken.AccessToken);
-                var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                var response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
                 var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -181,7 +181,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
         "and a properly configured token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromClientCredentials("post_client", "post_client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting token".x(
@@ -199,7 +199,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKeys = _jwks.GetSigningKeys(),
+                    IssuerSigningKeys = ServerKeyset.GetSigningKeys(),
                     ValidAudience = "post_client",
                     ValidIssuer = "https://localhost"
                 };
@@ -209,7 +209,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
             });
 
         "given a uma client".x(
-            () => { umaClient = new UmaClient(_fixture.Client, new Uri("https://localhost/")); });
+            () => { umaClient = new UmaClient(Fixture.Client, new Uri("https://localhost/")); });
 
         "when creating resource set without a policy".x(
             async () =>
@@ -237,7 +237,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
-                var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                var response = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
 
                 Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
                 var httpHeaderValueCollection = response.Headers.WwwAuthenticate;
@@ -273,7 +273,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
         "and a properly configured token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromClientCredentials("post_client", "post_client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting token".x(
@@ -291,7 +291,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKeys = _jwks.GetSigningKeys(),
+                    IssuerSigningKeys = ServerKeyset.GetSigningKeys(),
                     ValidAudience = "post_client",
                     ValidIssuer = "https://localhost"
                 };
@@ -304,7 +304,7 @@ public sealed class UmaTicketLoginFlowFeature : AuthFlowFeature
             () =>
             {
                 umaClient = new UmaClient(
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri("https://localhost/.well-known/uma2-configuration"));
             });
 

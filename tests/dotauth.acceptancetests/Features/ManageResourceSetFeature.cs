@@ -34,11 +34,11 @@ public sealed class ManageResourceSetFeature : AuthFlowFeature
             {
                 client = new TokenClient(
                     TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
             });
 
-        "And a UMA client".x(() => { umaClient = new UmaClient(_fixture.Client, new Uri(BaseUrl)); });
+        "And a UMA client".x(() => { umaClient = new UmaClient(Fixture.Client, new Uri(BaseUrl)); });
 
         "When getting a PAT token".x(
             async () =>
@@ -87,7 +87,7 @@ public sealed class ManageResourceSetFeature : AuthFlowFeature
                 msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
 
-                var policyResponse = await _fixture.Client().SendAsync(msg).ConfigureAwait(false);
+                var policyResponse = await Fixture.Client().SendAsync(msg).ConfigureAwait(false);
 
                 Assert.True(policyResponse.IsSuccessStatusCode);
 
@@ -110,7 +110,7 @@ public sealed class ManageResourceSetFeature : AuthFlowFeature
                 };
                 msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
 
-                var policyResponse = await _fixture.Client().SendAsync(msg).ConfigureAwait(false);
+                var policyResponse = await Fixture.Client().SendAsync(msg).ConfigureAwait(false);
 
                 Assert.True(policyResponse.IsSuccessStatusCode);
             });

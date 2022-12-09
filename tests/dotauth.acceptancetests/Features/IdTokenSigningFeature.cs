@@ -31,7 +31,7 @@ public sealed class IdTokenSigningFeature : AuthFlowFeature
             {
                 client = new TokenClient(
                     TokenCredentials.FromClientCredentials("no_key", "no_key"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
             });
 
@@ -49,7 +49,7 @@ public sealed class IdTokenSigningFeature : AuthFlowFeature
         "Then token is signed with server key".x(
             () =>
             {
-                var key = _jwks.GetSignKeys().First();
+                var key = ServerKeyset.GetSignKeys().First();
                 var validationParameters = new TokenValidationParameters
                 {
                     IssuerSigningKey = key,

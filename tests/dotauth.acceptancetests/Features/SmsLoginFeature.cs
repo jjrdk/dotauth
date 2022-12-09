@@ -29,7 +29,7 @@ public sealed class SmsLoginFeature : AuthFlowFeature
         "and a properly configured token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromBasicAuthentication("client", "client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting an sms".x(
@@ -56,7 +56,7 @@ public sealed class SmsLoginFeature : AuthFlowFeature
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKeys = _jwks.GetSigningKeys(),
+                    IssuerSigningKeys = ServerKeyset.GetSigningKeys(),
                     ValidAudience = "client",
                     ValidIssuer = "https://localhost"
                 };

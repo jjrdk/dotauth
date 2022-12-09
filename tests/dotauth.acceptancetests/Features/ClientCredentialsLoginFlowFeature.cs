@@ -27,7 +27,7 @@ public sealed class ClientCredentialsLoginFlowFeature : AuthFlowFeature
         "and a properly configured token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting token".x(
@@ -48,7 +48,7 @@ public sealed class ClientCredentialsLoginFlowFeature : AuthFlowFeature
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKeys = _jwks.GetSigningKeys(),
+                    IssuerSigningKeys = ServerKeyset.GetSigningKeys(),
                     ValidAudience = "clientCredentials",
                     ValidIssuer = "https://localhost"
                 };
@@ -74,7 +74,7 @@ public sealed class ClientCredentialsLoginFlowFeature : AuthFlowFeature
         "and a properly token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromBasicAuthentication("clientCredentials", "clientCredentials"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting auth token".x(
@@ -106,7 +106,7 @@ public sealed class ClientCredentialsLoginFlowFeature : AuthFlowFeature
         "and a properly token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting auth token".x(
@@ -138,7 +138,7 @@ public sealed class ClientCredentialsLoginFlowFeature : AuthFlowFeature
         "and a token client with invalid client credentials".x(
             () => client = new TokenClient(
                 TokenCredentials.FromClientCredentials("xxx", "xxx"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting auth token".x(

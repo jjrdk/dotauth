@@ -43,7 +43,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
         "and a properly configured token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromBasicAuthentication("client", "client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting token".x(
@@ -64,7 +64,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKeys = _jwks.GetSigningKeys(),
+                    IssuerSigningKeys = ServerKeyset.GetSigningKeys(),
                     ValidAudience = "client",
                     ValidIssuer = "https://localhost"
                 };
@@ -99,7 +99,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
         "and a properly configured token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromBasicAuthentication("client", "client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting token".x(
@@ -117,7 +117,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKeys = _jwks.GetSigningKeys(),
+                    IssuerSigningKeys = ServerKeyset.GetSigningKeys(),
                     ValidAudience = "client",
                     ValidIssuer = "https://localhost"
                 };
@@ -135,7 +135,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                 };
                 userinfoRequest.Headers.Authorization =
                     new AuthenticationHeaderValue(result.TokenType, result.AccessToken);
-                var userinfo = await _fixture.Client().SendAsync(userinfoRequest).ConfigureAwait(false);
+                var userinfo = await Fixture.Client().SendAsync(userinfoRequest).ConfigureAwait(false);
 
                 Assert.True(userinfo.IsSuccessStatusCode);
             });
@@ -151,7 +151,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
         "and a properly configured token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromBasicAuthentication("client", "client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting token".x(
@@ -169,7 +169,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKeys = _jwks.GetSigningKeys(),
+                    IssuerSigningKeys = ServerKeyset.GetSigningKeys(),
                     ValidAudience = "client",
                     ValidIssuer = "https://localhost"
                 };
@@ -192,12 +192,12 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+                    RequestUri = new Uri(Fixture.Server.BaseAddress + "resource_owners/claims")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue(
                     JwtBearerDefaults.AuthenticationScheme,
                     tokenResponse.AccessToken);
-                updateResponse = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+                updateResponse = await Fixture.Client().SendAsync(request).ConfigureAwait(false);
             });
 
         "then update is successful".x(() => { Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode); });
@@ -213,7 +213,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
         "and a properly token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromBasicAuthentication("client", "client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting auth token".x(
@@ -254,7 +254,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
         "and a properly token client".x(
             () => client = new TokenClient(
                 TokenCredentials.FromBasicAuthentication("client", "client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting auth token".x(
@@ -283,7 +283,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
         "and a token client with invalid client credentials".x(
             () => client = new TokenClient(
                 TokenCredentials.FromBasicAuthentication("xxx", "xxx"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting auth token".x(
@@ -305,7 +305,7 @@ public sealed class ResourceOwnerLoginFlowFeature : AuthFlowFeature
         "and a token client with invalid client credentials".x(
             () => client = new TokenClient(
                 TokenCredentials.FromBasicAuthentication("client", "client"),
-                _fixture.Client,
+                Fixture.Client,
                 new Uri(WellKnownOpenidConfiguration)));
 
         "when requesting auth token".x(

@@ -28,7 +28,7 @@ public sealed class IdTokenGenerationFeature : AuthFlowFeature
             {
                 client = new TokenClient(
                     TokenCredentials.FromClientCredentials("no_key", "no_key"),
-                    _fixture.Client,
+                    Fixture.Client,
                     new Uri(WellKnownOpenidConfiguration));
             });
 

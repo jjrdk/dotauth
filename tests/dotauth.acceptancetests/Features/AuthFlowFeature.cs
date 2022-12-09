@@ -1,19 +1,21 @@
 ﻿namespace DotAuth.AcceptanceTests.Features;
 
+using System.Threading.Tasks;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using TechTalk.SpecFlow;
 using Xbehave;
 using Xunit;
 using Xunit.Abstractions;
 
 public abstract class AuthFlowFeature
 {
-    private readonly ITestOutputHelper _outputHelper;
+    protected readonly ITestOutputHelper _outputHelper;
     protected const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
     protected const string BaseUrl = "http://localhost:5000";
-    protected TestServerFixture _fixture = null!;
-    protected JsonWebKeySet _jwks = null!;
+    protected TestServerFixture Fixture = null!;
+    protected JsonWebKeySet ServerKeyset = null!;
 
     public AuthFlowFeature(ITestOutputHelper outputHelper)
     {
@@ -24,17 +26,17 @@ public abstract class AuthFlowFeature
     [Background]
     public void Background()
     {
-        "Given a running auth server".x(() => _fixture = new TestServerFixture(_outputHelper, BaseUrl))
-            .Teardown(() => _fixture?.Dispose());
+        "Given a running auth server".x(() => Fixture = new TestServerFixture(_outputHelper, BaseUrl))
+            .Teardown(() => Fixture?.Dispose());
 
         "And the server signing keys".x(
             async () =>
             {
-                var keysJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                var keysJson = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
                 var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(keysJson);
 
-                _jwks = keys!;
-                Assert.NotEmpty(_jwks?.Keys);
+                ServerKeyset = keys!;
+                Assert.NotEmpty(ServerKeyset?.Keys);
             });
     }
 }

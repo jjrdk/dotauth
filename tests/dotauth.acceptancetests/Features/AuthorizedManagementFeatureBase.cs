@@ -10,29 +10,29 @@ using Xunit.Abstractions;
 
 public abstract class AuthorizedManagementFeatureBase
 {
-    private readonly ITestOutputHelper _outputHelper;
-    private const string BaseUrl = "http://localhost";
-    private static readonly Uri WellKnownUmaConfiguration = new(BaseUrl + "/.well-known/openid-configuration");
-    protected TestServerFixture _fixture = null!;
+    protected readonly ITestOutputHelper OutputHelper;
+    protected const string BaseUrl = "http://localhost";
+    protected static readonly Uri WellKnownUmaConfiguration = new(BaseUrl + "/.well-known/openid-configuration");
+    protected TestServerFixture Fixture = null!;
     protected ManagementClient _managerClient = null!;
     protected TokenClient _tokenClient = null!;
     protected GrantedTokenResponse _administratorToken = null!;
 
     public AuthorizedManagementFeatureBase(ITestOutputHelper outputHelper)
     {
-        _outputHelper = outputHelper;
+        OutputHelper = outputHelper;
     }
 
     [Background]
     public void Background()
     {
-        "Given a running auth server".x(() => _fixture = new TestServerFixture(_outputHelper, BaseUrl))
-            .Teardown(() => _fixture.Dispose());
+        "Given a running auth server".x(() => Fixture = new TestServerFixture(OutputHelper, BaseUrl))
+            .Teardown(() => Fixture.Dispose());
 
         "and a manager client".x(
             async () =>
             {
-                _managerClient = await ManagementClient.Create(_fixture.Client, WellKnownUmaConfiguration)
+                _managerClient = await ManagementClient.Create(Fixture.Client, WellKnownUmaConfiguration)
                     .ConfigureAwait(false);
             });
 
@@ -41,7 +41,7 @@ public abstract class AuthorizedManagementFeatureBase
             {
                 _tokenClient = new TokenClient(
                     TokenCredentials.FromClientCredentials("manager_client", "manager_client"),
-                    _fixture.Client,
+                    Fixture.Client,
                     WellKnownUmaConfiguration);
             });
 

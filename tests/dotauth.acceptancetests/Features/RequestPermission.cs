@@ -16,13 +16,11 @@ using Xunit;
 using Xunit.Abstractions;
 
 [Binding]
-public class RequestPermission : IDisposable
+[Scope(Feature = "Request permission to protected resource")]
+public class RequestPermission : AuthFlowFeature, IDisposable
 {
-    private const string BaseUrl = "http://localhost:5000";
     private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
 
-    private readonly ITestOutputHelper _outputHelper;
-    private TestServerFixture _fixture;
     private GrantedTokenResponse _grantedToken = null!;
     private UmaClient _client = null!;
     private TokenClient _tokenClient = null!;
@@ -30,28 +28,28 @@ public class RequestPermission : IDisposable
     private string _ticketId = null!;
 
     public RequestPermission(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
-        _outputHelper = outputHelper;
         IdentityModelEventSource.ShowPII = true;
-    }
-
-    [Given(@"a running auth server")]
-    public void GivenARunningAuthServer()
-    {
-        _fixture = new TestServerFixture(_outputHelper, BaseUrl);
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
-        _fixture?.Dispose();
+        Fixture?.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    [Given(@"a running auth server")]
+    public void GivenARunningAuthServer()
+    {
+        Fixture = new TestServerFixture(_outputHelper, BaseUrl);
     }
 
     [Given(@"the server's signing key")]
     public async Task GivenTheServersSigningKey()
     {
-        var json = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+        var json = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
         var jwks = new JsonWebKeySet(json);
 
         Assert.NotEmpty(jwks.Keys);
@@ -62,7 +60,7 @@ public class RequestPermission : IDisposable
     {
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-            _fixture.Client,
+            Fixture.Client,
             new Uri(WellKnownUmaConfiguration));
     }
 
@@ -80,7 +78,7 @@ public class RequestPermission : IDisposable
     [Given(@"a properly configured uma client")]
     public void GivenAProperlyConfiguredUmaClient()
     {
-        _client = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration));
+        _client = new UmaClient(Fixture.Client, new Uri(WellKnownUmaConfiguration));
     }
 
     [When(@"registering resource")]
