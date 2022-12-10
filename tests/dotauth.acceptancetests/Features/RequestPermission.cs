@@ -19,8 +19,6 @@ using Xunit.Abstractions;
 [Scope(Feature = "Request permission to protected resource")]
 public class RequestPermission : AuthFlowFeature, IDisposable
 {
-    private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
-
     private GrantedTokenResponse _grantedToken = null!;
     private UmaClient _client = null!;
     private TokenClient _tokenClient = null!;

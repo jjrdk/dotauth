@@ -9,13 +9,15 @@ using Xbehave;
 using Xunit;
 using Xunit.Abstractions;
 
-public abstract class AuthFlowFeature
+[Binding]
+public partial class AuthFlowFeature
 {
-    protected readonly ITestOutputHelper _outputHelper;
-    protected const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
+    private readonly ITestOutputHelper _outputHelper;
+    public const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
+    public const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
     protected const string BaseUrl = "http://localhost:5000";
-    protected TestServerFixture Fixture = null!;
-    protected JsonWebKeySet ServerKeyset = null!;
+    private TestServerFixture _fixture = null!;
+    private JsonWebKeySet _serverKeyset = null!;
 
     public AuthFlowFeature(ITestOutputHelper outputHelper)
     {
@@ -23,20 +25,35 @@ public abstract class AuthFlowFeature
         IdentityModelEventSource.ShowPII = true;
     }
 
+    [Given(@"a running auth server")]
+    public void GivenARunningAuthServer()
+    {
+        _fixture = new TestServerFixture(_outputHelper, BaseUrl);
+    }
+
+    [Given(@"the server's signing key")]
+    public async Task GivenTheServersSigningKey()
+    {
+        var json = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+        _serverKeyset = new JsonWebKeySet(json);
+
+        Assert.NotEmpty(_serverKeyset.Keys);
+    }
+
     [Background]
     public void Background()
     {
-        "Given a running auth server".x(() => Fixture = new TestServerFixture(_outputHelper, BaseUrl))
-            .Teardown(() => Fixture?.Dispose());
+        "Given a running auth server".x(() => _fixture = new TestServerFixture(_outputHelper, BaseUrl))
+            .Teardown(() => _fixture?.Dispose());
 
         "And the server signing keys".x(
             async () =>
             {
-                var keysJson = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+                var keysJson = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
                 var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(keysJson);
 
-                ServerKeyset = keys!;
-                Assert.NotEmpty(ServerKeyset?.Keys);
+                _serverKeyset = keys!;
+                Assert.NotEmpty(_serverKeyset?.Keys);
             });
     }
 }

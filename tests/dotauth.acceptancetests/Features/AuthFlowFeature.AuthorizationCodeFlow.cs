@@ -7,46 +7,20 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
-using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
 using Xunit;
-using Xunit.Abstractions;
 
-[Binding]
-[Scope(Feature = "Authorization Code Flow")]
-public class AuthorizationCodeFlow : AuthFlowFeature
+public partial class AuthFlowFeature
 {
-    private TokenClient _client = null!;
     private Option<Uri> _response;
-
-    /// <inheritdoc />
-    public AuthorizationCodeFlow(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
-
-    [Given(@"a running auth server")]
-    public void GivenARunningAuthServer()
-    {
-        Fixture = new TestServerFixture(_outputHelper, BaseUrl);
-    }
-
-    [Given(@"the server's signing key")]
-    public async Task GivenTheServersSigningKey()
-    {
-        var json = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
-        var jwks = new JsonWebKeySet(json);
-
-        Assert.NotEmpty(jwks.Keys);
-    }
 
     [Given(@"a properly configured auth client")]
     public void GivenAProperlyConfiguredAuthClient()
     {
         _client = new TokenClient(
             TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
-            Fixture.Client,
-            new Uri(WellKnownOpenidConfiguration));
+            _fixture.Client,
+            new Uri(AuthFlowFeature.WellKnownOpenidConfiguration));
     }
 
     [When(@"requesting authorization for scope (.*)")]
