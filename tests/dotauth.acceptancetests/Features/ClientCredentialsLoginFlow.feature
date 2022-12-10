@@ -4,7 +4,7 @@ Feature: Client Credentials Login Flow
 Background: 
 	Given a running auth server
 	And the server's signing key
-	And a properly configured token client
+	And a client credentials token client with clientCredentials, clientCredentials
 
 Scenario: Successful authentication
 	When requesting token

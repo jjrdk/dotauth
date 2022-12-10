@@ -9,56 +9,22 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
 using Xunit;
-using Xunit.Abstractions;
 
-[Binding]
-[Scope(Feature = "Request permission to protected resource")]
-public class RequestPermission : AuthFlowFeature, IDisposable
+public partial class AuthFlowFeature
 {
     private GrantedTokenResponse _grantedToken = null!;
-    private UmaClient _client = null!;
-    private TokenClient _tokenClient = null!;
+    private UmaClient _umaClient = null!;
     private string _resourceId = null!;
     private string _ticketId = null!;
-
-    public RequestPermission(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-        IdentityModelEventSource.ShowPII = true;
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        Fixture?.Dispose();
-        GC.SuppressFinalize(this);
-    }
-
-    [Given(@"a running auth server")]
-    public void GivenARunningAuthServer()
-    {
-        Fixture = new TestServerFixture(_outputHelper, BaseUrl);
-    }
-
-    [Given(@"the server's signing key")]
-    public async Task GivenTheServersSigningKey()
-    {
-        var json = await Fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
-        var jwks = new JsonWebKeySet(json);
-
-        Assert.NotEmpty(jwks.Keys);
-    }
 
     [Given(@"a properly configured token client")]
     public void GivenAProperlyConfiguredTokenClient()
     {
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-            Fixture.Client,
+            _fixture.Client,
             new Uri(WellKnownUmaConfiguration));
     }
 
@@ -76,13 +42,13 @@ public class RequestPermission : AuthFlowFeature, IDisposable
     [Given(@"a properly configured uma client")]
     public void GivenAProperlyConfiguredUmaClient()
     {
-        _client = new UmaClient(Fixture.Client, new Uri(WellKnownUmaConfiguration));
+        _umaClient = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration));
     }
 
     [When(@"registering resource")]
     public async Task WhenRegisteringResource()
     {
-        var resource = (await _client.AddResource(
+        var resource = (await _umaClient.AddResource(
                 new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
                 _grantedToken.AccessToken)
             .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result)!;
@@ -92,7 +58,7 @@ public class RequestPermission : AuthFlowFeature, IDisposable
     [When(@"updating policy")]
     public async Task WhenSettingSettingPolicy()
     {
-        var option = await _client.UpdateResource(
+        var option = await _umaClient.UpdateResource(
             new ResourceSet
             {
                 Id = _resourceId,
@@ -116,7 +82,7 @@ public class RequestPermission : AuthFlowFeature, IDisposable
     [When(@"requesting permission")]
     public async Task WhenRequestingPermission()
     {
-        var response = await _client.RequestPermission(
+        var response = await _umaClient.RequestPermission(
                 _grantedToken.AccessToken,
                 requests: new PermissionRequest { IdToken = _grantedToken.IdToken, ResourceSetId = _resourceId, Scopes = new[] { "read" } })
             .ConfigureAwait(false) as Option<TicketResponse>.Result;
@@ -129,7 +95,7 @@ public class RequestPermission : AuthFlowFeature, IDisposable
     [When(@"requesting permissions")]
     public async Task WhenRequestingPermissions()
     {
-        var response = await _client.RequestPermission(
+        var response = await _umaClient.RequestPermission(
                 _grantedToken.AccessToken,
                 CancellationToken.None,
                 new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "write" } },

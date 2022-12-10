@@ -24,8 +24,8 @@ public partial class AuthFlowFeature
     private Option<GrantedTokenResponse> _expiredPoll = null!;
     private DeviceAuthorizationResponse _deviceResponse = null!;
 
-    [Given(@"a token client")]
-    public void GivenATokenClient()
+    [Given(@"a device token client")]
+    public void GivenADeviceTokenClient()
     {
         _tokenClient = new TokenClient(
             TokenCredentials.AsDevice(),

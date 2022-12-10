@@ -14,13 +14,11 @@ using Xunit;
 
 public partial class AuthFlowFeature
 {
-    private TokenClient _client = null!;
-    private GrantedTokenResponse _token = null!;
 
     [Given(@"a client credentials token client with (.+), (.+)")]
     public void GivenAClientCredentialsTokenClientWith(string id, string secret)
     {
-        _client = new TokenClient(
+        _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials(id, secret),
             _fixture!.Client,
             new Uri(AuthFlowFeature.WellKnownOpenidConfiguration));
@@ -29,7 +27,7 @@ public partial class AuthFlowFeature
     [When(@"getting token")]
     public async Task WhenGettingToken()
     {
-        var option = await _client.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "api" }))
+        var option = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "api" }))
             .ConfigureAwait(false);
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         _token = response!.Item;

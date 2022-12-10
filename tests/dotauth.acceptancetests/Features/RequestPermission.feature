@@ -1,24 +1,21 @@
 Feature: Request permission to protected resource
 	Create resource and request permission and access token
 
-@RequestPermission
-Scenario: Successful permission creation
+Background: 	
 	Given a running auth server
 	And the server's signing key
-	And a properly configured token client
-	And a valid UMA token
+	And a client credentials token client with clientCredentials, clientCredentials
+	Given a valid UMA token
 	And a properly configured uma client
+
+@RequestPermission
+Scenario: Successful permission creation
 	When registering resource
 	And requesting permission
 	Then returns ticket id
 
 @RequestPermission
 Scenario: Successful permission token grant
-	Given a running auth server
-	And the server's signing key
-	And a properly configured token client
-	And a valid UMA token
-	And a properly configured uma client
 	When registering resource
 	And requesting permission
 	And updating policy
@@ -27,11 +24,6 @@ Scenario: Successful permission token grant
 
 @RequestPermission
 Scenario: Successful permissions creation
-	Given a running auth server
-	And the server's signing key
-	And a properly configured token client
-	And a valid UMA token
-	And a properly configured uma client
 	When registering resource
 	And requesting permissions
 	Then returns ticket id

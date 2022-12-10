@@ -19,7 +19,7 @@ namespace DotAuth.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class RequestPermissionToProtectedResourceFeature : object, Xunit.IClassFixture<RequestPermissionToProtectedResourceFeature.FixtureData>, System.IDisposable
+    public partial class LocalAuthenticationFeature : object, Xunit.IClassFixture<LocalAuthenticationFeature.FixtureData>, System.IDisposable
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
@@ -28,10 +28,10 @@ namespace DotAuth.AcceptanceTests.Features
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "RequestPermission.feature"
+#line 1 "LocalAuthentication.feature"
 #line hidden
         
-        public RequestPermissionToProtectedResourceFeature(RequestPermissionToProtectedResourceFeature.FixtureData fixtureData, DotAuth_AcceptanceTests_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public LocalAuthenticationFeature(LocalAuthenticationFeature.FixtureData fixtureData, DotAuth_AcceptanceTests_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
             this.TestInitialize();
@@ -40,7 +40,7 @@ namespace DotAuth.AcceptanceTests.Features
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Request permission to protected resource", "\tCreate resource and request permission and access token", ProgrammingLanguage.CSharp, featureTags);
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Local Authentication", "\tLocal authentication behavior verification", ProgrammingLanguage.CSharp, featureTags);
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -85,15 +85,6 @@ namespace DotAuth.AcceptanceTests.Features
 #line 6
  testRunner.And("the server\'s signing key", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 7
- testRunner.And("a client credentials token client with clientCredentials, clientCredentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 8
- testRunner.Given("a valid UMA token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 9
- testRunner.And("a properly configured uma client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
         }
         
         void System.IDisposable.Dispose()
@@ -101,16 +92,45 @@ namespace DotAuth.AcceptanceTests.Features
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Successful permission creation")]
-        [Xunit.TraitAttribute("FeatureTitle", "Request permission to protected resource")]
-        [Xunit.TraitAttribute("Description", "Successful permission creation")]
-        [Xunit.TraitAttribute("Category", "RequestPermission")]
-        public void SuccessfulPermissionCreation()
+        [Xunit.SkippableFactAttribute(DisplayName="Successful logout")]
+        [Xunit.TraitAttribute("FeatureTitle", "Local Authentication")]
+        [Xunit.TraitAttribute("Description", "Successful logout")]
+        public void SuccessfulLogout()
         {
-            string[] tagsOfScenario = new string[] {
-                    "RequestPermission"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful permission creation", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful logout", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 8
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 4
+this.FeatureBackground();
+#line hidden
+#line 9
+ testRunner.When("logging out", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 10
+ testRunner.Then("receives redirect to login page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="Valid local login")]
+        [Xunit.TraitAttribute("FeatureTitle", "Local Authentication")]
+        [Xunit.TraitAttribute("Description", "Valid local login")]
+        public void ValidLocalLogin()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Valid local login", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 12
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -125,91 +145,41 @@ this.ScenarioInitialize(scenarioInfo);
 this.FeatureBackground();
 #line hidden
 #line 13
- testRunner.When("registering resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("posting valid local authorization credentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 14
- testRunner.And("requesting permission", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 15
- testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("receives auth cookie", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Successful permission token grant")]
-        [Xunit.TraitAttribute("FeatureTitle", "Request permission to protected resource")]
-        [Xunit.TraitAttribute("Description", "Successful permission token grant")]
-        [Xunit.TraitAttribute("Category", "RequestPermission")]
-        public void SuccessfulPermissionTokenGrant()
+        [Xunit.SkippableFactAttribute(DisplayName="Invalid local login")]
+        [Xunit.TraitAttribute("FeatureTitle", "Local Authentication")]
+        [Xunit.TraitAttribute("Description", "Invalid local login")]
+        public void InvalidLocalLogin()
         {
-            string[] tagsOfScenario = new string[] {
-                    "RequestPermission"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful permission token grant", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Invalid local login", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 16
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 4
+this.FeatureBackground();
+#line hidden
+#line 17
+ testRunner.When("posting invalid local authorization credentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
 #line 18
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 4
-this.FeatureBackground();
-#line hidden
-#line 19
- testRunner.When("registering resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 20
- testRunner.And("requesting permission", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 21
- testRunner.And("updating policy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 22
- testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-#line 23
- testRunner.And("can get access token for resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="Successful permissions creation")]
-        [Xunit.TraitAttribute("FeatureTitle", "Request permission to protected resource")]
-        [Xunit.TraitAttribute("Description", "Successful permissions creation")]
-        [Xunit.TraitAttribute("Category", "RequestPermission")]
-        public void SuccessfulPermissionsCreation()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "RequestPermission"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful permissions creation", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 26
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 4
-this.FeatureBackground();
-#line hidden
-#line 27
- testRunner.When("registering resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 28
- testRunner.And("requesting permissions", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 29
- testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("returns login page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -222,12 +192,12 @@ this.FeatureBackground();
             
             public FixtureData()
             {
-                RequestPermissionToProtectedResourceFeature.FeatureSetup();
+                LocalAuthenticationFeature.FeatureSetup();
             }
             
             void System.IDisposable.Dispose()
             {
-                RequestPermissionToProtectedResourceFeature.FeatureTearDown();
+                LocalAuthenticationFeature.FeatureTearDown();
             }
         }
     }

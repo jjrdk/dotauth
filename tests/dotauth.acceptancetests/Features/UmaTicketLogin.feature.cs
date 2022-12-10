@@ -19,7 +19,7 @@ namespace DotAuth.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class RequestPermissionToProtectedResourceFeature : object, Xunit.IClassFixture<RequestPermissionToProtectedResourceFeature.FixtureData>, System.IDisposable
+    public partial class UmaTicketLoginFeature : object, Xunit.IClassFixture<UmaTicketLoginFeature.FixtureData>, System.IDisposable
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
@@ -28,10 +28,10 @@ namespace DotAuth.AcceptanceTests.Features
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "RequestPermission.feature"
+#line 1 "UmaTicketLogin.feature"
 #line hidden
         
-        public RequestPermissionToProtectedResourceFeature(RequestPermissionToProtectedResourceFeature.FixtureData fixtureData, DotAuth_AcceptanceTests_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public UmaTicketLoginFeature(UmaTicketLoginFeature.FixtureData fixtureData, DotAuth_AcceptanceTests_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
             this.TestInitialize();
@@ -40,7 +40,7 @@ namespace DotAuth.AcceptanceTests.Features
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Request permission to protected resource", "\tCreate resource and request permission and access token", ProgrammingLanguage.CSharp, featureTags);
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Uma ticket login", "\tLog in with UMA ticket", ProgrammingLanguage.CSharp, featureTags);
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -86,13 +86,16 @@ namespace DotAuth.AcceptanceTests.Features
  testRunner.And("the server\'s signing key", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 7
- testRunner.And("a client credentials token client with clientCredentials, clientCredentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("a client credentials token client with post_client, post_client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 8
- testRunner.Given("a valid UMA token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.And("a UMA client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 9
- testRunner.And("a properly configured uma client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.When("getting a token for user, password for scope uma_protection,offline", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 10
+ testRunner.And("has valid access token for audience post_client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
         }
         
@@ -101,16 +104,14 @@ namespace DotAuth.AcceptanceTests.Features
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Successful permission creation")]
-        [Xunit.TraitAttribute("FeatureTitle", "Request permission to protected resource")]
-        [Xunit.TraitAttribute("Description", "Successful permission creation")]
-        [Xunit.TraitAttribute("Category", "RequestPermission")]
-        public void SuccessfulPermissionCreation()
+        [Xunit.SkippableFactAttribute(DisplayName="Successful ticket authentication")]
+        [Xunit.TraitAttribute("FeatureTitle", "Uma ticket login")]
+        [Xunit.TraitAttribute("Description", "Successful ticket authentication")]
+        public void SuccessfulTicketAuthentication()
         {
-            string[] tagsOfScenario = new string[] {
-                    "RequestPermission"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful permission creation", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful ticket authentication", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 12
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -125,28 +126,29 @@ this.ScenarioInitialize(scenarioInfo);
 this.FeatureBackground();
 #line hidden
 #line 13
- testRunner.When("registering resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("creating resource set", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 14
- testRunner.And("requesting permission", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("getting a redirection", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 15
- testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And("getting token from ticket", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 16
+ testRunner.Then("can get resource with token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Successful permission token grant")]
-        [Xunit.TraitAttribute("FeatureTitle", "Request permission to protected resource")]
-        [Xunit.TraitAttribute("Description", "Successful permission token grant")]
-        [Xunit.TraitAttribute("Category", "RequestPermission")]
-        public void SuccessfulPermissionTokenGrant()
+        [Xunit.SkippableFactAttribute(DisplayName="Instance without policy ticket authentication")]
+        [Xunit.TraitAttribute("FeatureTitle", "Uma ticket login")]
+        [Xunit.TraitAttribute("Description", "Instance without policy ticket authentication")]
+        public void InstanceWithoutPolicyTicketAuthentication()
         {
-            string[] tagsOfScenario = new string[] {
-                    "RequestPermission"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful permission token grant", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Instance without policy ticket authentication", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 18
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -161,35 +163,27 @@ this.ScenarioInitialize(scenarioInfo);
 this.FeatureBackground();
 #line hidden
 #line 19
- testRunner.When("registering resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("creating resource set without policy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 20
- testRunner.And("requesting permission", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("getting a redirection", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 21
- testRunner.And("updating policy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 22
- testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-#line 23
- testRunner.And("can get access token for resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Then("cannot get token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Successful permissions creation")]
-        [Xunit.TraitAttribute("FeatureTitle", "Request permission to protected resource")]
-        [Xunit.TraitAttribute("Description", "Successful permissions creation")]
-        [Xunit.TraitAttribute("Category", "RequestPermission")]
-        public void SuccessfulPermissionsCreation()
+        [Xunit.SkippableFactAttribute(DisplayName="Unsuccessful ticket authentication")]
+        [Xunit.TraitAttribute("FeatureTitle", "Uma ticket login")]
+        [Xunit.TraitAttribute("Description", "Unsuccessful ticket authentication")]
+        public void UnsuccessfulTicketAuthentication()
         {
-            string[] tagsOfScenario = new string[] {
-                    "RequestPermission"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful permissions creation", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 26
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Unsuccessful ticket authentication", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 23
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -202,14 +196,14 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-#line 27
- testRunner.When("registering resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 24
+ testRunner.When("creating resource set with deviating scopes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 28
- testRunner.And("requesting permissions", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 25
+ testRunner.And("requesting permission ticket", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 29
- testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 26
+ testRunner.Then("cannot get token from ticket", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -222,12 +216,12 @@ this.FeatureBackground();
             
             public FixtureData()
             {
-                RequestPermissionToProtectedResourceFeature.FeatureSetup();
+                UmaTicketLoginFeature.FeatureSetup();
             }
             
             void System.IDisposable.Dispose()
             {
-                RequestPermissionToProtectedResourceFeature.FeatureTearDown();
+                UmaTicketLoginFeature.FeatureTearDown();
             }
         }
     }

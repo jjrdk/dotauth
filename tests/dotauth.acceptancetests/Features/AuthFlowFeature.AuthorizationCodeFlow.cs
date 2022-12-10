@@ -17,7 +17,7 @@ public partial class AuthFlowFeature
     [Given(@"a properly configured auth client")]
     public void GivenAProperlyConfiguredAuthClient()
     {
-        _client = new TokenClient(
+        _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
             _fixture.Client,
             new Uri(AuthFlowFeature.WellKnownOpenidConfiguration));
@@ -40,7 +40,7 @@ public partial class AuthFlowFeature
             code_challenge = CodeChallengeMethods.S256.BuildPkce().CodeChallenge,
             prompt = PromptNames.Login
         };
-        _response = await _client.GetAuthorization(
+        _response = await _tokenClient.GetAuthorization(
                 authorizationRequest)
             .ConfigureAwait(false);
     }
@@ -63,7 +63,7 @@ public partial class AuthFlowFeature
     public async Task WhenRequestingAuthorizationForWrongCallback()
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
-        _response = await _client.GetAuthorization(
+        _response = await _tokenClient.GetAuthorization(
                 new AuthorizationRequest(
                     new[] { "api1" },
                     new[] { ResponseTypeNames.Code },
