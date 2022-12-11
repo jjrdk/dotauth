@@ -28,7 +28,7 @@ Scenario: Can authorize device with user approval when polled too fast
 Scenario: Polling after expiry gets error
 	Given a running auth server
 	And the server's signing key
-	And a token client
+	And a device token client
 	When a device requests authorization
 	And the device polls the token server after expiry
 	Then error shows request expiry

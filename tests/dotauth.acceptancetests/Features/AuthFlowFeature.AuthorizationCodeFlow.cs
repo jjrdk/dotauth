@@ -10,7 +10,7 @@ using DotAuth.Shared.Requests;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     private Option<Uri> _response;
 
@@ -20,7 +20,7 @@ public partial class AuthFlowFeature
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
             _fixture.Client,
-            new Uri(AuthFlowFeature.WellKnownOpenidConfiguration));
+            new Uri(FeatureTest.WellKnownOpenidConfiguration));
     }
 
     [When(@"requesting authorization for scope (.*)")]

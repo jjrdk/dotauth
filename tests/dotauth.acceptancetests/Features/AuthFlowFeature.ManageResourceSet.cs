@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     AddResourceSetResponse _resourceSetResponse = null!;
     EditPolicyResponse _policyRules = null!;

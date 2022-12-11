@@ -8,7 +8,7 @@ using DotAuth.Shared.Responses;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     [When(@"getting a PAT token for (.+), (.+)")]
     public async Task WhenGettingAPatTokenFor(string user, string password)

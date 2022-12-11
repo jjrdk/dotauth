@@ -302,11 +302,14 @@ public sealed class ResourceSetController : ControllerBase
                 HttpStatusCode.BadRequest);
         }
 
-        resourceSet = resourceSet with
-        {
-            Id = Id.Create(),
-            AuthorizationPolicies = new[] { new PolicyRule { IsResourceOwnerConsentNeeded = true } }
-        };
+        resourceSet = resourceSet.AuthorizationPolicies.Length == 0
+            ? resourceSet with
+            {
+                Id = Id.Create(),
+                AuthorizationPolicies = new[] { new PolicyRule { IsResourceOwnerConsentNeeded = true } }
+            }
+            : resourceSet with { Id = Id.Create() };
+            
         if (!await _resourceSetRepository.Add(subject, resourceSet, cancellationToken).ConfigureAwait(false))
         {
             return Problem();

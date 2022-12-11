@@ -105,7 +105,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("a manager client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 7
- testRunner.And("a token client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("a client credentials token client with manager_client, manager_client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 8
  testRunner.And("a manager token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");

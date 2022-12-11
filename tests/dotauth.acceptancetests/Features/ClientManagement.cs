@@ -9,40 +9,16 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Responses;
 using TechTalk.SpecFlow;
 using Xunit;
-using Xunit.Abstractions;
 
-[Binding]
-[Scope(Feature = "Client Management")]
-public class ClientManagement : AuthorizedManagementFeatureBase
+public partial class FeatureTest
 {
     private Client[] _clients = null!;
     private Option<Client> _addClientResponse;
 
-    /// <inheritdoc />
-    public ClientManagement(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
-
-    [Given(@"a running auth server")]
-    public void GivenARunningAuthServer()
-    {
-        Fixture = new TestServerFixture(OutputHelper, BaseUrl);
-    }
-
     [Given(@"a manager client")]
     public async Task GivenAManagerClient()
     {
-        _managerClient = await ManagementClient.Create(Fixture.Client, WellKnownUmaConfiguration).ConfigureAwait(false);
-    }
-
-    [Given(@"a token client")]
-    public void GivenATokenClient()
-    {
-        _tokenClient = new TokenClient(
-            TokenCredentials.FromClientCredentials("manager_client", "manager_client"),
-            Fixture.Client,
-            WellKnownUmaConfiguration);
+        _managerClient = await ManagementClient.Create(_fixture.Client, new Uri(WellKnownUmaConfiguration)).ConfigureAwait(false);
     }
 
     [Given(@"a manager token")]
@@ -81,7 +57,7 @@ public class ClientManagement : AuthorizedManagementFeatureBase
             ClientId = "test_client",
             ClientName = "Test Client",
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
-            AllowedScopes = new[] { "api" },
+            AllowedScopes = new[] { "test" },
             RedirectionUrls = new[] { new Uri("http://localhost/callback"), },
             ApplicationType = ApplicationTypes.Native,
             GrantTypes = new[] { GrantTypes.ClientCredentials },

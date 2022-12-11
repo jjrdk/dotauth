@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     private IDataProtector _dataProtector = null!;
     

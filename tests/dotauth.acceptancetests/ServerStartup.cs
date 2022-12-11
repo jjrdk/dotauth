@@ -92,8 +92,12 @@ public sealed class ServerStartup
                 },
                 assemblyTypes: new[] { typeof(IDefaultUi), typeof(IDefaultSmsUi) })
             .AddSmsAuthentication(mockSmsClient.Object);
-        services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter();
-        services.AddAuthentication(
+        services
+            #if DEBUG
+            .AddLogging(l => l.AddXunit(_outputHelper))
+            #endif
+            .AddAccountFilter()
+            .AddAuthentication(
                 cfg =>
                 {
                     cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;

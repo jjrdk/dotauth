@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     private GrantedTokenResponse _token = null!;
     private Option<GrantedTokenResponse> _tokenOption = null!;
@@ -88,7 +88,7 @@ public partial class AuthFlowFeature
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials("xxx", "xxx"),
             _fixture!.Client,
-            new Uri(AuthFlowFeature.WellKnownOpenidConfiguration));
+            new Uri(FeatureTest.WellKnownOpenidConfiguration));
     }
 
     [Then(@"does not have token")]

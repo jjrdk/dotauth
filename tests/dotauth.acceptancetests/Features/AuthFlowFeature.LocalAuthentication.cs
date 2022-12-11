@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     private HttpResponseMessage _responseMessage = null!;
 

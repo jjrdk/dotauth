@@ -19,7 +19,7 @@ Scenario: UserInfo after successful authorization
 	And can get user info response
 
 Scenario: Successful claims update
-	When getting a token for user, password for scope openid
+	When getting a token for user, password for scope openid,offline
 	And has valid access token for audience client
 	And updating own claims
 	Then update is successful
@@ -35,9 +35,9 @@ Scenario: Successful token revocation
 
 Scenario: Invalid client	
 	Given a client credentials token client with xxx, xxx
-	When requesting auth token
+	When getting a token option for user, password for scope openid
 	Then does not have token
 
 Scenario: Invalid user credentials
-	When getting a token for user, xxx for scope openid,offline
+	When getting a token option for user, xxx for scope openid,offline
 	Then does not have token

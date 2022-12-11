@@ -16,7 +16,7 @@ using DotAuth.Shared.Responses;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     private GrantedTokenResponse _umaToken;
 

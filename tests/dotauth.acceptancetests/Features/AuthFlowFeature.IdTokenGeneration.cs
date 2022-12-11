@@ -12,18 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
-
-    [Given(@"a client credentials token client with (.+), (.+)")]
-    public void GivenAClientCredentialsTokenClientWith(string id, string secret)
-    {
-        _tokenClient = new TokenClient(
-            TokenCredentials.FromClientCredentials(id, secret),
-            _fixture!.Client,
-            new Uri(AuthFlowFeature.WellKnownOpenidConfiguration));
-    }
-
     [When(@"getting token")]
     public async Task WhenGettingToken()
     {
@@ -46,7 +36,7 @@ public partial class AuthFlowFeature
     [Then(@"token is signed with server key")]
     public void ThenTokenIsSignedWithServerKey()
     {
-        var key = _serverKeyset.GetSignKeys().First();
+        var key = _serverKeyset.GetSigningKeys().First();
         var validationParameters = new TokenValidationParameters
         {
             IssuerSigningKey = key,

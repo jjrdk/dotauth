@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     [Given(@"a basic authentication token client with (.+), (.+)")]
     public void GivenABasicAuthenticationTokenClientWith(string clientId, string clientSecret)

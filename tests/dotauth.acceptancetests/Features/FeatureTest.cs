@@ -2,6 +2,8 @@
 
 using System;
 using System.Threading.Tasks;
+using DotAuth.Client;
+using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
@@ -9,7 +11,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 [Binding]
-public partial class AuthFlowFeature : IDisposable
+public partial class FeatureTest : IDisposable
 {
     private readonly ITestOutputHelper _outputHelper;
     public const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
@@ -17,8 +19,10 @@ public partial class AuthFlowFeature : IDisposable
     protected const string BaseUrl = "http://localhost:5000";
     private TestServerFixture _fixture = null!;
     private JsonWebKeySet _serverKeyset = null!;
+    protected ManagementClient _managerClient = null!;
+    protected GrantedTokenResponse _administratorToken = null!;
 
-    public AuthFlowFeature(ITestOutputHelper outputHelper)
+    public FeatureTest(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper;
         IdentityModelEventSource.ShowPII = true;
@@ -37,6 +41,15 @@ public partial class AuthFlowFeature : IDisposable
         _serverKeyset = new JsonWebKeySet(json);
 
         Assert.NotEmpty(_serverKeyset.Keys);
+    }
+
+    [Given(@"a client credentials token client with (.+), (.+)")]
+    public void GivenAClientCredentialsTokenClientWith(string id, string secret)
+    {
+        _tokenClient = new TokenClient(
+            TokenCredentials.FromClientCredentials(id, secret),
+            _fixture.Client,
+            new Uri(FeatureTest.WellKnownOpenidConfiguration));
     }
 
     /// <inheritdoc />

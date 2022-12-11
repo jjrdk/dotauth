@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     [When(@"getting a token for (.+), (.+) for scope (.+)")]
     public async Task WhenGettingATokenForForScope(string user, string password, string scope)
@@ -31,6 +31,14 @@ public partial class AuthFlowFeature
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
 
         _token = response.Item;
+    }
+
+    [When(@"getting a token option for (.+), (.+) for scope (.+)")]
+    public async Task WhenGettingATokenOptionForForScope(string user, string password, string scope)
+    {
+        var scopes = scope.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        _tokenOption = await _tokenClient.GetToken(TokenRequest.FromPassword(user, password, scopes))
+            .ConfigureAwait(false);
     }
 
     [Then(@"has valid access token for audience (.+)")]
@@ -70,10 +78,7 @@ public partial class AuthFlowFeature
         var tokenHandler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
         {
-            IssuerSigningKey = TestKeys.SecretKey.CreateJwk(
-                JsonWebKeyUseNames.Sig,
-                KeyOperations.Sign,
-                KeyOperations.Verify),
+            IssuerSigningKey = _serverKeyset.GetSigningKeys()[0],
             ValidAudience = client,
             ValidIssuer = "https://localhost"
         };

@@ -186,7 +186,7 @@ this.ScenarioInitialize(scenarioInfo);
 this.FeatureBackground();
 #line hidden
 #line 22
- testRunner.When("getting a token for user, password for scope openid", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("getting a token for user, password for scope openid,offline", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 23
  testRunner.And("has valid access token for audience client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
@@ -291,7 +291,7 @@ this.FeatureBackground();
  testRunner.Given("a client credentials token client with xxx, xxx", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 38
- testRunner.When("requesting auth token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("getting a token option for user, password for scope openid", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 39
  testRunner.Then("does not have token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -322,7 +322,7 @@ this.ScenarioInitialize(scenarioInfo);
 this.FeatureBackground();
 #line hidden
 #line 42
- testRunner.When("getting a token for user, xxx for scope openid,offline", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("getting a token option for user, xxx for scope openid,offline", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 43
  testRunner.Then("does not have token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");

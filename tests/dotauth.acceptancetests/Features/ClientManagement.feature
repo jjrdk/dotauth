@@ -1,18 +1,16 @@
 Feature: Client Management
 	Client management
 
-Scenario: Successful client listing
+Background: 
 	Given a running auth server
 	And a manager client
-	And a token client
+	And a client credentials token client with manager_client, manager_client
 	And a manager token
+
+Scenario: Successful client listing
 	When getting all clients
 	Then contains list of clients
 
 Scenario: Successful add client
-	Given a running auth server
-	And a manager client
-	And a token client
-	And a manager token
 	When adding client
 	Then operation succeeds

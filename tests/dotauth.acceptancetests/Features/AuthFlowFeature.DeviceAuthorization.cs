@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using Xunit;
 
-public partial class AuthFlowFeature
+public partial class FeatureTest
 {
     private const string ClientId = "device";
     private DiscoveryInformation _doc = null!;
@@ -30,7 +30,7 @@ public partial class AuthFlowFeature
         _tokenClient = new TokenClient(
             TokenCredentials.AsDevice(),
             _fixture!.Client,
-            new Uri(AuthFlowFeature.WellKnownOpenidConfiguration));
+            new Uri(FeatureTest.WellKnownOpenidConfiguration));
 
         Assert.NotNull(_tokenClient);
     }
@@ -39,7 +39,7 @@ public partial class AuthFlowFeature
     public async Task WhenRequestingDiscoveryDocument()
     {
         var request =
-            new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(AuthFlowFeature.WellKnownOpenidConfiguration) };
+            new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(FeatureTest.WellKnownOpenidConfiguration) };
         request.Headers.Accept.Clear();
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         var response = await _fixture!.Client().SendAsync(request).ConfigureAwait(false);
@@ -61,7 +61,7 @@ public partial class AuthFlowFeature
         var authClient = new TokenClient(
             TokenCredentials.FromClientCredentials(ClientId, "client"),
             _fixture!.Client,
-            new Uri(AuthFlowFeature.WellKnownOpenidConfiguration));
+            new Uri(FeatureTest.WellKnownOpenidConfiguration));
         var option = await authClient.GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }))
             .ConfigureAwait(false);
 
