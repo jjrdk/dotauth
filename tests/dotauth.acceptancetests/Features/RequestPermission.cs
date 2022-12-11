@@ -45,17 +45,24 @@ public partial class FeatureTest
     }
 
     [When(@"registering resource")]
-    public async Task WhenRegisteringResource()
+    public async Task WhenRegisteringResource(Table table)
     {
+        var row = table.Rows[0];
+        var resourceSet = new ResourceSet
+        {
+            Name = row["Name"],
+            Scopes = row["Scopes"]
+                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        };
         var resource = (await _umaClient.AddResource(
-                new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
+                resourceSet,
                 _token.AccessToken)
             .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result)!;
         _resourceId = resource.Item.Id;
     }
 
     [When(@"updating policy")]
-    public async Task WhenSettingSettingPolicy()
+    public async Task WhenUpdatingPolicy()
     {
         var option = await _umaClient.UpdateResource(
             new ResourceSet
@@ -78,12 +85,13 @@ public partial class FeatureTest
         Assert.IsType<Option<UpdateResourceSetResponse>.Result>(option);
     }
 
-    [When(@"requesting permission")]
-    public async Task WhenRequestingPermission()
+    [When(@"requesting permission for (.+)")]
+    public async Task WhenRequestingPermissionFor(string scope)
     {
+        var scopes = scope.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         var response = await _umaClient.RequestPermission(
                 _token.AccessToken,
-                requests: new PermissionRequest { IdToken = _token.IdToken, ResourceSetId = _resourceId, Scopes = new[] { "read" } })
+                requests: new PermissionRequest { IdToken = _token.IdToken, ResourceSetId = _resourceId, Scopes = scopes })
             .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
         Assert.NotNull(response);

@@ -8,13 +8,11 @@ Background:
 	Given a valid UMA token
 	And a properly configured uma client
 
-@RequestPermission
 Scenario: Successful permission creation
 	When registering resource
 	And requesting permission
 	Then returns ticket id
 
-@RequestPermission
 Scenario: Successful permission token grant
 	When registering resource
 	And requesting permission
@@ -22,7 +20,6 @@ Scenario: Successful permission token grant
 	Then returns ticket id
 	And can get access token for resource
 
-@RequestPermission
 Scenario: Successful permissions creation
 	When registering resource
 	And requesting permissions
