@@ -3,7 +3,6 @@
 using System;
 using System.Threading.Tasks;
 using DotAuth.Client;
-using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
@@ -14,13 +13,12 @@ using Xunit.Abstractions;
 public partial class FeatureTest : IDisposable
 {
     private readonly ITestOutputHelper _outputHelper;
-    public const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
-    public const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
-    protected const string BaseUrl = "http://localhost:5000";
+    private const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
+    private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
+    private const string BaseUrl = "http://localhost:5000";
     private TestServerFixture _fixture = null!;
-    private JsonWebKeySet _serverKeyset = null!;
-    protected ManagementClient _managerClient = null!;
-    protected GrantedTokenResponse _administratorToken = null!;
+    private JsonWebKeySet _serverKeySet = null!;
+    private ManagementClient _managerClient = null!;
 
     public FeatureTest(ITestOutputHelper outputHelper)
     {
@@ -38,9 +36,9 @@ public partial class FeatureTest : IDisposable
     public async Task GivenTheServersSigningKey()
     {
         var json = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
-        _serverKeyset = new JsonWebKeySet(json);
+        _serverKeySet = new JsonWebKeySet(json);
 
-        Assert.NotEmpty(_serverKeyset.Keys);
+        Assert.NotEmpty(_serverKeySet.Keys);
     }
 
     [Given(@"a client credentials token client with (.+), (.+)")]

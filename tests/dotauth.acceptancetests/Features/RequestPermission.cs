@@ -14,7 +14,6 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private GrantedTokenResponse _grantedToken = null!;
     private UmaClient _umaClient = null!;
     private string _resourceId = null!;
     private string _ticketId = null!;
@@ -36,7 +35,7 @@ public partial class FeatureTest
         var handler = new JwtSecurityTokenHandler();
         var principal = handler.ReadJwtToken(token.Item.AccessToken);
         Assert.NotNull(principal.Issuer);
-        _grantedToken = token.Item;
+        _token = token.Item;
     }
 
     [Given(@"a properly configured uma client")]
@@ -50,7 +49,7 @@ public partial class FeatureTest
     {
         var resource = (await _umaClient.AddResource(
                 new ResourceSet { Name = "picture", Scopes = new[] { "read", "write" } },
-                _grantedToken.AccessToken)
+                _token.AccessToken)
             .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result)!;
         _resourceId = resource.Item.Id;
     }
@@ -74,7 +73,7 @@ public partial class FeatureTest
                     }
                 }
             },
-            _grantedToken.AccessToken);
+            _token.AccessToken);
 
         Assert.IsType<Option<UpdateResourceSetResponse>.Result>(option);
     }
@@ -83,8 +82,8 @@ public partial class FeatureTest
     public async Task WhenRequestingPermission()
     {
         var response = await _umaClient.RequestPermission(
-                _grantedToken.AccessToken,
-                requests: new PermissionRequest { IdToken = _grantedToken.IdToken, ResourceSetId = _resourceId, Scopes = new[] { "read" } })
+                _token.AccessToken,
+                requests: new PermissionRequest { IdToken = _token.IdToken, ResourceSetId = _resourceId, Scopes = new[] { "read" } })
             .ConfigureAwait(false) as Option<TicketResponse>.Result;
 
         Assert.NotNull(response);
@@ -96,7 +95,7 @@ public partial class FeatureTest
     public async Task WhenRequestingPermissions()
     {
         var response = await _umaClient.RequestPermission(
-                _grantedToken.AccessToken,
+                _token.AccessToken,
                 CancellationToken.None,
                 new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "write" } },
                 new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "read" } })
@@ -124,7 +123,7 @@ public partial class FeatureTest
         {
             case Option<GrantedTokenResponse>.Result result:
                 {
-                    var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, result.Item.IdToken));
+                    var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, result.Item.IdToken!));
 
                     Assert.IsType<Option<GrantedTokenResponse>.Result>(rpt);
                     break;

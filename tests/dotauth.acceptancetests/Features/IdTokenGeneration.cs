@@ -36,7 +36,7 @@ public partial class FeatureTest
     [Then(@"token is signed with server key")]
     public void ThenTokenIsSignedWithServerKey()
     {
-        var key = _serverKeyset.GetSigningKeys().First();
+        var key = _serverKeySet.GetSigningKeys().First();
         var validationParameters = new TokenValidationParameters
         {
             IssuerSigningKey = key,

@@ -30,13 +30,13 @@ public partial class FeatureTest
 
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(response);
 
-        _administratorToken = result.Item;
+        _token = result.Item;
     }
 
     [When(@"getting all clients")]
     public async Task WhenGettingAllClients()
     {
-        var option = await _managerClient.GetAllClients(_administratorToken.AccessToken).ConfigureAwait(false);
+        var option = await _managerClient.GetAllClients(_token.AccessToken).ConfigureAwait(false);
 
         var response = Assert.IsType<Option<Client[]>.Result>(option);
 
@@ -63,7 +63,7 @@ public partial class FeatureTest
             GrantTypes = new[] { GrantTypes.ClientCredentials },
             JsonWebKeys = TestKeys.SuperSecretKey.CreateSignatureJwk().ToSet()
         };
-        _addClientResponse = await _managerClient.AddClient(client, _administratorToken.AccessToken)
+        _addClientResponse = await _managerClient.AddClient(client, _token.AccessToken)
             .ConfigureAwait(false);
     }
 

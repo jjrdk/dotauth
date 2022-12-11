@@ -47,7 +47,7 @@ public partial class FeatureTest
         var tokenHandler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
         {
-            IssuerSigningKeys = _serverKeyset.GetSigningKeys(),
+            IssuerSigningKeys = _serverKeySet.GetSigningKeys(),
             ValidAudience = "client",
             ValidIssuer = "https://localhost"
         };
@@ -78,7 +78,7 @@ public partial class FeatureTest
         var tokenHandler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
         {
-            IssuerSigningKey = _serverKeyset.GetSigningKeys()[0],
+            IssuerSigningKey = _serverKeySet.GetSigningKeys()[0],
             ValidAudience = client,
             ValidIssuer = "https://localhost"
         };
