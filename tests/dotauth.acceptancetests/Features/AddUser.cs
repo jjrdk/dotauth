@@ -12,9 +12,7 @@ using Moq;
 using TechTalk.SpecFlow;
 using Xunit;
 
-[Binding]
-[Scope(Feature = "Add User")]
-public class AddUser
+public partial class FeatureTest
 {
     private bool _userModified;
     private AddUserOperation _addUserOperation;
