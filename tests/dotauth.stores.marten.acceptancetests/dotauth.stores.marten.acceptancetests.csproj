@@ -16,7 +16,8 @@
         <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0-preview-20221003-04" />
-        <PackageReference Include="xbehave" Version="2.4.1" />
+        <PackageReference Include="Moq" Version="4.18.3" />
+        <PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
         <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <PrivateAssets>all</PrivateAssets>
@@ -30,6 +31,10 @@
         <ProjectReference Include="..\..\src\dotauth.stores.marten\dotauth.stores.marten.csproj" />
         <ProjectReference Include="..\..\src\dotauth.ui\dotauth.ui.csproj" />
         <ProjectReference Include="..\..\src\dotauth\dotauth.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features" />
     </ItemGroup>
 
 </Project>

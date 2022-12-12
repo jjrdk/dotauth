@@ -26,44 +26,44 @@ using Microsoft.IdentityModel.Tokens;
 
 public static class DefaultStores
 {
-    public static IEnumerable<Consent> Consents()
+    public static List<Consent> Consents()
     {
-        return new[]
+        return new()
         {
             new Consent
             {
                 Id = "1",
                 ClientId = "authcode_client",
                 Subject = "administrator",
-                GrantedScopes = new[] {"api1", "openid"}
+                GrantedScopes = new[] { "api1", "openid" }
             },
             new Consent
             {
                 Id = "2",
                 ClientId = "implicit_client",
                 Subject = "administrator",
-                GrantedScopes = new[] {"api1", "openid"}
+                GrantedScopes = new[] { "api1", "openid" }
             },
             new Consent
             {
                 Id = "3",
                 ClientId = "hybrid_client",
                 Subject = "administrator",
-                GrantedScopes = new[] {"api1", "openid"}
+                GrantedScopes = new[] { "api1", "openid" }
             },
             new Consent
             {
                 Id = "4",
                 ClientId = "pkce_client",
                 Subject = "administrator",
-                GrantedScopes = new[] {"api1", "openid"}
+                GrantedScopes = new[] { "api1", "openid" }
             }
         };
     }
 
-    public static IEnumerable<ResourceOwner> Users()
+    public static List<ResourceOwner> Users()
     {
-        return new[]
+        return new()
         {
             new ResourceOwner
             {
@@ -72,7 +72,8 @@ public static class DefaultStores
                 {
                     new Claim(OpenIdClaimTypes.Subject, "administrator"),
                     new Claim(OpenIdClaimTypes.Role, "administrator"),
-                    new Claim(OpenIdClaimTypes.Address, "{ country : 'france' }")
+                    new Claim("acceptance_test", "test"),
+                    new Claim("some_other_claim", "test"),
                 },
                 Password = "password".ToSha256Hash(string.Empty),
                 IsLocalAccount = true
@@ -84,7 +85,8 @@ public static class DefaultStores
                 Claims = new[]
                 {
                     new Claim(OpenIdClaimTypes.Subject, "user"),
-                    new Claim(OpenIdClaimTypes.Name, "John Doe")
+                    new Claim(OpenIdClaimTypes.Name, "John Doe"),
+                    new Claim("acceptance_test", "test"),
                 },
                 IsLocalAccount = true
             },
@@ -103,9 +105,9 @@ public static class DefaultStores
         };
     }
 
-    public static IEnumerable<Client> Clients(SharedContext sharedCtx)
+    public static List<Client> Clients(SharedContext sharedCtx)
     {
-        return new[]
+        return new()
         {
             new Client
             {
@@ -130,22 +132,28 @@ public static class DefaultStores
             },
             new Client
             {
+                RequirePkce = false,
                 ClientId = "client",
                 ClientName = "client",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "client"}},
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "client" } },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"openid", "role", "profile", "address", "offline"},
-                GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
+                AllowedScopes = new[] { "openid", "role", "profile", "address", "offline" },
+                GrantTypes = new[] { GrantTypes.RefreshToken, GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 JsonWebKeys =
                     TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                         .ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") },
+                UserClaimsToIncludeInAuthToken = new[]
+                {
+                    new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                    new Regex("^acceptance_test$", RegexOptions.Compiled),
+                }
             },
             new Client
             {
@@ -159,17 +167,17 @@ public static class DefaultStores
                     }
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"openid", "role", "profile"},
-                GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
+                AllowedScopes = new[] { "openid", "role", "profile" },
+                GrantTypes = new[] { GrantTypes.RefreshToken, GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 UserInfoSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") }
             },
             new Client
             {
@@ -183,12 +191,12 @@ public static class DefaultStores
                     }
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"openid", "role", "profile"},
-                GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
+                AllowedScopes = new[] { "openid", "role", "profile" },
+                GrantTypes = new[] { GrantTypes.RefreshToken, GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 JsonWebKeys =
                     new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk())
                         .AddKey(TestKeys.SecretKey.CreateEncryptionJwk()),
@@ -197,7 +205,7 @@ public static class DefaultStores
                 UserInfoEncryptedResponseAlg = SecurityAlgorithms.EcdsaSha256,
                 UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") }
             },
             new Client
             {
@@ -211,15 +219,15 @@ public static class DefaultStores
                     }
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"openid", "role", "profile"},
-                GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.ClientCredentials},
-                ResponseTypes = new[] {ResponseTypeNames.IdToken},
+                AllowedScopes = new[] { "openid", "role", "profile" },
+                GrantTypes = new[] { GrantTypes.RefreshToken, GrantTypes.ClientCredentials },
+                ResponseTypes = new[] { ResponseTypeNames.IdToken },
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") }
             },
             new Client
             {
@@ -229,70 +237,66 @@ public static class DefaultStores
                 {
                     new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "clientCredentials"}
                 },
-                Claims = new[] {new Claim("test", "test"), new Claim("sub", "ClientCredentials"), },
+                Claims = new[] { new Claim("test", "test"), new Claim("sub", "ClientCredentials"), },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+                UserClaimsToIncludeInAuthToken = new[] { new Regex("^sub$", RegexOptions.Compiled) },
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1", "uma_protection", "offline"},
-                GrantTypes = new[] {GrantTypes.RefreshToken, GrantTypes.ClientCredentials},
-                ResponseTypes = new[] {ResponseTypeNames.Token},
-                JsonWebKeys =
-                    TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
-                        .ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                AllowedScopes = new[] { "api1", "uma_protection", "offline" },
+                GrantTypes = GrantTypes.All,
+                ResponseTypes = ResponseTypeNames.All,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") }
             },
             new Client
             {
                 ClientId = "basic_client",
                 ClientName = "basic_client",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "basic_client"}},
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "basic_client" } },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
-                //LogoUri = null,
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1"},
-                GrantTypes = new[] {GrantTypes.ClientCredentials},
-                ResponseTypes = new[] {ResponseTypeNames.Token},
+                AllowedScopes = new[] { "api1" },
+                GrantTypes = new[] { GrantTypes.ClientCredentials },
+                ResponseTypes = new[] { ResponseTypeNames.Token },
                 JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") }
             },
             new Client
             {
+                RequirePkce = false,
                 ClientId = "post_client",
                 ClientName = "post_client",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "post_client"}},
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "post_client" } },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+                UserClaimsToIncludeInAuthToken = new[] { new Regex("^sub$", RegexOptions.Compiled) },
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1", "uma_protection"},
-                GrantTypes = new[] {GrantTypes.ClientCredentials},
-                ResponseTypes = new[] {ResponseTypeNames.Token},
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                AllowedScopes = new[] { "api1", "uma_protection", "offline" },
+                GrantTypes = new[] { GrantTypes.ClientCredentials, GrantTypes.Password, GrantTypes.UmaTicket },
+                ResponseTypes = new[] { ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")}
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") }
             },
             new Client
             {
                 ClientId = "jwt_client",
                 ClientName = "jwt_client",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "jwt_client"}},
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "jwt_client" } },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretJwt,
-                //LogoUri = null,
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1"},
-                GrantTypes = new[] {GrantTypes.ClientCredentials},
-                ResponseTypes = new[] {ResponseTypeNames.Token},
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                AllowedScopes = new[] { "api1" },
+                GrantTypes = new[] { GrantTypes.ClientCredentials },
+                ResponseTypes = new[] { ResponseTypeNames.Token },
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")},
-                JsonWebKeys = new[] {sharedCtx.ModelSignatureKey, sharedCtx.ModelEncryptionKey}.ToJwks()
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") },
+                JsonWebKeys = new[] { sharedCtx.ModelSignatureKey, sharedCtx.ModelEncryptionKey }.ToJwks()
             },
             new Client
             {
@@ -303,16 +307,16 @@ public static class DefaultStores
                     new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "private_key_client"}
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.PrivateKeyJwt,
-                //LogoUri = null,
+
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1"},
-                GrantTypes = new[] {GrantTypes.ClientCredentials},
-                ResponseTypes = new[] {ResponseTypeNames.Token},
+                AllowedScopes = new[] { "api1" },
+                GrantTypes = new[] { GrantTypes.ClientCredentials },
+                ResponseTypes = new[] { ResponseTypeNames.Token },
                 JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("https://localhost:4200/callback")},
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") },
                 //JwksUri = new Uri("http://localhost:5000/jwks_client")
             },
             new Client
@@ -324,19 +328,19 @@ public static class DefaultStores
                     new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "authcode_client"}
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1", "openid"},
-                GrantTypes = new[] {GrantTypes.AuthorizationCode},
-                ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
+                AllowedScopes = new[] { "api1", "openid" },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
+                ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 JsonWebKeys =
                     TestKeys.SecretKey.CreateSignatureJwk()
                         .ToSet()
                         .AddKey(TestKeys.SuperSecretKey.CreateEncryptionJwk()),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")}
+                RedirectionUrls = new[] { new Uri("http://localhost:5000/callback") }
             },
             new Client
             {
@@ -350,15 +354,14 @@ public static class DefaultStores
                     }
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1", "openid"},
-                GrantTypes = new[] {GrantTypes.AuthorizationCode},
-                ResponseTypes = new[] {ResponseTypeNames.IdToken},
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                AllowedScopes = new[] { "api1", "openid" },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
+                ResponseTypes = new[] { ResponseTypeNames.IdToken },
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")}
+                RedirectionUrls = new[] { new Uri("http://localhost:5000/callback") }
             },
             new Client
             {
@@ -370,50 +373,50 @@ public static class DefaultStores
                 },
                 JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1", "openid"},
-                GrantTypes = new[] {GrantTypes.Implicit},
-                ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
+                AllowedScopes = new[] { "api1", "openid" },
+                GrantTypes = new[] { GrantTypes.Implicit },
+                ResponseTypes = new[] { ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")}
+                RedirectionUrls = new[] { new Uri("http://localhost:5000/callback") }
             },
             new Client
             {
                 ClientId = "pkce_client",
                 ClientName = "pkce_client",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "pkce_client"}},
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "pkce_client" } },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1", "openid"},
-                GrantTypes = new[] {GrantTypes.AuthorizationCode},
-                ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
+                AllowedScopes = new[] { "api1", "openid" },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode },
+                ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")},
+                RedirectionUrls = new[] { new Uri("http://localhost:5000/callback") },
                 RequirePkce = true
             },
             new Client
             {
                 ClientId = "hybrid_client",
                 ClientName = "hybrid_client",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "hybrid_client"}},
+                Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "hybrid_client" } },
                 JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
+
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = new[] {"api1", "openid"},
-                GrantTypes = new[] {GrantTypes.AuthorizationCode, GrantTypes.Implicit},
-                ResponseTypes = new[] {ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken},
+                AllowedScopes = new[] { "api1", "openid" },
+                GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit },
+                ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 ApplicationType = ApplicationTypes.Web,
-                RedirectionUrls = new [] {new Uri("http://localhost:5000/callback")},
+                RedirectionUrls = new[] { new Uri("http://localhost:5000/callback") },
             },
             // Certificate test client.
             new Client
@@ -442,10 +445,10 @@ public static class DefaultStores
                             new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable)
                                 .CreateJwk(JsonWebKeyUseNames.Enc, KeyOperations.Encrypt, KeyOperations.Decrypt)),
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.TlsClientAuth,
-                //LogoUri = null,
-                AllowedScopes = new[] {"openid"},
-                GrantTypes = new[] {GrantTypes.Password},
-                ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.IdToken},
+
+                AllowedScopes = new[] { "openid" },
+                GrantTypes = new[] { GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaV15KeyWrap, //SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Native
             },
@@ -459,63 +462,85 @@ public static class DefaultStores
                     new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "stateless_client"}
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
-                AllowedScopes = new[] {"openid", "register_client", "manage_account_filtering"},
-                GrantTypes = new[] {GrantTypes.ClientCredentials},
+
+                AllowedScopes = new[] { "openid", "register_client", "manage_account_filtering" },
+                GrantTypes = new[] { GrantTypes.ClientCredentials },
                 JsonWebKeys =
                     new JsonWebKeySet().AddKey(
                         TestKeys.SecretKey.CreateJwk(
                             JsonWebKeyUseNames.Sig,
                             KeyOperations.Sign,
                             KeyOperations.Verify)),
-                ResponseTypes = new[] {ResponseTypeNames.Token},
+                ResponseTypes = new[] { ResponseTypeNames.Token },
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Native
             },
             new Client
             {
+                RequirePkce = false,
                 ClientId = "manager_client",
                 ClientName = "Manager client",
                 Secrets =
-                    new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "manager_client"}},
+                    new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "manager_client" } },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
-                AllowedScopes = new[] {"manager"},
-                GrantTypes = new[] {GrantTypes.ClientCredentials},
+
+                AllowedScopes = new[] { "manager", "openid", "offline" },
+                GrantTypes = new[] { GrantTypes.ClientCredentials, GrantTypes.Password, GrantTypes.RefreshToken },
                 JsonWebKeys =
                     new JsonWebKeySet().AddKey(
                         TestKeys.SecretKey.CreateJwk(
                             JsonWebKeyUseNames.Sig,
                             KeyOperations.Sign,
                             KeyOperations.Verify)),
-                ResponseTypes = new[] {ResponseTypeNames.Token},
+                ResponseTypes = new[] { ResponseTypeNames.Token, ResponseTypeNames.IdToken },
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
-                ApplicationType = ApplicationTypes.Native
+                ApplicationType = ApplicationTypes.Native,
+                UserClaimsToIncludeInAuthToken = new[]
+                {
+                    new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                    new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled),
+                    new Regex($"^{OpenIdClaimTypes.Name}$", RegexOptions.Compiled),
+                    new Regex("^acceptance_test$", RegexOptions.Compiled),
+                    new Regex("^added_claim_test$", RegexOptions.Compiled)
+                }
             },
             new Client
             {
                 ClientId = "admin_client",
                 ClientName = "Admin client",
                 Secrets =
-                    new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "admin_client" } },
+                    new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "admin_client" } },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
-                AllowedScopes = new[] {"admin"},
-                GrantTypes = new[] {GrantTypes.ClientCredentials},
+
+                AllowedScopes = new[] { "admin" },
+                GrantTypes = new[] { GrantTypes.ClientCredentials },
                 JsonWebKeys =
                     new JsonWebKeySet().AddKey(
                         TestKeys.SecretKey.CreateJwk(
                             JsonWebKeyUseNames.Sig,
                             KeyOperations.Sign,
                             KeyOperations.Verify)),
-                ResponseTypes = new[] {ResponseTypeNames.Token},
+                ResponseTypes = new[] { ResponseTypeNames.Token },
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Native
+            },
+            new Client
+            {
+                ClientId = "no_key",
+                ClientName = "No Key client",
+                Secrets =
+                    new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "no_key" } },
+                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
+
+                AllowedScopes = new[] { "api" },
+                GrantTypes = new[] { GrantTypes.ClientCredentials, GrantTypes.Password },
+                ResponseTypes = new[] { ResponseTypeNames.Token, ResponseTypeNames.IdToken },
+                ApplicationType = ApplicationTypes.Web
             }
         };
     }
 
-    public static IEnumerable<Scope> Scopes()
+    public static IReadOnlyCollection<Scope> Scopes()
     {
         return new[]
         {
@@ -528,6 +553,15 @@ public static class DefaultStores
                 Name = "test",
                 Type = ScopeTypes.ProtectedApi,
             },
+            new Scope
+            {
+                Claims = new[] {OpenIdClaimTypes.Subject},
+                Description = "Manage user managed resources and policies.",
+                IsDisplayedInConsent = true,
+                IsExposed = true,
+                Name = "uma_protection",
+                Type = ScopeTypes.ProtectedApi
+            }
         };
     }
 }

@@ -47,12 +47,14 @@ public sealed class MartenTicketStore : ITicketStore
             return (false, Array.Empty<ClaimData>());
         }
 
-        if (!ticket.IsAuthorizedByRo)
+        if (ticket.IsAuthorizedByRo)
         {
-            ticket = ticket with { IsAuthorizedByRo = true };
-            session.Store(ticket);
-            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return (true, ticket.Requester);
         }
+
+        ticket = ticket with { IsAuthorizedByRo = true };
+        session.Store(ticket);
+        await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return (true, ticket.Requester);
     }

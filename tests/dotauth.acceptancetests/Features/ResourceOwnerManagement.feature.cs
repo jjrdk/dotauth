@@ -184,14 +184,14 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                             "Type",
                             "Value"});
-                table1.AddRow(new string[] {
+                table4.AddRow(new string[] {
                             "added_claim_test",
                             "something"});
 #line 20
- testRunner.When("updating user administrator claims", ((string)(null)), table1, "When ");
+ testRunner.When("updating user administrator claims", ((string)(null)), table4, "When ");
 #line hidden
 #line 23
  testRunner.Then("is ok request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -227,14 +227,14 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
                             "Type",
                             "Value"});
-                table2.AddRow(new string[] {
+                table5.AddRow(new string[] {
                             "added_claim_test",
                             "something"});
 #line 28
- testRunner.When("updating user administrator claims", ((string)(null)), table2, "When ");
+ testRunner.When("updating user administrator claims", ((string)(null)), table5, "When ");
 #line hidden
 #line 31
  testRunner.Then("is ok request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -276,14 +276,14 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
                             "Type",
                             "Value"});
-                table3.AddRow(new string[] {
+                table6.AddRow(new string[] {
                             "added_claim_test",
                             "something"});
 #line 38
- testRunner.When("updating user administrator claims", ((string)(null)), table3, "When ");
+ testRunner.When("updating user administrator claims", ((string)(null)), table6, "When ");
 #line hidden
 #line 41
  testRunner.Then("is ok request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -387,26 +387,26 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
                             "Type",
                             "Value"});
-                table4.AddRow(new string[] {
+                table7.AddRow(new string[] {
                             "added_claim_test",
                             "something"});
 #line 56
- testRunner.When("updating user administrator claims", ((string)(null)), table4, "When ");
+ testRunner.When("updating user administrator claims", ((string)(null)), table7, "When ");
 #line hidden
 #line 59
  testRunner.Then("has new admin token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
                             "Type",
                             "Value"});
-                table5.AddRow(new string[] {
+                table8.AddRow(new string[] {
                             "added_claim_test2",
                             "something"});
 #line 60
- testRunner.When("updating user administrator claims", ((string)(null)), table5, "When ");
+ testRunner.When("updating user administrator claims", ((string)(null)), table8, "When ");
 #line hidden
 #line 63
  testRunner.Then("is ok request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -436,14 +436,14 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
                             "Type",
                             "Value"});
-                table6.AddRow(new string[] {
+                table9.AddRow(new string[] {
                             "test",
                             "something"});
 #line 66
- testRunner.When("updating user other claims", ((string)(null)), table6, "When ");
+ testRunner.When("updating user other claims", ((string)(null)), table9, "When ");
 #line hidden
 #line 69
  testRunner.Then("is bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");

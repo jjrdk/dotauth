@@ -71,7 +71,8 @@ public sealed class MartenClientStore : IClientRepository
     public async Task<Option> Update(Client client, CancellationToken cancellationToken)
     {
         await using var session = _sessionFactory();
-        if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
+        var existing = await session.LoadAsync<Client>(client.ClientId, cancellationToken);
+        if (existing != null)
         {
             return new ErrorDetails
             {
@@ -90,7 +91,8 @@ public sealed class MartenClientStore : IClientRepository
     public async Task<bool> Insert(Client client, CancellationToken cancellationToken = default)
     {
         await using var session = _sessionFactory();
-        if (session.LoadAsync<Client>(client.ClientId, cancellationToken) != null)
+        var existing = await session.LoadAsync<Client>(client.ClientId, cancellationToken);
+        if (existing != null)
         {
             return false;
         }

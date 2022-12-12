@@ -42,16 +42,20 @@ public sealed class RedisTokenStore : ITokenStore
             });
     }
 
-    public async Task<GrantedToken?> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)
+    public Task<GrantedToken?> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)
     {
-        var value = await _database.StringGetAsync(getRefreshToken).ConfigureAwait(false);
-        return JsonConvert.DeserializeObject<GrantedToken>(value!);
+        return GetToken(getRefreshToken, cancellationToken);
     }
 
-    public async Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken)
+    public Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken)
     {
-        var value = await _database.StringGetAsync(accessToken).ConfigureAwait(false);
-        return JsonConvert.DeserializeObject<GrantedToken>(value!);
+        return GetToken(accessToken, cancellationToken);
+    }
+
+    private async Task<GrantedToken?> GetToken(string token, CancellationToken cancellationToken)
+    {
+        var value = await _database.StringGetAsync(token).ConfigureAwait(false);
+        return value.IsNullOrEmpty ? null : JsonConvert.DeserializeObject<GrantedToken>(value!);
     }
 
     public async Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
@@ -76,13 +80,15 @@ public sealed class RedisTokenStore : ITokenStore
             ? Task.FromResult(true)
             : _database.StringSetAsync(grantedToken.RefreshToken, value, expiry, when: When.NotExists);
 
-        if ((await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
-            .All(x => x))
-        {
-            return true;
-        }
-
-        return await RemoveToken(grantedToken).ConfigureAwait(false);
+        var result = (await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
+            .All(x => x);
+        return result;
+        // if (result)
+        // {
+        //     return true;
+        // }
+        //
+        // return await RemoveToken(grantedToken).ConfigureAwait(false);
     }
 
     public async Task<bool> RemoveRefreshToken(string refreshToken, CancellationToken cancellationToken)
@@ -106,7 +112,15 @@ public sealed class RedisTokenStore : ITokenStore
             ? Task.FromResult(true)
             : _database.KeyDeleteAsync(grantedToken.RefreshToken);
 
-        return (await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
-            .All(x => x);
+        try
+        {
+            var result = (await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
+                .All(x => x);
+            return result;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

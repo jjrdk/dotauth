@@ -54,8 +54,9 @@ internal sealed class ServerStartup
             Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetRequiredService<Func<IDocumentSession>>()),
             Tickets =
                 sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _martenOptions!.TicketLifeTime),
-            Tokens = sp => new RedisTokenStore(
-                sp.GetRequiredService<IDatabaseAsync>())
+            Tokens = sp => new RedisTokenStore(sp.GetRequiredService<IDatabaseAsync>()),
+            DevicePollingInterval = TimeSpan.FromSeconds(3),
+            DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5)
         };
         _context = context;
         _connectionString = connectionString;
@@ -88,7 +89,12 @@ internal sealed class ServerStartup
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         // 2. Configure server
         services.AddDotAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme }, assemblyTypes: typeof(IDefaultUi));
-        services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
+        services
+#if DEBUG
+            .AddLogging(l => l.AddXunit(_outputHelper))
+#endif
+            .AddAccountFilter()
+            .AddSingleton(_ => _context.Client);
         services.AddAuthentication(
                 cfg =>
                 {
@@ -106,6 +112,7 @@ internal sealed class ServerStartup
                     cfg.RequireHttpsMetadata = false;
                     cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                 });
+        services.AddUmaClient(new Uri("http://localhost"));
     }
 
 #pragma warning disable CA1822 // Mark members as static

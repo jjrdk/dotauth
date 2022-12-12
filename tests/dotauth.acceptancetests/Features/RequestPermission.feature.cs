@@ -104,14 +104,12 @@ namespace DotAuth.AcceptanceTests.Features
         [Xunit.SkippableFactAttribute(DisplayName="Successful permission creation")]
         [Xunit.TraitAttribute("FeatureTitle", "Request permission to protected resource")]
         [Xunit.TraitAttribute("Description", "Successful permission creation")]
-        [Xunit.TraitAttribute("Category", "RequestPermission")]
         public void SuccessfulPermissionCreation()
         {
-            string[] tagsOfScenario = new string[] {
-                    "RequestPermission"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful permission creation", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 12
+#line 11
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -124,13 +122,19 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-#line 13
- testRunner.When("registering resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 14
- testRunner.And("requesting permission", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Name",
+                            "Scopes"});
+                table1.AddRow(new string[] {
+                            "picture",
+                            "read"});
+#line 12
+ testRunner.When("registering resource", ((string)(null)), table1, "When ");
 #line hidden
 #line 15
+ testRunner.And("requesting permission for read", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 16
  testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -140,11 +144,9 @@ this.FeatureBackground();
         [Xunit.SkippableFactAttribute(DisplayName="Successful permission token grant")]
         [Xunit.TraitAttribute("FeatureTitle", "Request permission to protected resource")]
         [Xunit.TraitAttribute("Description", "Successful permission token grant")]
-        [Xunit.TraitAttribute("Category", "RequestPermission")]
         public void SuccessfulPermissionTokenGrant()
         {
-            string[] tagsOfScenario = new string[] {
-                    "RequestPermission"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful permission token grant", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 18
@@ -160,19 +162,25 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
+                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Name",
+                            "Scopes"});
+                table2.AddRow(new string[] {
+                            "picture",
+                            "read"});
 #line 19
- testRunner.When("registering resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 20
- testRunner.And("requesting permission", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 21
- testRunner.And("updating policy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.When("registering resource", ((string)(null)), table2, "When ");
 #line hidden
 #line 22
- testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And("requesting permission for read", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 23
+ testRunner.And("updating policy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 24
+ testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 25
  testRunner.And("can get access token for resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -182,14 +190,12 @@ this.FeatureBackground();
         [Xunit.SkippableFactAttribute(DisplayName="Successful permissions creation")]
         [Xunit.TraitAttribute("FeatureTitle", "Request permission to protected resource")]
         [Xunit.TraitAttribute("Description", "Successful permissions creation")]
-        [Xunit.TraitAttribute("Category", "RequestPermission")]
         public void SuccessfulPermissionsCreation()
         {
-            string[] tagsOfScenario = new string[] {
-                    "RequestPermission"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful permissions creation", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 26
+#line 27
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -202,13 +208,19 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-#line 27
- testRunner.When("registering resource", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Name",
+                            "Scopes"});
+                table3.AddRow(new string[] {
+                            "picture",
+                            "read,write"});
 #line 28
+ testRunner.When("registering resource", ((string)(null)), table3, "When ");
+#line hidden
+#line 31
  testRunner.And("requesting permissions", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 29
+#line 32
  testRunner.Then("returns ticket id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }

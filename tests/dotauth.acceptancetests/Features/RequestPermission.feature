@@ -10,17 +10,23 @@ Background:
 
 Scenario: Successful permission creation
 	When registering resource
-	And requesting permission
+		| Name | Scopes |
+		| picture | read |
+	And requesting permission for read
 	Then returns ticket id
 
 Scenario: Successful permission token grant
 	When registering resource
-	And requesting permission
+	  | Name | Scopes |
+	  | picture | read |
+	And requesting permission for read
 	And updating policy
 	Then returns ticket id
 	And can get access token for resource
 
 Scenario: Successful permissions creation
 	When registering resource
+	  | Name | Scopes |
+	  | picture | read,write |
 	And requesting permissions
 	Then returns ticket id

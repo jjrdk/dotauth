@@ -53,7 +53,7 @@ public sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>()
+        services.AddHttpClient<HttpClient>(x=>{})
             .AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
         services.AddSingleton<IDocumentStore>(
             _ => new DocumentStore(
@@ -93,6 +93,8 @@ public sealed class ServerStartup
                     cfg.RequireHttpsMetadata = false;
                     cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                 });
+        
+        services.AddUmaClient(new Uri("http://localhost/"));
     }
 
     public void Configure(IApplicationBuilder app)

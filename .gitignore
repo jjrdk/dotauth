@@ -230,3 +230,4 @@ kubernetes_*.yml
 .config
 .idea
 open-id-testing
+*.feature.cs

@@ -70,14 +70,7 @@ public sealed class AuthorizationPolicyValidatorFixture
     {
         var handler = new JwtSecurityTokenHandler();
         var jsonWebKey = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
-        var token = handler.CreateEncodedJwt(
-            "test",
-            "test",
-            new ClaimsIdentity(),
-            null,
-            null,
-            null,
-            jsonWebKey);
+        var token = handler.CreateEncodedJwt("test", "test", new ClaimsIdentity(), null, null, null, jsonWebKey);
         var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "resource_set_id" } } };
         _resourceSetRepositoryStub
             .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -137,10 +130,9 @@ public sealed class AuthorizationPolicyValidatorFixture
             DateTime.UtcNow,
             key);
         _clientStoreStub.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns<string, CancellationToken>(
-                (s, c) => Task.FromResult(new Client { ClientId = s }));
+            .Returns<string, CancellationToken>((s, c) => Task.FromResult(new Client { ClientId = s }));
 
-        var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
+        var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1", Scopes = new[] { "read" } } } };
         var resourceSet = new[]
         {
             new ResourceSet
@@ -150,8 +142,9 @@ public sealed class AuthorizationPolicyValidatorFixture
                 {
                     new PolicyRule
                     {
-                        ClientIdsAllowed = new[] {"client_id"},
-                        Claims = new[] {new ClaimData {Type = "test", Value = "test"}}
+                        Scopes = new[] { "read" },
+                        ClientIdsAllowed = new[] { "client_id" },
+                        Claims = new[] { new ClaimData { Type = "test", Value = "test" } }
                     }
                 }
             }
