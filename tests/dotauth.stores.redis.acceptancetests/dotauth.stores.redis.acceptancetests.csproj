@@ -14,7 +14,7 @@
 
     <ItemGroup>
         <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0-preview-20221003-04" />
         <PackageReference Include="Moq" Version="4.18.3" />
         <PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
@@ -23,7 +23,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="7.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="7.0.1" />
     </ItemGroup>
 
     <ItemGroup>
