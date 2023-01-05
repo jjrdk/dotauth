@@ -10,15 +10,15 @@ Create resource and request permission and access token
 
     Scenario: Successful permission creation
         When registering resource
-          | Name | Scopes |
-          | picture | read |
+          | Name    | Type  | Description | Scopes |
+          | picture | image | a picture   | read   |
         And requesting permission for read
         Then returns ticket id
 
     Scenario: Successful permission token grant
         When registering resource
-          | Name | Scopes |
-          | picture | read |
+          | Name    | Type  | Description | Scopes |
+          | picture | image | a picture   | read   |
         And requesting permission for read
         And updating policy
         Then returns ticket id
@@ -26,7 +26,7 @@ Create resource and request permission and access token
 
     Scenario: Successful permissions creation
         When registering resource
-          | Name | Scopes |
-          | picture | read,write |
+          | Name    | Type  | Description | Scopes     |
+          | picture | image | a picture   | read.write |
         And requesting permissions
         Then returns ticket id

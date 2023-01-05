@@ -25,6 +25,7 @@ using DotAuth.Extensions;
 using DotAuth.Parameters;
 using DotAuth.Shared.Events.Uma;
 using DotAuth.Shared.Models;
+using DotAuth.Shared.Policies;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;
 
@@ -76,12 +77,12 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
                 ticketLine.Scopes,
                 validTicket.IsAuthorizedByRo);
             var resource = resources.First(r => r.Id == ticketLine.ResourceSetId);
-            validationResult = await Validate(
+            validationResult = await _authorizationPolicy.Execute(
                     ticketLineParameter,
-                    resource,
                     claimTokenParameter.Format,
                     requester,
-                    cancellationToken)
+                    cancellationToken,
+                    resource.AuthorizationPolicies)
                 .ConfigureAwait(false);
 
             switch (validationResult.Result)
@@ -116,25 +117,5 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
         }
 
         return validationResult!;
-    }
-
-    private async Task<AuthorizationPolicyResult> Validate(
-        TicketLineParameter ticketLineParameter,
-        ResourceSet resource,
-        string? claimTokenFormat,
-        ClaimsPrincipal requester,
-        CancellationToken cancellationToken)
-    {
-        if (resource.AuthorizationPolicies.Length == 0)
-        {
-            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted, requester);
-        }
-
-        return await _authorizationPolicy.Execute(
-                ticketLineParameter,
-                claimTokenFormat,
-                requester,
-                cancellationToken, resource.AuthorizationPolicies)
-            .ConfigureAwait(false);
     }
 }

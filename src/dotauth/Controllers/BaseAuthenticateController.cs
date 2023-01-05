@@ -678,14 +678,14 @@ public abstract class BaseAuthenticateController : BaseController
         // 7. Store claims into new cookie
         //if (actionResult != null)
         //{
-            await SetLocalCookie(claims.ToOpenidClaims(), authorizationRequest.session_id!).ConfigureAwait(false);
-            await _authenticationService.SignOutAsync(
-                    HttpContext,
-                    null,
-                    new AuthenticationProperties())
-                .ConfigureAwait(false);
-            await LogAuthenticateUser(subject, actionResult.Amr!).ConfigureAwait(false);
-            return actionResult.CreateRedirectionFromActionResult(authorizationRequest, _logger)!;
+        await SetLocalCookie(claims.ToOpenidClaims(), authorizationRequest.session_id!).ConfigureAwait(false);
+        await _authenticationService.SignOutAsync(
+                HttpContext,
+                null,
+                new AuthenticationProperties())
+            .ConfigureAwait(false);
+        await LogAuthenticateUser(subject, actionResult.Amr!).ConfigureAwait(false);
+        return actionResult.CreateRedirectionFromActionResult(authorizationRequest, _logger)!;
         //}
 
         //return RedirectToAction("OpenId", "Authenticate", new { code });
@@ -796,10 +796,22 @@ public abstract class BaseAuthenticateController : BaseController
             .Except(externalClaims.Select(x => x.Type).ToOpenIdClaimType())
             .Select(x => new Claim(x, string.Empty))
             .Concat(externalClaims.Select(x => new Claim(x.Type, x.Value, x.ValueType, x.Issuer)))
+            .Concat(
+                externalClaims.Any(x => x.Type == OpenIdClaimTypes.Email)
+                    ? new[]
+                    {
+                        new Claim(
+                            "domain",
+                            externalClaims.First(x => x.Type == OpenIdClaimTypes.Email)
+                                .Value[externalClaims.First(x => x.Type == OpenIdClaimTypes.Email)
+                                    .Value.LastIndexOf('@')..])
+                    }
+                    : Array.Empty<Claim>())
             .ToOpenidClaims()
             .OrderBy(x => x.Type)
             .ToArray();
 
+        var now = DateTimeOffset.UtcNow;
         var record = new ResourceOwner
         {
             Subject = Id.Create(),
@@ -818,6 +830,8 @@ public abstract class BaseAuthenticateController : BaseController
             Password = Id.Create().ToSha256Hash(string.Empty),
             IsLocalAccount = false,
             Claims = userClaims,
+            CreateDateTime = now,
+            UpdateDateTime = now,
             TwoFactorAuthentication = null
         };
 
@@ -825,7 +839,7 @@ public abstract class BaseAuthenticateController : BaseController
         if (success)
         {
             record.Password = string.Empty;
-            await _eventPublisher.Publish(new ExternalUserCreated(Id.Create(), record, DateTimeOffset.UtcNow))
+            await _eventPublisher.Publish(new ExternalUserCreated(Id.Create(), record, now))
                 .ConfigureAwait(false);
         }
 

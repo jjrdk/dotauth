@@ -59,7 +59,7 @@ public sealed class AddPermissionActionFixture
         Assert.Equal(
             string.Format(
                 Strings.MissingParameter,
-                DotAuth.UmaConstants.AddPermissionNames.ResourceSetId),
+                UmaConstants.AddPermissionNames.ResourceSetId),
             exception.Details.Detail);
     }
 
@@ -74,7 +74,7 @@ public sealed class AddPermissionActionFixture
                 .ConfigureAwait(false) as Option<Ticket>.Error;
         Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
         Assert.Equal(
-            string.Format(Strings.MissingParameter, DotAuth.UmaConstants.AddPermissionNames.Scopes),
+            string.Format(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes),
             exception.Details.Detail);
     }
 

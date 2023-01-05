@@ -1,6 +1,7 @@
 ﻿namespace DotAuth.Shared.Models;
 
 using System.Runtime.Serialization;
+using System.Security.Claims;
 
 /// <summary>
 /// Defines the posted claim.
@@ -25,4 +26,13 @@ public sealed record ClaimData
     /// </value>
     [DataMember(Name = "value")]
     public string Value { get; set; } = null!;
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Claim"/> to <see cref="ClaimData"/>.
+    /// </summary>
+    /// <param name="claim"></param>
+    public static ClaimData FromClaim(Claim claim)
+    {
+        return new ClaimData { Type = claim.Type, Value = claim.Value };
+    }
 }

@@ -62,7 +62,12 @@ public sealed class DotAuthRegistry : MartenRegistry
             .Duplicate(x => x.Owner)
             .Duplicate(x => x.Name)
             .Duplicate(x => x.Type)
-            .GinIndexJsonData();
+            .GinIndexJsonData(
+                idx =>
+                {
+                    idx.TenancyScope = TenancyScope.PerTenant;
+                    idx.IsConcurrent = true;
+                });
         For<Ticket>()
             .Identity(x => x.Id)
             .Duplicate(x => x.ResourceOwner,

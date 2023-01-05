@@ -47,18 +47,26 @@ public partial class FeatureTest
     [When(@"registering resource")]
     public async Task WhenRegisteringResource(Table table)
     {
-        var row = table.Rows[0];
-        var resourceSet = new ResourceSet
+        foreach (var row in table.Rows)
         {
-            Name = row["Name"],
-            Scopes = row["Scopes"]
-                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-        };
-        var resource = (await _umaClient.AddResource(
-                resourceSet,
-                _token.AccessToken)
-            .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result)!;
-        _resourceId = resource.Item.Id;
+            var scopes = row["Scopes"]
+                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            var resourceSet = new ResourceSet
+            {
+                Name = row["Name"],
+                Type = row["Type"],
+                Description = row["Description"],
+                Scopes = scopes,
+                AuthorizationPolicies = new[]
+                {
+                    new PolicyRule { Scopes = scopes, IsResourceOwnerConsentNeeded = false }
+                }
+            };
+            var resource =
+                (await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+                    Option<AddResourceSetResponse>.Result)!;
+            _resourceId = resource.Item.Id;
+        }
     }
 
     [When(@"updating policy")]

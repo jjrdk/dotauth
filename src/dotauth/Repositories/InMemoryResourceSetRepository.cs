@@ -4,14 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
+using DotAuth.Shared.Policies;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the in-memory resource set repository.
@@ -19,19 +22,22 @@ using DotAuth.Shared.Requests;
 /// <seealso cref="IResourceSetRepository" />
 internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
 {
+    private readonly IAuthorizationPolicy _policy;
     private readonly ICollection<OwnedResourceSet> _resources;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InMemoryResourceSetRepository"/> class.
     /// </summary>
+    /// <param name="policy">The resource policy validator</param>
     /// <param name="resources">The resources.</param>
-    public InMemoryResourceSetRepository(IEnumerable<(string owner, ResourceSet resource)>? resources = null)
+    public InMemoryResourceSetRepository(IAuthorizationPolicy policy, IEnumerable<(string owner, ResourceSet resource)>? resources = null)
     {
+        _policy = policy;
         _resources = resources?.Select(x => new OwnedResourceSet(x.owner, x.resource)).ToList() ?? new List<OwnedResourceSet>();
     }
 
     /// <inheritdoc />
-    public Task<bool> Remove(string id, CancellationToken cancellationToken)
+    public  Task<bool> Remove(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -49,7 +55,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public Task<ResourceSet?> Get(string owner, string id, CancellationToken cancellationToken)
+    public  Task<ResourceSet?> Get(string owner, string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -62,7 +68,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public Task<ResourceSet[]> Get(CancellationToken cancellationToken, params string[] ids)
+    public  Task<ResourceSet[]> Get(CancellationToken cancellationToken = default, params string[] ids)
     {
         if (ids == null)
         {
@@ -75,7 +81,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public Task<string?> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
+    public  Task<string?> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
     {
         var owners = _resources.Where(r => ids.Contains(r.Resource.Id)).Select(x => x.Owner).Distinct();
 
@@ -83,14 +89,14 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken)
+    public  Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken = default)
     {
         var result = _resources.Where(x => x.Owner == owner).Select(x => x.Resource).ToArray();
         return Task.FromResult(result);
     }
 
     /// <inheritdoc />
-    public Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken)
+    public  Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken = default)
     {
         if (resourceSet == null)
         {
@@ -102,50 +108,68 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public Task<PagedResult<ResourceSet>> Search(
-        SearchResourceSet parameter,
-        CancellationToken cancellationToken)
+    public  async Task<PagedResult<ResourceSet>> Search(
+        ClaimsPrincipal owner,
+        SearchResourceSet? parameter,
+        CancellationToken cancellationToken = default)
     {
-        if (parameter == null)
+        if (parameter?.Terms.Length == 0)
         {
             throw new ArgumentNullException(nameof(parameter));
         }
 
-        var result = _resources.Select(x => x.Resource);
-        if (parameter.Ids.Any())
-        {
-            result = result.Where(r => parameter.Ids.Contains(r.Id));
-        }
+        var result = _resources.AsEnumerable();//.Select(x => x.Resource);
 
-        if (parameter.Names.Any())
-        {
             result = result.Where(
-                r => parameter.Names.Any(n => !string.IsNullOrWhiteSpace(r.Name) && r.Name.Contains(n)));
-        }
-
+                r => parameter!.Terms.Any(t => r.Resource.Name.Contains(t, StringComparison.OrdinalIgnoreCase))
+                     || parameter.Terms.Any(t => r.Resource.Description.Contains(t, StringComparison.OrdinalIgnoreCase))
+                     || parameter.Terms.Any(t => r.Resource.Type.Contains(t, StringComparison.OrdinalIgnoreCase)));
+        
         if (parameter.Types.Any())
         {
-            result = result.Where(
-                r => parameter.Types.Any(t => !string.IsNullOrWhiteSpace(r.Type) && r.Type.Contains(t)));
+            result = result.Where(r => parameter.Types.Contains(r.Resource.Type, StringComparer.OrdinalIgnoreCase));
         }
 
-        var sortedResult = result.OrderBy(c => c.Id).ToArray();
-        var nbResult = sortedResult.Length;
+        var asyncResult = await Filter(owner, result, cancellationToken);
+
+        IEnumerable<ResourceSet> sortedResult = asyncResult.OrderBy(c => c.Name);
+        var nbResult = asyncResult.Length;
         if (parameter.TotalResults > 0)
         {
-            sortedResult = sortedResult.Skip(parameter.StartIndex).Take(parameter.TotalResults).ToArray();
+            sortedResult = sortedResult.Skip(parameter.StartIndex).Take(parameter.TotalResults);
         }
-        return Task.FromResult(
-            new PagedResult<ResourceSet>
+
+        return new PagedResult<ResourceSet>
+        {
+            Content = sortedResult.ToArray(),
+            StartIndex = parameter.StartIndex,
+            TotalResults = nbResult
+        };
+    }
+    
+    private async Task<ResourceSet[]> Filter(ClaimsPrincipal requestor, IEnumerable<InMemoryResourceSetRepository.OwnedResourceSet> resourceSets, CancellationToken cancellationToken)
+    {
+        List<ResourceSet> results = new();
+        foreach (var resourceSet in resourceSets)
+        {
+            var ticket = new TicketLineParameter(requestor.GetClientId(), new[] { "search" });
+            if ((await _policy.Execute(
+                    ticket,
+                    UmaConstants.IdTokenType,
+                    requestor,
+                    cancellationToken,
+                    resourceSet.Resource.AuthorizationPolicies)).Result
+                == AuthorizationPolicyResultKind.Authorized)
             {
-                Content = sortedResult,
-                StartIndex = parameter.StartIndex,
-                TotalResults = nbResult
-            });
+                results.Add(resourceSet.Resource);
+            }
+        }
+
+        return results.ToArray();
     }
 
     /// <inheritdoc />
-    public Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
+    public  Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken = default)
     {
         if (resourceSet == null)
         {

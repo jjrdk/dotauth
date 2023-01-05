@@ -26,6 +26,7 @@ using DotAuth;
 using DotAuth.Extensions;
 using DotAuth.Repositories;
 using DotAuth.Shared.Models;
+using DotAuth.Shared.Policies;
 using DotAuth.Shared.Repositories;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;
@@ -64,8 +65,9 @@ internal sealed class Startup
                     DefaultConfiguration.GetClients()),
             Scopes = _ => new InMemoryScopeRepository(DefaultConfiguration.GetScopes()),
             ResourceSets =
-                _ => new InMemoryResourceSetRepository(
-                    new[]
+                sp => new InMemoryResourceSetRepository(
+                    sp.GetRequiredService<IAuthorizationPolicy>(),
+            new []
                     {
                         ("administrator",
                             new ResourceSet

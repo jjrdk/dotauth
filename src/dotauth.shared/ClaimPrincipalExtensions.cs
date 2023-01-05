@@ -35,10 +35,7 @@ public static class ClaimPrincipalExtensions
     /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
     public static bool TryGetUmaTickets(this ClaimsIdentity identity, out Permission[] tickets)
     {
-        Permission[] t = Array.Empty<Permission>();
-        var result = identity.Claims.TryGetUmaTickets(out t);
-        tickets = t;
-        return result == true;
+        return identity.Claims.TryGetUmaTickets(out tickets);
     }
 
     /// <summary>

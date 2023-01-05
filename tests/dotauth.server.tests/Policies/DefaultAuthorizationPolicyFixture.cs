@@ -21,7 +21,9 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Policies;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
+using DotAuth.Shared.Policies;
 using DotAuth.Shared.Responses;
 using Newtonsoft.Json;
 using Xunit;
@@ -103,7 +105,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             var result = await _authorizationPolicy.Execute(
                     new TicketLineParameter("Test", ticketLine.Scopes, ticket.IsAuthorizedByRo),
-                    DotAuth.UmaConstants.IdTokenType,
+                    UmaConstants.IdTokenType,
                     new ClaimsPrincipal(new ClaimsIdentity(ticket.Requester.Select(c => new Claim(c.Type, c.Value)))),
                     CancellationToken.None,
                     resourceSet!.AuthorizationPolicies)
@@ -124,7 +126,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         await Assert.ThrowsAsync<NullReferenceException>(
                 () => _authorizationPolicy.Execute(
                     null,
-                    DotAuth.UmaConstants.IdTokenType,
+                    UmaConstants.IdTokenType,
                     new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                     CancellationToken.None,
                     new PolicyRule()))
@@ -140,7 +142,7 @@ public sealed class DefaultAuthorizationPolicyFixture
 
         var result = await _authorizationPolicy.Execute(
                 ticket,
-                DotAuth.UmaConstants.IdTokenType,
+                UmaConstants.IdTokenType,
                 null,
                 CancellationToken.None,
                 authorizationPolicy)
@@ -442,7 +444,7 @@ public sealed class DefaultAuthorizationPolicyFixture
 
         var result = await _authorizationPolicy.Execute(
                 ticket,
-                DotAuth.UmaConstants.IdTokenType,
+                UmaConstants.IdTokenType,
                 new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                 CancellationToken.None,
                 authorizationPolicy)
@@ -468,7 +470,7 @@ public sealed class DefaultAuthorizationPolicyFixture
 
         var result = await _authorizationPolicy.Execute(
                 ticket,
-                DotAuth.UmaConstants.IdTokenType,
+                UmaConstants.IdTokenType,
                 new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
                 CancellationToken.None,
                 authorizationPolicy)

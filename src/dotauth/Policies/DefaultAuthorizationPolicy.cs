@@ -21,7 +21,9 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
+using DotAuth.Shared.Policies;
 using DotAuth.Shared.Responses;
 using Newtonsoft.Json;
 
@@ -37,23 +39,23 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
         cancellationToken.ThrowIfCancellationRequested();
         if (authorizationPolicy.Length == 0)
         {
-            return Task.FromResult(new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester));
+            return Task.FromResult(
+                new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester));
         }
 
         if (claimTokenFormat != UmaConstants.IdTokenType)
         {
-            return GetNeedInfoResult(authorizationPolicy[0].Claims, requester, authorizationPolicy[0].OpenIdProvider ?? string.Empty);
+            return GetNeedInfoResult(
+                authorizationPolicy[0].Claims,
+                requester,
+                authorizationPolicy[0].OpenIdProvider ?? string.Empty);
         }
 
         AuthorizationPolicyResult? result = null;
         foreach (var rule in authorizationPolicy)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            result = ExecuteAuthorizationPolicyRule(
-                ticketLineParameter,
-                rule,
-                requester,
-                cancellationToken);
+            result = ExecuteAuthorizationPolicyRule(ticketLineParameter, rule, requester, cancellationToken);
             if (result.Result == AuthorizationPolicyResultKind.Authorized)
             {
                 break;
@@ -72,13 +74,15 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
         cancellationToken.ThrowIfCancellationRequested();
 
         // 1. Check can access to the scope
-        if (ticketLineParameter.Scopes.Length == 0 || ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
+        if (ticketLineParameter.Scopes.Length == 0
+            || ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
         {
             return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
         }
 
         // 2. Check clients are correct
-        var clientAuthorizationResult = authorizationPolicy.ClientIdsAllowed.Length == 0 || authorizationPolicy.ClientIdsAllowed.Contains(ticketLineParameter.ClientId);
+        var clientAuthorizationResult = authorizationPolicy.ClientIdsAllowed.Length == 0
+                                        || authorizationPolicy.ClientIdsAllowed.Contains(ticketLineParameter.ClientId);
         if (!clientAuthorizationResult)
         {
             return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
@@ -97,62 +101,44 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
             : new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
     }
 
-    private static Task<AuthorizationPolicyResult> GetNeedInfoResult(ClaimData[] claims, ClaimsPrincipal requester, string openidConfigurationUrl)
+    private static Task<AuthorizationPolicyResult> GetNeedInfoResult(
+        ClaimData[] claims,
+        ClaimsPrincipal requester,
+        string openidConfigurationUrl)
     {
         var requestingPartyClaims = new Dictionary<string, object>();
         var requiredClaims = claims.Select(
                 claim => new Dictionary<string, string>
                 {
-                    {"name", claim.Type},
-                    {"friendly_name", claim.Type},
-                    {"issuer", openidConfigurationUrl}
+                    { "name", claim.Type }, { "friendly_name", claim.Type }, { "issuer", openidConfigurationUrl }
                 })
             .ToList();
 
         requestingPartyClaims.Add("required_claims", requiredClaims);
         requestingPartyClaims.Add("redirect_user", false);
-        return Task.FromResult(new AuthorizationPolicyResult(
-            AuthorizationPolicyResultKind.NeedInfo,
-            requester,
-            new Dictionary<string, object>
-            {
-                {"requesting_party_claims", requestingPartyClaims}
-            }));
+        return Task.FromResult(
+            new AuthorizationPolicyResult(
+                AuthorizationPolicyResultKind.NeedInfo,
+                requester,
+                new Dictionary<string, object> { { "requesting_party_claims", requestingPartyClaims } }));
     }
 
-    private static AuthorizationPolicyResult CheckClaims(
-        PolicyRule authorizationPolicy,
-        ClaimsPrincipal requester)
+    private static AuthorizationPolicyResult CheckClaims(PolicyRule authorizationPolicy, ClaimsPrincipal requester)
     {
         if (!authorizationPolicy.Claims.Any())
         {
             return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
         }
 
-        foreach (var policyClaim in authorizationPolicy.Claims)
-        {
-            var tokenClaim = requester.Claims.FirstOrDefault(j => j.Type == policyClaim.Type);
-            if (tokenClaim == null)
-            {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
-            }
+        var unmatchedPolicyClaim = (from policyClaim in authorizationPolicy.Claims
+            let tokenClaims =
+                requester.Claims.Where(j => j.Type == policyClaim.Type && j.ValueType != JsonClaimValueTypes.JsonArray)
+                    .ToArray()
+            where tokenClaims.Length == 0 || tokenClaims.All(tc => tc.Value != policyClaim.Value)
+            select policyClaim).Any();
 
-            if (tokenClaim.ValueType == JsonClaimValueTypes.JsonArray) // is IEnumerable<string> strings)
-            {
-                var strings = JsonConvert.DeserializeObject<object[]>(tokenClaim.Value)!;
-                if (!strings.Any(s => Equals(s, policyClaim.Value)))
-                {
-                    return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
-                }
-            }
-
-            var regex = new Regex(policyClaim.Value);
-            if (!regex.IsMatch(tokenClaim.Value)) //tokenClaim.Value != policyClaim.Value)
-            {
-                return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
-            }
-        }
-
-        return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
+        return unmatchedPolicyClaim
+            ? new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester)
+            : new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
     }
 }

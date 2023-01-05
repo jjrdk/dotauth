@@ -1,4 +1,4 @@
-﻿namespace DotAuth.Policies;
+﻿namespace DotAuth.Shared.Policies;
 
 using System;
 using System.Collections.Generic;

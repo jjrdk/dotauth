@@ -11,6 +11,7 @@ using DotAuth.Parameters;
 using DotAuth.Policies;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
+using DotAuth.Shared.Policies;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;
 using Microsoft.Extensions.Logging.Abstractions;

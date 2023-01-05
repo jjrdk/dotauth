@@ -29,6 +29,7 @@ using DotAuth.Repositories;
 using DotAuth.Services;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
+using DotAuth.Shared.Policies;
 using DotAuth.Shared.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -289,7 +290,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton(sp => options.Scopes?.Invoke(sp) ?? new InMemoryScopeRepository())
             .AddSingleton<IScopeStore>(sp => sp.GetRequiredService<IScopeRepository>())
             .AddSingleton(sp => options.DeviceAuthorizations?.Invoke(sp) ?? new InMemoryDeviceAuthorizationStore())
-            .AddSingleton(sp => options.ResourceSets?.Invoke(sp) ?? new InMemoryResourceSetRepository())
+            .AddSingleton(sp => options.ResourceSets?.Invoke(sp) ?? new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>()))
             .AddSingleton(sp => options.Tickets?.Invoke(sp) ?? new InMemoryTicketStore())
             .AddSingleton(sp => options.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
             .AddSingleton(sp => options.Tokens?.Invoke(sp) ?? new InMemoryTokenStore())
@@ -297,7 +298,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton(sp => options.AccountFilters?.Invoke(sp) ?? new InMemoryFilterStore())
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
-            .AddTransient<IAuthorizationPolicy, DefaultAuthorizationPolicy>();
+            .AddSingleton<IAuthorizationPolicy, DefaultAuthorizationPolicy>();
         if (options.DataProtector != null)
         {
             s.AddSingleton(options.DataProtector);

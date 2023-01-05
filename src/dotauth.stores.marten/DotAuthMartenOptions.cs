@@ -94,8 +94,15 @@ public sealed class DotAuthMartenOptions : StoreOptions
             _innerSerializer = new JsonSerializer
             {
                 MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Include,
+                NullValueHandling = NullValueHandling.Include,
+                DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                FloatFormatHandling = FloatFormatHandling.DefaultValue,
+                FloatParseHandling = FloatParseHandling.Double,
+                Formatting = Formatting.None,
+                TypeNameHandling = TypeNameHandling.Auto,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 StringEscapeHandling = StringEscapeHandling.EscapeHtml
             };
             _innerSerializer.Converters.Add(new ClaimConverter());

@@ -14,6 +14,7 @@
 
 namespace DotAuth.Shared.Repositories;
 
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared.Models;
@@ -27,10 +28,11 @@ public interface IResourceSetRepository
     /// <summary>
     /// Searches the specified parameter.
     /// </summary>
+    /// <param name="requestingUser">The requesting user</param>
     /// <param name="parameter">The parameter.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    Task<PagedResult<ResourceSet>> Search(SearchResourceSet parameter, CancellationToken cancellationToken = default);
+    Task<PagedResult<ResourceSet>> Search(ClaimsPrincipal requestingUser, SearchResourceSet parameter, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Inserts the specified resource set.

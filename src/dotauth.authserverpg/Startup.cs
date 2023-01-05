@@ -25,6 +25,7 @@ using Amazon.Runtime;
 using Baseline;
 using DotAuth;
 using DotAuth.Extensions;
+using DotAuth.Shared.Policies;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.Stores.Marten;
@@ -105,7 +106,7 @@ public sealed class Startup
                 JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
                 Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
                 Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
-                ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
+                ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<IAuthorizationPolicy>()),
                 EventPublisher = sp =>
                     new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>())
             };
@@ -237,13 +238,13 @@ public sealed class Startup
             .Use(
                 async (ctx, next) =>
                 {
-                var logger = ctx.RequestServices.GetRequiredService<ILogger<HttpRequest>>();
-                var headers = JsonConvert.SerializeObject(
-                    ctx.Request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
-                    Formatting.None);
-                logger.LogInformation("Request headers: {headers}", headers);
-        await next(ctx).ConfigureAwait(false);
-    })
+                    var logger = ctx.RequestServices.GetRequiredService<ILogger<HttpRequest>>();
+                    var headers = JsonConvert.SerializeObject(
+                        ctx.Request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
+                        Formatting.None);
+                    logger.LogInformation("Request headers: {headers}", headers);
+                    await next(ctx).ConfigureAwait(false);
+                })
             .UseDotAuthMvc(x => { x.KnownProxies.AddRange(knownProxies); }, applicationTypes: typeof(IDefaultUi))
             .UseEndpoints(endpoint => { endpoint.MapHealthChecks("/health"); });
     }

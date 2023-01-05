@@ -25,6 +25,7 @@ using Amazon.Runtime;
 using Baseline;
 using DotAuth;
 using DotAuth.Extensions;
+using DotAuth.Shared.Policies;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.Stores.Marten;
@@ -92,7 +93,7 @@ internal sealed class Startup
             Tokens =
                 sp => new RedisTokenStore(
                     sp.GetRequiredService<IDatabaseAsync>()),
-            ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>),
+            ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<IAuthorizationPolicy>()),
             EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
             ClaimsIncludedInUserCreation = new[]
             {

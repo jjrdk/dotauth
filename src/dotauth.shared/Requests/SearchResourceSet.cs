@@ -15,18 +15,9 @@ public sealed record SearchResourceSet
     /// <value>
     /// The ids.
     /// </value>
-    [DataMember(Name = "ids")]
-    public string[] Ids { get; set; } = Array.Empty<string>();
-
-    /// <summary>
-    /// Gets or sets the names.
-    /// </summary>
-    /// <value>
-    /// The names.
-    /// </value>
-    [DataMember(Name = "names")]
-    public string[] Names { get; set; } = Array.Empty<string>();
-
+    [DataMember(Name = "terms")]
+    public string[] Terms { get; set; } = Array.Empty<string>();
+    
     /// <summary>
     /// Gets or sets the types.
     /// </summary>

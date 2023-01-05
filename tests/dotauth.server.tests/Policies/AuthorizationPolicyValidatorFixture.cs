@@ -23,6 +23,7 @@ using DotAuth.Events;
 using DotAuth.Parameters;
 using DotAuth.Policies;
 using DotAuth.Repositories;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;
@@ -79,7 +80,7 @@ public sealed class AuthorizationPolicyValidatorFixture
         var result = await _authorizationPolicyValidator.IsAuthorized(
                 ticket,
                 new Client { ClientId = "client_id" },
-                new ClaimTokenParameter { Format = DotAuth.UmaConstants.IdTokenType, Token = token },
+                new ClaimTokenParameter { Format = UmaConstants.IdTokenType, Token = token },
                 CancellationToken.None)
             .ConfigureAwait(false);
 
@@ -155,7 +156,7 @@ public sealed class AuthorizationPolicyValidatorFixture
         var result = await _authorizationPolicyValidator.IsAuthorized(
                 ticket,
                 new Client { ClientId = "client_id" },
-                new ClaimTokenParameter { Token = token, Format = DotAuth.UmaConstants.IdTokenType },
+                new ClaimTokenParameter { Token = token, Format = UmaConstants.IdTokenType },
                 CancellationToken.None)
             .ConfigureAwait(false);
 

@@ -23,6 +23,7 @@ using DotAuth.Repositories;
 using DotAuth.Server.Tests.MiddleWares;
 using DotAuth.Server.Tests.Stores;
 using DotAuth.Shared;
+using DotAuth.Shared.Policies;
 using DotAuth.Shared.Repositories;
 using DotAuth.UI;
 using Microsoft.AspNetCore.Builder;
@@ -57,7 +58,7 @@ public sealed class FakeUmaStartup
                     opts.DefaultAuthenticateScheme = DefaultSchema;
                     opts.DefaultChallengeScheme = DefaultSchema;
                 })
-            .AddUmaCustomAuth(o => { });
+            .AddUmaCustomAuth(_ => { });
         services.AddAuthorization(
             opts =>
             {
@@ -67,7 +68,7 @@ public sealed class FakeUmaStartup
                         policy =>
                         {
                             policy.AddAuthenticationSchemes(DefaultSchema);
-                            policy.RequireAssertion(p => true);
+                            policy.RequireAssertion(_ => true);
                         });
             });
         // 3. Add the dependencies needed to enable CORS
@@ -88,13 +89,13 @@ public sealed class FakeUmaStartup
                     new Mock<ILogger<InMemoryClientRepository>>().Object,
                     OAuthStores.GetClients()),
                 Scopes = _ => new InMemoryScopeRepository(OAuthStores.GetScopes()),
-                ResourceSets = _ => new InMemoryResourceSetRepository(UmaStores.GetResources())
+                ResourceSets = sp => new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>(), UmaStores.GetResources())
             },
             new[] { DefaultSchema },
             assemblyTypes: typeof(IDefaultUi));
 
         // 3. Enable logging.
-        services.AddLogging(l=>l.AddXunit(_outputHelper));
+        services.AddLogging(l => l.AddXunit(_outputHelper));
         // 5. Register other classes.
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
     }

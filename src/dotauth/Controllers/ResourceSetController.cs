@@ -68,7 +68,7 @@ public sealed class ResourceSetController : ControllerBase
         [FromBody] SearchResourceSet? searchResourceSet,
         CancellationToken cancellationToken)
     {
-        if (searchResourceSet == null)
+        if (searchResourceSet?.Terms.Length == 0)
         {
             return BuildError(
                 ErrorCodes.InvalidRequest,
@@ -76,7 +76,7 @@ public sealed class ResourceSetController : ControllerBase
                 HttpStatusCode.BadRequest);
         }
 
-        var result = await _resourceSetRepository.Search(searchResourceSet, cancellationToken)
+        var result = await _resourceSetRepository.Search(User, searchResourceSet!, cancellationToken)
             .ConfigureAwait(false);
         return new OkObjectResult(
             new PagedResult<ResourceSet>
@@ -190,7 +190,7 @@ public sealed class ResourceSetController : ControllerBase
     [HttpPost("{id}/policy")]
     [Authorize(Policy = "UmaProtection")]
     public async Task<IActionResult> SetResourceSetPolicy(
-        EditPolicyResponse viewModel,
+        EditPolicyResponse? viewModel,
         CancellationToken cancellationToken)
     {
         if (viewModel == null)
@@ -280,7 +280,7 @@ public sealed class ResourceSetController : ControllerBase
                 Strings.TheSubjectCannotBeRetrieved,
                 HttpStatusCode.BadRequest);
         }
-            
+
         if (resourceSet.IconUri != null && !resourceSet.IconUri.IsAbsoluteUri)
         {
             return BuildError(ErrorCodes.InvalidUri, Strings.TheUrlIsNotWellFormed, HttpStatusCode.BadRequest);
@@ -309,7 +309,7 @@ public sealed class ResourceSetController : ControllerBase
                 AuthorizationPolicies = new[] { new PolicyRule { IsResourceOwnerConsentNeeded = true } }
             }
             : resourceSet with { Id = Id.Create() };
-            
+
         if (!await _resourceSetRepository.Add(subject, resourceSet, cancellationToken).ConfigureAwait(false))
         {
             return Problem();
@@ -349,7 +349,7 @@ public sealed class ResourceSetController : ControllerBase
             return e.Details.Status switch
             {
                 HttpStatusCode.BadRequest => BadRequest(e.Details),
-                _ => new ObjectResult(e.Details) {StatusCode = (int) e.Details.Status}
+                _ => new ObjectResult(e.Details) { StatusCode = (int)e.Details.Status }
             };
         }
         //if (!resourceSetUpdated)
@@ -432,7 +432,7 @@ public sealed class ResourceSetController : ControllerBase
                 viewModel.ClientIdsAllowed == null
                     ? Array.Empty<string>()
                     : viewModel.ClientIdsAllowed.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(x => x.Trim()!)
+                        .Select(x => x.Trim())
                         .ToArray(),
             IsResourceOwnerConsentNeeded = viewModel.IsResourceOwnerConsentNeeded,
             OpenIdProvider = viewModel.OpenIdProvider
