@@ -15,6 +15,7 @@
 namespace DotAuth.Shared.Models;
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 /// <summary>
@@ -76,4 +77,16 @@ public record ResourceSet
     /// </summary>
     [DataMember(Name = "authorization_policies")]
     public PolicyRule[] AuthorizationPolicies { get; set; } = Array.Empty<PolicyRule>();
+
+    /// <summary>
+    /// Gets or sets the metadata for the resource set.
+    /// </summary>
+    [DataMember(Name = "metadata")] 
+    public List<KeyValuePair<string, string>> Metadata { get; set; } = new();
+    
+    /// <summary>
+    /// Gets or sets the creation time.
+    /// </summary>
+    [DataMember(Name = "created")]
+    public DateTimeOffset Created { get; set; } = DateTimeOffset.UtcNow;
 }

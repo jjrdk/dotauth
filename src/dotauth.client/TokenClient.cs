@@ -111,7 +111,7 @@ public sealed class TokenClient : ClientBase, ITokenClient
             .ConfigureAwait(false);
         return result switch
         {
-            Option<GrantedTokenResponse>.Error e when e.Details.Title == ErrorCodes.AuthorizationPending =>
+            Option<GrantedTokenResponse>.Error { Details.Title: ErrorCodes.AuthorizationPending } =>
                 await GetToken(tokenRequest, cancellationToken).ConfigureAwait(false),
             _ => result
         };

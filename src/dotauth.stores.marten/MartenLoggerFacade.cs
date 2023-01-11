@@ -32,7 +32,7 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
     /// <inheritdoc />
     public void SchemaChange(string sql)
     {
-        _logger.LogInformation("Executing DDL change: {sql}", sql);
+        _logger.LogInformation("Executing DDL change: {Sql}", sql);
     }
 
     /// <inheritdoc />
@@ -43,7 +43,7 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
             (current, npgsqlParameter) => current.Replace(
                 npgsqlParameter.ParameterName,
                 $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
-        _logger.LogInformation("{entry}", entry);
+        _logger.LogInformation("{Entry}", entry);
     }
 
     /// <inheritdoc />
@@ -55,14 +55,14 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
             (current, npgsqlParameter) => current.Replace(
                 npgsqlParameter.ParameterName,
                 $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
-        _logger.LogError("{entry}", entry);
+        _logger.LogError("{Entry}", entry);
     }
 
     /// <inheritdoc />
     public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
     {
         _logger.LogInformation(
-            "Persisted {updateAmount} updates, {insertAmount} inserts, and {deleteAmount} deletions",
+            "Persisted {UpdateAmount} updates, {InsertAmount} inserts, and {DeleteAmount} deletions",
             commit.Updated.Count(),
             commit.Inserted.Count(),
             commit.Deleted.Count());
@@ -71,6 +71,6 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
     /// <inheritdoc />
     public void OnBeforeExecute(NpgsqlCommand command)
     {
-        _logger.LogError("Before PostgreSql command: {commandText}", command.CommandText);
+        _logger.LogError("Before PostgreSql command: {CommandText}", command.CommandText);
     }
 }

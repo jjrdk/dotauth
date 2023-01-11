@@ -10,19 +10,19 @@ using System.Runtime.Serialization;
 public sealed record SearchResourceSet
 {
     /// <summary>
-    /// Gets or sets the ids.
+    /// Gets or sets the search terms.
     /// </summary>
     /// <value>
-    /// The ids.
+    /// The search terms.
     /// </value>
     [DataMember(Name = "terms")]
     public string[] Terms { get; set; } = Array.Empty<string>();
     
     /// <summary>
-    /// Gets or sets the types.
+    /// Gets or sets the requested resource types.
     /// </summary>
     /// <value>
-    /// The types.
+    /// The requested resource types.
     /// </value>
     [DataMember(Name = "types")]
     public string[] Types { get; set; } = Array.Empty<string>();
@@ -37,11 +37,11 @@ public sealed record SearchResourceSet
     public int StartIndex { get; set; }
 
     /// <summary>
-    /// Gets or sets the total results.
+    /// Gets or sets the page size.
     /// </summary>
     /// <value>
-    /// The total results.
+    /// The page size of the result set.
     /// </value>
     [DataMember(Name = "count")]
-    public int TotalResults { get; set; }
+    public int PageSize { get; set; }
 }

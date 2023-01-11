@@ -26,7 +26,7 @@ public sealed class PagedResult<T>
     /// The start index.
     /// </value>
     [DataMember(Name = "start_index")]
-    public int StartIndex { get; set; }
+    public long StartIndex { get; set; }
 
     /// <summary>
     /// Gets or sets the content.

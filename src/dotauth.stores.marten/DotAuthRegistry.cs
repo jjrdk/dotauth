@@ -49,13 +49,9 @@ public sealed class DotAuthRegistry : MartenRegistry
             .GinIndexJsonData();
         For<Client>()
             .Identity(x => x.ClientId)
-            //.Index(x => x.AllowedScopes)
-            //.Index(x => x.GrantTypes)
 #pragma warning disable CS8603
             .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)")
 #pragma warning restore CS8603
-            //.Index(x => x.ResponseTypes)
-            //.Index(x => x.Claims)
             .GinIndexJsonData();
         For<OwnedResourceSet>()
             .Identity(x => x.Id)
@@ -65,6 +61,7 @@ public sealed class DotAuthRegistry : MartenRegistry
             .GinIndexJsonData(
                 idx =>
                 {
+                    idx.Columns = new[] { nameof(ResourceSet.AuthorizationPolicies) };
                     idx.TenancyScope = TenancyScope.PerTenant;
                     idx.IsConcurrent = true;
                 });
