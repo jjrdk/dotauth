@@ -113,7 +113,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
         SearchResourceSet? parameter,
         CancellationToken cancellationToken = default)
     {
-        if (parameter?.Terms.Length == 0)
+        if (parameter == null || parameter.Terms.Length == 0)
         {
             throw new ArgumentNullException(nameof(parameter));
         }
@@ -134,9 +134,9 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
 
         IEnumerable<ResourceSet> sortedResult = asyncResult.OrderBy(c => c.Name);
         var nbResult = asyncResult.Length;
-        if (parameter.TotalResults > 0)
+        if (parameter.PageSize > 0)
         {
-            sortedResult = sortedResult.Skip(parameter.StartIndex).Take(parameter.TotalResults);
+            sortedResult = sortedResult.Skip(parameter.StartIndex).Take(parameter.PageSize);
         }
 
         return new PagedResult<ResourceSet>

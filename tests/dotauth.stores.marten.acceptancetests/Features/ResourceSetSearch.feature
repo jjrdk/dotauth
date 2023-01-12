@@ -9,7 +9,7 @@ Feature: ResourceSet Search
 		And a properly configured uma client
 
 	Scenario: Find resource set by name
-		When registering resource
+		When registering resources
 		  | Name     | Type  | Description     | Scopes      |
 		  | picture  | image | some picture    | read,search |
 		  | picture2 | image | another picture | read        |
@@ -17,14 +17,14 @@ Feature: ResourceSet Search
 		Then returns 1 search results
 
 	Scenario: Find resource set by type
-		When registering resource
+		When registering resources
 		  | Name     | Type  | Description     | Scopes      |
 		  | picture  | image | some picture    | read,search |
 		And searching by type image and term picture
 		Then returns 1 search results
 
 	Scenario: Find resource set by description
-		When registering resource
+		When registering resources
 		  | Name    | Type  | Description           | Scopes      |
 		  | picture | image | some fancy picture    | read,search |
 		  | picture | image | another fancy picture | read,search |
@@ -32,7 +32,7 @@ Feature: ResourceSet Search
 		Then returns 2 search results
 
 	Scenario: Cannot find unsearchable resources
-		When registering resource
+		When registering resources
 		  | Name    | Type  | Description           | Scopes     |
 		  | picture | image | some fancy picture    | read,write |
 		  | picture | image | another fancy picture | read,write |

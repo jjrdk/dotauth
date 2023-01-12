@@ -5,11 +5,13 @@ using System.Net.Http;
 using DotAuth;
 using DotAuth.Extensions;
 using DotAuth.Repositories;
+using DotAuth.Shared.Policies;
 using DotAuth.Stores.Marten;
 using DotAuth.UI;
 using global::Marten;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -41,6 +43,10 @@ public sealed class ServerStartup
             Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<Func<IDocumentSession>>()),
             Consents = sp => new MartenConsentRepository(sp.GetRequiredService<Func<IDocumentSession>>()),
             Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetRequiredService<Func<IDocumentSession>>()),
+            ResourceSets =
+                sp => new MartenResourceSetRepository(
+                    sp.GetRequiredService<Func<IDocumentSession>>(),
+                    sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
             DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5),
             DevicePollingInterval = TimeSpan.FromSeconds(3)
         };
@@ -61,7 +67,7 @@ public sealed class ServerStartup
                     _connectionString,
                     new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
                     _schemaName,
-                    AutoCreate.None)));
+                    AutoCreate.CreateOrUpdate)));
         services.AddTransient<Func<IDocumentSession>>(
             sp =>
             {

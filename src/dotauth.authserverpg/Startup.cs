@@ -25,7 +25,6 @@ using Amazon.Runtime;
 using Baseline;
 using DotAuth;
 using DotAuth.Extensions;
-using DotAuth.Shared.Policies;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.Stores.Marten;
@@ -106,7 +105,7 @@ public sealed class Startup
                 JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
                 Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
                 Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
-                ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<IAuthorizationPolicy>()),
+                ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
                 EventPublisher = sp =>
                     new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>())
             };

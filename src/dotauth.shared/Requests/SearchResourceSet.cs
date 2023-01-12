@@ -43,5 +43,5 @@ public sealed record SearchResourceSet
     /// The page size of the result set.
     /// </value>
     [DataMember(Name = "count")]
-    public int PageSize { get; set; }
+    public int PageSize { get; set; } = 100;
 }

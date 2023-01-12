@@ -93,7 +93,7 @@ internal sealed class Startup
             Tokens =
                 sp => new RedisTokenStore(
                     sp.GetRequiredService<IDatabaseAsync>()),
-            ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<IAuthorizationPolicy>()),
+            ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
             EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
             ClaimsIncludedInUserCreation = new[]
             {

@@ -96,6 +96,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
                 MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
                 DefaultValueHandling = DefaultValueHandling.Include,
                 NullValueHandling = NullValueHandling.Include,
+                MissingMemberHandling = MissingMemberHandling.Ignore,
                 DateFormatHandling = DateFormatHandling.IsoDateFormat,
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                 FloatFormatHandling = FloatFormatHandling.DefaultValue,
