@@ -9,24 +9,24 @@ Create resource and request permission and access token
         And a properly configured uma client
 
     Scenario: Successful permission creation
-        When registering resource
+        When registering resources
           | Name    | Type  | Description | Scopes |
           | picture | image | a picture   | read   |
-        And requesting permission for read
+        And requesting permission to read
         Then returns ticket id
 
     Scenario: Successful permission token grant
-        When registering resource
+        When registering resources
           | Name    | Type  | Description | Scopes |
           | picture | image | a picture   | read   |
-        And requesting permission for read
+        And requesting permission to read
         And updating policy
         Then returns ticket id
         And can get access token for resource
 
     Scenario: Successful permissions creation
-        When registering resource
+        When registering resources
           | Name    | Type  | Description | Scopes     |
-          | picture | image | a picture   | read.write |
+          | picture | image | a picture   | read,write |
         And requesting permissions
         Then returns ticket id

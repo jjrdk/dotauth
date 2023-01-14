@@ -52,6 +52,10 @@ internal sealed class ServerStartup
             },
             Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<Func<IDocumentSession>>()),
             Users = sp => new MartenResourceOwnerStore(string.Empty, sp.GetRequiredService<Func<IDocumentSession>>()),
+            ResourceSets =
+                sp => new MartenResourceSetRepository(
+                    sp.GetRequiredService<Func<IDocumentSession>>(),
+                    sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
             Tickets =
                 sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _martenOptions!.TicketLifeTime),
             Tokens = sp => new RedisTokenStore(sp.GetRequiredService<IDatabaseAsync>()),
@@ -77,7 +81,7 @@ internal sealed class ServerStartup
                     _connectionString,
                     new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
                     _schemaName,
-                    AutoCreate.None)));
+                    AutoCreate.CreateOrUpdate)));
         services.AddTransient<Func<IDocumentSession>>(
             sp =>
             {

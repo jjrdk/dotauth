@@ -43,22 +43,26 @@ public partial class FeatureTest
     {
         _umaClient = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration));
     }
-
-    [When(@"registering resource")]
-    public async Task WhenRegisteringResource(Table table)
+    
+    [When(@"registering resources")]
+    public async Task WhenRegisteringResources(Table table)
     {
-        var row = table.Rows[0];
-        var resourceSet = new ResourceSet
+        foreach (var row in table.Rows)
         {
-            Name = row["Name"],
-            Scopes = row["Scopes"]
-                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-        };
-        var resource = (await _umaClient.AddResource(
-                resourceSet,
-                _token.AccessToken)
-            .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result)!;
-        _resourceId = resource.Item.Id;
+            var scopes = row["Scopes"]
+                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            var resourceSet = new ResourceSet
+            {
+                Name = row["Name"],
+                Type = row["Type"],
+                Description = row["Description"],
+                Scopes = scopes,
+                AuthorizationPolicies = new[] { new PolicyRule { Scopes = scopes } }
+            };
+            var option = await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false);
+            var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
+            _resourceId = resource.Item.Id;
+        }
     }
 
     [When(@"updating policy")]
@@ -85,8 +89,8 @@ public partial class FeatureTest
         Assert.IsType<Option<UpdateResourceSetResponse>.Result>(option);
     }
 
-    [When(@"requesting permission for (.+)")]
-    public async Task WhenRequestingPermissionFor(string scope)
+    [When(@"requesting permission to (.+)")]
+    public async Task WhenRequestingPermissionTo(string scope)
     {
         var scopes = scope.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         var response = await _umaClient.RequestPermission(

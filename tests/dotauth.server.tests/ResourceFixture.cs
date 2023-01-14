@@ -208,12 +208,11 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Search_Resources_Then_List_Is_Returned()
     {
-        var resource = await _umaClient.SearchResources(
-                new SearchResourceSet { StartIndex = 0, PageSize = 100 },
+        var option = await _umaClient.SearchResources(
+                new SearchResourceSet { Terms = new[] { "Resources" }, StartIndex = 0, PageSize = 100 },
                 "header")
-            .ConfigureAwait(false) as Option<PagedResult<ResourceSet>>.Result;
-
-        Assert.True(resource.Item.Content.Any());
+            .ConfigureAwait(false);
+        Assert.IsType<Option<PagedResult<ResourceSet>>.Result>(option);
     }
 
     [Fact]

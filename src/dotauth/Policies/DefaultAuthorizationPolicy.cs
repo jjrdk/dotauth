@@ -40,7 +40,7 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
         if (authorizationPolicy.Length == 0)
         {
             return Task.FromResult(
-                new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester));
+                new AuthorizationPolicyResult(AuthorizationPolicyResultKind.RequestSubmitted, requester));
         }
 
         if (claimTokenFormat != UmaConstants.IdTokenType)

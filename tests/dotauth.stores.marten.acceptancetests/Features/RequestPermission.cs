@@ -60,7 +60,7 @@ public partial class FeatureTest
                 AuthorizationPolicies = new[] { new PolicyRule { Scopes = scopes } }
             };
             var option = await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false);
-            var resource = (option as Option<AddResourceSetResponse>.Result)!;
+            var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
             _resourceId = resource.Item.Id;
         }
     }

@@ -107,9 +107,9 @@ public partial class FeatureTest
             AuthorizationPolicies = Array.Empty<PolicyRule>()
         };
 
-        var resourceResponse =
-            await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false) as
-                Option<AddResourceSetResponse>.Result;
+        var option = await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false);
+        var resourceResponse = Assert.IsType<Option<AddResourceSetResponse>.Result>(
+            option);
         _resourceSetResponse = resourceResponse.Item;
 
         Assert.NotNull(resourceResponse);
