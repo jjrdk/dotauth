@@ -87,7 +87,7 @@ public sealed class MartenTicketStore : ITicketStore
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        return tickets;
+        return tickets.ToArray();
     }
 
     /// <inheritdoc />

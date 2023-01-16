@@ -80,7 +80,6 @@ public sealed class DotAuthRegistry : MartenRegistry
             .Duplicate(x => x.Name, configure: index => index.TenancyScope = TenancyScope.PerTenant)
             .Duplicate(x => x.Description, configure: index => index.TenancyScope = TenancyScope.PerTenant)
             .Duplicate(x => x.Type, configure: index => index.TenancyScope = TenancyScope.PerTenant)
-            .Index(x => x.AuthorizationPolicies, index => index.TenancyScope = TenancyScope.PerTenant)
             .GinIndexJsonData(
                 idx =>
                 {
@@ -177,7 +176,6 @@ public sealed class DotAuthRegistry : MartenRegistry
                 configure: idx =>
                 {
                     idx.IsUnique = false;
-
                     idx.IsConcurrent = true;
                 })
             .GinIndexJsonData(
@@ -191,11 +189,6 @@ public sealed class DotAuthRegistry : MartenRegistry
             .Duplicate(x => x.Jwk.Use, "character(3)")
             .Duplicate(x => x.Jwk.HasPrivateKey, dbType: NpgsqlDbType.Boolean)
             .Index(x => x.Jwk.KeyOps);
-        //.GinIndexJsonData(
-        //    idx =>
-        //    {
-        //        idx.IsConcurrent = true;
-        //    });
         For<DeviceAuthorizationData>()
             .Identity(x => x.DeviceCode)
             .Duplicate(

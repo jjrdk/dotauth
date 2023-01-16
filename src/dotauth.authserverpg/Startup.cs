@@ -41,6 +41,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Weasel.Core;
 
 public sealed class Startup
 {
@@ -119,7 +120,8 @@ public sealed class Startup
                 {
                     var options = new DotAuthMartenOptions(
                         _configuration[ConfigurationValues.ConnectionString] ?? "",
-                        new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()));
+                        new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
+                        autoCreate: AutoCreate.CreateOrUpdate);
                     return new DocumentStore(options);
                 })
             .AddTransient(sp => sp.GetRequiredService<IDocumentStore>().LightweightSession())
