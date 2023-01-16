@@ -86,6 +86,10 @@ public sealed class UserController : BaseController
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var authenticatedUser = await SetUser().ConfigureAwait(false);
+        if (authenticatedUser == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
         var subject = authenticatedUser.GetSubject();
         var ro = subject == null ? null : await GetUserProfile(subject, cancellationToken).ConfigureAwait(false);
         if (ro == null)
