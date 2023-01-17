@@ -122,10 +122,10 @@ public sealed class AuthorizationController : ControllerBase
 
         authorizationRequest = (result as Option<AuthorizationRequest>.Result)!.Item
             with
-            {
-                origin_url = originUrl,
-                session_id = sessionId
-            };
+        {
+            origin_url = originUrl,
+            session_id = sessionId
+        };
 
         var authenticatedUser = await _authenticationService
             .GetAuthenticatedUser(this, CookieNames.CookieName)
@@ -139,43 +139,43 @@ public sealed class AuthorizationController : ControllerBase
         switch (actionResult.Type)
         {
             case ActionResultType.RedirectToCallBackUrl:
-            {
-                return authorizationRequest.redirect_uri!.CreateRedirectHttpTokenResponse(
-                    actionResult.GetRedirectionParameters(),
-                    actionResult.RedirectInstruction!.ResponseMode!);
-            }
-            case ActionResultType.RedirectToAction:
-            {
-                if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
-                    || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
                 {
-                    // Force the resource owner to be re-authenticated
-                    if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
-                    {
-                        authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
-                    }
-
-                    // Set the process id into the request.
-                    if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
-                    {
-                        authorizationRequest = authorizationRequest with { aggregate_id = actionResult.ProcessId };
-                    }
-
-                    // Add the encoded request into the query string
-                    var encryptedRequest = _dataProtector.Protect(authorizationRequest);
-                    actionResult = actionResult with
-                    {
-                        RedirectInstruction = actionResult.RedirectInstruction.AddParameter(
-                            StandardAuthorizationResponseNames.AuthorizationCodeName,
-                            encryptedRequest)
-                    };
+                    return authorizationRequest.redirect_uri!.CreateRedirectHttpTokenResponse(
+                        actionResult.GetRedirectionParameters(),
+                        actionResult.RedirectInstruction!.ResponseMode!);
                 }
+            case ActionResultType.RedirectToAction:
+                {
+                    if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
+                        || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
+                    {
+                        // Force the resource owner to be re-authenticated
+                        if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
+                        {
+                            authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
+                        }
 
-                var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
-                var uri = new Uri(url);
-                var redirectionUrl = uri.AddParametersInQuery(actionResult.GetRedirectionParameters());
-                return new RedirectResult(redirectionUrl.AbsoluteUri);
-            }
+                        // Set the process id into the request.
+                        if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
+                        {
+                            authorizationRequest = authorizationRequest with { aggregate_id = actionResult.ProcessId };
+                        }
+
+                        // Add the encoded request into the query string
+                        var encryptedRequest = _dataProtector.Protect(authorizationRequest);
+                        actionResult = actionResult with
+                        {
+                            RedirectInstruction = actionResult.RedirectInstruction.AddParameter(
+                                StandardAuthorizationResponseNames.AuthorizationCodeName,
+                                encryptedRequest)
+                        };
+                    }
+
+                    var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
+                    var uri = new Uri(url);
+                    var redirectionUrl = uri.AddParametersInQuery(actionResult.GetRedirectionParameters());
+                    return new RedirectResult(redirectionUrl.AbsoluteUri);
+                }
             case ActionResultType.BadRequest:
                 return BadRequest(actionResult.Error);
             case ActionResultType.None:
@@ -187,8 +187,12 @@ public sealed class AuthorizationController : ControllerBase
 
     private string GetSessionId()
     {
-        return Request.Cookies.TryGetValue(CoreConstants.SessionId, out var sessionId) && sessionId != null
+        return Request.Cookies.TryGetValue(CoreConstants.SessionId, out var sessionId)
+#if NET6_0
+            ? sessionId ?? Id.Create()
+#else
             ? sessionId
+#endif
             : Id.Create();
     }
 
