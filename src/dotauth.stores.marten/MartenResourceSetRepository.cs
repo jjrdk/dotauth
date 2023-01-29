@@ -41,17 +41,17 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public async Task<PagedResult<ResourceSet>> Search(
-        ClaimsPrincipal requestor,
+    public async Task<PagedResult<ResourceSetDescription>> Search(
+        IReadOnlyList<Claim> claims,
         SearchResourceSet parameter,
         CancellationToken cancellationToken)
     {
         try
         {
             await using var session = _sessionFactory();
-            var command = CreateQueryCommand(parameter, requestor, session);
+            var command = CreateQueryCommand(parameter, claims, session);
             var reader = await session.ExecuteReaderAsync(command, cancellationToken);
-            var resultSet = new List<ResourceSet>();
+            var resultSet = new List<ResourceSetDescription>();
             var totalCount = 0;
             while (await reader.ReadAsync(cancellationToken))
             {
@@ -60,7 +60,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
                     break;
                 }
 
-                var set = await session.DocumentStore.Advanced.Serializer.FromJsonAsync<ResourceSet>(
+                var set = await session.DocumentStore.Advanced.Serializer.FromJsonAsync<ResourceSetDescription>(
                     reader,
                     0,
                     cancellationToken);
@@ -71,8 +71,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
             }
 
             return cancellationToken.IsCancellationRequested
-                ? new PagedResult<ResourceSet>()
-                : new PagedResult<ResourceSet>
+                ? new PagedResult<ResourceSetDescription>()
+                : new PagedResult<ResourceSetDescription>
                 {
                     Content = resultSet.ToArray(),
                     StartIndex = parameter.StartIndex,
@@ -82,24 +82,34 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "{error}", ex.Message);
-            return new PagedResult<ResourceSet>
+            return new PagedResult<ResourceSetDescription>
             {
-                Content = Array.Empty<ResourceSet>(),
+                Content = Array.Empty<ResourceSetDescription>(),
                 StartIndex = 0,
                 TotalResults = 0
             };
         }
     }
 
-    private static NpgsqlCommand CreateQueryCommand(SearchResourceSet parameter, ClaimsPrincipal principal, IDocumentSession session)
+    private static NpgsqlCommand CreateQueryCommand(SearchResourceSet parameter, IReadOnlyList<Claim> claims, IQuerySession session)
     {
         var builder = new StringBuilder();
         builder.Append(
             "SELECT d.data, count(d.data) over (range unbounded preceding) total from mt_doc_ownedresourceset d WHERE ");
-        var parameterNames = parameter.Terms.Length == 0 ? "" : "(d.name = any (@terms) OR string_to_array(d.description, ' ') && (@terms) OR d.type = any (@terms))";
-        var parameterTypes = parameter.Types.Length == 0 ? "" : "d.type = any (@type)";
-        const string allowedPolicy = "(d.data @> @onlySearchScope OR d.data @> @onlyClient OR d.data @> @onlyProvider OR d.data @> @clientAndProvider)";
-        const string allowedClaims = @"exists 
+        if (parameter.Terms.Length > 0)
+        {
+            builder.Append(
+                "(d.name = any (@terms) OR string_to_array(d.description, ' ') && (@terms) OR d.type = any (@terms))");
+        }
+
+        if (parameter.Types.Length > 0)
+        {
+            builder.Append(" AND d.type = any (@type)");
+        }
+
+        builder.Append(" AND (d.data @> @onlySearchScope OR d.data @> @onlyClient OR d.data @> @onlyProvider OR d.data @> @clientAndProvider)");
+        builder.Append(
+            @" AND exists 
  (
     select policies from 
     (
@@ -107,12 +117,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
 			from mt_doc_ownedresourceset d
     ) p
     where @claims @> (p.policies -> 'claims') 
- )";
+ )");
 
-        builder.AppendJoin(
-            " AND ",
-            new[] { parameterNames, parameterTypes, allowedPolicy, allowedClaims }.Where(
-                x => !string.IsNullOrWhiteSpace(x)));
         builder.Append(" ORDER BY (d.data ->> 'name')");
         if (parameter.PageSize > 0)
         {
@@ -125,20 +131,20 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
         }
 
         //var serializer = session.DocumentStore.Advanced.Serializer;
-        var provider = principal.Claims.First(c => c.Type == "iss").Value;
+        var provider = claims.First(c => c.Type == "iss").Value;
         var command = new NpgsqlCommand(builder.ToString(), session.Connection);
 
-        if (!string.IsNullOrWhiteSpace(parameterNames))
+        if (parameter.Terms.Length>0)
         {
             command.AddNamedParameter("terms", parameter.Terms, NpgsqlDbType.Array | NpgsqlDbType.Text);
         }
 
-        if (!string.IsNullOrWhiteSpace(parameterTypes))
+        if (parameter.Types.Length > 0)
         {
             command.AddNamedParameter("type", parameter.Types, NpgsqlDbType.Array | NpgsqlDbType.Varchar);
         }
 
-        var clientId = principal.GetClientId();
+        var clientId = claims.GetClientId();
         command.AddNamedParameter(
             "onlySearchScope",
             new
@@ -194,7 +200,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
                 }
             },
             NpgsqlDbType.Jsonb);
-        command.AddNamedParameter("claims", principal.Claims.Select(ClaimData.FromClaim).ToArray(), NpgsqlDbType.Jsonb);
+        command.AddNamedParameter("claims", claims.Select(ClaimData.FromClaim).ToArray(), NpgsqlDbType.Jsonb);
         if (parameter.PageSize > 0)
         {
             command.AddNamedParameter("limit", parameter.PageSize, NpgsqlDbType.Integer);

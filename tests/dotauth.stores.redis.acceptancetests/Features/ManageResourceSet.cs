@@ -55,7 +55,7 @@ public partial class FeatureTest
             Scopes = new[] { "read" },
             Type = "test"
         };
-        var option = await _umaClient.AddResource(resource, _token.AccessToken).ConfigureAwait(false);
+        var option = await _umaClient.AddResourceSet(resource, _token.AccessToken).ConfigureAwait(false);
 
         var response = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
 

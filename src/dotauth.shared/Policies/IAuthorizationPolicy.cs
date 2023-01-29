@@ -1,5 +1,6 @@
 ﻿namespace DotAuth.Shared.Policies;
 
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ public interface IAuthorizationPolicy
     Task<AuthorizationPolicyResult> Execute(
         TicketLineParameter ticket,
         string? claimTokenFormat,
-        ClaimsPrincipal requester,
+        IReadOnlyList<Claim> requester,
         CancellationToken cancellationToken,
         params PolicyRule[] policy);
 }

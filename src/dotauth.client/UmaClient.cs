@@ -30,7 +30,7 @@ using DotAuth.Shared.Responses;
 /// <summary>
 /// Defines the UMA client.
 /// </summary>
-public sealed class UmaClient : ClientBase, IUmaPermissionClient, IResourceClient, IIntrospectionClient
+public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSetClient, IIntrospectionClient
 {
     private readonly Uri _configurationUri;
     private UmaConfiguration? _umaConfiguration;
@@ -107,7 +107,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IResourceClien
     }
 
     /// <inheritdoc />
-    public async Task<Option<UpdateResourceSetResponse>> UpdateResource(
+    public async Task<Option<UpdateResourceSetResponse>> UpdateResourceSet(
         ResourceSet request,
         string token,
         CancellationToken cancellationToken = default)
@@ -131,7 +131,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IResourceClien
     }
 
     /// <inheritdoc />
-    public async Task<Option<AddResourceSetResponse>> AddResource(
+    public async Task<Option<AddResourceSetResponse>> AddResourceSet(
         ResourceSet request,
         string token,
         CancellationToken cancellationToken = default)
@@ -188,7 +188,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IResourceClien
     }
 
     /// <inheritdoc />
-    public async Task<Option<string[]>> GetAllResources(
+    public async Task<Option<string[]>> GetAllOwnResourceSets(
         string token,
         CancellationToken cancellationToken = default)
     {
@@ -207,7 +207,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IResourceClien
     }
 
     /// <inheritdoc />
-    public async Task<Option<ResourceSet>> GetResource(
+    public async Task<Option<ResourceSet>> GetResourceSet(
         string resourceSetId,
         string token,
         CancellationToken cancellationToken = default)
@@ -232,7 +232,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IResourceClien
     }
 
     /// <inheritdoc />
-    public async Task<Option<PagedResult<ResourceSet>>> SearchResources(
+    public async Task<Option<PagedResult<ResourceSetDescription>>> SearchResources(
         SearchResourceSet parameter,
         string? token = null,
         CancellationToken cancellationToken = default)
@@ -243,12 +243,12 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IResourceClien
         }
 
         var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
-        var url = configuration.ResourceRegistrationEndpoint + "/.search";
+        var url = $"{configuration.ResourceRegistrationEndpoint}/.search";
 
         var serializedPostPermission = Serializer.Default.Serialize(parameter);
         var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
         var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
-        return await GetResult<PagedResult<ResourceSet>>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return await GetResult<PagedResult<ResourceSetDescription>>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<UmaConfiguration> GetUmaConfiguration(CancellationToken cancellationToken)
@@ -267,7 +267,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IResourceClien
             throw new Exception(e.Details.Detail);
         }
 
-        _umaConfiguration = ((Option<UmaConfiguration>.Result)result).Item!;
+        _umaConfiguration = ((Option<UmaConfiguration>.Result)result).Item;
 
         return _umaConfiguration;
     }

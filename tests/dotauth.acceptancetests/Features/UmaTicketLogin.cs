@@ -40,7 +40,7 @@ public partial class FeatureTest
             }
         };
 
-        var option = await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false);
+        var option = await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false);
         var resourceResponse = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
 
         _resourceSetResponse = resourceResponse.Item;
@@ -108,7 +108,7 @@ public partial class FeatureTest
         };
 
         var resourceResponse =
-            await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+            await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
                 Option<AddResourceSetResponse>.Result;
         _resourceSetResponse = resourceResponse.Item;
 
@@ -145,7 +145,7 @@ public partial class FeatureTest
         };
 
         var resourceResponse =
-            await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+            await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
                 Option<AddResourceSetResponse>.Result;
 
         Assert.NotNull(resourceResponse);

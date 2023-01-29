@@ -119,7 +119,7 @@ public sealed class Startup
                 provider =>
                 {
                     var options = new DotAuthMartenOptions(
-                        _configuration[ConfigurationValues.ConnectionString] ?? "",
+                        "Server=odin;Port=5432;Database=simpleauth;User Id=simpleauth;Password=simpleauth;Include Error Detail=true;",
                         new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
                         autoCreate: AutoCreate.CreateOrUpdate);
                     return new DocumentStore(options);
@@ -172,7 +172,7 @@ public sealed class Startup
                 });
         services.ConfigureOptions<ConfigureOAuthOptions>()
             .AddHealthChecks()
-            .AddNpgSql(_configuration[ConfigurationValues.ConnectionString] ?? "", failureStatus: HealthStatus.Unhealthy);
+            .AddNpgSql("Server=odin;Port=5432;Database=simpleauth;User Id=simpleauth;Password=simpleauth;Include Error Detail=true;", failureStatus: HealthStatus.Unhealthy);
 
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientId]))
         {

@@ -10,7 +10,7 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private Option<PagedResult<ResourceSet>>.Result _searchResults;
+    private Option<PagedResult<ResourceSetDescription>>.Result _searchResults;
 
     [When(@"searching by term (.+)")]
     public async Task WhenSearchingByTerm(string term)
@@ -18,7 +18,7 @@ public partial class FeatureTest
         var searchOption = await _umaClient.SearchResources(
             new SearchResourceSet { Terms = new[] { term } },
             token: _token.AccessToken);
-        _searchResults = Assert.IsType<Option<PagedResult<ResourceSet>>.Result>(searchOption);
+        _searchResults = Assert.IsType<Option<PagedResult<ResourceSetDescription>>.Result>(searchOption);
     }
 
     [Then(@"returns (\d+) search results")]
@@ -37,6 +37,6 @@ public partial class FeatureTest
                 Types = type.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             },
             token: _token.AccessToken);
-        _searchResults = Assert.IsType<Option<PagedResult<ResourceSet>>.Result>(searchOption);
+        _searchResults = Assert.IsType<Option<PagedResult<ResourceSetDescription>>.Result>(searchOption);
     }
 }

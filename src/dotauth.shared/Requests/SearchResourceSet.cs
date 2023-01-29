@@ -10,6 +10,12 @@ using System.Runtime.Serialization;
 public sealed record SearchResourceSet
 {
     /// <summary>
+    /// Gets or sets the id token for the query.
+    /// </summary>
+    [DataMember(Name = "id_token")]
+    public string IdToken { get; set; } = "";
+    
+    /// <summary>
     /// Gets or sets the search terms.
     /// </summary>
     /// <value>

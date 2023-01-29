@@ -111,7 +111,22 @@ public static class ClaimPrincipalExtensions
             return string.Empty;
         }
 
-        var claim = principal.Claims.FirstOrDefault(c => c.Type == StandardClaimNames.Azp);
+        return principal.Claims.GetClientId();
+    }
+
+    /// <summary>
+    /// Gets the client application id claim value.
+    /// </summary>
+    /// <param name="claims">The user claims.</param>
+    /// <returns>the user's client.</returns>
+    public static string GetClientId(this IEnumerable<Claim>? claims)
+    {
+        if (claims == null)
+        {
+            return string.Empty;
+        }
+
+        var claim = claims.FirstOrDefault(c => c.Type == StandardClaimNames.Azp);
         return claim == null ? string.Empty : claim.Value;
     }
 

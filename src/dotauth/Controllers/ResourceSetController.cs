@@ -64,7 +64,7 @@ public sealed class ResourceSetController : ControllerBase
     /// <returns></returns>
     [HttpPost(".search")]
     [Authorize("UmaProtection")]
-    public async Task<ActionResult<PagedResult<ResourceSet>>> SearchResourceSets(
+    public async Task<ActionResult<PagedResult<ResourceSetDescription>>> SearchResourceSets(
         [FromBody] SearchResourceSet? searchResourceSet,
         CancellationToken cancellationToken)
     {
@@ -76,10 +76,10 @@ public sealed class ResourceSetController : ControllerBase
                 HttpStatusCode.BadRequest);
         }
 
-        var result = await _resourceSetRepository.Search(User, searchResourceSet!, cancellationToken)
+        var result = await _resourceSetRepository.Search(User.Claims.ToArray(), searchResourceSet!, cancellationToken)
             .ConfigureAwait(false);
         return new OkObjectResult(
-            new PagedResult<ResourceSet>
+            new PagedResult<ResourceSetDescription>
             {
                 Content = result.Content,
                 StartIndex = result.StartIndex,

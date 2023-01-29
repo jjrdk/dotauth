@@ -35,7 +35,7 @@ public partial class FeatureTest
             Description = "Test resource", Name = "Test resource", Scopes = new[] { "read" }, Type = "Test resource"
         };
         var response =
-            await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+            await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
                 Option<AddResourceSetResponse>.Result;
 
         Assert.NotNull(response);
@@ -63,7 +63,7 @@ public partial class FeatureTest
             Type = "Test resource"
         };
         var response =
-            await _umaClient.UpdateResource(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+            await _umaClient.UpdateResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
                 Option<UpdateResourceSetResponse>.Result;
 
         Assert.NotNull(response);

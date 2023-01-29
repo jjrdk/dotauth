@@ -106,7 +106,7 @@ public sealed class DefaultAuthorizationPolicyFixture
             var result = await _authorizationPolicy.Execute(
                     new TicketLineParameter("Test", ticketLine.Scopes, ticket.IsAuthorizedByRo),
                     UmaConstants.IdTokenType,
-                    new ClaimsPrincipal(new ClaimsIdentity(ticket.Requester.Select(c => new Claim(c.Type, c.Value)))),
+                    ticket.Requester.Select(c => new Claim(c.Type, c.Value)).ToArray(),
                     CancellationToken.None,
                     resourceSet!.AuthorizationPolicies)
                 .ConfigureAwait(false);
@@ -127,7 +127,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 () => _authorizationPolicy.Execute(
                     null,
                     UmaConstants.IdTokenType,
-                    new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                    Array.Empty<Claim>(),
                     CancellationToken.None,
                     new PolicyRule()))
             .ConfigureAwait(false);
@@ -165,7 +165,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#IDToken",
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);
@@ -197,7 +197,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "bad_format",
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);
@@ -255,7 +255,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);
@@ -287,7 +287,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);
@@ -319,7 +319,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);
@@ -351,7 +351,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);
@@ -383,7 +383,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);
@@ -415,7 +415,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);
@@ -445,7 +445,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 UmaConstants.IdTokenType,
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);
@@ -471,7 +471,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 UmaConstants.IdTokenType,
-                new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>())),
+                Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
             .ConfigureAwait(false);

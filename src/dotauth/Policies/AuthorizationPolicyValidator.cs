@@ -65,7 +65,7 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
         var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
         if (resources.Length == 0 || resources.Length != resourceIds.Length)
         {
-            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester);
+            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester.Claims.ToArray());
         }
 
         AuthorizationPolicyResult? validationResult = null;
@@ -80,7 +80,7 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
             validationResult = await _authorizationPolicy.Execute(
                     ticketLineParameter,
                     claimTokenParameter.Format,
-                    requester,
+                    requester.Claims.ToArray(),
                     cancellationToken,
                     resource.AuthorizationPolicies)
                 .ConfigureAwait(false);

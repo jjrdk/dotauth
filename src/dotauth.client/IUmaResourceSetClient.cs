@@ -11,7 +11,7 @@ using DotAuth.Shared.Responses;
 /// <summary>
 /// Defines the resource client interface.
 /// </summary>
-public interface IResourceClient
+public interface IUmaResourceSetClient
 {
     /// <summary>
     /// Updates the resource.
@@ -25,7 +25,7 @@ public interface IResourceClient
     /// or
     /// token
     /// </exception>
-    Task<Option<UpdateResourceSetResponse>> UpdateResource(
+    Task<Option<UpdateResourceSetResponse>> UpdateResourceSet(
         ResourceSet request,
         string token,
         CancellationToken cancellationToken = default);
@@ -42,7 +42,7 @@ public interface IResourceClient
     /// or
     /// token
     /// </exception>
-    Task<Option<AddResourceSetResponse>> AddResource(ResourceSet request, string token, CancellationToken cancellationToken = default);
+    Task<Option<AddResourceSetResponse>> AddResourceSet(ResourceSet request, string token, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deletes the resource.
@@ -65,7 +65,7 @@ public interface IResourceClient
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">authorizationHeaderValue</exception>
-    Task<Option<string[]>> GetAllResources(string token, CancellationToken cancellationToken = default);
+    Task<Option<string[]>> GetAllOwnResourceSets(string token, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the resource.
@@ -79,7 +79,7 @@ public interface IResourceClient
     /// or
     /// authorizationHeaderValue
     /// </exception>
-    Task<Option<ResourceSet>> GetResource(
+    Task<Option<ResourceSet>> GetResourceSet(
         string resourceSetId,
         string token,
         CancellationToken cancellationToken = default);
@@ -91,7 +91,7 @@ public interface IResourceClient
     /// <param name="token">The authorization header value.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    Task<Option<PagedResult<ResourceSet>>> SearchResources(
+    Task<Option<PagedResult<ResourceSetDescription>>> SearchResources(
         SearchResourceSet parameter,
         string? token = null,
         CancellationToken cancellationToken = default);

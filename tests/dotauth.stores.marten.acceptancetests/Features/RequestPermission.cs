@@ -59,7 +59,7 @@ public partial class FeatureTest
                 Scopes = scopes,
                 AuthorizationPolicies = new[] { new PolicyRule { Scopes = scopes } }
             };
-            var option = await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false);
+            var option = await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false);
             var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
             _resourceId = resource.Item.Id;
         }
@@ -68,7 +68,7 @@ public partial class FeatureTest
     [When(@"updating policy")]
     public async Task WhenUpdatingPolicy()
     {
-        var option = await _umaClient.UpdateResource(
+        var option = await _umaClient.UpdateResourceSet(
             new ResourceSet
             {
                 Id = _resourceId,

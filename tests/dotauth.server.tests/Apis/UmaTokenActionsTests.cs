@@ -60,7 +60,7 @@ public class UmaTokenActionsTests
                     It.IsAny<ClaimTokenParameter>(),
                     It.IsAny<CancellationToken>()))
             .ReturnsAsync(
-                new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, new ClaimsPrincipal()));
+                new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, Array.Empty	<Claim>()));
         var jwksStore = new Mock<IJwksStore>();
         var eventPublisher = new Mock<IEventPublisher>();
         _tokenActions = new UmaTokenActions(

@@ -108,8 +108,8 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public  async Task<PagedResult<ResourceSet>> Search(
-        ClaimsPrincipal owner,
+    public  async Task<PagedResult<ResourceSetDescription>> Search(
+        IReadOnlyList<Claim> owner,
         SearchResourceSet? parameter,
         CancellationToken cancellationToken = default)
     {
@@ -121,7 +121,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
         var result = _resources.AsEnumerable();//.Select(x => x.Resource);
 
             result = result.Where(
-                r => parameter!.Terms.Any(t => r.Resource.Name.Contains(t, StringComparison.OrdinalIgnoreCase))
+                r => parameter.Terms.Any(t => r.Resource.Name.Contains(t, StringComparison.OrdinalIgnoreCase))
                      || parameter.Terms.Any(t => r.Resource.Description.Contains(t, StringComparison.OrdinalIgnoreCase))
                      || parameter.Terms.Any(t => r.Resource.Type.Contains(t, StringComparison.OrdinalIgnoreCase)));
         
@@ -132,14 +132,14 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
 
         var asyncResult = await Filter(owner, result, cancellationToken);
 
-        IEnumerable<ResourceSet> sortedResult = asyncResult.OrderBy(c => c.Name);
+        IEnumerable<ResourceSetDescription> sortedResult = asyncResult.OrderBy(c => c.Name);
         var nbResult = asyncResult.Length;
         if (parameter.PageSize > 0)
         {
             sortedResult = sortedResult.Skip(parameter.StartIndex).Take(parameter.PageSize);
         }
 
-        return new PagedResult<ResourceSet>
+        return new PagedResult<ResourceSetDescription>
         {
             Content = sortedResult.ToArray(),
             StartIndex = parameter.StartIndex,
@@ -147,9 +147,9 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
         };
     }
     
-    private async Task<ResourceSet[]> Filter(ClaimsPrincipal requestor, IEnumerable<InMemoryResourceSetRepository.OwnedResourceSet> resourceSets, CancellationToken cancellationToken)
+    private async Task<ResourceSetDescription[]> Filter(IReadOnlyList<Claim> requestor, IEnumerable<OwnedResourceSet> resourceSets, CancellationToken cancellationToken)
     {
-        List<ResourceSet> results = new();
+        List<ResourceSetDescription> results = new();
         foreach (var resourceSet in resourceSets)
         {
             var ticket = new TicketLineParameter(requestor.GetClientId(), new[] { "search" });
@@ -161,7 +161,15 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
                     resourceSet.Resource.AuthorizationPolicies)).Result
                 == AuthorizationPolicyResultKind.Authorized)
             {
-                results.Add(resourceSet.Resource);
+                results.Add(
+                    new ResourceSetDescription
+                    {
+                        Description = resourceSet.Resource.Description,
+                        IconUri = resourceSet.Resource.IconUri,
+                        Id = resourceSet.Resource.Id,
+                        Name = resourceSet.Resource.Name,
+                        Type = resourceSet.Resource.Type
+                    });
             }
         }
 

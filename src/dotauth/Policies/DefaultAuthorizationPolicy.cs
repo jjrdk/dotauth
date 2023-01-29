@@ -18,21 +18,19 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Policies;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
 
 internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
 {
     public Task<AuthorizationPolicyResult> Execute(
         TicketLineParameter ticketLineParameter,
         string? claimTokenFormat,
-        ClaimsPrincipal requester,
+        IReadOnlyList<Claim> requester,
         CancellationToken cancellationToken,
         params PolicyRule[] authorizationPolicy)
     {
@@ -68,7 +66,7 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
     private static AuthorizationPolicyResult ExecuteAuthorizationPolicyRule(
         TicketLineParameter ticketLineParameter,
         PolicyRule authorizationPolicy,
-        ClaimsPrincipal requester,
+        IReadOnlyList<Claim> requester,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -103,7 +101,7 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
 
     private static Task<AuthorizationPolicyResult> GetNeedInfoResult(
         ClaimData[] claims,
-        ClaimsPrincipal requester,
+        IReadOnlyList<Claim> requester,
         string openidConfigurationUrl)
     {
         var requestingPartyClaims = new Dictionary<string, object>();
@@ -123,7 +121,7 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
                 new Dictionary<string, object> { { "requesting_party_claims", requestingPartyClaims } }));
     }
 
-    private static AuthorizationPolicyResult CheckClaims(PolicyRule authorizationPolicy, ClaimsPrincipal requester)
+    private static AuthorizationPolicyResult CheckClaims(PolicyRule authorizationPolicy, IReadOnlyList<Claim> requester)
     {
         if (!authorizationPolicy.Claims.Any())
         {
@@ -132,7 +130,7 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
 
         var unmatchedPolicyClaim = (from policyClaim in authorizationPolicy.Claims
             let tokenClaims =
-                requester.Claims.Where(j => j.Type == policyClaim.Type && j.ValueType != JsonClaimValueTypes.JsonArray)
+                requester.Where(j => j.Type == policyClaim.Type && j.ValueType != JsonClaimValueTypes.JsonArray)
                     .ToArray()
             where tokenClaims.Length == 0 || tokenClaims.All(tc => tc.Value != policyClaim.Value)
             select policyClaim).Any();

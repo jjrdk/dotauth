@@ -80,7 +80,7 @@ public sealed class PermissionFixture : IDisposable
     [Fact]
     public async Task When_Scopes_Does_Not_Exist_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.AddResource(
+        var resource = await _umaClient.AddResourceSet(
                 new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                 "header")
             .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
@@ -100,7 +100,7 @@ public sealed class PermissionFixture : IDisposable
     [Fact]
     public async Task When_Adding_Permission_Then_TicketId_Is_Returned()
     {
-        var resource = await _umaClient.AddResource(
+        var resource = await _umaClient.AddResourceSet(
                 new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                 "header")
             .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
@@ -116,7 +116,7 @@ public sealed class PermissionFixture : IDisposable
     [Fact]
     public async Task WhenRequestingPermissionsThenTicketIdsAreReturned()
     {
-        var resource = await _umaClient.AddResource(
+        var resource = await _umaClient.AddResourceSet(
                 new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
                 "header")
             .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;

@@ -1,4 +1,4 @@
-// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
+// Copyright Â© 2015 Habart Thierry, Â© 2018 Jacob Reimers
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 namespace DotAuth.Shared.Repositories;
 
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,11 +29,11 @@ public interface IResourceSetRepository
     /// <summary>
     /// Searches the specified parameter.
     /// </summary>
-    /// <param name="requestingUser">The requesting user</param>
+    /// <param name="claims">The requesting user claims</param>
     /// <param name="parameter">The parameter.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    Task<PagedResult<ResourceSet>> Search(ClaimsPrincipal requestingUser, SearchResourceSet parameter, CancellationToken cancellationToken = default);
+    Task<PagedResult<ResourceSetDescription>> Search(IReadOnlyList<Claim> claims, SearchResourceSet parameter, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Inserts the specified resource set.

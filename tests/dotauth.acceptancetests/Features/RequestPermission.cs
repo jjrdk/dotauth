@@ -63,7 +63,7 @@ public partial class FeatureTest
                 }
             };
             var resource =
-                (await _umaClient.AddResource(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+                (await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
                     Option<AddResourceSetResponse>.Result)!;
             _resourceId = resource.Item.Id;
         }
@@ -72,7 +72,7 @@ public partial class FeatureTest
     [When(@"updating policy")]
     public async Task WhenUpdatingPolicy()
     {
-        var option = await _umaClient.UpdateResource(
+        var option = await _umaClient.UpdateResourceSet(
             new ResourceSet
             {
                 Id = _resourceId,

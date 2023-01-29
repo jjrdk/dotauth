@@ -153,7 +153,7 @@ internal sealed class UmaTokenActions
                     ticket.Id,
                     client.ClientId,
                     ticket.ResourceOwner,
-                    authorizationResult.Principal.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
+                    authorizationResult.Principal.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow)).ConfigureAwait(false);
             return new ErrorDetails
             {
@@ -170,7 +170,7 @@ internal sealed class UmaTokenActions
                         Id.Create(),
                         parameter.Ticket,
                         parameter.ClientId ?? string.Empty,
-                        authorizationResult.Principal.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
+                        authorizationResult.Principal.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return new ErrorDetails
@@ -186,7 +186,7 @@ internal sealed class UmaTokenActions
                     Id.Create(),
                     parameter.Ticket,
                     parameter.ClientId ?? string.Empty,
-                    authorizationResult.Principal.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
+                    authorizationResult.Principal.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow))
             .ConfigureAwait(false);
         return new ErrorDetails

@@ -14,6 +14,7 @@
 
 namespace DotAuth.Shared.Policies;
 
+using System.Collections.Generic;
 using System.Security.Claims;
 using DotAuth.Shared.Responses;
 
@@ -28,7 +29,7 @@ public sealed class AuthorizationPolicyResult
     /// <param name="result"></param>
     /// <param name="principal">The requesting principal.</param>
     /// <param name="errorDetails"></param>
-    public AuthorizationPolicyResult(AuthorizationPolicyResultKind result, ClaimsPrincipal principal, object? errorDetails = null)
+    public AuthorizationPolicyResult(AuthorizationPolicyResultKind result, IReadOnlyList<Claim> principal, object? errorDetails = null)
     {
         Result = result;
         Principal = principal;
@@ -46,7 +47,7 @@ public sealed class AuthorizationPolicyResult
     /// <summary>
     /// Gets the requesting principal.
     /// </summary>
-    public ClaimsPrincipal Principal { get; }
+    public IReadOnlyList<Claim> Principal { get; }
 
     /// <summary>
     /// Get the error details.

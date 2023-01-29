@@ -49,7 +49,7 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Add_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.AddResource(new ResourceSet { Name = string.Empty }, "header")
+        var resource = await _umaClient.AddResourceSet(new ResourceSet { Name = string.Empty }, "header")
             .ConfigureAwait(false) as Option<AddResourceSetResponse>.Error;
 
         Assert.NotNull(resource);
@@ -61,7 +61,7 @@ public sealed class ResourceFixture : IDisposable
     public async Task When_Add_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
     {
         var resource =
-            await _umaClient.AddResource(new ResourceSet { Name = "name" }, "header").ConfigureAwait(false) as
+            await _umaClient.AddResourceSet(new ResourceSet { Name = "name" }, "header").ConfigureAwait(false) as
                 Option<AddResourceSetResponse>.Error;
 
         Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
@@ -91,7 +91,7 @@ public sealed class ResourceFixture : IDisposable
     public async Task When_Get_Unknown_Resource_Then_Error_Is_Returned()
     {
         var resource =
-            await _umaClient.GetResource("unknown", "header").ConfigureAwait(false) as Option<ResourceSet>.Error;
+            await _umaClient.GetResourceSet("unknown", "header").ConfigureAwait(false) as Option<ResourceSet>.Error;
 
         Assert.Equal(HttpStatusCode.NoContent, resource.Details.Status);
     }
@@ -108,7 +108,7 @@ public sealed class ResourceFixture : IDisposable
     public async Task WhenUpdateResourceAndNoIdIsSpecifiedThenIsNotUpdated()
     {
         var resource =
-            await _umaClient.UpdateResource(new ResourceSet(), "header").ConfigureAwait(false) as
+            await _umaClient.UpdateResourceSet(new ResourceSet(), "header").ConfigureAwait(false) as
                 Option<UpdateResourceSetResponse>.Error;
 
         Assert.Equal(HttpStatusCode.NotFound, resource.Details.Status);
@@ -117,7 +117,7 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Update_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.UpdateResource(
+        var resource = await _umaClient.UpdateResourceSet(
                 new ResourceSet { Id = "invalid", Name = string.Empty },
                 "header")
             .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Error;
@@ -129,7 +129,7 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Update_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.UpdateResource(new ResourceSet { Id = "invalid", Name = "name" }, "header")
+        var resource = await _umaClient.UpdateResourceSet(new ResourceSet { Id = "invalid", Name = "name" }, "header")
             .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Error;
 
         Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
@@ -158,7 +158,7 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Update_Unknown_Resource_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.UpdateResource(
+        var resource = await _umaClient.UpdateResourceSet(
                 new ResourceSet { Id = "invalid", Name = "name", Scopes = new[] { "scope" } },
                 "header")
             .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Error;
@@ -170,7 +170,7 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Getting_Resources_Then_Identifiers_Are_Returned()
     {
-        var resources = await _umaClient.GetAllResources("token").ConfigureAwait(false) as Option<string[]>.Result;
+        var resources = await _umaClient.GetAllOwnResourceSets("token").ConfigureAwait(false) as Option<string[]>.Result;
 
         Assert.True(resources.Item.Any());
     }
@@ -178,8 +178,8 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Getting_ResourceInformation_Then_Dto_Is_Returned()
     {
-        var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false) as Option<string[]>.Result;
-        var resource = await _umaClient.GetResource(resources.Item.First(), "header").ConfigureAwait(false);
+        var resources = await _umaClient.GetAllOwnResourceSets("header").ConfigureAwait(false) as Option<string[]>.Result;
+        var resource = await _umaClient.GetResourceSet(resources.Item.First(), "header").ConfigureAwait(false);
 
         Assert.NotNull(resource);
     }
@@ -187,9 +187,9 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Deleting_ResourceInformation_Then_It_Does_Not_Exist()
     {
-        var resources = await _umaClient.GetAllResources("header").ConfigureAwait(false) as Option<string[]>.Result;
+        var resources = await _umaClient.GetAllOwnResourceSets("header").ConfigureAwait(false) as Option<string[]>.Result;
         await _umaClient.DeleteResource(resources.Item.First(), "header").ConfigureAwait(false);
-        var information = await _umaClient.GetResource(resources.Item.First(), "header").ConfigureAwait(false);
+        var information = await _umaClient.GetResourceSet(resources.Item.First(), "header").ConfigureAwait(false);
 
         Assert.IsType<Option<ResourceSet>.Error>(information);
     }
@@ -197,7 +197,7 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Adding_Resource_Then_Information_Can_Be_Retrieved()
     {
-        var resource = await _umaClient.AddResource(
+        var resource = await _umaClient.AddResourceSet(
                 new ResourceSet { Name = "name", Scopes = new[] { "scope" } },
                 "header")
             .ConfigureAwait(false);
@@ -212,23 +212,23 @@ public sealed class ResourceFixture : IDisposable
                 new SearchResourceSet { Terms = new[] { "Resources" }, StartIndex = 0, PageSize = 100 },
                 "header")
             .ConfigureAwait(false);
-        Assert.IsType<Option<PagedResult<ResourceSet>>.Result>(option);
+        Assert.IsType<Option<PagedResult<ResourceSetDescription>>.Result>(option);
     }
 
     [Fact]
     public async Task When_Updating_Resource_Then_Changes_Are_Persisted()
     {
-        var resource = await _umaClient.AddResource(
+        var resource = await _umaClient.AddResourceSet(
                 new ResourceSet { Name = "name", Scopes = new[] { "scope" } },
                 "header")
             .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
 
-        var updateResult = await _umaClient.UpdateResource(
+        var updateResult = await _umaClient.UpdateResourceSet(
                 new ResourceSet { Id = resource.Item.Id, Name = "name2", Type = "type", Scopes = new[] { "scope2" } },
                 "header")
             .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Result;
         var information =
-            await _umaClient.GetResource(updateResult.Item.Id, "header").ConfigureAwait(false) as
+            await _umaClient.GetResourceSet(updateResult.Item.Id, "header").ConfigureAwait(false) as
                 Option<ResourceSet>.Result;
 
         Assert.Equal("name2", information.Item.Name);

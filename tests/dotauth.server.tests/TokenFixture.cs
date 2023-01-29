@@ -99,10 +99,10 @@ public sealed class TokenFixture : IDisposable
             }
         };
         var resource =
-            await _umaClient.AddResource(resourceSet, result.Item.AccessToken).ConfigureAwait(false) as
+            await _umaClient.AddResourceSet(resourceSet, result.Item.AccessToken).ConfigureAwait(false) as
                 Option<AddResourceSetResponse>.Result;
         resourceSet = resourceSet with {Id = resource.Item.Id};
-        await _umaClient.UpdateResource(resourceSet, result.Item.AccessToken).ConfigureAwait(false);
+        await _umaClient.UpdateResourceSet(resourceSet, result.Item.AccessToken).ConfigureAwait(false);
         var ticket = await _umaClient.RequestPermission(
                 "header",
                 requests: new PermissionRequest // Add permission & retrieve a ticket id.
