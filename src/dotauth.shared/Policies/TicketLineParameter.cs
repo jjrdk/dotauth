@@ -36,7 +36,7 @@ public sealed record TicketLineParameter
     /// <value>
     /// The scopes.
     /// </value>
-    public string[] Scopes { get; init; }
+    public string[] Scopes { get; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this instance is authorized by ro.
@@ -44,5 +44,5 @@ public sealed record TicketLineParameter
     /// <value>
     ///   <c>true</c> if this instance is authorized by ro; otherwise, <c>false</c>.
     /// </value>
-    public bool IsAuthorizedByRo { get; init; }
+    public bool IsAuthorizedByRo { get; }
 }
