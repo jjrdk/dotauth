@@ -59,6 +59,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{6E546AD0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotauth.build", "cake\dotauth.build\dotauth.build.csproj", "{EA158D2F-FACE-4F2D-B25E-7871164B0626}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotauth.tool", "src\dotauth.tool\dotauth.tool.csproj", "{A87A21C7-35A9-460B-BC52-581B1AE75AD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,10 @@ Global
 		{EA158D2F-FACE-4F2D-B25E-7871164B0626}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA158D2F-FACE-4F2D-B25E-7871164B0626}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA158D2F-FACE-4F2D-B25E-7871164B0626}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A87A21C7-35A9-460B-BC52-581B1AE75AD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A87A21C7-35A9-460B-BC52-581B1AE75AD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A87A21C7-35A9-460B-BC52-581B1AE75AD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A87A21C7-35A9-460B-BC52-581B1AE75AD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,7 +160,7 @@ Global
 		{EA158D2F-FACE-4F2D-B25E-7871164B0626} = {6E546AD0-8248-45A6-AA58-F4FED3C7396F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_PrefixTranslations = False
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}
+		RESX_PrefixTranslations = False
 	EndGlobalSection
 EndGlobal

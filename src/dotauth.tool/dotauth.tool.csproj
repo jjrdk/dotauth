@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Title>DotAuth Tool</Title>
+		<Version>1.0.0</Version>
+		<Authors>Jacob Reimers</Authors>
+		<Company>Reimers.dk</Company>
+		<Product>DotAuth</Product>
+		<Description>DotAuth tool lets you get access tokens from your command line.</Description>
+		<PackageDescription>DotAuth tool lets you get access tokens from your command line.</PackageDescription>
+		<PackageTags>OpenID OAuth UMA Authentication Authorization Identity</PackageTags>
+		<Copyright>Reimers.dk © 2018-2023</Copyright>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://github.com/jjrdk/dotauth</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/jjrdk/dotauth</RepositoryUrl>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+		<WarningsAsErrors />
+		<WarningsNotAsErrors>618;1701;CS8600;CS8602;CS8603;CS8604;CS8625</WarningsNotAsErrors>
+
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>token</ToolCommandName>
+		<PackageOutputPath>./nupkg</PackageOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommandLineParser" Version="2.9.1" />
+		<!--<PackageReference Include="Wasi.Sdk" Version="0.1.1" />-->
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\dotauth.client\dotauth.client.csproj" />
+	</ItemGroup>
+
+</Project>

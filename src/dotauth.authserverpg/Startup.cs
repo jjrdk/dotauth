@@ -46,7 +46,7 @@ using Weasel.Core;
 public sealed class Startup
 {
     private const string DotAuthScheme = "dotauth";
-    private const string DefaultGoogleScopes = "openid,profile,email";
+    private const string DefaultScopes = "openid,profile,email";
     private readonly IConfiguration _configuration;
     private readonly DotAuthOptions _options;
 
@@ -119,7 +119,7 @@ public sealed class Startup
                 provider =>
                 {
                     var options = new DotAuthMartenOptions(
-                        "Server=odin;Port=5432;Database=simpleauth;User Id=simpleauth;Password=simpleauth;Include Error Detail=true;",
+                        _configuration[ConfigurationValues.ConnectionString]!,
                         new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
                         autoCreate: AutoCreate.CreateOrUpdate);
                     return new DocumentStore(options);
@@ -172,9 +172,10 @@ public sealed class Startup
                 });
         services.ConfigureOptions<ConfigureOAuthOptions>()
             .AddHealthChecks()
-            .AddNpgSql("Server=odin;Port=5432;Database=simpleauth;User Id=simpleauth;Password=simpleauth;Include Error Detail=true;", failureStatus: HealthStatus.Unhealthy);
+            .AddNpgSql(_configuration[ConfigurationValues.ConnectionString]!, failureStatus: HealthStatus.Unhealthy);
 
-        if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientId]))
+        if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientId]) &&
+            !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientSecret]))
         {
             services.AddAuthentication(CookieNames.ExternalCookieName)
                 .AddCookie(CookieNames.ExternalCookieName)
@@ -182,16 +183,33 @@ public sealed class Startup
                     opts =>
                     {
                         opts.AccessType = "offline";
-                        opts.ClientId = _configuration[ConfigurationValues.GoogleClientId] ?? "";
-                        opts.ClientSecret = _configuration[ConfigurationValues.GoogleClientSecret] ?? "";
-                        opts.SignInScheme = CookieNames.ExternalCookieName;
-                        var scopes = _configuration[ConfigurationValues.GoogleScopes] ?? DefaultGoogleScopes;
+                        opts.ClientId = _configuration[ConfigurationValues.GoogleClientId]!;
+                        opts.ClientSecret = _configuration[ConfigurationValues.GoogleClientSecret]!;
+                        var scopes = _configuration[ConfigurationValues.GoogleScopes] ?? DefaultScopes;
                         foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                      .Select(x => x.Trim()))
                         {
                             opts.Scope.Add(scope);
                         }
                     });
+        }
+
+        if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientId])
+            && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientSecret]))
+        {
+            services.AddAuthentication(CookieNames.ExternalCookieName).AddMicrosoftAccount(
+                opts =>
+                {
+                    opts.ClientId = _configuration[ConfigurationValues.MsClientId]!;
+                    opts.ClientSecret = _configuration[ConfigurationValues.MsClientSecret]!;
+                    opts.UsePkce = true;
+                    var scopes = _configuration[ConfigurationValues.MsScopes] ?? DefaultScopes;
+                    foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(x => x.Trim()))
+                    {
+                        opts.Scope.Add(scope);
+                    }
+                });
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonAccessKey])
