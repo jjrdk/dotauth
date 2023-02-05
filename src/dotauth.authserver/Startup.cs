@@ -53,7 +53,7 @@ internal sealed class Startup
         {
             AllowHttp = true,
             RedirectToLogin = redirect,
-            DataProtector = sp => new SymmetricDataProtector(Aes.Create()),
+            DataProtector = _ => new SymmetricDataProtector(Aes.Create()),
             ApplicationName = _configuration["SERVER_NAME"] ?? "DotAuth",
             Users = _ => new InMemoryResourceOwnerRepository(salt, DefaultConfiguration.GetUsers(salt)),
             Tickets = _ => new InMemoryTicketStore(),
@@ -170,6 +170,24 @@ internal sealed class Startup
                             opts.Scope.Add(scope);
                         }
                     });
+        }
+        
+        if (!string.IsNullOrWhiteSpace(_configuration["MS:CLIENTID"])
+            && !string.IsNullOrWhiteSpace(_configuration["MS:CLIENTSECRET"]))
+        {
+            services.AddAuthentication(CookieNames.ExternalCookieName).AddMicrosoftAccount(
+                opts =>
+                {
+                    opts.ClientId = _configuration["MS:CLIENTID"]!;
+                    opts.ClientSecret = _configuration["MS:CLIENTSECRET"]!;
+                    opts.UsePkce = true;
+                    var scopes = _configuration["MS:SCOPES"] ?? "openid,profile,email";
+                    foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(x => x.Trim()))
+                    {
+                        opts.Scope.Add(scope);
+                    }
+                });
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])

@@ -25,7 +25,6 @@ using Amazon.Runtime;
 using Baseline;
 using DotAuth;
 using DotAuth.Extensions;
-using DotAuth.Shared.Policies;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.Stores.Marten;
@@ -46,7 +45,7 @@ using StackExchange.Redis;
 internal sealed class Startup
 {
     private const string DotAuthScheme = "dotauth";
-    private const string DefaultGoogleScopes = "openid,profile,email";
+    private const string DefaultScopes = "openid,profile,email";
     private readonly IConfiguration _configuration;
     private readonly DotAuthOptions _options;
 
@@ -66,7 +65,7 @@ internal sealed class Startup
                     symmetricAlgorithm.Padding = PaddingMode.ISO10126;
                     return new SymmetricDataProtector(symmetricAlgorithm);
                 }
-                : null;
+        : null;
         _options = new DotAuthOptions(salt)
         {
             AllowHttp = allowHttp,
@@ -152,7 +151,7 @@ internal sealed class Startup
                     options.DefaultChallengeScheme = DotAuthScheme;
                 })
             .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-            .AddOAuth(DotAuthScheme, '_' + DotAuthScheme, options => { })
+            .AddOAuth(DotAuthScheme, '_' + DotAuthScheme, _ => { })
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
                 cfg =>
@@ -171,7 +170,7 @@ internal sealed class Startup
                 });
         services.ConfigureOptions<ConfigureOAuthOptions>();
 
-        if (!string.IsNullOrWhiteSpace(_configuration["GOOGLE:CLIENTID"]))
+        if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientId]) && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientSecret]))
         {
             services.AddAuthentication(CookieNames.ExternalCookieName)
                 .AddCookie(CookieNames.ExternalCookieName)
@@ -182,13 +181,32 @@ internal sealed class Startup
                         opts.ClientId = _configuration["GOOGLE:CLIENTID"] ?? "";
                         opts.ClientSecret = _configuration["GOOGLE:CLIENTSECRET"] ?? "";
                         opts.SignInScheme = CookieNames.ExternalCookieName;
-                        var scopes = _configuration["GOOGLE:SCOPES"] ?? DefaultGoogleScopes;
+                        var scopes = _configuration["GOOGLE:SCOPES"] ?? DefaultScopes;
                         foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                      .Select(x => x.Trim()))
                         {
                             opts.Scope.Add(scope);
                         }
                     });
+        }
+
+        if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientId])
+            && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientSecret]))
+        {
+            services.AddAuthentication(CookieNames.ExternalCookieName)
+                .AddMicrosoftAccount(
+                opts =>
+                {
+                    opts.ClientId = _configuration[ConfigurationValues.MsClientId]!;
+                    opts.ClientSecret = _configuration[ConfigurationValues.MsClientSecret]!;
+                    opts.UsePkce = true;
+                    var scopes = _configuration[ConfigurationValues.MsScopes] ?? DefaultScopes;
+                    foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(x => x.Trim()))
+                    {
+                        opts.Scope.Add(scope);
+                    }
+                });
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
