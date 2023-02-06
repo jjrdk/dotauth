@@ -34,7 +34,8 @@ public sealed class MartenClientStore : IClientRepository
     /// <inheritdoc />
     public async Task<Client?> GetById(string clientId, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var client = await session.LoadAsync<Client>(clientId, cancellationToken).ConfigureAwait(false);
         return client;
     }
@@ -42,7 +43,8 @@ public sealed class MartenClientStore : IClientRepository
     /// <inheritdoc />
     public async Task<Client[]> GetAll(CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var clients = await session.Query<Client>().ToListAsync(cancellationToken).ConfigureAwait(false);
         return clients.ToArray();
     }
@@ -52,7 +54,8 @@ public sealed class MartenClientStore : IClientRepository
         SearchClientsRequest parameter,
         CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var take = parameter.NbResults == 0 ? int.MaxValue : parameter.NbResults;
         var results = await session.Query<Client>()
             .Where(x => x.ClientId.IsOneOf(parameter.ClientIds))
@@ -70,8 +73,9 @@ public sealed class MartenClientStore : IClientRepository
     /// <inheritdoc />
     public async Task<Option> Update(Client client, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
-        var existing = await session.LoadAsync<Client>(client.ClientId, cancellationToken);
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
+        var existing = await session.LoadAsync<Client>(client.ClientId, cancellationToken).ConfigureAwait(false);
         if (existing != null)
         {
             return new ErrorDetails
@@ -90,8 +94,9 @@ public sealed class MartenClientStore : IClientRepository
     /// <inheritdoc />
     public async Task<bool> Insert(Client client, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
-        var existing = await session.LoadAsync<Client>(client.ClientId, cancellationToken);
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
+        var existing = await session.LoadAsync<Client>(client.ClientId, cancellationToken).ConfigureAwait(false);
         if (existing != null)
         {
             return false;
@@ -105,7 +110,8 @@ public sealed class MartenClientStore : IClientRepository
     /// <inheritdoc />
     public async Task<bool> Delete(string clientId, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Delete<Client>(clientId);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;

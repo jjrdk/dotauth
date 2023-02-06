@@ -79,11 +79,11 @@ public class UmaTokenActionsTests
     public async Task CanGenerateTokenFromValidTicketRequest()
     {
         var option = await _tokenActions.GetTokenByTicketId(
-                new GetTokenViaTicketIdParameter { Ticket = "ticket_id", ClientId = "client", ClientSecret = "secret", ClaimToken = new ClaimTokenParameter { Format = "", Token = "token" } },
-                new AuthenticationHeaderValue("Bearer", "rtttdvdtgdtg"),
-                null,
-                "test",
-                CancellationToken.None);
+            new GetTokenViaTicketIdParameter { Ticket = "ticket_id", ClientId = "client", ClientSecret = "secret", ClaimToken = new ClaimTokenParameter { Format = "", Token = "token" } },
+            new AuthenticationHeaderValue("Bearer", "rtttdvdtgdtg"),
+            null,
+            "test",
+            CancellationToken.None).ConfigureAwait(false);
 
         Assert.IsType<Option<GrantedToken>.Result>(option);
     }

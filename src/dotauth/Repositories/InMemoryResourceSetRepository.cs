@@ -130,7 +130,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
             result = result.Where(r => parameter.Types.Contains(r.Resource.Type, StringComparer.OrdinalIgnoreCase));
         }
 
-        var asyncResult = await Filter(owner, result, cancellationToken);
+        var asyncResult = await Filter(owner, result, cancellationToken).ConfigureAwait(false);
 
         IEnumerable<ResourceSetDescription> sortedResult = asyncResult.OrderBy(c => c.Name);
         var nbResult = asyncResult.Length;
@@ -158,7 +158,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
                     UmaConstants.IdTokenType,
                     requestor,
                     cancellationToken,
-                    resourceSet.Resource.AuthorizationPolicies)).Result
+                    resourceSet.Resource.AuthorizationPolicies).ConfigureAwait(false)).Result
                 == AuthorizationPolicyResultKind.Authorized)
             {
                 results.Add(

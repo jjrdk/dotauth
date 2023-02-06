@@ -27,7 +27,8 @@ public sealed class MartenAuthorizationCodeStore : IAuthorizationCodeStore
     /// <inheritdoc />
     public async Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var authorizationCode = await session.LoadAsync<AuthorizationCode>(code, cancellationToken)
             .ConfigureAwait(false);
 
@@ -39,7 +40,8 @@ public sealed class MartenAuthorizationCodeStore : IAuthorizationCodeStore
         AuthorizationCode authorizationCode,
         CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Store(authorizationCode);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
@@ -48,7 +50,8 @@ public sealed class MartenAuthorizationCodeStore : IAuthorizationCodeStore
     /// <inheritdoc />
     public async Task<bool> Remove(string code, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Delete<AuthorizationCode>(code);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;

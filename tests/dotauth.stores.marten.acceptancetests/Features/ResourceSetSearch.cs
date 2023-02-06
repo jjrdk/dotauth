@@ -17,7 +17,7 @@ public partial class FeatureTest
     {
         var searchOption = await _umaClient.SearchResources(
             new SearchResourceSet { Terms = new[] { term } },
-            token: _token.AccessToken);
+            token: _token.AccessToken).ConfigureAwait(false);
         _searchResults = Assert.IsType<Option<PagedResult<ResourceSetDescription>>.Result>(searchOption);
     }
 
@@ -36,7 +36,7 @@ public partial class FeatureTest
                 Terms = term.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
                 Types = type.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             },
-            token: _token.AccessToken);
+            token: _token.AccessToken).ConfigureAwait(false);
         _searchResults = Assert.IsType<Option<PagedResult<ResourceSetDescription>>.Result>(searchOption);
     }
 }

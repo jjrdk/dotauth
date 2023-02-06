@@ -40,7 +40,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
         string value,
         CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var ro = await session.Query<ResourceOwner>()
             .FirstOrDefaultAsync(r => r.Claims.Any(x => x.Type == key && x.Value == value), token: cancellationToken)
             .ConfigureAwait(false);
@@ -51,7 +52,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
     /// <inheritdoc />
     public async Task<ResourceOwner?> Get(string id, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var ro = await session.LoadAsync<ResourceOwner>(id, cancellationToken).ConfigureAwait(false);
 
         return ro;
@@ -63,7 +65,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
         var externalAccountSubject = externalAccount.Subject;
         var externalAccountIssuer = externalAccount.Issuer;
 
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var ro = await session.Query<ResourceOwner>()
             .Where(x => x.ExternalLogins.Any(e => e.Subject == externalAccountSubject))
             .ToListAsync(cancellationToken)
@@ -77,7 +80,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
     /// <inheritdoc />
     public async Task<ResourceOwner?> Get(string id, string password, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var hashed = password.ToSha256Hash(_salt);
         var ro = await session.Query<ResourceOwner>()
             .FirstOrDefaultAsync(x => x.Subject == id && x.Password == hashed, cancellationToken)
@@ -89,7 +93,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
     /// <inheritdoc />
     public async Task<ResourceOwner[]> GetAll(CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var resourceOwners = await session.Query<ResourceOwner>()
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -99,7 +104,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
     /// <inheritdoc />
     public async Task<bool> Insert(ResourceOwner resourceOwner, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         resourceOwner.Password = resourceOwner.Password?.ToSha256Hash(_salt);
         session.Store(resourceOwner);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -109,7 +115,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
     /// <inheritdoc />
     public async Task<Option> Update(ResourceOwner resourceOwner, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var user = await session.LoadAsync<ResourceOwner>(resourceOwner.Subject, cancellationToken)
             .ConfigureAwait(false);
         if (user == null)
@@ -135,7 +142,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
     /// <inheritdoc />
     public async Task<bool> SetPassword(string subject, string password, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var user = await session.LoadAsync<ResourceOwner>(subject, cancellationToken)
             .ConfigureAwait(false);
         if (user == null)
@@ -152,7 +160,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
     /// <inheritdoc />
     public async Task<bool> Delete(string subject, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Delete<ResourceOwner>(subject);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
@@ -163,7 +172,8 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
         SearchResourceOwnersRequest parameter,
         CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var subjects = parameter.Subjects ?? Array.Empty<string>();
         var results = await session.Query<ResourceOwner>()
             .Where(r => r.Claims.Any(x => x.Type == OpenIdClaimTypes.Subject && x.Value.IsOneOf(subjects)))

@@ -30,7 +30,8 @@ public sealed class MartenScopeRepository : IScopeRepository
     /// <inheritdoc />
     public async Task<PagedResult<Scope>> Search(SearchScopesRequest parameter, CancellationToken cancellationToken = default)
     {
-        await using var session = this._sessionFactory();
+        var session = this._sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var results = await session.Query<Scope>()
             .Where(x => x.Name.IsOneOf(parameter.ScopeNames) && x.Type.IsOneOf(parameter.ScopeTypes))
             .ToPagedListAsync(parameter.StartIndex + 1, parameter.NbResults, cancellationToken)
@@ -52,7 +53,8 @@ public sealed class MartenScopeRepository : IScopeRepository
             return null;
         }
 
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var scope = await session.LoadAsync<Scope>(name, cancellationToken).ConfigureAwait(false);
 
         return scope;
@@ -61,7 +63,8 @@ public sealed class MartenScopeRepository : IScopeRepository
     /// <inheritdoc />
     public async Task<Scope[]> SearchByNames(CancellationToken cancellationToken = default, params string[] names)
     {
-        await using var session = this._sessionFactory();
+        var session = this._sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var scopes = await session.Query<Scope>()
             .Where(x => x.Name.IsOneOf(names))
             .ToListAsync(cancellationToken)
@@ -73,7 +76,8 @@ public sealed class MartenScopeRepository : IScopeRepository
     /// <inheritdoc />
     public async Task<Scope[]> GetAll(CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var scopes = await session.Query<Scope>()
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -84,7 +88,8 @@ public sealed class MartenScopeRepository : IScopeRepository
     /// <inheritdoc />
     public async Task<bool> Insert(Scope scope, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Store(scope);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
@@ -93,7 +98,8 @@ public sealed class MartenScopeRepository : IScopeRepository
     /// <inheritdoc />
     public async Task<bool> Delete(Scope scope, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Delete(scope.Name);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
@@ -102,7 +108,8 @@ public sealed class MartenScopeRepository : IScopeRepository
     /// <inheritdoc />
     public async Task<bool> Update(Scope scope, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Update(scope);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;

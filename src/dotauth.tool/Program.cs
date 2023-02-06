@@ -12,7 +12,7 @@
 
     internal class Program
     {
-        static Task Main(string[] args)
+        static async Task Main(string[] args)
         {
             var parser = new Parser(
                 settings =>
@@ -33,7 +33,7 @@
                     (TokenArgs tokenArgs) => GetToken(tokenArgs),
                     (ConfigureArgs configArgs) => Configure(configArgs),
                     _ => Task.CompletedTask);
-            return result;
+            await result.ConfigureAwait(false);
         }
 
         private static async Task<ToolConfig?> GetConfiguration()
@@ -57,7 +57,7 @@
 
         private static async Task Configure(ConfigureArgs args)
         {
-            var config = await GetConfiguration() ?? new ToolConfig();
+            var config = await GetConfiguration().ConfigureAwait(false) ?? new ToolConfig();
 
             if (Uri.TryCreate(args.Authority, UriKind.Absolute, out var auth))
             {
@@ -94,15 +94,15 @@
             await File.WriteAllTextAsync(configFile, JsonConvert.SerializeObject(config), Encoding.UTF8)
                 .ConfigureAwait(false);
 
-            await Console.Out.WriteLineAsync("Tool configured");
+            await Console.Out.WriteLineAsync("Tool configured").ConfigureAwait(false);
         }
 
         private static async Task GetToken(TokenArgs args)
         {
-            var config = await GetConfiguration();
+            var config = await GetConfiguration().ConfigureAwait(false);
             if (config == null)
             {
-                await Console.Out.WriteLineAsync("Missing configuration. Did you run the `configure` action?");
+                await Console.Out.WriteLineAsync("Missing configuration. Did you run the `configure` action?").ConfigureAwait(false);
                 return;
             }
 
@@ -116,14 +116,14 @@
             var state = Guid.NewGuid().ToString("N");
             var uri = await client.GetAuthorization(
                 new AuthorizationRequest(
-                    args.Scopes,
-                    new[] { ResponseTypeNames.Code },
-                    config.ClientId,
-                    new Uri(config.RedirectUrl),
-                    pkce.CodeChallenge,
-                    config.CodeChallengeMethod,
-                    state)
-                { nonce = Guid.NewGuid().ToString("N"), response_mode = args.ResponseMode });
+                        args.Scopes,
+                        new[] { ResponseTypeNames.Code },
+                        config.ClientId,
+                        new Uri(config.RedirectUrl),
+                        pkce.CodeChallenge,
+                        config.CodeChallengeMethod,
+                        state)
+                    { nonce = Guid.NewGuid().ToString("N"), response_mode = args.ResponseMode }).ConfigureAwait(false);
             if (uri is Option<Uri>.Result result)
             {
                 using var process = Process.Start(
@@ -134,23 +134,23 @@
                 listener.Start();
                 while (listener.IsListening)
                 {
-                    var context = await listener.GetContextAsync();
+                    var context = await listener.GetContextAsync().ConfigureAwait(false);
                     var code = context.Request.QueryString.Get("code");
                     if (code != null)
                     {
                         var tokenOption = await client.GetToken(
-                            TokenRequest.FromAuthorizationCode(code, config.RedirectUrl, pkce.CodeVerifier));
+                            TokenRequest.FromAuthorizationCode(code, config.RedirectUrl, pkce.CodeVerifier)).ConfigureAwait(false);
                         if (tokenOption is Option<GrantedTokenResponse>.Result token)
                         {
                             var json = JsonConvert.SerializeObject(token.Item, Formatting.Indented);
-                            await Console.Out.WriteLineAsync(json);
+                            await Console.Out.WriteLineAsync(json).ConfigureAwait(false);
                         }
                     }
 
                     context.Response.StatusCode = (int)HttpStatusCode.OK;
                     await context.Response.OutputStream.WriteAsync(
                         "<html><head><title>Token flow completed</title><head><body><script>window.close();</script></body></html>"u8
-                            .ToArray());
+                            .ToArray()).ConfigureAwait(false);
                     context.Response.Close();
                     listener.Stop();
                 }

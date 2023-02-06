@@ -31,7 +31,8 @@ public sealed class MartenConsentRepository : IConsentRepository
         string subject,
         CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var consents = await session.Query<Consent>()
             .Where(x => x.Subject == subject)
             .ToListAsync(cancellationToken)
@@ -42,7 +43,8 @@ public sealed class MartenConsentRepository : IConsentRepository
     /// <inheritdoc />
     public async Task<bool> Insert(Consent record, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Store(record);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
@@ -52,7 +54,8 @@ public sealed class MartenConsentRepository : IConsentRepository
     /// <inheritdoc />
     public async Task<bool> Delete(Consent record, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Delete(record.Id);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

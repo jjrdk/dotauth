@@ -48,12 +48,13 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     {
         try
         {
-            await using var session = _sessionFactory();
+            var session = _sessionFactory();
+            await using var _ = session.ConfigureAwait(false);
             var command = CreateQueryCommand(parameter, claims, session);
-            var reader = await session.ExecuteReaderAsync(command, cancellationToken);
+            var reader = await session.ExecuteReaderAsync(command, cancellationToken).ConfigureAwait(false);
             var resultSet = new List<ResourceSetDescription>();
             var totalCount = 0;
-            while (await reader.ReadAsync(cancellationToken))
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -63,7 +64,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
                 var set = await session.DocumentStore.Advanced.Serializer.FromJsonAsync<ResourceSetDescription>(
                     reader,
                     0,
-                    cancellationToken);
+                    cancellationToken).ConfigureAwait(false);
 
                 resultSet.Add(set);
 
@@ -216,7 +217,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     /// <inheritdoc />
     public async Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Store(OwnedResourceSet.FromResourceSet(resourceSet, owner));
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
@@ -225,7 +227,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     /// <inheritdoc />
     public async Task<ResourceSet?> Get(string owner, string id, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var resourceSet = await session.LoadAsync<OwnedResourceSet>(id, cancellationToken).ConfigureAwait(false);
 
         return resourceSet?.Owner == owner
@@ -236,7 +239,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     /// <inheritdoc />
     public async Task<string?> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var resourceSets = await session.LoadManyAsync<OwnedResourceSet>(cancellationToken, ids).ConfigureAwait(false);
         var owners = resourceSets.Select(x => x.Owner).Distinct();
 
@@ -246,7 +250,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     /// <inheritdoc />
     public async Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var existing = await session.LoadAsync<OwnedResourceSet>(resourceSet.Id, cancellationToken).ConfigureAwait(false);
         if (existing == null)
         {
@@ -265,7 +270,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     /// <inheritdoc />
     public async Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var resourceSets = await session.Query<OwnedResourceSet>()
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -276,7 +282,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     /// <inheritdoc />
     public async Task<bool> Remove(string id, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Delete<OwnedResourceSet>(id);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
@@ -285,7 +292,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     /// <inheritdoc />
     public async Task<ResourceSet[]> Get(CancellationToken cancellationToken = default, params string[] ids)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var resourceSets =
             await session.LoadManyAsync<OwnedResourceSet>(cancellationToken, ids).ConfigureAwait(false);
 

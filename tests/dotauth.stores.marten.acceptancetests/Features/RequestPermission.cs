@@ -84,7 +84,7 @@ public partial class FeatureTest
                     }
                 }
             },
-            _token.AccessToken);
+            _token.AccessToken).ConfigureAwait(false);
 
         Assert.IsType<Option<UpdateResourceSetResponse>.Result>(option);
     }
@@ -129,13 +129,13 @@ public partial class FeatureTest
     {
         var option = await _tokenClient.GetToken(
             TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }),
-            CancellationToken.None);
+            CancellationToken.None).ConfigureAwait(false);
 
         switch (option)
         {
             case Option<GrantedTokenResponse>.Result result:
                 {
-                    var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, result.Item.IdToken!));
+                    var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, result.Item.IdToken!)).ConfigureAwait(false);
 
                     Assert.IsType<Option<GrantedTokenResponse>.Result>(rpt);
                     break;

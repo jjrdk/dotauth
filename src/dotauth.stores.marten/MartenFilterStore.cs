@@ -28,7 +28,8 @@ public sealed class MartenFilterStore : IFilterStore
     /// <inheritdoc />
     public async Task<Filter[]> GetAll(CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var filters = await session.Query<Filter>().ToListAsync(token: cancellationToken).ConfigureAwait(false);
         return filters.ToArray();
     }

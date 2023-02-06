@@ -93,7 +93,8 @@ internal sealed class RazorOutputFormatter : TextOutputFormatter
                 : context.Object;
             var view = viewEngineResult.View;
             viewEngineResult.EnsureSuccessful(Array.Empty<string>());
-            await using var output = new StreamWriter(httpContext.Response.Body);
+            var output = new StreamWriter(httpContext.Response.Body);
+            await using var _ = output.ConfigureAwait(false);
 
             var viewContext = new ViewContext(
                 actionContext,

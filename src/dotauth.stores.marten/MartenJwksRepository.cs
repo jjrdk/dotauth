@@ -31,7 +31,8 @@ public sealed class MartenJwksRepository : IJwksRepository
     /// <inheritdoc />
     public async Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var keysets = await session.Query<JsonWebKeyContainer>()
             .Where(x => x.Jwk.HasPrivateKey == false)
             .ToListAsync(cancellationToken)
@@ -43,7 +44,8 @@ public sealed class MartenJwksRepository : IJwksRepository
     /// <inheritdoc />
     public async Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var webKeys = await session.Query<JsonWebKeyContainer>()
             .Where(x => x.Jwk.HasPrivateKey == true && x.Jwk.Alg == alg && x.Jwk.Use == JsonWebKeyUseNames.Sig)
             .ToListAsync(cancellationToken)
@@ -65,7 +67,8 @@ public sealed class MartenJwksRepository : IJwksRepository
     /// <inheritdoc />
     public async Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var webKeys = await session.Query<JsonWebKeyContainer>()
             .Where(
                 x => x.Jwk.HasPrivateKey == true && x.Jwk.Alg == alg && x.Jwk.Use == JsonWebKeyUseNames.Enc)
@@ -88,7 +91,8 @@ public sealed class MartenJwksRepository : IJwksRepository
     /// <inheritdoc />
     public async Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var webKeys = await session.Query<JsonWebKeyContainer>()
             .Where(x => x.Jwk.Use == JsonWebKeyUseNames.Sig)
             .ToListAsync(cancellationToken)
@@ -110,7 +114,8 @@ public sealed class MartenJwksRepository : IJwksRepository
     /// <inheritdoc />
     public async Task<bool> Add(JsonWebKey key, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Store(JsonWebKeyContainer.Create(key));
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
@@ -120,7 +125,8 @@ public sealed class MartenJwksRepository : IJwksRepository
     /// <inheritdoc />
     public async Task<bool> Rotate(JsonWebKeySet keySet, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         foreach (var key in keySet.Keys)
         {
             var keyKeyId = key.KeyId;

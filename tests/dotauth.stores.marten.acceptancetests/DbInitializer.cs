@@ -83,7 +83,8 @@ public static class DbInitializer
                 connectionString,
                 new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
                 searchPath));
-        await using var session = store.LightweightSession("test");
+        var session = store.LightweightSession("test");
+        await using var _ = session.ConfigureAwait(false);
         if (users != null) session.Store(users.ToArray());
         if (consents != null) session.Store(consents.ToArray());
         if (clients != null) session.Store(clients.ToArray());

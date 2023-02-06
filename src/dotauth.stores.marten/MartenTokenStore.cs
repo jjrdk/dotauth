@@ -39,7 +39,8 @@ public sealed class MartenTokenStore : ITokenStore
             return null;
         }
 
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var options = await session.Query<GrantedToken>()
             .Where(
                 x => x.ClientId == clientId
@@ -54,7 +55,8 @@ public sealed class MartenTokenStore : ITokenStore
     /// <inheritdoc />
     public async Task<GrantedToken?> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var grantedToken = await session.Query<GrantedToken>()
             .FirstOrDefaultAsync(x => x.RefreshToken == getRefreshToken, token: cancellationToken)
             .ConfigureAwait(false);
@@ -64,7 +66,8 @@ public sealed class MartenTokenStore : ITokenStore
     /// <inheritdoc />
     public async Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         var grantedToken = await session.Query<GrantedToken>()
             .FirstOrDefaultAsync(x => x.AccessToken == accessToken, token: cancellationToken)
             .ConfigureAwait(false);
@@ -74,7 +77,8 @@ public sealed class MartenTokenStore : ITokenStore
     /// <inheritdoc />
     public async Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.Store(grantedToken);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
@@ -83,7 +87,8 @@ public sealed class MartenTokenStore : ITokenStore
     /// <inheritdoc />
     public async Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.DeleteWhere<GrantedToken>(x => x.AccessToken == accessToken);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
@@ -92,7 +97,8 @@ public sealed class MartenTokenStore : ITokenStore
     /// <inheritdoc />
     public async Task<bool> RemoveRefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFactory();
+        var session = _sessionFactory();
+        await using var _ = session.ConfigureAwait(false);
         session.DeleteWhere<GrantedToken>(x => x.RefreshToken == refreshToken);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;

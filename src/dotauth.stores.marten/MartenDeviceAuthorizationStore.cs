@@ -32,7 +32,8 @@ public sealed class MartenDeviceAuthorizationStore : IDeviceAuthorizationStore
     /// <inheritdoc />
     public async Task<Option<DeviceAuthorizationResponse>> Get(string userCode, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFunc();
+        var session = _sessionFunc();
+        await using var _ = session.ConfigureAwait(false);
         var request = await session.Query<DeviceAuthorizationData>()
             .Where(x => x.Response.UserCode == userCode)
             .Select(x => x.Response)
@@ -53,7 +54,8 @@ public sealed class MartenDeviceAuthorizationStore : IDeviceAuthorizationStore
     /// <inheritdoc />
     public async Task<Option<DeviceAuthorizationData>> Get(string clientId, string deviceCode, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFunc();
+        var session = _sessionFunc();
+        await using var _ = session.ConfigureAwait(false);
         var request = await session.Query<DeviceAuthorizationData>()
             .Where(x => x.ClientId == clientId && x.DeviceCode == deviceCode)
             .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
@@ -73,7 +75,8 @@ public sealed class MartenDeviceAuthorizationStore : IDeviceAuthorizationStore
     /// <inheritdoc />
     public async Task<Option> Approve(string userCode, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFunc();
+        var session = _sessionFunc();
+        await using var _ = session.ConfigureAwait(false);
         var data = await session.Query<DeviceAuthorizationData>().Where(x => x.Response.UserCode == userCode)
             .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         if (data == null)
@@ -96,7 +99,8 @@ public sealed class MartenDeviceAuthorizationStore : IDeviceAuthorizationStore
     /// <inheritdoc />
     public async Task<Option> Save(DeviceAuthorizationData request, CancellationToken cancellationToken = default)
     {
-        await using var session = _sessionFunc();
+        var session = _sessionFunc();
+        await using var _ = session.ConfigureAwait(false);
         session.Store(request);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return new Option.Success();
@@ -105,7 +109,8 @@ public sealed class MartenDeviceAuthorizationStore : IDeviceAuthorizationStore
     /// <inheritdoc />
     public async Task<Option> Remove(DeviceAuthorizationData authRequest, CancellationToken cancellationToken)
     {
-        await using var session = _sessionFunc();
+        var session = _sessionFunc();
+        await using var _ = session.ConfigureAwait(false);
         session.Delete<DeviceAuthorizationData>(authRequest.DeviceCode);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return new Option.Success();
