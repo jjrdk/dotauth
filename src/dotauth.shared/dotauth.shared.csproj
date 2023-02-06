@@ -1,4 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="../../shared.projinfo" />
 	<PropertyGroup>
 		<Description>DotAuth Shared Library</Description>
 		<Title>DotAuth Shared</Title>
@@ -6,14 +8,8 @@
 		<AssemblyName>dotauth.shared</AssemblyName>
 		<PackageId>dotauth.shared</PackageId>
 		<RootNamespace>DotAuth.Shared</RootNamespace>
-		<Nullable>enable</Nullable>
-	</PropertyGroup>
-	<PropertyGroup>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningsAsErrors />
 	</PropertyGroup>
-	<Import Project="../../shared.projinfo" />
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />

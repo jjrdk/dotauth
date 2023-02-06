@@ -9,7 +9,7 @@ using DotAuth.Shared.Models;
     null,
     HelpText = "Configures the tool with the provided values as defaults for later use.",
     Hidden = false)]
-internal class ConfigureArgs
+public class ConfigureArgs
 {
     [Option(
         'i',

@@ -2,9 +2,9 @@
 
 using CommandLine;
 
-[Verb("authenticate", true, new[] { "a", "token" }, HelpText = "Authenticate and get tokens", Hidden = false)]
+[Verb("token", true, new[] { "t" }, HelpText = "Authenticate and get tokens", Hidden = false)]
 
-internal class TokenArgs
+public class TokenArgs
 {
     [Option(
         'r',

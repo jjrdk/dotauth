@@ -136,7 +136,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     [Fact]
     public async Task When_Does_Not_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
     {
-        var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
+        var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" });
 
         var authorizationPolicy = new[] { new PolicyRule { Scopes = new[] { "read" } } };
 
@@ -154,7 +154,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     [Fact]
     public async Task When_Client_Is_Not_Allowed_Then_NotAuthorized_Is_Returned()
     {
-        var ticket = new TicketLineParameter("invalid_client_id") { Scopes = new[] { "read", "create", "update" } };
+        var ticket = new TicketLineParameter("invalid_client_id", new[] { "read", "create", "update" });
 
         var authorizationPolicy = new PolicyRule
         {
@@ -177,7 +177,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     public async Task When_There_Is_No_Access_Token_Passed_Then_NeedInfo_Is_Returned()
     {
         const string configurationUrl = "http://localhost/configuration";
-        var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
+        var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" });
 
         var authorizationPolicy = new[]
         {
@@ -219,23 +219,23 @@ public sealed class DefaultAuthorizationPolicyFixture
 
         Assert.Contains(
             requiredClaims,
-            r => r.Any(kv => kv.Key == "name" && kv.Value == "name"));
+            r => r.Any(kv => kv is { Key: "name", Value: "name" }));
         Assert.Contains(
             requiredClaims,
-            r => r.Any(kv => kv.Key == "friendly_name" && kv.Value == "name"));
+            r => r.Any(kv => kv is { Key: "friendly_name", Value: "name" }));
         Assert.Contains(
             requiredClaims,
-            r => r.Any(kv => kv.Key == "name" && kv.Value == "email"));
+            r => r.Any(kv => kv is { Key: "name", Value: "email" }));
         Assert.Contains(
             requiredClaims,
-            r => r.Any(kv => kv.Key == "friendly_name" && kv.Value == "email"));
+            r => r.Any(kv => kv is { Key: "friendly_name", Value: "email" }));
     }
 
     [Fact]
     public async Task When_JwsPayload_Cannot_Be_Extracted_Then_NotAuthorized_Is_Returned()
     {
         const string configurationUrl = "http://localhost/configuration";
-        var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
+        var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" });
 
         var authorizationPolicy = new[]
         {
@@ -267,7 +267,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     public async Task When_Role_Is_Not_Correct_Then_NotAuthorized_Is_Returned()
     {
         const string configurationUrl = "http://localhost/configuration";
-        var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
+        var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" });
 
         var authorizationPolicy = new[]
         {
@@ -299,7 +299,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     public async Task When_There_Is_No_Role_Then_NotAuthorized_Is_Returned()
     {
         const string configurationUrl = "http://localhost/configuration";
-        var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
+        var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" });
 
         var authorizationPolicy = new[]
         {
@@ -331,7 +331,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     public async Task When_Passing_Not_Valid_Roles_In_JArray_Then_NotAuthorized_Is_Returned()
     {
         const string configurationUrl = "http://localhost/configuration";
-        var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
+        var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" });
 
         var authorizationPolicy = new[]
         {
@@ -363,7 +363,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     public async Task When_Passing_Not_Valid_Roles_InStringArray_Then_NotAuthorized_Is_Returned()
     {
         const string configurationUrl = "http://localhost/configuration";
-        var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
+        var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" });
 
         var authorizationPolicy = new[]
         {
@@ -395,7 +395,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     public async Task When_Claims_Are_Not_Correct_Then_NotAuthorized_Is_Returned()
     {
         const string configurationUrl = "http://localhost/configuration";
-        var ticket = new TicketLineParameter("client_id") { Scopes = new[] { "read", "create", "update" } };
+        var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" });
 
         var authorizationPolicy = new[]
         {
@@ -426,11 +426,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     [Fact]
     public async Task When_ResourceOwnerConsent_Is_Required_Then_RequestSubmitted_Is_Returned()
     {
-        var ticket = new TicketLineParameter("client_id")
-        {
-            IsAuthorizedByRo = false,
-            Scopes = new[] { "read", "create", "update" }
-        };
+        var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" }, false);
 
         var authorizationPolicy = new[]
         {
@@ -456,7 +452,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     [Fact]
     public async Task When_AuthorizationPassed_Then_Authorization_Is_Returned()
     {
-        var ticket = new TicketLineParameter("client_id") { IsAuthorizedByRo = true, Scopes = new[] { "create" } };
+        var ticket = new TicketLineParameter("client_id", new[] { "create" }, true);
 
         var authorizationPolicy = new[]
         {

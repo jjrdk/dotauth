@@ -2,7 +2,7 @@
 
 using DotAuth.Shared.Models;
 
-internal class ToolConfig
+public class ToolConfig
 {
     public string ClientId { get; set; } = null!;
     public string ClientSecret { get; set; } = null!;

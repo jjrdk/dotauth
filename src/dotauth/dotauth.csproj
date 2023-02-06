@@ -1,18 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<Import Project="../../shared.projinfo" />
 	<PropertyGroup>
-		<Description>DotAuth Server</Description>
-		<Title>DotAuth Server</Title>
+		<Description>DotAuth Server SDK</Description>
+		<Title>DotAuth Server SDK</Title>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<AssemblyName>dotauth</AssemblyName>
 		<PackageId>dotauth</PackageId>
 		<RootNamespace>DotAuth</RootNamespace>
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-		<Nullable>enable</Nullable>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
 	</PropertyGroup>
-
-	<Import Project="../../shared.projinfo" />
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />

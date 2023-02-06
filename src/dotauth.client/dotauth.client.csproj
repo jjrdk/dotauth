@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<Import Project="../../shared.projinfo" />
+
 	<PropertyGroup>
 		<Description>DotAuth Client</Description>
 		<Title>DotAuth Client</Title>
@@ -7,14 +9,11 @@
 		<AssemblyName>dotauth.client</AssemblyName>
 		<PackageId>dotauth.client</PackageId>
 		<RootNamespace>DotAuth.Client</RootNamespace>
-		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
 	</PropertyGroup>
-
-	<Import Project="../../shared.projinfo" />
 
 	<ItemGroup>
 	  <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />

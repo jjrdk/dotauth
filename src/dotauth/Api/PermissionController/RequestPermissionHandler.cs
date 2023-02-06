@@ -73,7 +73,7 @@ internal sealed class RequestPermissionHandler
             .Select(x => new ClaimData { Type = x.Type, Value = x.Value })
             .ToArray() ?? Array.Empty<ClaimData>();
 
-        var lines = addPermissionParameters.Where(x => x.Scopes != null && x.ResourceSetId != null)
+        var lines = addPermissionParameters.Where(x => x is { Scopes: { }, ResourceSetId: { } })
             .Select(
                 addPermissionParameter => new TicketLine
                 {
