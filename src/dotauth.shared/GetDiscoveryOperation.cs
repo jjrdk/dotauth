@@ -34,18 +34,28 @@ internal sealed class GetDiscoveryOperation
 
     public GetDiscoveryOperation(Uri authority, Func<HttpClient> httpClient)
     {
-        var path = "/.well-known/openid-configuration";
-        if (!string.IsNullOrWhiteSpace(authority.PathAndQuery))
+        const string wellKnownOpenidConfiguration = "/.well-known/openid-configuration";
+        var path = authority.PathAndQuery;
+        if (!string.IsNullOrWhiteSpace(path))
         {
-            var queryStart = authority.PathAndQuery.IndexOf('?');
+            var hasWellKnownPart = path.IndexOf("/.well-known", StringComparison.OrdinalIgnoreCase);
+            if (hasWellKnownPart > -1)
+            {
+                path = path[..hasWellKnownPart];
+            }
+            var queryStart = path.IndexOf('?');
             if (queryStart > 0)
             {
-                path = authority.PathAndQuery[..queryStart].TrimEnd('/') + path;
+                path = path[..queryStart].TrimEnd('/') + wellKnownOpenidConfiguration;
             }
             else
             {
-                path = authority.PathAndQuery.TrimEnd('/') + path;
+                path = path.TrimEnd('/') + wellKnownOpenidConfiguration;
             }
+        }
+        else
+        {
+            path = wellKnownOpenidConfiguration;
         }
         var uri = new UriBuilder(
             authority.Scheme,
