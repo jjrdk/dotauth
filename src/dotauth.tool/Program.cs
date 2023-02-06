@@ -28,12 +28,37 @@
                     settings.MaximumDisplayWidth = 80;
                     settings.PosixlyCorrect = true;
                 });
-            var result = parser.ParseArguments<TokenArgs, ConfigureArgs>(args)
+            var result = parser.ParseArguments<TokenArgs, ConfigureArgs, RefreshArgs>(args)
                 .MapResult(
                     (TokenArgs tokenArgs) => GetToken(tokenArgs),
                     (ConfigureArgs configArgs) => Configure(configArgs),
+                    (RefreshArgs refreshArgs) => Refresh(refreshArgs),
                     _ => Task.CompletedTask);
             await result.ConfigureAwait(false);
+        }
+
+        private static async Task Refresh(RefreshArgs refreshArgs)
+        {
+            var config = await GetConfiguration().ConfigureAwait(false);
+            if (config == null)
+            {
+                await Console.Out.WriteLineAsync("Missing configuration. Did you run the `configure` action?").ConfigureAwait(false);
+                return;
+            }
+
+            using var httpClient = new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false });
+            var client = new TokenClient(
+                TokenCredentials.FromClientCredentials(config.ClientId, config.ClientSecret),
+                // ReSharper disable once AccessToDisposedClosure
+                () => httpClient,
+                new Uri(config.Authority));
+            var tokenOption = await client.GetToken(TokenRequest.FromRefreshToken(refreshArgs.RefreshToken))
+                .ConfigureAwait(false);
+            if (tokenOption is Option<GrantedTokenResponse>.Result token)
+            {
+                var json = JsonConvert.SerializeObject(token.Item, Formatting.Indented);
+                await Console.Out.WriteLineAsync(json).ConfigureAwait(false);
+            }
         }
 
         private static async Task<ToolConfig?> GetConfiguration()
@@ -123,7 +148,7 @@
                         pkce.CodeChallenge,
                         config.CodeChallengeMethod,
                         state)
-                    { nonce = Guid.NewGuid().ToString("N"), response_mode = args.ResponseMode }).ConfigureAwait(false);
+                { nonce = Guid.NewGuid().ToString("N"), response_mode = args.ResponseMode }).ConfigureAwait(false);
             if (uri is Option<Uri>.Result result)
             {
                 using var process = Process.Start(
