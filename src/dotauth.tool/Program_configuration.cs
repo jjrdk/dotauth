@@ -52,6 +52,10 @@ internal partial class Program
             .ConfigureAwait(false);
 
         await Console.Out.WriteLineAsync("Tool configured").ConfigureAwait(false);
+        if (args.OutputResulting)
+        {
+            var json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            await Console.Out.WriteLineAsync(json).ConfigureAwait(false);
+        }
     }
-
 }

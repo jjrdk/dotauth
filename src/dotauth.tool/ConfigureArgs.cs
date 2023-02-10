@@ -53,4 +53,13 @@ public class ConfigureArgs
         Required = false,
         HelpText = "Sets the code challenge method (optional). Default value is S256")]
     public string? CodeChallengeMethod { get; set; }
+
+    [Option(
+        'o',
+        "output-resulting",
+        Default = true,
+        Required = false,
+        Hidden = false,
+        HelpText = "Toggles whether to output the resulting configuration to the console. Default is true.")]
+    public bool OutputResulting { get; set; }
 }
