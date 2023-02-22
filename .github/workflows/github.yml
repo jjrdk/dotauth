@@ -6,17 +6,12 @@ jobs:
   build-linux:
    runs-on: ubuntu-latest
    steps:
-     - name: Setup Gitversion
-       uses: actions/setup-gitversion@v1.0.0
-       with:
-         gitversion-version: 5.1.1
-     - run: GitVersion
      - name: Setup .NET
        uses: actions/setup-dotnet@v3
        with:
          dotnet-version: 7.0.200
      - name: Get the sources
        uses: actions/checkout@v2
-     - name: Run the build script
-       run: bash ./build.sh --target Build
+     - name: Run the acceptance tests
+       run: dotnet test ./tests/dotauth.acceptancetests/dotauth.acceptancetests.csproj -c Release
        shell: bash
