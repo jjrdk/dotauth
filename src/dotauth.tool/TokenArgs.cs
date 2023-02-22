@@ -11,7 +11,7 @@ public class TokenArgs
         "response-mode",
         Default = "query",
         Required = false,
-        HelpText = "Sets the client id for the login request (optional).")]
+        HelpText = "Sets the client id for the login request.")]
     public string ResponseMode { get; set; } = null!;
 
     [Option(
@@ -19,6 +19,6 @@ public class TokenArgs
         "scopes",
         Default = new[] { "openid" },
         Separator = ',',
-        HelpText = "Sets the scopes to request token for (optional). Default is `openid`.")]
+        HelpText = "Sets the scopes to request token for.")]
     public IEnumerable<string> Scopes { get; set; } = null!;
 }
