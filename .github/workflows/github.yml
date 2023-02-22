@@ -6,6 +6,11 @@ jobs:
   build-linux:
    runs-on: ubuntu-latest
    steps:
+     - name: Setup Gitversion
+       uses: actions/setup-gitversion@v1.0.0
+       with:
+         gitversion-version: 5.1.1
+     - run: GitVersion
      - name: Setup .NET
        uses: actions/setup-dotnet@v3
        with:
