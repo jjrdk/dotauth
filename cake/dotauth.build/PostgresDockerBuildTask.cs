@@ -15,6 +15,7 @@ public sealed class PostgresDockerBuildTask : FrostingTask<BuildContext>
         var publishSettings = new DotNetPublishSettings
         {
             PublishTrimmed = false,
+            TieredCompilation = true,
             Runtime = "linux-musl-x64",
             SelfContained = true,
             Configuration = context.BuildConfiguration,

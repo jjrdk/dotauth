@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
+    <Import Project="../../shared.projinfo" />
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <PreserveCompilationContext>true</PreserveCompilationContext>
@@ -10,7 +11,6 @@
         <UserSecretsId>dotauth-authserver</UserSecretsId>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-    <Import Project="../../shared.projinfo" />
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.2" />
@@ -29,8 +29,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <TrimmerRootAssembly Include="System.Runtime" />
-        <TrimmerRootAssembly Include="System.Private.CoreLib" />
+	    <TrimmerRootAssembly Include="System.Runtime" />
+	    <TrimmerRootAssembly Include="System.Private.CoreLib" />
+	    <TrimmerRootAssembly Include="dotauth" />
+	    <TrimmerRootAssembly Include="dotauth.ui" />
     </ItemGroup>
 
     <ItemGroup>

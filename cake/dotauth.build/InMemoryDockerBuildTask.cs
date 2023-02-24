@@ -14,7 +14,8 @@ public sealed class InMemoryDockerBuildTask : FrostingTask<BuildContext>
     {
         var publishSettings = new DotNetPublishSettings
         {
-            PublishTrimmed = false,
+            PublishTrimmed = true,
+            TieredCompilation = true,
             Runtime = "linux-musl-x64",
             SelfContained = true,
             Configuration = context.BuildConfiguration,

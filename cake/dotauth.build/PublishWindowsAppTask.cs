@@ -14,6 +14,7 @@ public sealed class PublishWindowsAppTask : FrostingTask<BuildContext>
         var winPublishSettings = new DotNetPublishSettings
         {
             PublishTrimmed = false,
+            TieredCompilation = true,
             Runtime = "win-x64",
             SelfContained = true,
             Configuration = context.BuildConfiguration,

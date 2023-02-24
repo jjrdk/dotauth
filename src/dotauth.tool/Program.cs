@@ -1,14 +1,7 @@
 ﻿namespace dotauth.tool
 {
     using CommandLine;
-    using DotAuth.Client;
     using Newtonsoft.Json;
-    using System.Diagnostics;
-    using System.Net;
-    using System.Text;
-    using DotAuth.Shared;
-    using DotAuth.Shared.Requests;
-    using DotAuth.Shared.Responses;
 
     internal partial class Program
     {

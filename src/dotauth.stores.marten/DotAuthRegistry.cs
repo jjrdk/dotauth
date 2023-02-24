@@ -29,7 +29,7 @@ public sealed class DotAuthRegistry : MartenRegistry
 #pragma warning disable CS8603
             .Duplicate(x => x.Password, configure: idx =>
             {
-                idx.IsConcurrent = true;
+                idx.IsConcurrent = false;
                 idx.TenancyScope = TenancyScope.PerTenant;
             })
 #pragma warning restore CS8603
@@ -39,7 +39,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 })
             .Index(
                 x => x.ExternalLogins,
@@ -47,12 +47,12 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 })
             .GinIndexJsonData(
                 idx =>
                 {
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 });
         For<Consent>()
             .Identity(x => x.Id)
@@ -61,7 +61,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 x => x.ClientName,
                 idx =>
                 {
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
                 });
         For<Client>()
@@ -72,7 +72,7 @@ public sealed class DotAuthRegistry : MartenRegistry
             .GinIndexJsonData(
                 idx =>
                 {
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 });
         For<OwnedResourceSet>()
             .Identity(x => x.Id)
@@ -83,7 +83,7 @@ public sealed class DotAuthRegistry : MartenRegistry
             .GinIndexJsonData(
                 idx =>
                 {
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 });
         For<Ticket>()
             .Identity(x => x.Id)
@@ -93,19 +93,19 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 })
             .Index(x => x.Created, configure: idx =>
             {
                 idx.IsUnique = false;
                 idx.TenancyScope = TenancyScope.PerTenant;
-                idx.IsConcurrent = true;
+                idx.IsConcurrent = false;
             })
             .Index(x => x.Expires, configure: idx =>
             {
                 idx.IsUnique = false;
                 idx.TenancyScope = TenancyScope.PerTenant;
-                idx.IsConcurrent = true;
+                idx.IsConcurrent = false;
             })
             .Duplicate(x => x.IsAuthorizedByRo, dbType: NpgsqlDbType.Boolean);
         For<AuthorizationCode>()
@@ -119,7 +119,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = true;
                     idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 });
         For<GrantedToken>()
             .Identity(x => x.Id)
@@ -129,7 +129,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 })
             .Duplicate(
                 x => x.AccessToken,
@@ -137,7 +137,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = true;
                     idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 })
             .Duplicate(
                 x => x.ClientId,
@@ -145,7 +145,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 })
             .Duplicate(x => x.CreateDateTime)
             .Duplicate(x => x.ExpiresIn)
@@ -157,7 +157,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 })
             .Duplicate(x => x.ParentTokenId, dbType: NpgsqlDbType.Varchar)
             .Duplicate(
@@ -167,7 +167,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = true;
 
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 })
 #pragma warning restore CS8603
             .Duplicate(
@@ -176,12 +176,12 @@ public sealed class DotAuthRegistry : MartenRegistry
                 configure: idx =>
                 {
                     idx.IsUnique = false;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 })
             .GinIndexJsonData(
                 idx =>
                 {
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 });
         For<JsonWebKeyContainer>()
             .Identity(x => x.Id)
@@ -198,7 +198,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 configure: idx =>
                 {
                     idx.IsUnique = true;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
                 })
             .Duplicate(
@@ -208,7 +208,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 {
                     idx.IsUnique = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
-                    idx.IsConcurrent = true;
+                    idx.IsConcurrent = false;
                 });
     }
 }
