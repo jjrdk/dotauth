@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="../../shared.projinfo" />
+
+	<PropertyGroup>
+		<Description>DotAuth MAUI authentication client</Description>
+		<Title>DotAuth MAUI Client</Title>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<AssemblyName>dotauth.client.maui</AssemblyName>
+		<PackageId>dotauth.client.maui</PackageId>
+		<RootNamespace>DotAuth.Client.Maui</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ReactiveUI.Maui.Essentials" Version="18.4.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\dotauth.client\dotauth.client.csproj" />
+	</ItemGroup>
+
+</Project>
