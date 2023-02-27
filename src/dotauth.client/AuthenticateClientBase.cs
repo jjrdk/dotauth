@@ -47,7 +47,10 @@ public abstract class AuthenticateClientBase : IDisposable
                 pkce.CodeChallenge,
                 CodeChallengeMethods.Rs256,
                 Guid.NewGuid().ToString("N"))
-            { nonce = Guid.NewGuid().ToString("N") };
+        {
+            nonce = Guid.NewGuid().ToString("N"),
+            response_mode = _options.ResponseMode
+        };
         var uriOption = await _tokenClient.GetAuthorization(request, cancellationToken);
         if (uriOption is Option<Uri>.Error error)
         {
