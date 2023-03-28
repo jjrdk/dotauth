@@ -15,6 +15,7 @@
 namespace DotAuth.Client;
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -54,6 +55,27 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
 
     /// <inheritdoc />
     public Uri Authority { get; }
+
+    /// <inheritdoc />
+    public async Task<Option<IReadOnlyList<Ticket>>> ApproveTicket(
+        string ticketId,
+        string accessToken,
+        CancellationToken cancellationToken = default)
+    {
+        var config = await GetUmaConfiguration(cancellationToken);
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(config.PermissionEndpoint, $"{ticketId}/approve")
+        };
+        var option = await GetResult<Ticket[]>(request, accessToken, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return (option) switch
+        {
+            Option<Ticket[]>.Error error => error.Details,
+            Option<Ticket[]>.Result result => result.Item,
+            _ => throw new InvalidOperationException("Invalid option type")
+        };
+    }
 
     /// <inheritdoc />
     public async Task<Option<UmaIntrospectionResponse>> Introspect(

@@ -1,6 +1,7 @@
 ﻿namespace DotAuth.Client;
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
@@ -13,6 +14,15 @@ using DotAuth.Shared.Responses;
 /// </summary>
 public interface IUmaResourceSetClient
 {
+    /// <summary>
+    /// Approves the ticket by the token owner.
+    /// </summary>
+    /// <param name="ticketId">The id of the ticket to approve.</param>
+    /// <param name="accessToken">The access token of the approving user.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns>A list of residual ticket requests as an async operation.</returns>
+    Task<Option<IReadOnlyList<Ticket>>> ApproveTicket(string ticketId, string accessToken, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Updates the resource.
     /// </summary>
