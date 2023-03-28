@@ -3,6 +3,7 @@
 using System;
 using System.Threading.Tasks;
 using DotAuth.Client;
+using Microsoft.Maui.Authentication;
 
 /// <summary>
 /// <para>Defines the MAUI authenticate client.</para>
