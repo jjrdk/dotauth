@@ -213,7 +213,7 @@ public sealed class PermissionsController : BaseController
         switch (option)
         {
             case Option<Ticket>.Error e:
-                _logger.LogError(e.Details.Detail);
+                _logger.LogError("{error}", e.Details.Detail);
                 return BadRequest(e.Details);
             case Option<Ticket>.Result r:
                 var ticket = r.Item;
@@ -242,8 +242,8 @@ public sealed class PermissionsController : BaseController
 
     private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
     {
-        _logger.LogError(message);
         var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
+        _logger.LogError("{error}", message);
         return new BadRequestObjectResult(error) { StatusCode = (int)statusCode };
     }
 }
