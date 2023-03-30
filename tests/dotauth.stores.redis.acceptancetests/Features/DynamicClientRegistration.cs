@@ -1,4 +1,4 @@
-namespace DotAuth.AcceptanceTests.Features;
+namespace DotAuth.Stores.Redis.AcceptanceTests.Features;
 
 using System;
 using System.Net;
@@ -76,7 +76,7 @@ public partial class FeatureTest
         var clientInfo = JsonConvert.DeserializeObject<DynamicClientRegistrationResponse>(json);
 
         Assert.False(string.IsNullOrWhiteSpace(clientInfo?.ClientId));
-        Assert.False(string.IsNullOrWhiteSpace(clientInfo.ClientSecret));
+        Assert.False(string.IsNullOrWhiteSpace(clientInfo?.ClientSecret));
     }
 
     [When(@"creating a new DynamicRegistrationClient")]

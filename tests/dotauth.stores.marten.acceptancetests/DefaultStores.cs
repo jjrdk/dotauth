@@ -24,6 +24,8 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using Microsoft.IdentityModel.Tokens;
 
+#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+
 public static class DefaultStores
 {
     public static List<Consent> Consents()
@@ -109,6 +111,26 @@ public static class DefaultStores
     {
         return new()
         {
+            new Client
+            {
+                ClientId = "dcr",
+                ClientName = "dcr",
+                Secrets = new[]
+                {
+                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "dcr"}
+                },
+                Claims = new[] { new Claim("email", "test@test.com"), new Claim("sub", "dcr"), },
+                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
+                UserClaimsToIncludeInAuthToken = new[] { new Regex("^sub$", RegexOptions.Compiled) },
+                PolicyUri = new Uri("http://openid.net"),
+                TosUri = new Uri("http://openid.net"),
+                AllowedScopes = new[] { "dcr" },
+                GrantTypes = GrantTypes.All,
+                ResponseTypes = ResponseTypeNames.All,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                ApplicationType = ApplicationTypes.Web,
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") }
+            },
             new Client
             {
                 RequirePkce = false,
@@ -565,3 +587,4 @@ public static class DefaultStores
         };
     }
 }
+#pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.

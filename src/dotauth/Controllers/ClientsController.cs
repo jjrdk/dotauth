@@ -164,11 +164,12 @@ public sealed class ClientsController : BaseController
     [HttpPut]
     [Route("register/{clientId}")]
     [Authorize(Policy = "dcr")]
-    public async Task<IActionResult> Modify(string clientId, DynamicClientRegistrationRequest update, CancellationToken cancellationToken)
+    public async Task<IActionResult> Modify(string clientId, [FromBody] DynamicClientRegistrationRequest update, CancellationToken cancellationToken)
     {
         var client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
         if (client == null)
         {
+            _logger.LogError("Client with id: {clientId} not found.", clientId);
             return BadRequest();
         }
 
@@ -411,6 +412,7 @@ public sealed class ClientsController : BaseController
 
     private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
     {
+        _logger.LogError("Error with client, {error}", message);
         var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
         return StatusCode((int)statusCode, error);
     }

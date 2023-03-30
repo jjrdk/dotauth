@@ -76,7 +76,7 @@ public sealed class MartenClientStore : IClientRepository
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
         var existing = await session.LoadAsync<Client>(client.ClientId, cancellationToken).ConfigureAwait(false);
-        if (existing != null)
+        if (existing == null)
         {
             return new ErrorDetails
             {

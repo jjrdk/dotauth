@@ -18,7 +18,7 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private GrantedTokenResponse _umaToken;
+    private GrantedTokenResponse? _umaToken;
 
     [When(@"creating resource set")]
     public async Task WhenCreatingResourceSet()
@@ -63,10 +63,7 @@ public partial class FeatureTest
         var httpHeaderValueCollection = response.Headers.WwwAuthenticate;
         Assert.True(httpHeaderValueCollection != null);
 
-        var match = Regex.Match(
-            httpHeaderValueCollection.First().Parameter!,
-            ".+ticket=\"(.+)\".*",
-            RegexOptions.Compiled);
+        var match = TicketMatch().Match(httpHeaderValueCollection.First().Parameter!);
         _ticketId = match.Groups[1].Value;
     }
 
@@ -88,7 +85,7 @@ public partial class FeatureTest
         {
             Method = HttpMethod.Get, RequestUri = new Uri($"http://localhost/data/{_resourceSetResponse.Id}")
         };
-        request.Headers.Authorization = new AuthenticationHeaderValue(_umaToken.TokenType, _umaToken.AccessToken);
+        request.Headers.Authorization = new AuthenticationHeaderValue(_umaToken!.TokenType, _umaToken.AccessToken);
         var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
         var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -110,7 +107,7 @@ public partial class FeatureTest
         var resourceResponse =
             await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
                 Option<AddResourceSetResponse>.Result;
-        _resourceSetResponse = resourceResponse.Item;
+        _resourceSetResponse = resourceResponse!.Item;
 
         Assert.NotNull(resourceResponse);
     }
@@ -167,8 +164,11 @@ public partial class FeatureTest
     [Then(@"cannot get token from ticket")]
     public async Task ThenCannotGetTokenFromTicket()
     {
-        var option = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _token.IdToken))
+        var option = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _token.IdToken!))
             .ConfigureAwait(false);
         Assert.IsType<Option<GrantedTokenResponse>.Error>(option);
     }
+
+    [GeneratedRegex(".+ticket=\"(.+)\".*", RegexOptions.Compiled)]
+    private static partial Regex TicketMatch();
 }

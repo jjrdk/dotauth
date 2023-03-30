@@ -10,7 +10,7 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private Option<PagedResult<ResourceSetDescription>>.Result _searchResults;
+    private Option<PagedResult<ResourceSetDescription>>.Result _searchResults = null!;
 
     [When(@"searching by term (.+)")]
     public async Task WhenSearchingByTerm(string term)

@@ -3,8 +3,13 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
         <RootNamespace>DotAuth.Stores.Redis.AcceptanceTests</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <SpecFlowObsoleteCodeBehindFiles Remove="Features\DynamicClientRegistration.feature.cs" />
+    </ItemGroup>
     <!--<Import Project="../../shared.projinfo" />-->
     <ItemGroup>
         <None Include="..\mycert.pfx" Link="mycert.pfx">
@@ -35,7 +40,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features" />
+      <Compile Update="Features\DynamicClientRegistration.feature.cs">
+        <DependentUpon>%(Filename)</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <SpecFlowFeatureFiles Update="Features\DynamicClientRegistration.feature">
+        <Visible>$(UsingMicrosoftNETSdk)</Visible>
+        <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+      </SpecFlowFeatureFiles>
     </ItemGroup>
 
 </Project>

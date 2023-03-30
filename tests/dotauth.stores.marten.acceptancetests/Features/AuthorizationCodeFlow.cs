@@ -12,7 +12,7 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private Option<Uri> _response;
+    private Option<Uri> _response = null!;
 
     [Given(@"a properly configured auth client")]
     public void GivenAProperlyConfiguredAuthClient()

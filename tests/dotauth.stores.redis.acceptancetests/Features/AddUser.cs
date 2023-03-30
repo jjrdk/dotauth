@@ -15,8 +15,8 @@ using Xunit;
 public partial class FeatureTest
 {
     private bool _userModified;
-    private AddUserOperation _addUserOperation;
-    private RuntimeSettings _runtimeSettings;
+    private AddUserOperation _addUserOperation = null!;
+    private RuntimeSettings _runtimeSettings = null!;
     private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepository = new();
     private readonly ISubjectBuilder _subjectBuilder = new DefaultSubjectBuilder();
     private readonly Mock<IEventPublisher> _eventPublisher = new();

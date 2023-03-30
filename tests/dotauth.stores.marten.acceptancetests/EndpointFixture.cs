@@ -40,7 +40,7 @@ public sealed class EndpointFixture : IDisposable
 
         _connectionString = DbInitializer.Init(
                 outputHelper,
-                configuration["Db:ConnectionString"],
+                configuration["Db:ConnectionString"]!,
                 DefaultStores.Consents(),
                 DefaultStores.Users(),
                 DefaultStores.Clients(SharedContext.Instance),

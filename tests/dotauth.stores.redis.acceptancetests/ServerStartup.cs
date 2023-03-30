@@ -71,7 +71,7 @@ internal sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>().AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
+        services.AddHttpClient<HttpClient>().AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler!()));
         var db = new Random(DateTime.UtcNow.Millisecond).Next(16);
         services.AddSingleton(ConnectionMultiplexer.Connect("localhost"));
         services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase(db));
@@ -98,7 +98,7 @@ internal sealed class ServerStartup
             .AddLogging(l => l.AddXunit(_outputHelper))
 #endif
             .AddAccountFilter()
-            .AddSingleton(_ => _context.Client);
+            .AddSingleton(_ => _context.Client!);
         services.AddAuthentication(
                 cfg =>
                 {

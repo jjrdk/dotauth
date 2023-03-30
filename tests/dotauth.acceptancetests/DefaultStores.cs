@@ -107,6 +107,7 @@ public static class DefaultStores
 
     public static List<Client> Clients(SharedContext sharedCtx)
     {
+#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
         return new()
         {
             new Client
@@ -558,6 +559,7 @@ public static class DefaultStores
                 ApplicationType = ApplicationTypes.Web
             }
         };
+#pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
     }
 
     public static IReadOnlyCollection<Scope> Scopes()

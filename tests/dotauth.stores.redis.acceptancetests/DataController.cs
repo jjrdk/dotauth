@@ -37,11 +37,11 @@ public sealed class DataController : ControllerBase
         var token = await HttpContext.GetTokenAsync("access_token").ConfigureAwait(false);
         var request = new PermissionRequest {ResourceSetId = id, Scopes = new[] {"api1"}};
         var option =
-            await _umaClient.RequestPermission(token, cancellationToken, request).ConfigureAwait(false);
+            await _umaClient.RequestPermission(token!, cancellationToken, request).ConfigureAwait(false);
         var ticket = option as Option<TicketResponse>.Result;
         Response.StatusCode = (int) HttpStatusCode.Unauthorized;
         Response.Headers[HeaderNames.WWWAuthenticate] =
-            $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket.Item.TicketId}\"";
+            $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket!.Item.TicketId}\"";
 
         return StatusCode((int) HttpStatusCode.Unauthorized);
     }

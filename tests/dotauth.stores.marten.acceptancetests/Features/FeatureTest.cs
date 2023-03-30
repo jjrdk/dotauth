@@ -33,7 +33,7 @@ public partial class FeatureTest : IAsyncDisposable
     public async Task SetupConnectionString()
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
-        _connectionString = configuration["Db:ConnectionString"];
+        _connectionString = configuration["Db:ConnectionString"]!;
         Assert.False(string.IsNullOrWhiteSpace(_connectionString));
     }
 

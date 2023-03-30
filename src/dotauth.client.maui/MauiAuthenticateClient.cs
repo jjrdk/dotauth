@@ -1,4 +1,4 @@
-﻿namespace dotauth.client.maui;
+﻿namespace DotAuth.Client.Maui;
 
 using System;
 using System.Threading.Tasks;

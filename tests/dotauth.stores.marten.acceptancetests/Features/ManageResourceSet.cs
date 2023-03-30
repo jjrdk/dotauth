@@ -79,7 +79,7 @@ public partial class FeatureTest
         Assert.True(policyResponse.IsSuccessStatusCode);
 
         var content = await policyResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        _policyRules = JsonConvert.DeserializeObject<EditPolicyResponse>(content);
+        _policyRules = JsonConvert.DeserializeObject<EditPolicyResponse>(content)!;
 
         Assert.Single(_policyRules!.Rules);
     }

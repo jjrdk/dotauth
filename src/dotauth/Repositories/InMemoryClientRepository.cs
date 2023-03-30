@@ -173,7 +173,7 @@ internal sealed class InMemoryClientRepository : IClientRepository
                 x => x.ClientId == newClient.ClientId || x.ClientName == newClient.ClientName);
             if (removed != 1)
             {
-                _logger.LogError($"Client {newClient.ClientId} not properly updated.");
+                _logger.LogError("Client {clientId} not properly updated.", newClient.ClientId);
             }
 
             _clients.Add(newClient);

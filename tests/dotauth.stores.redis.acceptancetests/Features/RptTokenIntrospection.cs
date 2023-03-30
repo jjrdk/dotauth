@@ -11,7 +11,7 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private string _rptToken;
+    private string _rptToken = null!;
 
     [Given(@"a PAT token")]
     public async Task GivenAPatToken()
