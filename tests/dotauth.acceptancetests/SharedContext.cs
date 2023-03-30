@@ -21,7 +21,7 @@ using Microsoft.IdentityModel.Tokens;
 
 public sealed class SharedContext
 {
-    private static SharedContext ctx = null!;
+    private static readonly SharedContext ctx = new();
 
     private SharedContext()
     {
@@ -32,12 +32,15 @@ public sealed class SharedContext
         ModelEncryptionKey = rsa.CreateEncryptionJwk("4", true);
     }
 
-    public static SharedContext Instance => ctx ??= new SharedContext();
+    public static SharedContext Instance
+    {
+        get { return ctx; }
+    }
 
     public JsonWebKey EncryptionKey { get; }
     public JsonWebKey ModelEncryptionKey { get; }
     public JsonWebKey SignatureKey { get; }
     public JsonWebKey ModelSignatureKey { get; }
-    public HttpClient Client { get; set; }
-    public HttpMessageHandler Handler { get; set; }
+    public HttpClient? Client { get; set; }
+    public HttpMessageHandler? Handler { get; set; }
 }

@@ -73,7 +73,6 @@ public sealed class UpdateClientActionFixture
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
             ClientId = clientId,
             AllowedScopes = new[] { "not_supported_scope" },
-            RequestUris = new[] { new Uri("https://localhost"), },
             RedirectionUrls = new[] { new Uri("https://localhost") }
         };
         InitializeFakeObjects(new[] { client });

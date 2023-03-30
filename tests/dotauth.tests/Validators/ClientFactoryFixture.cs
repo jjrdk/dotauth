@@ -43,8 +43,7 @@ public sealed class ClientFactoryFixture
         {
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
             RedirectionUrls = new[] { new Uri(localhost) },
-            AllowedScopes = new[] { "test" },
-            RequestUris = new[] { new Uri("https://localhost"), }
+            AllowedScopes = new[] { "test" }
         };
 
         var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
@@ -60,8 +59,7 @@ public sealed class ClientFactoryFixture
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
             RedirectionUrls = new[] { new Uri("https://google.com") },
             ResponseTypes = Array.Empty<string>(),
-            AllowedScopes = new[] { "test" },
-            RequestUris = new[] { new Uri("https://localhost"), }
+            AllowedScopes = new[] { "test" }
         };
 
         parameter = (await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Result)!.Item;
@@ -77,8 +75,7 @@ public sealed class ClientFactoryFixture
         {
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
             RedirectionUrls = new[] { new Uri("https://google.com") },
-            AllowedScopes = new[] { "test" },
-            RequestUris = new[] { new Uri("https://localhost"), }
+            AllowedScopes = new[] { "test" }
         };
 
         parameter = (await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Result)!.Item;
@@ -94,8 +91,7 @@ public sealed class ClientFactoryFixture
         {
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
             RedirectionUrls = new[] { new Uri("https://google.com") },
-            AllowedScopes = new[] { "test" },
-            RequestUris = new[] { new Uri("https://localhost"), }
+            AllowedScopes = new[] { "test" }
         };
 
         parameter = (await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Result)!.Item;
@@ -202,7 +198,6 @@ public sealed class ClientFactoryFixture
         var parameter = new Client
         {
             AllowedScopes = new[] { "test" },
-            RequestUris = new[] { new Uri("https://localhost"), },
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
             RedirectionUrls = new[] { new Uri("https://google.com") },
             IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
@@ -267,7 +262,6 @@ public sealed class ClientFactoryFixture
         {
             AllowedScopes = new[] { "test" },
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-            RequestUris = new[] { new Uri("https://localhost") },
             RedirectionUrls = new[] { new Uri("https://google.com") },
             RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
         };
@@ -306,7 +300,6 @@ public sealed class ClientFactoryFixture
             UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
             RequestObjectEncryptionAlg = SecurityAlgorithms.Aes128KW,
             RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
-            RequestUris = new[] { new Uri("http://localhost") },
             SectorIdentifierUri = new Uri("https://localhost")
         };
 

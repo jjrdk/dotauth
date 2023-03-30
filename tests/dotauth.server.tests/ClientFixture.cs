@@ -42,8 +42,7 @@ public sealed class ClientFixture : IDisposable
                     AllowedScopes = new[] { "openid" },
                     ClientId = "test",
                     ClientName = "name",
-                    RedirectionUrls = new[] { new Uri("http://localhost#fragment") },
-                    RequestUris = new[] { new Uri("https://localhost") }
+                    RedirectionUrls = new[] { new Uri("http://localhost#fragment") }
                 },
                 null)
             .ConfigureAwait(false) as Option<Client>.Error;
@@ -69,7 +68,6 @@ public sealed class ClientFixture : IDisposable
             ClientId = Guid.NewGuid().ToString("N"),
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
             AllowedScopes = new[] { "openid" },
-            RequestUris = new[] { new Uri("https://localhost"), },
             ApplicationType = ApplicationTypes.Web,
             ClientName = "client_name",
             ClientUri = new Uri("http://clienturi.com"),
@@ -132,7 +130,6 @@ public sealed class ClientFixture : IDisposable
             DefaultAcrValues = "sms",
             GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
             ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.IdToken, ResponseTypeNames.Token },
-            RequestUris = new[] { new Uri("https://localhost"), },
             RedirectionUrls = new[] { new Uri("http://localhost"), },
             PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback"), },
             //LogoUri = new Uri("http://logouri.com")
@@ -167,7 +164,6 @@ public sealed class ClientFixture : IDisposable
             DefaultAcrValues = "sms",
             // DefaultMaxAge = 10,
             GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
-            RequestUris = new[] { new Uri("https://localhost") },
             RedirectionUrls = new[] { new Uri("http://localhost") },
             PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
             //LogoUri = new Uri("http://logouri.com")
@@ -204,7 +200,6 @@ public sealed class ClientFixture : IDisposable
                     DefaultAcrValues = "sms",
                     //DefaultMaxAge = 10,
                     GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
-                    RequestUris = new[] { new Uri("https://localhost"), },
                     RedirectionUrls = new[] { new Uri("http://localhost") },
                     PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
                     //LogoUri = new Uri("http://logouri.com")
@@ -226,7 +221,6 @@ public sealed class ClientFixture : IDisposable
                 {
                     ClientId = Guid.NewGuid().ToString("N"),
                     AllowedScopes = new[] { "openid" },
-                    RequestUris = new[] { new Uri("https://localhost"), },
                     ApplicationType = ApplicationTypes.Web,
                     ClientName = "client_name",
                     IdTokenSignedResponseAlg = "RS256",

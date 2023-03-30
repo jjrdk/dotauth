@@ -42,7 +42,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
     /// <param name="client">The <see cref="HttpClient"/> to use for requests.</param>
     /// <param name="authorityUri">The <see cref="Uri"/> of the UMA authority.</param>
     public UmaClient(Func<HttpClient> client, Uri authorityUri)
-        : base(client)
+        : base(client, authorityUri)
     {
         Authority = authorityUri;
         var builder = new UriBuilder(

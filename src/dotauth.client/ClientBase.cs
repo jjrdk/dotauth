@@ -9,12 +9,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
+using DotAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the base client for interacting with an authorization server.
 /// </summary>
 public abstract class ClientBase
 {
+    private DiscoveryInformation? _discovery;
+    private readonly GetDiscoveryOperation? _discoveryOperation;
+
     /// <summary>
     /// The mime type for json requests.
     /// </summary>
@@ -25,9 +29,22 @@ public abstract class ClientBase
     /// Initializes a new instance of the <see cref="ClientBase"/> class.
     /// </summary>
     /// <param name="client"></param>
-    protected ClientBase(Func<HttpClient> client)
+    /// <param name="authority">The base <see cref="Uri"/> of the authorization authority.</param>
+    protected ClientBase(Func<HttpClient> client, Uri authority)
     {
         _client = client;
+        _discoveryOperation = new GetDiscoveryOperation(authority, client);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClientBase"/> class.
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="discoveryDocumentation">The metadata information.</param>
+    protected ClientBase(Func<HttpClient> client, DiscoveryInformation discoveryDocumentation)
+    {
+        _client = client;
+        _discovery = discoveryDocumentation;
     }
 
     /// <summary>
@@ -86,6 +103,17 @@ public abstract class ClientBase
             : Serializer.Default.Deserialize<ErrorDetails>(content);
 
         return genericResult!;
+    }
+    
+    /// <summary>
+    /// Gets the discovery information for a given authority.
+    /// </summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns>A <see cref="DiscoveryInformation"/> document.</returns>
+    protected async Task<DiscoveryInformation> GetDiscoveryInformation(CancellationToken cancellationToken = default)
+    {
+        return _discovery ??= await _discoveryOperation!.Execute(cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private static HttpRequestMessage PrepareRequest(

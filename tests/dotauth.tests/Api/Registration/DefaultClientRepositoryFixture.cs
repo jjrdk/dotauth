@@ -65,8 +65,7 @@ public sealed class DefaultClientRepositoryFixture
             ClientId = "test",
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
             AllowedScopes = new[] { "scope" },
-            RedirectionUrls = new[] { new Uri("https://localhost"), },
-            RequestUris = new[] { new Uri("https://localhost"), }
+            RedirectionUrls = new[] { new Uri("https://localhost"), }
         };
         _ = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
 
@@ -98,7 +97,6 @@ public sealed class DefaultClientRepositoryFixture
         const string defaultAcrValues = "default_acr_values";
         const bool requireAuthTime = false;
         var initiateLoginUri = new Uri("https://initiate_login_uri", UriKind.Absolute);
-        var requestUri = new Uri("https://request_uri", UriKind.Absolute);
 
         var client = new Client
         {
@@ -129,8 +127,7 @@ public sealed class DefaultClientRepositoryFixture
             //DefaultMaxAge = defaultMaxAge,
             DefaultAcrValues = defaultAcrValues,
             RequireAuthTime = requireAuthTime,
-            InitiateLoginUri = initiateLoginUri,
-            RequestUris = new[] { requestUri }
+            InitiateLoginUri = initiateLoginUri
         };
 
         var result = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);

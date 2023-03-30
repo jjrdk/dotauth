@@ -59,7 +59,7 @@ public sealed class ServerStartup
             ConfirmationCodes = sp => mockConfirmationCodeStore.Object,
             Clients =
                 sp => new InMemoryClientRepository(
-                    new TestHttpClientFactory(context.Client),
+                    new TestHttpClientFactory(context.Client!),
                     new InMemoryScopeRepository(),
                     new Mock<ILogger<InMemoryClientRepository>>().Object,
                     DefaultStores.Clients(context)),
@@ -76,8 +76,8 @@ public sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>(x => { }).AddHttpMessageHandler(d => new TestDelegatingHandler(_context.Handler));
-        services.AddTransient(sp => _context.Client);
+        services.AddHttpClient<HttpClient>(x => { }).AddHttpMessageHandler(d => new TestDelegatingHandler(_context.Handler!));
+        services.AddTransient(_ => _context.Client!);
         var mockSmsClient = new Mock<ISmsClient>();
         mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((true, null));
 
@@ -93,9 +93,9 @@ public sealed class ServerStartup
                 assemblyTypes: new[] { typeof(IDefaultUi), typeof(IDefaultSmsUi) })
             .AddSmsAuthentication(mockSmsClient.Object);
         services
-            #if DEBUG
+#if DEBUG
             .AddLogging(l => l.AddXunit(_outputHelper))
-            #endif
+#endif
             .AddAccountFilter()
             .AddAuthentication(
                 cfg =>

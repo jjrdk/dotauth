@@ -231,6 +231,26 @@ public static class DefaultStores
             },
             new Client
             {
+                ClientId = "dcr",
+                ClientName = "dcr",
+                Secrets = new[]
+                {
+                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "dcr"}
+                },
+                Claims = new[] { new Claim("email", "test@test.com"), new Claim("sub", "dcr"), },
+                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
+                UserClaimsToIncludeInAuthToken = new[] { new Regex("^sub$", RegexOptions.Compiled) },
+                PolicyUri = new Uri("http://openid.net"),
+                TosUri = new Uri("http://openid.net"),
+                AllowedScopes = new[] { "dcr" },
+                GrantTypes = GrantTypes.All,
+                ResponseTypes = ResponseTypeNames.All,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                ApplicationType = ApplicationTypes.Web,
+                RedirectionUrls = new[] { new Uri("https://localhost:4200/callback") }
+            },
+            new Client
+            {
                 ClientId = "clientCredentials",
                 ClientName = "clientCredentials",
                 Secrets = new[]

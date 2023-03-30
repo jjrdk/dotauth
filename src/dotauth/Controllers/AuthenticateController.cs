@@ -176,8 +176,8 @@ public sealed class AuthenticateController : BaseAuthenticateController
         try
         {
             var resourceOwner = await _resourceOwnerServices.Authenticate(
-                    authorizeViewModel!.Login!,
-                    authorizeViewModel!.Password!,
+                    authorizeViewModel.Login!,
+                    authorizeViewModel.Password!,
                     cancellationToken)
                 .ConfigureAwait(false);
             if (resourceOwner == null)

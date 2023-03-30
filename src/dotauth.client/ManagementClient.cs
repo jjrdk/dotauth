@@ -31,12 +31,9 @@ using DotAuth.Shared.Responses;
 /// </summary>
 public sealed class ManagementClient : ClientBase, IManagementClient
 {
-    private readonly DiscoveryInformation _discoveryInformation;
-
     private ManagementClient(Func<HttpClient> client, DiscoveryInformation discoveryInformation)
-        : base(client)
+        : base(client, discoveryInformation)
     {
-        _discoveryInformation = discoveryInformation;
     }
 
     /// <summary>
@@ -49,8 +46,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     {
         if (!discoveryDocumentationUri.IsAbsoluteUri)
         {
-            throw new ArgumentException(
-                string.Format(ClientStrings.TheUrlIsNotWellFormed, discoveryDocumentationUri));
+            throw new ArgumentException(string.Format(ClientStrings.TheUrlIsNotWellFormed, discoveryDocumentationUri));
         }
 
         var operation = new GetDiscoveryOperation(discoveryDocumentationUri, client);
@@ -66,17 +62,17 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<Client>> GetClient(
+    public async Task<Option<Client>> GetClient(
         string clientId,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
+            Method = HttpMethod.Get, RequestUri = new Uri(discoveryInformation.Clients + "/" + clientId)
         };
-        return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -86,7 +82,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<Client>> AddClient(
+    public async Task<Option<Client>> AddClient(
         Client client,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
@@ -96,16 +92,15 @@ public sealed class ManagementClient : ClientBase, IManagementClient
             throw new ArgumentNullException(nameof(client));
         }
 
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var serializedJson = Serializer.Default.Serialize(client);
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Post,
-            RequestUri = _discoveryInformation.Clients,
-            Content = body
+            Method = HttpMethod.Post, RequestUri = discoveryInformation.Clients, Content = body
         };
 
-        return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -115,17 +110,17 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<Client>> DeleteClient(
+    public async Task<Option<Client>> DeleteClient(
         string clientId,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Delete,
-            RequestUri = new Uri(_discoveryInformation.Clients + "/" + clientId)
+            Method = HttpMethod.Delete, RequestUri = new Uri(discoveryInformation.Clients + "/" + clientId)
         };
-        return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -135,7 +130,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<Client>> UpdateClient(
+    public async Task<Option<Client>> UpdateClient(
         Client client,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
@@ -145,16 +140,14 @@ public sealed class ManagementClient : ClientBase, IManagementClient
             throw new ArgumentNullException(nameof(client));
         }
 
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Put,
-            RequestUri = _discoveryInformation.Clients,
-            Content = new StringContent(
-                Serializer.Default.Serialize(client),
-                Encoding.UTF8,
-                "application/json")
+            RequestUri = discoveryInformation.Clients,
+            Content = new StringContent(Serializer.Default.Serialize(client), Encoding.UTF8, "application/json")
         };
-        return GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -163,12 +156,13 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<Client[]>> GetAllClients(
+    public async Task<Option<Client[]>> GetAllClients(
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _discoveryInformation.Clients };
-        return GetResult<Client[]>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
+        var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = discoveryInformation.Clients };
+        return await GetResult<Client[]>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -178,20 +172,24 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<PagedResult<Client>>> SearchClients(
+    public async Task<Option<PagedResult<Client>>> SearchClients(
         SearchClientsRequest searchClientParameter,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var serializedPostPermission = Serializer.Default.Serialize(searchClientParameter);
         var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(_discoveryInformation.Clients + "/.search"),
+            RequestUri = new Uri(discoveryInformation.Clients + "/.search"),
             Content = body
         };
-        return GetResult<PagedResult<Client>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<PagedResult<Client>>(
+            request,
+            authorizationHeaderValue,
+            cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -202,7 +200,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <exception cref="ArgumentException">If id is empty or whitespace.</exception>
     /// <returns></returns>
-    public Task<Option<Scope>> GetScope(
+    public async Task<Option<Scope>> GetScope(
         string id,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
@@ -212,12 +210,12 @@ public sealed class ManagementClient : ClientBase, IManagementClient
             throw new ArgumentException(ErrorMessages.InvalidScopeId, nameof(id));
         }
 
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri($"{_discoveryInformation.Scopes}/{id}")
+            Method = HttpMethod.Get, RequestUri = new Uri($"{discoveryInformation.Scopes}/{id}")
         };
-        return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -227,20 +225,19 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<Scope>> AddScope(
+    public async Task<Option<Scope>> AddScope(
         Scope scope,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var serializedJson = Serializer.Default.Serialize(scope);
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Post,
-            RequestUri = _discoveryInformation.Scopes,
-            Content = body
+            Method = HttpMethod.Post, RequestUri = discoveryInformation.Scopes, Content = body
         };
-        return GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -250,17 +247,22 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="accessToken">The access token for the request.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the asynchronous request.</param>
     /// <returns>A response with success or error details.</returns>
-    public async Task<Option<Client>> Register(Client client, string accessToken, CancellationToken cancellationToken = default)
+    public async Task<Option<Client>> Register(
+        Client client,
+        string accessToken,
+        CancellationToken cancellationToken = default)
     {
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var json = Serializer.Default.Serialize(client);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
-            RequestUri = _discoveryInformation.RegistrationEndPoint
+            RequestUri = discoveryInformation.RegistrationEndPoint
         };
 
-        return await GetResult<Client>(request, accessToken, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return await GetResult<Client>(request, accessToken, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -270,7 +272,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<AddResourceOwnerResponse>> AddResourceOwner(
+    public async Task<Option<AddResourceOwnerResponse>> AddResourceOwner(
         AddResourceOwnerRequest resourceOwner,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
@@ -280,16 +282,20 @@ public sealed class ManagementClient : ClientBase, IManagementClient
             throw new ArgumentNullException(nameof(resourceOwner));
         }
 
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = _discoveryInformation.ResourceOwners,
+            RequestUri = discoveryInformation.ResourceOwners,
             Content = new StringContent(
                 Serializer.Default.Serialize(resourceOwner),
                 Encoding.UTF8,
                 "application/json")
         };
-        return GetResult<AddResourceOwnerResponse>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<AddResourceOwnerResponse>(
+            request,
+            authorizationHeaderValue,
+            cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -299,17 +305,18 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<ResourceOwner>> GetResourceOwner(
+    public async Task<Option<ResourceOwner>> GetResourceOwner(
         string resourceOwnerId,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
+            RequestUri = new Uri($"{discoveryInformation.ResourceOwners}/{resourceOwnerId}")
         };
-        return GetResult<ResourceOwner>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<ResourceOwner>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -324,10 +331,11 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Delete,
-            RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/{resourceOwnerId}")
+            RequestUri = new Uri($"{discoveryInformation.ResourceOwners}/{resourceOwnerId}")
         };
         var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -356,12 +364,13 @@ public sealed class ManagementClient : ClientBase, IManagementClient
             throw new ArgumentNullException(nameof(updateResourceOwnerPasswordRequest));
         }
 
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var serializedJson = Serializer.Default.Serialize(updateResourceOwnerPasswordRequest);
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Put,
-            RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/password"),
+            RequestUri = new Uri($"{discoveryInformation.ResourceOwners}/password"),
             Content = body
         };
         var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
@@ -390,12 +399,13 @@ public sealed class ManagementClient : ClientBase, IManagementClient
             throw new ArgumentNullException(nameof(updateResourceOwnerClaimsRequest));
         }
 
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var serializedJson = Serializer.Default.Serialize(updateResourceOwnerClaimsRequest);
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Put,
-            RequestUri = new Uri($"{_discoveryInformation.ResourceOwners}/claims"),
+            RequestUri = new Uri($"{discoveryInformation.ResourceOwners}/claims"),
             Content = body
         };
         var result = await GetResult<object>(request, authorizationHeaderValue, cancellationToken: cancellationToken)
@@ -413,16 +423,19 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<ResourceOwner[]>> GetAllResourceOwners(
+    public async Task<Option<ResourceOwner[]>> GetAllResourceOwners(
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Get,
-            RequestUri = _discoveryInformation.ResourceOwners
+            Method = HttpMethod.Get, RequestUri = discoveryInformation.ResourceOwners
         };
-        return GetResult<ResourceOwner[]>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<ResourceOwner[]>(
+            request,
+            authorizationHeaderValue,
+            cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -432,20 +445,24 @@ public sealed class ManagementClient : ClientBase, IManagementClient
     /// <param name="authorizationHeaderValue">The authorization token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    public Task<Option<PagedResult<ResourceOwner>>> SearchResourceOwners(
+    public async Task<Option<PagedResult<ResourceOwner>>> SearchResourceOwners(
         SearchResourceOwnersRequest searchResourceOwnersRequest,
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
+        var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var serializedPostPermission = Serializer.Default.Serialize(searchResourceOwnersRequest);
         var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(_discoveryInformation.ResourceOwners + "/.search"),
+            RequestUri = new Uri(discoveryInformation.ResourceOwners + "/.search"),
             Content = body
         };
 
-        return GetResult<PagedResult<ResourceOwner>>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
+        return await GetResult<PagedResult<ResourceOwner>>(
+            request,
+            authorizationHeaderValue,
+            cancellationToken: cancellationToken);
     }
 }

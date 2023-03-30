@@ -208,7 +208,7 @@ public abstract class BaseAuthenticateController : BaseController
     {
         if (!string.IsNullOrWhiteSpace(error))
         {
-            _logger.LogError(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
+            _logger.LogError("{error}", string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             return SetRedirection(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error), Strings.InternalServerError, ErrorCodes.InternalError);
         }
 
@@ -603,8 +603,11 @@ public abstract class BaseAuthenticateController : BaseController
         // 3 : Raise an exception is there's an authentication error
         if (!string.IsNullOrWhiteSpace(error))
         {
-            _logger.LogError(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
-            return SetRedirection(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error), Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
+            _logger.LogError("{error}", string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+            return SetRedirection(
+                string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error),
+                Strings.InternalServerError,
+                ErrorCodes.UnhandledExceptionCode);
         }
 
         // 4. Check if the user is authenticated
@@ -676,8 +679,6 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
 
         // 7. Store claims into new cookie
-        //if (actionResult != null)
-        //{
         await SetLocalCookie(claims.ToOpenidClaims(), authorizationRequest.session_id!).ConfigureAwait(false);
         await _authenticationService.SignOutAsync(
                 HttpContext,
@@ -686,9 +687,6 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
         await LogAuthenticateUser(subject, actionResult.Amr!).ConfigureAwait(false);
         return actionResult.CreateRedirectionFromActionResult(authorizationRequest, _logger)!;
-        //}
-
-        //return RedirectToAction("OpenId", "Authenticate", new { code });
     }
 
     /// <summary>

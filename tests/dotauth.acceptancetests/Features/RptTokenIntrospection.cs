@@ -11,7 +11,7 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private string _rptToken;
+    private string? _rptToken;
 
     [Given(@"a PAT token")]
     public async Task GivenAPatToken()
@@ -99,7 +99,7 @@ public partial class FeatureTest
     public async Task ThenCanIntrospectRptTokenUsingPatTokenAsAuthentication()
     {
         var introspectResult = await _umaClient
-            .Introspect(DotAuth.Client.IntrospectionRequest.Create(_rptToken, "access_token", _token.AccessToken))
+            .Introspect(DotAuth.Client.IntrospectionRequest.Create(_rptToken!, "access_token", _token.AccessToken))
             .ConfigureAwait(false);
 
         Assert.IsType<Option<UmaIntrospectionResponse>.Result>(introspectResult);

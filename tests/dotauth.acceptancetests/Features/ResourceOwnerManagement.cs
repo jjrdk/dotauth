@@ -101,7 +101,7 @@ public partial class FeatureTest
     {
         var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _updatedToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json);
+        _updatedToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json)!;
 
         Assert.NotNull(_updatedToken);
     }
@@ -111,7 +111,7 @@ public partial class FeatureTest
     {
         var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _token = JsonConvert.DeserializeObject<GrantedTokenResponse>(json);
+        _token = JsonConvert.DeserializeObject<GrantedTokenResponse>(json)!;
 
         Assert.NotNull(_token);
     }
@@ -227,7 +227,7 @@ public partial class FeatureTest
     {
         var store = (IResourceOwnerStore) _fixture.Server.Host.Services.GetRequiredService(
             typeof(IResourceOwnerStore));
-        _resourceOwner = await store.Get("administrator", CancellationToken.None).ConfigureAwait(false);
+        _resourceOwner = (await store.Get("administrator", CancellationToken.None).ConfigureAwait(false))!;
     }
 
     [Then(@"resource owner still has claim")]

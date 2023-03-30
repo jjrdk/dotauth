@@ -69,6 +69,7 @@ internal sealed class DiscoveryActions
             // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
 
             Issuer = new Uri(issuer),
+            DynamicClientRegistrationEndpoint = new Uri(issuer + "/" + CoreConstants.EndPoints.DynamicClientRegistration),
             DeviceAuthorizationEndPoint = new Uri(issuer+"/"+CoreConstants.EndPoints.DeviceAuthorization),
             AuthorizationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Authorization),
             TokenEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Token),

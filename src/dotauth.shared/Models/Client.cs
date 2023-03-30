@@ -250,13 +250,7 @@ public sealed class Client
     /// </summary>
     [DataMember(Name = "initiate_login_uri")]
     public Uri? InitiateLoginUri { get; set; }
-
-    /// <summary>
-    /// Gets or sets the list of request uris
-    /// </summary>
-    [DataMember(Name = "request_uris")]
-    public Uri[] RequestUris { get; set; } = Array.Empty<Uri>();
-
+    
     /// <summary>
     /// Client require PKCE.
     /// </summary>

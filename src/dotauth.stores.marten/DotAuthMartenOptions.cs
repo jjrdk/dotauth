@@ -41,7 +41,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
             DatabaseSchemaName = searchPath;
         }
 
-        Policies.DisableInformationalFields().AllDocumentsAreMultiTenanted();
+        Policies.AllDocumentsAreMultiTenanted();
         AutoCreateSchemaObjects = autoCreate;
         Advanced.DuplicatedFieldEnumStorage = EnumStorage.AsString;
         Advanced.DuplicatedFieldUseTimestampWithoutTimeZoneForDateTime = true;

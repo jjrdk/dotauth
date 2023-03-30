@@ -15,8 +15,8 @@ using Xunit;
 public partial class FeatureTest
 {
     private bool _userModified;
-    private AddUserOperation _addUserOperation;
-    private RuntimeSettings _runtimeSettings;
+    private AddUserOperation? _addUserOperation;
+    private RuntimeSettings? _runtimeSettings;
     private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepository = new();
     private readonly ISubjectBuilder _subjectBuilder = new DefaultSubjectBuilder();
     private readonly Mock<IEventPublisher> _eventPublisher = new();
@@ -40,7 +40,7 @@ public partial class FeatureTest
     public void GivenAnAddUserOperation()
     {
         _addUserOperation = new AddUserOperation(
-            _runtimeSettings,
+            _runtimeSettings!,
             _resourceOwnerRepository.Object,
             System.Array.Empty<IAccountFilter>(),
             _subjectBuilder,
@@ -51,7 +51,7 @@ public partial class FeatureTest
     public async Task WhenLocalAccountUserIsAddedToStorage()
     {
         var resourceOwner = new ResourceOwner { Subject = "tester", Password = "password", IsLocalAccount = true };
-        var (_, s) = await _addUserOperation.Execute(resourceOwner, CancellationToken.None).ConfigureAwait(false);
+        var (_, s) = await _addUserOperation!.Execute(resourceOwner, CancellationToken.None).ConfigureAwait(false);
         _subject = s;
     }
 
@@ -59,7 +59,7 @@ public partial class FeatureTest
     public async Task WhenExternalAccountUserIsAddedToStorage()
     {
         var resourceOwner = new ResourceOwner { Subject = "tester", IsLocalAccount = false };
-        _ = await _addUserOperation.Execute(resourceOwner, CancellationToken.None).ConfigureAwait(false);
+        _ = await _addUserOperation!.Execute(resourceOwner, CancellationToken.None).ConfigureAwait(false);
     }
 
     [Then(@"subject is not modified")]

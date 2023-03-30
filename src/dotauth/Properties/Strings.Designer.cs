@@ -439,15 +439,6 @@ namespace DotAuth.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to one of the request_uri is not valid.
-        /// </summary>
-        internal static string OneOfTheRequestUriIsNotValid {
-            get {
-                return ResourceManager.GetString("OneOfTheRequestUriIsNotValid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to one or more sector uri is not a redirect_uri.
         /// </summary>
         internal static string OneOrMoreSectorIdentifierUriIsNotARedirectUri {

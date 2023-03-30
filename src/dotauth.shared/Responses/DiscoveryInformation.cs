@@ -25,6 +25,12 @@ using Microsoft.IdentityModel.Tokens;
 public sealed record DiscoveryInformation
 {
     /// <summary>
+    /// Gets or sets the dynamic client registration endpoint.
+    /// </summary>
+    [DataMember(Name = "dynamic_registration")]
+    public Uri DynamicClientRegistrationEndpoint { get; set; } = null!;
+
+    /// <summary>
     /// Gets or sets the device authorization endpoint.
     /// </summary>
     [DataMember(Name = "device_authorization_endpoint")]

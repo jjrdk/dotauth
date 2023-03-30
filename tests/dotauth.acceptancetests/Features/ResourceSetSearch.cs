@@ -10,7 +10,7 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private Option<PagedResult<ResourceSetDescription>>.Result _searchResults;
+    private Option<PagedResult<ResourceSetDescription>>.Result? _searchResults;
 
     [When(@"searching by term (.+)")]
     public async Task WhenSearchingByTerm(string term)
@@ -24,7 +24,7 @@ public partial class FeatureTest
     [Then(@"returns (\d+) search results")]
     public void ThenReturnsSearchResults(int amount)
     {
-        Assert.Equal(amount, _searchResults.Item.Content.Length);
+        Assert.Equal(amount, _searchResults!.Item.Content.Length);
     }
 
     [When(@"searching by type (.+) and term (.+)")]

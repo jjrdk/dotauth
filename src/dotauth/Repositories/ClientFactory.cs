@@ -35,19 +35,19 @@ internal sealed class ClientFactory
         var result = ValidateNotMandatoryUri(newClient.ClientUri, "client_uri");
         if (result is Option.Error e)
         {
-            _logger.LogError(e.Details.Detail);
+            _logger.LogError("{error}", e.Details.Detail);
             return new Option<Client>.Error(e.Details, e.State);
         }
         result = ValidateNotMandatoryUri(newClient.TosUri, "tos_uri");
         if (result is Option.Error e2)
         {
-            _logger.LogError(e2.Details.Detail);
+            _logger.LogError("{error}", e2.Details.Detail);
             return new Option<Client>.Error(e2.Details, e2.State);
         }
         result = ValidateNotMandatoryUri(newClient.SectorIdentifierUri, "sector_identifier_uri", true);
         if (result is Option.Error e3)
         {
-            _logger.LogError(e3.Details.Detail);
+            _logger.LogError("{error}", e3.Details.Detail);
             return new Option<Client>.Error(e3.Details, e3.State);
         }
         // Based on the RFC : http://openid.net/specs/openid-connect-registration-1_0.html#SectorIdentifierValidation validate the sector_identifier_uri
@@ -64,7 +64,7 @@ internal sealed class ClientFactory
             if (sectorIdentifierUris.Any(
                     sectorIdentifierUri => !newClient.RedirectionUrls.Contains(sectorIdentifierUri)))
             {
-                _logger.LogError(Strings.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
+                _logger.LogError("{error}", Strings.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
                 return new Option<Client>.Error(new ErrorDetails
                 {
                     Title = ErrorCodes.InvalidClientMetaData,
@@ -76,7 +76,7 @@ internal sealed class ClientFactory
 
         if (!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc) && string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg))
         {
-            _logger.LogError(Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
+            _logger.LogError("{error}", Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
             return new Option<Client>.Error(new ErrorDetails
             {
                 Title = ErrorCodes.InvalidClientMetaData,
@@ -87,7 +87,7 @@ internal sealed class ClientFactory
 
         if (!string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseEnc) && string.IsNullOrWhiteSpace(newClient.UserInfoEncryptedResponseAlg))
         {
-            _logger.LogError(Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
+            _logger.LogError("{error}", Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
             return new Option<Client>.Error(new ErrorDetails
             {
                 Title = ErrorCodes.InvalidClientMetaData,
@@ -98,7 +98,7 @@ internal sealed class ClientFactory
 
         if (!string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionEnc) && string.IsNullOrWhiteSpace(newClient.RequestObjectEncryptionAlg))
         {
-            _logger.LogError(Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
+            _logger.LogError("{error}", Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
             return new Option<Client>.Error(new ErrorDetails
             {
                 Title = ErrorCodes.InvalidClientMetaData,
@@ -110,7 +110,7 @@ internal sealed class ClientFactory
         if (newClient.RedirectionUrls.Length == 0)
         {
             var message = string.Format(Strings.MissingParameter, "redirect_uris");
-            _logger.LogError(message);
+            _logger.LogError("{error}", message);
             return new Option<Client>.Error(new ErrorDetails
             {
                 Title = ErrorCodes.InvalidRedirectUri,
@@ -124,18 +124,7 @@ internal sealed class ClientFactory
         {
             return new Option<Client>.Error(e4.Details, e4.State);
         }
-        if (newClient.RequestUris.Any(requestUri => !requestUri.IsAbsoluteUri))
-        {
-            var message = Strings.OneOfTheRequestUriIsNotValid;
-            _logger.LogError(message);
-            return new Option<Client>.Error(new ErrorDetails
-            {
-                Title = ErrorCodes.InvalidClientMetaData,
-                Detail = message,
-                Status = HttpStatusCode.BadRequest
-            });
-        }
-
+        
         var client = new Client
         {
             ClientId = updateId ? Id.Create() : newClient.ClientId
@@ -192,7 +181,7 @@ internal sealed class ClientFactory
         else if (!string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseEnc))
         {
             var message = Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified;
-            _logger.LogError(message);
+            _logger.LogError("{error}", message);
             return new Option<Client>.Error(new ErrorDetails
             {
                 Title = ErrorCodes.InvalidClientMetaData,
@@ -219,7 +208,7 @@ internal sealed class ClientFactory
         {
             var enumerable = newClient.AllowedScopes.Except(scopes.Select(x => x.Name));
             var message = $"Unknown scopes: {string.Join(",", enumerable)}";
-            _logger.LogError(message);
+            _logger.LogError("{error}", message);
             return new Option<Client>.Error(new ErrorDetails
             {
                 Title = ErrorCodes.InvalidScope,
@@ -238,7 +227,7 @@ internal sealed class ClientFactory
                 if (!redirectUri.IsAbsoluteUri || !Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                 {
                     var message = string.Format(Strings.TheRedirectUrlIsNotValid, redirectUri);
-                    _logger.LogError(message);
+                    _logger.LogError("{error}", message);
                     return new Option<Client>.Error(new ErrorDetails
                     {
                         Title = ErrorCodes.InvalidRedirectUri,
@@ -250,7 +239,7 @@ internal sealed class ClientFactory
                 if (!string.IsNullOrWhiteSpace(redirectUri.Fragment))
                 {
                     var message = string.Format(Strings.TheRedirectUrlCannotContainsFragment, redirectUri);
-                    _logger.LogError(message);
+                    _logger.LogError("{error}", message);
                     return new Option<Client>.Error(
                         new ErrorDetails
                         {
@@ -270,7 +259,7 @@ internal sealed class ClientFactory
                 if (!Uri.IsWellFormedUriString(redirectUri.AbsoluteUri, UriKind.Absolute))
                 {
                     var message = string.Format(Strings.TheRedirectUrlIsNotValid, redirectUri);
-                    _logger.LogError(message);
+                    _logger.LogError("{error}", message);
                     return new Option<Client>.Error(
                         new ErrorDetails
                         {
@@ -287,7 +276,6 @@ internal sealed class ClientFactory
         client.RequestObjectEncryptionAlg = newClient.RequestObjectEncryptionAlg;
         client.RequestObjectEncryptionEnc = newClient.RequestObjectEncryptionEnc;
         client.RequestObjectSigningAlg = newClient.RequestObjectSigningAlg;
-        client.RequestUris = newClient.RequestUris;
         client.RequireAuthTime = newClient.RequireAuthTime;
         client.RequirePkce = newClient.RequirePkce;
 
@@ -341,7 +329,7 @@ internal sealed class ClientFactory
         }
         catch
         {
-            _logger.LogError(Strings.TheSectorIdentifierUrisCannotBeRetrieved);
+            _logger.LogError("{error}", Strings.TheSectorIdentifierUrisCannotBeRetrieved);
             return new Option<IReadOnlyCollection<Uri>>.Error(
                 new ErrorDetails
                 {

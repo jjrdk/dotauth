@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Filters;
@@ -29,6 +30,7 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using DotAuth.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -76,9 +78,126 @@ public sealed class ClientsController : BaseController
     }
 
     /// <summary>
+    /// Handles the dynamic client registration request from an application.
+    /// </summary>
+    /// <param name="request">The <see cref="DynamicClientRegistrationRequest"/> holding client information.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns>Information about the registered client as a <see cref="DynamicClientRegistrationResponse"/>.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when client registration fails.</exception>
+    [HttpPost("register")]
+    [Authorize(Policy = "dcr")]
+    public async Task<ActionResult<DynamicClientRegistrationResponse>> Register(
+        [FromBody] DynamicClientRegistrationRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.ClientName) || request.RedirectUris.Length == 0)
+        {
+            return BadRequest();
+        }
+
+        var email = User.GetEmail();
+        if (email != null && !request.Contacts.Contains(email))
+        {
+            request.Contacts = request.Contacts.Append(email).ToArray();
+        }
+        Uri.TryCreate(request.LogoUri, UriKind.Absolute, out var logoUri);
+        
+#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+        var client = new Client
+        {
+            ClientName = request.ClientName,
+            LogoUri = logoUri,
+            ApplicationType = request.ApplicationType == ApplicationTypes.Native ? ApplicationTypes.Native : ApplicationTypes.Web,
+            RedirectionUrls = request.RedirectUris.Select(x => new Uri(x)).ToArray(),
+            GrantTypes =
+                new[] { GrantTypes.AuthorizationCode, GrantTypes.ClientCredentials, GrantTypes.RefreshToken },
+            ClientId = Id.Create(),
+            Contacts = request.Contacts,
+            ResponseTypes = ResponseTypeNames.All,
+            RequirePkce = true,
+            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Id.Create() } },
+            TokenLifetime = TimeSpan.FromHours(1),
+            UserClaimsToIncludeInAuthToken = new[] { new Regex("^sub$", RegexOptions.Compiled) },
+            TokenEndPointAuthMethod = request.TokenEndpointAuthMethod ?? TokenEndPointAuthenticationMethods.ClientSecretPost
+        };
+#pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+
+        var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!, _logger);
+        var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
+        switch (toInsert)
+        {
+            case Option<Client>.Error e:
+                return StatusCode(
+                    statusCode: (int)HttpStatusCode.InternalServerError,
+                    new { error = e.Details.Title, error_description = e.Details.Detail });
+            case Option<Client>.Result r:
+                var item = r.Item;
+                var result = await _clientRepository.Insert(item, cancellationToken).ConfigureAwait(false);
+                var editUri = Url.ActionLink("register", "clients", new { clientId = item.ClientId })!;
+                return result
+                    ? Created(
+                        editUri,
+                        new DynamicClientRegistrationResponse
+                        {
+                            ApplicationType = item.ApplicationType,
+                            ClientId = item.ClientId,
+                            ClientName = item.ClientName,
+                            ClientSecret = item.Secrets[0].Value,
+                            RedirectUris = Array.ConvertAll(item.RedirectionUrls, u => u.AbsoluteUri),
+                            ClientSecretExpiresAt = 0,
+                            Contacts = item.Contacts,
+                            TokenEndpointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
+                            RegistrationClientUri = editUri
+                        })
+                    : BadRequest();
+            default: throw new InvalidOperationException();
+        }
+    }
+
+    /// <summary>
+    /// Modifies a dynamically registered client.
+    /// </summary>
+    /// <param name="clientId">The client id of the <see cref="Client"/> to modify.</param>
+    /// <param name="update">The update values as a <see cref="DynamicClientRegistrationRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns>The updated <see cref="Client"/> definition.</returns>
+    [HttpPut]
+    [Route("register/{clientId}")]
+    [Authorize(Policy = "dcr")]
+    public async Task<IActionResult> Modify(string clientId, DynamicClientRegistrationRequest update, CancellationToken cancellationToken)
+    {
+        var client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
+        if (client == null)
+        {
+            return BadRequest();
+        }
+
+        if (update.RedirectUris.Length > 0)
+        {
+            client.RedirectionUrls = Array.ConvertAll(update.RedirectUris, x => new Uri(x));
+        }
+        client.LogoUri = Uri.TryCreate(update.LogoUri, UriKind.Absolute, out var logoUri) ? logoUri : null;
+        if (update.Contacts.Length > 0)
+        {
+            client.Contacts = update.Contacts;
+        }
+        if (!string.IsNullOrWhiteSpace(update.ClientName))
+        {
+            client.ClientName = update.ClientName;
+        }
+        client.ApplicationType = update.ApplicationType == ApplicationTypes.Native ? ApplicationTypes.Native : ApplicationTypes.Web;
+        if (!string.IsNullOrWhiteSpace(update.TokenEndpointAuthMethod))
+        {
+            client.TokenEndPointAuthMethod = update.TokenEndpointAuthMethod;
+        }
+
+        return await Put(client, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Gets all clients.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
     [HttpGet]
     [Authorize(Policy = "manager")]
@@ -92,7 +211,7 @@ public sealed class ClientsController : BaseController
     /// Searches the specified request.
     /// </summary>
     /// <param name="request">The request.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
     [HttpPost(".search")]
     [Authorize(Policy = "manager")]
@@ -113,7 +232,7 @@ public sealed class ClientsController : BaseController
     /// Gets the specified client.
     /// </summary>
     /// <param name="id">The identifier.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
     [HttpGet("{id}")]
     [Authorize(Policy = "manager")]
@@ -140,7 +259,7 @@ public sealed class ClientsController : BaseController
     /// Deletes the specified identifier.
     /// </summary>
     /// <param name="id">The identifier.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
     [Authorize(Policy = "manager")]
@@ -169,7 +288,7 @@ public sealed class ClientsController : BaseController
     /// Puts the specified update client request.
     /// </summary>
     /// <param name="client">The update client request.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
     [HttpPut]
     [Authorize(Policy = "manager")]
@@ -256,7 +375,7 @@ public sealed class ClientsController : BaseController
             LogoUri = viewModel.LogoUri,
             ApplicationType = viewModel.ApplicationType ?? ApplicationTypes.Web,
             RedirectionUrls =
-                viewModel.RedirectionUrls.Split(",;".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                viewModel.RedirectionUrls.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(x => new Uri(x))
                     .ToArray(),
             GrantTypes = viewModel.GrantTypes.ToArray()

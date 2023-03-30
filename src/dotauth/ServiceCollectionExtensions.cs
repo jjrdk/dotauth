@@ -103,6 +103,31 @@ public static class ServiceCollectionExtensions
                     });
             });
         options.AddPolicy(
+            "dcr",
+            policy =>
+            {
+                policy.AddAuthenticationSchemes(authenticationSchemes);
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(
+                    p =>
+                    {
+                        if (p.User.Identity?.IsAuthenticated != true)
+                        {
+                            return false;
+                        }
+
+                        if (p.User.Claims.Where(c => c.Type == ScopeType)
+                            .Any(c => c.HasClaimValue("dcr")))
+                        {
+                            return true;
+                        }
+
+                        var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == ScopeType);
+                        return claimScopes != null
+                               && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries).Any(s => s == "dcr");
+                    });
+            });
+        options.AddPolicy(
             "manager",
             policy =>
             {

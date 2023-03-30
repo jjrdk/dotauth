@@ -37,12 +37,10 @@ using Microsoft.IdentityModel.Tokens;
 /// </summary>
 public sealed class TokenClient : ClientBase, ITokenClient
 {
-    private readonly GetDiscoveryOperation? _discoveryOperation;
     private readonly AuthenticationHeaderValue? _authorizationValue;
     private readonly X509Certificate2? _certificate;
     private readonly TokenCredentials _form;
     private readonly Func<HttpClient> _client;
-    private DiscoveryInformation? _discovery;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TokenClient"/> class.
@@ -51,7 +49,7 @@ public sealed class TokenClient : ClientBase, ITokenClient
     /// <param name="client">The <see cref="HttpClient"/> for requests.</param>
     /// <param name="authority">The <see cref="Uri"/> of the discovery document.</param>
     public TokenClient(TokenCredentials credentials, Func<HttpClient> client, Uri authority)
-        : base(client)
+        : base(client, authority)
     {
         if (!authority.IsAbsoluteUri)
         {
@@ -63,7 +61,6 @@ public sealed class TokenClient : ClientBase, ITokenClient
         _client = client;
         _authorizationValue = credentials.AuthorizationValue;
         _certificate = credentials.Certificate;
-        _discoveryOperation = new GetDiscoveryOperation(authority, client);
     }
 
     /// <summary>
@@ -73,13 +70,12 @@ public sealed class TokenClient : ClientBase, ITokenClient
     /// <param name="client">The <see cref="HttpClient"/> for requests.</param>
     /// <param name="discoveryDocumentation">The metadata information.</param>
     public TokenClient(TokenCredentials credentials, Func<HttpClient> client, DiscoveryInformation discoveryDocumentation)
-        : base(client)
+        : base(client, discoveryDocumentation)
     {
         _form = credentials;
         _client = client;
         _authorizationValue = credentials.AuthorizationValue;
         _certificate = credentials.Certificate;
-        _discovery = discoveryDocumentation;
     }
 
     /// <summary>
@@ -335,12 +331,6 @@ public sealed class TokenClient : ClientBase, ITokenClient
         }
 
         return await GetResult<JwtPayload>(request, inBody ? null : accessToken, _certificate, cancellationToken)
-            .ConfigureAwait(false);
-    }
-
-    private async Task<DiscoveryInformation> GetDiscoveryInformation(CancellationToken cancellationToken = default)
-    {
-        return _discovery ??= await _discoveryOperation!.Execute(cancellationToken)
             .ConfigureAwait(false);
     }
 }

@@ -16,12 +16,12 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
 
     public JwtBearerPostConfigureOptions(IServer server)
     {
-        this._server = server as TestServer;
+        _server = (server as TestServer)!;
     }
 
-    public void PostConfigure(string name, JwtBearerOptions options)
+    public void PostConfigure(string? name, JwtBearerOptions options)
     {
-        options.Authority = this._server.CreateClient().BaseAddress.AbsoluteUri;
+        options.Authority = this._server.CreateClient().BaseAddress!.AbsoluteUri;
         options.BackchannelHttpHandler = this._server.CreateHandler();
         options.RequireHttpsMetadata = false;
         options.Events = new JwtBearerEvents { OnAuthenticationFailed = ctx => throw ctx.Exception };

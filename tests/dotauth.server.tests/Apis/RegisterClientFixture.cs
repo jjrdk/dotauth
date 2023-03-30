@@ -252,7 +252,6 @@ public sealed class RegisterClientFixture : IDisposable
                     ClientName = "Test",
                     ClientId = "id",
                     RedirectionUrls = new[] {new Uri("https://localhost"),},
-                    RequestUris = new[] {new Uri("https://localhost")},
                 },
                 grantedToken.Item.AccessToken)
             .ConfigureAwait(false) as Option<Client>.Result;

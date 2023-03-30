@@ -321,6 +321,7 @@ internal static class CoreConstants
         public const string Jws = "jws";
         public const string Jwe = "jwe";
         public const string Clients = "clients";
+        public const string DynamicClientRegistration = "clients/register";
         public const string Scopes = "scopes";
         public const string ResourceOwners = "resource_owners";
         public const string Manage = "manage";

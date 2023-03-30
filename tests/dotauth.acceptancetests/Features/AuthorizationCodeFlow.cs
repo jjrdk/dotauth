@@ -12,7 +12,7 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private Option<Uri> _response;
+    private Option<Uri>? _response;
 
     [Given(@"a properly configured auth client")]
     public void GivenAProperlyConfiguredAuthClient()
@@ -20,7 +20,7 @@ public partial class FeatureTest
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
             _fixture.Client,
-            new Uri(FeatureTest.WellKnownOpenidConfiguration));
+            new Uri(WellKnownOpenidConfiguration));
     }
 
     [When(@"requesting authorization for scope (.*)")]

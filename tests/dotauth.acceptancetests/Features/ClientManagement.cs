@@ -13,7 +13,7 @@ using Xunit;
 public partial class FeatureTest
 {
     private Client[] _clients = null!;
-    private Option<Client> _addClientResponse;
+    private Option<Client>? _addClientResponse;
 
     [Given(@"a manager client")]
     public async Task GivenAManagerClient()
