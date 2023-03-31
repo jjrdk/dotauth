@@ -124,13 +124,7 @@ public sealed class Startup
                         autoCreate: AutoCreate.CreateOrUpdate);
                     return new DocumentStore(options);
                 })
-            .AddTransient(sp =>
-            {
-                var contextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                var context = contextAccessor.HttpContext;
-                var host = context?.Request.Host.Host ?? "localhost";
-                return sp.GetRequiredService<IDocumentStore>().LightweightSession("host");
-            })
+            .AddTransient(sp => sp.GetRequiredService<IDocumentStore>().LightweightSession())
             .AddResponseCompression(
                 x =>
                 {
