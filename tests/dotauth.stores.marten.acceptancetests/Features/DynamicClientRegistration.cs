@@ -120,6 +120,6 @@ public partial class FeatureTest
             },
             CancellationToken.None);
 
-        var result = Assert.IsType<Option<DynamicClientRegistrationResponse>.Result>(option);
+        Assert.IsType<Option<DynamicClientRegistrationResponse>.Result>(option);
     }
 }
