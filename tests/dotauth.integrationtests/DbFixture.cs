@@ -25,7 +25,8 @@ public sealed class DbFixture : IDisposable
 
     public async Task<ResourceOwner> GetUser()
     {
-        using var session = _store.OpenSession();
+        var session = _store.LightweightSession();
+        await using var _ = session.ConfigureAwait(false);
         {
             var existing = new ResourceOwner
             {
@@ -53,7 +54,6 @@ public sealed class DbFixture : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         _store.Dispose();
     }
 }

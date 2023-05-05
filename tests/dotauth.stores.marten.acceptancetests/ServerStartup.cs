@@ -23,7 +23,7 @@ using Xunit.Abstractions;
 public sealed class ServerStartup
 {
     private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
-    private readonly DotAuthOptions _martenOptions;
+    private readonly DotAuthConfiguration _martenConfiguration;
     private readonly SharedContext _context;
     private readonly string _connectionString;
     private readonly ITestOutputHelper _outputHelper;
@@ -31,7 +31,7 @@ public sealed class ServerStartup
 
     public ServerStartup(SharedContext context, string connectionString, ITestOutputHelper outputHelper)
     {
-        _martenOptions = new DotAuthOptions
+        _martenConfiguration = new DotAuthConfiguration
         {
             AdministratorRoleDefinition = default,
             Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>()),
@@ -78,8 +78,8 @@ public sealed class ServerStartup
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-        services.AddDotAuth(
-            _martenOptions,
+        services.AddDotAuthServer(
+            _martenConfiguration,
             new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme },
             assemblyTypes: typeof(IDefaultUi));
         services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
@@ -105,6 +105,6 @@ public sealed class ServerStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
     }
 }

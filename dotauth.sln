@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 		README.md = README.md
 		shared.projinfo = shared.projinfo
+		NuGet.Config = NuGet.Config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotauth.stores.marten.acceptancetests", "tests\dotauth.stores.marten.acceptancetests\dotauth.stores.marten.acceptancetests.csproj", "{816CBA5B-357C-4D00-9A9B-F06A33F93B10}"
@@ -62,6 +63,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotauth.tool", "src\dotauth.tool\dotauth.tool.csproj", "{A87A21C7-35A9-460B-BC52-581B1AE75AD5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotauth.client.maui", "src\dotauth.client.maui\dotauth.client.maui.csproj", "{3A07C531-2BE9-4F70-9F80-3B46C2E3FFF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotauth.authentication", "src\dotauth.authentication\dotauth.authentication.csproj", "{9175D30E-4F3F-4C99-ADE9-31CF905BF341}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotauth.authentication.acceptancetests", "tests\dotauth.authentication.acceptancetests\dotauth.authentication.acceptancetests.csproj", "{8BE474A7-D727-40B7-A934-9294BFC39A23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -149,6 +154,14 @@ Global
 		{3A07C531-2BE9-4F70-9F80-3B46C2E3FFF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A07C531-2BE9-4F70-9F80-3B46C2E3FFF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A07C531-2BE9-4F70-9F80-3B46C2E3FFF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9175D30E-4F3F-4C99-ADE9-31CF905BF341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9175D30E-4F3F-4C99-ADE9-31CF905BF341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9175D30E-4F3F-4C99-ADE9-31CF905BF341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9175D30E-4F3F-4C99-ADE9-31CF905BF341}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BE474A7-D727-40B7-A934-9294BFC39A23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BE474A7-D727-40B7-A934-9294BFC39A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BE474A7-D727-40B7-A934-9294BFC39A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BE474A7-D727-40B7-A934-9294BFC39A23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -164,6 +177,7 @@ Global
 		{CC911812-F5B2-4CA0-BCED-A4E5BDCDF8B2} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{4EC6178C-DA40-4750-B5D6-7197394E19D3} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{EA158D2F-FACE-4F2D-B25E-7871164B0626} = {6E546AD0-8248-45A6-AA58-F4FED3C7396F}
+		{8BE474A7-D727-40B7-A934-9294BFC39A23} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		RESX_PrefixTranslations = False

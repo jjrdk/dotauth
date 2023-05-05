@@ -22,7 +22,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Amazon;
 using Amazon.Runtime;
-using Baseline;
 using DotAuth;
 using DotAuth.Extensions;
 using DotAuth.Sms;
@@ -48,7 +47,7 @@ public sealed class Startup
     private const string DotAuthScheme = "dotauth";
     private const string DefaultScopes = "openid,profile,email";
     private readonly IConfiguration _configuration;
-    private readonly DotAuthOptions _options;
+    private readonly DotAuthConfiguration _dotAuthConfiguration;
 
     public Startup(IConfiguration configuration)
     {
@@ -67,9 +66,9 @@ public sealed class Startup
                     return new SymmetricDataProtector(symmetricAlgorithm);
                 }
                 : null;
-        _options =
+        _dotAuthConfiguration =
             new
-                DotAuthOptions(
+                DotAuthConfiguration(
                     salt,
                     ticketLifetime: TimeSpan.FromDays(7),
                     claimsIncludedInUserCreation: new[]
@@ -131,7 +130,7 @@ public sealed class Startup
                 var contextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
                 var context = contextAccessor.HttpContext;
                 var host = context?.Request.Host.Host ?? "localhost";
-                return sp.GetRequiredService<IDocumentStore>().LightweightSession("host");
+                return sp.GetRequiredService<IDocumentStore>().LightweightSession(host);
             })
             .AddResponseCompression(
                 x =>
@@ -176,7 +175,7 @@ public sealed class Startup
                             .ToArray()
                     };
 
-                    cfg.RequireHttpsMetadata = !_options.AllowHttp;
+                    cfg.RequireHttpsMetadata = !_dotAuthConfiguration.AllowHttp;
                 });
         services.ConfigureOptions<ConfigureOAuthOptions>()
             .AddHealthChecks()
@@ -223,8 +222,8 @@ public sealed class Startup
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonAccessKey])
          && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonSecretKey]))
         {
-            services.AddDotAuth(
-                    _options,
+            services.AddDotAuthServer(
+                    _dotAuthConfiguration,
                     new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                     assemblyTypes: new[] { GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi) })
                 .AddSmsAuthentication(
@@ -237,8 +236,8 @@ public sealed class Startup
         }
         else
         {
-            services.AddDotAuth(
-                _options,
+            services.AddDotAuthServer(
+                _dotAuthConfiguration,
                 new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                 assemblyTypes: new[] { GetType(), typeof(IDefaultUi) });
         }
@@ -272,7 +271,13 @@ public sealed class Startup
                     logger.LogInformation("Request headers: {headers}", headers);
                     await next(ctx).ConfigureAwait(false);
                 })
-            .UseDotAuthMvc(x => { x.KnownProxies.AddRange(knownProxies); }, applicationTypes: typeof(IDefaultUi))
+            .UseDotAuthServer(x =>
+            {
+                foreach (var proxy in knownProxies)
+                {
+                    x.KnownProxies.Add(proxy);
+                }
+            }, applicationTypes: typeof(IDefaultUi))
             .UseEndpoints(endpoint => { endpoint.MapHealthChecks("/health"); });
     }
 }

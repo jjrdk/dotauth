@@ -43,13 +43,13 @@ internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions
                     ServerCertificateCustomValidationCallback = (msg, cert, _, _) =>
                     {
                         var altNames = cert!.GetSubjectAlternativeNames();
-                        _logger.LogInformation("Subject alt names: {0}", string.Join(", ", altNames));
+                        _logger.LogInformation("Subject alt names: {altNames}", string.Join(", ", altNames));
                         var requestUriHost = msg.RequestUri?.Host;
-                        _logger.LogInformation($"Request host: {requestUriHost}");
+                        _logger.LogInformation("Request host: {host}", requestUriHost);
                         var allowed = requestUriHost != null && (altNames.Count == 0 || altNames.Contains(requestUriHost));
                         if (!allowed)
                         {
-                            _logger.LogWarning($"Certificate with thumbprint {cert!.Thumbprint} not allowed");
+                            _logger.LogWarning("Certificate with thumbprint {thumbPrint} not allowed", cert!.Thumbprint);
                         }
 
                         return allowed;
@@ -78,7 +78,7 @@ internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions
             OnRemoteFailure = ctx =>
             {
                 var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<IApplicationBuilder>>();
-                logger.LogError(ctx.Failure, ctx.Failure!.Message);
+                logger.LogError(ctx.Failure, "{error}", ctx.Failure!.Message);
                 return Task.CompletedTask;
             }
         };

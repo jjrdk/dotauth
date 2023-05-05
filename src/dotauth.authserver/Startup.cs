@@ -42,14 +42,14 @@ internal sealed class Startup
 {
     private const string DotAuthScheme = "dotauth";
     private readonly IConfiguration _configuration;
-    private readonly DotAuthOptions _options;
+    private readonly DotAuthConfiguration _dotAuthConfiguration;
 
     public Startup(IConfiguration configuration)
     {
         _configuration = configuration;
         _ = bool.TryParse(_configuration["REDIRECT"], out var redirect);
         var salt = _configuration["SALT"] ?? string.Empty;
-        _options = new DotAuthOptions(salt)
+        _dotAuthConfiguration = new DotAuthConfiguration(salt)
         {
             AllowHttp = true,
             RedirectToLogin = redirect,
@@ -171,7 +171,7 @@ internal sealed class Startup
                         }
                     });
         }
-        
+
         if (!string.IsNullOrWhiteSpace(_configuration["MS:CLIENTID"])
             && !string.IsNullOrWhiteSpace(_configuration["MS:CLIENTSECRET"]))
         {
@@ -193,8 +193,8 @@ internal sealed class Startup
         if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
             && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
         {
-            services.AddDotAuth(
-                    _options,
+            services.AddDotAuthServer(
+                    _dotAuthConfiguration,
                     new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                     assemblies: new[]
                     {
@@ -212,8 +212,8 @@ internal sealed class Startup
         }
         else
         {
-            services.AddDotAuth(
-                _options,
+            services.AddDotAuthServer(
+                _dotAuthConfiguration,
                 new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                 assemblies: new[]
                 {
@@ -231,6 +231,6 @@ internal sealed class Startup
             app = app.UsePathBase(pathBase);
         }
         app.UseResponseCompression()
-            .UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
+            .UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
     }
 }

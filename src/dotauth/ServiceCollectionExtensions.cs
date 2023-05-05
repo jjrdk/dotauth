@@ -181,17 +181,17 @@ public static class ServiceCollectionExtensions
     /// <param name="requestThrottle">The rate limiter.</param>
     /// <param name="authPolicies"></param>
     /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
-    public static IMvcBuilder AddDotAuth(
+    public static IMvcBuilder AddDotAuthServer(
         this IServiceCollection services,
-        Action<DotAuthOptions> configuration,
+        Action<DotAuthConfiguration> configuration,
         string[] authPolicies,
         Action<MvcOptions>? mvcConfig = null,
         IRequestThrottle? requestThrottle = null)
     {
-        var options = new DotAuthOptions();
+        var options = new DotAuthConfiguration();
         configuration(options);
 
-        return AddDotAuth(services, options, authPolicies, mvcConfig, requestThrottle, Array.Empty<Type>());
+        return AddDotAuthServer(services, options, authPolicies, mvcConfig, requestThrottle, Array.Empty<Type>());
     }
 
     /// <summary>
@@ -205,17 +205,17 @@ public static class ServiceCollectionExtensions
     /// <param name="assemblyTypes">Assemblies with additional application parts.</param>
     /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
     /// <exception cref="ArgumentNullException">options</exception>
-    public static IMvcBuilder AddDotAuth(
+    public static IMvcBuilder AddDotAuthServer(
         this IServiceCollection services,
-        DotAuthOptions options,
+        DotAuthConfiguration configuration,
         string[] authPolicies,
         Action<MvcOptions>? mvcConfig = null,
         IRequestThrottle? requestThrottle = null,
         params Type[] assemblyTypes)
     {
-        return AddDotAuth(
+        return AddDotAuthServer(
             services,
-            options,
+            configuration,
             authPolicies,
             mvcConfig,
             requestThrottle,
@@ -233,17 +233,17 @@ public static class ServiceCollectionExtensions
     /// <param name="assemblies">Assemblies with additional application parts.</param>
     /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
     /// <exception cref="ArgumentNullException">options</exception>
-    public static IMvcBuilder AddDotAuth(
+    public static IMvcBuilder AddDotAuthServer(
         this IServiceCollection services,
-        DotAuthOptions options,
+        DotAuthConfiguration configuration,
         string[] authPolicies,
         Action<MvcOptions>? mvcConfig = null,
         IRequestThrottle? requestThrottle = null,
         params (string defaultNamespace, Assembly assembly)[] assemblies)
     {
-        if (options == null)
+        if (configuration == null)
         {
-            throw new ArgumentNullException(nameof(options));
+            throw new ArgumentNullException(nameof(configuration));
         }
 
         services.Replace(
@@ -286,10 +286,10 @@ public static class ServiceCollectionExtensions
                         .AddApplicationPart(a.assembly);
                 })
             .AddNewtonsoftJson();
-        Globals.ApplicationName = options.ApplicationName;
-        var runtimeConfig = GetRuntimeConfig(options);
+        Globals.ApplicationName = configuration.ApplicationName;
+        var runtimeConfig = GetRuntimeConfig(configuration);
         services.AddAuthentication();
-        services.AddAuthorization(opts => { opts.AddAuthPolicies(options.AdministratorRoleDefinition, authPolicies); });
+        services.AddAuthorization(opts => { opts.AddAuthPolicies(configuration.AdministratorRoleDefinition, authPolicies); });
 
         var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
             .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
@@ -297,36 +297,36 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>()
             .AddSingleton(runtimeConfig)
             .AddSingleton(requestThrottle ?? NoopThrottle.Instance)
-            .AddSingleton(sp => options.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
-            .AddSingleton(sp => options.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
-            .AddSingleton(sp => options.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
+            .AddSingleton(sp => configuration.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
+            .AddSingleton(sp => configuration.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
+            .AddSingleton(sp => configuration.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
             .AddSingleton<IJwksStore>(sp => sp.GetRequiredService<IJwksRepository>())
             .AddSingleton(
-                sp => options.Clients?.Invoke(sp)
+                sp => configuration.Clients?.Invoke(sp)
                       ?? new InMemoryClientRepository(
                           sp.GetRequiredService<IHttpClientFactory>(),
                           sp.GetRequiredService<IScopeStore>(),
                           sp.GetRequiredService<ILogger<InMemoryClientRepository>>()))
             .AddSingleton<IClientStore>(sp => sp.GetRequiredService<IClientRepository>())
-            .AddSingleton(sp => options.Consents?.Invoke(sp) ?? new InMemoryConsentRepository())
+            .AddSingleton(sp => configuration.Consents?.Invoke(sp) ?? new InMemoryConsentRepository())
             .AddSingleton<IConsentStore>(sp => sp.GetRequiredService<IConsentRepository>())
-            .AddSingleton(sp => options.Users?.Invoke(sp) ?? new InMemoryResourceOwnerRepository(options.Salt))
+            .AddSingleton(sp => configuration.Users?.Invoke(sp) ?? new InMemoryResourceOwnerRepository(configuration.Salt))
             .AddSingleton<IResourceOwnerStore>(sp => sp.GetRequiredService<IResourceOwnerRepository>())
-            .AddSingleton(sp => options.Scopes?.Invoke(sp) ?? new InMemoryScopeRepository())
+            .AddSingleton(sp => configuration.Scopes?.Invoke(sp) ?? new InMemoryScopeRepository())
             .AddSingleton<IScopeStore>(sp => sp.GetRequiredService<IScopeRepository>())
-            .AddSingleton(sp => options.DeviceAuthorizations?.Invoke(sp) ?? new InMemoryDeviceAuthorizationStore())
-            .AddSingleton(sp => options.ResourceSets?.Invoke(sp) ?? new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>()))
-            .AddSingleton(sp => options.Tickets?.Invoke(sp) ?? new InMemoryTicketStore())
-            .AddSingleton(sp => options.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
-            .AddSingleton(sp => options.Tokens?.Invoke(sp) ?? new InMemoryTokenStore())
-            .AddSingleton(sp => options.ConfirmationCodes?.Invoke(sp) ?? new InMemoryConfirmationCodeStore())
-            .AddSingleton(sp => options.AccountFilters?.Invoke(sp) ?? new InMemoryFilterStore())
+            .AddSingleton(sp => configuration.DeviceAuthorizations?.Invoke(sp) ?? new InMemoryDeviceAuthorizationStore())
+            .AddSingleton(sp => configuration.ResourceSets?.Invoke(sp) ?? new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>()))
+            .AddSingleton(sp => configuration.Tickets?.Invoke(sp) ?? new InMemoryTicketStore())
+            .AddSingleton(sp => configuration.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
+            .AddSingleton(sp => configuration.Tokens?.Invoke(sp) ?? new InMemoryTokenStore())
+            .AddSingleton(sp => configuration.ConfirmationCodes?.Invoke(sp) ?? new InMemoryConfirmationCodeStore())
+            .AddSingleton(sp => configuration.AccountFilters?.Invoke(sp) ?? new InMemoryFilterStore())
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
             .AddSingleton<IAuthorizationPolicy, DefaultAuthorizationPolicy>();
-        if (options.DataProtector != null)
+        if (configuration.DataProtector != null)
         {
-            s.AddSingleton(options.DataProtector);
+            s.AddSingleton(configuration.DataProtector);
             s.AddTransient<IDataProtectionProvider>(sp => sp.GetRequiredService<IDataProtector>());
         }
         else
@@ -344,12 +344,12 @@ public static class ServiceCollectionExtensions
     /// <param name="forwardedHeaderConfiguration">Configuration action for handling proxy setup.</param>
     /// <param name="applicationTypes">Additional types to discover view assemblies.</param>
     /// <returns></returns>
-    public static IApplicationBuilder UseDotAuthMvc(
+    public static IApplicationBuilder UseDotAuthServer(
         this IApplicationBuilder app,
         Action<ForwardedHeadersOptions>? forwardedHeaderConfiguration = null,
         params Type[] applicationTypes)
     {
-        return app.UseDotAuthMvc(
+        return app.UseDotAuthServer(
             forwardedHeaderConfiguration,
             applicationTypes.Select(type => (type.Namespace ?? string.Empty, type.Assembly)).ToArray());
     }
@@ -361,7 +361,7 @@ public static class ServiceCollectionExtensions
     /// <param name="forwardedHeaderConfiguration">Configuration action for handling proxy setup.</param>
     /// <param name="assemblies">Additional view assemblies.</param>
     /// <returns></returns>
-    public static IApplicationBuilder UseDotAuthMvc(
+    public static IApplicationBuilder UseDotAuthServer(
         this IApplicationBuilder app,
         Action<ForwardedHeadersOptions>? forwardedHeaderConfiguration = null,
         params (string defaultNamespace, Assembly assembly)[] assemblies)
@@ -400,19 +400,19 @@ public static class ServiceCollectionExtensions
                 });
     }
 
-    private static RuntimeSettings GetRuntimeConfig(DotAuthOptions options)
+    private static RuntimeSettings GetRuntimeConfig(DotAuthConfiguration configuration)
     {
         return new(
-            options.Salt,
-            onResourceOwnerCreated: options.OnResourceOwnerCreated,
-            authorizationCodeValidityPeriod: options.AuthorizationCodeValidityPeriod,
-            claimsIncludedInUserCreation: options.ClaimsIncludedInUserCreation,
-            rptLifeTime: options.RptLifeTime,
-            patLifeTime: options.PatLifeTime,
-            ticketLifeTime: options.TicketLifeTime,
-            devicePollingInterval: options.DevicePollingInterval,
-            deviceAuthorizationLifetime: options.DeviceAuthorizationLifetime,
-            allowHttp: options.AllowHttp,
-            redirectToLogin: options.RedirectToLogin);
+            configuration.Salt,
+            onResourceOwnerCreated: configuration.OnResourceOwnerCreated,
+            authorizationCodeValidityPeriod: configuration.AuthorizationCodeValidityPeriod,
+            claimsIncludedInUserCreation: configuration.ClaimsIncludedInUserCreation,
+            rptLifeTime: configuration.RptLifeTime,
+            patLifeTime: configuration.PatLifeTime,
+            ticketLifeTime: configuration.TicketLifeTime,
+            devicePollingInterval: configuration.DevicePollingInterval,
+            deviceAuthorizationLifetime: configuration.DeviceAuthorizationLifetime,
+            allowHttp: configuration.AllowHttp,
+            redirectToLogin: configuration.RedirectToLogin);
     }
 }

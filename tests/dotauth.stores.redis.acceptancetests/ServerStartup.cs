@@ -24,7 +24,7 @@ using Xunit.Abstractions;
 internal sealed class ServerStartup
 {
     private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
-    private readonly DotAuthOptions _martenOptions;
+    private readonly DotAuthConfiguration _martenConfiguration;
     private readonly SharedContext _context;
     private readonly string _connectionString;
     private readonly ITestOutputHelper _outputHelper;
@@ -32,18 +32,18 @@ internal sealed class ServerStartup
 
     public ServerStartup(SharedContext context, string connectionString, ITestOutputHelper outputHelper)
     {
-        _martenOptions = new DotAuthOptions
+        _martenConfiguration = new DotAuthConfiguration
         {
             AdministratorRoleDefinition = default,
             AuthorizationCodes =
                 sp => new RedisAuthorizationCodeStore(
                     sp.GetRequiredService<IDatabaseAsync>(),
-                    _martenOptions!.AuthorizationCodeValidityPeriod),
+                    _martenConfiguration!.AuthorizationCodeValidityPeriod),
             Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>()),
             ConfirmationCodes =
                 sp => new RedisConfirmationCodeStore(
                     sp.GetRequiredService<IDatabaseAsync>(),
-                    _martenOptions!.RptLifeTime),
+                    _martenConfiguration!.RptLifeTime),
             Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
             JsonWebKeys = _ =>
             {
@@ -57,7 +57,7 @@ internal sealed class ServerStartup
                     sp.GetRequiredService<Func<IDocumentSession>>(),
                     sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
             Tickets =
-                sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _martenOptions!.TicketLifeTime),
+                sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _martenConfiguration!.TicketLifeTime),
             Tokens = sp => new RedisTokenStore(sp.GetRequiredService<IDatabaseAsync>()),
             DevicePollingInterval = TimeSpan.FromSeconds(3),
             DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5)
@@ -92,7 +92,7 @@ internal sealed class ServerStartup
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         // 2. Configure server
-        services.AddDotAuth(_martenOptions, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme }, assemblyTypes: typeof(IDefaultUi));
+        services.AddDotAuthServer(_martenConfiguration, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme }, assemblyTypes: typeof(IDefaultUi));
         services
 #if DEBUG
             .AddLogging(l => l.AddXunit(_outputHelper))
@@ -130,6 +130,6 @@ internal sealed class ServerStartup
                 var disposable = app.ApplicationServices.GetService<ConnectionMultiplexer>();
                 disposable?.Dispose();
             });
-        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
     }
 }

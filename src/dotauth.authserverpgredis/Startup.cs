@@ -22,7 +22,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Amazon;
 using Amazon.Runtime;
-using Baseline;
 using DotAuth;
 using DotAuth.Extensions;
 using DotAuth.Sms;
@@ -47,7 +46,7 @@ internal sealed class Startup
     private const string DotAuthScheme = "dotauth";
     private const string DefaultScopes = "openid,profile,email";
     private readonly IConfiguration _configuration;
-    private readonly DotAuthOptions _options;
+    private readonly DotAuthConfiguration _dotAuthConfiguration;
 
     public Startup(IConfiguration configuration)
     {
@@ -66,7 +65,7 @@ internal sealed class Startup
                     return new SymmetricDataProtector(symmetricAlgorithm);
                 }
         : null;
-        _options = new DotAuthOptions(salt)
+        _dotAuthConfiguration = new DotAuthConfiguration(salt)
         {
             AllowHttp = allowHttp,
             DataProtector = dataProtector,
@@ -88,7 +87,7 @@ internal sealed class Startup
             Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
             DeviceAuthorizations = sp => new MartenDeviceAuthorizationStore(sp.GetRequiredService<IDocumentSession>),
             JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
-            Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _options!.TicketLifeTime),
+            Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _dotAuthConfiguration!.TicketLifeTime),
             Tokens =
                 sp => new RedisTokenStore(
                     sp.GetRequiredService<IDatabaseAsync>()),
@@ -166,7 +165,7 @@ internal sealed class Startup
                             .ToArray()
                     };
 
-                    cfg.RequireHttpsMetadata = !_options.AllowHttp;
+                    cfg.RequireHttpsMetadata = !_dotAuthConfiguration.AllowHttp;
                 });
         services.ConfigureOptions<ConfigureOAuthOptions>();
 
@@ -212,8 +211,8 @@ internal sealed class Startup
         if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
             && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
         {
-            services.AddDotAuth(
-                    _options,
+            services.AddDotAuthServer(
+                    _dotAuthConfiguration,
                     new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                     assemblies: new[]
                     {
@@ -231,8 +230,8 @@ internal sealed class Startup
         }
         else
         {
-            services.AddDotAuth(
-                _options,
+            services.AddDotAuthServer(
+                _dotAuthConfiguration,
                 new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                 assemblies: new[]
                 {
@@ -260,8 +259,14 @@ internal sealed class Startup
             app = app.UsePathBase(pathBase);
         }
         app.UseResponseCompression()
-            .UseDotAuthMvc(
-                x => { x.KnownProxies.AddRange(knownProxies); },
+            .UseDotAuthServer(
+                x =>
+                {
+                    foreach (var proxy in knownProxies)
+                    {
+                        x.KnownProxies.Add(proxy);
+                    }
+                },
                 applicationTypes: typeof(IDefaultUi));
     }
 }

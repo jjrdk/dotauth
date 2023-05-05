@@ -35,14 +35,14 @@ public sealed class FakeManagerStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
     }
 
     private static void RegisterServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddHttpClient();
-        serviceCollection.AddDotAuth(
-            new DotAuthOptions
+        serviceCollection.AddDotAuthServer(
+            new DotAuthConfiguration
             {
                 Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStorage.GetUsers()),
             },
