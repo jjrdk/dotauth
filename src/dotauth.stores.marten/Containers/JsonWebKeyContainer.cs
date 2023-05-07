@@ -1,4 +1,4 @@
-﻿namespace DotAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten.Containers;
 
 using System;
 using Microsoft.IdentityModel.Tokens;
@@ -11,12 +11,12 @@ public sealed class JsonWebKeyContainer
     /// <summary>
     /// Gets or sets the id.
     /// </summary>
-    public string Id { get; set; } = null!;
+    public string Id { get; init; } = null!;
 
     /// <summary>
     /// Gets or sets the JWK.
     /// </summary>
-    public JsonWebKey Jwk { get; set; } = null!;
+    public JsonWebKey Jwk { get; init; } = null!;
 
     /// <summary>
     /// Create a container instance from a key.

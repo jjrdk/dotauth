@@ -236,7 +236,7 @@ public static class DefaultStores
                 ClientName = "dcr",
                 Secrets = new[]
                 {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "dcr"}
+                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "dcr" }
                 },
                 Claims = new[] { new Claim("email", "test@test.com"), new Claim("sub", "dcr"), },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
@@ -256,7 +256,7 @@ public static class DefaultStores
                 ClientName = "clientCredentials",
                 Secrets = new[]
                 {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "clientCredentials"}
+                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "clientCredentials" }
                 },
                 Claims = new[] { new Claim("test", "test"), new Claim("sub", "ClientCredentials"), },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
@@ -325,7 +325,7 @@ public static class DefaultStores
                 ClientName = "private_key_client",
                 Secrets = new[]
                 {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "private_key_client"}
+                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "private_key_client" }
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.PrivateKeyJwt,
 
@@ -346,7 +346,7 @@ public static class DefaultStores
                 ClientName = "authcode_client",
                 Secrets = new[]
                 {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "authcode_client"}
+                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "authcode_client" }
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
 
@@ -390,7 +390,7 @@ public static class DefaultStores
                 ClientName = "implicit_client",
                 Secrets = new[]
                 {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "implicit_client"}
+                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "implicit_client" }
                 },
                 JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
@@ -480,7 +480,7 @@ public static class DefaultStores
                 ClientName = "Stateless client",
                 Secrets = new[]
                 {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "stateless_client"}
+                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "stateless_client" }
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
 
@@ -577,7 +577,7 @@ public static class DefaultStores
             },
             new Scope
             {
-                Claims = new[] {OpenIdClaimTypes.Subject},
+                Claims = new[] { OpenIdClaimTypes.Subject },
                 Description = "Manage user managed resources and policies.",
                 IsDisplayedInConsent = true,
                 IsExposed = true,

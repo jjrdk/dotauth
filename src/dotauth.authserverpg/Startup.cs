@@ -93,7 +93,8 @@ public sealed class Startup
                     RedirectToLogin = redirect,
                     ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "DotAuth",
                     Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
-                    Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
+                    Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>,
+                        sp.GetRequiredService<ILogger<MartenClientStore>>()),
                     Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
                     AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
                     AuthorizationCodes =
@@ -105,7 +106,7 @@ public sealed class Startup
                     Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
                     JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
                     Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
-                    Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
+                    Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<ILogger<MartenTokenStore>>()),
                     ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>,
                         sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
                     EventPublisher = sp =>

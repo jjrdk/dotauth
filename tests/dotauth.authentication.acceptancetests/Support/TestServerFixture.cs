@@ -13,9 +13,9 @@ public sealed class TestServerFixture : IDisposable
 
     public Func<HttpClient> Client { get; }
 
-    public TestServerFixture(ITestOutputHelper outputHelper, params string[] urls)
+    public TestServerFixture(SharedContext sharedCtx, ITestOutputHelper outputHelper, params string[] urls)
     {
-        var startup = new ServerStartup(_sharedCtx, outputHelper);
+        var startup = new ServerStartup(sharedCtx, outputHelper);
         Server = new TestServer(
             new WebHostBuilder().UseUrls(urls)
                 .ConfigureServices(
@@ -32,8 +32,7 @@ public sealed class TestServerFixture : IDisposable
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         Server.Dispose();
-        Client?.Invoke()?.Dispose();
+        Client.Invoke().Dispose();
     }
 }

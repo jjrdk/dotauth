@@ -2,6 +2,7 @@
 
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
+using DotAuth.Stores.Marten.Containers;
 using global::Marten;
 using global::Marten.Schema.Indexing.Unique;
 using NpgsqlTypes;
@@ -18,12 +19,46 @@ public sealed class DotAuthRegistry : MartenRegistry
     /// </summary>
     public DotAuthRegistry()
     {
-        For<Scope>()
-            .Identity(x => x.Name)
-            .Duplicate(x => x.IsDisplayedInConsent, dbType: NpgsqlDbType.Boolean)
-            .Duplicate(x => x.Type, "varchar(15)");
-        For<Filter>()
-            .Identity(x => x.Name);
+        For<ScopeContainer>()
+            .Identity(x => x.Id)
+            .Duplicate(x => x.Name, configure: idx =>
+            {
+                idx.TenancyScope = TenancyScope.PerTenant;
+                idx.IsConcurrent = false;
+                idx.IsUnique = false;
+                idx.Method = IndexMethod.btree;
+            })
+            .Duplicate(x => x.IsDisplayedInConsent,
+                dbType: NpgsqlDbType.Boolean,
+                notNull: true,
+                configure: idx =>
+                {
+                    idx.TenancyScope = TenancyScope.PerTenant;
+                    idx.IsConcurrent = false;
+                    idx.IsUnique = false;
+                    idx.Method = IndexMethod.btree;
+                })
+            .Duplicate(x => x.Type,
+                pgType: "varchar(15)",
+                notNull: true,
+                configure: idx =>
+                {
+                    idx.TenancyScope = TenancyScope.PerTenant;
+                    idx.IsConcurrent = false;
+                    idx.IsUnique = false;
+                    idx.Method = IndexMethod.btree;
+                });
+        For<FilterContainer>()
+            .Identity(x => x.Id)
+            .Duplicate(x => x.Name,
+                notNull: true,
+                configure: idx =>
+                {
+                    idx.TenancyScope = TenancyScope.PerTenant;
+                    idx.IsConcurrent = false;
+                    idx.IsUnique = false;
+                    idx.Method = IndexMethod.btree;
+                });
         For<ResourceOwner>()
             .Identity(x => x.Subject)
 #pragma warning disable CS8603
@@ -50,10 +85,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                     idx.IsConcurrent = false;
                 })
             .GinIndexJsonData(
-                idx =>
-                {
-                    idx.IsConcurrent = false;
-                });
+                idx => { idx.IsConcurrent = false; });
         For<Consent>()
             .Identity(x => x.Id)
             .Duplicate(x => x.Subject, notNull: true)
@@ -64,16 +96,15 @@ public sealed class DotAuthRegistry : MartenRegistry
                     idx.IsConcurrent = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
                 });
-        For<Client>()
-            .Identity(x => x.ClientId)
+        For<ClientContainer>()
+            .Identity(x => x.Id)
+            .Duplicate(x => x.ClientId, notNull: true, configure: idx => { idx.TenancyScope = TenancyScope.PerTenant; })
 #pragma warning disable CS8603
-            .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)", configure: index => index.TenancyScope = TenancyScope.PerTenant)
+            .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)",
+                configure: index => index.TenancyScope = TenancyScope.PerTenant)
 #pragma warning restore CS8603
             .GinIndexJsonData(
-                idx =>
-                {
-                    idx.IsConcurrent = false;
-                });
+                idx => { idx.IsConcurrent = false; });
         For<OwnedResourceSet>()
             .Identity(x => x.Id)
             .Duplicate(x => x.Owner, configure: index => index.TenancyScope = TenancyScope.PerTenant)
@@ -81,10 +112,7 @@ public sealed class DotAuthRegistry : MartenRegistry
             .Duplicate(x => x.Description, configure: index => index.TenancyScope = TenancyScope.PerTenant)
             .Duplicate(x => x.Type, configure: index => index.TenancyScope = TenancyScope.PerTenant)
             .GinIndexJsonData(
-                idx =>
-                {
-                    idx.IsConcurrent = false;
-                });
+                idx => { idx.IsConcurrent = false; });
         For<Ticket>()
             .Identity(x => x.Id)
             .Duplicate(
@@ -179,10 +207,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                     idx.IsConcurrent = false;
                 })
             .GinIndexJsonData(
-                idx =>
-                {
-                    idx.IsConcurrent = false;
-                });
+                idx => { idx.IsConcurrent = false; });
         For<JsonWebKeyContainer>()
             .Identity(x => x.Id)
             .Duplicate(x => x.Jwk.Alg, pgType: "character(20)")

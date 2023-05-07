@@ -14,7 +14,7 @@ public interface IJwksStore
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default);
+    Task<JsonWebKeySet?> GetPublicKeys(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the signing key.
@@ -22,7 +22,7 @@ public interface IJwksStore
     /// <param name="alg"></param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
-    Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default);
+    Task<SigningCredentials?> GetSigningKey(string alg, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the signing key.
@@ -30,12 +30,12 @@ public interface IJwksStore
     /// <param name="alg"></param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
-    Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default);
+    Task<SecurityKey?> GetEncryptionKey(string alg, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the default signing key
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
     /// <returns>The default <see cref="SigningCredentials"/>.</returns>
-    Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default);
+    Task<SigningCredentials?> GetDefaultSigningKey(CancellationToken cancellationToken = default);
 }

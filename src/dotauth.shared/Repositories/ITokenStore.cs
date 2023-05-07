@@ -29,10 +29,10 @@ public interface ITokenStore
     /// <summary>
     /// Gets the refresh token.
     /// </summary>
-    /// <param name="getRefreshToken">The get refresh token.</param>
+    /// <param name="refreshToken">The get refresh token.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
-    Task<GrantedToken?> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken);
+    Task<GrantedToken?> GetRefreshToken(string refreshToken, CancellationToken cancellationToken);
 
     /// <summary>
     /// Gets the access token.

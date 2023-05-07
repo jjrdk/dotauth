@@ -21,7 +21,7 @@ using System.Runtime.Serialization;
 /// Defines the scope.
 /// </summary>
 [DataContract]
-public sealed record Scope
+public record Scope
 {
     /// <summary>
     /// Gets or sets the name.

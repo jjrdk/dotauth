@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Weasel.Core;
 using Xunit.Abstractions;
@@ -34,7 +35,8 @@ public sealed class ServerStartup
         _martenConfiguration = new DotAuthConfiguration
         {
             AdministratorRoleDefinition = default,
-            Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>()),
+            Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>(),
+                sp.GetRequiredService<ILogger<MartenClientStore>>()),
             JsonWebKeys = _ =>
             {
                 var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
@@ -59,7 +61,7 @@ public sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>(x=>{})
+        services.AddHttpClient<HttpClient>(x => { })
             .AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
         services.AddSingleton<IDocumentStore>(
             _ => new DocumentStore(
@@ -99,7 +101,7 @@ public sealed class ServerStartup
                     cfg.RequireHttpsMetadata = false;
                     cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                 });
-        
+
         services.AddUmaClient(new Uri("http://localhost/"));
     }
 

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
+using DotAuth.Stores.Marten.Containers;
 using global::Marten;
 
 /// <summary>
@@ -30,7 +31,8 @@ public sealed class MartenFilterStore : IFilterStore
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var filters = await session.Query<Filter>().ToListAsync(token: cancellationToken).ConfigureAwait(false);
-        return filters.ToArray();
+        var filters = await session.Query<FilterContainer>().ToListAsync(token: cancellationToken)
+            .ConfigureAwait(false);
+        return filters.Select(x => x.ToFilter()).ToArray();
     }
 }

@@ -7,8 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
 using DotAuth.Shared.Repositories;
+using DotAuth.Stores.Marten.Containers;
 using global::Marten;
-using Marten;
 using Microsoft.IdentityModel.Tokens;
 
 /// <summary>
@@ -29,7 +29,7 @@ public sealed class MartenJwksRepository : IJwksRepository
     }
 
     /// <inheritdoc />
-    public async Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default)
+    public async Task<JsonWebKeySet?> GetPublicKeys(CancellationToken cancellationToken = default)
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
@@ -37,12 +37,12 @@ public sealed class MartenJwksRepository : IJwksRepository
             .Where(x => x.Jwk.HasPrivateKey == false)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
-        var jwks = keysets.Select(x=>x.Jwk).ToSet();
+        var jwks = keysets.Select(x => x.Jwk).ToSet();
         return jwks;
     }
 
     /// <inheritdoc />
-    public async Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default)
+    public async Task<SigningCredentials?> GetSigningKey(string alg, CancellationToken cancellationToken = default)
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
@@ -50,6 +50,10 @@ public sealed class MartenJwksRepository : IJwksRepository
             .Where(x => x.Jwk.HasPrivateKey == true && x.Jwk.Alg == alg && x.Jwk.Use == JsonWebKeyUseNames.Sig)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
+        if (webKeys.Count == 0)
+        {
+            return default;
+        }
 
         var webKey = webKeys.First(x => x.Jwk.KeyOps.Contains(KeyOperations.Sign));
 
@@ -65,7 +69,7 @@ public sealed class MartenJwksRepository : IJwksRepository
     }
 
     /// <inheritdoc />
-    public async Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
+    public async Task<SecurityKey?> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
@@ -74,6 +78,10 @@ public sealed class MartenJwksRepository : IJwksRepository
                 x => x.Jwk.HasPrivateKey == true && x.Jwk.Alg == alg && x.Jwk.Use == JsonWebKeyUseNames.Enc)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
+        if (webKeys.Count == 0)
+        {
+            return default;
+        }
 
         var webKey = webKeys.First(x => x.Jwk.KeyOps.Contains(KeyOperations.Encrypt));
 
@@ -89,7 +97,7 @@ public sealed class MartenJwksRepository : IJwksRepository
     }
 
     /// <inheritdoc />
-    public async Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)
+    public async Task<SigningCredentials?> GetDefaultSigningKey(CancellationToken cancellationToken = default)
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
@@ -97,6 +105,10 @@ public sealed class MartenJwksRepository : IJwksRepository
             .Where(x => x.Jwk.Use == JsonWebKeyUseNames.Sig)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
+        if (webKeys.Count == 0)
+        {
+            return default;
+        }
 
         var webKey = webKeys.OrderBy(x => x.Jwk.KeyId).First(x => x.Jwk.KeyOps.Contains(KeyOperations.Sign));
 
@@ -116,7 +128,8 @@ public sealed class MartenJwksRepository : IJwksRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        session.Store(JsonWebKeyContainer.Create(key));
+        var keyContainer = JsonWebKeyContainer.Create(key);
+        session.Store(keyContainer);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return true;

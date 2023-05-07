@@ -42,9 +42,9 @@ public sealed class RedisTokenStore : ITokenStore
             });
     }
 
-    public Task<GrantedToken?> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)
+    public Task<GrantedToken?> GetRefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
-        return GetToken(getRefreshToken, cancellationToken);
+        return GetToken(refreshToken, cancellationToken);
     }
 
     public Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken)

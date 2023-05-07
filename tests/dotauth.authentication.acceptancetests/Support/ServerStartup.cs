@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using DotAuth;
+using DotAuth.Extensions;
 using DotAuth.Repositories;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
@@ -16,20 +17,27 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using Moq;
+using Xunit.Abstractions;
 
 public sealed class ServerStartup
 {
+    private readonly SharedContext _context;
+    private readonly ITestOutputHelper _outputHelper;
     private readonly DotAuthConfiguration _configuration;
 
-    public ServerStartup()
+    public ServerStartup(SharedContext context, ITestOutputHelper outputHelper)
     {
+        _context = context;
+        _outputHelper = outputHelper;
         IdentityModelEventSource.ShowPII = true;
         var mockConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
         mockConfirmationCodeStore.Setup(x => x.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        mockConfirmationCodeStore.Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        mockConfirmationCodeStore
+            .Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        mockConfirmationCodeStore.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        mockConfirmationCodeStore
+            .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 new ConfirmationCode
                 {
@@ -41,7 +49,7 @@ public sealed class ServerStartup
         var symmetricAlgorithm = Aes.Create();
         symmetricAlgorithm.GenerateIV();
         symmetricAlgorithm.GenerateKey();
-        _configuration = new DotAuth.DotAuthConfiguration
+        _configuration = new DotAuthConfiguration
         {
             DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm),
             AdministratorRoleDefinition = default,
@@ -68,8 +76,9 @@ public sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>(x => { }).AddHttpMessageHandler(d => new TestDelegatingHandler(_context.Handler!));
-
+        services.AddHttpClient<HttpClient>(x => { })
+            .AddHttpMessageHandler(d => new TestDelegatingHandler(_context.Handler!));
+        //services.AddLogging(x => x.AddXunit(_outputHelper));
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         services.AddDotAuthServer(
@@ -93,8 +102,7 @@ public sealed class ServerStartup
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
-                cfg =>
-                { });
+                cfg => { });
 
         services.ConfigureOptions<JwtBearerPostConfigureOptions>();
     }
