@@ -232,12 +232,12 @@ public sealed class TokenController : ControllerBase
         if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorizationHeader))
         {
             var authorizationHeaderValue = authorizationHeader.First();
-            var splittedAuthorizationHeaderValue = authorizationHeaderValue!.Split(' ');
-            if (splittedAuthorizationHeaderValue.Length == 2)
+            var splitAuthorizationHeaderValue = authorizationHeaderValue!.Split(' ');
+            if (splitAuthorizationHeaderValue.Length == 2)
             {
                 authenticationHeaderValue = new AuthenticationHeaderValue(
-                    splittedAuthorizationHeaderValue[0],
-                    splittedAuthorizationHeaderValue[1]);
+                    splitAuthorizationHeaderValue[0],
+                    splitAuthorizationHeaderValue[1]);
             }
         }
 
