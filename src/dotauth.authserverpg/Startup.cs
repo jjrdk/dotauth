@@ -153,7 +153,7 @@ public sealed class Startup
                     options.DefaultChallengeScheme = DotAuthScheme;
                 })
             .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
-            .AddOAuth(DotAuthScheme, '_' + DotAuthScheme, _ => { })
+            .AddOAuth(DotAuthScheme, $"_{DotAuthScheme}", _ => { })
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
                 cfg =>

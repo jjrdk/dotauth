@@ -296,10 +296,7 @@ public sealed class ResourceSetController : ControllerBase
 
         if (resourceSet.Scopes.Length == 0)
         {
-            return BuildError(
-                ErrorCodes.InvalidRequest,
-                string.Format(Strings.MissingParameter, "scopes"),
-                HttpStatusCode.BadRequest);
+            resourceSet = resourceSet with { Scopes = new[] { "read" } };
         }
 
         resourceSet = resourceSet.AuthorizationPolicies.Length == 0
