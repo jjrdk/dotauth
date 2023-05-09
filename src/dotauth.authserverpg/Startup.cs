@@ -66,7 +66,7 @@ public sealed class Startup
                     symmetricAlgorithm.Padding = PaddingMode.ISO10126;
                     return new SymmetricDataProtector(symmetricAlgorithm);
                 }
-        : null;
+                : null;
         _options =
             new
                 DotAuthOptions(
@@ -88,28 +88,30 @@ public sealed class Startup
                         ClaimTypes.StreetAddress,
                         ClaimTypes.Surname
                     })
-            {
-                DataProtector = dataProtector,
-                AllowHttp = allowHttp,
-                RedirectToLogin = redirect,
-                ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "DotAuth",
-                Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
-                Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
-                Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
-                AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
-                AuthorizationCodes =
+                {
+                    DataProtector = dataProtector,
+                    AllowHttp = allowHttp,
+                    RedirectToLogin = redirect,
+                    ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "DotAuth",
+                    Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
+                    Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
+                    Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
+                    AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
+                    AuthorizationCodes =
                         sp => new MartenAuthorizationCodeStore(sp.GetRequiredService<IDocumentSession>),
-                ConfirmationCodes =
+                    ConfirmationCodes =
                         sp => new MartenConfirmationCodeStore(sp.GetRequiredService<IDocumentSession>),
-                DeviceAuthorizations = sp => new MartenDeviceAuthorizationStore(sp.GetRequiredService<IDocumentSession>),
-                Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
-                JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
-                Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
-                Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
-                ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
-                EventPublisher = sp =>
-                    new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>())
-            };
+                    DeviceAuthorizations = sp =>
+                        new MartenDeviceAuthorizationStore(sp.GetRequiredService<IDocumentSession>),
+                    Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
+                    JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
+                    Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
+                    Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
+                    ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>,
+                        sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
+                    EventPublisher = sp =>
+                        new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>())
+                };
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -187,7 +189,7 @@ public sealed class Startup
                         opts.ClientSecret = _configuration[ConfigurationValues.GoogleClientSecret]!;
                         var scopes = _configuration[ConfigurationValues.GoogleScopes] ?? DefaultScopes;
                         foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                     .Select(x => x.Trim()))
+                            .Select(x => x.Trim()))
                         {
                             opts.Scope.Add(scope);
                         }
@@ -195,7 +197,7 @@ public sealed class Startup
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientId])
-            && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientSecret]))
+         && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientSecret]))
         {
             services.AddAuthentication(CookieNames.ExternalCookieName).AddMicrosoftAccount(
                 opts =>
@@ -205,7 +207,7 @@ public sealed class Startup
                     opts.UsePkce = true;
                     var scopes = _configuration[ConfigurationValues.MsScopes] ?? DefaultScopes;
                     foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                 .Select(x => x.Trim()))
+                        .Select(x => x.Trim()))
                     {
                         opts.Scope.Add(scope);
                     }
@@ -213,7 +215,7 @@ public sealed class Startup
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonAccessKey])
-            && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonSecretKey]))
+         && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonSecretKey]))
         {
             services.AddDotAuth(
                     _options,
