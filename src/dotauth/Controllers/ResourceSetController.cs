@@ -296,14 +296,20 @@ public sealed class ResourceSetController : ControllerBase
 
         if (resourceSet.Scopes.Length == 0)
         {
-            resourceSet = resourceSet with { Scopes = new[] { "read" } };
+            resourceSet = resourceSet with
+            {
+                Scopes = resourceSet.AuthorizationPolicies.Length == 0
+                    ? new[] { "read" }
+                    : resourceSet.AuthorizationPolicies.SelectMany(p => p.Scopes).ToArray()
+            };
         }
 
         resourceSet = resourceSet.AuthorizationPolicies.Length == 0
             ? resourceSet with
             {
                 Id = Id.Create(),
-                AuthorizationPolicies = new[] { new PolicyRule { IsResourceOwnerConsentNeeded = true } }
+                AuthorizationPolicies = new[]
+                    { new PolicyRule { IsResourceOwnerConsentNeeded = true, Scopes = new[] { "read" } } }
             }
             : resourceSet with { Id = Id.Create() };
 

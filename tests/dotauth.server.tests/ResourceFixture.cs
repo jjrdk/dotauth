@@ -58,14 +58,16 @@ public sealed class ResourceFixture : IDisposable
     }
 
     [Fact]
-    public async Task When_Add_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
+    public async Task When_Add_Resource_And_No_Scopes_Is_Specified_Then_Uses_Read_Scope()
     {
-        var resource =
-            await _umaClient.AddResourceSet(new ResourceSet { Name = "name" }, "header").ConfigureAwait(false) as
-                Option<AddResourceSetResponse>.Error;
+        var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(
+            await _umaClient.AddResourceSet(new ResourceSet { Name = "name" }, "header").ConfigureAwait(false));
+        var policy =
+            Assert.IsType<Option<ResourceSet>.Result>(await _umaClient.GetResourceSet(resource.Item.Id, "header")
+                .ConfigureAwait(false));
 
-        Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
-        Assert.Equal(string.Format(Strings.MissingParameter, "scopes"), resource.Details.Detail);
+        Assert.Equal("read", policy.Item.Scopes[0]);
+        Assert.Equal("read", policy.Item.AuthorizationPolicies[0].Scopes[0]);
     }
 
     [Fact]

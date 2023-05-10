@@ -117,8 +117,10 @@ public sealed class TokenFixture : IDisposable
             TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
             _server.Client,
             new Uri(BaseUrl + WellKnownUma2Configuration));
-        var token = await tokenClient.GetToken(TokenRequest.FromTicketId(ticket.Item.TicketId, jwt))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var option = await tokenClient
+            .GetToken(TokenRequest.FromTicketId(ticket.Item.TicketId, jwt))
+            .ConfigureAwait(false);
+        var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
 
         var jwtToken = handler.ReadJwtToken(token.Item.AccessToken);
         Assert.NotNull(jwtToken.Claims);

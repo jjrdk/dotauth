@@ -84,7 +84,7 @@ internal static class ClientExtensions
             .ToArray();
         if (signingKeys?.Length != 0)
         {
-            return Array.Empty<SigningCredentials?>();
+            return signingKeys!;
         }
 
         var keys = await (client.IdTokenSignedResponseAlg == null

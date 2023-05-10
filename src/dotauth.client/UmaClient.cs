@@ -177,7 +177,8 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
             Method = HttpMethod.Post,
             RequestUri = umaConfiguration.ResourceRegistrationEndpoint
         };
-        return await GetResult<AddResourceSetResponse>(httpRequest, token, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return await GetResult<AddResourceSetResponse>(httpRequest, token, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />

@@ -104,7 +104,7 @@ public abstract class ClientBase
 
         return genericResult!;
     }
-    
+
     /// <summary>
     /// Gets the discovery information for a given authority.
     /// </summary>
