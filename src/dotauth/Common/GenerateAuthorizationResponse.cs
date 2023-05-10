@@ -103,9 +103,9 @@ internal sealed class GenerateAuthorizationResponse
                                        _jwksStore,
                                        allowedTokenScopes,
                                        client.ClientId,
-                                       cancellationToken,
                                        idTokenJwsPayload: userInformationPayload,
-                                       userInfoJwsPayload: idTokenPayload)
+                                       userInfoJwsPayload: idTokenPayload,
+                                       cancellationToken: cancellationToken)
                                    .ConfigureAwait(false)
                                ?? await client.GenerateToken(
                                        _jwksStore,

@@ -38,7 +38,7 @@ internal static class ClientExtensions
         }
         var parameters = new TokenValidationParameters
         {
-            IssuerSigningKeys = signingKeys.Select(x => x.Key).ToArray(),
+            IssuerSigningKeys = signingKeys.Select(x => x!.Key).ToArray(),
             TokenDecryptionKeys = encryptionKeys
         };
         if (audience != null)
@@ -74,17 +74,17 @@ internal static class ClientExtensions
             : await GenerateIdToken(client, jwsPayload, jwksStore, cancellationToken).ConfigureAwait(false);
     }
 
-    private static async Task<SigningCredentials[]> GetSigningCredentials(
+    private static async Task<SigningCredentials?[]> GetSigningCredentials(
         this Client client,
         IJwksStore jwksStore,
         CancellationToken cancellationToken = default)
     {
-        var signingKeys = client.JsonWebKeys.Keys.Where(key => key.Use == JsonWebKeyUseNames.Sig)
+        var signingKeys = client.JsonWebKeys?.Keys.Where(key => key.Use == JsonWebKeyUseNames.Sig)
             .Select(key => new SigningCredentials(key, key.Alg))
             .ToArray();
-        if (signingKeys.Length != 0)
+        if (signingKeys?.Length != 0)
         {
-            return signingKeys;
+            return Array.Empty<SigningCredentials?>();
         }
 
         var keys = await (client.IdTokenSignedResponseAlg == null

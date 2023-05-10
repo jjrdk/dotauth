@@ -47,7 +47,8 @@ public static class JsonWebKeySetExtensions
     /// <returns></returns>
     public static IEnumerable<SecurityKey?> GetEncryptionKeys(this JsonWebKeySet? jwks)
     {
-        return jwks.Keys.Where(x => x.Use == JsonWebKeyUseNames.Enc && x.KeyOps.Contains(KeyOperations.Encrypt));
+        return jwks?.Keys.Where(x => x.Use == JsonWebKeyUseNames.Enc && x.KeyOps.Contains(KeyOperations.Encrypt))
+               ?? Enumerable.Empty<SecurityKey?>();
     }
 
     /// <summary>

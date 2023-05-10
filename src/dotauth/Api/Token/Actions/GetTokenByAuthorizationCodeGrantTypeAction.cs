@@ -98,9 +98,9 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
                 _jwksStore,
                 result.AuthCode.Scopes,
                 result.AuthCode.ClientId,
-                cancellationToken,
                 idTokenJwsPayload: result.AuthCode.IdTokenPayload,
-                userInfoJwsPayload: result.AuthCode.UserInfoPayLoad)
+                userInfoJwsPayload: result.AuthCode.UserInfoPayLoad,
+                cancellationToken: cancellationToken)
             .ConfigureAwait(false);
         if (grantedToken == null)
         {

@@ -198,7 +198,7 @@ public static class ServiceCollectionExtensions
     /// Adds DotAuth type registrations.
     /// </summary>
     /// <param name="services">The services.</param>
-    /// <param name="options">The options.</param>
+    /// <param name="configuration">The application configuration.</param>
     /// <param name="mvcConfig">MVC configuration.</param>
     /// <param name="requestThrottle">The rate limiter.</param>
     /// <param name="authPolicies"></param>
@@ -226,7 +226,7 @@ public static class ServiceCollectionExtensions
     /// Adds DotAuth type registrations.
     /// </summary>
     /// <param name="services">The services.</param>
-    /// <param name="options">The options.</param>
+    /// <param name="configuration">The application configuration.</param>
     /// <param name="mvcConfig">MVC configuration.</param>
     /// <param name="requestThrottle">The rate limiter.</param>
     /// <param name="authPolicies"></param>

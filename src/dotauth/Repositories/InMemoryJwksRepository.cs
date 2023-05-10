@@ -34,7 +34,10 @@ internal sealed class InMemoryJwksRepository : IJwksRepository
             rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, false, KeyOperations.Encrypt, KeyOperations.Decrypt)
         };
         _privateKeySet = privateKeys.ToJwks();
-        _privateKeySet.SkipUnresolvedJsonWebKeys = false;
+        if (_privateKeySet is not null)
+        {
+            _privateKeySet.SkipUnresolvedJsonWebKeys = false;
+        }
         _publicKeySet = publicKeys.ToJwks();
     }
 
@@ -45,9 +48,9 @@ internal sealed class InMemoryJwksRepository : IJwksRepository
 
     public Task<SigningCredentials?> GetSigningKey(string alg, CancellationToken cancellationToken = default)
     {
-        var signingKey = _privateKeySet.Keys.First(k => k.Use == JsonWebKeyUseNames.Sig && k.Alg == alg);
+        var signingKey = _privateKeySet?.Keys.First(k => k.Use == JsonWebKeyUseNames.Sig && k.Alg == alg);
 
-        return Task.FromResult(new SigningCredentials(signingKey, signingKey.Alg));
+        return Task.FromResult<SigningCredentials?>(new SigningCredentials(signingKey, signingKey?.Alg));
     }
 
     public Task<SecurityKey?> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
@@ -59,20 +62,20 @@ internal sealed class InMemoryJwksRepository : IJwksRepository
 
     public Task<SigningCredentials?> GetDefaultSigningKey(CancellationToken cancellationToken = default)
     {
-        var signingKey = _privateKeySet.Keys.First(k => k.Use == JsonWebKeyUseNames.Sig);
+        var signingKey = _privateKeySet?.Keys.First(k => k.Use == JsonWebKeyUseNames.Sig);
 
-        return Task.FromResult(new SigningCredentials(signingKey, signingKey.Alg));
+        return Task.FromResult<SigningCredentials?>(new SigningCredentials(signingKey, signingKey?.Alg));
     }
 
     public Task<bool> Add(JsonWebKey key, CancellationToken cancellationToken = default)
     {
         if (key.HasPrivateKey)
         {
-            _privateKeySet.Keys.Add(key);
+            _privateKeySet?.Keys.Add(key);
         }
         else
         {
-            _publicKeySet.Keys.Add(key);
+            _publicKeySet?.Keys.Add(key);
         }
 
         return Task.FromResult(true);
@@ -80,17 +83,17 @@ internal sealed class InMemoryJwksRepository : IJwksRepository
 
     public Task<bool> Rotate(JsonWebKeySet keySet, CancellationToken cancellationToken = default)
     {
-        _publicKeySet.Keys.Clear();
-        _privateKeySet.Keys.Clear();
+        _publicKeySet?.Keys.Clear();
+        _privateKeySet?.Keys.Clear();
         foreach (var key in keySet.Keys)
         {
             if (key.HasPrivateKey)
             {
-                _privateKeySet.Keys.Add(key);
+                _privateKeySet?.Keys.Add(key);
             }
             else
             {
-                _publicKeySet.Keys.Add(key);
+                _publicKeySet?.Keys.Add(key);
             }
         }
 

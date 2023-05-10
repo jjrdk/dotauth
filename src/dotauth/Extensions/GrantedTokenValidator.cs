@@ -58,7 +58,7 @@ internal static class GrantedTokenValidator
             ValidateActor = false,
             ValidAudience = grantedToken.ClientId,
             ValidateIssuer = false,
-            IssuerSigningKeys = publicKeys.Keys
+            IssuerSigningKeys = publicKeys?.Keys
         };
 
         try
@@ -83,9 +83,9 @@ internal static class GrantedTokenValidator
         IJwksStore jwksStore,
         string scopes,
         string clientId,
-        CancellationToken cancellationToken = default,
         JwtPayload? idTokenJwsPayload = null,
-        JwtPayload? userInfoJwsPayload = null)
+        JwtPayload? userInfoJwsPayload = null,
+        CancellationToken cancellationToken = default)
     {
         var token = await tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload, cancellationToken)
             .ConfigureAwait(false);

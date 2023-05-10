@@ -79,7 +79,7 @@ public sealed class SessionController : ControllerBase
                 ValidateActor = false,
                 ValidateAudience = false,
                 ValidateIssuer = false,
-                IssuerSigningKeys = jsonWebKeySet.Keys
+                IssuerSigningKeys = jsonWebKeySet?.Keys
             };
             handler.ValidateToken(request.id_token_hint, tokenValidationParameters, out var token);
             var jws = (token as JwtSecurityToken)?.Payload;

@@ -180,9 +180,9 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
                 _jwksStore,
                 allowedTokenScopes,
                 client.ClientId,
-                cancellationToken,
                 idTokenJwsPayload: idPayload,
-                userInfoJwsPayload: userInfo)
+                userInfoJwsPayload: userInfo,
+                cancellationToken: cancellationToken)
             .ConfigureAwait(false);
         if (generatedToken == null)
         {

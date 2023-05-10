@@ -35,6 +35,7 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Events.OAuth;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Responses;
 using Microsoft.Extensions.Logging;
 
 internal sealed class TokenActions
@@ -276,7 +277,7 @@ internal sealed class TokenActions
 
         // 4. Generate the JWT access token on the fly.
         var grantedToken = await _tokenStore
-            .GetValidGrantedToken(_jwksStore, allowedTokenScopes, client.ClientId, cancellationToken)
+            .GetValidGrantedToken(_jwksStore, allowedTokenScopes, client.ClientId, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
         if (grantedToken == null)
         {
@@ -302,7 +303,7 @@ internal sealed class TokenActions
                 .ConfigureAwait(false);
         }
 
-        return grantedToken;
+        return new Option<GrantedToken>.Result(grantedToken);
     }
 
     public async Task<Option<GrantedToken>> GetTokenByDeviceGrantType(string? clientId, string? deviceCode, string issuerName, CancellationToken cancellationToken)

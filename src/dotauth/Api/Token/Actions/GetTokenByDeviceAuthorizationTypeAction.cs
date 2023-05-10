@@ -46,8 +46,7 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         string issuerName,
         CancellationToken cancellationToken)
     {
-        var option = await _deviceAuthorizationStore.Get(clientId, deviceCode, cancellationToken)
-            .ConfigureAwait(false);
+        var option = await _deviceAuthorizationStore.Get(clientId, deviceCode, cancellationToken).ConfigureAwait(false);
         if (option is Option<DeviceAuthorizationData>.Error e)
         {
             return e.Details;
@@ -66,7 +65,7 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         if (authRequest.Expires < now)
         {
             await _deviceAuthorizationStore.Remove(authRequest, cancellationToken).ConfigureAwait(false);
-            const string? format = "Device code {0} is expired at {1}";
+            const string format = "Device code {0} is expired at {1}";
             _logger.LogInformation(format, authRequest.DeviceCode, now);
             return new ErrorDetails
             {
@@ -81,7 +80,7 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         await _deviceAuthorizationStore.Save(authRequest, cancellationToken).ConfigureAwait(false);
         if (lastPolled.AddSeconds(authRequest.Interval) > now)
         {
-            const string? detail = "Device with client id {0} polled after only {1} seconds.";
+            const string detail = "Device with client id {0} polled after only {1} seconds.";
 
             var totalSeconds = (now - lastPolled).TotalSeconds;
             _logger.LogInformation(detail, authRequest.ClientId, totalSeconds);
@@ -108,7 +107,11 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         CancellationToken cancellationToken)
     {
         var scopes = string.Join(" ", authRequest.Scopes);
-        var grantedToken = await _tokenStore.GetValidGrantedToken(_jwksStore, scopes, authRequest.ClientId, cancellationToken)
+        var grantedToken = await _tokenStore.GetValidGrantedToken(
+                _jwksStore,
+                scopes,
+                authRequest.ClientId,
+                cancellationToken: cancellationToken)
             //idTokenJwsPayload: result.AuthCode.IdTokenPayload,
             //userInfoJwsPayload: result.AuthCode.UserInfoPayLoad)
             .ConfigureAwait(false);
@@ -119,14 +122,7 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
                     _jwksStore,
                     authRequest.Scopes,
                     issuerName,
-                    //result.AuthCode.UserInfoPayLoad,
-                    //result.AuthCode.IdTokenPayload,
-                    cancellationToken: cancellationToken
-                    //result.AuthCode.IdTokenPayload?.Claims.Where(
-                    //        c => result.Client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
-                    //    .ToArray()
-                    //?? Array.Empty<Claim>())
-                )
+                    cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
                     new TokenGranted(
@@ -142,8 +138,12 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
             {
                 grantedToken = grantedToken with
                 {
-                    IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, client!.TokenLifetime),
-                    IdToken = await client.GenerateIdToken(grantedToken.IdTokenPayLoad, _jwksStore, cancellationToken)
+                    IdTokenPayLoad =
+                    JwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, client!.TokenLifetime),
+                    IdToken = await client.GenerateIdToken(
+                            grantedToken.IdTokenPayLoad,
+                            _jwksStore,
+                            cancellationToken)
                         .ConfigureAwait(false)
                 };
             }
