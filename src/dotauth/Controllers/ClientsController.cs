@@ -102,7 +102,6 @@ public sealed class ClientsController : BaseController
         }
         Uri.TryCreate(request.LogoUri, UriKind.Absolute, out var logoUri);
         
-#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
         var client = new Client
         {
             ClientName = request.ClientName,
@@ -120,7 +119,6 @@ public sealed class ClientsController : BaseController
             UserClaimsToIncludeInAuthToken = new[] { new Regex("^sub$", RegexOptions.Compiled) },
             TokenEndPointAuthMethod = request.TokenEndpointAuthMethod ?? TokenEndPointAuthenticationMethods.ClientSecretPost
         };
-#pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
 
         var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!, _logger);
         var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);

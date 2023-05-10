@@ -96,9 +96,8 @@ public sealed class DotAuthRegistry : MartenRegistry
                     idx.IsConcurrent = false;
                     idx.TenancyScope = TenancyScope.PerTenant;
                 });
-        For<ClientContainer>()
-            .Identity(x => x.Id)
-            .Duplicate(x => x.ClientId, notNull: true, configure: idx => { idx.TenancyScope = TenancyScope.PerTenant; })
+        For<Client>()
+            .Identity(x => x.ClientId)
 #pragma warning disable CS8603
             .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)",
                 configure: index => index.TenancyScope = TenancyScope.PerTenant)

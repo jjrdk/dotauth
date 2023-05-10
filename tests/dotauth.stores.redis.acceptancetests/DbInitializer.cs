@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared.Models;
 using DotAuth.Stores.Marten;
+using DotAuth.Stores.Marten.Containers;
 using global::Marten;
 using Microsoft.Extensions.Logging.Abstractions;
 using Npgsql;
@@ -79,7 +80,7 @@ public static class DbInitializer
         if (consents != null) session.Store(consents.ToArray());
         if (users != null) session.Store(users.ToArray());
         if (clients != null) session.Store(clients.ToArray());
-        if (scopes != null) session.Store(scopes.ToArray());
+        if (scopes != null) session.Store(scopes.Select(ScopeContainer.Create).ToArray());
         await session.SaveChangesAsync().ConfigureAwait(false);
     }
 

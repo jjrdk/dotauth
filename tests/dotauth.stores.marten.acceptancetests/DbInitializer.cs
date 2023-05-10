@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared.Models;
 using DotAuth.Stores.Marten;
+using DotAuth.Stores.Marten.Containers;
 using global::Marten;
 using Microsoft.Extensions.Logging.Abstractions;
 using Npgsql;
@@ -55,11 +56,7 @@ public static class DbInitializer
             cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION dotauth; ";
             await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
 
-            var builder = new NpgsqlConnectionStringBuilder(connectionString)
-            {
-                Timezone = "UTC",
-                SearchPath = schema
-            };
+            var builder = new NpgsqlConnectionStringBuilder(connectionString) { Timezone = "UTC", SearchPath = schema };
 
             await Seed(builder.ConnectionString, schema, consents, users, clients, scopes).ConfigureAwait(false);
             return builder.ConnectionString;
@@ -88,7 +85,7 @@ public static class DbInitializer
         if (users != null) session.Store(users.ToArray());
         if (consents != null) session.Store(consents.ToArray());
         if (clients != null) session.Store(clients.ToArray());
-        if (scopes != null) session.Store(scopes.ToArray());
+        if (scopes != null) session.Store(scopes.Select(ScopeContainer.Create).ToArray());
         await session.SaveChangesAsync().ConfigureAwait(false);
     }
 
@@ -106,7 +103,7 @@ public static class DbInitializer
 
             await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
-        catch(Exception exception)
+        catch (Exception exception)
         {
             outputHelper.WriteLine(exception.Message);
         }
