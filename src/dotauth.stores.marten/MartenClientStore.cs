@@ -11,8 +11,11 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
+using DotAuth.Stores.Marten.Containers;
 using global::Marten;
+using global::Marten.Internal;
 using global::Marten.Pagination;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Defines the marten based client store.
@@ -21,14 +24,17 @@ using global::Marten.Pagination;
 public sealed class MartenClientStore : IClientRepository
 {
     private readonly Func<IDocumentSession> _sessionFactory;
+    private readonly ILogger<MartenClientStore> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MartenClientStore"/> class.
     /// </summary>
     /// <param name="sessionFactory">The session factory.</param>
-    public MartenClientStore(Func<IDocumentSession> sessionFactory)
+    /// <param name="logger">The <see cref="ILogger{T}"/> to use.</param>
+    public MartenClientStore(Func<IDocumentSession> sessionFactory, ILogger<MartenClientStore> logger)
     {
         _sessionFactory = sessionFactory;
+        _logger = logger;
     }
 
     /// <inheritdoc />
@@ -36,8 +42,25 @@ public sealed class MartenClientStore : IClientRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var client = await session.LoadAsync<Client>(clientId, cancellationToken).ConfigureAwait(false);
-        return client;
+        var client = await session.Query<ClientContainer>()
+            .Where(x => x.ClientId == clientId)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (client != null)
+        {
+            return client.ToClient();
+        }
+
+        if (session is IMartenSession martenSession)
+        {
+            _logger.LogWarning("Client {clientId} not found in tenant {tenant}", clientId, martenSession.TenantId);
+        }
+        else
+        {
+            _logger.LogWarning("Client {clientId} not found", clientId);
+        }
+
+        return default;
     }
 
     /// <inheritdoc />
@@ -45,8 +68,8 @@ public sealed class MartenClientStore : IClientRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var clients = await session.Query<Client>().ToListAsync(cancellationToken).ConfigureAwait(false);
-        return clients.ToArray();
+        var clients = await session.Query<ClientContainer>().ToListAsync(cancellationToken).ConfigureAwait(false);
+        return clients.Select(c => c.ToClient()).ToArray();
     }
 
     /// <inheritdoc />
@@ -57,14 +80,14 @@ public sealed class MartenClientStore : IClientRepository
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
         var take = parameter.NbResults == 0 ? int.MaxValue : parameter.NbResults;
-        var results = await session.Query<Client>()
+        var results = await session.Query<ClientContainer>()
             .Where(x => x.ClientId.IsOneOf(parameter.ClientIds))
             .ToPagedListAsync(parameter.StartIndex + 1, take, cancellationToken)
             .ConfigureAwait(false);
 
         return new PagedResult<Client>
         {
-            Content = results.ToArray(),
+            Content = results.Select(c => c.ToClient()).ToArray(),
             StartIndex = parameter.StartIndex,
             TotalResults = results.TotalItemCount
         };
@@ -75,7 +98,8 @@ public sealed class MartenClientStore : IClientRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var existing = await session.LoadAsync<Client>(client.ClientId, cancellationToken).ConfigureAwait(false);
+        var existing = await session.LoadAsync<ClientContainer>(client.ClientId, cancellationToken)
+            .ConfigureAwait(false);
         if (existing == null)
         {
             return new ErrorDetails
@@ -86,7 +110,8 @@ public sealed class MartenClientStore : IClientRepository
             };
         }
 
-        session.Update(client);
+        existing.Update(client);
+        session.Update(existing);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return new Option.Success();
     }
@@ -96,13 +121,15 @@ public sealed class MartenClientStore : IClientRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var existing = await session.LoadAsync<Client>(client.ClientId, cancellationToken).ConfigureAwait(false);
+        var existing = await session.LoadAsync<ClientContainer>(client.ClientId, cancellationToken)
+            .ConfigureAwait(false);
         if (existing != null)
         {
             return false;
         }
 
-        session.Store(client);
+        var container = ClientContainer.Create(client);
+        session.Store(container);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
     }
@@ -112,8 +139,16 @@ public sealed class MartenClientStore : IClientRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        session.Delete<Client>(clientId);
+        var existing = await session.Query<ClientContainer>().Where(x => x.ClientId == clientId).Select(x => x.ClientId)
+            .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+        if (string.IsNullOrEmpty(existing))
+        {
+            return false;
+        }
+
+        session.Delete<Client>(existing);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
+
     }
 }

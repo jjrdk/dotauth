@@ -29,7 +29,7 @@ public static class JsonWebKeySetExtensions
     /// </summary>
     /// <param name="keys">The keys.</param>
     /// <returns></returns>
-    public static JsonWebKeySet ToJwks(this IEnumerable<JsonWebKey> keys)
+    public static JsonWebKeySet? ToJwks(this IEnumerable<JsonWebKey> keys)
     {
         var set = new JsonWebKeySet();
         foreach (var key in keys)
@@ -45,7 +45,7 @@ public static class JsonWebKeySetExtensions
     /// </summary>
     /// <param name="jwks">The JWKS.</param>
     /// <returns></returns>
-    public static IEnumerable<SecurityKey> GetEncryptionKeys(this JsonWebKeySet jwks)
+    public static IEnumerable<SecurityKey?> GetEncryptionKeys(this JsonWebKeySet? jwks)
     {
         return jwks.Keys.Where(x => x.Use == JsonWebKeyUseNames.Enc && x.KeyOps.Contains(KeyOperations.Encrypt));
     }

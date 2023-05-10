@@ -3,7 +3,7 @@
 /// <summary>
 /// Defines the filter content.
 /// </summary>
-public sealed record Filter
+public record Filter
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Filter"/> class.

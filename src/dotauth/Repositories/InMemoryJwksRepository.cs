@@ -11,10 +11,10 @@ using Microsoft.IdentityModel.Tokens;
 
 internal sealed class InMemoryJwksRepository : IJwksRepository
 {
-    private readonly JsonWebKeySet _privateKeySet;
-    private readonly JsonWebKeySet _publicKeySet;
+    private readonly JsonWebKeySet? _privateKeySet;
+    private readonly JsonWebKeySet? _publicKeySet;
 
-    public InMemoryJwksRepository(JsonWebKeySet publicKeySet, JsonWebKeySet privateKeySet)
+    public InMemoryJwksRepository(JsonWebKeySet? publicKeySet, JsonWebKeySet? privateKeySet)
     {
         _publicKeySet = publicKeySet;
         _privateKeySet = privateKeySet;
@@ -38,26 +38,26 @@ internal sealed class InMemoryJwksRepository : IJwksRepository
         _publicKeySet = publicKeys.ToJwks();
     }
 
-    public Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default)
+    public Task<JsonWebKeySet?> GetPublicKeys(CancellationToken cancellationToken = default)
     {
         return Task.FromResult(_publicKeySet);
     }
 
-    public Task<SigningCredentials> GetSigningKey(string alg, CancellationToken cancellationToken = default)
+    public Task<SigningCredentials?> GetSigningKey(string alg, CancellationToken cancellationToken = default)
     {
         var signingKey = _privateKeySet.Keys.First(k => k.Use == JsonWebKeyUseNames.Sig && k.Alg == alg);
 
         return Task.FromResult(new SigningCredentials(signingKey, signingKey.Alg));
     }
 
-    public Task<SecurityKey> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
+    public Task<SecurityKey?> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
     {
         var signingKey = _privateKeySet.GetEncryptionKeys().First();
 
         return Task.FromResult(signingKey);
     }
 
-    public Task<SigningCredentials> GetDefaultSigningKey(CancellationToken cancellationToken = default)
+    public Task<SigningCredentials?> GetDefaultSigningKey(CancellationToken cancellationToken = default)
     {
         var signingKey = _privateKeySet.Keys.First(k => k.Use == JsonWebKeyUseNames.Sig);
 

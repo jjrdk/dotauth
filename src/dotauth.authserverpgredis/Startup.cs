@@ -22,7 +22,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Amazon;
 using Amazon.Runtime;
-using Baseline;
 using DotAuth;
 using DotAuth.Extensions;
 using DotAuth.Sms;
@@ -47,7 +46,7 @@ internal sealed class Startup
     private const string DotAuthScheme = "dotauth";
     private const string DefaultScopes = "openid,profile,email";
     private readonly IConfiguration _configuration;
-    private readonly DotAuthOptions _options;
+    private readonly DotAuthConfiguration _dotAuthConfiguration;
 
     public Startup(IConfiguration configuration)
     {
@@ -65,8 +64,8 @@ internal sealed class Startup
                     symmetricAlgorithm.Padding = PaddingMode.ISO10126;
                     return new SymmetricDataProtector(symmetricAlgorithm);
                 }
-        : null;
-        _options = new DotAuthOptions(salt)
+                : null;
+        _dotAuthConfiguration = new DotAuthConfiguration(salt)
         {
             AllowHttp = allowHttp,
             DataProtector = dataProtector,
@@ -74,7 +73,8 @@ internal sealed class Startup
             ApplicationName = _configuration["SERVER:NAME"] ?? "DotAuth",
             Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
             Clients =
-                sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
+                sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>,
+                    sp.GetRequiredService<ILogger<MartenClientStore>>()),
             Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
             AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
             AuthorizationCodes =
@@ -88,11 +88,13 @@ internal sealed class Startup
             Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
             DeviceAuthorizations = sp => new MartenDeviceAuthorizationStore(sp.GetRequiredService<IDocumentSession>),
             JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
-            Tickets = sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _options!.TicketLifeTime),
+            Tickets = sp =>
+                new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _dotAuthConfiguration!.TicketLifeTime),
             Tokens =
                 sp => new RedisTokenStore(
                     sp.GetRequiredService<IDatabaseAsync>()),
-            ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
+            ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>,
+                sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
             EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
             ClaimsIncludedInUserCreation = new[]
             {
@@ -166,11 +168,12 @@ internal sealed class Startup
                             .ToArray()
                     };
 
-                    cfg.RequireHttpsMetadata = !_options.AllowHttp;
+                    cfg.RequireHttpsMetadata = !_dotAuthConfiguration.AllowHttp;
                 });
         services.ConfigureOptions<ConfigureOAuthOptions>();
 
-        if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientId]) && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientSecret]))
+        if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientId]) &&
+            !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.GoogleClientSecret]))
         {
             services.AddAuthentication(CookieNames.ExternalCookieName)
                 .AddCookie(CookieNames.ExternalCookieName)
@@ -183,7 +186,7 @@ internal sealed class Startup
                         opts.SignInScheme = CookieNames.ExternalCookieName;
                         var scopes = _configuration["GOOGLE:SCOPES"] ?? DefaultScopes;
                         foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                     .Select(x => x.Trim()))
+                            .Select(x => x.Trim()))
                         {
                             opts.Scope.Add(scope);
                         }
@@ -191,29 +194,29 @@ internal sealed class Startup
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientId])
-            && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientSecret]))
+         && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientSecret]))
         {
             services.AddAuthentication(CookieNames.ExternalCookieName)
                 .AddMicrosoftAccount(
-                opts =>
-                {
-                    opts.ClientId = _configuration[ConfigurationValues.MsClientId]!;
-                    opts.ClientSecret = _configuration[ConfigurationValues.MsClientSecret]!;
-                    opts.UsePkce = true;
-                    var scopes = _configuration[ConfigurationValues.MsScopes] ?? DefaultScopes;
-                    foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                 .Select(x => x.Trim()))
+                    opts =>
                     {
-                        opts.Scope.Add(scope);
-                    }
-                });
+                        opts.ClientId = _configuration[ConfigurationValues.MsClientId]!;
+                        opts.ClientSecret = _configuration[ConfigurationValues.MsClientSecret]!;
+                        opts.UsePkce = true;
+                        var scopes = _configuration[ConfigurationValues.MsScopes] ?? DefaultScopes;
+                        foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim()))
+                        {
+                            opts.Scope.Add(scope);
+                        }
+                    });
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
-            && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
+         && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
         {
-            services.AddDotAuth(
-                    _options,
+            services.AddDotAuthServer(
+                    _dotAuthConfiguration,
                     new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                     assemblies: new[]
                     {
@@ -231,8 +234,8 @@ internal sealed class Startup
         }
         else
         {
-            services.AddDotAuth(
-                _options,
+            services.AddDotAuthServer(
+                _dotAuthConfiguration,
                 new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                 assemblies: new[]
                 {
@@ -259,9 +262,16 @@ internal sealed class Startup
         {
             app = app.UsePathBase(pathBase);
         }
+
         app.UseResponseCompression()
-            .UseDotAuthMvc(
-                x => { x.KnownProxies.AddRange(knownProxies); },
+            .UseDotAuthServer(
+                x =>
+                {
+                    foreach (var proxy in knownProxies)
+                    {
+                        x.KnownProxies.Add(proxy);
+                    }
+                },
                 applicationTypes: typeof(IDefaultUi));
     }
 }

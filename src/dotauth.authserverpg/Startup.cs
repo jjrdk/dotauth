@@ -22,7 +22,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Amazon;
 using Amazon.Runtime;
-using Baseline;
 using DotAuth;
 using DotAuth.Extensions;
 using DotAuth.Sms;
@@ -48,7 +47,7 @@ public sealed class Startup
     private const string DotAuthScheme = "dotauth";
     private const string DefaultScopes = "openid,profile,email";
     private readonly IConfiguration _configuration;
-    private readonly DotAuthOptions _options;
+    private readonly DotAuthConfiguration _dotAuthConfiguration;
 
     public Startup(IConfiguration configuration)
     {
@@ -67,9 +66,9 @@ public sealed class Startup
                     return new SymmetricDataProtector(symmetricAlgorithm);
                 }
                 : null;
-        _options =
+        _dotAuthConfiguration =
             new
-                DotAuthOptions(
+                DotAuthConfiguration(
                     salt,
                     ticketLifetime: TimeSpan.FromDays(7),
                     claimsIncludedInUserCreation: new[]
@@ -94,7 +93,8 @@ public sealed class Startup
                     RedirectToLogin = redirect,
                     ApplicationName = _configuration[ConfigurationValues.ServerName] ?? "DotAuth",
                     Users = sp => new MartenResourceOwnerStore(salt, sp.GetRequiredService<IDocumentSession>),
-                    Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>),
+                    Clients = sp => new MartenClientStore(sp.GetRequiredService<IDocumentSession>,
+                        sp.GetRequiredService<ILogger<MartenClientStore>>()),
                     Scopes = sp => new MartenScopeRepository(sp.GetRequiredService<IDocumentSession>),
                     AccountFilters = sp => new MartenFilterStore(sp.GetRequiredService<IDocumentSession>),
                     AuthorizationCodes =
@@ -106,7 +106,7 @@ public sealed class Startup
                     Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
                     JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
                     Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
-                    Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>),
+                    Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<ILogger<MartenTokenStore>>()),
                     ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>,
                         sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
                     EventPublisher = sp =>
@@ -126,7 +126,13 @@ public sealed class Startup
                         autoCreate: AutoCreate.CreateOrUpdate);
                     return new DocumentStore(options);
                 })
-            .AddTransient(sp => sp.GetRequiredService<IDocumentStore>().LightweightSession())
+            .AddTransient(sp =>
+            {
+                var contextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+                var context = contextAccessor.HttpContext;
+                var host = context?.Request.Host.Host ?? "localhost";
+                return sp.GetRequiredService<IDocumentStore>().LightweightSession(host);
+            })
             .AddResponseCompression(
                 x =>
                 {
@@ -170,7 +176,7 @@ public sealed class Startup
                             .ToArray()
                     };
 
-                    cfg.RequireHttpsMetadata = !_options.AllowHttp;
+                    cfg.RequireHttpsMetadata = !_dotAuthConfiguration.AllowHttp;
                 });
         services.ConfigureOptions<ConfigureOAuthOptions>()
             .AddHealthChecks()
@@ -217,8 +223,8 @@ public sealed class Startup
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonAccessKey])
          && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonSecretKey]))
         {
-            services.AddDotAuth(
-                    _options,
+            services.AddDotAuthServer(
+                    _dotAuthConfiguration,
                     new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                     assemblyTypes: new[] { GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi) })
                 .AddSmsAuthentication(
@@ -231,8 +237,8 @@ public sealed class Startup
         }
         else
         {
-            services.AddDotAuth(
-                _options,
+            services.AddDotAuthServer(
+                _dotAuthConfiguration,
                 new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
                 assemblyTypes: new[] { GetType(), typeof(IDefaultUi) });
         }
@@ -266,7 +272,13 @@ public sealed class Startup
                     logger.LogInformation("Request headers: {headers}", headers);
                     await next(ctx).ConfigureAwait(false);
                 })
-            .UseDotAuthMvc(x => { x.KnownProxies.AddRange(knownProxies); }, applicationTypes: typeof(IDefaultUi))
+            .UseDotAuthServer(x =>
+            {
+                foreach (var proxy in knownProxies)
+                {
+                    x.KnownProxies.Add(proxy);
+                }
+            }, applicationTypes: typeof(IDefaultUi))
             .UseEndpoints(endpoint => { endpoint.MapHealthChecks("/health"); });
     }
 }

@@ -4,7 +4,7 @@
 	<PropertyGroup>
 		<Description>DotAuth Shared Library</Description>
 		<Title>DotAuth Shared</Title>
-		<TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<AssemblyName>dotauth.shared</AssemblyName>
 		<PackageId>dotauth.shared</PackageId>
 		<RootNamespace>DotAuth.Shared</RootNamespace>

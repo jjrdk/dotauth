@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using global::Marten;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Defines the Marten based token store.
@@ -16,14 +17,17 @@ using global::Marten;
 public sealed class MartenTokenStore : ITokenStore
 {
     private readonly Func<IDocumentSession> _sessionFactory;
+    private readonly ILogger<MartenTokenStore> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MartenTokenStore"/> class.
     /// </summary>
     /// <param name="sessionFactory">The session factory.</param>
-    public MartenTokenStore(Func<IDocumentSession> sessionFactory)
+    /// <param name="logger">The <see cref="ILogger{T}"/> to use.</param>
+    public MartenTokenStore(Func<IDocumentSession> sessionFactory, ILogger<MartenTokenStore> logger)
     {
         _sessionFactory = sessionFactory;
+        _logger = logger;
     }
 
     /// <inheritdoc />
@@ -44,21 +48,21 @@ public sealed class MartenTokenStore : ITokenStore
         var options = await session.Query<GrantedToken>()
             .Where(
                 x => x.ClientId == clientId
-                     && x.Scope == scopes)
+                 && x.Scope == scopes)
             .ToListAsync(token: cancellationToken)
             .ConfigureAwait(false);
-        return options!.FirstOrDefault(x =>
+        return options.FirstOrDefault(x =>
             idTokenJwsPayload.All(y => x.IdTokenPayLoad?.Contains(y) == true) &&
             userInfoJwsPayload.All(y => x.UserInfoPayLoad?.Contains(y) == true));
     }
 
     /// <inheritdoc />
-    public async Task<GrantedToken?> GetRefreshToken(string getRefreshToken, CancellationToken cancellationToken)
+    public async Task<GrantedToken?> GetRefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
         var grantedToken = await session.Query<GrantedToken>()
-            .FirstOrDefaultAsync(x => x.RefreshToken == getRefreshToken, token: cancellationToken)
+            .FirstOrDefaultAsync(x => x.RefreshToken == refreshToken, token: cancellationToken)
             .ConfigureAwait(false);
         return grantedToken;
     }
@@ -77,30 +81,54 @@ public sealed class MartenTokenStore : ITokenStore
     /// <inheritdoc />
     public async Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
     {
-        var session = _sessionFactory();
-        await using var _ = session.ConfigureAwait(false);
-        session.Store(grantedToken);
-        await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return true;
+        try
+        {
+            var session = _sessionFactory();
+            await using var _ = session.ConfigureAwait(false);
+            session.Store(grantedToken);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "{error}", ex.Message);
+            return false;
+        }
     }
 
     /// <inheritdoc />
     public async Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)
     {
-        var session = _sessionFactory();
-        await using var _ = session.ConfigureAwait(false);
-        session.DeleteWhere<GrantedToken>(x => x.AccessToken == accessToken);
-        await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return true;
+        try
+        {
+            var session = _sessionFactory();
+            await using var _ = session.ConfigureAwait(false);
+            session.DeleteWhere<GrantedToken>(x => x.AccessToken == accessToken);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "{error}", ex.Message);
+            return false;
+        }
     }
 
     /// <inheritdoc />
     public async Task<bool> RemoveRefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
-        var session = _sessionFactory();
-        await using var _ = session.ConfigureAwait(false);
-        session.DeleteWhere<GrantedToken>(x => x.RefreshToken == refreshToken);
-        await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return true;
+        try
+        {
+            var session = _sessionFactory();
+            await using var _ = session.ConfigureAwait(false);
+            session.DeleteWhere<GrantedToken>(x => x.RefreshToken == refreshToken);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "{error}", ex.Message);
+            return false;
+        }
     }
 }

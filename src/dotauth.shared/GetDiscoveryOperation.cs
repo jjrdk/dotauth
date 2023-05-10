@@ -18,10 +18,12 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared.Responses;
 using Newtonsoft.Json;
+using JsonConverter = System.Text.Json.Serialization.JsonConverter;
 
 internal sealed class GetDiscoveryOperation
 {

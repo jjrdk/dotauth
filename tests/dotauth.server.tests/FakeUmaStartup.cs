@@ -80,8 +80,8 @@ public sealed class FakeUmaStartup
             .AddRazorRuntimeCompilation()
             .AddApplicationPart(typeof(CoreConstants).Assembly);
         services.AddRazorPages();
-        services.AddDotAuth(
-            new DotAuthOptions
+        services.AddDotAuthServer(
+            new DotAuthConfiguration
             {
                 Clients = sp => new InMemoryClientRepository(
                     new Mock<IHttpClientFactory>().Object,
@@ -121,6 +121,6 @@ public sealed class FakeUmaStartup
                 await next.Invoke().ConfigureAwait(false);
             });
 
-        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
     }
 }

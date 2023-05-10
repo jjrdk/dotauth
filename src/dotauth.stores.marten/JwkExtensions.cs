@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 
 internal static class JwkExtensions
 {
-    public static JsonWebKeySet ToSet(this IEnumerable<JsonWebKey> keys)
+    public static JsonWebKeySet? ToSet(this IEnumerable<JsonWebKey> keys)
     {
         var jwks = new JsonWebKeySet();
         foreach (var key in keys)

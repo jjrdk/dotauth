@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Weasel.Core;
 using Xunit.Abstractions;
@@ -23,7 +24,7 @@ using Xunit.Abstractions;
 public sealed class ServerStartup
 {
     private const string DefaultSchema = CookieAuthenticationDefaults.AuthenticationScheme;
-    private readonly DotAuthOptions _martenOptions;
+    private readonly DotAuthConfiguration _martenConfiguration;
     private readonly SharedContext _context;
     private readonly string _connectionString;
     private readonly ITestOutputHelper _outputHelper;
@@ -31,10 +32,11 @@ public sealed class ServerStartup
 
     public ServerStartup(SharedContext context, string connectionString, ITestOutputHelper outputHelper)
     {
-        _martenOptions = new DotAuthOptions
+        _martenConfiguration = new DotAuthConfiguration
         {
             AdministratorRoleDefinition = default,
-            Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>()),
+            Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>(),
+                sp.GetRequiredService<ILogger<MartenClientStore>>()),
             JsonWebKeys = _ =>
             {
                 var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
@@ -59,7 +61,7 @@ public sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>(x=>{})
+        services.AddHttpClient<HttpClient>(x => { })
             .AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
         services.AddSingleton<IDocumentStore>(
             _ => new DocumentStore(
@@ -78,8 +80,8 @@ public sealed class ServerStartup
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-        services.AddDotAuth(
-            _martenOptions,
+        services.AddDotAuthServer(
+            _martenConfiguration,
             new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme },
             assemblyTypes: typeof(IDefaultUi));
         services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
@@ -99,12 +101,12 @@ public sealed class ServerStartup
                     cfg.RequireHttpsMetadata = false;
                     cfg.TokenValidationParameters = new NoOpTokenValidationParameters(_context);
                 });
-        
+
         services.AddUmaClient(new Uri("http://localhost/"));
     }
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
     }
 }

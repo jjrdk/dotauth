@@ -24,7 +24,7 @@ using Microsoft.IdentityModel.Tokens;
 /// Defines the client.
 /// </summary>
 [DataContract]
-public sealed class Client
+public class Client
 {
     /// <summary>
     /// Gets or sets the client identifier.
@@ -156,7 +156,7 @@ public sealed class Client
     /// Gets or sets the list of json web keys
     /// </summary>
     [DataMember(Name = "jwks")]
-    public JsonWebKeySet JsonWebKeys { get; set; } = new();
+    public JsonWebKeySet? JsonWebKeys { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the list of contacts

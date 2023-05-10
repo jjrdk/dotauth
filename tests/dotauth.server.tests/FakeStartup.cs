@@ -69,7 +69,7 @@ public sealed class FakeStartup
         var symmetricAlgorithm = Aes.Create();
         symmetricAlgorithm.GenerateIV();
         symmetricAlgorithm.GenerateKey();
-        ServiceCollectionExtensions.AddDotAuth(
+        ServiceCollectionExtensions.AddDotAuthServer(
                 services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>(),
                 options =>
                 {
@@ -99,6 +99,6 @@ public sealed class FakeStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseDotAuthMvc(applicationTypes: typeof(IDefaultUi));
+        app.UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
     }
 }
