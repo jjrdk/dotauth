@@ -98,12 +98,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                 });
         For<Client>()
             .Identity(x => x.ClientId)
-#pragma warning disable CS8603
-            .Duplicate(x => x.IdTokenEncryptedResponseAlg, "varchar(10)",
-                configure: index => index.TenancyScope = TenancyScope.PerTenant)
-#pragma warning restore CS8603
-            .GinIndexJsonData(
-                idx => { idx.IsConcurrent = false; });
+            .GinIndexJsonData();
         For<OwnedResourceSet>()
             .Identity(x => x.Id)
             .Duplicate(x => x.Owner, configure: index => index.TenancyScope = TenancyScope.PerTenant)

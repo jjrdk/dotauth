@@ -11,7 +11,6 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
-using DotAuth.Stores.Marten.Containers;
 using global::Marten;
 using global::Marten.Internal;
 using global::Marten.Pagination;
@@ -109,7 +108,7 @@ public sealed class MartenClientStore : IClientRepository
                 Status = HttpStatusCode.NotFound
             };
         }
-        
+
         session.Update(client);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return new Option.Success();
@@ -126,7 +125,7 @@ public sealed class MartenClientStore : IClientRepository
         {
             return false;
         }
-        
+
         session.Store(client);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
