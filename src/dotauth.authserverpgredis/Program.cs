@@ -14,7 +14,6 @@
 
 namespace DotAuth.AuthServerPgRedis;
 
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -24,8 +23,6 @@ public sealed class Program
 {
     public static async Task Main()
     {
-        Trace.Listeners.Clear();
-        Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
         await new WebHostBuilder().UseKestrel(
                 o =>
                 {

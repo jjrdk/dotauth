@@ -29,8 +29,9 @@ public sealed class Program
         IdentityModelEventSource.ShowPII = true;
 #endif
         Trace.Listeners.Clear();
-        Trace.Listeners.Add(new ConsoleTraceListener { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
-        await new WebHostBuilder()
+        Trace.Listeners.Add(new ConsoleTraceListener
+            { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
+        var webHost = new WebHostBuilder()
             .UseKestrel(
                 o =>
                 {
@@ -39,8 +40,10 @@ public sealed class Program
                 })
             .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
             .UseStartup<Startup>()
-            .Build()
+            .Build();
+        await webHost
             .RunAsync()
             .ConfigureAwait(false);
+        webHost.Dispose();
     }
 }
