@@ -1,7 +1,8 @@
 ﻿namespace dotauth.tool
 {
+    using System.Text.Json;
     using CommandLine;
-    using Newtonsoft.Json;
+    using DotAuth.Shared;
 
     internal partial class Program
     {
@@ -38,8 +39,8 @@
                 return null;
             }
 
-            var configText = await File.ReadAllTextAsync(configFile).ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<ToolConfig>(configText)!;
+            return await JsonSerializer.DeserializeAsync<ToolConfig>(File.OpenRead(configFile),
+                DefaultJsonSerializerOptions.Instance);
         }
 
         private static string GetConfigFilePath()

@@ -18,13 +18,14 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using DotAuth.Common;
 using DotAuth.Parameters;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 internal static class MappingExtensions
 {
@@ -52,7 +53,9 @@ internal static class MappingExtensions
             ClientAssertion = request.client_assertion,
             ClientAssertionType = request.client_assertion_type,
             ClientSecret = request.client_secret,
-            AmrValues = string.IsNullOrWhiteSpace(request.amr_values) ? Array.Empty<string>() : request.amr_values.Split(' ')
+            AmrValues = string.IsNullOrWhiteSpace(request.amr_values)
+                ? Array.Empty<string>()
+                : request.amr_values.Split(' ')
         };
     }
 
@@ -158,7 +161,9 @@ internal static class MappingExtensions
             UiLocales = request.ui_locales,
             OriginUrl = request.origin_url,
             SessionId = request.session_id,
-            AmrValues = string.IsNullOrWhiteSpace(request.amr_values) ? Array.Empty<string>() : request.amr_values.Split(' ')
+            AmrValues = string.IsNullOrWhiteSpace(request.amr_values)
+                ? Array.Empty<string>()
+                : request.amr_values.Split(' ')
         };
 
         if (!string.IsNullOrWhiteSpace(request.aggregate_id))
@@ -170,29 +175,32 @@ internal static class MappingExtensions
         {
             result = result with { Claims = new ClaimsParameter() };
 
-            var obj = JObject.Parse(request.claims);
-            var idToken = obj.GetValue(CoreConstants.StandardClaimParameterNames.IdTokenName);
-            var userInfo = obj.GetValue(CoreConstants.StandardClaimParameterNames.UserInfoName);
-            if (idToken != null)
+            var obj = JsonNode.Parse(request.claims);
+            if (obj is JsonObject jsonObject)
             {
-                result = result with
+                var hasIdToken = jsonObject.TryGetPropertyValue(CoreConstants.StandardClaimParameterNames.IdTokenName, out var idToken);
+                var hasUserInfo = jsonObject.TryGetPropertyValue(CoreConstants.StandardClaimParameterNames.UserInfoName, out var userInfo);
+                if (hasIdToken)
                 {
-                    Claims = result.Claims with
+                    result = result with
                     {
-                        IdToken = FillInClaimsParameter(idToken, result.Claims.IdToken)
-                    }
-                };
-            }
+                        Claims = result.Claims with
+                        {
+                            IdToken = FillInClaimsParameter(idToken!, result.Claims.IdToken)
+                        }
+                    };
+                }
 
-            if (userInfo != null)
-            {
-                result = result with
+                if (hasUserInfo)
                 {
-                    Claims = result.Claims with
+                    result = result with
                     {
-                        UserInfo = FillInClaimsParameter(userInfo, result.Claims.UserInfo)
-                    }
-                };
+                        Claims = result.Claims with
+                        {
+                            UserInfo = FillInClaimsParameter(userInfo!, result.Claims.UserInfo)
+                        }
+                    };
+                }
             }
         }
 
@@ -221,23 +229,33 @@ internal static class MappingExtensions
 
         var result = new AuthorizationRequest
         {
-            acr_values = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.AcrValuesName),
+            acr_values =
+                jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.AcrValuesName),
             claims = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ClaimsName),
             client_id = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName),
             display = displayEnum,
             prompt = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.PromptName),
-            id_token_hint = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
-            max_age = long.Parse(jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.MaxAgeName)!),
+            id_token_hint =
+                jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
+            max_age = long.Parse(
+                jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.MaxAgeName)!),
             nonce = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
-            response_type = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+            response_type =
+                jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
             state = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.StateName),
-            login_hint = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.LoginHintName),
-            redirect_uri = new Uri(jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)!),
+            login_hint =
+                jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.LoginHintName),
+            redirect_uri =
+                new Uri(jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames
+                    .RedirectUriName)!),
             request = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.RequestName),
-            request_uri = new Uri(jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.RequestUriName)!),
+            request_uri =
+                new Uri(jwsPayload.GetClaimValue(
+                    CoreConstants.StandardAuthorizationRequestParameterNames.RequestUriName)!),
             scope = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName),
             response_mode = string.IsNullOrWhiteSpace(responseMode) ? ResponseModes.None : responseMode,
-            ui_locales = jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.UiLocalesName),
+            ui_locales =
+                jwsPayload.GetClaimValue(CoreConstants.StandardAuthorizationRequestParameterNames.UiLocalesName),
         };
 
         return result;
@@ -257,24 +275,26 @@ internal static class MappingExtensions
     }
 
     private static ClaimParameter[] FillInClaimsParameter(
-        JToken token,
+        JsonNode token,
         IEnumerable<ClaimParameter> claimParameters)
     {
-        var children = token.Children()
+        var children = token.AsObject()
             .Select(
                 child =>
                 {
                     var record = new ClaimParameter
                     {
-                        Name = ((JProperty)child).Name,
+                        Name = child.Key,
                         Parameters = new Dictionary<string, object>()
                     };
 
-                    var subChild = child.Children().FirstOrDefault();
-                    if (subChild != null)
+                    var subChild = child.Value?.AsObject().FirstOrDefault();
+                    if (subChild?.Value != null)
                     {
+                        JsonNode? node = subChild.Value.Value!;
                         var parameters =
-                            JsonConvert.DeserializeObject<Dictionary<string, object>>(subChild.ToString())!;
+                            JsonSerializer.Deserialize<Dictionary<string, object>>(node.ToJsonString(),
+                                DefaultJsonSerializerOptions.Instance)!;
                         record = record with { Parameters = parameters };
                     }
 

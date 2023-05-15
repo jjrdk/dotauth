@@ -40,12 +40,6 @@ public record ResourceSet : ResourceSetDescription
     public PolicyRule[] AuthorizationPolicies { get; set; } = Array.Empty<PolicyRule>();
 
     /// <summary>
-    /// Gets or sets the metadata for the resource set.
-    /// </summary>
-    [DataMember(Name = "metadata")]
-    public List<KeyValuePair<string, string>> Metadata { get; set; } = new();
-
-    /// <summary>
     /// Gets or sets the creation time.
     /// </summary>
     [DataMember(Name = "created")]

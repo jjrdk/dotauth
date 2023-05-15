@@ -21,8 +21,8 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
 
     public void PostConfigure(string? name, JwtBearerOptions options)
     {
-        options.Authority = this._server.CreateClient().BaseAddress!.AbsoluteUri;
-        options.BackchannelHttpHandler = this._server.CreateHandler();
+        options.Authority = _server.CreateClient().BaseAddress!.AbsoluteUri;
+        options.BackchannelHttpHandler = _server.CreateHandler();
         options.RequireHttpsMetadata = false;
         options.Events = new JwtBearerEvents { OnAuthenticationFailed = ctx => throw ctx.Exception };
         options.TokenValidationParameters = new TokenValidationParameters
@@ -30,7 +30,7 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
             ValidateAudience = false,
             ValidateIssuer = false,
             ValidateIssuerSigningKey = false,
-            ValidIssuer = "http://localhost:5000"
+            ValidIssuer = "http://localhost"
         };
         if (string.IsNullOrEmpty(options.TokenValidationParameters.ValidAudience)
             && !string.IsNullOrEmpty(options.Audience))
@@ -67,7 +67,7 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
 
                 var httpClient = new HttpClient(options.BackchannelHttpHandler ?? new HttpClientHandler())
                 {
-                    Timeout = options.BackchannelTimeout, 
+                    Timeout = options.BackchannelTimeout,
                     MaxResponseContentBufferSize = 1024 * 1024 * 10 // 10 MB
                 };
 

@@ -16,16 +16,16 @@ namespace DotAuth.Extensions;
 
 using System;
 using System.Text;
+using System.Text.Json;
 using DotAuth.Shared;
 using Microsoft.AspNetCore.DataProtection;
-using Newtonsoft.Json;
 
 internal static class DataProtectorExtensions
 {
     public static T Unprotect<T>(this IDataProtector dataProtector, string encoded)
     {
         var unprotected = Unprotect(dataProtector, encoded);
-        return JsonConvert.DeserializeObject<T>(unprotected)!;
+        return JsonSerializer.Deserialize<T>(unprotected, DefaultJsonSerializerOptions.Instance)!;
     }
 
     private static string Unprotect(this IDataProtector dataProtector, string encoded)
@@ -37,7 +37,7 @@ internal static class DataProtectorExtensions
 
     public static string Protect<T>(this IDataProtector dataProtector, T toEncode)
     {
-        var serialized = JsonConvert.SerializeObject(toEncode);
+        var serialized = JsonSerializer.Serialize(toEncode, DefaultJsonSerializerOptions.Instance);
 
         var bytes = Encoding.ASCII.GetBytes(serialized);
         var protectedBytes = dataProtector.Protect(bytes);

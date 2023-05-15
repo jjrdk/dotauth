@@ -1,9 +1,9 @@
 ﻿namespace dotauth.tool;
 
+using System.Text.Json;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
 
 internal partial class Program
 {
@@ -12,7 +12,8 @@ internal partial class Program
         var config = await GetConfiguration().ConfigureAwait(false);
         if (config == null)
         {
-            await Console.Out.WriteLineAsync("Missing configuration. Did you run the `configure` action?").ConfigureAwait(false);
+            await Console.Out.WriteLineAsync("Missing configuration. Did you run the `configure` action?")
+                .ConfigureAwait(false);
             return;
         }
 
@@ -26,9 +27,10 @@ internal partial class Program
             .ConfigureAwait(false);
         if (tokenOption is Option<GrantedTokenResponse>.Result token)
         {
-            var json = JsonConvert.SerializeObject(token.Item, Formatting.Indented);
+            var options = DefaultJsonSerializerOptions.Instance;
+            options.WriteIndented = true;
+            var json = JsonSerializer.Serialize(token.Item, options);
             await Console.Out.WriteLineAsync(json).ConfigureAwait(false);
         }
     }
-
 }

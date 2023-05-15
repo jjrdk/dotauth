@@ -2,11 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 /// <summary>
@@ -31,7 +32,7 @@ public sealed class RedisTicketStore : ITicketStore
     /// <inheritdoc />
     public Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
     {
-        var json = JsonConvert.SerializeObject(ticket);
+        var json = JsonSerializer.Serialize(ticket, DefaultJsonSerializerOptions.Instance);
         return _database.StringSetAsync(ticket.Id, json, _expiry);
     }
 
@@ -46,8 +47,13 @@ public sealed class RedisTicketStore : ITicketStore
             return (false, Array.Empty<ClaimData>());
         }
 
-        var ticket = JsonConvert.DeserializeObject<Ticket>(value!)! with { IsAuthorizedByRo = true };
-        var result = await _database.StringSetAsync(ticket.Id, JsonConvert.SerializeObject(ticket), _expiry).ConfigureAwait(false);
+        var ticket = JsonSerializer.Deserialize<Ticket>(value!, DefaultJsonSerializerOptions.Instance)! with
+        {
+            IsAuthorizedByRo = true
+        };
+        var result = await _database.StringSetAsync(ticket.Id,
+                JsonSerializer.Serialize(ticket, DefaultJsonSerializerOptions.Instance), _expiry)
+            .ConfigureAwait(false);
 
         return (result, result ? ticket.Requester : Array.Empty<ClaimData>());
     }
@@ -63,7 +69,7 @@ public sealed class RedisTicketStore : ITicketStore
     {
         var ticket = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
         return ticket.HasValue
-            ? JsonConvert.DeserializeObject<Ticket>(ticket!)
+            ? JsonSerializer.Deserialize<Ticket>(ticket!, DefaultJsonSerializerOptions.Instance)
             : null;
     }
 

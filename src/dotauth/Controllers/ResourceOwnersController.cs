@@ -317,7 +317,7 @@ public sealed class ResourceOwnersController : ControllerBase
 
         var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
 
-        return result is Option.Success ? new OkResult() : BadRequest(Strings.TheClaimsCannotBeUpdated);
+        return result is Option.Success ? new OkObjectResult("{}") : BadRequest(Strings.TheClaimsCannotBeUpdated);
     }
 
     /// <summary>

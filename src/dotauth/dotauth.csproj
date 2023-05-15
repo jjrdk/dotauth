@@ -4,7 +4,6 @@
 	<PropertyGroup>
 		<Description>DotAuth Server SDK</Description>
 		<Title>DotAuth Server SDK</Title>
-		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<AssemblyName>dotauth</AssemblyName>
 		<PackageId>dotauth</PackageId>
 		<RootNamespace>DotAuth</RootNamespace>
@@ -15,13 +14,6 @@
 	<ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.5" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.5" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.11" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.11" />
 	</ItemGroup>
 
 	<ItemGroup>

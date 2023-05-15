@@ -1,9 +1,9 @@
 ﻿namespace dotauth.tool;
 
+using System.Text.Json;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
 
 internal partial class Program
 {
@@ -31,7 +31,9 @@ internal partial class Program
         var code = await authenticateClient.LogIn(CancellationToken.None).ConfigureAwait(false);
         if (code is Option<GrantedTokenResponse>.Result tokenResponse)
         {
-            var json = JsonConvert.SerializeObject(tokenResponse.Item);
+            var options = DefaultJsonSerializerOptions.Instance;
+            options.WriteIndented = true;
+            var json = JsonSerializer.Serialize(tokenResponse.Item, options);
             await Console.Out.WriteLineAsync(json).ConfigureAwait(false);
         }
     }

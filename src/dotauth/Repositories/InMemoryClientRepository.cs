@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
@@ -14,7 +15,6 @@ using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 /// <summary>
 /// Defines the in-memory client repository.
@@ -40,7 +40,11 @@ internal sealed class InMemoryClientRepository : IClientRepository
         IReadOnlyCollection<Client>? clients = null)
     {
         _logger = logger;
-        _clientFactory = new ClientFactory(httpClient, scopeStore, JsonConvert.DeserializeObject<Uri[]>!, logger);
+        _clientFactory = new ClientFactory(
+            httpClient,
+            scopeStore,
+            u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!,
+            logger);
         _clients = clients == null
             ? new List<Client>()
             : clients.ToList();
@@ -149,7 +153,7 @@ internal sealed class InMemoryClientRepository : IClientRepository
     public async Task<Option> Update(Client newClient, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(newClient.ClientId)
-            || !_clients.Exists(x => x.ClientId == newClient.ClientId))
+         || !_clients.Exists(x => x.ClientId == newClient.ClientId))
         {
             return new Option.Error(
                 new ErrorDetails
@@ -166,7 +170,7 @@ internal sealed class InMemoryClientRepository : IClientRepository
             return new Option.Error(e.Details, e.State);
         }
 
-        newClient = ((Option<Client>.Result) option).Item;
+        newClient = ((Option<Client>.Result)option).Item;
         lock (_clients)
         {
             var removed = _clients.RemoveAll(

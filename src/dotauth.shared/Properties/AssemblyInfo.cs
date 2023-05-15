@@ -1,10 +1,14 @@
 ﻿using System.Runtime.CompilerServices;
 
 [assembly:InternalsVisibleTo("dotauth")]
+[assembly:InternalsVisibleTo("dotauth.authserver")]
 [assembly:InternalsVisibleTo("dotauth.client")]
 [assembly:InternalsVisibleTo("dotauth.resourceserver")]
 [assembly:InternalsVisibleTo("dotauth.sms")]
+[assembly:InternalsVisibleTo("dotauth.stores.marten")]
+[assembly:InternalsVisibleTo("dotauth.stores.redis")]
 [assembly:InternalsVisibleTo("dotauth.sms.tests")]
+[assembly:InternalsVisibleTo("dotauth.tool")]
 [assembly:InternalsVisibleTo("dotauth.tests")]
 [assembly:InternalsVisibleTo("dotauth.acceptancetests")]
 [assembly:InternalsVisibleTo("dotauth.stores.marten.acceptancetests")]

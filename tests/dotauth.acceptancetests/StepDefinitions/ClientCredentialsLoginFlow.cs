@@ -88,7 +88,7 @@ public partial class FeatureTest
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials("xxx", "xxx"),
             _fixture!.Client,
-            new Uri(FeatureTest.WellKnownOpenidConfiguration));
+            new Uri(WellKnownOpenidConfiguration));
     }
 
     [Then(@"does not have token")]

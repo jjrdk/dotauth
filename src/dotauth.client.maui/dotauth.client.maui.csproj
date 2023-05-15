@@ -5,7 +5,6 @@
 	<PropertyGroup>
 		<Description>DotAuth MAUI authentication client</Description>
 		<Title>DotAuth MAUI Client</Title>
-		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<AssemblyName>dotauth.client.maui</AssemblyName>
 		<PackageId>dotauth.client.maui</PackageId>
 		<RootNamespace>DotAuth.Client.Maui</RootNamespace>

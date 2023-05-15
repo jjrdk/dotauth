@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +38,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 /// <summary>
 /// Defines the client controller.
@@ -74,7 +74,7 @@ public sealed class ClientsController : BaseController
         _httpClient = httpClient;
         _logger = logger;
         _httpClient = httpClient;
-        _urlReader = JsonConvert.DeserializeObject<Uri[]>!;
+        _urlReader = u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!;
     }
 
     /// <summary>
@@ -100,13 +100,16 @@ public sealed class ClientsController : BaseController
         {
             request.Contacts = request.Contacts.Append(email).ToArray();
         }
+
         Uri.TryCreate(request.LogoUri, UriKind.Absolute, out var logoUri);
-        
+
         var client = new Client
         {
             ClientName = request.ClientName,
             LogoUri = logoUri,
-            ApplicationType = request.ApplicationType == ApplicationTypes.Native ? ApplicationTypes.Native : ApplicationTypes.Web,
+            ApplicationType = request.ApplicationType == ApplicationTypes.Native
+                ? ApplicationTypes.Native
+                : ApplicationTypes.Web,
             RedirectionUrls = request.RedirectUris.Select(x => new Uri(x)).ToArray(),
             GrantTypes =
                 new[] { GrantTypes.AuthorizationCode, GrantTypes.ClientCredentials, GrantTypes.RefreshToken },
@@ -117,10 +120,12 @@ public sealed class ClientsController : BaseController
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Id.Create() } },
             TokenLifetime = TimeSpan.FromHours(1),
             UserClaimsToIncludeInAuthToken = new[] { new Regex("^sub$", RegexOptions.Compiled) },
-            TokenEndPointAuthMethod = request.TokenEndpointAuthMethod ?? TokenEndPointAuthenticationMethods.ClientSecretPost
+            TokenEndPointAuthMethod =
+                request.TokenEndpointAuthMethod ?? TokenEndPointAuthenticationMethods.ClientSecretPost
         };
 
-        var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!, _logger);
+        var factory = new ClientFactory(_httpClient, _scopeStore,
+            u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!, _logger);
         var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
         switch (toInsert)
         {
@@ -162,7 +167,10 @@ public sealed class ClientsController : BaseController
     [HttpPut]
     [Route("register/{clientId}")]
     [Authorize(Policy = "dcr")]
-    public async Task<IActionResult> Modify(string clientId, [FromBody] DynamicClientRegistrationRequest update, CancellationToken cancellationToken)
+    public async Task<IActionResult> Modify(
+        string clientId,
+        [FromBody] DynamicClientRegistrationRequest update,
+        CancellationToken cancellationToken)
     {
         var client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
         if (client == null)
@@ -175,16 +183,21 @@ public sealed class ClientsController : BaseController
         {
             client.RedirectionUrls = Array.ConvertAll(update.RedirectUris, x => new Uri(x));
         }
+
         client.LogoUri = Uri.TryCreate(update.LogoUri, UriKind.Absolute, out var logoUri) ? logoUri : null;
         if (update.Contacts.Length > 0)
         {
             client.Contacts = update.Contacts;
         }
+
         if (!string.IsNullOrWhiteSpace(update.ClientName))
         {
             client.ClientName = update.ClientName;
         }
-        client.ApplicationType = update.ApplicationType == ApplicationTypes.Native ? ApplicationTypes.Native : ApplicationTypes.Web;
+
+        client.ApplicationType = update.ApplicationType == ApplicationTypes.Native
+            ? ApplicationTypes.Native
+            : ApplicationTypes.Web;
         if (!string.IsNullOrWhiteSpace(update.TokenEndpointAuthMethod))
         {
             client.TokenEndPointAuthMethod = update.TokenEndpointAuthMethod;
@@ -339,7 +352,8 @@ public sealed class ClientsController : BaseController
     [Authorize(Policy = "manager")]
     public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
     {
-        var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!, _logger);
+        var factory = new ClientFactory(_httpClient, _scopeStore,
+            u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!, _logger);
         var option = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
         switch (option)
         {
@@ -368,6 +382,7 @@ public sealed class ClientsController : BaseController
         {
             return BadRequest();
         }
+
         var client = new Client
         {
             ClientName = viewModel.Name,
@@ -380,7 +395,8 @@ public sealed class ClientsController : BaseController
             GrantTypes = viewModel.GrantTypes.ToArray()
         };
 
-        var factory = new ClientFactory(_httpClient, _scopeStore, JsonConvert.DeserializeObject<Uri[]>!, _logger);
+        var factory = new ClientFactory(_httpClient, _scopeStore,
+            u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!, _logger);
         var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
         switch (toInsert)
         {

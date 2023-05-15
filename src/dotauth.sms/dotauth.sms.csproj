@@ -5,7 +5,6 @@
     <PropertyGroup>
         <Description>DotAuth SMS Authentication Library</Description>
         <Title>DotAuth SMS Authentication</Title>
-        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
         <AssemblyName>dotauth.sms</AssemblyName>
         <PackageId>dotauth.sms</PackageId>
         <RootNamespace>DotAuth.Sms</RootNamespace>

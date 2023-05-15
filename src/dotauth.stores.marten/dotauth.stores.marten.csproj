@@ -5,7 +5,6 @@
     <PropertyGroup>
         <Description>DotAuth Marten Stores</Description>
         <Title>DotAuth Marten Stores</Title>
-        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
         <AssemblyName>dotauth.stores.marten</AssemblyName>
         <PackageId>dotauth.stores.marten</PackageId>
         <RootNamespace>DotAuth.Stores.Marten</RootNamespace>
@@ -17,11 +16,6 @@
         <PackageReference Include="marten" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-        <PackageReference Include="marten" Version="5.11.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.3" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />

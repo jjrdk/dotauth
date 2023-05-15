@@ -2,11 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 public sealed class RedisConsentStore : IConsentRepository
@@ -20,17 +21,19 @@ public sealed class RedisConsentStore : IConsentRepository
         _expiry = expiry == default ? TimeSpan.FromDays(365 * 5) : expiry;
     }
 
-    public async Task<IReadOnlyCollection<Consent>> GetConsentsForGivenUser(string subject, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Consent>> GetConsentsForGivenUser(
+        string subject,
+        CancellationToken cancellationToken)
     {
         var consent = await _database.StringGetAsync(subject).ConfigureAwait(false);
         return consent.HasValue
-            ? JsonConvert.DeserializeObject<Consent[]>(consent!)!
+            ? JsonSerializer.Deserialize<Consent[]>(consent!, DefaultJsonSerializerOptions.Instance)!
             : Array.Empty<Consent>();
     }
 
     public Task<bool> Insert(Consent record, CancellationToken cancellationToken)
     {
-        var json = JsonConvert.SerializeObject(record);
+        var json = JsonSerializer.Serialize(record, DefaultJsonSerializerOptions.Instance);
         return _database.StringSetAsync(record.Subject, json, _expiry);
     }
 

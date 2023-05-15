@@ -18,8 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using DotAuth.Shared.Models;
-using Newtonsoft.Json;
 
 /// <summary>
 /// Defines the ClaimPrincipal extensions.
@@ -54,8 +54,11 @@ public static class ClaimPrincipalExtensions
             tickets = claims.Where(c => c.Type == "permissions")
                 .SelectMany(
                     c => c.Value.StartsWith("[")
-                        ? JsonConvert.DeserializeObject<Permission[]>(c.Value)!
-                        : new[] { JsonConvert.DeserializeObject<Permission>(c.Value)! })
+                        ? JsonSerializer.Deserialize<Permission[]>(c.Value, DefaultJsonSerializerOptions.Instance)!
+                        : new[]
+                        {
+                            JsonSerializer.Deserialize<Permission>(c.Value, DefaultJsonSerializerOptions.Instance)!
+                        })
                 .ToArray();
             return tickets.Length > 0;
         }
@@ -96,7 +99,7 @@ public static class ClaimPrincipalExtensions
     {
         // ReSharper disable once PossibleMultipleEnumeration
         return (claims.FirstOrDefault(c => c.Type == OpenIdClaimTypes.Subject)
-                ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier))?.Value;
+         ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier))?.Value;
     }
 
     /// <summary>
@@ -138,9 +141,9 @@ public static class ClaimPrincipalExtensions
     public static string? GetName(this ClaimsPrincipal? principal)
     {
         return GetClaimValue(principal, OpenIdClaimTypes.Name)
-               ?? GetClaimValue(principal, StandardClaimNames.Subject)
-               ?? GetClaimValue(principal, ClaimTypes.Name)
-               ?? GetClaimValue(principal, ClaimTypes.NameIdentifier);
+         ?? GetClaimValue(principal, StandardClaimNames.Subject)
+         ?? GetClaimValue(principal, ClaimTypes.Name)
+         ?? GetClaimValue(principal, ClaimTypes.NameIdentifier);
     }
 
     /// <summary>
@@ -151,9 +154,9 @@ public static class ClaimPrincipalExtensions
     public static string? GetEmail(this ClaimsPrincipal? principal)
     {
         return GetClaimValue(principal, OpenIdClaimTypes.Email)
-               ?? GetClaimValue(principal, ClaimTypes.Email);
+         ?? GetClaimValue(principal, ClaimTypes.Email);
     }
-    
+
     /// <summary>
     /// Returns the email claim value from a set of claims.
     /// Otherwise returns null.

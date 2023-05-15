@@ -109,7 +109,7 @@ public sealed class PermissionsController : BaseController
                     new UmaRequestApproved(
                         Id.Create(),
                         id,
-                        User.GetClientId()!,
+                        User.GetClientId(),
                         User.GetSubject()!,
                         claims,
                         DateTimeOffset.UtcNow))

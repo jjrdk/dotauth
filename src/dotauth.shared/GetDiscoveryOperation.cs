@@ -18,12 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
-using JsonConverter = System.Text.Json.Serialization.JsonConverter;
 
 internal sealed class GetDiscoveryOperation
 {
@@ -45,6 +43,7 @@ internal sealed class GetDiscoveryOperation
             {
                 path = path[..hasWellKnownPart];
             }
+
             var queryStart = path.IndexOf('?');
             if (queryStart > 0)
             {
@@ -59,6 +58,7 @@ internal sealed class GetDiscoveryOperation
         {
             path = wellKnownOpenidConfiguration;
         }
+
         var uri = new UriBuilder(
             authority.Scheme,
             authority.Host,
@@ -84,14 +84,11 @@ internal sealed class GetDiscoveryOperation
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var response =
                 await _httpClient().SendAsync(request, cancellationToken).ConfigureAwait(false);
-#if NETSTANDARD2_1
-            var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-#else
-            var serializedContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-#endif
-            doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent)!;
-            _cache.Add(key, doc);
-            return doc;
+            var serializedContent = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            doc = await JsonSerializer.DeserializeAsync<DiscoveryInformation>(serializedContent,
+                DefaultJsonSerializerOptions.Instance, cancellationToken: cancellationToken);
+            _cache.Add(key, doc!);
+            return doc!;
         }
         finally
         {

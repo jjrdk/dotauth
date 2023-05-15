@@ -29,20 +29,24 @@ public sealed class DataController : ControllerBase
     public async Task<IActionResult> Index(string id, CancellationToken cancellationToken)
     {
         var userIdentity = User.Identity as ClaimsIdentity;
-        if (userIdentity!.TryGetUmaTickets(out var permissions) && permissions.Any(x => x.ResourceSetId == id))
+        var umaTickets = userIdentity!.TryGetUmaTickets(out var permissions);
+        if (umaTickets && permissions.Any(x => x.ResourceSetId == id))
         {
             return Ok("Hello");
         }
 
         var token = await HttpContext.GetTokenAsync("access_token").ConfigureAwait(false);
         var request = new PermissionRequest {ResourceSetId = id, Scopes = new[] {"api1"}};
-        var ticket =
-            await _umaClient.RequestPermission(token!, cancellationToken, request).ConfigureAwait(false) as
-                Option<TicketResponse>.Result;
-        Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-        Response.Headers[HeaderNames.WWWAuthenticate] =
-            $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket!.Item.TicketId}\"";
+        var option = await _umaClient.RequestPermission(token!, cancellationToken, request).ConfigureAwait(false);
+        if (option is Option<TicketResponse>.Result ticket)
+        {
+            Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            Response.Headers[HeaderNames.WWWAuthenticate] =
+                $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket!.Item.TicketId}\"";
 
-        return StatusCode((int) HttpStatusCode.Unauthorized);
+            return StatusCode((int)HttpStatusCode.Unauthorized);
+        }
+
+        return BadRequest(option as Option<TicketResponse>.Error);
     }
 }

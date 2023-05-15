@@ -3,11 +3,12 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 public sealed class RedisTokenStore : ITokenStore
@@ -28,16 +29,16 @@ public sealed class RedisTokenStore : ITokenStore
     {
         var token = await _database.StringGetAsync(clientId + scopes).ConfigureAwait(false);
         var options = token.HasValue
-            ? JsonConvert.DeserializeObject<GrantedToken[]>(token!)!
+            ? JsonSerializer.Deserialize<GrantedToken[]>(token!, DefaultJsonSerializerOptions.Instance)!
             : Array.Empty<GrantedToken>();
         return options.FirstOrDefault(
             x =>
             {
                 var hasSameIdToken = (idTokenJwsPayload == null && x.IdTokenPayLoad == null)
-                                     || idTokenJwsPayload?.All(a => x.IdTokenPayLoad?.Contains(a) == true) == true;
+                 || idTokenJwsPayload?.All(a => x.IdTokenPayLoad?.Contains(a) == true) == true;
                 var hasSameUserInfoToken = (userInfoJwsPayload == null && x.UserInfoPayLoad == null)
-                                           || userInfoJwsPayload?.All(a => x.UserInfoPayLoad?.Contains(a) == true)
-                                           == true;
+                 || userInfoJwsPayload?.All(a => x.UserInfoPayLoad?.Contains(a) == true)
+                 == true;
                 return hasSameIdToken && hasSameUserInfoToken;
             });
     }
@@ -55,18 +56,21 @@ public sealed class RedisTokenStore : ITokenStore
     private async Task<GrantedToken?> GetToken(string token, CancellationToken cancellationToken)
     {
         var value = await _database.StringGetAsync(token).ConfigureAwait(false);
-        return value.IsNullOrEmpty ? null : JsonConvert.DeserializeObject<GrantedToken>(value!);
+        return value.IsNullOrEmpty
+            ? null
+            : JsonSerializer.Deserialize<GrantedToken>(value!, DefaultJsonSerializerOptions.Instance);
     }
 
     public async Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
     {
-        var value = JsonConvert.SerializeObject(grantedToken);
+        var value = JsonSerializer.Serialize(grantedToken, DefaultJsonSerializerOptions.Instance);
         var existingScopeValue = await _database.StringGetAsync(grantedToken.ClientId + grantedToken.Scope)
             .ConfigureAwait(false);
         var existingScopeToken = existingScopeValue.HasValue
-            ? JsonConvert.DeserializeObject<GrantedToken[]>(existingScopeValue!)!
+            ? JsonSerializer.Deserialize<GrantedToken[]>(existingScopeValue!, DefaultJsonSerializerOptions.Instance)!
             : Array.Empty<GrantedToken>();
-        var scopeTokens = JsonConvert.SerializeObject(existingScopeToken.Concat(new[] { grantedToken }).ToArray());
+        var scopeTokens = JsonSerializer.Serialize(existingScopeToken.Concat(new[] { grantedToken }).ToArray(),
+            DefaultJsonSerializerOptions.Instance);
         var expiry = TimeSpan.FromSeconds(grantedToken.ExpiresIn);
         var idTask = _database.StringSetAsync(grantedToken.Id, value, expiry, when: When.NotExists);
         var scopeTokenTask = _database.StringSetAsync(
@@ -80,7 +84,8 @@ public sealed class RedisTokenStore : ITokenStore
             ? Task.FromResult(true)
             : _database.StringSetAsync(grantedToken.RefreshToken, value, expiry, when: When.NotExists);
 
-        var result = (await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
+        var result = (await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask)
+                .ConfigureAwait(false))
             .All(x => x);
         return result;
         // if (result)
@@ -114,7 +119,8 @@ public sealed class RedisTokenStore : ITokenStore
 
         try
         {
-            var result = (await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask).ConfigureAwait(false))
+            var result = (await Task.WhenAll(idTask, scopeTokenTask, accessTokenTask, refreshTokenTask)
+                    .ConfigureAwait(false))
                 .All(x => x);
             return result;
         }

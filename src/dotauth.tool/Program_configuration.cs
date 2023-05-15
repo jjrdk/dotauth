@@ -1,7 +1,8 @@
 ﻿namespace dotauth.tool;
 
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
+using DotAuth.Shared;
 
 internal partial class Program
 {
@@ -16,6 +17,7 @@ internal partial class Program
         {
             args.Authority = "https://accounts.google.com";
         }
+
         if (Uri.TryCreate(args.Authority, UriKind.Absolute, out var auth))
         {
             config.Authority = auth.AbsoluteUri;
@@ -48,13 +50,16 @@ internal partial class Program
             Directory.CreateDirectory(directoryName!);
         }
 
-        await File.WriteAllTextAsync(configFile, JsonConvert.SerializeObject(config), Encoding.UTF8)
+        await File.WriteAllTextAsync(configFile,
+                JsonSerializer.Serialize(config, DefaultJsonSerializerOptions.Instance), Encoding.UTF8)
             .ConfigureAwait(false);
 
         await Console.Out.WriteLineAsync("Tool configured").ConfigureAwait(false);
         if (args.OutputResulting)
         {
-            var json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            var options = DefaultJsonSerializerOptions.Instance;
+            options.WriteIndented = true;
+            var json = JsonSerializer.Serialize(config, options);
             await Console.Out.WriteLineAsync(json).ConfigureAwait(false);
         }
     }

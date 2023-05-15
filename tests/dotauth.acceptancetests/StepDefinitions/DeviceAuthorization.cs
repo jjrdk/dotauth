@@ -30,7 +30,7 @@ public partial class FeatureTest
         _tokenClient = new TokenClient(
             TokenCredentials.AsDevice(),
             _fixture!.Client,
-            new Uri(FeatureTest.WellKnownOpenidConfiguration));
+            new Uri(WellKnownOpenidConfiguration));
 
         Assert.NotNull(_tokenClient);
     }
@@ -39,7 +39,7 @@ public partial class FeatureTest
     public async Task WhenRequestingDiscoveryDocument()
     {
         var request =
-            new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(FeatureTest.WellKnownOpenidConfiguration) };
+            new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(WellKnownOpenidConfiguration) };
         request.Headers.Accept.Clear();
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         var response = await _fixture!.Client().SendAsync(request).ConfigureAwait(false);
@@ -61,7 +61,7 @@ public partial class FeatureTest
         var authClient = new TokenClient(
             TokenCredentials.FromClientCredentials(ClientId, "client"),
             _fixture!.Client,
-            new Uri(FeatureTest.WellKnownOpenidConfiguration));
+            new Uri(WellKnownOpenidConfiguration));
         var option = await authClient.GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }))
             .ConfigureAwait(false);
 

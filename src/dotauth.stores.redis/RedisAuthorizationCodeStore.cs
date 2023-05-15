@@ -1,11 +1,12 @@
 ﻿namespace DotAuth.Stores.Redis;
 
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 /// <summary>
@@ -31,13 +32,15 @@ public sealed class RedisAuthorizationCodeStore : IAuthorizationCodeStore
     public async Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken)
     {
         var authCode = await _database.StringGetAsync(code).ConfigureAwait(false);
-        return authCode.HasValue ? JsonConvert.DeserializeObject<AuthorizationCode>(authCode!) : null;
+        return authCode.HasValue
+            ? JsonSerializer.Deserialize<AuthorizationCode>(authCode!, DefaultJsonSerializerOptions.Instance)
+            : null;
     }
 
     /// <inheritdoc />
     public Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken)
     {
-        var json = JsonConvert.SerializeObject(authorizationCode);
+        var json = JsonSerializer.Serialize(authorizationCode, DefaultJsonSerializerOptions.Instance);
         return _database.StringSetAsync(authorizationCode.Code, json, _expiry);
     }
 

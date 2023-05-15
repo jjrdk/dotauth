@@ -2,7 +2,6 @@
 
     <Import Project="../../shared.projinfo" />
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
         <PreserveCompilationContext>true</PreserveCompilationContext>
         <AssemblyName>dotauth.authserverpg</AssemblyName>
         <OutputType>Exe</OutputType>

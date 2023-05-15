@@ -99,7 +99,8 @@ public static class ServiceCollectionExtensions
 
                         var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == ScopeType);
                         return claimScopes != null
-                               && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries).Any(s => s == "uma_protection");
+                         && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries)
+                                .Any(s => s == "uma_protection");
                     });
             });
         options.AddPolicy(
@@ -124,7 +125,7 @@ public static class ServiceCollectionExtensions
 
                         var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == ScopeType);
                         return claimScopes != null
-                               && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries).Any(s => s == "dcr");
+                         && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries).Any(s => s == "dcr");
                     });
             });
         options.AddPolicy(
@@ -150,8 +151,8 @@ public static class ServiceCollectionExtensions
 
                         var (roleName, roleClaim) = administratorRoleDefinition;
                         return result
-                               && p.User.Claims.Where(c => c.Type == roleName)
-                                   .Any(c => c.HasClaimValue(roleClaim));
+                         && p.User.Claims.Where(c => c.Type == roleName)
+                                .Any(c => c.HasClaimValue(roleClaim));
                     });
             });
 
@@ -275,7 +276,29 @@ public static class ServiceCollectionExtensions
                 {
                     o.OutputFormatters.Add(new RazorOutputFormatter());
                     mvcConfig?.Invoke(o);
-                });
+                })
+            .AddJsonOptions(o =>
+            {
+                var instance = DefaultJsonSerializerOptions.Instance;
+                var options = o.JsonSerializerOptions;
+                foreach (var converter in instance.Converters)
+                {
+                    options.Converters.Add(converter);
+                }
+
+                options.NumberHandling = instance.NumberHandling;
+                options.WriteIndented = instance.WriteIndented;
+                options.AllowTrailingCommas = instance.AllowTrailingCommas;
+                options.DefaultIgnoreCondition = instance.DefaultIgnoreCondition;
+                options.DictionaryKeyPolicy = instance.DictionaryKeyPolicy;
+                options.PropertyNamingPolicy = instance.PropertyNamingPolicy;
+                options.ReadCommentHandling = instance.ReadCommentHandling;
+                options.TypeInfoResolver = instance.TypeInfoResolver;
+                options.UnknownTypeHandling = instance.UnknownTypeHandling;
+                options.IgnoreReadOnlyFields = instance.IgnoreReadOnlyFields;
+                options.IgnoreReadOnlyProperties = instance.IgnoreReadOnlyProperties;
+                options.PropertyNameCaseInsensitive = instance.PropertyNameCaseInsensitive;
+            });
         mvcBuilder = assemblies.Distinct()
             .Aggregate(
                 mvcBuilder,
@@ -284,16 +307,17 @@ public static class ServiceCollectionExtensions
                     return b.AddRazorRuntimeCompilation(
                             o => o.FileProviders.Add(new EmbeddedFileProvider(a.assembly, a.defaultNamespace)))
                         .AddApplicationPart(a.assembly);
-                })
-            .AddNewtonsoftJson();
+                });
         Globals.ApplicationName = configuration.ApplicationName;
         var runtimeConfig = GetRuntimeConfig(configuration);
         services.AddAuthentication();
-        services.AddAuthorization(opts => { opts.AddAuthPolicies(configuration.AdministratorRoleDefinition, authPolicies); });
+        services.AddAuthorization(opts =>
+        {
+            opts.AddAuthPolicies(configuration.AdministratorRoleDefinition, authPolicies);
+        });
 
         var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()
             .AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>()
-            .ConfigureOptions<ConfigureMvcNewtonsoftJsonOptions>()
             .AddSingleton<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>()
             .AddSingleton(runtimeConfig)
             .AddSingleton(requestThrottle ?? NoopThrottle.Instance)
@@ -303,19 +327,23 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IJwksStore>(sp => sp.GetRequiredService<IJwksRepository>())
             .AddSingleton(
                 sp => configuration.Clients?.Invoke(sp)
-                      ?? new InMemoryClientRepository(
-                          sp.GetRequiredService<IHttpClientFactory>(),
-                          sp.GetRequiredService<IScopeStore>(),
-                          sp.GetRequiredService<ILogger<InMemoryClientRepository>>()))
+                 ?? new InMemoryClientRepository(
+                        sp.GetRequiredService<IHttpClientFactory>(),
+                        sp.GetRequiredService<IScopeStore>(),
+                        sp.GetRequiredService<ILogger<InMemoryClientRepository>>()))
             .AddSingleton<IClientStore>(sp => sp.GetRequiredService<IClientRepository>())
             .AddSingleton(sp => configuration.Consents?.Invoke(sp) ?? new InMemoryConsentRepository())
             .AddSingleton<IConsentStore>(sp => sp.GetRequiredService<IConsentRepository>())
-            .AddSingleton(sp => configuration.Users?.Invoke(sp) ?? new InMemoryResourceOwnerRepository(configuration.Salt))
+            .AddSingleton(sp =>
+                configuration.Users?.Invoke(sp) ?? new InMemoryResourceOwnerRepository(configuration.Salt))
             .AddSingleton<IResourceOwnerStore>(sp => sp.GetRequiredService<IResourceOwnerRepository>())
             .AddSingleton(sp => configuration.Scopes?.Invoke(sp) ?? new InMemoryScopeRepository())
             .AddSingleton<IScopeStore>(sp => sp.GetRequiredService<IScopeRepository>())
-            .AddSingleton(sp => configuration.DeviceAuthorizations?.Invoke(sp) ?? new InMemoryDeviceAuthorizationStore())
-            .AddSingleton(sp => configuration.ResourceSets?.Invoke(sp) ?? new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>()))
+            .AddSingleton(
+                sp => configuration.DeviceAuthorizations?.Invoke(sp) ?? new InMemoryDeviceAuthorizationStore())
+            .AddSingleton(sp =>
+                configuration.ResourceSets?.Invoke(sp) ??
+                new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>()))
             .AddSingleton(sp => configuration.Tickets?.Invoke(sp) ?? new InMemoryTicketStore())
             .AddSingleton(sp => configuration.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
             .AddSingleton(sp => configuration.Tokens?.Invoke(sp) ?? new InMemoryTokenStore())
@@ -367,7 +395,8 @@ public static class ServiceCollectionExtensions
         params (string defaultNamespace, Assembly assembly)[] assemblies)
     {
         var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
-        var forwardedHeadersOptions = new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All, ForwardLimit = null };
+        var forwardedHeadersOptions = new ForwardedHeadersOptions
+            { ForwardedHeaders = ForwardedHeaders.All, ForwardLimit = null };
         forwardedHeadersOptions.KnownNetworks.Clear();
         forwardedHeadersOptions.KnownProxies.Clear();
         forwardedHeaderConfiguration?.Invoke(forwardedHeadersOptions);

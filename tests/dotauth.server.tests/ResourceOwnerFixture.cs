@@ -88,10 +88,11 @@ public sealed class ResourceOwnerFixture : IDisposable
     [Fact]
     public async Task When_Update_Password_And_No_Login_Is_Passed_Then_Error_Is_Returned()
     {
-        var result = await _resourceOwnerClient
+        var option = await _resourceOwnerClient
             .UpdateResourceOwnerPassword(new UpdateResourceOwnerPasswordRequest(), "token")
             .ConfigureAwait(false) as Option.Error;
 
+        var result = Assert.IsType<Option.Error>(option);
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "login"), result.Details.Detail);
     }
