@@ -274,7 +274,7 @@ public static class ServiceCollectionExtensions
             .AddControllersWithViews(
                 o =>
                 {
-                    o.OutputFormatters.Add(new RazorOutputFormatter());
+                    o.OutputFormatters.Insert(1, new RazorOutputFormatter());
                     mvcConfig?.Invoke(o);
                 })
             .AddJsonOptions(o =>
