@@ -7,8 +7,8 @@ using Cake.Frosting;
 public sealed class BuildContext : FrostingContext
 {
     public string BuildConfiguration { get; set; } = "Release";
-    public string BuildVersion { get; set; }
-    public string InformationalVersion { get; set; }
+    public string BuildVersion { get; set; } = null!;
+    public string InformationalVersion { get; set; } = null!;
 
     public string SolutionName = "dotauth.sln";
 
