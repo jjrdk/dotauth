@@ -17,6 +17,7 @@ namespace DotAuth.Client;
 using System;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Client.Properties;
@@ -93,7 +94,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         }
 
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
-        var serializedJson = Serializer.Default.Serialize(client);
+        var serializedJson = JsonSerializer.Serialize(client, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
@@ -141,11 +142,12 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         }
 
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(client, DefaultJsonSerializerOptions.Instance);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Put,
             RequestUri = discoveryInformation.Clients,
-            Content = new StringContent(Serializer.Default.Serialize(client), Encoding.UTF8, "application/json")
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
         return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
@@ -178,7 +180,8 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         CancellationToken cancellationToken = default)
     {
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
-        var serializedPostPermission = Serializer.Default.Serialize(searchClientParameter);
+        var serializedPostPermission =
+            JsonSerializer.Serialize(searchClientParameter, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
@@ -231,7 +234,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         CancellationToken cancellationToken = default)
     {
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
-        var serializedJson = Serializer.Default.Serialize(scope);
+        var serializedJson = JsonSerializer.Serialize(scope, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
@@ -253,7 +256,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         CancellationToken cancellationToken = default)
     {
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
-        var json = Serializer.Default.Serialize(client);
+        var json = JsonSerializer.Serialize(client, DefaultJsonSerializerOptions.Instance);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -288,7 +291,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
             Method = HttpMethod.Post,
             RequestUri = discoveryInformation.ResourceOwners,
             Content = new StringContent(
-                Serializer.Default.Serialize(resourceOwner),
+                JsonSerializer.Serialize(resourceOwner, DefaultJsonSerializerOptions.Instance),
                 Encoding.UTF8,
                 "application/json")
         };
@@ -365,7 +368,8 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         }
 
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
-        var serializedJson = Serializer.Default.Serialize(updateResourceOwnerPasswordRequest);
+        var serializedJson =
+            JsonSerializer.Serialize(updateResourceOwnerPasswordRequest, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
@@ -400,7 +404,8 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         }
 
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
-        var serializedJson = Serializer.Default.Serialize(updateResourceOwnerClaimsRequest);
+        var serializedJson =
+            JsonSerializer.Serialize(updateResourceOwnerClaimsRequest, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
@@ -451,7 +456,8 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         CancellationToken cancellationToken = default)
     {
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
-        var serializedPostPermission = Serializer.Default.Serialize(searchResourceOwnersRequest);
+        var serializedPostPermission =
+            JsonSerializer.Serialize(searchResourceOwnersRequest, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {

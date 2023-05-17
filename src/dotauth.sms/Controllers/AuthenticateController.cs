@@ -151,7 +151,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     public async Task<IActionResult> Index()
     {
         var authenticatedUser = await SetUser().ConfigureAwait(false);
-        if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
+        if (authenticatedUser?.Identity is not { IsAuthenticated: true })
         {
             var viewModel = new AuthorizeViewModel();
             await SetIdProviders(viewModel).ConfigureAwait(false);
@@ -174,7 +174,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         CancellationToken cancellationToken)
     {
         var authenticatedUser = await SetUser().ConfigureAwait(false);
-        if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
+        if (authenticatedUser?.Identity is { IsAuthenticated: true })
         {
             return RedirectToAction("Index", "User", new { Area = "pwd" });
         }
@@ -249,7 +249,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     public async Task<IActionResult> ConfirmCode(string code)
     {
         var user = await SetUser().ConfigureAwait(false);
-        if (user?.Identity != null && user.Identity.IsAuthenticated)
+        if (user?.Identity is { IsAuthenticated: true })
         {
             return RedirectToAction("Index", "User", new { Area = "pwd" });
         }
@@ -257,7 +257,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         var authenticatedUser = await _authenticationService
             .GetAuthenticatedUser(this, CookieNames.PasswordLessCookieName)
             .ConfigureAwait(false);
-        if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
+        if (authenticatedUser?.Identity is not { IsAuthenticated: true })
         {
             var message = "SMS authentication cannot be performed";
             _logger.LogError(message);
@@ -286,7 +286,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         }
 
         var user = await SetUser().ConfigureAwait(false);
-        if (user?.Identity != null && user.Identity.IsAuthenticated)
+        if (user?.Identity is { IsAuthenticated: true })
         {
             return RedirectToAction("Index", "User", new { Area = "pwd" });
         }
@@ -294,7 +294,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         var authenticatedUser = await _authenticationService
             .GetAuthenticatedUser(this, CookieNames.PasswordLessCookieName)
             .ConfigureAwait(false);
-        if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
+        if (authenticatedUser?.Identity is not { IsAuthenticated: true })
         {
             var message = "SMS authentication cannot be performed";
             _logger.LogError(message);

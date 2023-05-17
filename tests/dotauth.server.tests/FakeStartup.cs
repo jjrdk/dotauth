@@ -69,9 +69,7 @@ public sealed class FakeStartup
         var symmetricAlgorithm = Aes.Create();
         symmetricAlgorithm.GenerateIV();
         symmetricAlgorithm.GenerateKey();
-        ServiceCollectionExtensions.AddDotAuthServer(
-                services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>(),
-                options =>
+        services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>().AddDotAuthServer(options =>
                 {
                     options.DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm);
                     options.AdministratorRoleDefinition = default;

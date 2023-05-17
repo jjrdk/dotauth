@@ -22,6 +22,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Client.Properties;
@@ -69,7 +70,10 @@ public sealed class TokenClient : ClientBase, ITokenClient
     /// <param name="credentials">The <see cref="TokenCredentials"/>.</param>
     /// <param name="client">The <see cref="HttpClient"/> for requests.</param>
     /// <param name="discoveryDocumentation">The metadata information.</param>
-    public TokenClient(TokenCredentials credentials, Func<HttpClient> client, DiscoveryInformation discoveryDocumentation)
+    public TokenClient(
+        TokenCredentials credentials,
+        Func<HttpClient> client,
+        DiscoveryInformation discoveryDocumentation)
         : base(client, discoveryDocumentation)
     {
         _form = credentials;
@@ -90,7 +94,8 @@ public sealed class TokenClient : ClientBase, ITokenClient
     {
         if (tokenRequest is DeviceTokenRequest deviceTokenRequest)
         {
-            await Task.Delay(TimeSpan.FromSeconds(deviceTokenRequest.Interval), cancellationToken).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromSeconds(deviceTokenRequest.Interval), cancellationToken)
+                .ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
         }
 
@@ -103,8 +108,9 @@ public sealed class TokenClient : ClientBase, ITokenClient
             RequestUri = discoveryInformation.TokenEndPoint
         };
 
-        var result = await GetResult<GrantedTokenResponse>(request, _authorizationValue, _certificate, cancellationToken)
-            .ConfigureAwait(false);
+        var result =
+            await GetResult<GrantedTokenResponse>(request, _authorizationValue, _certificate, cancellationToken)
+                .ConfigureAwait(false);
         return result switch
         {
             Option<GrantedTokenResponse>.Error { Details.Title: ErrorCodes.AuthorizationPending } =>
@@ -155,12 +161,9 @@ public sealed class TokenClient : ClientBase, ITokenClient
                 Status = HttpStatusCode.UnprocessableEntity
             },
             >= 300 and < 400 => response.Headers.Location!,
-            _ => Serializer.Default.Deserialize<ErrorDetails>(
-#if NETSTANDARD2_1
-                await response.Content.ReadAsStringAsync().ConfigureAwait(false))!
-#else
-                await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false))!
-#endif
+            _ => (await JsonSerializer.DeserializeAsync<ErrorDetails>(
+                await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false),
+                DefaultJsonSerializerOptions.Instance, cancellationToken))!
         };
     }
 
@@ -182,20 +185,15 @@ public sealed class TokenClient : ClientBase, ITokenClient
 
         var response = await _client().SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
+        var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         return (int)response.StatusCode switch
         {
-            < 300 => Serializer.Default.Deserialize<DeviceAuthorizationResponse>(
-#if NETSTANDARD2_1
-                await response.Content.ReadAsStringAsync().ConfigureAwait(false))!,
-#else
-                await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false))!,
-#endif
-            _ => Serializer.Default.Deserialize<ErrorDetails>(
-#if NETSTANDARD2_1
-                await response.Content.ReadAsStringAsync().ConfigureAwait(false))!,
-#else
-                await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false))!,
-#endif
+            < 300 => (await JsonSerializer.DeserializeAsync<DeviceAuthorizationResponse>(
+                stream,
+                DefaultJsonSerializerOptions.Instance, cancellationToken))!,
+            _ => (await JsonSerializer.DeserializeAsync<ErrorDetails>(
+                stream,
+                DefaultJsonSerializerOptions.Instance, cancellationToken))!,
         };
     }
 
@@ -228,7 +226,7 @@ public sealed class TokenClient : ClientBase, ITokenClient
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var requestUri = new Uri(discoveryInformation.Issuer + "code");
 
-        var json = Serializer.Default.Serialize(request);
+        var json = JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance);
         var req = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -239,14 +237,11 @@ public sealed class TokenClient : ClientBase, ITokenClient
         req.Headers.Authorization = _authorizationValue;
 
         var result = await _client().SendAsync(req, cancellationToken).ConfigureAwait(false);
-#if NETSTANDARD2_1
-        var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-#else
-        var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-#endif
+        var content = await result.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         if (!result.IsSuccessStatusCode)
         {
-            return Serializer.Default.Deserialize<ErrorDetails>(content)!;
+            return (await JsonSerializer.DeserializeAsync<ErrorDetails>(content, DefaultJsonSerializerOptions.Instance,
+                cancellationToken))!;
         }
 
         return new Option.Success();
@@ -280,17 +275,14 @@ public sealed class TokenClient : ClientBase, ITokenClient
         request.Headers.Authorization = _authorizationValue;
 
         var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
-#if NETSTANDARD2_1
-        var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-#else
-        var json = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-#endif
-        if (!result.IsSuccessStatusCode)
+        if (result.IsSuccessStatusCode)
         {
-            return Serializer.Default.Deserialize<ErrorDetails>(json)!;
+            return new Option.Success();
         }
 
-        return new Option.Success();
+        var json = await result.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        return (await JsonSerializer.DeserializeAsync<ErrorDetails>(json, DefaultJsonSerializerOptions.Instance,
+            cancellationToken))!;
     }
 
     /// <summary>

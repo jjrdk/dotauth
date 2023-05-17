@@ -90,6 +90,7 @@ public sealed class UserController : BaseController
         {
             return RedirectToAction("Index", "Home");
         }
+
         var subject = authenticatedUser.GetSubject();
         var ro = subject == null ? null : await GetUserProfile(subject, cancellationToken).ConfigureAwait(false);
         if (ro == null)
@@ -114,13 +115,13 @@ public sealed class UserController : BaseController
             viewModel.LinkedIdentityProviders.Add(record);
         }
 
-        var actualScheme = authenticatedUser?.Identity?.AuthenticationType;
+        var actualScheme = authenticatedUser.Identity?.AuthenticationType;
 
         viewModel.UnlinkedIdentityProviders = authenticationSchemes
             .Where(
                 a => a.DisplayName != null
-                     && !a.DisplayName.StartsWith('_')
-                     && !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
+                 && !a.DisplayName.StartsWith('_')
+                 && !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
             .Select(p => new IdentityProviderViewModel(p.Name))
             .ToList();
         return Ok(viewModel);
@@ -173,6 +174,7 @@ public sealed class UserController : BaseController
         {
             return Unauthorized();
         }
+
         ViewBag.IsUpdated = false;
         ViewBag.IsCreated = false;
         return await GetEditView(authenticatedUser, cancellationToken).ConfigureAwait(false);
@@ -204,8 +206,8 @@ public sealed class UserController : BaseController
         //var resourceOwner = await _getUserOperation.Execute(authenticatedUser).ConfigureAwait(false);
         var subject = authenticatedUser.GetSubject();
         var updated = subject != null
-                      && await _resourceOwnerRepository.SetPassword(subject, viewModel.Password!, cancellationToken)
-                          .ConfigureAwait(false);
+         && await _resourceOwnerRepository.SetPassword(subject, viewModel.Password!, cancellationToken)
+                .ConfigureAwait(false);
         ViewBag.IsUpdated = updated;
         return await GetEditView(authenticatedUser!, cancellationToken).ConfigureAwait(false);
     }
@@ -324,8 +326,8 @@ public sealed class UserController : BaseController
         var externalClaims = await _authenticationService.GetAuthenticatedUser(this)
             .ConfigureAwait(false);
         if (externalClaims?.Identity == null
-            || !externalClaims.Identity.IsAuthenticated
-            || externalClaims.Identity is not ClaimsIdentity identity)
+         || !externalClaims.Identity.IsAuthenticated
+         || externalClaims.Identity is not ClaimsIdentity identity)
         {
             return RedirectToAction("Index", "User");
         }
@@ -346,8 +348,8 @@ public sealed class UserController : BaseController
         var externalClaims = await _authenticationService.GetAuthenticatedUser(this)
             .ConfigureAwait(false);
         if (externalClaims?.Identity == null
-            || !externalClaims.Identity.IsAuthenticated
-            || externalClaims.Identity is not ClaimsIdentity)
+         || !externalClaims.Identity.IsAuthenticated
+         || externalClaims.Identity is not ClaimsIdentity)
         {
             return RedirectToAction("Profile", "User");
         }
@@ -361,6 +363,7 @@ public sealed class UserController : BaseController
             {
                 return SetRedirection(e.Details.Detail, e.Details.Status.ToString(), e.Details.Title);
             }
+
             return RedirectToAction("Index", "User");
         }
         finally
@@ -543,7 +546,6 @@ public sealed class UserController : BaseController
         var result = await _resourceOwnerRepository.Update(resourceOwner, cancellationToken)
             .ConfigureAwait(false);
         return result;
-
     }
 
     private async Task<Option> InnerLinkProfile(
@@ -594,6 +596,5 @@ public sealed class UserController : BaseController
             .ToArray();
         await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
         return new Option.Success();
-
     }
 }

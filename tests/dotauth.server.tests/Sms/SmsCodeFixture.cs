@@ -27,8 +27,9 @@ public sealed class SmsCodeFixture : IDisposable
     public async Task WhenNoPhoneNumberConfiguredThenReturnsError()
     {
         var client = CreateTokenClient();
-        var noPhoneNumberResult = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = string.Empty })
-            .ConfigureAwait(false) as Option.Error;
+        var noPhoneNumberResult = Assert.IsType<Option.Error>(await client
+            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = string.Empty })
+            .ConfigureAwait(false));
 
         // ASSERT : NO PHONE NUMBER
         Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.Details.Status);
@@ -57,8 +58,9 @@ public sealed class SmsCodeFixture : IDisposable
         _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync((false, ""));
         var client = CreateTokenClient();
-        var twilioNotConfigured = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            .ConfigureAwait(false) as Option.Error;
+        var twilioNotConfigured = Assert.IsType<Option.Error>(await client
+            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, twilioNotConfigured.Details.Title);
         Assert.Equal("The SMS account is not properly configured", twilioNotConfigured.Details.Detail);
@@ -78,9 +80,9 @@ public sealed class SmsCodeFixture : IDisposable
             .Callback(() => { })
             .ReturnsAsync((true, null));
         var client = CreateTokenClient();
-        var cannotInsertConfirmationCode = await client
+        var cannotInsertConfirmationCode = Assert.IsType<Option.Error>(await client
             .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            .ConfigureAwait(false) as Option.Error;
+            .ConfigureAwait(false));
 
         // ASSERT : CANNOT INSERT CONFIRMATION CODE
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, cannotInsertConfirmationCode.Details.Title);
@@ -101,8 +103,9 @@ public sealed class SmsCodeFixture : IDisposable
             .Callback(() => throw new Exception())
             .Returns(() => Task.FromResult(false));
         var client = CreateTokenClient();
-        var unhandledException = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            .ConfigureAwait(false) as Option.Error;
+        var unhandledException = Assert.IsType<Option.Error>(await client
+            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Details!.Title);
         Assert.Equal(
@@ -133,7 +136,6 @@ public sealed class SmsCodeFixture : IDisposable
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         _server?.Dispose();
     }
 }

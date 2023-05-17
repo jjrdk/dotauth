@@ -14,14 +14,14 @@ using Xunit;
 
 public sealed class ClientFixture : IDisposable
 {
-    private const string OpenidmanagerConfiguration = "http://localhost:5000/.well-known/openid-configuration";
+    private const string OpenIdManagerConfiguration = "http://localhost:5000/.well-known/openid-configuration";
     private readonly TestManagerServerFixture _server;
     private readonly ManagementClient _openidClients;
 
     public ClientFixture()
     {
         _server = new TestManagerServerFixture();
-        _openidClients = ManagementClient.Create(_server.Client, new Uri(OpenidmanagerConfiguration)).Result;
+        _openidClients = ManagementClient.Create(_server.Client, new Uri(OpenIdManagerConfiguration)).GetAwaiter().GetResult();
     }
 
     [Fact]

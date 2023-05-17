@@ -15,12 +15,12 @@
 namespace DotAuth.Server.Tests;
 
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Properties;
@@ -31,7 +31,6 @@ using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using Xunit;
 using Xunit.Abstractions;
-using Serializer = DotAuth.Client.Serializer;
 
 public sealed class ResourceFixture : IDisposable
 {
@@ -74,7 +73,7 @@ public sealed class ResourceFixture : IDisposable
     public async Task When_Add_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
     {
         var request = new { name = "name", scopes = new[] { "scope" }, icon_uri = "invalid" };
-        var serializedPostResourceSet = Serializer.Default.Serialize(request);
+        var serializedPostResourceSet = JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, "application/json");
         var httpRequest = new HttpRequestMessage
         {
@@ -92,8 +91,8 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Get_Unknown_Resource_Then_Error_Is_Returned()
     {
-        var resource =
-            await _umaClient.GetResourceSet("unknown", "header").ConfigureAwait(false) as Option<ResourceSet>.Error;
+        var resource = Assert.IsType<Option<ResourceSet>.Error>(
+            await _umaClient.GetResourceSet("unknown", "header").ConfigureAwait(false));
 
         Assert.Equal(HttpStatusCode.NoContent, resource.Details.Status);
     }
@@ -101,7 +100,8 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Delete_Unknown_Resource_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.DeleteResource("unknown", "header").ConfigureAwait(false) as Option.Error;
+        var resource = Assert.IsType<Option.Error>(
+            await _umaClient.DeleteResource("unknown", "header").ConfigureAwait(false));
 
         Assert.Equal(HttpStatusCode.BadRequest, resource.Details.Status);
     }
@@ -109,9 +109,8 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task WhenUpdateResourceAndNoIdIsSpecifiedThenIsNotUpdated()
     {
-        var resource =
-            await _umaClient.UpdateResourceSet(new ResourceSet(), "header").ConfigureAwait(false) as
-                Option<UpdateResourceSetResponse>.Error;
+        var resource = Assert.IsType<Option<UpdateResourceSetResponse>.Error>(
+            await _umaClient.UpdateResourceSet(new ResourceSet(), "header").ConfigureAwait(false));
 
         Assert.Equal(HttpStatusCode.NotFound, resource.Details.Status);
     }
@@ -119,10 +118,10 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Update_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.UpdateResourceSet(
+        var resource = Assert.IsType<Option<UpdateResourceSetResponse>.Error>(await _umaClient.UpdateResourceSet(
                 new ResourceSet { Id = "invalid", Name = string.Empty },
                 "header")
-            .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Error;
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "name"), resource.Details.Detail);
@@ -131,8 +130,9 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Update_Resource_And_No_Scopes_Is_Specified_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.UpdateResourceSet(new ResourceSet { Id = "invalid", Name = "name" }, "header")
-            .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Error;
+        var resource = Assert.IsType<Option<UpdateResourceSetResponse>.Error>(await _umaClient
+            .UpdateResourceSet(new ResourceSet { Id = "invalid", Name = "name" }, "header")
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "scopes"), resource.Details.Detail);
@@ -142,7 +142,7 @@ public sealed class ResourceFixture : IDisposable
     public async Task When_Update_Resource_And_No_Invalid_IconUri_Is_Specified_Then_Error_Is_Returned()
     {
         var request = new { _id = "invalid", name = "name", scopes = new[] { "scope" }, icon_uri = "invalid" };
-        var serializedPostResourceSet = Serializer.Default.Serialize(request);
+        var serializedPostResourceSet = JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, "application/json");
         var httpRequest = new HttpRequestMessage
         {
@@ -160,10 +160,10 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Update_Unknown_Resource_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.UpdateResourceSet(
+        var resource = Assert.IsType<Option<UpdateResourceSetResponse>.Error>(await _umaClient.UpdateResourceSet(
                 new ResourceSet { Id = "invalid", Name = "name", Scopes = new[] { "scope" } },
                 "header")
-            .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Error;
+            .ConfigureAwait(false));
 
         Assert.Equal("not_updated", resource.Details.Title);
         Assert.Equal("Resource cannot be updated", resource.Details.Detail);
@@ -172,7 +172,8 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Getting_Resources_Then_Identifiers_Are_Returned()
     {
-        var resources = await _umaClient.GetAllOwnResourceSets("token").ConfigureAwait(false) as Option<string[]>.Result;
+        var resources = Assert.IsType<Option<string[]>.Result>(
+            await _umaClient.GetAllOwnResourceSets("token").ConfigureAwait(false));
 
         Assert.True(resources.Item.Any());
     }
@@ -180,7 +181,8 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Getting_ResourceInformation_Then_Dto_Is_Returned()
     {
-        var resources = await _umaClient.GetAllOwnResourceSets("header").ConfigureAwait(false) as Option<string[]>.Result;
+        var resources = Assert.IsType<Option<string[]>.Result>(
+            await _umaClient.GetAllOwnResourceSets("header").ConfigureAwait(false));
         var resource = await _umaClient.GetResourceSet(resources.Item.First(), "header").ConfigureAwait(false);
 
         Assert.NotNull(resource);
@@ -189,7 +191,8 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Deleting_ResourceInformation_Then_It_Does_Not_Exist()
     {
-        var resources = await _umaClient.GetAllOwnResourceSets("header").ConfigureAwait(false) as Option<string[]>.Result;
+        var resources = Assert.IsType<Option<string[]>.Result>(
+            await _umaClient.GetAllOwnResourceSets("header").ConfigureAwait(false));
         await _umaClient.DeleteResource(resources.Item.First(), "header").ConfigureAwait(false);
         var information = await _umaClient.GetResourceSet(resources.Item.First(), "header").ConfigureAwait(false);
 
@@ -220,18 +223,17 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Updating_Resource_Then_Changes_Are_Persisted()
     {
-        var resource = await _umaClient.AddResourceSet(
+        var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(await _umaClient.AddResourceSet(
                 new ResourceSet { Name = "name", Scopes = new[] { "scope" } },
                 "header")
-            .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+            .ConfigureAwait(false));
 
-        var updateResult = await _umaClient.UpdateResourceSet(
+        var updateResult = Assert.IsType<Option<UpdateResourceSetResponse>.Result>(await _umaClient.UpdateResourceSet(
                 new ResourceSet { Id = resource.Item.Id, Name = "name2", Type = "type", Scopes = new[] { "scope2" } },
                 "header")
-            .ConfigureAwait(false) as Option<UpdateResourceSetResponse>.Result;
-        var information =
-            await _umaClient.GetResourceSet(updateResult.Item.Id, "header").ConfigureAwait(false) as
-                Option<ResourceSet>.Result;
+            .ConfigureAwait(false));
+        var information = Assert.IsType<Option<ResourceSet>.Result>(
+        await _umaClient.GetResourceSet(updateResult.Item.Id, "header").ConfigureAwait(false));
 
         Assert.Equal("name2", information.Item.Name);
         Assert.Equal("type", information.Item.Type);
@@ -241,7 +243,6 @@ public sealed class ResourceFixture : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         _server?.Dispose();
     }
 }

@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
@@ -89,15 +90,17 @@ public abstract class ClientBase
     {
         request = PrepareRequest(request, token, certificate);
         var result = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
-        var content = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        var content = await result.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         if (result.IsSuccessStatusCode && result.StatusCode != HttpStatusCode.NoContent)
         {
-            return Serializer.Default.Deserialize<T>(content)!;
+            return (await JsonSerializer.DeserializeAsync<T>(content, DefaultJsonSerializerOptions.Instance,
+                cancellationToken))!;
         }
 
-        var genericResult = string.IsNullOrWhiteSpace(content)
+        var genericResult = content.Length == 0
             ? new ErrorDetails { Status = result.StatusCode }
-            : Serializer.Default.Deserialize<ErrorDetails>(content);
+            : await JsonSerializer.DeserializeAsync<ErrorDetails>(content, DefaultJsonSerializerOptions.Instance,
+                cancellationToken);
 
         return genericResult!;
     }

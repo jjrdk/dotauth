@@ -47,11 +47,11 @@ internal sealed class GetDiscoveryOperation
             var queryStart = path.IndexOf('?');
             if (queryStart > 0)
             {
-                path = path[..queryStart].TrimEnd('/') + wellKnownOpenidConfiguration;
+                path = $"{path[..queryStart].TrimEnd('/')}{wellKnownOpenidConfiguration}";
             }
             else
             {
-                path = path.TrimEnd('/') + wellKnownOpenidConfiguration;
+                path = $"{path.TrimEnd('/')}{wellKnownOpenidConfiguration}";
             }
         }
         else
@@ -85,7 +85,8 @@ internal sealed class GetDiscoveryOperation
             var response =
                 await _httpClient().SendAsync(request, cancellationToken).ConfigureAwait(false);
             var serializedContent = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-            doc = await JsonSerializer.DeserializeAsync<DiscoveryInformation>(serializedContent,
+            doc = await JsonSerializer.DeserializeAsync<DiscoveryInformation>(
+                serializedContent,
                 DefaultJsonSerializerOptions.Instance, cancellationToken: cancellationToken);
             _cache.Add(key, doc!);
             return doc!;

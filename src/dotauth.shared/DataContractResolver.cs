@@ -3,6 +3,7 @@
 namespace DotAuth.Shared;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -97,7 +98,7 @@ internal static class DefaultJsonSerializerOptions
         public override JwtPayload Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var obj = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
-            var jsonNode = obj["claims"].AsArray();
+            var jsonNode = obj!["claims"]!.AsArray();
             return new JwtPayload(
                 null,
                 null,
@@ -149,6 +150,7 @@ internal static class DefaultJsonSerializerOptions
 
 internal class DataContractResolver : IJsonTypeInfoResolver
 {
+    private static readonly ConcurrentDictionary<Type, TypeMembers?[]> Infos = new();
     private static DataContractResolver? _defaultInstance;
 
     public static DataContractResolver Default
@@ -194,80 +196,108 @@ internal class DataContractResolver : IJsonTypeInfoResolver
 
     private static IEnumerable<JsonPropertyInfo> CreateDataMembers(JsonTypeInfo jsonTypeInfo)
     {
-        var isDataContract = jsonTypeInfo.Type.GetCustomAttribute<DataContractAttribute>() != null;
-        var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+        var members = Infos.GetOrAdd(
+            jsonTypeInfo.Type,
+            type =>
+            {
+                var isDataContract = type.GetCustomAttribute<DataContractAttribute>() != null;
+                var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
 
-        if (isDataContract)
+                if (isDataContract)
+                {
+                    bindingFlags |= BindingFlags.NonPublic;
+                }
+
+                return EnumerateFieldsAndProperties(type, bindingFlags)
+                    .Select(memberInfo => GetInfo(isDataContract, memberInfo))
+                    .ToArray();
+            });
+        return members.Where(m => m != null).Select(m =>
         {
-            bindingFlags |= BindingFlags.NonPublic;
-        }
+            TypeMembers typeMembers = m!;
+            var jsonPropertyInfo =
+                jsonTypeInfo.CreateJsonPropertyInfo(typeMembers.PropertyType, typeMembers.PropertyName);
 
-        foreach (var memberInfo in EnumerateFieldsAndProperties(jsonTypeInfo.Type, bindingFlags))
-        {
-            DataMemberAttribute? attr = null;
-            if (isDataContract)
+            jsonPropertyInfo.Get = typeMembers.GetValue;
+            jsonPropertyInfo.Set = typeMembers.SetValue;
+
+            if (typeMembers.Order != null)
             {
-                attr = memberInfo.GetCustomAttribute<DataMemberAttribute>();
-                if (attr == null)
-                {
-                    continue;
-                }
-            }
-            else
-            {
-                if (memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)
-                {
-                    continue;
-                }
+                jsonPropertyInfo.Order = typeMembers.Order.Value;
+                jsonPropertyInfo.ShouldSerialize =
+                    !typeMembers.EmitDefaultValue ? (_, obj) => !IsNullOrDefault(obj) : null;
             }
 
-            Func<object, object?>? getValue = null;
-            Action<object, object?>? setValue = null;
-            Type? propertyType;
-            string? propertyName;
-
-            if (memberInfo.MemberType == MemberTypes.Field && memberInfo is FieldInfo fieldInfo)
-            {
-                propertyName = attr?.Name ?? fieldInfo.Name;
-                propertyType = fieldInfo.FieldType;
-                getValue = fieldInfo.GetValue;
-                setValue = (obj, value) => fieldInfo.SetValue(obj, value);
-            }
-            else if (memberInfo.MemberType == MemberTypes.Property && memberInfo is PropertyInfo propertyInfo)
-            {
-                propertyName = attr?.Name ?? propertyInfo.Name;
-                propertyType = propertyInfo.PropertyType;
-                if (propertyInfo.CanRead)
-                {
-                    getValue = propertyInfo.GetValue;
-                }
-
-                if (propertyInfo.CanWrite)
-                {
-                    setValue = (obj, value) => propertyInfo.SetValue(obj, value);
-                }
-            }
-            else
-            {
-                continue;
-            }
-
-            var jsonPropertyInfo = jsonTypeInfo.CreateJsonPropertyInfo(propertyType, propertyName);
-
-            jsonPropertyInfo.Get = getValue;
-            jsonPropertyInfo.Set = setValue;
-
-            if (attr != null)
-            {
-                jsonPropertyInfo.Order = attr.Order;
-                jsonPropertyInfo.ShouldSerialize = !attr.EmitDefaultValue ? ((_, obj) => !IsNullOrDefault(obj)) : null;
-            }
-
-            yield return jsonPropertyInfo;
-        }
+            return jsonPropertyInfo;
+        });
     }
 
-    public static JsonTypeInfo GetTypeInfo(JsonTypeInfo jsonTypeInfo)
+    private static TypeMembers? GetInfo(
+        bool isDataContract,
+        MemberInfo memberInfo)
+    {
+        DataMemberAttribute? attr = null;
+        if (isDataContract)
+        {
+            attr = memberInfo.GetCustomAttribute<DataMemberAttribute>();
+            if (attr == null)
+            {
+                return null;
+            }
+        }
+        else
+        {
+            if (memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)
+            {
+                return null;
+            }
+        }
+
+        Func<object, object?>? getValue = null;
+        Action<object, object?>? setValue = null;
+        Type? propertyType;
+        string? propertyName;
+
+        if (memberInfo.MemberType == MemberTypes.Field && memberInfo is FieldInfo fieldInfo)
+        {
+            propertyName = attr?.Name ?? fieldInfo.Name;
+            propertyType = fieldInfo.FieldType;
+            getValue = fieldInfo.GetValue;
+            setValue = (obj, value) => fieldInfo.SetValue(obj, value);
+        }
+        else if (memberInfo.MemberType == MemberTypes.Property && memberInfo is PropertyInfo propertyInfo)
+        {
+            propertyName = attr?.Name ?? propertyInfo.Name;
+            propertyType = propertyInfo.PropertyType;
+            if (propertyInfo.CanRead)
+            {
+                getValue = propertyInfo.GetValue;
+            }
+
+            if (propertyInfo.CanWrite)
+            {
+                setValue = (obj, value) => propertyInfo.SetValue(obj, value);
+            }
+        }
+        else
+        {
+            return null;
+        }
+
+        var members = new TypeMembers
+        {
+            GetValue = getValue,
+            Order = attr?.Order,
+            EmitDefaultValue = attr?.EmitDefaultValue ?? false,
+            PropertyType = propertyType,
+            SetValue = setValue,
+            PropertyName = propertyName
+        };
+
+        return members;
+    }
+
+    private static JsonTypeInfo GetTypeInfo(JsonTypeInfo jsonTypeInfo)
     {
         if (jsonTypeInfo.Kind == JsonTypeInfoKind.Object)
         {
@@ -285,7 +315,16 @@ internal class DataContractResolver : IJsonTypeInfoResolver
     public JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
         var jsonTypeInfo = JsonTypeInfo.CreateJsonTypeInfo(type, options);
-
         return GetTypeInfo(jsonTypeInfo);
     }
+}
+
+internal record TypeMembers
+{
+    public int? Order { get; init; }
+    public bool EmitDefaultValue { get; init; }
+    public Func<object, object?>? GetValue { get; init; }
+    public Action<object, object?>? SetValue { get; init; }
+    public Type PropertyType { get; init; } = null!;
+    public string PropertyName { get; init; } = null!;
 }

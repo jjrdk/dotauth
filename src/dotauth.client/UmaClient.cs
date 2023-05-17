@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Client.Properties;
@@ -68,7 +69,8 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
             Method = HttpMethod.Post,
             RequestUri = new Uri(config.PermissionEndpoint, $"{ticketId}/approve")
         };
-        var option = await GetResult<Ticket[]>(request, accessToken, cancellationToken: cancellationToken).ConfigureAwait(false);
+        var option = await GetResult<Ticket[]>(request, accessToken, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
         return (option) switch
         {
             Option<Ticket[]>.Error error => error.Details,
@@ -90,7 +92,8 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
             RequestUri = discoveryInformation.IntrospectionEndpoint
         };
 
-        return await GetResult<UmaIntrospectionResponse>(request, introspectionRequest.PatToken, cancellationToken: cancellationToken)
+        return await GetResult<UmaIntrospectionResponse>(request, introspectionRequest.PatToken,
+                cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -114,12 +117,13 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
         }
 
         var serializedPostPermission = requests.Length > 1
-            ? Serializer.Default.Serialize(requests)
-            : Serializer.Default.Serialize(requests[0]);
+            ? JsonSerializer.Serialize(requests, DefaultJsonSerializerOptions.Instance)
+            : JsonSerializer.Serialize(requests[0], DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
         var httpRequest =
             new HttpRequestMessage { Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url) };
-        return await GetResult<TicketResponse>(httpRequest, token, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return await GetResult<TicketResponse>(httpRequest, token, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -140,7 +144,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
         }
 
         var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
-        var serializedPostResourceSet = Serializer.Default.Serialize(request);
+        var serializedPostResourceSet = JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
         var httpRequest = new HttpRequestMessage
         {
@@ -168,7 +172,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
             throw new ArgumentNullException(nameof(token));
         }
 
-        var serializedPostResourceSet = Serializer.Default.Serialize(request);
+        var serializedPostResourceSet = JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
         var umaConfiguration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
         var httpRequest = new HttpRequestMessage
@@ -202,7 +206,8 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
         resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
 
         var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
-        var result = await GetResult<object>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
+        var result = await GetResult<object>(request, token, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
         return result switch
         {
             Option<object>.Error e => e.Details,
@@ -268,10 +273,11 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
         var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
         var url = $"{configuration.ResourceRegistrationEndpoint}/.search";
 
-        var serializedPostPermission = Serializer.Default.Serialize(parameter);
+        var serializedPostPermission = JsonSerializer.Serialize(parameter, DefaultJsonSerializerOptions.Instance);
         var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
         var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
-        return await GetResult<PagedResult<ResourceSetDescription>>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return await GetResult<PagedResult<ResourceSetDescription>>(request, token,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<UmaConfiguration> GetUmaConfiguration(CancellationToken cancellationToken)

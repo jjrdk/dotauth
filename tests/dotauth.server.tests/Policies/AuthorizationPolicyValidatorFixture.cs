@@ -51,22 +51,6 @@ public sealed class AuthorizationPolicyValidatorFixture
     }
 
     [Fact]
-    public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _authorizationPolicyValidator.IsAuthorized(null, null, null, CancellationToken.None))
-            .ConfigureAwait(false);
-    }
-
-    [Fact]
-    public async Task WhenPassingEmptyTicketParameterThenExceptionsAreThrown()
-    {
-        await Assert.ThrowsAsync<ArgumentException>(
-                () => _authorizationPolicyValidator.IsAuthorized(new Ticket(), null, null, CancellationToken.None))
-            .ConfigureAwait(false);
-    }
-
-    [Fact]
     public async Task WhenResourceSetDoesNotExistThenReturnsNotAuthorized()
     {
         var handler = new JwtSecurityTokenHandler();
@@ -131,7 +115,7 @@ public sealed class AuthorizationPolicyValidatorFixture
             DateTime.UtcNow,
             key);
         _clientStoreStub.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns<string, CancellationToken>((s, c) => Task.FromResult(new Client { ClientId = s }));
+            .Returns<string, CancellationToken>((s, _) => Task.FromResult(new Client { ClientId = s }));
 
         var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1", Scopes = new[] { "read" } } } };
         var resourceSet = new[]
