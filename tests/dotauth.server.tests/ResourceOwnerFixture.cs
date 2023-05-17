@@ -44,7 +44,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Pass_No_Password_To_Add_ResourceOwner_Then_Error_Is_Returned()
     {
         var result = await _resourceOwnerClient
-            .AddResourceOwner(new AddResourceOwnerRequest {Subject = "subject"}, "token")
+            .AddResourceOwner(new AddResourceOwnerRequest { Subject = "subject" }, "token")
             .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Error;
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
@@ -54,7 +54,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Login_Already_Exists_Then_Error_Is_Returned()
     {
         var result = await _resourceOwnerClient.AddResourceOwner(
-                new AddResourceOwnerRequest {Subject = "administrator", Password = "password"},
+                new AddResourceOwnerRequest { Subject = "administrator", Password = "password" },
                 "token")
             .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Error;
 
@@ -77,7 +77,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Update_Claims_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
     {
         var result = await _resourceOwnerClient.UpdateResourceOwnerClaims(
-                new UpdateResourceOwnerClaimsRequest {Subject = "invalid_login"},
+                new UpdateResourceOwnerClaimsRequest { Subject = "invalid_login" },
                 "token")
             .ConfigureAwait(false) as Option.Error;
 
@@ -101,7 +101,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Update_Password_And_No_Password_Is_Passed_Then_Error_Is_Returned()
     {
         var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                new UpdateResourceOwnerPasswordRequest {Subject = "login"},
+                new UpdateResourceOwnerPasswordRequest { Subject = "login" },
                 "token")
             .ConfigureAwait(false) as Option.Error;
 
@@ -113,7 +113,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Update_Password_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
     {
         var result = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                new UpdateResourceOwnerPasswordRequest {Subject = "invalid_login", Password = "password"},
+                new UpdateResourceOwnerPasswordRequest { Subject = "invalid_login", Password = "password" },
                 "token")
             .ConfigureAwait(false) as Option.Error;
 
@@ -141,8 +141,8 @@ public sealed class ResourceOwnerFixture : IDisposable
                     Subject = "administrator",
                     Claims = new[]
                     {
-                        new ClaimData {Type = "role", Value = "role"},
-                        new ClaimData {Type = "not_valid", Value = "not_valid"}
+                        new ClaimData { Type = "role", Value = "role" },
+                        new ClaimData { Type = "not_valid", Value = "not_valid" }
                     }
                 },
                 "token")
@@ -158,7 +158,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Update_Password_Then_ResourceOwner_Is_Updated()
     {
         _ = await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                new UpdateResourceOwnerPasswordRequest {Subject = "administrator", Password = "pass"},
+                new UpdateResourceOwnerPasswordRequest { Subject = "administrator", Password = "pass" },
                 "token")
             .ConfigureAwait(false);
         var resourceOwner =
@@ -172,7 +172,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Search_Resource_Owners_Then_One_Resource_Owner_Is_Returned()
     {
         var result = await _resourceOwnerClient.SearchResourceOwners(
-                new SearchResourceOwnersRequest {StartIndex = 0, NbResults = 1},
+                new SearchResourceOwnersRequest { StartIndex = 0, NbResults = 1 },
                 "token")
             .ConfigureAwait(false) as Option<PagedResult<ResourceOwner>>.Result;
 
@@ -192,7 +192,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Add_Resource_Owner_Then_Ok_Is_Returned()
     {
         var result = await _resourceOwnerClient.AddResourceOwner(
-                new AddResourceOwnerRequest {Subject = "login", Password = "password"},
+                new AddResourceOwnerRequest { Subject = "login", Password = "password" },
                 "token")
             .ConfigureAwait(false);
 
@@ -202,11 +202,11 @@ public sealed class ResourceOwnerFixture : IDisposable
     [Fact]
     public async Task When_Delete_ResourceOwner_Then_ResourceOwner_Does_Not_Exist()
     {
-        var result = await _resourceOwnerClient.AddResourceOwner(
-                new AddResourceOwnerRequest {Subject = "login1", Password = "password"},
+        var result = Assert.IsType<Option<AddResourceOwnerResponse>.Result>(await _resourceOwnerClient.AddResourceOwner(
+                new AddResourceOwnerRequest { Subject = "login1", Password = "password" },
                 "token")
-            .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
-        var remove = await _resourceOwnerClient.DeleteResourceOwner(result.Item.Subject, "token")
+            .ConfigureAwait(false));
+        var remove = await _resourceOwnerClient.DeleteResourceOwner(result.Item.Subject!, "token")
             .ConfigureAwait(false);
 
         Assert.IsType<Option.Success>(remove);

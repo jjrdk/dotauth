@@ -355,10 +355,6 @@ public sealed class ResourceSetController : ControllerBase
                 _ => new ObjectResult(e.Details) { StatusCode = (int)e.Details.Status }
             };
         }
-        //if (!resourceSetUpdated)
-        //{
-        //    return GetNotUpdatedResourceSet();
-        //}
 
         var response = new UpdateResourceSetResponse { Id = resourceSet.Id };
 
@@ -386,18 +382,6 @@ public sealed class ResourceSetController : ControllerBase
         var resourceSetExists = await _resourceSetRepository.Remove(id, cancellationToken).ConfigureAwait(false);
         return !resourceSetExists ? BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest }) : NoContent();
     }
-
-    //private static ActionResult GetNotUpdatedResourceSet()
-    //{
-    //    var errorResponse = new ErrorDetails
-    //    {
-    //        Status = HttpStatusCode.NotFound,
-    //        Title = ErrorCodes.NotUpdated,
-    //        Detail = Strings.ResourceCannotBeUpdated
-    //    };
-
-    //    return new ObjectResult(errorResponse) { StatusCode = (int)HttpStatusCode.NotFound };
-    //}
 
     private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
     {

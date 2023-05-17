@@ -436,7 +436,7 @@ public sealed class ResourceOwnersController : ControllerBase
         await _eventPublisher.Publish(
                 new ClaimsUpdated(
                     Id.Create(),
-                    resourceOwner.Subject!,
+                    resourceOwner.Subject,
                     previousClaims,
                     resourceOwner.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value })
                         .ToArray(),

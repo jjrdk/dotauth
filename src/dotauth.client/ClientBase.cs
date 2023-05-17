@@ -93,8 +93,10 @@ public abstract class ClientBase
         var content = await result.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         if (result.IsSuccessStatusCode && result.StatusCode != HttpStatusCode.NoContent)
         {
-            return (await JsonSerializer.DeserializeAsync<T>(content, DefaultJsonSerializerOptions.Instance,
-                cancellationToken))!;
+            return content.Length == 0
+                ? new Option<T>.Result(default!)
+                : (await JsonSerializer.DeserializeAsync<T>(content, DefaultJsonSerializerOptions.Instance,
+                    cancellationToken))!;
         }
 
         var genericResult = content.Length == 0
