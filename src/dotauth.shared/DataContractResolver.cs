@@ -3,154 +3,17 @@
 namespace DotAuth.Shared;
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Security.Claims;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using System.Text.RegularExpressions;
 using System.Threading;
-using Microsoft.IdentityModel.Tokens;
-
-internal static class DefaultJsonSerializerOptions
-{
-    static DefaultJsonSerializerOptions()
-    {
-        Instance = new JsonSerializerOptions
-        {
-            TypeInfoResolver = DataContractResolver.Default,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            WriteIndented = false,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            NumberHandling = JsonNumberHandling.AllowReadingFromString |
-                JsonNumberHandling.AllowNamedFloatingPointLiterals,
-            AllowTrailingCommas = true,
-            Converters =
-            {
-                new ClaimConverter(),
-                new JwtPayloadConverter(),
-                new JsonWebKeySetConverter(),
-                new RegexConverter()
-            },
-            ReadCommentHandling = JsonCommentHandling.Skip,
-            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-            UnknownTypeHandling = JsonUnknownTypeHandling.JsonNode
-        };
-    }
-
-    public static JsonSerializerOptions Instance { get; }
-
-    private sealed class RegexConverter : JsonConverter<Regex>
-    {
-        public override Regex Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            var regex = reader.GetString();
-            return new Regex(regex ?? "", RegexOptions.Compiled);
-        }
-
-        public override void Write(Utf8JsonWriter writer, Regex value, JsonSerializerOptions options)
-        {
-            writer.WriteRawValue($"\"{value}\"");
-        }
-    }
-
-    private sealed class ClaimConverter : JsonConverter<Claim>
-    {
-        public override Claim Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            var obj = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
-            if (obj == null)
-            {
-                throw new Exception("Failed to read json");
-            }
-
-            var properties = obj.Select(x => x.Key).ToArray();
-            if (properties.Length == 1)
-            {
-                var type = obj.First().Key;
-                var value = obj[type];
-                return new Claim(type, value?.GetValue<string>() ?? string.Empty);
-            }
-
-            return new Claim(
-                obj["type"]!.GetValue<string>(),
-                obj["value"]!.GetValue<string>(),
-                obj["valueType"]?.GetValue<string>(),
-                obj["issuer"]?.GetValue<string>());
-        }
-
-        public override void Write(Utf8JsonWriter writer, Claim value, JsonSerializerOptions options)
-        {
-            writer.WriteStartObject();
-            writer.WriteString(value.Type, value.Value);
-            writer.WriteEndObject();
-        }
-    }
-
-    private sealed class JwtPayloadConverter : JsonConverter<JwtPayload>
-    {
-        public override JwtPayload Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            var obj = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
-            var jsonNode = obj!["claims"]!.AsArray();
-            return new JwtPayload(
-                null,
-                null,
-                jsonNode.AsArray().Deserialize<Claim[]>(options),
-                null,
-                null);
-        }
-
-        public override void Write(Utf8JsonWriter writer, JwtPayload value, JsonSerializerOptions options)
-        {
-            writer.WriteStartObject();
-            writer.WriteString("acr", value.Acr);
-            writer.WriteString("azp", value.Azp);
-            writer.WriteStartArray("claims");
-            foreach (var claim in value.Claims)
-            {
-                writer.WriteStartObject();
-                writer.WriteString("type", claim.Type);
-                writer.WriteString("value", claim.Value);
-                writer.WriteEndObject();
-            }
-
-            writer.WriteEndArray();
-            writer.WriteEndObject();
-        }
-    }
-
-    private sealed class JsonWebKeySetConverter : JsonConverter<JsonWebKeySet>
-    {
-        public override JsonWebKeySet Read(
-            ref Utf8JsonReader reader,
-            Type typeToConvert,
-            JsonSerializerOptions options)
-        {
-            var obj = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
-            var json = obj?.ToJsonString();
-            return new JsonWebKeySet(json);
-        }
-
-        public override void Write(Utf8JsonWriter writer, JsonWebKeySet value, JsonSerializerOptions options)
-        {
-            writer.WriteStartObject();
-            writer.WritePropertyName("keys");
-            writer.WriteRawValue(JsonSerializer.Serialize(value.Keys, options));
-            writer.WriteEndObject();
-        }
-    }
-}
 
 internal class DataContractResolver : IJsonTypeInfoResolver
 {
-    private static readonly ConcurrentDictionary<Type, TypeMembers?[]> Infos = new();
+    private static readonly Dictionary<Type, TypeMembers[]> Infos = new();
     private static DataContractResolver? _defaultInstance;
 
     public static DataContractResolver Default
@@ -196,25 +59,31 @@ internal class DataContractResolver : IJsonTypeInfoResolver
 
     private static IEnumerable<JsonPropertyInfo> CreateDataMembers(JsonTypeInfo jsonTypeInfo)
     {
-        var members = Infos.GetOrAdd(
-            jsonTypeInfo.Type,
-            type =>
-            {
-                var isDataContract = type.GetCustomAttribute<DataContractAttribute>() != null;
-                var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
-
-                if (isDataContract)
-                {
-                    bindingFlags |= BindingFlags.NonPublic;
-                }
-
-                return EnumerateFieldsAndProperties(type, bindingFlags)
-                    .Select(memberInfo => GetInfo(isDataContract, memberInfo))
-                    .ToArray();
-            });
-        return members.Where(m => m != null).Select(m =>
+        TypeMembers[] GetTypeMembers(Type type)
         {
-            TypeMembers typeMembers = m!;
+            var isDataContract = type.GetCustomAttribute<DataContractAttribute>() != null;
+            var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+
+            if (isDataContract)
+            {
+                bindingFlags |= BindingFlags.NonPublic;
+            }
+
+            return EnumerateFieldsAndProperties(type, bindingFlags)
+                .Select(memberInfo => GetInfo(isDataContract, memberInfo))
+                .Where(m => m != null)
+                .Select(m => m!)
+                .ToArray();
+        }
+
+        if (!Infos.ContainsKey(jsonTypeInfo.Type))
+        {
+            Infos[jsonTypeInfo.Type] = GetTypeMembers(jsonTypeInfo.Type);
+        }
+
+        var members = Infos[jsonTypeInfo.Type];
+        return members.Select(typeMembers =>
+        {
             var jsonPropertyInfo =
                 jsonTypeInfo.CreateJsonPropertyInfo(typeMembers.PropertyType, typeMembers.PropertyName);
 
@@ -232,25 +101,32 @@ internal class DataContractResolver : IJsonTypeInfoResolver
         });
     }
 
+    private static bool IgnoreMember(
+        MemberInfo memberInfo,
+        bool isDataContract,
+        ref DataMemberAttribute? dataMemberAttribute)
+    {
+        if (isDataContract)
+        {
+            dataMemberAttribute = memberInfo.GetCustomAttribute<DataMemberAttribute>();
+            if (dataMemberAttribute == null)
+            {
+                return true;
+            }
+        }
+
+        return memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null;
+    }
+
     private static TypeMembers? GetInfo(
         bool isDataContract,
         MemberInfo memberInfo)
     {
         DataMemberAttribute? attr = null;
-        if (isDataContract)
+
+        if (IgnoreMember(memberInfo, isDataContract, ref attr))
         {
-            attr = memberInfo.GetCustomAttribute<DataMemberAttribute>();
-            if (attr == null)
-            {
-                return null;
-            }
-        }
-        else
-        {
-            if (memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)
-            {
-                return null;
-            }
+            return null;
         }
 
         Func<object, object?>? getValue = null;
@@ -317,14 +193,4 @@ internal class DataContractResolver : IJsonTypeInfoResolver
         var jsonTypeInfo = JsonTypeInfo.CreateJsonTypeInfo(type, options);
         return GetTypeInfo(jsonTypeInfo);
     }
-}
-
-internal record TypeMembers
-{
-    public int? Order { get; init; }
-    public bool EmitDefaultValue { get; init; }
-    public Func<object, object?>? GetValue { get; init; }
-    public Action<object, object?>? SetValue { get; init; }
-    public Type PropertyType { get; init; } = null!;
-    public string PropertyName { get; init; } = null!;
 }

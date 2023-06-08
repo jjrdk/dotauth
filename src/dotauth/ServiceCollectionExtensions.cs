@@ -422,7 +422,6 @@ public static class ServiceCollectionExtensions
             .UseEndpoints(
                 endpoint =>
                 {
-                    //endpoint.MapRazorPages();
                     endpoint.MapControllerRoute("areaexists", "{area:exists}/{controller=Home}/{action=Index}");
                     endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Home}/{action=Index}");
                     endpoint.MapControllerRoute("default", "{controller=Home}/{action=Index}");
