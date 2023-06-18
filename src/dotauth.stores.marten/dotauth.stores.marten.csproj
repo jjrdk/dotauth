@@ -14,7 +14,7 @@
     </PropertyGroup>
     <ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
         <PackageReference Include="marten" Version="6.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     </ItemGroup>
     <ItemGroup>
