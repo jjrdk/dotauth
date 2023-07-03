@@ -210,13 +210,7 @@ internal sealed class Startup
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
                     new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
-                .AddDotAuthUi(
-                    assemblies: new[]
-                    {
-                        (GetType().Namespace!, GetType().Assembly),
-                        (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly)
-                    }
-                );
+                .AddDotAuthUi(GetType(), typeof(IDefaultUi));
         }
     }
 

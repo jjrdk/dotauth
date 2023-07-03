@@ -61,7 +61,7 @@ public partial class FeatureTest
             RedirectionUrls = new[] { new Uri("http://localhost/callback"), },
             ApplicationType = ApplicationTypes.Native,
             GrantTypes = new[] { GrantTypes.ClientCredentials },
-            JsonWebKeys = TestKeys.SuperSecretKey.CreateSignatureJwk().ToSet()
+            JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
         };
         _addClientResponse = await _managerClient.AddClient(client, _token.AccessToken)
             .ConfigureAwait(false);

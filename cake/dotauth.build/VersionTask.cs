@@ -1,5 +1,6 @@
 namespace DotAuth.Build;
 
+using System.ComponentModel;
 using System.Reflection;
 using Cake.Common.Tools.GitVersion;
 using Cake.Core.Diagnostics;
@@ -17,8 +18,10 @@ public sealed class VersionTask : FrostingTask<BuildContext>
         {
             versionInfo = context.GitVersion(new GitVersionSettings { UpdateAssemblyInfo = false });
         }
-        catch
+        catch (Win32Exception)
         {
+            context.Log.Information("Reverting to assembly version");
+
             var version = Assembly.GetAssembly(typeof(VersionTask))!.GetName().Version!;
             var versionString = version.ToString();
             context.Log.Information(versionString);
@@ -38,6 +41,7 @@ public sealed class VersionTask : FrostingTask<BuildContext>
                 NuGetVersion = versionString
             };
         }
+
         if (versionInfo.BranchName == "master" || versionInfo.BranchName.StartsWith("tags/"))
         {
             context.BuildVersion =

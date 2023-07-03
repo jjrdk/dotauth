@@ -76,9 +76,12 @@ internal class DataContractResolver : IJsonTypeInfoResolver
                 .ToArray();
         }
 
-        if (!Infos.ContainsKey(jsonTypeInfo.Type))
+        lock (Infos)
         {
-            Infos[jsonTypeInfo.Type] = GetTypeMembers(jsonTypeInfo.Type);
+            if (!Infos.ContainsKey(jsonTypeInfo.Type))
+            {
+                Infos[jsonTypeInfo.Type] = GetTypeMembers(jsonTypeInfo.Type);
+            }
         }
 
         var members = Infos[jsonTypeInfo.Type];
