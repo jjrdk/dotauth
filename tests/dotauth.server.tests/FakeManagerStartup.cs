@@ -42,12 +42,12 @@ public sealed class FakeManagerStartup
     {
         serviceCollection.AddHttpClient();
         serviceCollection.AddDotAuthServer(
-            new DotAuthConfiguration
-            {
-                Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStorage.GetUsers()),
-            },
-            new[] {JwtBearerDefaults.AuthenticationScheme},
-            assemblyTypes: typeof(IDefaultUi));
+                new DotAuthConfiguration
+                {
+                    Users = _ => new InMemoryResourceOwnerRepository(string.Empty, DefaultStorage.GetUsers()),
+                },
+                new[] { JwtBearerDefaults.AuthenticationScheme })
+            .AddDotAuthUi(typeof(IDefaultUi));
         serviceCollection.AddAuthentication(opts =>
         {
             opts.DefaultAuthenticateScheme = DefaultSchema;
@@ -55,10 +55,7 @@ public sealed class FakeManagerStartup
         });
         serviceCollection.AddAuthorization(options =>
         {
-            options.AddPolicy("manager", policy =>
-            {
-                policy.RequireAssertion(p => true);
-            });
+            options.AddPolicy("manager", policy => { policy.RequireAssertion(_ => true); });
         });
     }
 }

@@ -61,7 +61,7 @@ public sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>(x => { })
+        services.AddHttpClient<HttpClient>(_ => { })
             .AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler()));
         services.AddSingleton<IDocumentStore>(
             _ => new DocumentStore(
@@ -81,9 +81,9 @@ public sealed class ServerStartup
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
         services.AddDotAuthServer(
-            _martenConfiguration,
-            new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme },
-            assemblyTypes: typeof(IDefaultUi));
+                _martenConfiguration,
+                new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme })
+            .AddDotAuthUi(typeof(IDefaultUi));
         services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
         services.AddAuthentication(
                 cfg =>

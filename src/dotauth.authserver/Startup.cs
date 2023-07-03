@@ -67,32 +67,32 @@ internal sealed class Startup
             ResourceSets =
                 sp => new InMemoryResourceSetRepository(
                     sp.GetRequiredService<IAuthorizationPolicy>(),
-            new []
+                    new[]
                     {
                         ("administrator",
-                            new ResourceSet
-                            {
-                                Id = "abc",
-                                Name = "Test Resource",
-                                Type = "Content",
-                                Scopes = new[] {"read"},
-                                AuthorizationPolicies = new[]
-                                {
-                                    new PolicyRule
-                                    {
-                                        Claims = new[]
-                                        {
-                                            new ClaimData
-                                            {
-                                                Type = "sub", Value = "administrator"
-                                            }
-                                        },
-                                        ClientIdsAllowed = new[] {"web"},
-                                        Scopes = new[] {"read"},
-                                        IsResourceOwnerConsentNeeded = true
-                                    }
-                                }
-                            })
+                         new ResourceSet
+                         {
+                             Id = "abc",
+                             Name = "Test Resource",
+                             Type = "Content",
+                             Scopes = new[] { "read" },
+                             AuthorizationPolicies = new[]
+                             {
+                                 new PolicyRule
+                                 {
+                                     Claims = new[]
+                                     {
+                                         new ClaimData
+                                         {
+                                             Type = "sub", Value = "administrator"
+                                         }
+                                     },
+                                     ClientIdsAllowed = new[] { "web" },
+                                     Scopes = new[] { "read" },
+                                     IsResourceOwnerConsentNeeded = true
+                                 }
+                             }
+                         })
                     }),
             EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
             ClaimsIncludedInUserCreation = new[]
@@ -120,12 +120,12 @@ internal sealed class Startup
             .AddLogging(log =>
             {
                 log.AddJsonConsole(
-                o =>
-                {
-                    o.IncludeScopes = true;
-                    o.UseUtcTimestamp = true;
-                    o.JsonWriterOptions = new JsonWriterOptions { Indented = false };
-                });
+                    o =>
+                    {
+                        o.IncludeScopes = true;
+                        o.UseUtcTimestamp = true;
+                        o.JsonWriterOptions = new JsonWriterOptions { Indented = false };
+                    });
             })
             .AddAuthentication(
                 options =>
@@ -165,7 +165,7 @@ internal sealed class Startup
                         opts.SignInScheme = CookieNames.ExternalCookieName;
                         var scopes = _configuration["GOOGLE:SCOPES"] ?? "openid,profile,email";
                         foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                     .Select(x => x.Trim()))
+                            .Select(x => x.Trim()))
                         {
                             opts.Scope.Add(scope);
                         }
@@ -173,7 +173,7 @@ internal sealed class Startup
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration["MS:CLIENTID"])
-            && !string.IsNullOrWhiteSpace(_configuration["MS:CLIENTSECRET"]))
+         && !string.IsNullOrWhiteSpace(_configuration["MS:CLIENTSECRET"]))
         {
             services.AddAuthentication(CookieNames.ExternalCookieName).AddMicrosoftAccount(
                 opts =>
@@ -183,7 +183,7 @@ internal sealed class Startup
                     opts.UsePkce = true;
                     var scopes = _configuration["MS:SCOPES"] ?? "openid,profile,email";
                     foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                 .Select(x => x.Trim()))
+                        .Select(x => x.Trim()))
                     {
                         opts.Scope.Add(scope);
                     }
@@ -191,17 +191,12 @@ internal sealed class Startup
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
-            && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
+         && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
         {
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
-                    assemblies: new[]
-                    {
-                        (GetType().Namespace!, GetType().Assembly),
-                        (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly),
-                        (typeof(IDefaultSmsUi).Namespace!, typeof(IDefaultSmsUi).Assembly)
-                    })
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                .AddDotAuthUi(GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi))
                 .AddSmsAuthentication(
                     new AwsSmsClient(
                         new BasicAWSCredentials(
@@ -213,13 +208,15 @@ internal sealed class Startup
         else
         {
             services.AddDotAuthServer(
-                _dotAuthConfiguration,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
-                assemblies: new[]
-                {
-                    (GetType().Namespace!, GetType().Assembly),
-                    (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly)
-                });
+                    _dotAuthConfiguration,
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                .AddDotAuthUi(
+                    assemblies: new[]
+                    {
+                        (GetType().Namespace!, GetType().Assembly),
+                        (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly)
+                    }
+                );
         }
     }
 
@@ -230,6 +227,7 @@ internal sealed class Startup
         {
             app = app.UsePathBase(pathBase);
         }
+
         app.UseResponseCompression()
             .UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
     }

@@ -12,6 +12,7 @@ using DotAuth.Repositories;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
+using DotAuth.Tests.Helpers;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
@@ -115,8 +116,8 @@ public sealed class ClientAssertionAuthenticationFixture
 
     private JsonWebKeySet CreateJwt(JwtPayload jwsPayload, out string jwt)
     {
-        var jwks = "verylongsecretkey".CreateSignatureJwk().ToSet();
-            
+        var jwks = TestKeys.SecretKey.CreateSignatureJwk().ToSet();
+
         var token = new JwtSecurityToken(
             new JwtHeader(new SigningCredentials(jwks.Keys[0], SecurityAlgorithms.HmacSha256)),
             jwsPayload);
@@ -151,7 +152,7 @@ public sealed class ClientAssertionAuthenticationFixture
 
         Assert.NotNull(result.Client);
     }
-        
+
     [Fact]
     public async Task When_Decrypt_Valid_Client_Secret_Jwt_Then_Client_Is_Returned()
     {

@@ -192,7 +192,7 @@ public static class ServiceCollectionExtensions
         var options = new DotAuthConfiguration();
         configuration(options);
 
-        return AddDotAuthServer(services, options, authPolicies, mvcConfig, requestThrottle, Array.Empty<Type>());
+        return AddDotAuthServer(services, options, authPolicies, mvcConfig, requestThrottle);
     }
 
     /// <summary>
@@ -203,7 +203,6 @@ public static class ServiceCollectionExtensions
     /// <param name="mvcConfig">MVC configuration.</param>
     /// <param name="requestThrottle">The rate limiter.</param>
     /// <param name="authPolicies"></param>
-    /// <param name="assemblyTypes">Assemblies with additional application parts.</param>
     /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
     /// <exception cref="ArgumentNullException">options</exception>
     public static IMvcBuilder AddDotAuthServer(
@@ -211,36 +210,7 @@ public static class ServiceCollectionExtensions
         DotAuthConfiguration configuration,
         string[] authPolicies,
         Action<MvcOptions>? mvcConfig = null,
-        IRequestThrottle? requestThrottle = null,
-        params Type[] assemblyTypes)
-    {
-        return AddDotAuthServer(
-            services,
-            configuration,
-            authPolicies,
-            mvcConfig,
-            requestThrottle,
-            assemblyTypes.Select(type => (type.Namespace ?? string.Empty, type.Assembly)).ToArray());
-    }
-
-    /// <summary>
-    /// Adds DotAuth type registrations.
-    /// </summary>
-    /// <param name="services">The services.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <param name="mvcConfig">MVC configuration.</param>
-    /// <param name="requestThrottle">The rate limiter.</param>
-    /// <param name="authPolicies"></param>
-    /// <param name="assemblies">Assemblies with additional application parts.</param>
-    /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
-    /// <exception cref="ArgumentNullException">options</exception>
-    public static IMvcBuilder AddDotAuthServer(
-        this IServiceCollection services,
-        DotAuthConfiguration configuration,
-        string[] authPolicies,
-        Action<MvcOptions>? mvcConfig = null,
-        IRequestThrottle? requestThrottle = null,
-        params (string defaultNamespace, Assembly assembly)[] assemblies)
+        IRequestThrottle? requestThrottle = null)
     {
         if (configuration == null)
         {
@@ -299,15 +269,7 @@ public static class ServiceCollectionExtensions
                 options.IgnoreReadOnlyProperties = instance.IgnoreReadOnlyProperties;
                 options.PropertyNameCaseInsensitive = instance.PropertyNameCaseInsensitive;
             });
-        mvcBuilder = assemblies.Distinct()
-            .Aggregate(
-                mvcBuilder,
-                (b, a) =>
-                {
-                    return b.AddRazorRuntimeCompilation(
-                            o => o.FileProviders.Add(new EmbeddedFileProvider(a.assembly, a.defaultNamespace)))
-                        .AddApplicationPart(a.assembly);
-                });
+
         Globals.ApplicationName = configuration.ApplicationName;
         var runtimeConfig = GetRuntimeConfig(configuration);
         services.AddAuthentication();

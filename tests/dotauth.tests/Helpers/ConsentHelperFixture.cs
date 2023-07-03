@@ -64,6 +64,7 @@ public sealed class ConsentHelperFixture
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             .ConfigureAwait(false);
 
+        Assert.NotNull(result);
         Assert.Single(result.Claims);
         Assert.Equal(claimName, result.Claims.First());
     }
@@ -88,6 +89,7 @@ public sealed class ConsentHelperFixture
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             .ConfigureAwait(false);
 
+        Assert.NotNull(result);
         Assert.Single(result.GrantedScopes);
         Assert.Equal(scope, result.GrantedScopes.First());
     }

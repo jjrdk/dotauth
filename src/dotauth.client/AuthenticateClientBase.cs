@@ -15,15 +15,17 @@ using DotAuth.Shared.Responses;
 public abstract class AuthenticateClientBase : IDisposable
 {
     private readonly AuthenticateClientOptions _options;
-    private readonly HttpClient _httpClient = new(new HttpClientHandler { AllowAutoRedirect = false });
+    private readonly HttpClient _httpClient; // = new(new HttpClientHandler { AllowAutoRedirect = false });
     private readonly TokenClient _tokenClient;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthenticateClientBase"/> class.
     /// </summary>
     /// <param name="options">The <see cref="AuthenticateClientOptions"/>.</param>
-    protected AuthenticateClientBase(AuthenticateClientOptions options)
+    /// <param name="httpClient">The <see cref="HttpClient"/> to use for token requests.</param>
+    protected AuthenticateClientBase(AuthenticateClientOptions options, HttpClient? httpClient = null)
     {
+        _httpClient = httpClient ?? new(new HttpClientHandler { AllowAutoRedirect = false });
         _options = options;
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials(options.ClientId, options.ClientSecret),
@@ -35,18 +37,19 @@ public abstract class AuthenticateClientBase : IDisposable
     /// Logs the user in using an authentication code flow.
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <param name="scopes">Access scopes to request. If none are passed, then uses scopes from the constructor options.</param>
     /// <returns>An <see cref="Option{T}"/> as an async operation.</returns>
-    public async Task<Option<GrantedTokenResponse>> LogIn(CancellationToken cancellationToken)
+    public async Task<Option<GrantedTokenResponse>> LogIn(CancellationToken cancellationToken, params string[] scopes)
     {
         var pkce = CodeChallengeMethods.Rs256.BuildPkce();
         var request = new AuthorizationRequest(
-                _options.Scopes,
-                new[] { ResponseTypeNames.Code },
-                _options.ClientId,
-                _options.Callback,
-                pkce.CodeChallenge,
-                CodeChallengeMethods.Rs256,
-                Guid.NewGuid().ToString("N"))
+            scopes.Length == 0 ? _options.Scopes : scopes,
+            new[] { ResponseTypeNames.Code },
+            _options.ClientId,
+            _options.Callback,
+            pkce.CodeChallenge,
+            CodeChallengeMethods.Rs256,
+            Guid.NewGuid().ToString("N"))
         {
             nonce = Guid.NewGuid().ToString("N"),
             response_mode = _options.ResponseMode

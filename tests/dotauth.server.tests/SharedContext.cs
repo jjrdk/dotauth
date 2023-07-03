@@ -30,7 +30,7 @@ public sealed class SharedContext
         SignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
         ModelSignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
         EncryptionKey = TestKeys.SecretKey.CreateEncryptionJwk();
-        ModelEncryptionKey = TestKeys.SuperSecretKey.CreateJwk(
+        ModelEncryptionKey = TestKeys.SecretKey.CreateJwk(
             JsonWebKeyUseNames.Enc,
             KeyOperations.Decrypt,
             KeyOperations.Encrypt);

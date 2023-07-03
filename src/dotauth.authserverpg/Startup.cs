@@ -28,6 +28,7 @@ using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.Stores.Marten;
 using DotAuth.UI;
+using JasperFx.Core.Reflection;
 using Marten;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -106,7 +107,8 @@ public sealed class Startup
                     Consents = sp => new MartenConsentRepository(sp.GetRequiredService<IDocumentSession>),
                     JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
                     Tickets = sp => new MartenTicketStore(sp.GetRequiredService<IDocumentSession>),
-                    Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>, sp.GetRequiredService<ILogger<MartenTokenStore>>()),
+                    Tokens = sp => new MartenTokenStore(sp.GetRequiredService<IDocumentSession>,
+                        sp.GetRequiredService<ILogger<MartenTokenStore>>()),
                     ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>,
                         sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
                     EventPublisher = sp =>
@@ -225,8 +227,8 @@ public sealed class Startup
         {
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
-                    assemblyTypes: new[] { GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi) })
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                .AddDotAuthUi(GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi))
                 .AddSmsAuthentication(
                     new AwsSmsClient(
                         new BasicAWSCredentials(
@@ -238,9 +240,9 @@ public sealed class Startup
         else
         {
             services.AddDotAuthServer(
-                _dotAuthConfiguration,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
-                assemblyTypes: new[] { GetType(), typeof(IDefaultUi) });
+                    _dotAuthConfiguration,
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                .AddDotAuthUi(GetType(), typeof(IDefaultUi));
         }
     }
 

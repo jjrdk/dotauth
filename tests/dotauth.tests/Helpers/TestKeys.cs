@@ -2,5 +2,5 @@
 
 internal static class TestKeys
 {
-    public const string SecretKey = "verylongsecretkey";
+    public const string SecretKey = "verysecretlongkeyverysecretlongk";
 }

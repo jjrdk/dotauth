@@ -34,7 +34,6 @@ public static class OAuthStores
     {
         return new()
         {
-            // Resource server.
             new Client
             {
                 ClientId = "resource_server",
@@ -44,15 +43,13 @@ public static class OAuthStores
                     new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "resource_server"}
                 },
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                //LogoUri = null,
                 AllowedScopes = new[] {"uma_protection", "uma_authorization"},
                 GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.UmaTicket},
                 ResponseTypes = new[] {ResponseTypeNames.Token},
-                JsonWebKeys = "verylongsecretkey".CreateSignatureJwk().ToSet(),
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Native
             },
-            // Anonymous.
             new Client
             {
                 ClientId = "anonymous",

@@ -13,11 +13,11 @@
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -291,7 +291,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .ConfigureAwait(false) as Option<Uri>.Error;
         UserStore.Instance().IsInactive = false;
 
-        Assert.Equal("login_required", result.Details.Title);
+        Assert.Equal("login_required", result!.Details.Title);
         Assert.Equal("The user needs to be authenticated", result.Details.Detail);
     }
 
@@ -515,7 +515,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                         TestKeys.SecretKey.CreateSignatureJwk(),
                         SecurityAlgorithms.HmacSha256),
                 EncryptingCredentials = new EncryptingCredentials(
-                    TestKeys.SuperSecretKey.CreateEncryptionJwk(),
+                    TestKeys.SecretKey.CreateEncryptionJwk(),
                     SecurityAlgorithms.Aes256KW,
                     SecurityAlgorithms.Aes128CbcHmacSha256)
             });

@@ -217,13 +217,8 @@ internal sealed class Startup
         {
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
-                    assemblies: new[]
-                    {
-                        (GetType().Namespace!, GetType().Assembly),
-                        (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly),
-                        (typeof(IDefaultSmsUi).Namespace!, typeof(IDefaultSmsUi).Assembly)
-                    })
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                .AddDotAuthUi(GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi))
                 .AddSmsAuthentication(
                     new AwsSmsClient(
                         new BasicAWSCredentials(
@@ -235,13 +230,9 @@ internal sealed class Startup
         else
         {
             services.AddDotAuthServer(
-                _dotAuthConfiguration,
-                new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme },
-                assemblies: new[]
-                {
-                    (GetType().Namespace!, GetType().Assembly),
-                    (typeof(IDefaultUi).Namespace!, typeof(IDefaultUi).Assembly)
-                });
+                    _dotAuthConfiguration,
+                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                .AddDotAuthUi(GetType(), typeof(IDefaultUi));
         }
     }
 

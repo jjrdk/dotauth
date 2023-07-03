@@ -19,22 +19,23 @@ public sealed class VersionTask : FrostingTask<BuildContext>
         }
         catch
         {
-            var assembly = Assembly.GetAssembly(typeof(VersionTask))!.GetName().Version;
-            context.Log.Information(assembly.ToString());
+            var version = Assembly.GetAssembly(typeof(VersionTask))!.GetName().Version!;
+            var versionString = version.ToString();
+            context.Log.Information(versionString);
             versionInfo = new GitVersion
             {
-                AssemblySemVer = assembly.ToString(),
+                AssemblySemVer = versionString,
                 BranchName = "master",
-                InformationalVersion = assembly.ToString(),
-                FullSemVer = assembly.ToString(),
-                SemVer = assembly.ToString(),
-                LegacySemVer = assembly.ToString(),
-                Major = assembly.Major,
-                Minor = assembly.Minor,
-                Patch = assembly.Build,
-                MajorMinorPatch = $"{assembly.Major}.{assembly.Minor}.{assembly.Build}",
+                InformationalVersion = versionString,
+                FullSemVer = versionString,
+                SemVer = versionString,
+                LegacySemVer = versionString,
+                Major = version.Major,
+                Minor = version.Minor,
+                Patch = version.Build,
+                MajorMinorPatch = $"{version.Major}.{version.Minor}.{version.Build}",
                 CommitsSinceVersionSource = 0,
-                NuGetVersion = assembly.ToString()
+                NuGetVersion = versionString
             };
         }
         if (versionInfo.BranchName == "master" || versionInfo.BranchName.StartsWith("tags/"))
@@ -46,12 +47,8 @@ public sealed class VersionTask : FrostingTask<BuildContext>
         }
         else
         {
-            context.BuildVersion = string.Concat(
-                versionInfo.MajorMinorPatch,
-                "-",
-                versionInfo.BranchName.Replace("features/", "").Replace("_", ""),
-                ".",
-                versionInfo.CommitsSinceVersionSource);
+            context.BuildVersion =
+                $"{versionInfo.MajorMinorPatch}-{versionInfo.BranchName.Replace("features/", "").Replace("_", "")}.{versionInfo.CommitsSinceVersionSource}";
         }
 
         if (versionInfo.BranchName == "master")
@@ -59,12 +56,12 @@ public sealed class VersionTask : FrostingTask<BuildContext>
             context.BuildConfiguration = "Release";
         }
 
-        context.InformationalVersion = versionInfo.MajorMinorPatch + "." + (versionInfo.CommitsSinceVersionSource ?? 0);
-        context.Log.Information("Build configuration: " + context.BuildConfiguration);
-        context.Log.Information("Branch: " + versionInfo.BranchName);
-        context.Log.Information("Version: " + versionInfo.FullSemVer);
-        context.Log.Information("Version: " + versionInfo.MajorMinorPatch);
-        context.Log.Information("Build version: " + context.BuildVersion);
-        context.Log.Information("CommitsSinceVersionSource: " + versionInfo.CommitsSinceVersionSource);
+        context.InformationalVersion = $"{versionInfo.MajorMinorPatch}.{(versionInfo.CommitsSinceVersionSource ?? 0)}";
+        context.Log.Information($"Build configuration: {context.BuildConfiguration}");
+        context.Log.Information($"Branch: {versionInfo.BranchName}");
+        context.Log.Information($"Version: {versionInfo.FullSemVer}");
+        context.Log.Information($"Version: {versionInfo.MajorMinorPatch}");
+        context.Log.Information($"Build version: {context.BuildVersion}");
+        context.Log.Information($"CommitsSinceVersionSource: {versionInfo.CommitsSinceVersionSource}");
     }
 }

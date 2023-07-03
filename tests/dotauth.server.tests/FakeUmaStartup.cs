@@ -81,18 +81,20 @@ public sealed class FakeUmaStartup
             .AddApplicationPart(typeof(CoreConstants).Assembly);
         services.AddRazorPages();
         services.AddDotAuthServer(
-            new DotAuthConfiguration
-            {
-                Clients = sp => new InMemoryClientRepository(
-                    new Mock<IHttpClientFactory>().Object,
-                    sp.GetService<IScopeStore>(),
-                    new Mock<ILogger<InMemoryClientRepository>>().Object,
-                    OAuthStores.GetClients()),
-                Scopes = _ => new InMemoryScopeRepository(OAuthStores.GetScopes()),
-                ResourceSets = sp => new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>(), UmaStores.GetResources())
-            },
-            new[] { DefaultSchema },
-            assemblyTypes: typeof(IDefaultUi));
+                new DotAuthConfiguration
+                {
+                    Clients = sp => new InMemoryClientRepository(
+                        new Mock<IHttpClientFactory>().Object,
+                        sp.GetService<IScopeStore>(),
+                        new Mock<ILogger<InMemoryClientRepository>>().Object,
+                        OAuthStores.GetClients()),
+                    Scopes = _ => new InMemoryScopeRepository(OAuthStores.GetScopes()),
+                    ResourceSets = sp =>
+                        new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>(),
+                            UmaStores.GetResources())
+                },
+                new[] { DefaultSchema })
+            .AddDotAuthUi(typeof(IDefaultUi));
 
         // 3. Enable logging.
         services.AddLogging(l => l.AddXunit(_outputHelper));

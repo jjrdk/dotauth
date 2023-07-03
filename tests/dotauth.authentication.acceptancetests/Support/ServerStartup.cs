@@ -82,13 +82,13 @@ public sealed class ServerStartup
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         services.AddDotAuthServer(
-            _configuration,
-            new[]
-            {
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                JwtBearerDefaults.AuthenticationScheme,
-            },
-            assemblyTypes: new[] { typeof(IDefaultUi) });
+                _configuration,
+                new[]
+                {
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    JwtBearerDefaults.AuthenticationScheme,
+                })
+            .AddDotAuthUi(typeof(IDefaultUi));
         services
             .AddAccountFilter()
             .AddAuthentication(

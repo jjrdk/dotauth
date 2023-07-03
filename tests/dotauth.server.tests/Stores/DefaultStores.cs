@@ -323,7 +323,7 @@ public static class DefaultStores
                 JsonWebKeys =
                     TestKeys.SecretKey.CreateSignatureJwk()
                         .ToSet()
-                        .AddKey(TestKeys.SuperSecretKey.CreateEncryptionJwk()),
+                        .AddKey(TestKeys.SecretKey.CreateEncryptionJwk()),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = new[] { new Uri("http://localhost:5000/callback") }

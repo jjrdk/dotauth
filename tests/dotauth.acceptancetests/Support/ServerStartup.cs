@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit.Abstractions;
 
@@ -34,9 +33,11 @@ public sealed class ServerStartup
         var mockConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
         mockConfirmationCodeStore.Setup(x => x.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        mockConfirmationCodeStore.Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        mockConfirmationCodeStore
+            .Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        mockConfirmationCodeStore.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        mockConfirmationCodeStore
+            .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 new ConfirmationCode
                 {
@@ -52,21 +53,21 @@ public sealed class ServerStartup
         {
             DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm),
             AdministratorRoleDefinition = default,
-            JsonWebKeys = sp =>
+            JsonWebKeys = _ =>
             {
                 var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                 return new InMemoryJwksRepository(keyset, keyset);
             },
-            ConfirmationCodes = sp => mockConfirmationCodeStore.Object,
+            ConfirmationCodes = _ => mockConfirmationCodeStore.Object,
             Clients =
-                sp => new InMemoryClientRepository(
+                _ => new InMemoryClientRepository(
                     new TestHttpClientFactory(context.Client!),
                     new InMemoryScopeRepository(),
                     new Mock<ILogger<InMemoryClientRepository>>().Object,
                     DefaultStores.Clients(context)),
-            Scopes = sp => new InMemoryScopeRepository(DefaultStores.Scopes()),
-            Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
-            Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users()),
+            Scopes = _ => new InMemoryScopeRepository(DefaultStores.Scopes()),
+            Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents()),
+            Users = _ => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users()),
             ClaimsIncludedInUserCreation = new[] { "acceptance_test" },
             DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5),
             DevicePollingInterval = TimeSpan.FromSeconds(3)
@@ -77,7 +78,8 @@ public sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>(x => { }).AddHttpMessageHandler(d => new TestDelegatingHandler(_context.Handler!));
+        services.AddHttpClient<HttpClient>(_ => { })
+            .AddHttpMessageHandler(_ => new TestDelegatingHandler(_context.Handler!));
         services.AddTransient(_ => _context.Client!);
         var mockSmsClient = new Mock<ISmsClient>();
         mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((true, null));
@@ -90,8 +92,8 @@ public sealed class ServerStartup
                 {
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     JwtBearerDefaults.AuthenticationScheme,
-                },
-                assemblyTypes: new[] { typeof(IDefaultUi), typeof(IDefaultSmsUi) })
+                })
+            .AddDotAuthUi(typeof(IDefaultUi), typeof(IDefaultSmsUi))
             .AddSmsAuthentication(mockSmsClient.Object);
         services
 #if DEBUG
@@ -109,8 +111,7 @@ public sealed class ServerStartup
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
-                cfg =>
-                { });
+                _ => { });
 
         services.AddUmaClient(new Uri("http://localhost/"));
         services.ConfigureOptions<JwtBearerPostConfigureOptions>();
