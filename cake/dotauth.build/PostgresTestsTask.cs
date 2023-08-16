@@ -26,7 +26,7 @@ public sealed class PostgresTestsTask : FrostingTask<BuildContext>
 
             var upsettings = new DockerComposeUpSettings
             {
-                DetachedMode = true,
+                Detach = true,
                 Files = dockerComposeFiles
             };
             context.DockerComposeUp(upsettings);

@@ -24,8 +24,8 @@ public sealed class RedisTestsTask : FrostingTask<BuildContext>
 
             var upsettings = new DockerComposeUpSettings
             {
-                DetachedMode = true,
-                Files = new string[] { "./tests/dotauth.stores.redis.acceptancetests/docker-compose.yml" }
+                Detach = true,
+                Files = new [] { "./tests/dotauth.stores.redis.acceptancetests/docker-compose.yml" }
             };
             context.DockerComposeUp(upsettings);
 
