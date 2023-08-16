@@ -34,7 +34,7 @@ public sealed class ClientFactoryFixture
             s => s.DeserializeWithJavascript<Uri[]>(),
             new TestOutputLogger("test", outputHelper));
     }
-        
+
     [Fact]
     public async Task When_One_Request_Uri_Contains_A_Fragment_Then_Exception_Is_Thrown()
     {
@@ -46,7 +46,7 @@ public sealed class ClientFactoryFixture
             AllowedScopes = new[] { "test" }
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidRedirectUri, ex.Details.Title);
         Assert.Equal(string.Format(Strings.TheRedirectUrlCannotContainsFragment, localhost), ex.Details.Detail);
     }
@@ -108,7 +108,7 @@ public sealed class ClientFactoryFixture
             SectorIdentifierUri = new Uri("https://sector_identifier_uri/")
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(Strings.TheSectorIdentifierUrisCannotBeRetrieved, ex.Details.Detail);
     }
@@ -122,7 +122,7 @@ public sealed class ClientFactoryFixture
             SectorIdentifierUri = new Uri("http://localhost/identity")
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(string.Format(Strings.ParameterIsNotCorrect, "sector_identifier_uri"), ex.Details.Detail);
     }
@@ -141,7 +141,7 @@ public sealed class ClientFactoryFixture
         var httpClientFake = new HttpClient(handler);
         _httpClientFake = httpClientFake;
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(Strings.TheSectorIdentifierUrisCannotBeRetrieved, ex.Details.Detail);
@@ -170,7 +170,7 @@ public sealed class ClientFactoryFixture
             s => s.DeserializeWithJavascript<Uri[]>(),
             new TestOutputLogger("test", _outputHelper));
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(Strings.OneOrMoreSectorIdentifierUriIsNotARedirectUri, ex.Details.Detail);
     }
@@ -185,7 +185,7 @@ public sealed class ClientFactoryFixture
             IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Details.Detail);
@@ -203,7 +203,7 @@ public sealed class ClientFactoryFixture
             IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(Strings.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified, ex.Details.Detail);
     }
@@ -218,7 +218,7 @@ public sealed class ClientFactoryFixture
             UserInfoEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Details.Detail);
     }
@@ -234,7 +234,7 @@ public sealed class ClientFactoryFixture
             //UserInfoEncryptedResponseAlg = "user_info_encrypted_response_alg_not_correct"
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(Strings.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified, ex.Details.Detail);
     }
@@ -249,7 +249,7 @@ public sealed class ClientFactoryFixture
             RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Details.Detail);
     }
@@ -266,7 +266,7 @@ public sealed class ClientFactoryFixture
             RequestObjectEncryptionEnc = SecurityAlgorithms.Aes128CbcHmacSha256,
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(Strings.TheParameterRequestObjectEncryptionAlgMustBeSpecified, ex.Details.Detail);
     }
@@ -280,7 +280,7 @@ public sealed class ClientFactoryFixture
             InitiateLoginUri = new Uri("http://localhost/identity")
         };
 
-        var ex = await _factory.Build(parameter).ConfigureAwait(false) as Option<Client>.Error;
+        var ex = Assert.IsType<Option<Client>.Error>(await _factory.Build(parameter).ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClientMetaData, ex.Details.Title);
         Assert.Equal(string.Format(Strings.ParameterIsNotCorrect, "initiate_login_uri"), ex.Details.Detail);
     }

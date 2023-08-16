@@ -48,8 +48,9 @@ public sealed class ResourceFixture : IDisposable
     [Fact]
     public async Task When_Add_Resource_And_No_Name_Is_Specified_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.AddResourceSet(new ResourceSet { Name = string.Empty }, "header")
-            .ConfigureAwait(false) as Option<AddResourceSetResponse>.Error;
+        var resource = Assert.IsType<Option<AddResourceSetResponse>.Error>(
+            await _umaClient.AddResourceSet(new ResourceSet { Name = string.Empty }, "header")
+                .ConfigureAwait(false));
 
         Assert.NotNull(resource);
         Assert.Equal(ErrorCodes.InvalidRequest, resource.Details.Title);
@@ -233,7 +234,7 @@ public sealed class ResourceFixture : IDisposable
                 "header")
             .ConfigureAwait(false));
         var information = Assert.IsType<Option<ResourceSet>.Result>(
-        await _umaClient.GetResourceSet(updateResult.Item.Id, "header").ConfigureAwait(false));
+            await _umaClient.GetResourceSet(updateResult.Item.Id, "header").ConfigureAwait(false));
 
         Assert.Equal("name2", information.Item.Name);
         Assert.Equal("type", information.Item.Type);

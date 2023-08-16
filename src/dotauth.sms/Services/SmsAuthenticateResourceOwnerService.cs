@@ -50,7 +50,7 @@ internal sealed class SmsAuthenticateResourceOwnerService : IAuthenticateResourc
             .ConfigureAwait(false);
         if (resourceOwner != null)
         {
-            await _confirmationCodeStore.Remove(password, resourceOwner.Subject!, cancellationToken)
+            await _confirmationCodeStore.Remove(password, resourceOwner.Subject, cancellationToken)
                 .ConfigureAwait(false);
         }
 

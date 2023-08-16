@@ -42,7 +42,7 @@ public sealed class DataController : ControllerBase
         {
             Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             Response.Headers[HeaderNames.WWWAuthenticate] =
-                $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket!.Item.TicketId}\"";
+                $"UMA as_uri=\"{_umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket.Item.TicketId}\"";
 
             return StatusCode((int)HttpStatusCode.Unauthorized);
         }

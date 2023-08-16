@@ -24,32 +24,34 @@ public partial class FeatureTest
 {
     private GrantedTokenResponse _updatedToken = null!;
     private GrantedTokenResponse _newToken = null!;
-    
+
     [When(@"adding resource owner with (.+), (.+)")]
     public async Task WhenAddingResourceOwnerWith(string subject, string password)
     {
-        var response = await _managerClient.AddResourceOwner(
-                new AddResourceOwnerRequest {Password = password, Subject = subject},
-                _token.AccessToken)
-            .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
+        var response = Assert.IsType<Option<AddResourceOwnerResponse>.Result>(
+            await _managerClient.AddResourceOwner(
+                    new AddResourceOwnerRequest { Password = password, Subject = subject },
+                    _token.AccessToken)
+                .ConfigureAwait(false));
 
         Assert.NotNull(response);
     }
-    
+
     [Then(@"resource owner (.+) is local account")]
     public async Task ThenResourceOwnerIsLocalAccount(string subject)
     {
-        var response = await _managerClient.GetResourceOwner(subject, _token.AccessToken)
-            .ConfigureAwait(false) as Option<ResourceOwner>.Result;
+        var response = Assert.IsType<Option<ResourceOwner>.Result>(
+            await _managerClient.GetResourceOwner(subject, _token.AccessToken)
+                .ConfigureAwait(false));
 
-        Assert.True(response!.Item.IsLocalAccount);
+        Assert.True(response.Item.IsLocalAccount);
     }
 
     [Then(@"can update resource owner (.+) with password (.+)")]
     public async Task ThenCanUpdateResourceOwnerWithPassword(string subject, string password)
     {
         var response = await _managerClient.UpdateResourceOwnerPassword(
-                new UpdateResourceOwnerPasswordRequest {Subject = subject, Password = password},
+                new UpdateResourceOwnerPasswordRequest { Subject = subject, Password = password },
                 _token.AccessToken)
             .ConfigureAwait(false);
 
@@ -60,7 +62,7 @@ public partial class FeatureTest
     public async Task ThenUserCanLoginWithNewPassword(string subject, string password)
     {
         var option =
-            await _tokenClient.GetToken(TokenRequest.FromPassword(subject, password, new[] {"manager"}))
+            await _tokenClient.GetToken(TokenRequest.FromPassword(subject, password, new[] { "manager" }))
                 .ConfigureAwait(false);
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
@@ -123,7 +125,7 @@ public partial class FeatureTest
             .GetToken(TokenRequest.FromRefreshToken(_token.RefreshToken!))
             .ConfigureAwait(false);
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
-        Assert.NotNull(result!.Item);
+        Assert.NotNull(result.Item);
 
         var handler = new JwtSecurityTokenHandler();
         var token = handler.ReadToken(result.Item.AccessToken) as JwtSecurityToken;
@@ -167,13 +169,13 @@ public partial class FeatureTest
     {
         var option =
             await _tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] {"manager", "offline"}))
+                    TokenRequest.FromPassword("administrator", "password", new[] { "manager", "offline" }))
                 .ConfigureAwait(false);
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
 
         var handler = new JwtSecurityTokenHandler();
-        var token = (JwtSecurityToken) handler.ReadToken(result.Item.AccessToken);
+        var token = (JwtSecurityToken)handler.ReadToken(result.Item.AccessToken);
         Assert.Contains(token.Claims, c => c.Type == "added_claim_test" && c.Value == "something");
     }
 
@@ -197,13 +199,13 @@ public partial class FeatureTest
     {
         var option =
             await _tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"manager"}))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" }))
                 .ConfigureAwait(false);
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
 
         var handler = new JwtSecurityTokenHandler();
-        var token = (JwtSecurityToken) handler.ReadToken(result.Item.AccessToken);
+        var token = (JwtSecurityToken)handler.ReadToken(result.Item.AccessToken);
         Assert.DoesNotContain(token.Claims, c => c.Type == "acceptance_test");
     }
 
@@ -221,11 +223,11 @@ public partial class FeatureTest
 
 
     private ResourceOwner _resourceOwner = null!;
-    
+
     [Then(@"when getting resource owner from store")]
     public async Task ThenWhenGettingResourceOwnerFromStore()
     {
-        var store = (IResourceOwnerStore) _fixture.Server.Host.Services.GetRequiredService(
+        var store = (IResourceOwnerStore)_fixture.Server.Host.Services.GetRequiredService(
             typeof(IResourceOwnerStore));
         _resourceOwner = (await store.Get("administrator", CancellationToken.None).ConfigureAwait(false))!;
     }
@@ -261,10 +263,10 @@ public partial class FeatureTest
             Subject = "user",
             Claims = new[]
             {
-                new ClaimData {Type = OpenIdClaimTypes.Subject, Value = "user"},
-                new ClaimData {Type = OpenIdClaimTypes.Name, Value = "John Doe"},
-                new ClaimData {Type = "acceptance_test", Value = "test"},
-                new ClaimData {Type = "test", Value = "something"}
+                new ClaimData { Type = OpenIdClaimTypes.Subject, Value = "user" },
+                new ClaimData { Type = OpenIdClaimTypes.Name, Value = "John Doe" },
+                new ClaimData { Type = "acceptance_test", Value = "test" },
+                new ClaimData { Type = "test", Value = "something" }
             }
         };
 

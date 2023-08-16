@@ -27,8 +27,9 @@ public sealed class TokenTests : IClassFixture<DbFixture>
         await _fixture.GetUser().ConfigureAwait(false);
         for (var i = 0; i < 100; i++)
         {
-            var token = await client.GetToken(TokenRequest.FromPassword("user", "password", new[] { "read" }))
-                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+            var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(await client
+                .GetToken(TokenRequest.FromPassword("user", "password", new[] { "read" }))
+                .ConfigureAwait(false));
 
             Assert.NotNull(token.Item);
         }

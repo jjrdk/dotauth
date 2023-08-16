@@ -12,7 +12,7 @@ public sealed class AmrHelperFixture
     [Fact]
     public void When_No_Amr_Then_Exception_Is_Thrown()
     {
-        var exception = Array.Empty<string>().GetAmr(new[] { "pwd" }) as Option<string>.Error;
+        var exception = Assert.IsType<Option<string>.Error>(Array.Empty<string>().GetAmr(new[] { "pwd" }));
 
         Assert.Equal(ErrorCodes.InternalError, exception.Details.Title);
         Assert.Equal(Strings.NoActiveAmr, exception.Details.Detail);
@@ -21,7 +21,7 @@ public sealed class AmrHelperFixture
     [Fact]
     public void When_Amr_Does_Not_Exist_Then_Exception_Is_Thrown()
     {
-        var exception = new[] { "invalid" }.GetAmr(new[] { "pwd" }) as Option<string>.Error;
+        var exception = Assert.IsType<Option<string>.Error>(new[] { "invalid" }.GetAmr(new[] { "pwd" }));
 
         Assert.Equal(ErrorCodes.InternalError, exception.Details.Title);
         Assert.Equal(string.Format(Strings.TheAmrDoesntExist, "pwd"), exception.Details.Detail);
@@ -30,7 +30,7 @@ public sealed class AmrHelperFixture
     [Fact]
     public void When_Amr_Does_Not_Exist_Then_Default_One_Is_Returned()
     {
-        var amr = new[] { "pwd" }.GetAmr(new[] { "invalid" }) as Option<string>.Result;
+        var amr = Assert.IsType<Option<string>.Result>(new[] { "pwd" }.GetAmr(new[] { "invalid" }));
 
         Assert.Equal("pwd", amr.Item);
     }
@@ -38,7 +38,7 @@ public sealed class AmrHelperFixture
     [Fact]
     public void When_Amr_Exists_Then_Same_Amr_Is_Returned()
     {
-        var amr = new[] { "amr" }.GetAmr(new[] { "amr" }) as Option<string>.Result;
+        var amr = Assert.IsType<Option<string>.Result>(new[] { "amr" }.GetAmr(new[] { "amr" }));
 
         Assert.Equal("amr", amr.Item);
     }

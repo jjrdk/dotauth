@@ -73,13 +73,14 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                resourceOwnerGrantTypeParameter,
-                authenticationHeader,
-                null,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+        var result = Assert.IsType<Option<GrantedToken>.Error>(
+            await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+                    resourceOwnerGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidClient, result.Details.Title);
         Assert.Equal(string.Format(SharedStrings.TheClientDoesntExist), result.Details.Detail);
@@ -112,13 +113,14 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                resourceOwnerGrantTypeParameter,
-                authenticationHeader,
-                null,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+        var result = Assert.IsType<Option<GrantedToken>.Error>(
+            await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+                    resourceOwnerGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(
@@ -153,13 +155,14 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                resourceOwnerGrantTypeParameter,
-                authenticationHeader,
-                null,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+        var result = Assert.IsType<Option<GrantedToken>.Error>(
+            await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+                    resourceOwnerGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidResponse, result.Details.Title);
         Assert.Equal(
@@ -201,13 +204,14 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                resourceOwnerGrantTypeParameter,
-                authenticationHeader,
-                null,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+        var result = Assert.IsType<Option<GrantedToken>.Error>(
+            await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+                    resourceOwnerGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidCredentials, result.Details.Title);
         Assert.Equal(Strings.ResourceOwnerCredentialsAreNotValid, result.Details.Detail);
     }
@@ -250,13 +254,14 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
-                resourceOwnerGrantTypeParameter,
-                authenticationHeader,
-                null,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+        var result = Assert.IsType<Option<GrantedToken>.Error>(
+            await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(
+                    resourceOwnerGrantTypeParameter,
+                    authenticationHeader,
+                    null,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidScope, result.Details.Title);
     }

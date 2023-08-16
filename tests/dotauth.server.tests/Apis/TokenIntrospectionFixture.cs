@@ -60,7 +60,7 @@ public sealed class TokenIntrospectionFixture
     [Fact]
     public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
     {
-        var request = new List<KeyValuePair<string, string>> {new("invalid", "invalid")};
+        var request = new List<KeyValuePair<string, string>> { new("invalid", "invalid") };
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
@@ -82,9 +82,9 @@ public sealed class TokenIntrospectionFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
-        var introspection = await tokenClient.Introspect(
+        var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
                 IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken, "pat"))
-            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+            .ConfigureAwait(false));
 
         Assert.False(introspection.Item.Active);
     }
@@ -96,12 +96,12 @@ public sealed class TokenIntrospectionFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
-        var result =
-            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
-                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
-        var introspection = await tokenClient.Introspect(
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                .ConfigureAwait(false));
+        var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
                 IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
-            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+            .ConfigureAwait(false));
 
         Assert.Single(introspection.Item.Scope);
         Assert.Equal("scim", introspection.Item.Scope.First());
@@ -114,13 +114,13 @@ public sealed class TokenIntrospectionFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
-        var result = await tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", new[] {"scim", "offline"}))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient.GetToken(
+                TokenRequest.FromPassword("administrator", "password", new[] { "scim", "offline" }))
+            .ConfigureAwait(false));
 
-        var introspection = await tokenClient.Introspect(
+        var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
                 IntrospectionRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken, "pat"))
-            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+            .ConfigureAwait(false));
 
         Assert.Equal(2, introspection.Item.Scope.Length);
         Assert.Equal("scim", introspection.Item.Scope.First());

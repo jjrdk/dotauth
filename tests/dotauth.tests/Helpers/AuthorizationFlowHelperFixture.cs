@@ -16,7 +16,7 @@ public sealed class AuthorizationFlowHelperFixture
     {
         const string state = "state";
 
-        var exception = new List<string>().GetAuthorizationFlow(state) as Option<AuthorizationFlow>.Error;
+        var exception = Assert.IsType<Option<AuthorizationFlow>.Error>(new List<string>().GetAuthorizationFlow(state));
 
         var expected = new Option<AuthorizationFlow>.Error(
             new ErrorDetails
@@ -34,7 +34,9 @@ public sealed class AuthorizationFlowHelperFixture
     {
         const string state = "state";
 
-        var result = new[] { ResponseTypeNames.Code }.GetAuthorizationFlow(state) as Option<AuthorizationFlow>.Result;
+        var result =
+            Assert.IsType<Option<AuthorizationFlow>.Result>(
+                new[] { ResponseTypeNames.Code }.GetAuthorizationFlow(state));
 
         Assert.Equal(AuthorizationFlow.AuthorizationCodeFlow, result.Item);
     }
@@ -44,9 +46,8 @@ public sealed class AuthorizationFlowHelperFixture
     {
         const string state = "state";
 
-        var result =
-            new List<string> { ResponseTypeNames.IdToken }.GetAuthorizationFlow(state) as
-                Option<AuthorizationFlow>.Result;
+        var result = Assert.IsType<Option<AuthorizationFlow>.Result>(
+            new List<string> { ResponseTypeNames.IdToken }.GetAuthorizationFlow(state));
 
         Assert.Equal(AuthorizationFlow.ImplicitFlow, result.Item);
     }
@@ -56,9 +57,8 @@ public sealed class AuthorizationFlowHelperFixture
     {
         const string state = "state";
 
-        var result =
-            new List<string> { ResponseTypeNames.IdToken, ResponseTypeNames.Code }.GetAuthorizationFlow(state) as
-                Option<AuthorizationFlow>.Result;
+        var result = Assert.IsType<Option<AuthorizationFlow>.Result>(
+            new List<string> { ResponseTypeNames.IdToken, ResponseTypeNames.Code }.GetAuthorizationFlow(state));
 
         Assert.Equal(AuthorizationFlow.HybridFlow, result.Item);
     }

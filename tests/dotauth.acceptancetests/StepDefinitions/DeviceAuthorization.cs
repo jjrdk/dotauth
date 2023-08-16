@@ -29,7 +29,7 @@ public partial class FeatureTest
     {
         _tokenClient = new TokenClient(
             TokenCredentials.AsDevice(),
-            _fixture!.Client,
+            _fixture.Client,
             new Uri(WellKnownOpenidConfiguration));
 
         Assert.NotNull(_tokenClient);
@@ -42,7 +42,7 @@ public partial class FeatureTest
             new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(WellKnownOpenidConfiguration) };
         request.Headers.Accept.Clear();
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var response = await _fixture!.Client().SendAsync(request).ConfigureAwait(false);
+        var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
 
         var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -60,7 +60,7 @@ public partial class FeatureTest
     {
         var authClient = new TokenClient(
             TokenCredentials.FromClientCredentials(ClientId, "client"),
-            _fixture!.Client,
+            _fixture.Client,
             new Uri(WellKnownOpenidConfiguration));
         var option = await authClient.GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }))
             .ConfigureAwait(false);
@@ -92,7 +92,7 @@ public partial class FeatureTest
     [When(@"user successfully posts user code")]
     public async Task WhenUserSuccessfullyPostsUserCode()
     {
-        var client = _fixture!.Client();
+        var client = _fixture.Client();
         var msg = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -118,9 +118,9 @@ public partial class FeatureTest
     [When(@"the device polls the token server too fast")]
     public async Task WhenTheDevicePollsTheTokenServerTooFast()
     {
-        var fastPoll =
+        var fastPoll = Assert.IsType<Option<GrantedTokenResponse>.Error>(
             await _tokenClient.GetToken(TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode, 1))
-                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Error;
+                .ConfigureAwait(false) );
 
         Assert.NotNull(fastPoll);
         Assert.Equal(ErrorCodes.SlowDown, fastPoll.Details.Title);

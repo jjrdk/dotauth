@@ -148,9 +148,9 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
                 };
             }
 
-            await _tokenStore.AddToken(grantedToken!, cancellationToken).ConfigureAwait(false);
+            await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
         }
 
-        return grantedToken!;
+        return grantedToken;
     }
 }

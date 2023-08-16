@@ -267,7 +267,7 @@ public abstract class BaseAuthenticateController : BaseController
             await SetTwoFactorCookie(claims.ToArray()).ConfigureAwait(false);
             try
             {
-                await _generateAndSendCode.Send(resourceOwner.Subject!, cancellationToken).ConfigureAwait(false);
+                await _generateAndSendCode.Send(resourceOwner.Subject, cancellationToken).ConfigureAwait(false);
                 return RedirectToAction("SendCode");
             }
             catch (ClaimRequiredException)
@@ -660,11 +660,11 @@ public abstract class BaseAuthenticateController : BaseController
         if (resourceOwner != null && !string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
         {
             await SetTwoFactorCookie(claims).ConfigureAwait(false);
-            await _generateAndSendCode.Send(resourceOwner.Subject!, cancellationToken).ConfigureAwait(false);
+            await _generateAndSendCode.Send(resourceOwner.Subject, cancellationToken).ConfigureAwait(false);
             return RedirectToAction("SendCode", new { code = request });
         }
 
-        var subject = resourceOwner!.Subject!;
+        var subject = resourceOwner!.Subject;
         // 6. Try to authenticate the resource owner & returns the claims.
         var authorizationRequest = DataProtector.Unprotect<AuthorizationRequest>(request);
         var issuerName = Request.GetAbsoluteUriWithVirtualPath();

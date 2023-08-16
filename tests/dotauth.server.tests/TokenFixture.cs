@@ -55,8 +55,9 @@ public sealed class TokenFixture : IDisposable
             TokenCredentials.FromClientCredentials("resource_server", "resource_server"),
             _server.Client,
             new Uri(BaseUrl + WellKnownUma2Configuration));
-        var result = await tokenClient.GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
+            .GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
+            .ConfigureAwait(false));
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -71,7 +72,7 @@ public sealed class TokenFixture : IDisposable
         var securityToken = new JwtSecurityToken(
             "http://server.example.com",
             "s6BhdRkqt3",
-            new[] {new Claim("sub", "248289761001")},
+            new[] { new Claim("sub", "248289761001") },
             null,
             DateTime.UtcNow.AddYears(1),
             new SigningCredentials(set.GetSignKeys().First(), SecurityAlgorithms.HmacSha256));
@@ -82,34 +83,36 @@ public sealed class TokenFixture : IDisposable
             _server.Client,
             new Uri(BaseUrl + WellKnownUma2Configuration));
         // Get PAT.
-        var result = await tc.GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tc
+            .GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"))
+            .ConfigureAwait(false));
 
         var resourceSet = new ResourceSet
         {
             Name = "name",
-            Scopes = new[] {"read", "write", "execute"},
+            Scopes = new[] { "read", "write", "execute" },
             AuthorizationPolicies = new[]
             {
                 new PolicyRule
                 {
-                    ClientIdsAllowed = new[] {"resource_server"},
-                    Scopes = new[] {"read", "write", "execute"}
+                    ClientIdsAllowed = new[] { "resource_server" },
+                    Scopes = new[] { "read", "write", "execute" }
                 }
             }
         };
         var resource =
             await _umaClient.AddResourceSet(resourceSet, result.Item.AccessToken).ConfigureAwait(false) as
                 Option<AddResourceSetResponse>.Result;
-        resourceSet = resourceSet with {Id = resource.Item.Id};
+        resourceSet = resourceSet with { Id = resource.Item.Id };
         await _umaClient.UpdateResourceSet(resourceSet, result.Item.AccessToken).ConfigureAwait(false);
-        var ticket = await _umaClient.RequestPermission(
-                "header",
-                requests: new PermissionRequest // Add permission & retrieve a ticket id.
-                {
-                    ResourceSetId = resource.Item.Id, Scopes = new[] {"read"}
-                })
-            .ConfigureAwait(false) as Option<TicketResponse>.Result;
+        var ticket = Assert.IsType<Option<TicketResponse>.Result>(
+            await _umaClient.RequestPermission(
+                    "header",
+                    requests: new PermissionRequest // Add permission & retrieve a ticket id.
+                    {
+                        ResourceSetId = resource.Item.Id, Scopes = new[] { "read" }
+                    })
+                .ConfigureAwait(false));
 
         Assert.NotNull(ticket.Item);
 

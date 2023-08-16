@@ -21,13 +21,16 @@ public sealed class ClientFixture : IDisposable
     public ClientFixture()
     {
         _server = new TestManagerServerFixture();
-        _openidClients = ManagementClient.Create(_server.Client, new Uri(OpenIdManagerConfiguration)).GetAwaiter().GetResult();
+        _openidClients = ManagementClient.Create(_server.Client, new Uri(OpenIdManagerConfiguration)).GetAwaiter()
+            .GetResult();
     }
 
     [Fact]
     public async Task When_Pass_No_Parameter_Then_Error_Is_Returned()
     {
-        var result = await _openidClients.AddClient(new Client(), "token").ConfigureAwait(false) as Option<Client>.Error;
+        var result =
+            Assert.IsType<Option<Client>.Error>(await _openidClients.AddClient(new Client(), "token")
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
     }
@@ -35,7 +38,7 @@ public sealed class ClientFixture : IDisposable
     [Fact]
     public async Task When_Add_User_And_Redirect_Uri_Contains_Fragment_Then_Error_Is_Returned()
     {
-        var result = await _openidClients.AddClient(
+        var result = Assert.IsType<Option<Client>.Error>(await _openidClients.AddClient(
                 new Client
                 {
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
@@ -45,7 +48,7 @@ public sealed class ClientFixture : IDisposable
                     RedirectionUrls = new[] { new Uri("http://localhost#fragment") }
                 },
                 null)
-            .ConfigureAwait(false) as Option<Client>.Error;
+            .ConfigureAwait(false));
 
         Assert.Equal("invalid_redirect_uri", result.Details.Title);
         Assert.Equal("The redirect_uri http://localhost/#fragment cannot contain fragment", result.Details.Detail);
@@ -54,7 +57,8 @@ public sealed class ClientFixture : IDisposable
     [Fact]
     public async Task When_Update_And_Pass_No_Parameter_Then_Error_Is_Returned()
     {
-        var result = await _openidClients.UpdateClient(new Client(), "token").ConfigureAwait(false) as Option<Client>.Error;
+        var result = Assert.IsType<Option<Client>.Error>(
+            await _openidClients.UpdateClient(new Client(), "token").ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "redirect_uris"), result.Details.Detail);
@@ -75,13 +79,15 @@ public sealed class ClientFixture : IDisposable
             DefaultAcrValues = "sms",
             GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
             RedirectionUrls = new[] { new Uri("http://localhost") },
-            PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
-            //LogoUri = new Uri("http://logouri.com")
+            PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") }
         };
-        var addClientResult = await _openidClients.AddClient(client, "token").ConfigureAwait(false) as Option<Client>.Result;
+        var addClientResult = Assert.IsType<Option<Client>.Result>(
+            await _openidClients.AddClient(client, "token").ConfigureAwait(false));
         client = addClientResult.Item;
         client.AllowedScopes = new[] { "not_valid" };
-        var result = await _openidClients.UpdateClient(client, "token").ConfigureAwait(false) as Option<Client>.Error;
+        var result =
+            Assert.IsType<Option<Client>.Error>(
+                await _openidClients.UpdateClient(client, "token").ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidScope, result.Details.Title);
         Assert.Equal("Unknown scopes: not_valid", result.Details.Detail);
@@ -90,7 +96,8 @@ public sealed class ClientFixture : IDisposable
     [Fact]
     public async Task When_Get_Unknown_Client_Then_Error_Is_Returned()
     {
-        var newClient = await _openidClients.GetClient("unknown_client", "token").ConfigureAwait(false) as Option<Client>.Error;
+        var newClient = Assert.IsType<Option<Client>.Error>(
+            await _openidClients.GetClient("unknown_client", "token").ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRequest, newClient.Details.Title);
         Assert.Equal(SharedStrings.TheClientDoesntExist, newClient.Details.Detail);
@@ -134,9 +141,12 @@ public sealed class ClientFixture : IDisposable
             PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback"), },
             //LogoUri = new Uri("http://logouri.com")
         };
-        var result = await _openidClients.AddClient(client, "token").ConfigureAwait(false) as Option<Client>.Result;
+        var result =
+            Assert.IsType<Option<Client>.Result>(await _openidClients.AddClient(client, "token").ConfigureAwait(false));
 
-        var newClient = await _openidClients.GetClient(result.Item.ClientId, "token").ConfigureAwait(false) as Option<Client>.Result;
+        var newClient = Assert.IsType<Option<Client>.Result>(
+            await _openidClients.GetClient(result.Item.ClientId, "token")
+                .ConfigureAwait(false));
 
         Assert.Equal(ApplicationTypes.Web, newClient.Item.ApplicationType);
         Assert.Equal("client_name", newClient.Item.ClientName);
@@ -169,15 +179,20 @@ public sealed class ClientFixture : IDisposable
             //LogoUri = new Uri("http://logouri.com")
         };
 
-        var addClientResult = await _openidClients.AddClient(client, "token").ConfigureAwait(false) as Option<Client>.Result;
+        var addClientResult = Assert.IsType<Option<Client>.Result>(
+            await _openidClients.AddClient(client, "token").ConfigureAwait(false));
         client = addClientResult.Item;
         client.PostLogoutRedirectUris = new[]
         {
             new Uri("http://localhost/callback"), new Uri("http://localhost/callback2"),
         };
         client.GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, };
-        var result = await _openidClients.UpdateClient(client, "token").ConfigureAwait(false) as Option<Client>.Result;
-        var newClient = await _openidClients.GetClient(result.Item.ClientId, "token").ConfigureAwait(false) as Option<Client>.Result;
+        var result =
+            Assert.IsType<Option<Client>.Result>(await _openidClients.UpdateClient(client, "token")
+                .ConfigureAwait(false));
+        var newClient = Assert.IsType<Option<Client>.Result>(
+            await _openidClients.GetClient(result.Item.ClientId, "token")
+                .ConfigureAwait(false));
 
         Assert.Equal(2, newClient.Item.PostLogoutRedirectUris.Length);
         Assert.Single(newClient.Item.RedirectionUrls);
@@ -187,25 +202,27 @@ public sealed class ClientFixture : IDisposable
     [Fact]
     public async Task When_Delete_Client_Then_Ok_Is_Returned()
     {
-        var addClientResult = await _openidClients.AddClient(
-                new Client
-                {
-                    ClientId = Guid.NewGuid().ToString("N"),
-                    JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                    AllowedScopes = new[] { "openid" },
-                    ApplicationType = ApplicationTypes.Web,
-                    ClientName = "client_name",
-                    ClientUri = new Uri("http://clienturi.com"),
-                    Contacts = new[] { "contact" },
-                    DefaultAcrValues = "sms",
-                    //DefaultMaxAge = 10,
-                    GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
-                    RedirectionUrls = new[] { new Uri("http://localhost") },
-                    PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
-                    //LogoUri = new Uri("http://logouri.com")
-                },
-                null)
-            .ConfigureAwait(false) as Option<Client>.Result;
+        var addClientResult = Assert.IsType<Option<Client>.Result>(
+            await _openidClients.AddClient(
+                    new Client
+                    {
+                        ClientId = Guid.NewGuid().ToString("N"),
+                        JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                        AllowedScopes = new[] { "openid" },
+                        ApplicationType = ApplicationTypes.Web,
+                        ClientName = "client_name",
+                        ClientUri = new Uri("http://clienturi.com"),
+                        Contacts = new[] { "contact" },
+                        DefaultAcrValues = "sms",
+                        //DefaultMaxAge = 10,
+                        GrantTypes = new[]
+                            { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
+                        RedirectionUrls = new[] { new Uri("http://localhost") },
+                        PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                        //LogoUri = new Uri("http://logouri.com")
+                    },
+                    null)
+                .ConfigureAwait(false));
 
         var deleteResult =
             await _openidClients.DeleteClient(addClientResult.Item.ClientId, "token").ConfigureAwait(false);
@@ -251,10 +268,11 @@ public sealed class ClientFixture : IDisposable
                 null)
             .ConfigureAwait(false);
 
-        var searchResult = await _openidClients.SearchClients(
-                new SearchClientsRequest { StartIndex = 0, NbResults = 1 },
-                null)
-            .ConfigureAwait(false) as Option<PagedResult<Client>>.Result;
+        var searchResult = Assert.IsType<Option<PagedResult<Client>>.Result>(
+            await _openidClients.SearchClients(
+                    new SearchClientsRequest { StartIndex = 0, NbResults = 1 },
+                    null)
+                .ConfigureAwait(false));
 
         Assert.Single(searchResult.Item.Content);
     }

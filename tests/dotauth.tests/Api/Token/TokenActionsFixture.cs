@@ -121,13 +121,14 @@ public sealed class TokenActionsFixture
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{Clientsecret}".Base64Encode());
-        var result = await _tokenActions.GetTokenByClientCredentialsGrantType(
+        var result = Assert.IsType<Option<GrantedToken>.Result>(await _tokenActions
+            .GetTokenByClientCredentialsGrantType(
                 parameter,
                 authenticationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Result;
+            .ConfigureAwait(false));
 
         Assert.Equal(clientId, result.Item.ClientId);
     }

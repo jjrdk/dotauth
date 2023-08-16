@@ -103,7 +103,7 @@ internal sealed class LocalOpenIdUserAuthenticationAction
                 await _authenticateHelper.ProcessRedirection(
                         authorizationParameter,
                         code,
-                        resourceOwner.Subject!,
+                        resourceOwner.Subject,
                         claims,
                         issuerName,
                         cancellationToken)

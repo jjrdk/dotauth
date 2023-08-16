@@ -65,8 +65,9 @@ public sealed class GenerateAndSendCodeActionFixture
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((ResourceOwner)null);
 
-        var exception = await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-            .ConfigureAwait(false) as Option<string>.Error;
+        var exception = Assert.IsType<Option<string>.Error>(
+            await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);
@@ -78,8 +79,9 @@ public sealed class GenerateAndSendCodeActionFixture
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ResourceOwner { TwoFactorAuthentication = string.Empty });
 
-        var exception = await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-            .ConfigureAwait(false) as Option<string>.Error;
+        var exception = Assert.IsType<Option<string>.Error>(
+            await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TwoFactorAuthenticationIsNotEnabled, exception.Details.Detail);
@@ -128,8 +130,9 @@ public sealed class GenerateAndSendCodeActionFixture
         _confirmationCodeStoreStub.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(false);
 
-        var exception = await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-            .ConfigureAwait(false) as Option<string>.Error;
+        var exception = Assert.IsType<Option<string>.Error>(
+            await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TheConfirmationCodeCannotBeSaved, exception.Details.Detail);

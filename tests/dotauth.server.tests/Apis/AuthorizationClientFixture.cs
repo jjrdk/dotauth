@@ -112,7 +112,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                    + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=invalid"))
+                  + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=invalid"))
             .ConfigureAwait(false);
         var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -129,7 +129,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                    + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=invalid"))
+                  + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=invalid"))
             .ConfigureAwait(false);
         var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -146,7 +146,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                    + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=none"))
+                  + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=none"))
             .ConfigureAwait(false);
         var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -162,7 +162,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                    + "/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
+                  + "/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
             .ConfigureAwait(false);
         var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -178,7 +178,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                    + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
+                  + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
             .ConfigureAwait(false);
         var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -195,7 +195,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                    + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none"))
+                  + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none"))
             .ConfigureAwait(false);
         var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -211,7 +211,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                    + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none"))
+                  + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none"))
             .ConfigureAwait(false);
         var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -227,7 +227,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                    + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))
+                  + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))
             .ConfigureAwait(false);
         var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -244,7 +244,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                    + "/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))
+                  + "/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))
             .ConfigureAwait(false);
         var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
@@ -260,16 +260,16 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         const string baseUrl = "http://localhost:5000";
         var pkce = CodeChallengeMethods.S256.BuildPkce();
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "implicit_client",
                     new Uri(baseUrl + "/invalid_callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
                     "state"))
-            .ConfigureAwait(false) as Option<Uri>.Error;
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
     }
@@ -279,16 +279,16 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         UserStore.Instance().IsInactive = true;
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.None})
-            .ConfigureAwait(false) as Option<Uri>.Error;
+                    "state") { prompt = PromptNames.None })
+            .ConfigureAwait(false));
         UserStore.Instance().IsInactive = false;
 
         Assert.Equal("login_required", result!.Details.Title);
@@ -301,16 +301,16 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         UserStore.Instance().Subject = "user";
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.None})
-            .ConfigureAwait(false) as Option<Uri>.Error;
+                    "state") { prompt = PromptNames.None })
+            .ConfigureAwait(false));
         UserStore.Instance().Subject = "administrator";
 
         Assert.Equal("interaction_required", result.Details.Title);
@@ -321,16 +321,16 @@ public sealed class AuthorizationClientFixture : IDisposable
     public async Task When_Pass_Invalid_IdTokenHint_To_Authorization_Then_Error_Is_Returned()
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {id_token_hint = "token", prompt = "none"})
-            .ConfigureAwait(false) as Option<Uri>.Error;
+                    "state") { id_token_hint = "token", prompt = "none" })
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheIdTokenHintParameterIsNotAValidToken, result.Details.Detail);
@@ -344,22 +344,22 @@ public sealed class AuthorizationClientFixture : IDisposable
         var jws = _jwsGenerator.CreateEncodedJwt(
             new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] {new Claim("sub", "administrator")}),
+                Subject = new ClaimsIdentity(new[] { new Claim("sub", "administrator") }),
                 SigningCredentials = new SigningCredentials(
                     TestKeys.SecretKey.CreateSignatureJwk(),
                     SecurityAlgorithms.HmacSha256Signature)
             });
 
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {id_token_hint = jws, prompt = "none"})
-            .ConfigureAwait(false) as Option<Uri>.Error;
+                    "state") { id_token_hint = jws, prompt = "none" })
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
     }
@@ -373,23 +373,23 @@ public sealed class AuthorizationClientFixture : IDisposable
             new SecurityTokenDescriptor
             {
                 Audience = "http://localhost:5000",
-                Subject = new ClaimsIdentity(new[] {new Claim("sub", "adm")}),
+                Subject = new ClaimsIdentity(new[] { new Claim("sub", "adm") }),
                 SigningCredentials = new SigningCredentials(
                     TestKeys.SecretKey.CreateSignatureJwk(),
                     SecurityAlgorithms.HmacSha256)
             });
         //var jws = _jwsGenerator.Generate(payload, SecurityAlgorithms.RsaSha256, _server.SharedCtx.SignatureKey);
 
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {id_token_hint = jws, prompt = "none"})
-            .ConfigureAwait(false) as Option<Uri>.Error;
+                    "state") { id_token_hint = jws, prompt = "none" })
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken, result.Details.Detail);
@@ -401,25 +401,25 @@ public sealed class AuthorizationClientFixture : IDisposable
         const string baseUrl = "http://localhost:5000";
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         // NOTE : The consent has already been given in the database.
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(baseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.None})
-            .ConfigureAwait(false) as Option<Uri>.Result;
+                    "state") { prompt = PromptNames.None })
+            .ConfigureAwait(false));
         var location = result.Item;
         var queries = QueryHelpers.ParseQuery(location.Query);
         var tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials("authcode_client", "authcode_client"),
             _server.Client,
             new Uri(baseUrl + WellKnownOpenidConfiguration));
-        var token = await tokenClient
+        var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
             .GetToken(TokenRequest.FromAuthorizationCode(queries["code"], "http://localhost:5000/callback"))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+            .ConfigureAwait(false));
 
         Assert.NotEmpty(token.Item.AccessToken);
         Assert.True(queries["state"] == "state");
@@ -430,16 +430,16 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         UserStore.Instance().AuthenticationOffset = DateTimeOffset.UtcNow.AddDays(-2);
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.None, max_age = 300})
-            .ConfigureAwait(false) as Option<Uri>.Result;
+                    "state") { prompt = PromptNames.None, max_age = 300 })
+            .ConfigureAwait(false));
         var location = result.Item;
         UserStore.Instance().AuthenticationOffset = null;
 
@@ -450,16 +450,16 @@ public sealed class AuthorizationClientFixture : IDisposable
     public async Task When_Pass_Login_Prompt_Then_Redirect_To_Authenticate_Page()
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.Login})
-            .ConfigureAwait(false) as Option<Uri>.Result;
+                    "state") { prompt = PromptNames.Login })
+            .ConfigureAwait(false));
 
         Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
     }
@@ -469,16 +469,16 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         UserStore.Instance().IsInactive = true;
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.Consent})
-            .ConfigureAwait(false) as Option<Uri>.Result;
+                    "state") { prompt = PromptNames.Consent })
+            .ConfigureAwait(false));
         UserStore.Instance().IsInactive = false;
 
         Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
@@ -488,16 +488,16 @@ public sealed class AuthorizationClientFixture : IDisposable
     public async Task When_Pass_Consent_Prompt_And_User_Is_Authenticated_Then_Redirect_To_Authenticate_Page()
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.Consent})
-            .ConfigureAwait(false) as Option<Uri>.Result;
+                    "state") { prompt = PromptNames.Consent })
+            .ConfigureAwait(false));
 
         Assert.Equal("/Consent", result.Item.LocalPath);
     }
@@ -509,7 +509,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             new SecurityTokenDescriptor
             {
                 Audience = "http://localhost:5000",
-                Subject = new ClaimsIdentity(new[] {new Claim("sub", "administrator")}),
+                Subject = new ClaimsIdentity(new[] { new Claim("sub", "administrator") }),
                 SigningCredentials =
                     new SigningCredentials(
                         TestKeys.SecretKey.CreateSignatureJwk(),
@@ -523,13 +523,13 @@ public sealed class AuthorizationClientFixture : IDisposable
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var result = await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "authcode_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {id_token_hint = jwe, prompt = "none"})
+                    "state") { id_token_hint = jwe, prompt = "none" })
             .ConfigureAwait(false);
 
         Assert.IsType<Option<Uri>.Result>(result);
@@ -540,30 +540,30 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
 
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.Code },
                     "pkce_client",
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.None})
-            .ConfigureAwait(false) as Option<Uri>.Result;
+                    "state") { prompt = PromptNames.None })
+            .ConfigureAwait(false));
         var location = result.Item;
         var queries = QueryHelpers.ParseQuery(location.Query);
         var tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials("pkce_client", "pkce_client"),
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
-        var token = await tokenClient.GetToken(
+        var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient.GetToken(
                 TokenRequest.FromAuthorizationCode(
                     queries["code"],
                     "http://localhost:5000/callback",
                     pkce.CodeVerifier))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+            .ConfigureAwait(false));
 
-        Assert.NotNull(token?.Item.AccessToken);
+        Assert.NotNull(token.Item.AccessToken);
     }
 
     [Fact]
@@ -573,16 +573,16 @@ public sealed class AuthorizationClientFixture : IDisposable
 
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         // NOTE : The consent has already been given in the database.
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token },
                     "implicit_client",
                     new Uri(baseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.None, nonce = "nonce"})
-            .ConfigureAwait(false) as Option<Uri>.Result;
+                    "state") { prompt = PromptNames.None, nonce = "nonce" })
+            .ConfigureAwait(false));
         var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
         Assert.NotNull(result.Item);
@@ -599,16 +599,16 @@ public sealed class AuthorizationClientFixture : IDisposable
 
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         // NOTE : The consent has already been given in the database.
-        var result = await _authorizationClient.GetAuthorization(
+        var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] {"openid", "api1"},
-                    new[] {ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code},
+                    new[] { "openid", "api1" },
+                    new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code },
                     "hybrid_client",
                     new Uri(baseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") {prompt = PromptNames.None, nonce = "nonce"})
-            .ConfigureAwait(false) as Option<Uri>.Result;
+                    "state") { prompt = PromptNames.None, nonce = "nonce" })
+            .ConfigureAwait(false));
         var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
         Assert.NotNull(result.Item);

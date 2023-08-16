@@ -43,7 +43,7 @@ public partial class FeatureTest : IAsyncDisposable
     {
         _connectionString = await DbInitializer.Init(
                 _outputHelper,
-                _connectionString!,
+                _connectionString,
                 DefaultStores.Consents(),
                 DefaultStores.Users(),
                 DefaultStores.Clients(SharedContext.Instance),

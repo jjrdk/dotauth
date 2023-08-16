@@ -64,7 +64,7 @@ public sealed class RevokeTokenClientFixture
     [Fact]
     public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
     {
-        var request = new List<KeyValuePair<string, string>> {new("invalid", "invalid")};
+        var request = new List<KeyValuePair<string, string>> { new("invalid", "invalid") };
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
@@ -115,9 +115,9 @@ public sealed class RevokeTokenClientFixture
             TokenCredentials.FromClientCredentials("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15"),
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
-        var result = await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
+            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            .ConfigureAwait(false));
         var revokeClient = new TokenClient(
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
@@ -137,9 +137,9 @@ public sealed class RevokeTokenClientFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
-        var result = await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
+            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            .ConfigureAwait(false));
         var revoke = await tokenClient
             .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken))
             .ConfigureAwait(false) as Option.Success;
@@ -159,11 +159,11 @@ public sealed class RevokeTokenClientFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
-        var result = await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim", "offline"}))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
+            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim", "offline" }))
+            .ConfigureAwait(false));
         var revoke = await tokenClient
-            .RevokeToken(RevokeTokenRequest.Create(result.Item.RefreshToken, TokenTypes.RefreshToken))
+            .RevokeToken(RevokeTokenRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken))
             .ConfigureAwait(false);
         var introspectClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var ex = await introspectClient.Introspect(

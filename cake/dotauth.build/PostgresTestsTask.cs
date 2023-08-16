@@ -37,7 +37,7 @@ public sealed class PostgresTestsTask : FrostingTask<BuildContext>
             var reportName = "./artifacts/testreports/"
                              + context.BuildVersion
                              + "_"
-                             + System.IO.Path.GetFileNameWithoutExtension(project.FullPath)!.Replace('.', '_')
+                             + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_')
                              + ".xml";
             reportName = System.IO.Path.GetFullPath(reportName);
 

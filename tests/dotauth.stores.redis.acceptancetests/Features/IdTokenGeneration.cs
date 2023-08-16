@@ -18,7 +18,7 @@ public partial class FeatureTest
         var option = await _tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "api" }))
             .ConfigureAwait(false);
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
-        _token = response!.Item;
+        _token = response.Item;
 
         Assert.NotNull(_token);
     }

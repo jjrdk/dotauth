@@ -93,10 +93,11 @@ public partial class FeatureTest
     public async Task WhenRequestingPermissionTo(string scope)
     {
         var scopes = scope.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        var response = await _umaClient.RequestPermission(
+        var response = Assert.IsType<Option<TicketResponse>.Result>(await _umaClient.RequestPermission(
                 _token.AccessToken,
-                requests: new PermissionRequest { IdToken = _token.IdToken, ResourceSetId = _resourceId, Scopes = scopes })
-            .ConfigureAwait(false) as Option<TicketResponse>.Result;
+                requests: new PermissionRequest
+                    { IdToken = _token.IdToken, ResourceSetId = _resourceId, Scopes = scopes })
+            .ConfigureAwait(false));
 
         Assert.NotNull(response);
 
@@ -134,12 +135,13 @@ public partial class FeatureTest
         switch (option)
         {
             case Option<GrantedTokenResponse>.Result result:
-                {
-                    var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, result.Item.IdToken!)).ConfigureAwait(false);
+            {
+                var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, result.Item.IdToken!))
+                    .ConfigureAwait(false);
 
-                    Assert.IsType<Option<GrantedTokenResponse>.Result>(rpt);
-                    break;
-                }
+                Assert.IsType<Option<GrantedTokenResponse>.Result>(rpt);
+                break;
+            }
             case Option<GrantedTokenResponse>.Error error:
                 Assert.Fail(error.Details.Title);
                 break;

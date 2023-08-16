@@ -24,18 +24,18 @@ public partial class FeatureTest
 {
     private GrantedTokenResponse _updatedToken = null!;
     private GrantedTokenResponse _newToken = null!;
-    
+
     [When(@"adding resource owner with (.+), (.+)")]
     public async Task WhenAddingResourceOwnerWith(string subject, string password)
     {
-        var response = await _managerClient.AddResourceOwner(
+        var response =Assert.IsType<Option<AddResourceOwnerResponse>.Result>( await _managerClient.AddResourceOwner(
                 new AddResourceOwnerRequest {Password = password, Subject = subject},
                 _token.AccessToken)
-            .ConfigureAwait(false) as Option<AddResourceOwnerResponse>.Result;
+            .ConfigureAwait(false) );
 
         Assert.NotNull(response);
     }
-    
+
     [Then(@"resource owner (.+) is local account")]
     public async Task ThenResourceOwnerIsLocalAccount(string subject)
     {
@@ -123,7 +123,7 @@ public partial class FeatureTest
             .GetToken(TokenRequest.FromRefreshToken(_token.RefreshToken!))
             .ConfigureAwait(false);
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
-        Assert.NotNull(result!.Item);
+        Assert.NotNull(result.Item);
 
         var handler = new JwtSecurityTokenHandler();
         var token = handler.ReadToken(result.Item.AccessToken) as JwtSecurityToken;
@@ -221,7 +221,7 @@ public partial class FeatureTest
 
 
     private ResourceOwner _resourceOwner = null!;
-    
+
     [Then(@"when getting resource owner from store")]
     public async Task ThenWhenGettingResourceOwnerFromStore()
     {

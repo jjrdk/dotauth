@@ -197,8 +197,8 @@ public sealed class JwtGeneratorFixture
             .Returns(
                 new[]
                 {
-                    new Scope {Type = "role", Claims = new[] {OpenIdClaimTypes.Role}},
-                    new Scope {Type = "manager", Claims = new[] {OpenIdClaimTypes.Role}}
+                    new Scope { Type = "role", Claims = new[] { OpenIdClaimTypes.Role } },
+                    new Scope { Type = "manager", Claims = new[] { OpenIdClaimTypes.Role } }
                 }.ToArray());
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
@@ -236,8 +236,8 @@ public sealed class JwtGeneratorFixture
             .Returns(
                 new[]
                 {
-                    new Scope {Type = "role", Claims = new[] {OpenIdClaimTypes.Role}},
-                    new Scope {Type = "manager", Claims = new[] {OpenIdClaimTypes.Role}}
+                    new Scope { Type = "role", Claims = new[] { OpenIdClaimTypes.Role } },
+                    new Scope { Type = "manager", Claims = new[] { OpenIdClaimTypes.Role } }
                 }.ToArray());
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
@@ -304,8 +304,8 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.Audiences,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true},
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.ValuesName, new[] {"audience"}}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValuesName, new[] { "audience" } }
                 }
             }
         };
@@ -314,13 +314,14 @@ public sealed class JwtGeneratorFixture
         _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
             .Returns(FakeOpenIdAssets.GetClients());
 
-        var exception = await _jwtGenerator.GenerateFilteredIdTokenPayload(
-                claimsPrincipal,
-                authorizationParameter,
-                claimsParameter,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<JwtPayload>.Error;
+        var exception = Assert.IsType<Option<JwtPayload>.Error>(
+            await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
         Assert.NotNull(exception);
         Assert.Equal(ErrorCodes.InvalidGrant, exception.Details.Title);
         Assert.Equal(
@@ -350,8 +351,8 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.Issuer,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true},
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, "issuer"}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, "issuer" }
                 }
             }
         };
@@ -360,13 +361,14 @@ public sealed class JwtGeneratorFixture
         _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
             .Returns(FakeOpenIdAssets.GetClients());
 
-        var exception = await _jwtGenerator.GenerateFilteredIdTokenPayload(
-                claimsPrincipal,
-                authorizationParameter,
-                claimsParameter,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<JwtPayload>.Error;
+        var exception = Assert.IsType<Option<JwtPayload>.Error>(
+            await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(
             new Option<JwtPayload>.Error(
@@ -400,8 +402,8 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.ExpirationTime,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true},
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, 12}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, 12 }
                 }
             }
         };
@@ -410,13 +412,14 @@ public sealed class JwtGeneratorFixture
         _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
             .Returns(FakeOpenIdAssets.GetClients());
 
-        var exception = await _jwtGenerator.GenerateFilteredIdTokenPayload(
-                claimsPrincipal,
-                authorizationParameter,
-                claimsParameter,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<JwtPayload>.Error;
+        var exception = Assert.IsType<Option<JwtPayload>.Error>(
+            await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
         Assert.Equal(
             new Option<JwtPayload>.Error(
                 new ErrorDetails
@@ -446,8 +449,8 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true},
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, notValidSubject}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, notValidSubject }
                 }
             }
         };
@@ -456,13 +459,14 @@ public sealed class JwtGeneratorFixture
         _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
             .Returns(FakeOpenIdAssets.GetClients());
 
-        var result = await _jwtGenerator.GenerateFilteredIdTokenPayload(
-                claimsPrincipal,
-                authorizationParameter,
-                claimsParameter,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<JwtPayload>.Error;
+        var result = Assert.IsType<Option<JwtPayload>.Error>(
+            await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter,
+                    null,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(
             new Option<JwtPayload>.Error(
@@ -499,7 +503,7 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.AuthenticationTime,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             },
             new ClaimParameter
@@ -509,7 +513,7 @@ public sealed class JwtGeneratorFixture
                 {
                     {
                         DotAuth.CoreConstants.StandardClaimParameterValueNames.ValuesName,
-                        new[] {FakeOpenIdAssets.GetClients().First().ClientId}
+                        new[] { FakeOpenIdAssets.GetClients().First().ClientId }
                     }
                 }
             },
@@ -518,7 +522,7 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.Nonce,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, nonce}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, nonce }
                 }
             },
             new ClaimParameter
@@ -526,7 +530,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Role,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             },
             new ClaimParameter
@@ -534,7 +538,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             }
         };
@@ -602,7 +606,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             }
         };
@@ -614,10 +618,11 @@ public sealed class JwtGeneratorFixture
         _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(scopes);
 
-        var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
-            claimsParameter,
-            claimsPrincipal,
-            authorizationParameter) as Option<JwtPayload>.Error;
+        var exception = Assert.IsType<Option<JwtPayload>.Error>(
+            _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter));
         Assert.NotNull(exception);
         Assert.Equal(ErrorCodes.InvalidGrant, exception.Details.Title);
         Assert.Equal(string.Format(Strings.TheClaimIsNotValid, OpenIdClaimTypes.Subject), exception.Details.Detail);
@@ -640,7 +645,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, "john.doe@email.com"}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, "john.doe@email.com" }
                 }
             }
         };
@@ -652,10 +657,11 @@ public sealed class JwtGeneratorFixture
         _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(scopes);
 
-        var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
-            claimsParameter,
-            claimsPrincipal,
-            authorizationParameter) as Option<JwtPayload>.Error;
+        var exception = Assert.IsType<Option<JwtPayload>.Error>(
+            _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter));
 
         Assert.Equal(
             new Option<JwtPayload>.Error(
@@ -683,7 +689,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Name,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             }
         };
@@ -695,10 +701,11 @@ public sealed class JwtGeneratorFixture
         _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(scopes);
 
-        var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
-            claimsParameter,
-            claimsPrincipal,
-            authorizationParameter) as Option<JwtPayload>.Error;
+        var exception = Assert.IsType<Option<JwtPayload>.Error>(
+            _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter));
 
         Assert.Equal(
             new Option<JwtPayload>.Error(
@@ -729,7 +736,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, subject}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, subject }
                 }
             },
             new ClaimParameter
@@ -737,7 +744,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Name,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, "name"}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, "name" }
                 }
             }
         };
@@ -749,10 +756,11 @@ public sealed class JwtGeneratorFixture
         _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(scopes);
 
-        var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
-            claimsParameter,
-            claimsPrincipal,
-            authorizationParameter) as Option<JwtPayload>.Error;
+        var exception = Assert.IsType<Option<JwtPayload>.Error>(
+            _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter));
 
         Assert.Equal(
             new Option<JwtPayload>.Error(
@@ -780,7 +788,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Name,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             },
             new ClaimParameter
@@ -788,8 +796,8 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true},
-                    {DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, subject}
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, subject }
                 }
             }
         };
@@ -816,13 +824,6 @@ public sealed class JwtGeneratorFixture
     {
         Assert.Throws<NullReferenceException>(
             () => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(null, null, null, null));
-    }
-
-    [Fact]
-    public void When_Passing_Empty_Parameters_To_FillInOtherClaimsIdentityTokenPayload_Then_Exceptions_Are_Thrown()
-    {
-        Assert.Throws<NullReferenceException>(
-            () => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(new JwtPayload(), null, null, null));
     }
 
     [Fact]

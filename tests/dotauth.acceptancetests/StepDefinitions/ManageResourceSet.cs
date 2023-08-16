@@ -81,7 +81,7 @@ public partial class FeatureTest
         var content = await policyResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
         _policyRules = JsonConvert.DeserializeObject<EditPolicyResponse>(content)!;
 
-        Assert.Single(_policyRules!.Rules);
+        Assert.Single(_policyRules.Rules);
     }
 
     [Then(@"can update resource policies")]

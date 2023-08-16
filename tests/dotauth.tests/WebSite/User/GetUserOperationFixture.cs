@@ -46,8 +46,9 @@ public sealed class GetUserOperationFixture
     {
         var emptyClaimsPrincipal = new ClaimsPrincipal();
 
-        var exception = await _getUserOperation.Execute(emptyClaimsPrincipal, CancellationToken.None)
-            .ConfigureAwait(false) as Option<ResourceOwner>.Error;
+        var exception = Assert.IsType<Option<ResourceOwner>.Error>(
+            await _getUserOperation.Execute(emptyClaimsPrincipal, CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TheUserNeedsToBeAuthenticated, exception.Details.Detail);
@@ -60,8 +61,9 @@ public sealed class GetUserOperationFixture
         claimsIdentity.AddClaim(new Claim("test", "test"));
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-        var exception = await _getUserOperation.Execute(claimsPrincipal, CancellationToken.None)
-            .ConfigureAwait(false) as Option<ResourceOwner>.Error;
+        var exception = Assert.IsType<Option<ResourceOwner>.Error>(
+            await _getUserOperation.Execute(claimsPrincipal, CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
         Assert.Equal(Strings.TheSubjectCannotBeRetrieved, exception.Details.Detail);

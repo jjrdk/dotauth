@@ -35,12 +35,13 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     public async Task When_Validating_Authorization_Parameter_With_Empty_Scope_Then_Exception_Is_Thrown()
     {
         const string state = "state";
-        var authorizationParameter = new AuthorizationParameter {State = state};
+        var authorizationParameter = new AuthorizationParameter { State = state };
 
-        var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+        var exception = Assert.IsType<Option<Client>.Error>(await _authorizationCodeGrantTypeParameterAuthEdpValidator
+            .Validate(
                 authorizationParameter,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<Client>.Error;
+            .ConfigureAwait(false));
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -59,12 +60,13 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     public async Task When_Validating_Authorization_Parameter_With_Empty_ClientId_Then_Exception_Is_Thrown()
     {
         const string state = "state";
-        var authorizationParameter = new AuthorizationParameter {State = state, Scope = "scope"};
+        var authorizationParameter = new AuthorizationParameter { State = state, Scope = "scope" };
 
-        var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                authorizationParameter,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<Client>.Error;
+        var exception = Assert.IsType<Option<Client>.Error>(
+            await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -88,10 +90,11 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             State = state, Scope = "scope", ClientId = "clientId"
         };
 
-        var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                authorizationParameter,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<Client>.Error;
+        var exception = Assert.IsType<Option<Client>.Error>(
+            await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -115,10 +118,11 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             State = state, Scope = "scope", ClientId = "clientId", RedirectUrl = new Uri("https://redirectUrl")
         };
 
-        var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                authorizationParameter,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<Client>.Error;
+        var exception = Assert.IsType<Option<Client>.Error>(
+            await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -146,10 +150,11 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             ResponseType = "invalid_response_type"
         };
 
-        var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                authorizationParameter,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<Client>.Error;
+        var exception = Assert.IsType<Option<Client>.Error>(
+            await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -175,10 +180,11 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             Prompt = "invalid_prompt"
         };
 
-        var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                authorizationParameter,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<Client>.Error;
+        var exception = Assert.IsType<Option<Client>.Error>(
+            await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -236,12 +242,13 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
         };
 
         _clientRepository.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((Client) null));
+            .Returns(Task.FromResult((Client)null));
 
-        var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                authorizationParameter,
-                CancellationToken.None)
-            .ConfigureAwait(false) as Option<Client>.Error;
+        var exception = Assert.IsType<Option<Client>.Error>(
+            await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
+                    authorizationParameter,
+                    CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(
             new Option<Client>.Error(

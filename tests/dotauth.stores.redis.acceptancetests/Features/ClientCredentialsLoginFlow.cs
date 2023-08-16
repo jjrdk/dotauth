@@ -33,7 +33,7 @@ public partial class FeatureTest
         var tokenHandler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
         {
-            IssuerSigningKeys = _serverKeySet!.GetSigningKeys(),
+            IssuerSigningKeys = _serverKeySet.GetSigningKeys(),
             ValidAudience = "clientCredentials",
             ValidIssuer = "https://localhost"
         };
@@ -87,7 +87,7 @@ public partial class FeatureTest
     {
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials("xxx", "xxx"),
-            _fixture!.Client,
+            _fixture.Client,
             new Uri(FeatureTest.WellKnownOpenidConfiguration));
     }
 

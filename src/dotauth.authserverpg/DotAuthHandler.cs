@@ -201,7 +201,7 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
             context.Properties.Items.Remove(OAuthConstants.CodeVerifierKey);
         }
 
-        var requestContent = new FormUrlEncodedContent(tokenRequestParameters!);
+        var requestContent = new FormUrlEncodedContent(tokenRequestParameters);
 
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, Options.TokenEndpoint);
         requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

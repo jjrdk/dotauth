@@ -53,7 +53,7 @@ public sealed class TokenClientFixture
     [Fact]
     public async Task When_GrantType_Is_Not_Specified_To_Token_Endpoint_Then_Json_Is_Returned()
     {
-        var request = new List<KeyValuePair<string, string>> {new("invalid", "invalid")};
+        var request = new List<KeyValuePair<string, string>> { new("invalid", "invalid") };
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
@@ -72,7 +72,7 @@ public sealed class TokenClientFixture
     [Fact]
     public async Task When_Use_Password_GrantType_And_No_Username_Is_Passed_Then_Json_Is_Returned()
     {
-        var request = new List<KeyValuePair<string, string>> {new("grant_type", "password")};
+        var request = new List<KeyValuePair<string, string>> { new("grant_type", "password") };
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
@@ -243,7 +243,7 @@ public sealed class TokenClientFixture
     [Fact]
     public async Task When_Use_ClientCredentials_Grant_Type_And_No_Scope_Is_Passwed_Then_Json_Is_Returned()
     {
-        var request = new List<KeyValuePair<string, string>> {new("grant_type", "client_credentials")};
+        var request = new List<KeyValuePair<string, string>> { new("grant_type", "client_credentials") };
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
@@ -342,7 +342,7 @@ public sealed class TokenClientFixture
     [Fact]
     public async Task When_Use_RefreshToken_Grant_Type_And_No_RefreshToken_Is_Passed_Then_Json_Is_Returned()
     {
-        var request = new List<KeyValuePair<string, string>> {new("grant_type", "refresh_token")};
+        var request = new List<KeyValuePair<string, string>> { new("grant_type", "refresh_token") };
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
@@ -414,15 +414,14 @@ public sealed class TokenClientFixture
             TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var result =
-            await tokenClient.GetToken(TokenRequest.FromScopes("openid", "offline")).ConfigureAwait(false) as
-                Option<GrantedTokenResponse>.Result;
-        var refreshToken = await new TokenClient(
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
+            await tokenClient.GetToken(TokenRequest.FromScopes("openid", "offline")).ConfigureAwait(false));
+        var refreshToken = Assert.IsType<Option<GrantedTokenResponse>.Error>(await new TokenClient(
                 TokenCredentials.FromClientCredentials("client", "client"),
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl))
-            .GetToken(TokenRequest.FromRefreshToken(result.Item.RefreshToken))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Error;
+            .GetToken(TokenRequest.FromRefreshToken(result.Item.RefreshToken!))
+            .ConfigureAwait(false));
 
         Assert.Equal(HttpStatusCode.BadRequest, refreshToken.Details.Status);
         Assert.Equal(ErrorCodes.InvalidGrant, refreshToken.Details.Title);
@@ -432,7 +431,7 @@ public sealed class TokenClientFixture
     [Fact]
     public async Task When_Use_AuthCode_Grant_Type_And_No_Code_Is_Passed_Then_Json_Is_Returned()
     {
-        var request = new List<KeyValuePair<string, string>> {new("grant_type", "authorization_code")};
+        var request = new List<KeyValuePair<string, string>> { new("grant_type", "authorization_code") };
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
@@ -585,9 +584,8 @@ public sealed class TokenClientFixture
             TokenCredentials.FromClientCredentials("stateless_client", "stateless_client"),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var result =
-            await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false) as
-                Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
+            await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false));
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -599,9 +597,9 @@ public sealed class TokenClientFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var result =
-            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
-                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                .ConfigureAwait(false));
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -613,8 +611,9 @@ public sealed class TokenClientFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var result = await tokenClient.GetToken(TokenRequest.FromPassword("superuser", "password", new[] {"role"}))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
+            .GetToken(TokenRequest.FromPassword("superuser", "password", new[] { "role" }))
+            .ConfigureAwait(false));
 
         var payload = new JwtSecurityToken(result.Item.IdToken);
         var roles = payload.Claims.Where(x => x.Type == "role").ToArray();
@@ -631,9 +630,9 @@ public sealed class TokenClientFixture
             TokenCredentials.FromCertificate("certificate_client", certificate),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var result = await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"openid"}))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
+            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "openid" }))
+            .ConfigureAwait(false));
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -645,9 +644,9 @@ public sealed class TokenClientFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var result =
-            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
-                .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                .ConfigureAwait(false));
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -660,9 +659,9 @@ public sealed class TokenClientFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var result = await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] {"scim"}))
-            .ConfigureAwait(false) as Option<GrantedTokenResponse>.Result;
+        var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
+            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            .ConfigureAwait(false));
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -674,9 +673,8 @@ public sealed class TokenClientFixture
             TokenCredentials.FromBasicAuthentication("basic_client", "basic_client"),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var token =
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
-                Option<GrantedTokenResponse>.Result;
+        var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false));
 
         Assert.NotEmpty(token.Item.AccessToken);
     }
@@ -688,9 +686,8 @@ public sealed class TokenClientFixture
             TokenCredentials.FromBasicAuthentication("basic_client", "basic_client"),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var firstToken =
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
-                Option<GrantedTokenResponse>.Result;
+        var firstToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false));
 
         Assert.NotEmpty(firstToken.Item.AccessToken);
     }
@@ -760,9 +757,8 @@ public sealed class TokenClientFixture
             TokenCredentials.FromClientSecret(jws, "private_key_client"),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
-        var token =
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
-                Option<GrantedTokenResponse>.Result;
+        var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false));
 
         Assert.NotEmpty(token.Item.AccessToken);
     }

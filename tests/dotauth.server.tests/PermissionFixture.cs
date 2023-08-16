@@ -44,10 +44,10 @@ public sealed class PermissionFixture : IDisposable
     [Fact]
     public async Task When_ResourceSetId_Is_Null_Then_Error_Is_Returned()
     {
-        var ticket = await _umaClient.RequestPermission(
+        var ticket = Assert.IsType<Option<TicketResponse>.Error>(await _umaClient.RequestPermission(
                 "header",
-                requests: new PermissionRequest {ResourceSetId = string.Empty})
-            .ConfigureAwait(false) as Option<TicketResponse>.Error;
+                requests: new PermissionRequest { ResourceSetId = string.Empty })
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRequest, ticket.Details.Title);
         Assert.Equal("The parameter resource_set_id needs to be specified", ticket.Details.Detail);
@@ -56,10 +56,11 @@ public sealed class PermissionFixture : IDisposable
     [Fact]
     public async Task When_Scopes_Is_Null_Then_Error_Is_Returned()
     {
-        var ticket = await _umaClient.RequestPermission(
-                "header",
-                requests: new PermissionRequest {ResourceSetId = "resource"})
-            .ConfigureAwait(false) as Option<TicketResponse>.Error;
+        var ticket = Assert.IsType<Option<TicketResponse>.Error>(
+            await _umaClient.RequestPermission(
+                    "header",
+                    requests: new PermissionRequest { ResourceSetId = "resource" })
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidRequest, ticket.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "scopes"), ticket.Details.Detail);
@@ -68,10 +69,11 @@ public sealed class PermissionFixture : IDisposable
     [Fact]
     public async Task When_Resource_Does_Not_Exist_Then_Error_Is_Returned()
     {
-        var ticket = await _umaClient.RequestPermission(
-                "header",
-                requests: new PermissionRequest {ResourceSetId = "resource", Scopes = new[] {"scope"}})
-            .ConfigureAwait(false) as Option<TicketResponse>.Error;
+        var ticket = Assert.IsType<Option<TicketResponse>.Error>(
+            await _umaClient.RequestPermission(
+                    "header",
+                    requests: new PermissionRequest { ResourceSetId = "resource", Scopes = new[] { "scope" } })
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidResourceSetId, ticket.Details.Title);
         Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, "resource"), ticket.Details.Detail);
@@ -80,18 +82,20 @@ public sealed class PermissionFixture : IDisposable
     [Fact]
     public async Task When_Scopes_Does_Not_Exist_Then_Error_Is_Returned()
     {
-        var resource = await _umaClient.AddResourceSet(
-                new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
-                "header")
-            .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+        var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(
+            await _umaClient.AddResourceSet(
+                    new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                    "header")
+                .ConfigureAwait(false));
 
-        var ticket = await _umaClient.RequestPermission(
+        var ticket = Assert.IsType<Option<TicketResponse>.Error>(
+            await _umaClient.RequestPermission(
                 "header",
                 requests: new PermissionRequest
                 {
-                    ResourceSetId = resource.Item.Id, Scopes = new[] {"scopescopescope"}
+                    ResourceSetId = resource.Item.Id, Scopes = new[] { "scopescopescope" }
                 })
-            .ConfigureAwait(false) as Option<TicketResponse>.Error;
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidScope, ticket.Details!.Title);
         Assert.Equal("one or more scopes are not valid", ticket.Details.Detail);
@@ -100,15 +104,16 @@ public sealed class PermissionFixture : IDisposable
     [Fact]
     public async Task When_Adding_Permission_Then_TicketId_Is_Returned()
     {
-        var resource = await _umaClient.AddResourceSet(
-                new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
-                "header")
-            .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+        var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(
+            await _umaClient.AddResourceSet(
+                    new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
+                    "header")
+                .ConfigureAwait(false));
 
-        var ticket = await _umaClient.RequestPermission(
+        var ticket = Assert.IsType<Option<TicketResponse>.Result>(await _umaClient.RequestPermission(
                 "header",
-                requests: new PermissionRequest {ResourceSetId = resource.Item.Id, Scopes = new[] {"read"}})
-            .ConfigureAwait(false) as Option<TicketResponse>.Result;
+                requests: new PermissionRequest { ResourceSetId = resource.Item.Id, Scopes = new[] { "read" } })
+            .ConfigureAwait(false));
 
         Assert.NotEmpty(ticket.Item.TicketId);
     }
@@ -116,14 +121,14 @@ public sealed class PermissionFixture : IDisposable
     [Fact]
     public async Task WhenRequestingPermissionsThenTicketIdsAreReturned()
     {
-        var resource = await _umaClient.AddResourceSet(
-                new ResourceSet {Name = "picture", Scopes = new[] {"read"}},
+        var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(await _umaClient.AddResourceSet(
+                new ResourceSet { Name = "picture", Scopes = new[] { "read" } },
                 "header")
-            .ConfigureAwait(false) as Option<AddResourceSetResponse>.Result;
+            .ConfigureAwait(false));
         var permissions = new[]
         {
-            new PermissionRequest {ResourceSetId = resource.Item.Id, Scopes = new[] {"read"}},
-            new PermissionRequest {ResourceSetId = resource.Item.Id, Scopes = new[] {"read"}}
+            new PermissionRequest { ResourceSetId = resource.Item.Id, Scopes = new[] { "read" } },
+            new PermissionRequest { ResourceSetId = resource.Item.Id, Scopes = new[] { "read" } }
         };
 
         var ticket = await _umaClient.RequestPermission("header", CancellationToken.None, permissions)

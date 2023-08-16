@@ -226,7 +226,7 @@ public sealed class PermissionsController : BaseController
                 await _eventPublisher.Publish(
                         new UmaTicketCreated(
                             Id.Create(),
-                            User.GetClientId()!,
+                            User.GetClientId(),
                             ticket.Id,
                             resourceSetOwner,
                             User.GetSubject()!,

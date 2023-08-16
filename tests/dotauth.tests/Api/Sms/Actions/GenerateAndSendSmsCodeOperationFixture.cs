@@ -35,8 +35,9 @@ public sealed class GenerateAndSendSmsCodeOperationFixture
         _twilioClientStub.SendMessage(Arg.Any<string>(), Arg.Any<string>())
             .Returns((false, ""));
 
-        var exception = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
-            .ConfigureAwait(false) as Option<string>.Error;
+        var exception = Assert.IsType<Option<string>.Error>(
+            await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
         Assert.Equal("The SMS account is not properly configured", exception.Details.Detail);
@@ -50,8 +51,9 @@ public sealed class GenerateAndSendSmsCodeOperationFixture
         _confirmationCodeStoreStub.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(false));
 
-        var exception = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
-            .ConfigureAwait(false) as Option<string>.Error;
+        var exception = Assert.IsType<Option<string>.Error>(
+            await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
+                .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
         Assert.Equal("The confirmation code cannot be saved", exception.Details.Detail);
