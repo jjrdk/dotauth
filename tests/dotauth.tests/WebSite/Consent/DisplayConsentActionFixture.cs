@@ -17,30 +17,30 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.Consent.Actions;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class DisplayConsentActionFixture
 {
-    private readonly Mock<IScopeRepository> _scopeRepositoryFake;
-    private readonly Mock<IClientStore> _clientRepositoryFake;
+    private readonly IScopeRepository _scopeRepositoryFake;
+    private readonly IClientStore _clientRepositoryFake;
     private readonly DisplayConsentAction _displayConsentAction;
-    private readonly Mock<IConsentRepository> _consentRepository;
+    private readonly IConsentRepository _consentRepository;
 
     public DisplayConsentActionFixture(ITestOutputHelper outputHelper)
     {
-        _scopeRepositoryFake = new Mock<IScopeRepository>();
-        _clientRepositoryFake = new Mock<IClientStore>();
-        _consentRepository = new Mock<IConsentRepository>();
+        _scopeRepositoryFake = Substitute.For<IScopeRepository>();
+        _clientRepositoryFake = Substitute.For<IClientStore>();
+        _consentRepository = Substitute.For<IConsentRepository>();
         _displayConsentAction = new DisplayConsentAction(
-            _scopeRepositoryFake.Object,
-            _clientRepositoryFake.Object,
-            _consentRepository.Object,
-            new Mock<IAuthorizationCodeStore>().Object,
-            new Mock<ITokenStore>().Object,
+            _scopeRepositoryFake,
+            _clientRepositoryFake,
+            _consentRepository,
+            Substitute.For<IAuthorizationCodeStore>(),
+            Substitute.For<ITokenStore>(),
             new InMemoryJwksRepository(),
-            new Mock<IEventPublisher>().Object,
+            Substitute.For<IEventPublisher>(),
             new TestOutputLogger("test", outputHelper));
     }
 
@@ -77,10 +77,10 @@ public sealed class DisplayConsentActionFixture
             AllowedScopes = new[] { scope }
         };
         var consent = new Consent { ClientId = client.ClientId, GrantedScopes = new[] { scope } };
-        _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Consent> { consent });
-        _scopeRepositoryFake.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(new[] { new Scope { Name = scope, IsDisplayedInConsent = true } });
+        _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new List<Consent> { consent });
+        _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(new[] { new Scope { Name = scope, IsDisplayedInConsent = true } });
         var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test"), }, "test");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
@@ -91,10 +91,10 @@ public sealed class DisplayConsentActionFixture
             ResponseMode = DotAuth.ResponseModes.Fragment
         };
 
-        _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
-        _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Client>());
+        _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
+        _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<Client>());
         var result = await _displayConsentAction
             .Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
             .ConfigureAwait(false);
@@ -133,12 +133,12 @@ public sealed class DisplayConsentActionFixture
                 .ToSet(),
             IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256
         };
-        _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(returnedClient);
-        _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Client>());
-        _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new[] { consent });
+        _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(returnedClient);
+        _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<Client>());
+        _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new[] { consent });
         var result = await _displayConsentAction.Execute(
                 authorizationParameter,
                 claimsPrincipal,
@@ -160,8 +160,8 @@ public sealed class DisplayConsentActionFixture
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId, State = state };
 
-        _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Client)null);
+        _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((Client)null);
 
         var result = await _displayConsentAction.Execute(
                 authorizationParameter,
@@ -191,10 +191,10 @@ public sealed class DisplayConsentActionFixture
         };
         var scopes = new[] { new Scope { IsDisplayedInConsent = true, Name = scopeName } };
 
-        _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
-        _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(scopes);
+        _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
+        _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(scopes);
 
         await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
             .ConfigureAwait(false);

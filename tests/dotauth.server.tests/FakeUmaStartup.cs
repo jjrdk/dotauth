@@ -30,7 +30,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Xunit.Abstractions;
 
 public sealed class FakeUmaStartup
@@ -84,9 +84,9 @@ public sealed class FakeUmaStartup
                 new DotAuthConfiguration
                 {
                     Clients = sp => new InMemoryClientRepository(
-                        new Mock<IHttpClientFactory>().Object,
+                        Substitute.For<IHttpClientFactory>(),
                         sp.GetService<IScopeStore>(),
-                        new Mock<ILogger<InMemoryClientRepository>>().Object,
+                        Substitute.For<ILogger<InMemoryClientRepository>>(),
                         OAuthStores.GetClients()),
                     Scopes = _ => new InMemoryScopeRepository(OAuthStores.GetScopes()),
                     ResourceSets = sp =>

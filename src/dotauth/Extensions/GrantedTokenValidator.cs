@@ -29,16 +29,6 @@ internal static class GrantedTokenValidator
 {
     public static async Task<GrantedTokenValidationResult> CheckGrantedToken(this GrantedToken grantedToken, IJwksStore jwksStore, CancellationToken cancellationToken = default)
     {
-        if (grantedToken == null)
-        {
-            return new GrantedTokenValidationResult
-            {
-                MessageErrorCode = ErrorCodes.InvalidToken,
-                MessageErrorDescription = Strings.TheTokenIsNotValid,
-                IsValid = false
-            };
-        }
-
         var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
         var tokenIsExpired = DateTimeOffset.UtcNow > expirationDateTime;
         if (tokenIsExpired)

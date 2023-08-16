@@ -14,7 +14,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Client = Shared.Models.Client;
 
@@ -25,11 +25,11 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
     public GetTokenViaImplicitWorkflowOperationFixture()
     {
         _getTokenViaImplicitWorkflowOperation = new GetTokenViaImplicitWorkflowOperation(
-            new Mock<IClientStore>().Object,
-            new Mock<IConsentRepository>().Object,
-            new Mock<IAuthorizationCodeStore>().Object,
-            new Mock<ITokenStore>().Object,
-            new Mock<IScopeRepository>().Object,
+            Substitute.For<IClientStore>(),
+            Substitute.For<IConsentRepository>(),
+            Substitute.For<IAuthorizationCodeStore>(),
+            Substitute.For<ITokenStore>(),
+            Substitute.For<IScopeRepository>(),
             new InMemoryJwksRepository(),
             new NoOpPublisher(),
             NullLogger.Instance);

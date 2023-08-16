@@ -13,7 +13,7 @@ using DotAuth.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public static class ResourceOwnersControllerTests
@@ -32,9 +32,9 @@ public static class ResourceOwnersControllerTests
                 new InMemoryTokenStore(),
                 new InMemoryJwksRepository(),
                 new InMemoryClientRepository(
-                    new Mock<IHttpClientFactory>().Object,
+                    Substitute.For<IHttpClientFactory>(),
                     inMemoryScopeRepository,
-                    new Mock<ILogger<InMemoryClientRepository>>().Object),
+                    Substitute.For<ILogger<InMemoryClientRepository>>()),
                 Array.Empty<AccountFilter>(),
                 new NoOpPublisher());
         }

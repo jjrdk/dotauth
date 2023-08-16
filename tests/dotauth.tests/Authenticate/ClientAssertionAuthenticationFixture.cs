@@ -14,13 +14,13 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Tests.Helpers;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class ClientAssertionAuthenticationFixture
 {
     private readonly JwtSecurityTokenHandler _handler = new();
-    private readonly Mock<IClientStore> _clientRepositoryStub;
+    private readonly IClientStore _clientRepositoryStub;
     private readonly ClientAssertionAuthentication _clientAssertionAuthentication;
 
     public static IEnumerable<object[]> InvalidPayloads()
@@ -63,9 +63,9 @@ public sealed class ClientAssertionAuthenticationFixture
 
     public ClientAssertionAuthenticationFixture()
     {
-        _clientRepositoryStub = new Mock<IClientStore>();
+        _clientRepositoryStub = Substitute.For<IClientStore>();
         _clientAssertionAuthentication = new ClientAssertionAuthentication(
-            _clientRepositoryStub.Object,
+            _clientRepositoryStub,
             new InMemoryJwksRepository());
     }
 
@@ -103,8 +103,8 @@ public sealed class ClientAssertionAuthenticationFixture
         };
         var client = new Client {JsonWebKeys = jwks};
 
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
 
         var result = await _clientAssertionAuthentication
             .AuthenticateClientWithPrivateKeyJwt(instruction, "invalid_issuer", CancellationToken.None)
@@ -143,8 +143,8 @@ public sealed class ClientAssertionAuthenticationFixture
         };
         var client = new Client {JsonWebKeys = jwks};
 
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
 
         var result = await _clientAssertionAuthentication
             .AuthenticateClientWithPrivateKeyJwt(instruction, "audience", CancellationToken.None)
@@ -171,8 +171,8 @@ public sealed class ClientAssertionAuthenticationFixture
         };
         var client = new Client {JsonWebKeys = jwks};
 
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
 
         var result = await _clientAssertionAuthentication
             .AuthenticateClientWithClientSecretJwt(instruction, CancellationToken.None)

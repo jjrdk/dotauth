@@ -15,7 +15,7 @@ public sealed class TestServerFixture : IDisposable
 
     public TestServerFixture(SharedContext sharedCtx, ITestOutputHelper outputHelper, params string[] urls)
     {
-        var startup = new ServerStartup(sharedCtx, outputHelper);
+        var startup = new ServerStartup(sharedCtx);
         Server = new TestServer(
             new WebHostBuilder().UseUrls(urls)
                 .ConfigureServices(

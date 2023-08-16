@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
-using Moq;
+using NSubstitute;
 using Xunit.Abstractions;
 
 public sealed class ServerStartup
@@ -30,15 +30,13 @@ public sealed class ServerStartup
     public ServerStartup(SharedContext context, ITestOutputHelper outputHelper)
     {
         IdentityModelEventSource.ShowPII = true;
-        var mockConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
-        mockConfirmationCodeStore.Setup(x => x.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-        mockConfirmationCodeStore
-            .Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-        mockConfirmationCodeStore
-            .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
+        var mockConfirmationCodeStore = Substitute.For<IConfirmationCodeStore>();
+        mockConfirmationCodeStore.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+        mockConfirmationCodeStore.Remove(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+        mockConfirmationCodeStore.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(
                 new ConfirmationCode
                 {
                     ExpiresIn = TimeSpan.FromDays(10).TotalSeconds,
@@ -58,12 +56,12 @@ public sealed class ServerStartup
                 var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                 return new InMemoryJwksRepository(keyset, keyset);
             },
-            ConfirmationCodes = _ => mockConfirmationCodeStore.Object,
+            ConfirmationCodes = _ => mockConfirmationCodeStore,
             Clients =
                 _ => new InMemoryClientRepository(
                     new TestHttpClientFactory(context.Client!),
                     new InMemoryScopeRepository(),
-                    new Mock<ILogger<InMemoryClientRepository>>().Object,
+                    Substitute.For<ILogger<InMemoryClientRepository>>(),
                     DefaultStores.Clients(context)),
             Scopes = _ => new InMemoryScopeRepository(DefaultStores.Scopes()),
             Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents()),
@@ -81,8 +79,8 @@ public sealed class ServerStartup
         services.AddHttpClient<HttpClient>(_ => { })
             .AddHttpMessageHandler(_ => new TestDelegatingHandler(_context.Handler!));
         services.AddTransient(_ => _context.Client!);
-        var mockSmsClient = new Mock<ISmsClient>();
-        mockSmsClient.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((true, null));
+        var mockSmsClient = Substitute.For<ISmsClient>();
+        mockSmsClient.SendMessage(Arg.Any<string>(), Arg.Any<string>()).Returns((true, null));
 
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
@@ -94,7 +92,7 @@ public sealed class ServerStartup
                     JwtBearerDefaults.AuthenticationScheme,
                 })
             .AddDotAuthUi(typeof(IDefaultUi), typeof(IDefaultSmsUi))
-            .AddSmsAuthentication(mockSmsClient.Object);
+            .AddSmsAuthentication(mockSmsClient);
         services
 #if DEBUG
             .AddLogging(l => l.AddXunit(_outputHelper))

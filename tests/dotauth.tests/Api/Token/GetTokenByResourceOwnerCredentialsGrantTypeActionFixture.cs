@@ -34,23 +34,24 @@ using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.Tests.Helpers;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
 {
     private readonly ITestOutputHelper _outputHelper;
-    private Mock<IEventPublisher> _eventPublisher;
-    private Mock<IClientStore> _clientStore;
-    private Mock<ITokenStore> _tokenStoreStub;
+    private IEventPublisher _eventPublisher;
+    private IClientStore _clientStore;
+    private ITokenStore _tokenStoreStub;
     private GetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
-    private readonly Mock<IScopeRepository> _scopeRepository;
+    private readonly IScopeRepository _scopeRepository;
 
     public GetTokenByResourceOwnerCredentialsGrantTypeActionFixture(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper;
-        _scopeRepository = new Mock<IScopeRepository>();
+        _scopeRepository = Substitute.For<IScopeRepository>();
     }
 
     [Fact]
@@ -106,7 +107,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
             GrantTypes = new[] { GrantTypes.AuthorizationCode }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -147,7 +148,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
             GrantTypes = new[] { GrantTypes.Password }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -188,17 +189,15 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
             ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
         };
 
-        var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
-        authenticateService.SetupGet(x => x.Amr).Returns("pwd");
-        authenticateService
-            .Setup(
-                x => x.AuthenticateResourceOwner(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ResourceOwner)null);
-        InitializeFakeObjects(authenticateService.Object);
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        var authenticateService = Substitute.For<IAuthenticateResourceOwnerService>();
+        authenticateService.Amr.Returns("pwd");
+        authenticateService.AuthenticateResourceOwner(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<CancellationToken>())
+            .ReturnsNull();
+        InitializeFakeObjects(authenticateService);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
@@ -238,17 +237,15 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         };
 
         var resourceOwner = new ResourceOwner();
-        var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
-        authenticateService
-            .Setup(
-                x => x.AuthenticateResourceOwner(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync(resourceOwner);
-        authenticateService.Setup(x => x.Amr).Returns("pwd");
-        InitializeFakeObjects(authenticateService.Object);
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        var authenticateService = Substitute.For<IAuthenticateResourceOwnerService>();
+        authenticateService.AuthenticateResourceOwner(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<CancellationToken>())
+            .Returns(resourceOwner);
+        authenticateService.Amr.Returns("pwd");
+        InitializeFakeObjects(authenticateService);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -294,19 +291,17 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
             ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
         };
         var resourceOwner = new ResourceOwner { Subject = "tester" };
-        var authenticateService = new Mock<IAuthenticateResourceOwnerService>();
-        authenticateService
-            .Setup(
-                x => x.AuthenticateResourceOwner(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync(resourceOwner);
-        authenticateService.SetupGet(x => x.Amr).Returns("pwd");
-        InitializeFakeObjects(authenticateService.Object);
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-        _scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(new[] { new Scope { Name = invalidScope } });
+        var authenticateService = Substitute.For<IAuthenticateResourceOwnerService>();
+        authenticateService.AuthenticateResourceOwner(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<CancellationToken>())
+            .Returns(resourceOwner);
+        authenticateService.Amr.Returns("pwd");
+        InitializeFakeObjects(authenticateService);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
+        _scopeRepository.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(new[] { new Scope { Name = invalidScope } });
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -319,24 +314,24 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                 CancellationToken.None)
             .ConfigureAwait(false);
 
-        _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
-        _eventPublisher.Verify(s => s.Publish(It.IsAny<TokenGranted>()));
+        await _tokenStoreStub.Received().AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>());
+        await _eventPublisher.Received().Publish(Arg.Any<TokenGranted>());
     }
 
     private void InitializeFakeObjects(params IAuthenticateResourceOwnerService[] services)
     {
-        _eventPublisher = new Mock<IEventPublisher>();
-        _eventPublisher.Setup(x => x.Publish(It.IsAny<TokenGranted>())).Returns(Task.CompletedTask);
-        _clientStore = new Mock<IClientStore>();
-        _tokenStoreStub = new Mock<ITokenStore>();
+        _eventPublisher = Substitute.For<IEventPublisher>();
+        _eventPublisher.Publish(Arg.Any<TokenGranted>()).Returns(Task.CompletedTask);
+        _clientStore = Substitute.For<IClientStore>();
+        _tokenStoreStub = Substitute.For<ITokenStore>();
 
         _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
-            _clientStore.Object,
-            _scopeRepository.Object,
-            _tokenStoreStub.Object,
+            _clientStore,
+            _scopeRepository,
+            _tokenStoreStub,
             new InMemoryJwksRepository(),
             services,
-            _eventPublisher.Object,
+            _eventPublisher,
             new TestOutputLogger("test", _outputHelper));
     }
 }

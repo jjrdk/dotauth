@@ -15,7 +15,7 @@ using DotAuth.Shared.Policies;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public class UmaTokenActionsTests
@@ -24,9 +24,9 @@ public class UmaTokenActionsTests
 
     public UmaTokenActionsTests()
     {
-        var ticketStore = new Mock<ITicketStore>();
-        ticketStore.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
+        var ticketStore = Substitute.For<ITicketStore>();
+        ticketStore.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(
                 new Ticket
                 {
                     Created = DateTimeOffset.UtcNow,
@@ -37,10 +37,10 @@ public class UmaTokenActionsTests
                     Requester = Array.Empty<ClaimData>(),
                     ResourceOwner = "ro"
                 });
-        ticketStore.Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        var clientStore = new Mock<IClientStore>();
-        clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
+        ticketStore.Remove(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(true);
+        var clientStore = Substitute.For<IClientStore>();
+        clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(
                 new Client
                 {
                     ClientId = "test_client",
@@ -48,30 +48,28 @@ public class UmaTokenActionsTests
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } }
                 });
-        var scopeStore = new Mock<IScopeStore>();
-        var tokenStore = new Mock<ITokenStore>();
-        tokenStore.Setup(x => x.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        var authorizationPolicyValidator = new Mock<IAuthorizationPolicyValidator>();
-        authorizationPolicyValidator
-            .Setup(
-                x => x.IsAuthorized(
-                    It.IsAny<Ticket>(),
-                    It.IsAny<Client>(),
-                    It.IsAny<ClaimTokenParameter>(),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
-                new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, Array.Empty	<Claim>()));
-        var jwksStore = new Mock<IJwksStore>();
-        var eventPublisher = new Mock<IEventPublisher>();
+        var scopeStore = Substitute.For<IScopeStore>();
+        var tokenStore = Substitute.For<ITokenStore>();
+        tokenStore.AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>()).Returns(true);
+        var authorizationPolicyValidator = Substitute.For<IAuthorizationPolicyValidator>();
+        authorizationPolicyValidator.IsAuthorized(
+                    Arg.Any<Ticket>(),
+                    Arg.Any<Client>(),
+                    Arg.Any<ClaimTokenParameter>(),
+                    Arg.Any<CancellationToken>())
+            .Returns(
+                new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, Array.Empty<Claim>()));
+        var jwksStore = Substitute.For<IJwksStore>();
+        var eventPublisher = Substitute.For<IEventPublisher>();
         _tokenActions = new UmaTokenActions(
-            ticketStore.Object,
+            ticketStore,
             new RuntimeSettings(),
-            clientStore.Object,
-            scopeStore.Object,
-            tokenStore.Object,
-            jwksStore.Object,
-            authorizationPolicyValidator.Object,
-            eventPublisher.Object,
+            clientStore,
+            scopeStore,
+            tokenStore,
+            jwksStore,
+            authorizationPolicyValidator,
+            eventPublisher,
             NullLogger.Instance);
     }
 
@@ -79,7 +77,11 @@ public class UmaTokenActionsTests
     public async Task CanGenerateTokenFromValidTicketRequest()
     {
         var option = await _tokenActions.GetTokenByTicketId(
-            new GetTokenViaTicketIdParameter { Ticket = "ticket_id", ClientId = "client", ClientSecret = "secret", ClaimToken = new ClaimTokenParameter { Format = "", Token = "token" } },
+            new GetTokenViaTicketIdParameter
+            {
+                Ticket = "ticket_id", ClientId = "client", ClientSecret = "secret",
+                ClaimToken = new ClaimTokenParameter { Format = "", Token = "token" }
+            },
             new AuthenticationHeaderValue("Bearer", "rtttdvdtgdtg"),
             null,
             "test",

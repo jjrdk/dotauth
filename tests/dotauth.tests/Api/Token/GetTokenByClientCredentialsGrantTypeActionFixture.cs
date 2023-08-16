@@ -34,17 +34,17 @@
 //{
 //    public sealed class GetTokenByClientCredentialsGrantTypeActionFixture
 //    {
-//        private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
-//        private Mock<IAuthenticateClient> _authenticateClientStub;
-//        private Mock<IClientValidator> _clientValidatorStub;
-//        private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperStub;
-//        private Mock<IScopeValidator> _scopeValidatorStub;
-//        private Mock<IOAuthEventSource> _oauthEventSource;
-//        private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
-//        private Mock<IClientHelper> _clientHelperStub;
-//        private Mock<IJwtGenerator> _jwtGeneratorStub;
-//        private Mock<ITokenStore> _tokenStoreStub;
-//        private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
+//        private IAuthenticateInstructionGenerator _authenticateInstructionGeneratorStub;
+//        private IAuthenticateClient _authenticateClientStub;
+//        private IClientValidator _clientValidatorStub;
+//        private IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelperStub;
+//        private IScopeValidator _scopeValidatorStub;
+//        private IOAuthEventSource _oauthEventSource;
+//        private IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidatorStub;
+//        private IClientHelper _clientHelperStub;
+//        private IJwtGenerator _jwtGeneratorStub;
+//        private ITokenStore _tokenStoreStub;
+//        private IGrantedTokenHelper _grantedTokenHelperStub;
 
 //        [Fact]
 //        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -63,10 +63,10 @@
 //                Scope = "scope"
 //            };
 //            var authenticateInstruction = new AuthenticateInstruction();
-//            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+//            _authenticateInstructionGeneratorStub.GetAuthenticateInstruction(Arg.Any<AuthenticationHeaderValue>())
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
+//            _authenticateClientStub.Authenticate(Arg.Any<AuthenticateInstruction>(), null)
+//                .Returns(Task.FromResult(new AuthenticationResult(null, null)));
 
 //            //            var exception = await Assert.ThrowsAsync<DotAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
@@ -89,10 +89,10 @@
 //                }
 //            }, null);
 //            var authenticateInstruction = new AuthenticateInstruction();
-//            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+//            _authenticateInstructionGeneratorStub.GetAuthenticateInstruction(Arg.Any<AuthenticationHeaderValue>())
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .ReturnsAsync(client));
+//            _authenticateClientStub.Authenticate(Arg.Any<AuthenticateInstruction>(), null)
+//                .Returns(client));
 
 //            //            var exception = await Assert.ThrowsAsync<DotAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
@@ -120,10 +120,10 @@
 //                }
 //            }, null);
 //            var authenticateInstruction = new AuthenticateInstruction();
-//            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+//            _authenticateInstructionGeneratorStub.GetAuthenticateInstruction(Arg.Any<AuthenticationHeaderValue>())
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .ReturnsAsync(client));
+//            _authenticateClientStub.Authenticate(Arg.Any<AuthenticateInstruction>(), null)
+//                .Returns(client));
 
 //            //            var exception = await Assert.ThrowsAsync<DotAuthException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null)).ConfigureAwait(false);
 //            Assert.NotNull(exception);
@@ -152,13 +152,13 @@
 //                }
 //            }, null);
 //            var authenticateInstruction = new AuthenticateInstruction();
-//            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+//            _authenticateInstructionGeneratorStub.GetAuthenticateInstruction(Arg.Any<AuthenticationHeaderValue>())
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .ReturnsAsync(client));
-//            _clientValidatorStub.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string[]>())).Returns(Array.Empty<string>());
-//            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
-//                .Returns(() => new ScopeValidationResult(false)
+//            _authenticateClientStub.Authenticate(Arg.Any<AuthenticateInstruction>(), null)
+//                .Returns(client));
+//            _clientValidatorStub.GetRedirectionUrls(Arg.Any<Client>(), Arg.Any<string[]>())).Returns(Array.Empty<string>();
+//            _scopeValidatorStub.Check(Arg.Any<string>(), Arg.Any<Client>())
+//                .Returns(new ScopeValidationResult(false)
 //                {
 //                    ErrorMessage = messageDescription
 //                });
@@ -200,23 +200,23 @@
 //                IdTokenPayLoad = new JwtSecurityToken()
 //            };
 //            var authenticateInstruction = new AuthenticateInstruction();
-//            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+//            _authenticateInstructionGeneratorStub.GetAuthenticateInstruction(Arg.Any<AuthenticationHeaderValue>())
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .ReturnsAsync(client));
-//            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
-//                .Returns(() => new ScopeValidationResult(true)
+//            _authenticateClientStub.Authenticate(Arg.Any<AuthenticateInstruction>(), null)
+//                .Returns(client));
+//            _scopeValidatorStub.Check(Arg.Any<string>(), Arg.Any<Client>())
+//                .Returns(new ScopeValidationResult(true)
 //                {
 //                    Scopes = scopes
 //                });
 //            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(
-//                    It.IsAny<Client>(),
-//                    It.IsAny<string>(),
-//                    It.IsAny<string>(),
-//                    It.IsAny<IDictionary<string, object>>(),
-//                    It.IsAny<JwtSecurityToken>(),
-//                    It.IsAny<JwtSecurityToken>()))
-//                .ReturnsAsync(grantedToken));
+//                    Arg.Any<Client>(),
+//                    Arg.Any<string>(),
+//                    Arg.Any<string>(),
+//                    Arg.Any<IDictionary<string, object>>(),
+//                    Arg.Any<JwtSecurityToken>(),
+//                    Arg.Any<JwtSecurityToken>()))
+//                .Returns(grantedToken));
 
 //            //            var resultKind = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
@@ -256,30 +256,30 @@
 //                ClientId = clientId
 //            };
 //            var authenticateInstruction = new AuthenticateInstruction();
-//            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+//            _authenticateInstructionGeneratorStub.GetAuthenticateInstruction(Arg.Any<AuthenticationHeaderValue>())
 //                .Returns(authenticateInstruction);
-//            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), null))
-//                .ReturnsAsync(client));
-//            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Client>()))
-//                .Returns(() => new ScopeValidationResult(true)
+//            _authenticateClientStub.Authenticate(Arg.Any<AuthenticateInstruction>(), null)
+//                .Returns(client));
+//            _scopeValidatorStub.Check(Arg.Any<string>(), Arg.Any<Client>())
+//                .Returns(new ScopeValidationResult(true)
 //                {
 //                    Scopes = scopes
 //                });
 //            _jwtGeneratorStub.Setup(g => g.GenerateAccessToken(
-//                    It.IsAny<Client>(),
-//                    It.IsAny<IEnumerable<string>>(),
-//                    It.IsAny<string>(),
-//                    It.IsAny<IDictionary<string, object>>()))
-//                .ReturnsAsync(jwsPayload));
-//            _clientHelperStub.Setup(g => g.GenerateIdToken(It.IsAny<Client>(),
-//                It.IsAny<JwtSecurityToken>()))
-//                .ReturnsAsync(accessToken));
-//            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(It.IsAny<Client>(),
-//                It.IsAny<string>(),
-//                It.IsAny<string>(),
-//                It.IsAny<IDictionary<string, object>>(),
-//                It.IsAny<JwtSecurityToken>(),
-//                It.IsAny<JwtSecurityToken>())).ReturnsAsync(grantedToken));
+//                    Arg.Any<Client>(),
+//                    Arg.Any<IEnumerable<string>>(),
+//                    Arg.Any<string>(),
+//                    Arg.Any<IDictionary<string, object>>()))
+//                .Returns(jwsPayload));
+//            _clientHelperStub.GenerateIdToken(Arg.Any<Client>(,
+//                Arg.Any<JwtSecurityToken>()))
+//                .Returns(accessToken));
+//            _grantedTokenGeneratorHelperStub.GenerateToken(Arg.Any<Client>(,
+//                Arg.Any<string>(),
+//                Arg.Any<string>(),
+//                Arg.Any<IDictionary<string, object>>(),
+//                Arg.Any<JwtSecurityToken>(),
+//                Arg.Any<JwtSecurityToken>())).Returns(grantedToken));
 
 //            //            var resultKind = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null, null, null).ConfigureAwait(false);
 
@@ -290,29 +290,29 @@
 
 //        private void InitializeFakeObjects()
 //        {
-//            _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
-//            _authenticateClientStub = new Mock<IAuthenticateClient>();
-//            _clientValidatorStub = new Mock<IClientValidator>();
-//            _grantedTokenGeneratorHelperStub = new Mock<IGrantedTokenGeneratorHelper>();
-//            _scopeValidatorStub = new Mock<IScopeValidator>();
-//            _oauthEventSource = new Mock<IOAuthEventSource>();
-//            _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
-//            _clientHelperStub = new Mock<IClientHelper>();
-//            _jwtGeneratorStub = new Mock<IJwtGenerator>();
-//            _tokenStoreStub = new Mock<ITokenStore>();
-//            _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
+//            _authenticateInstructionGeneratorStub = Substitute.For<IAuthenticateInstructionGenerator>();
+//            _authenticateClientStub = Substitute.For<IAuthenticateClient>();
+//            _clientValidatorStub = Substitute.For<IClientValidator>();
+//            _grantedTokenGeneratorHelperStub = Substitute.For<IGrantedTokenGeneratorHelper>();
+//            _scopeValidatorStub = Substitute.For<IScopeValidator>();
+//            _oauthEventSource = Substitute.For<IOAuthEventSource>();
+//            _clientCredentialsGrantTypeParameterValidatorStub = Substitute.For<IClientCredentialsGrantTypeParameterValidator>();
+//            _clientHelperStub = Substitute.For<IClientHelper>();
+//            _jwtGeneratorStub = Substitute.For<IJwtGenerator>();
+//            _tokenStoreStub = Substitute.For<ITokenStore>();
+//            _grantedTokenHelperStub = Substitute.For<IGrantedTokenHelper>();
 //            _getTokenByClientCredentialsGrantTypeAction = new GetTokenByClientCredentialsGrantTypeAction(
-//                _authenticateInstructionGeneratorStub.Object,
-//                _authenticateClientStub.Object,
-//                _clientValidatorStub.Object,
-//                _grantedTokenGeneratorHelperStub.Object,
-//                _scopeValidatorStub.Object,
-//                _oauthEventSource.Object,
-//                _clientCredentialsGrantTypeParameterValidatorStub.Object,
-//                _clientHelperStub.Object,
-//                _jwtGeneratorStub.Object,
-//                _tokenStoreStub.Object,
-//                _grantedTokenHelperStub.Object);
+//                _authenticateInstructionGeneratorStub,
+//                _authenticateClientStub,
+//                _clientValidatorStub,
+//                _grantedTokenGeneratorHelperStub,
+//                _scopeValidatorStub,
+//                _oauthEventSource,
+//                _clientCredentialsGrantTypeParameterValidatorStub,
+//                _clientHelperStub,
+//                _jwtGeneratorStub,
+//                _tokenStoreStub,
+//                _grantedTokenHelperStub);
 //        }
 //    }
 //}

@@ -8,16 +8,16 @@ using DotAuth.Extensions;
 using DotAuth.Parameters;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class ConsentHelperFixture
 {
-    private readonly Mock<IConsentRepository> _consentRepositoryFake;
+    private readonly IConsentRepository _consentRepositoryFake;
 
     public ConsentHelperFixture()
     {
-        _consentRepositoryFake = new Mock<IConsentRepository>();
+        _consentRepositoryFake = Substitute.For<IConsentRepository>();
     }
 
     [Fact]
@@ -27,10 +27,10 @@ public sealed class ConsentHelperFixture
         var authorizationParameter = new AuthorizationParameter();
 
         _consentRepositoryFake
-            .Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((IReadOnlyCollection<Consent>)null));
+            .GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult((IReadOnlyCollection<Consent>)null));
 
-        var result = await _consentRepositoryFake.Object
+        var result = await _consentRepositoryFake
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             .ConfigureAwait(false);
 
@@ -53,14 +53,13 @@ public sealed class ConsentHelperFixture
         };
         IReadOnlyCollection<Consent> consents = new List<Consent>
         {
-            new() {Claims = new [] {claimName}, ClientId = clientId}
+            new() { Claims = new[] { claimName }, ClientId = clientId }
         };
 
-        _consentRepositoryFake
-            .Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(consents);
+        _consentRepositoryFake.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(consents);
 
-        var result = await _consentRepositoryFake.Object
+        var result = await _consentRepositoryFake
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             .ConfigureAwait(false);
 
@@ -78,14 +77,13 @@ public sealed class ConsentHelperFixture
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
         IReadOnlyCollection<Consent> consents = new List<Consent>
         {
-            new() {ClientId = clientId, GrantedScopes = new[] {scope}}
+            new() { ClientId = clientId, GrantedScopes = new[] { scope } }
         };
 
-        _consentRepositoryFake
-            .Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(consents);
+        _consentRepositoryFake.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(consents);
 
-        var result = await _consentRepositoryFake.Object
+        var result = await _consentRepositoryFake
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             .ConfigureAwait(false);
 
@@ -112,15 +110,14 @@ public sealed class ConsentHelperFixture
         {
             new()
             {
-                ClientId = clientId, GrantedScopes = new[] {profileScope, openIdScope}
+                ClientId = clientId, GrantedScopes = new[] { profileScope, openIdScope }
             }
         };
 
-        _consentRepositoryFake
-            .Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(consents);
+        _consentRepositoryFake.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(consents);
 
-        var result = await _consentRepositoryFake.Object
+        var result = await _consentRepositoryFake
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             .ConfigureAwait(false);
 

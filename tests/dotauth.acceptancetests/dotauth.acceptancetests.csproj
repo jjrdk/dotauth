@@ -15,6 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="NSubstitute" Version="5.0.0" />
 		<PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.8" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.8" />
@@ -25,7 +26,6 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Moq" Version="4.18.4" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -178,14 +178,16 @@ internal class DataContractResolver : IJsonTypeInfoResolver
 
     private static JsonTypeInfo GetTypeInfo(JsonTypeInfo jsonTypeInfo)
     {
-        if (jsonTypeInfo.Kind == JsonTypeInfoKind.Object)
+        if (jsonTypeInfo.Kind != JsonTypeInfoKind.Object)
         {
-            jsonTypeInfo.CreateObject = () => Activator.CreateInstance(jsonTypeInfo.Type)!;
+            return jsonTypeInfo;
+        }
 
-            foreach (var jsonPropertyInfo in CreateDataMembers(jsonTypeInfo).OrderBy((x) => x.Order))
-            {
-                jsonTypeInfo.Properties.Add(jsonPropertyInfo);
-            }
+        jsonTypeInfo.CreateObject = () => Activator.CreateInstance(jsonTypeInfo.Type)!;
+
+        foreach (var jsonPropertyInfo in CreateDataMembers(jsonTypeInfo).OrderBy((x) => x.Order))
+        {
+            jsonTypeInfo.Properties.Add(jsonPropertyInfo);
         }
 
         return jsonTypeInfo;

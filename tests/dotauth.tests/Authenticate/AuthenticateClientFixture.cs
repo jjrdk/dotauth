@@ -8,18 +8,18 @@ using DotAuth.Repositories;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class AuthenticateClientFixture
 {
-    private readonly Mock<IClientStore> _clientRepositoryStub;
+    private readonly IClientStore _clientRepositoryStub;
     private readonly AuthenticateClient _authenticateClient;
 
     public AuthenticateClientFixture()
     {
-        _clientRepositoryStub = new Mock<IClientStore>();
-        _authenticateClient = new AuthenticateClient(_clientRepositoryStub.Object, new InMemoryJwksRepository());
+        _clientRepositoryStub = Substitute.For<IClientStore>();
+        _authenticateClient = new AuthenticateClient(_clientRepositoryStub, new InMemoryJwksRepository());
     }
 
     [Fact]
@@ -47,8 +47,8 @@ public sealed class AuthenticateClientFixture
     public async Task When_The_ClientId_Is_Not_Valid_Then_Message_Error_Is_Returned_And_Result_Is_Null()
     {
         var authenticationInstruction = new AuthenticateInstruction();
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((Client)null));
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult((Client)null));
 
         var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
             .ConfigureAwait(false);
@@ -75,8 +75,8 @@ public sealed class AuthenticateClientFixture
             ClientId = clientId
         };
 
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
 
         var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
             .ConfigureAwait(false);
@@ -96,8 +96,8 @@ public sealed class AuthenticateClientFixture
             ClientId = clientId
         };
 
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
 
         var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
             .ConfigureAwait(false);

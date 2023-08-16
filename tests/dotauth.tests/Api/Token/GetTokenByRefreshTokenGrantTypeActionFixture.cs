@@ -32,43 +32,43 @@ using DotAuth.Shared.Repositories;
 using DotAuth.Tests.Helpers;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
 {
-    private readonly Mock<ITokenStore> _tokenStoreStub;
-    private readonly Mock<IClientStore> _clientStore;
+    private readonly ITokenStore _tokenStoreStub;
+    private readonly IClientStore _clientStore;
     private readonly GetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
 
     public GetTokenByRefreshTokenGrantTypeActionFixture()
     {
         IdentityModelEventSource.ShowPII = true;
-        _tokenStoreStub = new Mock<ITokenStore>();
-        _clientStore = new Mock<IClientStore>();
+        _tokenStoreStub = Substitute.For<ITokenStore>();
+        _clientStore = Substitute.For<IClientStore>();
         _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
-            new Mock<IEventPublisher>().Object,
-            _tokenStoreStub.Object,
+            Substitute.For<IEventPublisher>(),
+            _tokenStoreStub,
             new InMemoryJwksRepository(),
             new InMemoryResourceOwnerRepository(string.Empty),
-            _clientStore.Object);
+            _clientStore);
     }
-        
+
     [Fact]
     public async Task When_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
     {
         var parameter = new RefreshTokenGrantTypeParameter();
 
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Client)null);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((Client)null);
 
-        var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByRefreshTokenGrantTypeAction.Execute(
                 parameter,
                 null,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidClient, result.Details.Title);
         Assert.Equal(SharedStrings.TheClientDoesntExist, result.Details.Detail);
@@ -84,16 +84,16 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
             GrantTypes = new[] { GrantTypes.AuthorizationCode }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
         var authenticationHeader = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
-        var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByRefreshTokenGrantTypeAction.Execute(
                 parameter,
                 authenticationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(
@@ -111,19 +111,19 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
             GrantTypes = new[] { GrantTypes.RefreshToken }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
-        _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((GrantedToken)null));
+        _tokenStoreStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult((GrantedToken)null));
 
         var authenticationHeader = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
-        var response = await _getTokenByRefreshTokenGrantTypeAction.Execute(
+        var response = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByRefreshTokenGrantTypeAction.Execute(
                 parameter,
                 authenticationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidGrant, response.Details.Title);
         Assert.Equal(Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, response.Details.Detail);
     }
@@ -138,19 +138,19 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
             GrantTypes = new[] { GrantTypes.RefreshToken }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
-        _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult(new GrantedToken { ClientId = "differentId" }));
+        _tokenStoreStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new GrantedToken { ClientId = "differentId" }));
 
         var authenticationValue = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
-        var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByRefreshTokenGrantTypeAction.Execute(
                 parameter,
                 authenticationValue,
                 null,
                 "issuer",
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
 
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, result.Details.Detail);
@@ -171,9 +171,9 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
             GrantTypes = new[] { GrantTypes.RefreshToken }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-        _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(grantedToken);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
+        _tokenStoreStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(grantedToken);
 
         var authenticationHeader = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
         await _getTokenByRefreshTokenGrantTypeAction.Execute(
@@ -184,6 +184,6 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
                 CancellationToken.None)
             .ConfigureAwait(false);
 
-        _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
+        await _tokenStoreStub.Received().AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>());
     }
 }

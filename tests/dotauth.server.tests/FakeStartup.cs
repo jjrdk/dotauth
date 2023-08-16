@@ -33,9 +33,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
-using Moq;
+using NSubstitute;
 using Xunit.Abstractions;
-using ServiceCollectionExtensions = DotAuth.ServiceCollectionExtensions;
 
 public sealed class FakeStartup
 {
@@ -76,16 +75,16 @@ public sealed class FakeStartup
                     options.Clients = sp => new InMemoryClientRepository(
                         sp.GetRequiredService<IHttpClientFactory>(),
                         sp.GetRequiredService<IScopeStore>(),
-                        new Mock<ILogger<InMemoryClientRepository>>().Object,
+                        Substitute.For<ILogger<InMemoryClientRepository>>(),
                         DefaultStores.Clients(_context));
                     options.Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents());
                     options.Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users());
                 },
                 new[] { JwtBearerDefaults.AuthenticationScheme })
-            .AddSmsAuthentication(_context.TwilioClient.Object)
+            .AddSmsAuthentication(_context.TwilioClient)
             .AddLogging(b => b.AddXunit(_testOutputHelper))
             .AddAccountFilter()
-            .AddSingleton(_context.ConfirmationCodeStore.Object)
+            .AddSingleton(_context.ConfirmationCodeStore)
             .AddSingleton(
                 sp =>
                 {

@@ -25,22 +25,23 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 public sealed class GrantedTokenGeneratorHelperFixture
 {
-    private readonly Mock<IClientStore> _clientRepositoryStub;
+    private readonly IClientStore _clientRepositoryStub;
 
     public GrantedTokenGeneratorHelperFixture()
     {
-        _clientRepositoryStub = new Mock<IClientStore>();
+        _clientRepositoryStub = Substitute.For<IClientStore>();
     }
 
     [Fact]
     public async Task WhenPassingNullOrWhiteSpaceThenErrorIsReturned()
     {
-        var result = await _clientRepositoryStub.Object.GenerateToken(
+        var result = await _clientRepositoryStub.GenerateToken(
                 new InMemoryJwksRepository(),
                 string.Empty,
                 Array.Empty<string>(),
@@ -55,17 +56,17 @@ public sealed class GrantedTokenGeneratorHelperFixture
     [Fact]
     public async Task WhenClientDoesNotExistThenErrorIsReturned()
     {
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Client)null);
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .ReturnsNull();
 
-        var ex = await _clientRepositoryStub.Object.GenerateToken(
+        var ex = Assert.IsType<Option<GrantedToken>.Error>(await _clientRepositoryStub.GenerateToken(
                 new InMemoryJwksRepository(),
                 "invalid_client",
                 Array.Empty<string>(),
                 "",
                 CancellationToken.None,
                 userInformationPayload: null)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClient, ex.Details.Title);
         Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Details.Detail);
     }
@@ -83,17 +84,17 @@ public sealed class GrantedTokenGeneratorHelperFixture
             IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
         };
 
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
 
-        var result = await _clientRepositoryStub.Object.GenerateToken(
+        var result = Assert.IsType<Option<GrantedToken>.Result>(await _clientRepositoryStub.GenerateToken(
                 new InMemoryJwksRepository(),
                 "client_id",
                 new[] { "scope" },
                 "issuer",
                 CancellationToken.None,
                 userInformationPayload: null)
-            .ConfigureAwait(false) as Option<GrantedToken>.Result;
+            .ConfigureAwait(false));
 
         Assert.Equal(3700, result.Item.ExpiresIn);
     }

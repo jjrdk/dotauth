@@ -30,15 +30,15 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class AddPermissionActionFixture
 {
     private readonly ITestOutputHelper _outputHelper;
-    private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-    private Mock<ITicketStore> _ticketStoreStub;
+    private IResourceSetRepository _resourceSetRepositoryStub;
+    private ITicketStore _ticketStoreStub;
     private RuntimeSettings _configurationServiceStub;
     private RequestPermissionHandler _requestPermissionHandler;
 
@@ -53,8 +53,9 @@ public sealed class AddPermissionActionFixture
         InitializeFakeObjects(new ResourceSet { Id = DotAuth.Id.Create(), Name = "resource" });
         var addPermissionParameter = new PermissionRequest();
 
-        var exception = await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-            .ConfigureAwait(false) as Option<Ticket>.Error;
+        var exception = Assert.IsType<Option<Ticket>.Error>(await _requestPermissionHandler
+            .Execute("tester", CancellationToken.None, addPermissionParameter)
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
         Assert.Equal(
             string.Format(
@@ -69,9 +70,9 @@ public sealed class AddPermissionActionFixture
         InitializeFakeObjects(new ResourceSet { Id = DotAuth.Id.Create(), Name = "resource" });
         var addPermissionParameter = new PermissionRequest { ResourceSetId = "resource_set_id" };
 
-        var exception =
+        var exception = Assert.IsType<Option<Ticket>.Error>(
             await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                .ConfigureAwait(false) as Option<Ticket>.Error;
+                .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
         Assert.Equal(
             string.Format(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes),
@@ -86,9 +87,9 @@ public sealed class AddPermissionActionFixture
         var addPermissionParameter =
             new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
 
-        var exception =
+        var exception = Assert.IsType<Option<Ticket>.Error>(
             await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                .ConfigureAwait(false) as Option<Ticket>.Error;
+                .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Details.Title);
         Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, resourceSetId), exception.Details.Detail);
     }
@@ -105,9 +106,9 @@ public sealed class AddPermissionActionFixture
         var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
         InitializeFakeObjects(resources);
 
-        var exception =
+        var exception = Assert.IsType<Option<Ticket>.Error>(
             await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                .ConfigureAwait(false) as Option<Ticket>.Error;
+                .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidScope, exception.Details.Title);
         Assert.Equal(Strings.TheScopeAreNotValid, exception.Details.Detail);
     }
@@ -133,7 +134,7 @@ public sealed class AddPermissionActionFixture
         };
         var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
         InitializeFakeObjects(resources);
-        _ticketStoreStub.Setup(r => r.Add(It.IsAny<Ticket>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _ticketStoreStub.Add(Arg.Any<Ticket>(), Arg.Any<CancellationToken>()).Returns(true);
 
         var ticket = (await _requestPermissionHandler
             .Execute("tester", CancellationToken.None, addPermissionParameter)
@@ -144,18 +145,17 @@ public sealed class AddPermissionActionFixture
 
     private void InitializeFakeObjects(params ResourceSet[] resourceSets)
     {
-        _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-        _resourceSetRepositoryStub
-            .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns<string, string, CancellationToken>(
-                (o, s, c) => Task.FromResult(resourceSets.FirstOrDefault(x => x.Id == s)));
-        _resourceSetRepositoryStub.Setup(x => x.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(resourceSets);
-        _ticketStoreStub = new Mock<ITicketStore>();
+        _resourceSetRepositoryStub = Substitute.For<IResourceSetRepository>();
+        _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(
+                c => Task.FromResult(resourceSets.FirstOrDefault(x => x.Id == c[1].ToString())));
+        _resourceSetRepositoryStub.Get(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(resourceSets);
+        _ticketStoreStub = Substitute.For<ITicketStore>();
         _configurationServiceStub = new RuntimeSettings(ticketLifeTime: TimeSpan.FromSeconds(2));
         _requestPermissionHandler = new RequestPermissionHandler(
             new InMemoryTokenStore(),
-            _resourceSetRepositoryStub.Object,
+            _resourceSetRepositoryStub,
             _configurationServiceStub,
             new TestOutputLogger("test", _outputHelper));
     }

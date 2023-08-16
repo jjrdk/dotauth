@@ -28,16 +28,16 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class AuthorizationActionsFixture
 {
     private const string OpenIdScope = "openid";
     private const string HttpsLocalhost = "https://localhost";
-    private Mock<IEventPublisher> _eventPublisherStub;
+    private IEventPublisher _eventPublisherStub;
     private AuthorizationActions _authorizationActions;
-    private Mock<IClientStore> _clientStore;
+    private IClientStore _clientStore;
 
     [Fact]
     public async Task WhenClientRequirePKCEAndNoCodeChallengeIsPassedThenAnErrorIsReturned()
@@ -74,23 +74,23 @@ public sealed class AuthorizationActionsFixture
 
     private void InitializeFakeObjects(Client client = null)
     {
-        _eventPublisherStub = new Mock<IEventPublisher>();
-        _clientStore = new Mock<IClientStore>();
+        _eventPublisherStub = Substitute.For<IEventPublisher>();
+        _clientStore = Substitute.For<IClientStore>();
         if (client != null)
         {
-            _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(client);
+            _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(client);
         }
 
         _authorizationActions = new AuthorizationActions(
-            new Mock<IAuthorizationCodeStore>().Object,
-            _clientStore.Object,
-            new Mock<ITokenStore>().Object,
-            new Mock<IScopeRepository>().Object,
-            new Mock<IConsentRepository>().Object,
+            Substitute.For<IAuthorizationCodeStore>(),
+            _clientStore,
+            Substitute.For<ITokenStore>(),
+            Substitute.For<IScopeRepository>(),
+            Substitute.For<IConsentRepository>(),
             new InMemoryJwksRepository(),
-            _eventPublisherStub.Object,
+            _eventPublisherStub,
             Array.Empty<IAuthenticateResourceOwnerService>(),
-            new Mock<ILogger>().Object);
+            Substitute.For<ILogger>());
     }
 }

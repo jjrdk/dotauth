@@ -13,29 +13,29 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.Authenticate;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class AuthenticateHelperFixture
 {
-    private readonly Mock<IClientStore> _clientRepositoryStub;
+    private readonly IClientStore _clientRepositoryStub;
     private readonly AuthenticateHelper _authenticateHelper;
-    private readonly Mock<IConsentRepository> _consentRepository;
+    private readonly IConsentRepository _consentRepository;
 
     public AuthenticateHelperFixture(ITestOutputHelper outputHelper)
     {
-        _clientRepositoryStub = new Mock<IClientStore>();
-        _consentRepository = new Mock<IConsentRepository>();
-        var scopeRepository = new Mock<IScopeRepository>();
-        scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(new[] { new Scope { Name = "scope" } });
+        _clientRepositoryStub = Substitute.For<IClientStore>();
+        _consentRepository = Substitute.For<IConsentRepository>();
+        var scopeRepository = Substitute.For<IScopeRepository>();
+        scopeRepository.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(new[] { new Scope { Name = "scope" } });
         _authenticateHelper = new AuthenticateHelper(
-            new Mock<IAuthorizationCodeStore>().Object,
-            new Mock<ITokenStore>().Object,
-            scopeRepository.Object,
-            _consentRepository.Object,
-            _clientRepositoryStub.Object,
+            Substitute.For<IAuthorizationCodeStore>(),
+            Substitute.For<ITokenStore>(),
+            scopeRepository,
+            _consentRepository,
+            _clientRepositoryStub,
             new InMemoryJwksRepository(),
             new NoopEventPublisher(),
             new TestOutputLogger("test", outputHelper));
@@ -52,8 +52,8 @@ public sealed class AuthenticateHelperFixture
     [Fact]
     public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
     {
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Client)null);
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((Client)null);
         var authorizationParameter = new AuthorizationParameter { ClientId = "client_id" };
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
@@ -77,9 +77,9 @@ public sealed class AuthenticateHelperFixture
         const string code = "code";
 
         var authorizationParameter = new AuthorizationParameter { ClientId = "abc" };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Client());
-        //_parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new Client());
+        //_parameterParserHelperFake.ParsePrompts(Arg.Any<string>())
         //    .Returns(prompts);
 
         var actionResult = await _authenticateHelper.ProcessRedirection(
@@ -109,17 +109,17 @@ public sealed class AuthenticateHelperFixture
             RedirectUrl = new Uri("https://localhost"),
             ResponseMode = DotAuth.ResponseModes.FormPost
         };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Client());
-        _clientRepositoryStub.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Client>());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new Client());
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<Client>());
         var consent = new Consent
         {
             GrantedScopes = new[] { "scope" },
             ClientId = "client"
         };
-        _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new[] { consent });
+        _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new[] { consent });
 
         var actionResult = await _authenticateHelper.ProcessRedirection(
                 authorizationParameter,
@@ -140,8 +140,8 @@ public sealed class AuthenticateHelperFixture
         const string code = "code";
 
         var authorizationParameter = new AuthorizationParameter { ClientId = "abc" };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Client());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new Client());
 
         var actionResult = await _authenticateHelper.ProcessRedirection(
                 authorizationParameter,

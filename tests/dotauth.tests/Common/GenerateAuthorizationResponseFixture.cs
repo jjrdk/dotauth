@@ -34,43 +34,43 @@ using DotAuth.Shared.Repositories;
 using DotAuth.Tests.Helpers;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class GenerateAuthorizationResponseFixture
 {
-    private readonly Mock<IAuthorizationCodeStore> _authorizationCodeRepositoryFake;
-    private readonly Mock<ITokenStore> _tokenStore;
-    private readonly Mock<IEventPublisher> _eventPublisher;
+    private readonly IAuthorizationCodeStore _authorizationCodeRepositoryFake;
+    private readonly ITokenStore _tokenStore;
+    private readonly IEventPublisher _eventPublisher;
     private readonly GenerateAuthorizationResponse _generateAuthorizationResponse;
-    private readonly Mock<IClientStore> _clientStore;
-    private readonly Mock<IConsentRepository> _consentRepository;
+    private readonly IClientStore _clientStore;
+    private readonly IConsentRepository _consentRepository;
     private readonly InMemoryJwksRepository _inMemoryJwksRepository;
 
     public GenerateAuthorizationResponseFixture(ITestOutputHelper outputHelper)
     {
         IdentityModelEventSource.ShowPII = true;
-        _authorizationCodeRepositoryFake = new Mock<IAuthorizationCodeStore>();
-        _tokenStore = new Mock<ITokenStore>();
-        _eventPublisher = new Mock<IEventPublisher>();
-        _eventPublisher.Setup(x => x.Publish(It.IsAny<TokenGranted>())).Returns(Task.CompletedTask);
-        _clientStore = new Mock<IClientStore>();
-        _clientStore.Setup(x => x.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(Array.Empty<Client>());
+        _authorizationCodeRepositoryFake = Substitute.For<IAuthorizationCodeStore>();
+        _tokenStore = Substitute.For<ITokenStore>();
+        _eventPublisher = Substitute.For<IEventPublisher>();
+        _eventPublisher.Publish(Arg.Any<TokenGranted>()).Returns(Task.CompletedTask);
+        _clientStore = Substitute.For<IClientStore>();
+        _clientStore.GetAll(Arg.Any<CancellationToken>()).Returns(Array.Empty<Client>());
 
-        _consentRepository = new Mock<IConsentRepository>();
-        var scopeRepository = new Mock<IScopeRepository>();
-        scopeRepository.Setup(x => x.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(new[] { new Scope { Name = "openid" } });
+        _consentRepository = Substitute.For<IConsentRepository>();
+        var scopeRepository = Substitute.For<IScopeRepository>();
+        scopeRepository.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(new[] { new Scope { Name = "openid" } });
         _inMemoryJwksRepository = new InMemoryJwksRepository();
         _generateAuthorizationResponse = new GenerateAuthorizationResponse(
-            _authorizationCodeRepositoryFake.Object,
-            _tokenStore.Object,
-            scopeRepository.Object,
-            _clientStore.Object,
-            _consentRepository.Object,
+            _authorizationCodeRepositoryFake,
+            _tokenStore,
+            scopeRepository,
+            _clientStore,
+            _consentRepository,
             _inMemoryJwksRepository,
-            _eventPublisher.Object,
+            _eventPublisher,
             new TestOutputLogger("test", outputHelper));
     }
 
@@ -125,7 +125,7 @@ public sealed class GenerateAuthorizationResponseFixture
                     .ToSet(),
             IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
         actionResult = await _generateAuthorizationResponse.Generate(
                 actionResult,
                 authorizationParameter,
@@ -176,8 +176,8 @@ public sealed class GenerateAuthorizationResponseFixture
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
             p => p.Name == DotAuth.StandardAuthorizationResponseNames.AccessTokenName);
-        _tokenStore.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
-        _eventPublisher.Verify(e => e.Publish(It.IsAny<TokenGranted>()));
+        await _tokenStore.Received().AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>());
+        await _eventPublisher.Received().Publish(Arg.Any<TokenGranted>());
     }
 
     [Fact]
@@ -214,14 +214,13 @@ public sealed class GenerateAuthorizationResponseFixture
             ExpiresIn = expiresIn
         };
 
-        _tokenStore.Setup(
-                x => x.GetToken(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<JwtPayload>(),
-                    It.IsAny<JwtPayload>(),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync(grantedToken);
+        _tokenStore.GetToken(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<JwtPayload>(),
+                Arg.Any<JwtPayload>(),
+                Arg.Any<CancellationToken>())
+            .Returns(grantedToken);
 
         var actionResult = await _generateAuthorizationResponse.Generate(
                 new EndpointResult { RedirectInstruction = new RedirectInstruction() },
@@ -261,8 +260,8 @@ public sealed class GenerateAuthorizationResponseFixture
             ClientId = clientId
         };
 
-        _consentRepository.Setup(x => x.GetConsentsForGivenUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new[] { consent });
+        _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new[] { consent });
 
         var actionResult = await _generateAuthorizationResponse.Generate(
                 new EndpointResult { RedirectInstruction = new RedirectInstruction() },
@@ -276,8 +275,9 @@ public sealed class GenerateAuthorizationResponseFixture
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
             p => p.Name == DotAuth.StandardAuthorizationResponseNames.AuthorizationCodeName);
-        _authorizationCodeRepositoryFake.Verify(a => a.Add(It.IsAny<AuthorizationCode>(), It.IsAny<CancellationToken>()));
-        _eventPublisher.Verify(s => s.Publish(It.IsAny<AuthorizationGranted>()));
+        await _authorizationCodeRepositoryFake.Received()
+            .Add(Arg.Any<AuthorizationCode>(), Arg.Any<CancellationToken>());
+        await _eventPublisher.Received().Publish(Arg.Any<AuthorizationGranted>());
     }
 
     [Fact]

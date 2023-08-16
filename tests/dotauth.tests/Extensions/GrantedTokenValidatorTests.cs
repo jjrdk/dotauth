@@ -11,7 +11,7 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class GrantedTokenValidatorTests
@@ -22,26 +22,16 @@ public sealed class GrantedTokenValidatorTests
     }
 
     [Fact]
-    public async Task WhenCheckingNullTokenThenTokenIsNotValid()
-    {
-        var jwksStoreMock = new Mock<IJwksStore>();
-        GrantedToken token = null;
-        var result = await token.CheckGrantedToken(jwksStoreMock.Object).ConfigureAwait(false);
-
-        Assert.False(result.IsValid);
-    }
-
-    [Fact]
     public async Task WhenTokenIsSignedByKeyIsJwksStoreThenTokenIsValid()
     {
         var handler = new JwtSecurityTokenHandler();
         using var rsa = new RSACryptoServiceProvider(2048);
         var jwk = rsa.CreateSignatureJwk("1", true);
         var keyset = new JsonWebKeySet().AddKey(rsa.CreateSignatureJwk("1", false));
-        var jwksStoreMock = new Mock<IJwksStore>();
-        jwksStoreMock.Setup(x => x.GetSigningKey(jwk.Alg, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new SigningCredentials(jwk, jwk.Alg));
-        jwksStoreMock.Setup(x => x.GetPublicKeys(It.IsAny<CancellationToken>())).ReturnsAsync(keyset);
+        var jwksStoreMock = Substitute.For<IJwksStore>();
+        jwksStoreMock.GetSigningKey(jwk.Alg, Arg.Any<CancellationToken>())
+            .Returns(new SigningCredentials(jwk, jwk.Alg));
+        jwksStoreMock.GetPublicKeys(Arg.Any<CancellationToken>()).Returns(keyset);
         var token = handler.CreateEncodedJwt(
             "http://localhost",
             "test",
@@ -57,7 +47,7 @@ public sealed class GrantedTokenValidatorTests
             ExpiresIn = 10000,
             CreateDateTime = DateTimeOffset.UtcNow
         };
-        var result = await grantedToken.CheckGrantedToken(jwksStoreMock.Object).ConfigureAwait(false);
+        var result = await grantedToken.CheckGrantedToken(jwksStoreMock).ConfigureAwait(false);
 
         Assert.True(result.IsValid);
     }
@@ -69,10 +59,10 @@ public sealed class GrantedTokenValidatorTests
         using var rsa = new RSACryptoServiceProvider(2048);
         var jwk = rsa.CreateSignatureJwk("1", true);
         var keyset = new JsonWebKeySet().AddKey(rsa.CreateSignatureJwk("1", false));
-        var jwksStoreMock = new Mock<IJwksStore>();
-        jwksStoreMock.Setup(x => x.GetSigningKey(jwk.Alg, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new SigningCredentials(jwk, jwk.Alg));
-        jwksStoreMock.Setup(x => x.GetPublicKeys(It.IsAny<CancellationToken>())).ReturnsAsync(keyset);
+        var jwksStoreMock = Substitute.For<IJwksStore>();
+        jwksStoreMock.GetSigningKey(jwk.Alg, Arg.Any<CancellationToken>())
+            .Returns(new SigningCredentials(jwk, jwk.Alg));
+        jwksStoreMock.GetPublicKeys(Arg.Any<CancellationToken>()).Returns(keyset);
         var token = handler.CreateEncodedJwt(
             "http://localhost",
             "test",
@@ -88,7 +78,7 @@ public sealed class GrantedTokenValidatorTests
             ExpiresIn = 10000,
             CreateDateTime = DateTimeOffset.UtcNow
         };
-        var result = await grantedToken.CheckGrantedToken(jwksStoreMock.Object).ConfigureAwait(false);
+        var result = await grantedToken.CheckGrantedToken(jwksStoreMock).ConfigureAwait(false);
 
         Assert.False(result.IsValid);
     }

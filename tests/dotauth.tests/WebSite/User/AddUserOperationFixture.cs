@@ -25,34 +25,26 @@ using DotAuth.Shared.Events.Logging;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.User;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class AddUserOperationFixture
 {
-    private readonly Mock<IEventPublisher> _eventPublisher;
-    private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+    private readonly IEventPublisher _eventPublisher;
+    private readonly IResourceOwnerRepository _resourceOwnerRepositoryStub;
     private readonly AddUserOperation _addResourceOwnerAction;
 
     public AddUserOperationFixture()
     {
-        _eventPublisher = new Mock<IEventPublisher>();
-        _eventPublisher.Setup(s => s.Publish(It.IsAny<ResourceOwnerAdded>())).Returns(Task.CompletedTask);
-        _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+        _eventPublisher = Substitute.For<IEventPublisher>();
+        _eventPublisher.Publish(Arg.Any<ResourceOwnerAdded>()).Returns(Task.CompletedTask);
+        _resourceOwnerRepositoryStub = Substitute.For<IResourceOwnerRepository>();
         _addResourceOwnerAction = new AddUserOperation(
             new RuntimeSettings(),
-            _resourceOwnerRepositoryStub.Object,
+            _resourceOwnerRepositoryStub,
             Array.Empty<IAccountFilter>(),
             new DefaultSubjectBuilder(),
-            _eventPublisher.Object);
-    }
-
-    [Fact]
-    public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-    {
-        await Assert
-            .ThrowsAsync<NullReferenceException>(() => _addResourceOwnerAction.Execute(null, CancellationToken.None))
-            .ConfigureAwait(false);
+            _eventPublisher);
     }
 
     [Fact]
@@ -60,21 +52,23 @@ public sealed class AddUserOperationFixture
     {
         var parameter = new ResourceOwner { Subject = "name", Password = "password" };
 
-        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ResourceOwner());
+        _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new ResourceOwner());
 
-        var (success, _) = await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
+        var (success, _) =
+            await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
         Assert.False(success);
     }
 
     [Fact]
     public async Task When_ResourceOwner_Cannot_Be_Added_Then_Returns_False()
     {
-        _resourceOwnerRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+        _resourceOwnerRepositoryStub.Insert(Arg.Any<ResourceOwner>(), Arg.Any<CancellationToken>())
+            .Returns(false);
         var parameter = new ResourceOwner { Subject = "name", Password = "password" };
 
-        var (success, _) = await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
+        var (success, _) =
+            await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
         Assert.False(success);
     }
 
@@ -83,15 +77,14 @@ public sealed class AddUserOperationFixture
     {
         var parameter = new ResourceOwner { Subject = "name", Password = "password" };
 
-        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ResourceOwner)null);
-        _resourceOwnerRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((ResourceOwner)null);
+        _resourceOwnerRepositoryStub.Insert(Arg.Any<ResourceOwner>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
         await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
 
-        _resourceOwnerRepositoryStub.Verify(
-            r => r.Insert(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()));
-        _eventPublisher.Verify(o => o.Publish(It.IsAny<ResourceOwnerAdded>()));
+        await _resourceOwnerRepositoryStub.Received().Insert(Arg.Any<ResourceOwner>(), Arg.Any<CancellationToken>());
+        await _eventPublisher.Received().Publish(Arg.Any<ResourceOwnerAdded>());
     }
 }

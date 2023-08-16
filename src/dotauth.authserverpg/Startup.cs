@@ -28,7 +28,6 @@ using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.Stores.Marten;
 using DotAuth.UI;
-using JasperFx.Core.Reflection;
 using Marten;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;

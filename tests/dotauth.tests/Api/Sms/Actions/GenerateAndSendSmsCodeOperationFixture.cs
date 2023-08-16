@@ -9,31 +9,31 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Sms;
 using DotAuth.Sms.Actions;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class GenerateAndSendSmsCodeOperationFixture
 {
-    private readonly Mock<ISmsClient> _twilioClientStub;
-    private readonly Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
+    private readonly ISmsClient _twilioClientStub;
+    private readonly IConfirmationCodeStore _confirmationCodeStoreStub;
     private readonly GenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
 
     public GenerateAndSendSmsCodeOperationFixture(ITestOutputHelper outputHelper)
     {
-        _twilioClientStub = new Mock<ISmsClient>();
-        _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
+        _twilioClientStub = Substitute.For<ISmsClient>();
+        _confirmationCodeStoreStub = Substitute.For<IConfirmationCodeStore>();
         _generateAndSendSmsCodeOperation = new GenerateAndSendSmsCodeOperation(
-            _twilioClientStub.Object,
-            _confirmationCodeStoreStub.Object,
+            _twilioClientStub,
+            _confirmationCodeStoreStub,
             new TestOutputLogger("test", outputHelper));
     }
 
     [Fact]
     public async Task When_TwilioSendException_Then_Exception_Is_Thrown()
     {
-        _twilioClientStub.Setup(s => s.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((false, ""));
+        _twilioClientStub.SendMessage(Arg.Any<string>(), Arg.Any<string>())
+            .Returns((false, ""));
 
         var exception = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
             .ConfigureAwait(false) as Option<string>.Error;
@@ -45,10 +45,10 @@ public sealed class GenerateAndSendSmsCodeOperationFixture
     [Fact]
     public async Task When_CannotInsert_ConfirmationCode_Then_Exception_Is_Thrown()
     {
-        _twilioClientStub.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((true, ""));
-        _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult(false));
+        _twilioClientStub.SendMessage(Arg.Any<string>(), Arg.Any<string>())
+            .Returns((true, ""));
+        _confirmationCodeStoreStub.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(false));
 
         var exception = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
             .ConfigureAwait(false) as Option<string>.Error;
@@ -60,12 +60,13 @@ public sealed class GenerateAndSendSmsCodeOperationFixture
     [Fact]
     public async Task When_GenerateAndSendConfirmationCode_Then_Code_Is_Returned()
     {
-        _twilioClientStub.Setup(x => x.SendMessage(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((true, ""));
-        _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult(true));
+        _twilioClientStub.SendMessage(Arg.Any<string>(), Arg.Any<string>())
+            .Returns((true, ""));
+        _confirmationCodeStoreStub.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(true));
 
-        var confirmationCode = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None).ConfigureAwait(false);
+        var confirmationCode = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
+            .ConfigureAwait(false);
 
         Assert.NotNull(confirmationCode);
     }

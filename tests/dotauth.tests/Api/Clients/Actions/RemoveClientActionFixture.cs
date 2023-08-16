@@ -22,7 +22,7 @@ using DotAuth.Repositories;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class RemoveClientActionFixture
@@ -32,9 +32,9 @@ public sealed class RemoveClientActionFixture
     public RemoveClientActionFixture()
     {
         _clientRepositoryStub = new InMemoryClientRepository(
-            new Mock<IHttpClientFactory>().Object,
+            Substitute.For<IHttpClientFactory>(),
             new InMemoryScopeRepository(),
-            new Mock<ILogger<InMemoryClientRepository>>().Object,
+            Substitute.For<ILogger<InMemoryClientRepository>>(),
             Array.Empty<Client>());
     }
 

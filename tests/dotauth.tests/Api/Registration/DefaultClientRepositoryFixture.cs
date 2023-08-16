@@ -29,7 +29,7 @@ using DotAuth.Tests.Helpers;
 using DotAuth.Tests.Validators;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class DefaultClientRepositoryFixture
@@ -41,7 +41,7 @@ public sealed class DefaultClientRepositoryFixture
         _clientRepositoryFake = new InMemoryClientRepository(
             new TestHttpClientFactory(),
             new InMemoryScopeRepository(new[] { new Scope { Name = "scope" } }),
-            new Mock<ILogger<InMemoryClientRepository>>().Object,
+            Substitute.For<ILogger<InMemoryClientRepository>>(),
             Array.Empty<Client>());
     }
 

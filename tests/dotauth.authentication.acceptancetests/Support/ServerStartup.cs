@@ -16,29 +16,24 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
-using Moq;
-using Xunit.Abstractions;
+using NSubstitute;
 
 public sealed class ServerStartup
 {
     private readonly SharedContext _context;
-    private readonly ITestOutputHelper _outputHelper;
     private readonly DotAuthConfiguration _configuration;
 
-    public ServerStartup(SharedContext context, ITestOutputHelper outputHelper)
+    public ServerStartup(SharedContext context)
     {
         _context = context;
-        _outputHelper = outputHelper;
         IdentityModelEventSource.ShowPII = true;
-        var mockConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
-        mockConfirmationCodeStore.Setup(x => x.Add(It.IsAny<ConfirmationCode>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-        mockConfirmationCodeStore
-            .Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-        mockConfirmationCodeStore
-            .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
+        var mockConfirmationCodeStore = Substitute.For<IConfirmationCodeStore>();
+        mockConfirmationCodeStore.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+        mockConfirmationCodeStore.Remove(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+        mockConfirmationCodeStore.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(
                 new ConfirmationCode
                 {
                     ExpiresIn = TimeSpan.FromDays(10).TotalSeconds,
@@ -53,21 +48,21 @@ public sealed class ServerStartup
         {
             DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm),
             AdministratorRoleDefinition = default,
-            JsonWebKeys = sp =>
+            JsonWebKeys = _ =>
             {
                 var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
                 return new InMemoryJwksRepository(keyset, keyset);
             },
-            ConfirmationCodes = sp => mockConfirmationCodeStore.Object,
+            ConfirmationCodes = _ => mockConfirmationCodeStore,
             Clients =
-                sp => new InMemoryClientRepository(
+                _ => new InMemoryClientRepository(
                     new TestHttpClientFactory(context.Client!),
                     new InMemoryScopeRepository(),
-                    new Mock<ILogger<InMemoryClientRepository>>().Object,
+                    Substitute.For<ILogger<InMemoryClientRepository>>(),
                     DefaultStores.Clients(context)),
-            Scopes = sp => new InMemoryScopeRepository(DefaultStores.Scopes()),
-            Consents = sp => new InMemoryConsentRepository(DefaultStores.Consents()),
-            Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users()),
+            Scopes = _ => new InMemoryScopeRepository(DefaultStores.Scopes()),
+            Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents()),
+            Users = _ => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users()),
             ClaimsIncludedInUserCreation = new[] { "acceptance_test" },
             DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5),
             DevicePollingInterval = TimeSpan.FromSeconds(3)
@@ -76,8 +71,8 @@ public sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>(x => { })
-            .AddHttpMessageHandler(d => new TestDelegatingHandler(_context.Handler!));
+        services.AddHttpClient<HttpClient>(_ => { })
+            .AddHttpMessageHandler(_ => new TestDelegatingHandler(_context.Handler!));
         //services.AddLogging(x => x.AddXunit(_outputHelper));
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
@@ -102,7 +97,7 @@ public sealed class ServerStartup
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
-                cfg => { });
+                _ => { });
 
         services.ConfigureOptions<JwtBearerPostConfigureOptions>();
     }

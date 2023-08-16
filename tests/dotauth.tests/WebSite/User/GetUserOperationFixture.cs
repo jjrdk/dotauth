@@ -24,20 +24,20 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.User;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class GetUserOperationFixture
 {
-    private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+    private readonly IResourceOwnerRepository _resourceOwnerRepositoryStub;
     private readonly GetUserOperation _getUserOperation;
 
     public GetUserOperationFixture(ITestOutputHelper outputHelper)
     {
-        _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+        _resourceOwnerRepositoryStub = Substitute.For<IResourceOwnerRepository>();
         _getUserOperation = new GetUserOperation(
-            _resourceOwnerRepositoryStub.Object,
+            _resourceOwnerRepositoryStub,
             new TestOutputLogger("test", outputHelper));
     }
 
@@ -73,8 +73,8 @@ public sealed class GetUserOperationFixture
         var claimsIdentity = new ClaimsIdentity("test");
         claimsIdentity.AddClaim(new Claim(OpenIdClaimTypes.Subject, "subject"));
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ResourceOwner());
+        _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new ResourceOwner());
 
         var result = _getUserOperation.Execute(claimsPrincipal, CancellationToken.None);
 

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -187,9 +188,15 @@ public sealed class AuthenticateController : BaseAuthenticateController
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(localAuthenticationViewModel.PhoneNumber))
         {
             ResourceOwner? resourceOwner = null;
-            var option = await _smsAuthenticationOperation
-                .Execute(localAuthenticationViewModel.PhoneNumber, cancellationToken)
-                .ConfigureAwait(false);
+            var option = string.IsNullOrWhiteSpace(localAuthenticationViewModel.PhoneNumber)
+                ? new Option<ResourceOwner>.Error(new ErrorDetails
+                {
+                    Title = "Invalid phone number", Detail = "Phone number is required",
+                    Status = HttpStatusCode.BadRequest
+                })
+                : await _smsAuthenticationOperation
+                    .Execute(localAuthenticationViewModel.PhoneNumber, cancellationToken)
+                    .ConfigureAwait(false);
             if (option is Option<ResourceOwner>.Error e)
             {
                 await _eventPublisher.Publish(
@@ -313,7 +320,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
 
         // Check the confirmation code.
         if (confirmCodeViewModel.ConfirmationCode == null
-            || !await _validateConfirmationCode
+         || !await _validateConfirmationCode
                 .Execute(confirmCodeViewModel.ConfirmationCode, subject, cancellationToken)
                 .ConfigureAwait(false))
         {
@@ -428,8 +435,14 @@ public sealed class AuthenticateController : BaseAuthenticateController
             }
             else
             {
-                var option = await _smsAuthenticationOperation.Execute(viewModel.PhoneNumber, cancellationToken)
-                    .ConfigureAwait(false);
+                var option = string.IsNullOrWhiteSpace(viewModel.PhoneNumber)
+                    ? new Option<ResourceOwner>.Error(new ErrorDetails
+                    {
+                        Title = "Invalid phone number", Detail = "Phone number is required",
+                        Status = HttpStatusCode.BadRequest
+                    })
+                    : await _smsAuthenticationOperation.Execute(viewModel.PhoneNumber, cancellationToken)
+                        .ConfigureAwait(false);
                 if (option is Option<ResourceOwner>.Error ex)
                 {
                     await _eventPublisher.Publish(
@@ -444,7 +457,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 }
                 else
                 {
-                    resourceOwner = ((Option<ResourceOwner>.Result) option).Item;
+                    resourceOwner = ((Option<ResourceOwner>.Result)option).Item;
                 }
             }
 

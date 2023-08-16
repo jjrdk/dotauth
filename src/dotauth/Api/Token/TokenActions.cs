@@ -35,7 +35,6 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Events.OAuth;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using DotAuth.Shared.Responses;
 using Microsoft.Extensions.Logging;
 
 internal sealed class TokenActions

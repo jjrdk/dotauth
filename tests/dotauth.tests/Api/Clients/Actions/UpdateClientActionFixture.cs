@@ -26,13 +26,13 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Tests.Helpers;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class UpdateClientActionFixture
 {
     private IClientRepository _clientRepositoryMock;
-    private Mock<IScopeRepository> _scopeRepositoryStub;
+    private IScopeRepository _scopeRepositoryStub;
 
     [Fact]
     public async Task WhenNoClientIdIsPassedThenReturnsError()
@@ -77,8 +77,8 @@ public sealed class UpdateClientActionFixture
         };
         InitializeFakeObjects(new[] { client });
 
-        _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(new[] { new Scope { Name = "scope" } });
+        _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(new[] { new Scope { Name = "scope" } });
 
         var ex =
             await _clientRepositoryMock.Update(parameter, CancellationToken.None).ConfigureAwait(false) as
@@ -90,10 +90,10 @@ public sealed class UpdateClientActionFixture
     private void InitializeFakeObjects(IReadOnlyCollection<Client> clients = null)
     {
         _clientRepositoryMock = new InMemoryClientRepository(
-            new Mock<IHttpClientFactory>().Object,
+            Substitute.For<IHttpClientFactory>(),
             new InMemoryScopeRepository(),
-            new Mock<ILogger<InMemoryClientRepository>>().Object,
+            Substitute.For<ILogger<InMemoryClientRepository>>(),
             clients ?? Array.Empty<Client>());
-        _scopeRepositoryStub = new Mock<IScopeRepository>();
+        _scopeRepositoryStub = Substitute.For<IScopeRepository>();
     }
 }

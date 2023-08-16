@@ -20,18 +20,18 @@ using System.Threading.Tasks;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.Authenticate;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class ValidateConfirmationCodeActionFixture
 {
-    private readonly Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
+    private readonly IConfirmationCodeStore _confirmationCodeStoreStub;
     private readonly ValidateConfirmationCodeAction _validateConfirmationCodeAction;
 
     public ValidateConfirmationCodeActionFixture()
     {
-        _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
-        _validateConfirmationCodeAction = new ValidateConfirmationCodeAction(_confirmationCodeStoreStub.Object);
+        _confirmationCodeStoreStub = Substitute.For<IConfirmationCodeStore>();
+        _validateConfirmationCodeAction = new ValidateConfirmationCodeAction(_confirmationCodeStoreStub);
     }
 
     [Fact]
@@ -56,8 +56,8 @@ public sealed class ValidateConfirmationCodeActionFixture
     [Fact]
     public async Task When_Code_Does_Not_Exist_Then_False_Is_Returned()
     {
-        _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ConfirmationCode)null);
+        _confirmationCodeStoreStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((ConfirmationCode)null);
 
         var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
             .ConfigureAwait(false);
@@ -69,8 +69,8 @@ public sealed class ValidateConfirmationCodeActionFixture
     {
         var confirmationCode = new ConfirmationCode { ExpiresIn = 10, IssueAt = DateTimeOffset.UtcNow.AddDays(-2) };
         _confirmationCodeStoreStub
-            .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(confirmationCode);
+            .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(confirmationCode);
 
         var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
             .ConfigureAwait(false);
@@ -83,8 +83,8 @@ public sealed class ValidateConfirmationCodeActionFixture
     {
         var confirmationCode = new ConfirmationCode { ExpiresIn = 200, IssueAt = DateTimeOffset.UtcNow };
         _confirmationCodeStoreStub
-            .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(confirmationCode);
+            .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(confirmationCode);
 
         var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
             .ConfigureAwait(false);

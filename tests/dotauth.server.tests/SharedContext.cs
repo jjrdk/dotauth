@@ -21,7 +21,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Repositories;
 using DotAuth.Sms;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
 
 public sealed class SharedContext
 {
@@ -34,8 +34,8 @@ public sealed class SharedContext
             JsonWebKeyUseNames.Enc,
             KeyOperations.Decrypt,
             KeyOperations.Encrypt);
-        ConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
-        TwilioClient = new Mock<ISmsClient>();
+        ConfirmationCodeStore = Substitute.For<IConfirmationCodeStore>();
+        TwilioClient = Substitute.For<ISmsClient>();
     }
 
     public JsonWebKey EncryptionKey { get; }
@@ -46,9 +46,9 @@ public sealed class SharedContext
 
     public JsonWebKey ModelSignatureKey { get; }
 
-    public Mock<IConfirmationCodeStore> ConfirmationCodeStore { get; }
+    public IConfirmationCodeStore ConfirmationCodeStore { get; }
 
-    public Mock<ISmsClient> TwilioClient { get; }
+    public ISmsClient TwilioClient { get; }
 
     public Func<HttpClient> Client { get; set; }
 

@@ -27,8 +27,8 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.Authenticate;
-using Moq;
 using Newtonsoft.Json;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -38,19 +38,19 @@ public sealed class AuthenticateResourceOwnerOpenIdActionFixture
 
     public AuthenticateResourceOwnerOpenIdActionFixture(ITestOutputHelper outputHelper)
     {
-        var mock = new Mock<IClientStore>();
-        mock.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Client());
+        var mock = Substitute.For<IClientStore>();
+        mock.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new Client());
         _authenticateResourceOwnerOpenIdAction = new AuthenticateResourceOwnerOpenIdAction(
-            new Mock<IAuthorizationCodeStore>().Object,
-            new Mock<ITokenStore>().Object,
-            new Mock<IScopeRepository>().Object,
-            new Mock<IConsentRepository>().Object,
-            mock.Object,
+            Substitute.For<IAuthorizationCodeStore>(),
+            Substitute.For<ITokenStore>(),
+            Substitute.For<IScopeRepository>(),
+            Substitute.For<IConsentRepository>(),
+            mock,
             new InMemoryJwksRepository(),
             new NoOpPublisher(),
             new TestOutputLogger("test", outputHelper));
     }
-        
+
     [Fact]
     public async Task When_No_Resource_Owner_Is_Passed_Then_Redirect_To_Index_Page()
     {

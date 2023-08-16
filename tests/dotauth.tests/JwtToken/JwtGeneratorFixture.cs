@@ -35,24 +35,24 @@ using DotAuth.Shared.Repositories;
 using DotAuth.Tests.Fake;
 using DotAuth.Tests.Helpers;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class JwtGeneratorFixture
 {
     private readonly JwtGenerator _jwtGenerator;
-    private readonly Mock<IClientStore> _clientRepositoryStub;
-    private readonly Mock<IScopeRepository> _scopeRepositoryStub;
+    private readonly IClientStore _clientRepositoryStub;
+    private readonly IScopeRepository _scopeRepositoryStub;
 
     public JwtGeneratorFixture(ITestOutputHelper outputHelper)
     {
-        _clientRepositoryStub = new Mock<IClientStore>();
-        _scopeRepositoryStub = new Mock<IScopeRepository>();
+        _clientRepositoryStub = Substitute.For<IClientStore>();
+        _scopeRepositoryStub = Substitute.For<IScopeRepository>();
 
         _jwtGenerator = new JwtGenerator(
-            _clientRepositoryStub.Object,
-            _scopeRepositoryStub.Object,
+            _clientRepositoryStub,
+            _scopeRepositoryStub,
             new InMemoryJwksRepository(),
             new TestOutputLogger("test", outputHelper));
     }
@@ -105,10 +105,10 @@ public sealed class JwtGeneratorFixture
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = "test", MaxAge = 2 };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients().First());
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                 claimsPrincipal,
@@ -135,10 +135,10 @@ public sealed class JwtGeneratorFixture
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients().First());
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
 
         var result = (await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                 claimsPrincipal,
@@ -162,10 +162,10 @@ public sealed class JwtGeneratorFixture
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Client)null);
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Client>());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((Client)null);
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<Client>());
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                 claimsPrincipal,
@@ -193,8 +193,8 @@ public sealed class JwtGeneratorFixture
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
-        this._scopeRepositoryStub.Setup(sr => sr.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(
+        this._scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(
                 new[]
                 {
                     new Scope {Type = "role", Claims = new[] {OpenIdClaimTypes.Role}},
@@ -232,8 +232,8 @@ public sealed class JwtGeneratorFixture
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
-        _scopeRepositoryStub.Setup(sr => sr.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(
+        _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(
                 new[]
                 {
                     new Scope {Type = "role", Claims = new[] {OpenIdClaimTypes.Role}},
@@ -263,10 +263,10 @@ public sealed class JwtGeneratorFixture
         var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients().First());
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                 claimsPrincipal,
@@ -309,10 +309,10 @@ public sealed class JwtGeneratorFixture
                 }
             }
         };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients().First());
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
 
         var exception = await _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
@@ -355,10 +355,10 @@ public sealed class JwtGeneratorFixture
                 }
             }
         };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients().First());
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
 
         var exception = await _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
@@ -405,10 +405,10 @@ public sealed class JwtGeneratorFixture
                 }
             }
         };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients().First());
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
 
         var exception = await _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
@@ -451,10 +451,10 @@ public sealed class JwtGeneratorFixture
                 }
             }
         };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients().First());
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
 
         var result = await _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
@@ -538,10 +538,10 @@ public sealed class JwtGeneratorFixture
                 }
             }
         };
-        _clientRepositoryStub.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients().First());
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
+        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients().First());
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
@@ -572,10 +572,10 @@ public sealed class JwtGeneratorFixture
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { Scope = "profile" };
         var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
-        _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(scopes);
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
+        _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(scopes);
 
         var result = await _jwtGenerator.GenerateUserInfoPayloadForScope(
                 claimsPrincipal,
@@ -609,10 +609,10 @@ public sealed class JwtGeneratorFixture
 
         var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
         var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
-        _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(scopes);
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
+        _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(scopes);
 
         var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
             claimsParameter,
@@ -647,10 +647,10 @@ public sealed class JwtGeneratorFixture
 
         var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
         var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
-        _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(scopes);
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
+        _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(scopes);
 
         var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
             claimsParameter,
@@ -690,10 +690,10 @@ public sealed class JwtGeneratorFixture
 
         var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
         var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
-        _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(scopes);
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
+        _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(scopes);
 
         var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
             claimsParameter,
@@ -744,10 +744,10 @@ public sealed class JwtGeneratorFixture
 
         var authorizationParameter = new AuthorizationParameter { Scope = "profile", State = state };
         var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
-        _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(scopes);
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
+        _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(scopes);
 
         var exception = _jwtGenerator.GenerateFilteredUserInfoPayload(
             claimsParameter,
@@ -796,10 +796,10 @@ public sealed class JwtGeneratorFixture
 
         var authorizationParameter = new AuthorizationParameter { Scope = "profile" };
         var scopes = FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile").ToArray();
-        _clientRepositoryStub.Setup(c => c.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeOpenIdAssets.GetClients());
-        _scopeRepositoryStub.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(scopes);
+        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
+            .Returns(FakeOpenIdAssets.GetClients());
+        _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(scopes);
 
         var generateIdTokenPayload = _jwtGenerator.GenerateFilteredUserInfoPayload(
             claimsParameter,

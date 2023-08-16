@@ -15,33 +15,33 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.Consent.Actions;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class ConfirmConsentFixture
 {
-    private readonly Mock<IConsentRepository> _consentRepositoryFake;
-    private readonly Mock<IClientStore> _clientRepositoryFake;
-    private readonly Mock<IScopeRepository> _scopeRepositoryFake;
+    private readonly IConsentRepository _consentRepositoryFake;
+    private readonly IClientStore _clientRepositoryFake;
+    private readonly IScopeRepository _scopeRepositoryFake;
     private readonly ConfirmConsentAction _confirmConsentAction;
 
     public ConfirmConsentFixture(ITestOutputHelper outputHelper)
     {
-        _consentRepositoryFake = new Mock<IConsentRepository>();
-        _clientRepositoryFake = new Mock<IClientStore>();
-        _scopeRepositoryFake = new Mock<IScopeRepository>();
+        _consentRepositoryFake = Substitute.For<IConsentRepository>();
+        _clientRepositoryFake = Substitute.For<IClientStore>();
+        _scopeRepositoryFake = Substitute.For<IScopeRepository>();
         _confirmConsentAction = new ConfirmConsentAction(
-            new Mock<IAuthorizationCodeStore>().Object,
-            new Mock<ITokenStore>().Object,
-            _consentRepositoryFake.Object,
-            _clientRepositoryFake.Object,
-            _scopeRepositoryFake.Object,
+            Substitute.For<IAuthorizationCodeStore>(),
+            Substitute.For<ITokenStore>(),
+            _consentRepositoryFake,
+            _clientRepositoryFake,
+            _scopeRepositoryFake,
             new InMemoryJwksRepository(),
             new NoOpPublisher(),
             new TestOutputLogger("test", outputHelper));
     }
-        
+
     [Fact]
     public async Task When_No_Consent_Has_Been_Given_And_ResponseMode_Is_No_Correct_Then_Exception_Is_Thrown()
     {
@@ -60,13 +60,13 @@ public sealed class ConfirmConsentFixture
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var client = new Client { ClientId = "clientId" };
 
-        _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
-        _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Client>());
+        _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
+        _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<Client>());
 
-        _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(Array.Empty<Scope>());
+        _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(Array.Empty<Scope>());
         var exception = await _confirmConsentAction.Execute(
                 authorizationParameter,
                 claimsPrincipal,
@@ -91,7 +91,7 @@ public sealed class ConfirmConsentFixture
             {
                 UserInfo = new[]
                 {
-                    new ClaimParameter {Name = OpenIdClaimTypes.Subject}
+                    new ClaimParameter { Name = OpenIdClaimTypes.Subject }
                 }
             },
             Scope = "profile"
@@ -101,17 +101,17 @@ public sealed class ConfirmConsentFixture
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var client = new Client { ClientId = clientId };
 
-        _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
-        _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Client>());
-        _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(Array.Empty<Scope>());
+        _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
+        _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<Client>());
+        _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(Array.Empty<Scope>());
 
         Consent insertedConsent = null;
-        _consentRepositoryFake.Setup(co => co.Insert(It.IsAny<Consent>(), It.IsAny<CancellationToken>()))
-            .Callback<Consent, CancellationToken>((consent, token) => insertedConsent = consent)
-            .ReturnsAsync(true);
+        _consentRepositoryFake.Insert(Arg.Any<Consent>(), Arg.Any<CancellationToken>())
+            .Returns(true)
+            .AndDoes(c => insertedConsent = c.Arg<Consent>());
 
         await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, "null", CancellationToken.None)
             .ConfigureAwait(false);
@@ -137,18 +137,18 @@ public sealed class ConfirmConsentFixture
         var claimsIdentity = new ClaimsIdentity(claims, "DotAuthServer");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var client = new Client { ClientId = "clientId" };
-        _clientRepositoryFake.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
-        _clientRepositoryFake.Setup(x => x.GetAll(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Client>());
-        _scopeRepositoryFake.Setup(s => s.SearchByNames(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(Array.Empty<Scope>());
+        _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
+        _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<Client>());
+        _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(Array.Empty<Scope>());
 
         var result = await _confirmConsentAction
             .Execute(authorizationParameter, claimsPrincipal, "null", CancellationToken.None)
             .ConfigureAwait(false);
 
-        _consentRepositoryFake.Verify(c => c.Insert(It.IsAny<Consent>(), It.IsAny<CancellationToken>()));
+        await _consentRepositoryFake.Received().Insert(Arg.Any<Consent>(), Arg.Any<CancellationToken>());
         Assert.Equal(DotAuth.ResponseModes.Query, result.RedirectInstruction!.ResponseMode);
     }
 }

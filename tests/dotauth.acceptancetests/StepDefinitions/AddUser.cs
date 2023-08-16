@@ -8,7 +8,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.User;
-using Moq;
+using NSubstitute;
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -17,17 +17,16 @@ public partial class FeatureTest
     private bool _userModified;
     private AddUserOperation? _addUserOperation;
     private RuntimeSettings? _runtimeSettings;
-    private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepository = new();
+    private readonly IResourceOwnerRepository _resourceOwnerRepository = Substitute.For<IResourceOwnerRepository>();
     private readonly ISubjectBuilder _subjectBuilder = new DefaultSubjectBuilder();
-    private readonly Mock<IEventPublisher> _eventPublisher = new();
+    private readonly IEventPublisher _eventPublisher = Substitute.For<IEventPublisher>();
     private string _subject = null!;
-    
+
     [Given(@"a configured resource owner repository")]
     public void GivenAConfiguredResourceOwnerRepository()
     {
-        _resourceOwnerRepository
-            .Setup(x => x.Insert(It.IsAny<ResourceOwner>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _resourceOwnerRepository.Insert(Arg.Any<ResourceOwner>(), Arg.Any<CancellationToken>())
+            .Returns(true);
     }
 
     [Given(@"runtime settings")]
@@ -41,10 +40,10 @@ public partial class FeatureTest
     {
         _addUserOperation = new AddUserOperation(
             _runtimeSettings!,
-            _resourceOwnerRepository.Object,
+            _resourceOwnerRepository,
             System.Array.Empty<IAccountFilter>(),
             _subjectBuilder,
-            _eventPublisher.Object);
+            _eventPublisher);
     }
 
     [When(@"local account user is added to storage")]

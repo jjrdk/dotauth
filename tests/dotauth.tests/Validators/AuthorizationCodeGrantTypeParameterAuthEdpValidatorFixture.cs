@@ -11,23 +11,23 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
 {
-    private readonly Mock<IClientStore> _clientRepository;
+    private readonly IClientStore _clientRepository;
 
     private readonly AuthorizationCodeGrantTypeParameterAuthEdpValidator
         _authorizationCodeGrantTypeParameterAuthEdpValidator;
 
     public AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture(ITestOutputHelper outputHelper)
     {
-        _clientRepository = new Mock<IClientStore>();
+        _clientRepository = Substitute.For<IClientStore>();
         _authorizationCodeGrantTypeParameterAuthEdpValidator =
             new AuthorizationCodeGrantTypeParameterAuthEdpValidator(
-                _clientRepository.Object,
+                _clientRepository,
                 new TestOutputLogger("test", outputHelper));
     }
 
@@ -235,8 +235,8 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             Prompt = "none"
         };
 
-        _clientRepository.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((Client) null));
+        _clientRepository.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult((Client) null));
 
         var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                 authorizationParameter,
@@ -272,8 +272,8 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
         };
         var client = new Client();
 
-        _clientRepository.Setup(c => c.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(client);
+        _clientRepository.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(client);
 
         var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                 authorizationParameter,

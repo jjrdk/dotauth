@@ -26,24 +26,25 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 public sealed class RevokeTokenActionFixture
 {
-    private readonly Mock<IClientStore> _clientStore;
-    private readonly Mock<ITokenStore> _grantedTokenRepositoryStub;
+    private readonly IClientStore _clientStore;
+    private readonly ITokenStore _grantedTokenRepositoryStub;
     private readonly RevokeTokenAction _revokeTokenAction;
 
     public RevokeTokenActionFixture()
     {
-        _clientStore = new Mock<IClientStore>();
-        _grantedTokenRepositoryStub = new Mock<ITokenStore>();
+        _clientStore = Substitute.For<IClientStore>();
+        _grantedTokenRepositoryStub = Substitute.For<ITokenStore>();
         _revokeTokenAction = new RevokeTokenAction(
-            _clientStore.Object,
-            _grantedTokenRepositoryStub.Object,
+            _clientStore,
+            _grantedTokenRepositoryStub,
             new InMemoryJwksRepository(),
-            new Mock<ILogger<TokenController>>().Object);
+            Substitute.For<ILogger<TokenController>>());
     }
 
     [Fact]
@@ -51,11 +52,11 @@ public sealed class RevokeTokenActionFixture
     {
         var parameter = new RevokeTokenParameter { Token = "access_token" };
 
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Client)null);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).ReturnsNull();
 
-        var error = await _revokeTokenAction.Execute(parameter, null, null, null, CancellationToken.None)
-            .ConfigureAwait(false) as Option.Error;
+        var error = Assert.IsType<Option.Error>(await _revokeTokenAction
+            .Execute(parameter, null, null, null, CancellationToken.None)
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClient, error.Details.Title);
     }
 
@@ -71,11 +72,11 @@ public sealed class RevokeTokenActionFixture
             ClientId = clientid,
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret } }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-        _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((GrantedToken)null));
-        _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((GrantedToken)null));
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
+        _grantedTokenRepositoryStub.GetAccessToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult((GrantedToken)null));
+        _grantedTokenRepositoryStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult((GrantedToken)null));
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -105,15 +106,14 @@ public sealed class RevokeTokenActionFixture
             ClientId = clientid,
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret } }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
-        _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((GrantedToken)null));
-        _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(parent);
-        _grantedTokenRepositoryStub
-            .Setup(g => g.RemoveAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _grantedTokenRepositoryStub.GetAccessToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult((GrantedToken)null));
+        _grantedTokenRepositoryStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(parent);
+        _grantedTokenRepositoryStub.RemoveAccessToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -121,8 +121,8 @@ public sealed class RevokeTokenActionFixture
         await _revokeTokenAction.Execute(parameter, authenticationHeader, null, null, CancellationToken.None)
             .ConfigureAwait(false);
 
-        _grantedTokenRepositoryStub.Verify(
-            g => g.RemoveRefreshToken(parent.RefreshToken, It.IsAny<CancellationToken>()));
+        await _grantedTokenRepositoryStub.Received()
+            .RemoveRefreshToken(parent.RefreshToken, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -138,15 +138,14 @@ public sealed class RevokeTokenActionFixture
             ClientId = clientId,
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
-        _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(grantedToken);
-        _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((GrantedToken)null));
-        _grantedTokenRepositoryStub
-            .Setup(g => g.RemoveAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _grantedTokenRepositoryStub.GetAccessToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(grantedToken);
+        _grantedTokenRepositoryStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult((GrantedToken)null));
+        _grantedTokenRepositoryStub.RemoveAccessToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -154,7 +153,7 @@ public sealed class RevokeTokenActionFixture
         await _revokeTokenAction.Execute(parameter, authenticationHeader, null, null, CancellationToken.None)
             .ConfigureAwait(false);
 
-        _grantedTokenRepositoryStub.Verify(
-            g => g.RemoveAccessToken(grantedToken.AccessToken, It.IsAny<CancellationToken>()));
+        await _grantedTokenRepositoryStub.Received()
+            .RemoveAccessToken(grantedToken.AccessToken, Arg.Any<CancellationToken>());
     }
 }

@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using StackExchange.Redis;
 using Weasel.Core;

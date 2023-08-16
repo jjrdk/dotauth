@@ -24,18 +24,18 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class PostIntrospectionActionFixture
 {
-    private readonly Mock<ITokenStore> _tokenStoreStub;
+    private readonly ITokenStore _tokenStoreStub;
     private readonly PostIntrospectionAction _postIntrospectionAction;
 
     public PostIntrospectionActionFixture()
     {
-        _tokenStoreStub = new Mock<ITokenStore>();
-        _postIntrospectionAction = new PostIntrospectionAction(_tokenStoreStub.Object);
+        _tokenStoreStub = Substitute.For<ITokenStore>();
+        _postIntrospectionAction = new PostIntrospectionAction(_tokenStoreStub);
     }
 
     [Fact]
@@ -58,11 +58,12 @@ public sealed class PostIntrospectionActionFixture
             Token = "token"
         };
 
-        _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() => null);
+        _tokenStoreStub.GetAccessToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(default(GrantedToken));
 
-        var response = await _postIntrospectionAction.Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+        var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
+            .Execute(parameter, CancellationToken.None)
+            .ConfigureAwait(false));
 
         Assert.False(response.Item.Active);
     }
@@ -80,17 +81,17 @@ public sealed class PostIntrospectionActionFixture
             ClientId = "client_id",
             IdTokenPayLoad = new JwtPayload
             {
-                {OpenIdClaimTypes.Subject, "tester"}, {StandardClaimNames.Audiences, new[] {"audience"}}
+                { OpenIdClaimTypes.Subject, "tester" }, { StandardClaimNames.Audiences, new[] { "audience" } }
             },
             CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
             ExpiresIn = 0
         };
-        _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() => grantedToken);
+        _tokenStoreStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(grantedToken);
 
-        var response = await _postIntrospectionAction
+        var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
             .Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+            .ConfigureAwait(false));
 
         var result = response.Item;
         Assert.False(result.Active);
@@ -102,7 +103,7 @@ public sealed class PostIntrospectionActionFixture
         const string clientId = "client_id";
         const string subject = "subject";
         const string audience = "audience";
-        var audiences = new[] {audience};
+        var audiences = new[] { audience };
         var parameter = new IntrospectionParameter
         {
             TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
@@ -113,18 +114,18 @@ public sealed class PostIntrospectionActionFixture
             ClientId = clientId,
             IdTokenPayLoad = new JwtPayload
             {
-                {OpenIdClaimTypes.Subject, subject}, {StandardClaimNames.Audiences, audiences}
+                { OpenIdClaimTypes.Subject, subject }, { StandardClaimNames.Audiences, audiences }
             },
             CreateDateTime = DateTimeOffset.UtcNow,
             ExpiresIn = 20000
         };
 
-        _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult(grantedToken));
+        _tokenStoreStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(grantedToken));
 
-        var response = await _postIntrospectionAction
+        var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
             .Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+            .ConfigureAwait(false));
 
         var result = response.Item;
         Assert.True(result.Active);
@@ -145,17 +146,17 @@ public sealed class PostIntrospectionActionFixture
             ClientId = "client_id",
             IdTokenPayLoad = new JwtPayload
             {
-                {OpenIdClaimTypes.Subject, "tester"}, {StandardClaimNames.Audiences, new[] {"audience"}}
+                { OpenIdClaimTypes.Subject, "tester" }, { StandardClaimNames.Audiences, new[] { "audience" } }
             },
             CreateDateTime = DateTimeOffset.UtcNow.AddYears(-1),
             ExpiresIn = 0
         };
-        _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() => grantedToken);
+        _tokenStoreStub.GetAccessToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(grantedToken);
 
-        var response = await _postIntrospectionAction
+        var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
             .Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+            .ConfigureAwait(false));
 
         var result = response.Item;
         Assert.False(result.Active);
@@ -167,7 +168,7 @@ public sealed class PostIntrospectionActionFixture
         const string clientId = "client_id";
         const string subject = "subject";
         const string audience = "audience";
-        var audiences = new[] {audience};
+        var audiences = new[] { audience };
         var parameter = new IntrospectionParameter
         {
             TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
@@ -178,18 +179,18 @@ public sealed class PostIntrospectionActionFixture
             ClientId = clientId,
             IdTokenPayLoad = new JwtPayload
             {
-                {OpenIdClaimTypes.Subject, subject}, {StandardClaimNames.Audiences, audiences}
+                { OpenIdClaimTypes.Subject, subject }, { StandardClaimNames.Audiences, audiences }
             },
             CreateDateTime = DateTimeOffset.UtcNow,
             ExpiresIn = 20000
         };
 
-        _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult(grantedToken));
+        _tokenStoreStub.GetAccessToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(grantedToken));
 
-        var response = await _postIntrospectionAction
+        var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
             .Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false) as Option<OauthIntrospectionResponse>.Result;
+            .ConfigureAwait(false));
 
         var result = response.Item;
         Assert.True(result.Active);

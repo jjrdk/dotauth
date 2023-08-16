@@ -15,10 +15,9 @@ using DotAuth.Services;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using DotAuth.Shared.Responses;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class TokenActionsFixture
@@ -29,11 +28,11 @@ public sealed class TokenActionsFixture
 
     public TokenActionsFixture()
     {
-        var eventPublisher = new Mock<IEventPublisher>();
+        var eventPublisher = Substitute.For<IEventPublisher>();
         const string scope = "valid_scope";
-        var mock = new Mock<IClientStore>();
-        mock.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
+        var mock = Substitute.For<IClientStore>();
+        mock.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(
                 new Client
                 {
                     JsonWebKeys =
@@ -53,16 +52,16 @@ public sealed class TokenActionsFixture
 
         _tokenActions = new TokenActions(
             new RuntimeSettings(string.Empty),
-            new Mock<IAuthorizationCodeStore>().Object,
-            mock.Object,
-            new Mock<IScopeRepository>().Object,
+            Substitute.For<IAuthorizationCodeStore>(),
+            mock,
+            Substitute.For<IScopeRepository>(),
             new InMemoryJwksRepository(),
             new InMemoryResourceOwnerRepository(string.Empty),
             Array.Empty<IAuthenticateResourceOwnerService>(),
-            eventPublisher.Object,
-            new Mock<ITokenStore>().Object,
-            new Mock<IDeviceAuthorizationStore>().Object,
-            new Mock<ILogger<TokenController>>().Object);
+            eventPublisher,
+            Substitute.For<ITokenStore>(),
+            Substitute.For<IDeviceAuthorizationStore>(),
+            Substitute.For<ILogger<TokenController>>());
     }
 
     [Fact]

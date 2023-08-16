@@ -6,7 +6,6 @@ using DotAuth.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Npgsql;
 using TechTalk.SpecFlow;
 using Xunit;
 using Xunit.Abstractions;

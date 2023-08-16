@@ -28,26 +28,26 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class AuthorizationPolicyValidatorFixture
 {
-    private readonly Mock<IResourceSetRepository> _resourceSetRepositoryStub;
+    private readonly IResourceSetRepository _resourceSetRepositoryStub;
     private readonly AuthorizationPolicyValidator _authorizationPolicyValidator;
-    private readonly Mock<IClientStore> _clientStoreStub;
+    private readonly IClientStore _clientStoreStub;
     private readonly InMemoryJwksRepository _inMemoryJwksRepository;
 
     public AuthorizationPolicyValidatorFixture()
     {
         IdentityModelEventSource.ShowPII = true;
-        _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-        _clientStoreStub = new Mock<IClientStore>();
+        _resourceSetRepositoryStub = Substitute.For<IResourceSetRepository>();
+        _clientStoreStub = Substitute.For<IClientStore>();
         _inMemoryJwksRepository = new InMemoryJwksRepository();
         _authorizationPolicyValidator = new AuthorizationPolicyValidator(
             _inMemoryJwksRepository,
-            _resourceSetRepositoryStub.Object,
-            new Mock<IEventPublisher>().Object);
+            _resourceSetRepositoryStub,
+            Substitute.For<IEventPublisher>());
     }
 
     [Fact]
@@ -57,9 +57,8 @@ public sealed class AuthorizationPolicyValidatorFixture
         var jsonWebKey = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
         var token = handler.CreateEncodedJwt("test", "test", new ClaimsIdentity(), null, null, null, jsonWebKey);
         var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "resource_set_id" } } };
-        _resourceSetRepositoryStub
-            .Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((ResourceSet)null));
+        _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult((ResourceSet)null));
 
         var result = await _authorizationPolicyValidator.IsAuthorized(
                 ticket,
@@ -87,8 +86,8 @@ public sealed class AuthorizationPolicyValidatorFixture
             key);
         var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
         var resourceSet = new[] { new ResourceSet { Id = "1" } };
-        _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(resourceSet);
+        _resourceSetRepositoryStub.Get(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(resourceSet);
 
         var result = await _authorizationPolicyValidator.IsAuthorized(
                 ticket,
@@ -114,8 +113,8 @@ public sealed class AuthorizationPolicyValidatorFixture
             DateTime.UtcNow.AddYears(1),
             DateTime.UtcNow,
             key);
-        _clientStoreStub.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns<string, CancellationToken>((s, _) => Task.FromResult(new Client { ClientId = s }));
+        _clientStoreStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(s => Task.FromResult(new Client { ClientId = s.ArgAt<string>(0) }));
 
         var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1", Scopes = new[] { "read" } } } };
         var resourceSet = new[]
@@ -134,8 +133,8 @@ public sealed class AuthorizationPolicyValidatorFixture
                 }
             }
         };
-        _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<CancellationToken>(), It.IsAny<string[]>()))
-            .ReturnsAsync(resourceSet);
+        _resourceSetRepositoryStub.Get(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+            .Returns(resourceSet);
 
         var result = await _authorizationPolicyValidator.IsAuthorized(
                 ticket,

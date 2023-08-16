@@ -210,12 +210,12 @@ public sealed class ProcessAuthorizationRequestFixture
 
     private void InitializeMockingObjects()
     {
-        var clientStore = new Mock<IClientStore>();
-        var consentRepository = new Mock<IConsentRepository>();
+        var clientStore = Substitute.For<IClientStore>();
+        var consentRepository = Substitute.For<IConsentRepository>();
 
         _processAuthorizationRequest = new ProcessAuthorizationRequest(
-            clientStore.Object,
-            consentRepository.Object,
+            clientStore,
+            consentRepository,
             new InMemoryJwksRepository(),
             NullLogger.Instance);
     }

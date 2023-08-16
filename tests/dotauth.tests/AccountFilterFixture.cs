@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class AccountFilterFixture
 {
-    private readonly Mock<IFilterStore> _filterRepositoryStub;
+    private readonly IFilterStore _filterRepositoryStub;
     private readonly IAccountFilter _accountFilter;
 
     public AccountFilterFixture()
     {
-        _filterRepositoryStub = new Mock<IFilterStore>();
-        _accountFilter = new AccountFilter(_filterRepositoryStub.Object);
+        _filterRepositoryStub = Substitute.For<IFilterStore>();
+        _accountFilter = new AccountFilter(_filterRepositoryStub);
     }
-        
+
     [Fact]
     public async Task When_Pass_Null_Parameter_Then_Exception_Is_Thrown()
     {
@@ -37,7 +37,7 @@ public sealed class AccountFilterFixture
         {
             new Filter("name", new FilterRule("key", "val", ComparisonOperations.Equal))
         };
-        _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
+        _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
         var result = await _accountFilter.Check(new List<Claim> {new("keyv", "valv")}, CancellationToken.None)
             .ConfigureAwait(false);
@@ -54,7 +54,7 @@ public sealed class AccountFilterFixture
         {
             new Filter("name", new FilterRule("key", "val", ComparisonOperations.Equal))
         };
-        _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
+        _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
         var result = await _accountFilter.Check(new List<Claim> {new("key", "valv")}, CancellationToken.None)
             .ConfigureAwait(false);
@@ -73,7 +73,7 @@ public sealed class AccountFilterFixture
         {
             new Filter("name", new FilterRule("key", "val", ComparisonOperations.NotEqual))
         };
-        _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
+        _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
         var result = await _accountFilter.Check(new List<Claim> {new("key", "val")}, CancellationToken.None)
             .ConfigureAwait(false);
@@ -92,7 +92,7 @@ public sealed class AccountFilterFixture
         {
             new Filter("name", new FilterRule("key", "^[0-9]{1}$", ComparisonOperations.RegularExpression))
         };
-        _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
+        _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
         var result = await _accountFilter.Check(new List<Claim> {new("key", "111")}, CancellationToken.None)
             .ConfigureAwait(false);
@@ -111,7 +111,7 @@ public sealed class AccountFilterFixture
         {
             new Filter("name", new FilterRule("key", "val", ComparisonOperations.Equal))
         };
-        _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
+        _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
         var result = await _accountFilter.Check(new List<Claim> {new("key", "val")}, CancellationToken.None)
             .ConfigureAwait(false);
@@ -128,7 +128,7 @@ public sealed class AccountFilterFixture
             new Filter("1", new FilterRule("key", "val", ComparisonOperations.Equal)),
             new Filter("2", new FilterRule("key", "val", ComparisonOperations.NotEqual))
         };
-        _filterRepositoryStub.Setup(f => f.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(filters);
+        _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
         var result = await _accountFilter.Check(new List<Claim> {new("key", "val")}, CancellationToken.None)
             .ConfigureAwait(false);

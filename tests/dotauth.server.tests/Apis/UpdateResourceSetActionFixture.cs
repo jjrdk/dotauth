@@ -14,7 +14,6 @@
 
 namespace DotAuth.Server.Tests.Apis;
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Api.ResourceSetController;
@@ -22,29 +21,20 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class UpdateResourceSetActionFixture
 {
-    private readonly Mock<IResourceSetRepository> _resourceSetRepositoryStub;
+    private readonly IResourceSetRepository _resourceSetRepositoryStub;
     private readonly UpdateResourceSetAction _updateResourceSetAction;
 
     public UpdateResourceSetActionFixture()
     {
-        _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-        _resourceSetRepositoryStub.Setup(x => x.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Option.Success());
-        _updateResourceSetAction = new UpdateResourceSetAction(_resourceSetRepositoryStub.Object, new Mock<ILogger>().Object);
-    }
-
-    [Fact]
-    public async Task When_Passing_No_Parameter_Then_Exception_Is_Thrown()
-    {
-        await Assert
-            .ThrowsAsync<NullReferenceException>(
-                () => _updateResourceSetAction.Execute(null, CancellationToken.None))
-            .ConfigureAwait(false);
+        _resourceSetRepositoryStub = Substitute.For<IResourceSetRepository>();
+        _resourceSetRepositoryStub.Update(Arg.Any<ResourceSet>(), Arg.Any<CancellationToken>())
+            .Returns(new Option.Success());
+        _updateResourceSetAction = new UpdateResourceSetAction(_resourceSetRepositoryStub, Substitute.For<ILogger>());
     }
 
     [Fact]
@@ -58,10 +48,10 @@ public sealed class UpdateResourceSetActionFixture
             Scopes = new[] { "scope" }
         };
         var resourceSet = new Shared.Models.ResourceSet { Id = id };
-        _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(resourceSet);
-        _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult<Option>(new Option.Error(new ErrorDetails())));
+        _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(resourceSet);
+        _resourceSetRepositoryStub.Update(Arg.Any<ResourceSet>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<Option>(new Option.Error(new ErrorDetails())));
 
         var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None).ConfigureAwait(false);
         Assert.IsType<Option.Error>(result);
@@ -78,10 +68,10 @@ public sealed class UpdateResourceSetActionFixture
             Scopes = new[] { "scope" }
         };
         var resourceSet = new Shared.Models.ResourceSet { Id = id };
-        _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(resourceSet);
-        _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<Shared.Models.ResourceSet>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Option.Success());
+        _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(resourceSet);
+        _resourceSetRepositoryStub.Update(Arg.Any<Shared.Models.ResourceSet>(), Arg.Any<CancellationToken>())
+            .Returns(new Option.Success());
 
         var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)
             .ConfigureAwait(false);

@@ -17,7 +17,7 @@ namespace DotAuth.Tests.TwoFactors;
 using System;
 using System.Threading.Tasks;
 using DotAuth.Services;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class TwoFactorAuthenticationHandlerFixture
@@ -26,7 +26,7 @@ public sealed class TwoFactorAuthenticationHandlerFixture
 
     public TwoFactorAuthenticationHandlerFixture()
     {
-        _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(new[] { new Mock<ITwoFactorAuthenticationService>().Object, });
+        _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(new[] { Substitute.For<ITwoFactorAuthenticationService>(), });
     }
 
     [Fact]

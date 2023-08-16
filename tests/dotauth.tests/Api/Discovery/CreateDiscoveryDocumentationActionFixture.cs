@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 using DotAuth.Api.Discovery;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 public sealed class CreateDiscoveryDocumentationActionFixture
 {
-    private readonly Mock<IScopeRepository> _scopeRepositoryStub;
+    private readonly IScopeRepository _scopeRepositoryStub;
     private readonly DiscoveryActions _createDiscoveryDocumentationAction;
 
     public CreateDiscoveryDocumentationActionFixture()
     {
-        _scopeRepositoryStub = new Mock<IScopeRepository>();
-        _createDiscoveryDocumentationAction = new DiscoveryActions(_scopeRepositoryStub.Object);
+        _scopeRepositoryStub = Substitute.For<IScopeRepository>();
+        _createDiscoveryDocumentationAction = new DiscoveryActions(_scopeRepositoryStub);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public sealed class CreateDiscoveryDocumentationActionFixture
             new Scope {IsExposed = false, Name = secondScopeName}
         };
 
-        _scopeRepositoryStub.Setup(s => s.GetAll(It.IsAny<CancellationToken>())).ReturnsAsync(scopes);
+        _scopeRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(scopes);
 
         var discoveryInformation = await _createDiscoveryDocumentationAction
             .CreateDiscoveryInformation("http://test", CancellationToken.None)

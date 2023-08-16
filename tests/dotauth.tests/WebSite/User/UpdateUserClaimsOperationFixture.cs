@@ -12,28 +12,28 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.User;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
 
 public sealed class UpdateUserClaimsOperationFixture
 {
-    private readonly Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+    private readonly IResourceOwnerRepository _resourceOwnerRepositoryStub;
     private readonly UpdateUserClaimsOperation _updateUserClaimsOperation;
 
     public UpdateUserClaimsOperationFixture(ITestOutputHelper outputHelper)
     {
-        _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+        _resourceOwnerRepositoryStub = Substitute.For<IResourceOwnerRepository>();
         _updateUserClaimsOperation = new UpdateUserClaimsOperation(
-            _resourceOwnerRepositoryStub.Object,
+            _resourceOwnerRepositoryStub,
             new TestOutputLogger("test", outputHelper));
     }
 
     [Fact]
     public async Task When_ResourceOwner_DoesntExist_Then_Exception_Is_Thrown()
     {
-        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ResourceOwner)null);
+        _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((ResourceOwner)null);
 
         var exception = await _updateUserClaimsOperation
             .Execute("subject", new List<Claim>(), CancellationToken.None)
@@ -46,8 +46,8 @@ public sealed class UpdateUserClaimsOperationFixture
     [Fact]
     public async Task When_Claims_Are_Updated_Then_Operation_Is_Called()
     {
-        _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
+        _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(
                 new ResourceOwner { Claims = new[] { new Claim("type", "value"), new Claim("type1", "value") } });
 
         await _updateUserClaimsOperation.Execute(
@@ -56,9 +56,8 @@ public sealed class UpdateUserClaimsOperationFixture
                 CancellationToken.None)
             .ConfigureAwait(false);
 
-        _resourceOwnerRepositoryStub.Verify(
-            p => p.Update(
-                It.Is<ResourceOwner>(r => r.Claims.Any(c => c.Type == "type" && c.Value == "value1")),
-                It.IsAny<CancellationToken>()));
+        await _resourceOwnerRepositoryStub.Received().Update(
+            Arg.Is<ResourceOwner>(r => r.Claims.Any(c => c.Type == "type" && c.Value == "value1")),
+            Arg.Any<CancellationToken>());
     }
 }

@@ -34,16 +34,17 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
+using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
 {
-    private Mock<IEventPublisher> _eventPublisher;
-    private Mock<IAuthorizationCodeStore> _authorizationCodeStoreFake;
+    private IEventPublisher _eventPublisher;
+    private IAuthorizationCodeStore _authorizationCodeStoreFake;
     private RuntimeSettings _dotAuthOptions;
-    private Mock<ITokenStore> _tokenStoreFake;
-    private Mock<IClientStore> _clientStore;
+    private ITokenStore _tokenStoreFake;
+    private IClientStore _clientStore;
     private GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
     private InMemoryJwksRepository _inMemoryJwksRepository;
 
@@ -65,16 +66,16 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             ClientSecret = "clientSecret"
         };
 
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Client)null);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).ReturnsNull();
 
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
+            .Execute(
                 authorizationCodeGrantTypeParameter,
                 null,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidClient, result!.Details.Title);
     }
 
@@ -100,15 +101,16 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
+            .Execute(
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(
             string.Format(
@@ -139,18 +141,19 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
             GrantTypes = new[] { GrantTypes.AuthorizationCode }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
         var authenticationValue = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
+            .Execute(
                 authorizationCodeGrantTypeParameter,
                 authenticationValue,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidResponse, result.Details.Title);
         Assert.Equal(
             string.Format(
@@ -180,20 +183,21 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             GrantTypes = new[] { GrantTypes.AuthorizationCode },
             ResponseTypes = new[] { ResponseTypeNames.Code }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
-        _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult((AuthorizationCode)null));
+        _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(default(AuthorizationCode)));
         var authorizationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
+            .Execute(
                 authorizationCodeGrantTypeParameter,
                 authorizationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(Strings.TheAuthorizationCodeIsNotCorrect, result.Details.Detail);
     }
@@ -222,21 +226,22 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             GrantTypes = new[] { GrantTypes.AuthorizationCode },
             ResponseTypes = new[] { ResponseTypeNames.Code }
         };
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
-        _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult(authorizationCode));
+        _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(authorizationCode));
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
+            .Execute(
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheCodeVerifierIsNotCorrect, result.Details.Detail);
     }
@@ -266,20 +271,21 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         };
         var authorizationCode = new AuthorizationCode { ClientId = "clientId" };
 
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-        _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns(() => Task.FromResult(authorizationCode));
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
+        _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(authorizationCode));
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
+            .Execute(
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(
             string.Format(
@@ -318,19 +324,20 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             RedirectUri = new Uri("https://redirectUri")
         };
 
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-        _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(authorizationCode);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
+        _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(authorizationCode);
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
+            .Execute(
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
         Assert.Equal(Strings.TheRedirectionUrlIsNotTheSame, result.Details.Detail);
     }
@@ -365,20 +372,21 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             CreateDateTime = DateTimeOffset.UtcNow.AddSeconds(-30)
         };
 
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-        _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(authorizationCode);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
+        _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(authorizationCode);
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
+            .Execute(
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.ExpiredAuthorizationCode, result.Details.Title);
         Assert.Equal(Strings.TheAuthorizationCodeIsObsolete, result.Details.Detail);
     }
@@ -413,21 +421,22 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             CreateDateTime = DateTimeOffset.UtcNow
         };
 
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
-        _authorizationCodeStoreFake.Setup(a => a.Remove(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(authorizationCode);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
+        _authorizationCodeStoreFake.Remove(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(true);
+        _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(authorizationCode);
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+        var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
+            .Execute(
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<GrantedToken>.Error;
+            .ConfigureAwait(false));
         Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
         Assert.Equal(
             string.Format(Strings.RedirectUrlIsNotValid, "https://redirecturi/"),
@@ -488,20 +497,18 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             ExpiresIn = 100000
         };
 
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
-        _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(authorizationCode);
+        _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(authorizationCode);
 
-        _tokenStoreFake
-            .Setup(
-                x => x.GetToken(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<JwtPayload>(),
-                    It.IsAny<JwtPayload>(),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync(grantedToken);
+        _tokenStoreFake.GetToken(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<JwtPayload>(),
+                Arg.Any<JwtPayload>(),
+                Arg.Any<CancellationToken>())
+            .Returns(grantedToken);
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
@@ -554,20 +561,18 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             CreateDateTime = DateTimeOffset.UtcNow
         };
 
-        _clientStore.Setup(x => x.GetById(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(client);
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
-        _authorizationCodeStoreFake.Setup(a => a.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(authorizationCode);
+        _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(authorizationCode);
         _dotAuthOptions = new RuntimeSettings(authorizationCodeValidityPeriod: TimeSpan.FromSeconds(3000));
 
-        _tokenStoreFake.Setup(
-                x => x.GetToken(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<JwtPayload>(),
-                    It.IsAny<JwtPayload>(),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync((GrantedToken)null);
+        _tokenStoreFake.GetToken(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<JwtPayload>(),
+            Arg.Any<JwtPayload>(),
+            Arg.Any<CancellationToken>()).ReturnsNull();
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -580,27 +585,27 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 CancellationToken.None)
             .ConfigureAwait(false);
 
-        _tokenStoreFake.Verify(g => g.AddToken(It.IsAny<GrantedToken>(), It.IsAny<CancellationToken>()));
-        _eventPublisher.Verify(s => s.Publish(It.IsAny<TokenGranted>()));
+        await _tokenStoreFake.Received().AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>());
+        await _eventPublisher.Received().Publish(Arg.Any<TokenGranted>());
     }
 
     private void InitializeFakeObjects(TimeSpan authorizationCodeValidity = default)
     {
-        _eventPublisher = new Mock<IEventPublisher>();
-        _authorizationCodeStoreFake = new Mock<IAuthorizationCodeStore>();
-        _tokenStoreFake = new Mock<ITokenStore>();
-        _clientStore = new Mock<IClientStore>();
+        _eventPublisher = Substitute.For<IEventPublisher>();
+        _authorizationCodeStoreFake = Substitute.For<IAuthorizationCodeStore>();
+        _tokenStoreFake = Substitute.For<ITokenStore>();
+        _clientStore = Substitute.For<IClientStore>();
         _dotAuthOptions = new RuntimeSettings(
             authorizationCodeValidityPeriod: authorizationCodeValidity == default
                 ? TimeSpan.FromSeconds(3600)
                 : authorizationCodeValidity);
         _inMemoryJwksRepository = new InMemoryJwksRepository();
         _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
-            _authorizationCodeStoreFake.Object,
+            _authorizationCodeStoreFake,
             _dotAuthOptions,
-            _clientStore.Object,
-            _eventPublisher.Object,
-            _tokenStoreFake.Object,
+            _clientStore,
+            _eventPublisher,
+            _tokenStoreFake,
             _inMemoryJwksRepository);
     }
 }
