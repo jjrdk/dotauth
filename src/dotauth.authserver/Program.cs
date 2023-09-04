@@ -31,12 +31,12 @@ public sealed class Program
         Trace.Listeners.Clear();
         Trace.Listeners.Add(new ConsoleTraceListener
             { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
-        var webHost = new WebHostBuilder()
+        using var webHost = new WebHostBuilder()
             .UseKestrel(
                 o =>
                 {
                     o.AddServerHeader = false;
-                    o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
+                    o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
                 })
             .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
             .UseStartup<Startup>()
@@ -44,6 +44,5 @@ public sealed class Program
         await webHost
             .RunAsync()
             .ConfigureAwait(false);
-        webHost.Dispose();
     }
 }

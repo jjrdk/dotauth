@@ -23,16 +23,16 @@ public sealed class Program
 {
     public static async Task Main()
     {
-        await new WebHostBuilder().UseKestrel(
+        using var webHost = new WebHostBuilder().UseKestrel(
                 o =>
                 {
                     o.AddServerHeader = false;
-                    o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
+                    o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
                 })
             .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
             .UseStartup<Startup>()
-            .Build()
-            .RunAsync()
+            .Build();
+        await webHost.RunAsync()
             .ConfigureAwait(false);
     }
 }
