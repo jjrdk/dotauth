@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="../../shared.projinfo" />
+	<Import Project="../../shared.proj" />
 	<PropertyGroup>
 		<Description>DotAuth Shared Library</Description>
 		<Title>DotAuth Shared</Title>
@@ -11,7 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.2" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.projinfo" />
+    <Import Project="../../shared.proj" />
     <PropertyGroup>
         <RootNamespace>DotAuth.Authentication</RootNamespace>
 
@@ -12,8 +12,8 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-rc.1.23419.4" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0-rc.1.23419.4" />
     </ItemGroup>
 
     <ItemGroup>

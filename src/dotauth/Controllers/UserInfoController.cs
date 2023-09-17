@@ -95,11 +95,14 @@ public sealed class UserInfoController : ControllerBase
         }
 
         var authenticationHeader = values.First();
-        var authorization = AuthenticationHeaderValue.Parse(authenticationHeader);
-        var scheme = authorization.Scheme;
-        return authorization.Parameter == null || string.Compare(scheme, "Bearer", StringComparison.CurrentCultureIgnoreCase) != 0
-            ? string.Empty
-            : authorization.Parameter;
+        if (AuthenticationHeaderValue.TryParse(authenticationHeader, out var authorization))
+        {
+            var scheme = authorization.Scheme;
+            return authorization.Parameter == null || string.Compare(scheme, "Bearer", StringComparison.CurrentCultureIgnoreCase) != 0
+                ? string.Empty
+                : authorization.Parameter;
+        }
+        return string.Empty;
     }
 
     /// <summary>

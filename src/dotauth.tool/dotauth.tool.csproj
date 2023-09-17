@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="../../shared.projinfo" />
+	<Import Project="../../shared.proj" />
 	<PropertyGroup>
 		<Title>DotAuth Tool</Title>
 		<Version>1.1.0</Version>
@@ -10,7 +10,6 @@
 		<Description>DotAuth tool lets you get access tokens from your command line.</Description>
 		<PackageDescription>DotAuth tool lets you get retrieve tokens from your command line.</PackageDescription>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PackAsTool>true</PackAsTool>

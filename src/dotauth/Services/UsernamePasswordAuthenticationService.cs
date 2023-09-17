@@ -40,7 +40,10 @@ internal sealed class UsernamePasswordAuthenticationService : IAuthenticateResou
         _eventPublisher = eventPublisher;
     }
 
-    public string Amr => "pwd";
+    public string Amr
+    {
+        get { return "pwd"; }
+    }
 
     public async Task<ResourceOwner?> AuthenticateResourceOwner(
         string login,

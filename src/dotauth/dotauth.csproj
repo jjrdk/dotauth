@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="../../shared.projinfo" />
+	<Import Project="../../shared.proj" />
 	<PropertyGroup>
 		<Description>DotAuth Server SDK</Description>
 		<Title>DotAuth Server SDK</Title>
@@ -11,8 +11,8 @@
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-rc.1.23419.4" />
 	</ItemGroup>
 
 	<ItemGroup>

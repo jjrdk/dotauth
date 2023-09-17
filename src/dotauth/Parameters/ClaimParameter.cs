@@ -9,17 +9,35 @@ internal sealed record ClaimParameter
 
     public Dictionary<string, object> Parameters { get; init; } = new();
 
-    public bool Essential => GetBoolean(CoreConstants.StandardClaimParameterValueNames.EssentialName);
+    public bool Essential
+    {
+        get { return GetBoolean(CoreConstants.StandardClaimParameterValueNames.EssentialName); }
+    }
 
-    public string Value => GetString(CoreConstants.StandardClaimParameterValueNames.ValueName);
+    public string Value
+    {
+        get { return GetString(CoreConstants.StandardClaimParameterValueNames.ValueName); }
+    }
 
-    public string[]? Values => GetArray(CoreConstants.StandardClaimParameterValueNames.ValuesName);
+    public string[]? Values
+    {
+        get { return GetArray(CoreConstants.StandardClaimParameterValueNames.ValuesName); }
+    }
 
-    public bool EssentialParameterExist => Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.EssentialName);
+    public bool EssentialParameterExist
+    {
+        get { return Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.EssentialName); }
+    }
 
-    public bool ValueParameterExist => Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValueName);
+    public bool ValueParameterExist
+    {
+        get { return Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValueName); }
+    }
 
-    public bool ValuesParameterExist => Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValuesName);
+    public bool ValuesParameterExist
+    {
+        get { return Parameters.Any(p => p.Key == CoreConstants.StandardClaimParameterValueNames.ValuesName); }
+    }
 
     private bool GetBoolean(string name)
     {

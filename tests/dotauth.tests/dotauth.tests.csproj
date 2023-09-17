@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <Import Project="../../shared.proj"/>
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
         <AssemblyName>dotauth.tests</AssemblyName>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         <RootNamespace>DotAuth.Tests</RootNamespace>
     </PropertyGroup>
-    <!--<Import Project="../../shared.projinfo" />-->
     <ItemGroup>
-        <None Include="..\..\.editorconfig" Link=".editorconfig" />
+        <None Include="..\..\.editorconfig" Link=".editorconfig"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -18,10 +17,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NSubstitute" Version="5.0.0" />
-        <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
-        <PackageReference Include="xunit" Version="2.5.0" />
+        <PackageReference Include="NSubstitute" Version="5.1.0"/>
+        <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0-preview-23424-02"/>
+        <PackageReference Include="xunit" Version="2.5.0"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -29,8 +28,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\dotauth.sms\dotauth.sms.csproj" />
-        <ProjectReference Include="..\..\src\dotauth\dotauth.csproj" />
+        <ProjectReference Include="..\..\src\dotauth.sms\dotauth.sms.csproj"/>
+        <ProjectReference Include="..\..\src\dotauth\dotauth.csproj"/>
     </ItemGroup>
 
 </Project>

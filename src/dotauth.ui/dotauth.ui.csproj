@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.projinfo" />
+    <Import Project="../../shared.proj" />
     <PropertyGroup>
         <RootNamespace>DotAuth.UI</RootNamespace>
         <IsTrimmable>false</IsTrimmable>
@@ -22,7 +22,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.0-rc.1.23421.29" />
     </ItemGroup>
 
 </Project>

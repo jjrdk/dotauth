@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="../../shared.projinfo" />
+	<Import Project="../../shared.proj" />
 
 	<PropertyGroup>
 		<Description>DotAuth Client</Description>

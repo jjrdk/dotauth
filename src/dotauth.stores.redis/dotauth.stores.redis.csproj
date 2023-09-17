@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.projinfo" />
+    <Import Project="../../shared.proj" />
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
         <RootNamespace>DotAuth.Stores.Redis</RootNamespace>
     </PropertyGroup>
 

@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../shared.projinfo" />
+  <Import Project="../../shared.proj" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
     <RunWorkingDirectory>$(MSBuildProjectDirectory)</RunWorkingDirectory>
     <RootNamespace>DotAuth.Build</RootNamespace>
   </PropertyGroup>

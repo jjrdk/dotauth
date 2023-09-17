@@ -26,11 +26,6 @@ using Base64UrlTextEncoder = Microsoft.AspNetCore.Authentication.Base64UrlTextEn
 public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> where TOptions : OAuthOptions, new()
 {
     /// <summary>
-    /// Gets the <see cref="HttpClient"/> instance used to communicate with the remote authentication provider.
-    /// </summary>
-    protected HttpClient Backchannel => Options.Backchannel;
-
-    /// <summary>
     /// The handler calls methods on the events which give the application control at certain points where processing is occurring.
     /// If it is not provided a default instance is supplied which does nothing when the methods are called.
     /// </summary>
@@ -44,11 +39,13 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
     /// Initializes a new instance of <see cref="DotAuthHandler{TOptions}"/>.
     /// </summary>
     /// <inheritdoc />
-    public DotAuthHandler(IOptionsMonitor<TOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-        : base(options, logger, encoder, clock)
-    { }
+    public DotAuthHandler(IOptionsMonitor<TOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+        : base(options, logger, encoder)
+    {
+    }
 
     /// <inheritdoc />
+    // ReSharper disable once CognitiveComplexity
     protected override async Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
     {
         var query = Request.Query;
@@ -84,10 +81,16 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
                 {
                     return result;
                 }
-                var deniedEx = new Exception("Access was denied by the resource owner or by the remote server.");
-                deniedEx.Data["error"] = error.ToString();
-                deniedEx.Data["error_description"] = errorDescription.ToString();
-                deniedEx.Data["error_uri"] = errorUri.ToString();
+
+                var deniedEx = new Exception("Access was denied by the resource owner or by the remote server.")
+                {
+                    Data =
+                    {
+                        ["error"] = error.ToString(),
+                        ["error_description"] = errorDescription.ToString(),
+                        ["error_uri"] = errorUri.ToString()
+                    }
+                };
 
                 return HandleRequestResult.Fail(deniedEx, properties);
             }
@@ -98,15 +101,21 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
             {
                 failureMessage.Append(";Description=").Append(errorDescription);
             }
+
             if (!StringValues.IsNullOrEmpty(errorUri))
             {
                 failureMessage.Append(";Uri=").Append(errorUri);
             }
 
-            var ex = new Exception(failureMessage.ToString());
-            ex.Data["error"] = error.ToString();
-            ex.Data["error_description"] = errorDescription.ToString();
-            ex.Data["error_uri"] = errorUri.ToString();
+            var ex = new Exception(failureMessage.ToString())
+            {
+                Data =
+                {
+                    ["error"] = error.ToString(),
+                    ["error_description"] = errorDescription.ToString(),
+                    ["error_uri"] = errorUri.ToString()
+                }
+            };
 
             return HandleRequestResult.Fail(ex, properties);
         }
@@ -118,7 +127,8 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
             return HandleRequestResult.Fail("Code was not found.", properties);
         }
 
-        var codeExchangeContext = new OAuthCodeExchangeContext(properties, code.ToString(), BuildRedirectUri(Options.CallbackPath));
+        var codeExchangeContext =
+            new OAuthCodeExchangeContext(properties, code.ToString(), BuildRedirectUri(Options.CallbackPath));
         using var tokens = await ExchangeCodeAsync(codeExchangeContext);
 
         if (tokens.Error != null)
@@ -135,9 +145,9 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
 
         if (Options.SaveTokens)
         {
-            var authTokens = new List<AuthenticationToken>();
+            var authTokens = new List<AuthenticationToken>
+                { new() { Name = "access_token", Value = tokens.AccessToken } };
 
-            authTokens.Add(new AuthenticationToken { Name = "access_token", Value = tokens.AccessToken });
             if (!string.IsNullOrEmpty(tokens.RefreshToken))
             {
                 authTokens.Add(new AuthenticationToken { Name = "refresh_token", Value = tokens.RefreshToken });
@@ -150,12 +160,11 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
 
             if (!string.IsNullOrEmpty(tokens.ExpiresIn))
             {
-                int value;
-                if (int.TryParse(tokens.ExpiresIn, NumberStyles.Integer, CultureInfo.InvariantCulture, out value))
+                if (int.TryParse(tokens.ExpiresIn, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
                 {
                     // https://www.w3.org/TR/xmlschema-2/#dateTime
                     // https://msdn.microsoft.com/en-us/library/az4se3k1(v=vs.110).aspx
-                    var expiresAt = Clock.UtcNow + TimeSpan.FromSeconds(value);
+                    var expiresAt = TimeProvider.GetUtcNow() + TimeSpan.FromSeconds(value);
                     authTokens.Add(new AuthenticationToken
                     {
                         Name = "expires_at",
@@ -168,14 +177,7 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
         }
 
         var ticket = await CreateTicketAsync(identity, properties, tokens);
-        if (ticket != null)
-        {
-            return HandleRequestResult.Success(ticket);
-        }
-        else
-        {
-            return HandleRequestResult.Fail("Failed to retrieve user information from remote server.", properties);
-        }
+        return HandleRequestResult.Success(ticket);
     }
 
     /// <summary>
@@ -206,26 +208,20 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, Options.TokenEndpoint);
         requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         requestMessage.Content = requestContent;
-        requestMessage.Version = Backchannel.DefaultRequestVersion;
-        var response = await Backchannel.SendAsync(requestMessage, Context.RequestAborted);
+        requestMessage.Version = Options.Backchannel.DefaultRequestVersion;
+        var response = await Options.Backchannel.SendAsync(requestMessage, Context.RequestAborted);
         var body = await response.Content.ReadAsStringAsync(Context.RequestAborted);
 
         return response.IsSuccessStatusCode switch
         {
             true => OAuthTokenResponse.Success(JsonDocument.Parse(body)),
-            false => PrepareFailedOAuthTokenReponse(response, body)
+            false => PrepareFailedOAuthTokenResponse(body)
         };
     }
 
-    private static OAuthTokenResponse PrepareFailedOAuthTokenReponse(HttpResponseMessage response, string body)
+    private static OAuthTokenResponse PrepareFailedOAuthTokenResponse(string body)
     {
         var exception = new Exception(JsonDocument.Parse(body).ToString());
-//
-//        if (exception is null)
-//        {
-//            var errorMessage = $"OAuth token endpoint failure: Status: {response.StatusCode};Headers: {response.Headers};Body: {body};";
-//            return OAuthTokenResponse.Failed(new Exception(errorMessage));
-//        }
 
         return OAuthTokenResponse.Failed(exception);
     }
@@ -237,14 +233,16 @@ public class DotAuthHandler<TOptions> : RemoteAuthenticationHandler<TOptions> wh
     /// <param name="properties">The <see cref="AuthenticationProperties"/>.</param>
     /// <param name="tokens">The <see cref="OAuthTokenResponse"/>.</param>
     /// <returns>The <see cref="AuthenticationTicket"/>.</returns>
-    protected virtual async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
+    protected virtual async Task<AuthenticationTicket> CreateTicketAsync(
+        ClaimsIdentity identity,
+        AuthenticationProperties properties,
+        OAuthTokenResponse tokens)
     {
-        using (var user = JsonDocument.Parse("{}"))
-        {
-            var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, user.RootElement);
-            await Events.CreatingTicket(context);
-            return new AuthenticationTicket(context.Principal!, context.Properties, Scheme.Name);
-        }
+        using var user = JsonDocument.Parse("{}");
+        var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme,
+            Options, Options.Backchannel, tokens, user.RootElement);
+        await Events.CreatingTicket(context);
+        return new AuthenticationTicket(context.Principal!, context.Properties, Scheme.Name);
     }
 
     /// <inheritdoc />

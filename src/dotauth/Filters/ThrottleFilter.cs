@@ -14,7 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 public sealed class ThrottleFilter : Attribute, IFilterFactory
 {
     /// <inheritdoc />
-    public bool IsReusable => true;
+    public bool IsReusable
+    {
+        get { return true; }
+    }
 
     /// <inheritdoc />
     public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)

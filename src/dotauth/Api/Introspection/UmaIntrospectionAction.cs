@@ -96,7 +96,7 @@ internal sealed class UmaIntrospectionAction
             result = result with
             {
                 Audience = string.Join(" ", audiencesArr),
-                IssuedAt = grantedToken.IdTokenPayLoad.Iat ?? 0,
+                IssuedAt = grantedToken.IdTokenPayLoad.IssuedAt.ConvertToUnixTimestamp(),
                 Issuer = grantedToken.IdTokenPayLoad.Iss
             };
             if (!string.IsNullOrWhiteSpace(subject))
