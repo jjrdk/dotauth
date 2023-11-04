@@ -62,7 +62,7 @@ public sealed class EndpointFixture : IDisposable
             Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/{path}")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
 
         Assert.Equal(statusCode, httpResult.StatusCode);
     }

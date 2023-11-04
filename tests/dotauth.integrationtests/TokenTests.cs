@@ -24,12 +24,11 @@ public sealed class TokenTests : IClassFixture<DbFixture>
             TokenCredentials.FromClientCredentials("client", "secret"),
             () => new HttpClient(),
             new Uri("http://localhost:8080/.well-known/openid-configuration"));
-        await _fixture.GetUser().ConfigureAwait(false);
+        await _fixture.GetUser();
         for (var i = 0; i < 100; i++)
         {
             var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(await client
-                .GetToken(TokenRequest.FromPassword("user", "password", new[] { "read" }))
-                .ConfigureAwait(false));
+                .GetToken(TokenRequest.FromPassword("user", "password", new[] { "read" })));
 
             Assert.NotNull(token.Item);
         }

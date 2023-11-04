@@ -12,7 +12,11 @@ using Microsoft.Extensions.Options;
 
 public sealed class TestAuthenticationHandler : AuthenticationHandler<TestAuthenticationOptions>
 {
-    public TestAuthenticationHandler(IOptionsMonitor<TestAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+    public TestAuthenticationHandler(
+        IOptionsMonitor<TestAuthenticationOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder,
+        ISystemClock clock) : base(options, logger, encoder, clock)
     {
     }
 
@@ -26,7 +30,9 @@ public sealed class TestAuthenticationHandler : AuthenticationHandler<TestAuthen
         var claims = new List<Claim> { new("sub", UserStore.Instance().Subject) };
         if (UserStore.Instance().AuthenticationOffset != null)
         {
-            claims.Add(new Claim(ClaimTypes.AuthenticationInstant, UserStore.Instance().AuthenticationOffset.Value.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)));
+            claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
+                UserStore.Instance().AuthenticationOffset.Value.ConvertToUnixTimestamp()
+                    .ToString(CultureInfo.InvariantCulture)));
         }
 
         var claimsIdentity = new ClaimsIdentity(claims, FakeStartup.DefaultSchema);

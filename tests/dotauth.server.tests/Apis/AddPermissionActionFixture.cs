@@ -37,10 +37,10 @@ using Xunit.Abstractions;
 public sealed class AddPermissionActionFixture
 {
     private readonly ITestOutputHelper _outputHelper;
-    private IResourceSetRepository _resourceSetRepositoryStub;
-    private ITicketStore _ticketStoreStub;
-    private RuntimeSettings _configurationServiceStub;
-    private RequestPermissionHandler _requestPermissionHandler;
+    private IResourceSetRepository _resourceSetRepositoryStub = null!;
+    private ITicketStore _ticketStoreStub = null!;
+    private RuntimeSettings _configurationServiceStub = null!;
+    private RequestPermissionHandler _requestPermissionHandler = null!;
 
     public AddPermissionActionFixture(ITestOutputHelper outputHelper)
     {
@@ -54,8 +54,7 @@ public sealed class AddPermissionActionFixture
         var addPermissionParameter = new PermissionRequest();
 
         var exception = Assert.IsType<Option<Ticket>.Error>(await _requestPermissionHandler
-            .Execute("tester", CancellationToken.None, addPermissionParameter)
-            .ConfigureAwait(false));
+            .Execute("tester", CancellationToken.None, addPermissionParameter));
         Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
         Assert.Equal(
             string.Format(
@@ -71,8 +70,7 @@ public sealed class AddPermissionActionFixture
         var addPermissionParameter = new PermissionRequest { ResourceSetId = "resource_set_id" };
 
         var exception = Assert.IsType<Option<Ticket>.Error>(
-            await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                .ConfigureAwait(false));
+            await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter));
         Assert.Equal(ErrorCodes.InvalidRequest, exception.Details.Title);
         Assert.Equal(
             string.Format(Strings.MissingParameter, UmaConstants.AddPermissionNames.Scopes),
@@ -88,8 +86,7 @@ public sealed class AddPermissionActionFixture
             new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
 
         var exception = Assert.IsType<Option<Ticket>.Error>(
-            await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                .ConfigureAwait(false));
+            await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter));
         Assert.Equal(ErrorCodes.InvalidResourceSetId, exception.Details.Title);
         Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, resourceSetId), exception.Details.Detail);
     }
@@ -107,8 +104,7 @@ public sealed class AddPermissionActionFixture
         InitializeFakeObjects(resources);
 
         var exception = Assert.IsType<Option<Ticket>.Error>(
-            await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter)
-                .ConfigureAwait(false));
+            await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter));
         Assert.Equal(ErrorCodes.InvalidScope, exception.Details.Title);
         Assert.Equal(Strings.TheScopeAreNotValid, exception.Details.Detail);
     }
@@ -117,7 +113,7 @@ public sealed class AddPermissionActionFixture
     public async Task When_Adding_Permission_Then_TicketId_Is_Returned()
     {
         var handler = new JwtSecurityTokenHandler();
-        var idtoken = handler.CreateEncodedJwt(
+        var idToken = handler.CreateEncodedJwt(
             "test",
             "test",
             new ClaimsIdentity(new[] { new Claim("sub", "tester") }),
@@ -130,17 +126,16 @@ public sealed class AddPermissionActionFixture
         {
             ResourceSetId = resourceSetId,
             Scopes = new[] { "scope" },
-            IdToken = idtoken
+            IdToken = idToken
         };
         var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
         InitializeFakeObjects(resources);
         _ticketStoreStub.Add(Arg.Any<Ticket>(), Arg.Any<CancellationToken>()).Returns(true);
 
-        var ticket = (await _requestPermissionHandler
-            .Execute("tester", CancellationToken.None, addPermissionParameter)
-            .ConfigureAwait(false) as Option<Ticket>.Result)!.Item;
+        var ticket = Assert.IsType<Option<Ticket>.Result>( await _requestPermissionHandler
+            .Execute("tester", CancellationToken.None, addPermissionParameter));
 
-        Assert.NotEmpty(ticket.Requester);
+        Assert.NotEmpty(ticket.Item.Requester);
     }
 
     private void InitializeFakeObjects(params ResourceSet[] resourceSets)

@@ -56,10 +56,11 @@ public sealed class AuthorizationClientFixture : IDisposable
     [Fact]
     public async Task When_Scope_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
     {
-        var httpResult = await _server.Client().GetAsync(new Uri(BaseUrl + "/authorization")).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var httpResult = await _server.Client().GetAsync(new Uri(BaseUrl + "/authorization"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(HttpStatusCode.BadRequest, error.Status);
         Assert.Equal(string.Format(Strings.MissingParameter, "scope"), error.Detail);
     }
@@ -68,11 +69,11 @@ public sealed class AuthorizationClientFixture : IDisposable
     public async Task When_ClientId_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
     {
         var httpResult = await _server.Client()
-            .GetAsync(new Uri(BaseUrl + "/authorization?scope=scope"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            .GetAsync(new Uri(BaseUrl + "/authorization?scope=scope"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "client_id"), error.Detail);
     }
@@ -81,11 +82,11 @@ public sealed class AuthorizationClientFixture : IDisposable
     public async Task When_RedirectUri_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
     {
         var httpResult = await _server.Client()
-            .GetAsync(new Uri(BaseUrl + "/authorization?scope=scope&client_id=client"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            .GetAsync(new Uri(BaseUrl + "/authorization?scope=scope&client_id=client"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "redirect_uri"), error.Detail);
     }
@@ -95,11 +96,11 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         var redirect = Uri.EscapeDataString("https://redirect_uri");
         var httpResult = await _server.Client()
-            .GetAsync(new Uri(BaseUrl + $"/authorization?scope=scope&client_id=client&redirect_uri={redirect}"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            .GetAsync(new Uri(BaseUrl + $"/authorization?scope=scope&client_id=client&redirect_uri={redirect}"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "response_type"), error.Detail);
     }
@@ -112,11 +113,11 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                  + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=invalid"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                  + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=invalid"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal("at least one response_type parameter is not supported", error.Detail);
     }
@@ -129,11 +130,11 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                  + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=invalid"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                  + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=invalid"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal("at least one prompt parameter is not supported", error.Detail);
     }
@@ -146,11 +147,11 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                  + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=none"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                  + $"/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=none"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(Strings.TheRedirectionUriIsNotWellFormed, error.Detail);
     }
@@ -162,11 +163,11 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                  + "/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                  + "/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(string.Format(Strings.ClientIsNotValid, "bad_client"), error.Detail);
     }
@@ -178,11 +179,11 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                  + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                  + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(string.Format(Strings.RedirectUrlIsNotValid, "http://localhost:5000/"), error.Detail);
     }
@@ -195,11 +196,11 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                  + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                  + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(string.Format(Strings.TheClientRequiresPkce, "pkce_client"), error.Detail);
     }
@@ -211,11 +212,11 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                  + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                  + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "nonce"), error.Detail);
     }
@@ -227,11 +228,11 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                  + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                  + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidScope, error.Title);
         Assert.Equal("The scopes scope are not allowed or invalid", error.Detail);
     }
@@ -244,11 +245,11 @@ public sealed class AuthorizationClientFixture : IDisposable
             .GetAsync(
                 new Uri(
                     BaseUrl
-                  + "/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"))
-            .ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+                  + "/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"));
+        var json = await httpResult.Content.ReadAsStringAsync();
         var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
 
+        Assert.NotNull(error);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(
             "The client 'incomplete_authcode_client' doesn't support the response type: 'id_token,code,token'",
@@ -268,8 +269,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(baseUrl + "/invalid_callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state"))
-            .ConfigureAwait(false));
+                    "state")));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
     }
@@ -287,11 +287,10 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.None })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.None }));
         UserStore.Instance().IsInactive = false;
 
-        Assert.Equal("login_required", result!.Details.Title);
+        Assert.Equal("login_required", result.Details.Title);
         Assert.Equal("The user needs to be authenticated", result.Details.Detail);
     }
 
@@ -309,8 +308,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.None })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.None }));
         UserStore.Instance().Subject = "administrator";
 
         Assert.Equal("interaction_required", result.Details.Title);
@@ -329,8 +327,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { id_token_hint = "token", prompt = "none" })
-            .ConfigureAwait(false));
+                    "state") { id_token_hint = "token", prompt = "none" }));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheIdTokenHintParameterIsNotAValidToken, result.Details.Detail);
@@ -358,8 +355,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { id_token_hint = jws, prompt = "none" })
-            .ConfigureAwait(false));
+                    "state") { id_token_hint = jws, prompt = "none" }));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
     }
@@ -388,8 +384,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { id_token_hint = jws, prompt = "none" })
-            .ConfigureAwait(false));
+                    "state") { id_token_hint = jws, prompt = "none" }));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken, result.Details.Detail);
@@ -409,8 +404,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(baseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.None })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.None }));
         var location = result.Item;
         var queries = QueryHelpers.ParseQuery(location.Query);
         var tokenClient = new TokenClient(
@@ -418,8 +412,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             _server.Client,
             new Uri(baseUrl + WellKnownOpenidConfiguration));
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromAuthorizationCode(queries["code"], "http://localhost:5000/callback"))
-            .ConfigureAwait(false));
+            .GetToken(TokenRequest.FromAuthorizationCode(queries["code"]!, "http://localhost:5000/callback")));
 
         Assert.NotEmpty(token.Item.AccessToken);
         Assert.True(queries["state"] == "state");
@@ -438,8 +431,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.None, max_age = 300 })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.None, max_age = 300 }));
         var location = result.Item;
         UserStore.Instance().AuthenticationOffset = null;
 
@@ -458,8 +450,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.Login })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.Login }));
 
         Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
     }
@@ -477,8 +468,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.Consent })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.Consent }));
         UserStore.Instance().IsInactive = false;
 
         Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
@@ -496,8 +486,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.Consent })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.Consent }));
 
         Assert.Equal("/Consent", result.Item.LocalPath);
     }
@@ -529,8 +518,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { id_token_hint = jwe, prompt = "none" })
-            .ConfigureAwait(false);
+                    "state") { id_token_hint = jwe, prompt = "none" });
 
         Assert.IsType<Option<Uri>.Result>(result);
     }
@@ -548,8 +536,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(BaseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.None })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.None }));
         var location = result.Item;
         var queries = QueryHelpers.ParseQuery(location.Query);
         var tokenClient = new TokenClient(
@@ -558,10 +545,9 @@ public sealed class AuthorizationClientFixture : IDisposable
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient.GetToken(
                 TokenRequest.FromAuthorizationCode(
-                    queries["code"],
+                    queries["code"]!,
                     "http://localhost:5000/callback",
-                    pkce.CodeVerifier))
-            .ConfigureAwait(false));
+                    pkce.CodeVerifier)));
 
         Assert.NotNull(token.Item.AccessToken);
     }
@@ -581,8 +567,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(baseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.None, nonce = "nonce" })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.None, nonce = "nonce" }));
         var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
         Assert.NotNull(result.Item);
@@ -607,8 +592,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     new Uri(baseUrl + "/callback"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.None, nonce = "nonce" })
-            .ConfigureAwait(false));
+                    "state") { prompt = PromptNames.None, nonce = "nonce" }));
         var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
         Assert.NotNull(result.Item);
@@ -621,7 +605,6 @@ public sealed class AuthorizationClientFixture : IDisposable
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
-        _server?.Dispose();
+        _server.Dispose();
     }
 }

@@ -3,7 +3,6 @@
 using System;
 using System.Net.Http;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
@@ -14,14 +13,14 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
 {
     private readonly TestServer _server;
 
-    public JwtBearerPostConfigureOptions(IServer server)
+    public JwtBearerPostConfigureOptions(TestServer server)
     {
-        _server = server as TestServer;
+        _server = server;
     }
 
-    public void PostConfigure(string name, JwtBearerOptions options)
+    public void PostConfigure(string? name, JwtBearerOptions options)
     {
-        options.Authority = _server.CreateClient().BaseAddress.AbsoluteUri;
+        options.Authority = _server.CreateClient().BaseAddress?.AbsoluteUri;
         options.BackchannelHttpHandler = _server.CreateHandler();
         options.RequireHttpsMetadata = false;
         options.Events = new JwtBearerEvents { OnAuthenticationFailed = ctx => throw ctx.Exception };
@@ -50,7 +49,7 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
                 if (string.IsNullOrEmpty(options.MetadataAddress) && !string.IsNullOrEmpty(options.Authority))
                 {
                     options.MetadataAddress = options.Authority;
-                    if (!options.MetadataAddress.EndsWith("/", StringComparison.Ordinal))
+                    if (!options.MetadataAddress.EndsWith('/'))
                     {
                         options.MetadataAddress += "/";
                     }
