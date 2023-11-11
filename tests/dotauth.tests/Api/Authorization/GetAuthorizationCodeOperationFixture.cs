@@ -40,7 +40,7 @@ public sealed class GetAuthorizationCodeOperationFixture
     {
         await Assert.ThrowsAsync<NullReferenceException>(
                 () => _getAuthorizationCodeOperation.Execute(null, null, null, null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public sealed class GetAuthorizationCodeOperationFixture
                 client,
                 "",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result);
         Assert.Equal(ErrorCodes.InvalidRequest, result.Error!.Title);
@@ -101,7 +101,7 @@ public sealed class GetAuthorizationCodeOperationFixture
 
         var result = await _getAuthorizationCodeOperation
             .Execute(authorizationParameter, new ClaimsPrincipal(), client, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result.RedirectInstruction);
     }

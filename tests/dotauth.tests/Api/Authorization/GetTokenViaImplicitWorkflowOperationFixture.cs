@@ -39,8 +39,7 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
     public async Task When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
     {
         await Assert.ThrowsAsync<NullReferenceException>(
-                () => _getTokenViaImplicitWorkflowOperation.Execute(null, null, null, null, CancellationToken.None))
-            .ConfigureAwait(false);
+            () => _getTokenViaImplicitWorkflowOperation.Execute(null, null, null, null, CancellationToken.None));
     }
 
     [Fact]
@@ -52,7 +51,7 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
                 new Client(),
                 "",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(ActionResultType.BadRequest, result.Type);
     }
@@ -68,7 +67,7 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
                 new Client(),
                 "",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
         Assert.Equal(ErrorCodes.InvalidRequest, result.Error!.Title);
         Assert.Equal(
             string.Format(
@@ -83,12 +82,11 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
         var authorizationParameter = new AuthorizationParameter { Nonce = "nonce", State = "state" };
 
         var ex = await _getTokenViaImplicitWorkflowOperation.Execute(
-                authorizationParameter,
-                new ClaimsPrincipal(),
-                new Client(),
-                "",
-                CancellationToken.None)
-            .ConfigureAwait(false);
+            authorizationParameter,
+            new ClaimsPrincipal(),
+            new Client(),
+            "",
+            CancellationToken.None);
         Assert.Equal(ErrorCodes.InvalidRequest, ex.Error!.Title);
         Assert.Equal(
             string.Format(Strings.TheClientDoesntSupportTheGrantType, authorizationParameter.ClientId, "implicit"),
@@ -121,12 +119,11 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
             AllowedScopes = new[] { "openid" }
         };
         var result = await _getTokenViaImplicitWorkflowOperation.Execute(
-                authorizationParameter,
-                claimsPrincipal,
-                client,
-                null,
-                CancellationToken.None)
-            .ConfigureAwait(false);
+            authorizationParameter,
+            claimsPrincipal,
+            client,
+            null,
+            CancellationToken.None);
 
         Assert.NotNull(result.RedirectInstruction);
     }

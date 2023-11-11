@@ -25,7 +25,7 @@ public sealed class UpdateResourceOwnerPasswordActionFixture
         await Assert
             .ThrowsAsync<ArgumentNullException>(
                 () => _resourceOwnerRepositoryStub.Update(null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public sealed class UpdateResourceOwnerPasswordActionFixture
 
         var result = await _resourceOwnerRepositoryStub
             .Update(new ResourceOwner {Subject = subject}, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option.Error>(result);
     }

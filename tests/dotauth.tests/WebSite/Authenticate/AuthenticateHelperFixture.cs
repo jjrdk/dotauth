@@ -46,7 +46,7 @@ public sealed class AuthenticateHelperFixture
     {
         await Assert.ThrowsAsync<NullReferenceException>(
                 () => _authenticateHelper.ProcessRedirection(null, null, null, null, null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public sealed class AuthenticateHelperFixture
                     null,
                     null,
                     CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
         Assert.Equal(
             string.Format(SharedStrings.TheClientDoesntExist),
             exception.Message);
@@ -89,7 +89,7 @@ public sealed class AuthenticateHelperFixture
                 Array.Empty<Claim>(),
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(DotAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
         Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
@@ -128,7 +128,7 @@ public sealed class AuthenticateHelperFixture
                 Array.Empty<Claim>(),
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(DotAuth.ResponseModes.FormPost, actionResult.RedirectInstruction.ResponseMode);
     }
@@ -150,7 +150,7 @@ public sealed class AuthenticateHelperFixture
                 Array.Empty<Claim>(),
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(DotAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
         Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);

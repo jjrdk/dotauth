@@ -80,7 +80,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.InvalidClient, result.Details.Title);
         Assert.Equal(string.Format(SharedStrings.TheClientDoesntExist), result.Details.Detail);
@@ -120,7 +120,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(
@@ -162,7 +162,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.InvalidResponse, result.Details.Title);
         Assert.Equal(
@@ -211,7 +211,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
         Assert.Equal(ErrorCodes.InvalidCredentials, result.Details.Title);
         Assert.Equal(Strings.ResourceOwnerCredentialsAreNotValid, result.Details.Detail);
     }
@@ -261,7 +261,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     null,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.InvalidScope, result.Details.Title);
     }
@@ -317,7 +317,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                 null,
                 "issuer",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         await _tokenStoreStub.Received().AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>());
         await _eventPublisher.Received().Publish(Arg.Any<TokenGranted>());

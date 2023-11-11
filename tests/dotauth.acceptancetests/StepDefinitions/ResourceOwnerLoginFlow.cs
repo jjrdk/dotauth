@@ -27,7 +27,7 @@ public partial class FeatureTest
     {
         var scopes = scope.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var option = await _tokenClient.GetToken(TokenRequest.FromPassword(user, password, scopes))
-            .ConfigureAwait(false);
+            ;
 
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
 
@@ -39,7 +39,7 @@ public partial class FeatureTest
     {
         var scopes = scope.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         _tokenOption = await _tokenClient.GetToken(TokenRequest.FromPassword(user, password, scopes))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Then(@"has valid access token for audience (.+)")]
@@ -95,7 +95,7 @@ public partial class FeatureTest
         };
         userinfoRequest.Headers.Authorization =
             new AuthenticationHeaderValue(_token.TokenType, _token.AccessToken);
-        var userinfo = await _fixture.Client().SendAsync(userinfoRequest).ConfigureAwait(false);
+        var userinfo = await _fixture.Client().SendAsync(userinfoRequest);
 
         Assert.True(userinfo.IsSuccessStatusCode);
     }
@@ -119,7 +119,7 @@ public partial class FeatureTest
         request.Headers.Authorization = new AuthenticationHeaderValue(
             JwtBearerDefaults.AuthenticationScheme,
             _token.AccessToken);
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
     }
 
     [Then(@"update is successful")]

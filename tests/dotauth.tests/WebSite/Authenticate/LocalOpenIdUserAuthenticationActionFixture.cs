@@ -48,7 +48,7 @@ public sealed class LocalOpenIdUserAuthenticationActionFixture
                 "",
                 "",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result.ErrorMessage);
     }
@@ -75,7 +75,7 @@ public sealed class LocalOpenIdUserAuthenticationActionFixture
                 "",
                 "",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         // Specify the resource owner authentication date
         Assert.NotNull(result.Claims);

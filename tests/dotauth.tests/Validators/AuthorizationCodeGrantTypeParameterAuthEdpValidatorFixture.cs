@@ -41,7 +41,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             .Validate(
                 authorizationParameter,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -66,7 +66,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                     authorizationParameter,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -94,7 +94,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                     authorizationParameter,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -122,7 +122,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                     authorizationParameter,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -154,7 +154,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                     authorizationParameter,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -184,7 +184,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                     authorizationParameter,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -214,7 +214,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
         var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                 authorizationParameter,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -248,7 +248,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                     authorizationParameter,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -285,7 +285,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
         var exception = await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
                 authorizationParameter,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(
             new Option<Client>.Error(

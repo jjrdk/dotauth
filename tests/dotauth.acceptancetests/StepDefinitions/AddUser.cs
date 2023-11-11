@@ -50,7 +50,7 @@ public partial class FeatureTest
     public async Task WhenLocalAccountUserIsAddedToStorage()
     {
         var resourceOwner = new ResourceOwner { Subject = "tester", Password = "password", IsLocalAccount = true };
-        var (_, s) = await _addUserOperation!.Execute(resourceOwner, CancellationToken.None).ConfigureAwait(false);
+        var (_, s) = await _addUserOperation!.Execute(resourceOwner, CancellationToken.None);
         _subject = s;
     }
 
@@ -58,7 +58,7 @@ public partial class FeatureTest
     public async Task WhenExternalAccountUserIsAddedToStorage()
     {
         var resourceOwner = new ResourceOwner { Subject = "tester", IsLocalAccount = false };
-        _ = await _addUserOperation!.Execute(resourceOwner, CancellationToken.None).ConfigureAwait(false);
+        _ = await _addUserOperation!.Execute(resourceOwner, CancellationToken.None);
     }
 
     [Then(@"subject is not modified")]

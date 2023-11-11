@@ -77,7 +77,7 @@ public sealed class ClientAssertionAuthenticationFixture
                     null,
                     null,
                     CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public sealed class ClientAssertionAuthenticationFixture
         var instruction = new AuthenticateInstruction {ClientAssertion = "invalid_header.invalid_payload"};
         var result = await _clientAssertionAuthentication
             .AuthenticateClientWithPrivateKeyJwt(instruction, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result.Client);
         Assert.Equal(Strings.TheClientAssertionIsNotAJwsToken, result.ErrorMessage);
@@ -108,7 +108,7 @@ public sealed class ClientAssertionAuthenticationFixture
 
         var result = await _clientAssertionAuthentication
             .AuthenticateClientWithPrivateKeyJwt(instruction, "invalid_issuer", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result.Client);
         Assert.NotNull(result.ErrorMessage);
@@ -148,7 +148,7 @@ public sealed class ClientAssertionAuthenticationFixture
 
         var result = await _clientAssertionAuthentication
             .AuthenticateClientWithPrivateKeyJwt(instruction, "audience", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result.Client);
     }
@@ -176,7 +176,7 @@ public sealed class ClientAssertionAuthenticationFixture
 
         var result = await _clientAssertionAuthentication
             .AuthenticateClientWithClientSecretJwt(instruction, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result);
     }

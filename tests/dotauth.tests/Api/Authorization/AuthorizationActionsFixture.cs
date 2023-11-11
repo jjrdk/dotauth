@@ -35,12 +35,12 @@ public sealed class AuthorizationActionsFixture
 {
     private const string OpenIdScope = "openid";
     private const string HttpsLocalhost = "https://localhost";
-    private IEventPublisher _eventPublisherStub;
-    private AuthorizationActions _authorizationActions;
-    private IClientStore _clientStore;
+    private IEventPublisher _eventPublisherStub = null!;
+    private AuthorizationActions _authorizationActions = null!;
+    private IClientStore _clientStore = null!;
 
     [Fact]
-    public async Task WhenClientRequirePKCEAndNoCodeChallengeIsPassedThenAnErrorIsReturned()
+    public async Task WhenClientRequirePkceAndNoCodeChallengeIsPassedThenAnErrorIsReturned()
     {
         const string clientId = "clientId";
         const string scope = OpenIdScope;
@@ -67,12 +67,11 @@ public sealed class AuthorizationActionsFixture
                 authorizationParameter,
                 new ClaimsPrincipal(),
                 "",
-                CancellationToken.None)
-            .ConfigureAwait(false);
+                CancellationToken.None);
         Assert.Equal(ActionResultType.BadRequest, result.Type);
     }
 
-    private void InitializeFakeObjects(Client client = null)
+    private void InitializeFakeObjects(Client? client = null)
     {
         _eventPublisherStub = Substitute.For<IEventPublisher>();
         _clientStore = Substitute.For<IClientStore>();

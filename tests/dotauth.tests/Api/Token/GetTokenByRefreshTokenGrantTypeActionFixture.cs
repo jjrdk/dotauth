@@ -68,7 +68,7 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(ErrorCodes.InvalidClient, result.Details.Title);
         Assert.Equal(SharedStrings.TheClientDoesntExist, result.Details.Detail);
@@ -93,7 +93,7 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(
@@ -123,7 +123,7 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidGrant, response.Details.Title);
         Assert.Equal(Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, response.Details.Detail);
     }
@@ -150,7 +150,7 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
                 null,
                 "issuer",
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, result.Details.Detail);
@@ -182,7 +182,7 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
                 null,
                 "issuer",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         await _tokenStoreStub.Received().AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>());
     }

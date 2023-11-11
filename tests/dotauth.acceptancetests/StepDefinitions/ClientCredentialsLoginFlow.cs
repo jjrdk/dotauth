@@ -19,7 +19,7 @@ public partial class FeatureTest
     public async Task WhenRequestingToken()
     {
         var option =
-            await _tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+            await _tokenClient.GetToken(TokenRequest.FromScopes("api1")) as
                 Option<GrantedTokenResponse>.Result;
 
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
@@ -45,7 +45,7 @@ public partial class FeatureTest
     [Then(@"can get user info")]
     public async Task ThenCanGetUserInfo()
     {
-        var option = await _tokenClient.GetUserInfo(_token.AccessToken).ConfigureAwait(false);
+        var option = await _tokenClient.GetUserInfo(_token.AccessToken);
         var userinfo = Assert.IsType<Option<JwtPayload>.Result>(option);
         Assert.NotNull(userinfo);
         Assert.NotNull(userinfo.Item);
@@ -54,7 +54,7 @@ public partial class FeatureTest
     [When(@"requesting auth token")]
     public async Task WhenRequestingAuthToken()
     {
-        var option = await _tokenClient.GetToken(TokenRequest.FromScopes("api1", "offline")).ConfigureAwait(false);
+        var option = await _tokenClient.GetToken(TokenRequest.FromScopes("api1", "offline"));
 
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
 
@@ -64,21 +64,21 @@ public partial class FeatureTest
     [When(@"attempting to request token")]
     public async Task WhenAttemptingToRequestToken()
     {
-        _tokenOption = await _tokenClient.GetToken(TokenRequest.FromScopes("pwd")).ConfigureAwait(false);
+        _tokenOption = await _tokenClient.GetToken(TokenRequest.FromScopes("pwd"));
     }
 
     [Then(@"can get new token from refresh token")]
     public async Task ThenCanGetNewTokenFromRefreshToken()
     {
         var response = await _tokenClient.GetToken(TokenRequest.FromRefreshToken(_token.RefreshToken!))
-            .ConfigureAwait(false);
+            ;
         Assert.IsType<Option<GrantedTokenResponse>.Result>(response);
     }
 
     [Then(@"can revoke token")]
     public async Task ThenCanRevokeToken()
     {
-        var response = await _tokenClient.RevokeToken(RevokeTokenRequest.Create(_token)).ConfigureAwait(false);
+        var response = await _tokenClient.RevokeToken(RevokeTokenRequest.Create(_token));
         Assert.IsType<Option.Success>(response);
     }
 

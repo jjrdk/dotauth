@@ -28,7 +28,7 @@ public partial class FeatureTest
     {
         var option = await _tokenClient.GetToken(
                 TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
-            .ConfigureAwait(false);
+            ;
 
         var tokenResponse = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
 
@@ -55,7 +55,7 @@ public partial class FeatureTest
             Scopes = new[] { "read" },
             Type = "test"
         };
-        var option = await _umaClient.AddResourceSet(resource, _token.AccessToken).ConfigureAwait(false);
+        var option = await _umaClient.AddResourceSet(resource, _token.AccessToken);
 
         var response = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
 
@@ -74,11 +74,11 @@ public partial class FeatureTest
         msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
 
-        var policyResponse = await _fixture.Client().SendAsync(msg).ConfigureAwait(false);
+        var policyResponse = await _fixture.Client().SendAsync(msg);
 
         Assert.True(policyResponse.IsSuccessStatusCode);
 
-        var content = await policyResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var content = await policyResponse.Content.ReadAsStringAsync();
         _policyRules = JsonConvert.DeserializeObject<EditPolicyResponse>(content)!;
 
         Assert.Single(_policyRules.Rules);
@@ -97,7 +97,7 @@ public partial class FeatureTest
         };
         msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
 
-        var policyResponse = await _fixture.Client().SendAsync(msg).ConfigureAwait(false);
+        var policyResponse = await _fixture.Client().SendAsync(msg);
 
         Assert.True(policyResponse.IsSuccessStatusCode);
     }

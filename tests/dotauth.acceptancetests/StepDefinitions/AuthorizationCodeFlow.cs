@@ -42,7 +42,7 @@ public partial class FeatureTest
         };
         _response = await _tokenClient.GetAuthorization(
                 authorizationRequest)
-            .ConfigureAwait(false);
+            ;
     }
 
     [Then(@"has authorization uri")]
@@ -72,7 +72,7 @@ public partial class FeatureTest
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
                     "abc"))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Then(@"has invalid request error message")]

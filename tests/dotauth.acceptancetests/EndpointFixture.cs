@@ -50,7 +50,7 @@ public sealed class EndpointFixture
             RequestUri = new Uri($"{BaseUrl}/{path}")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
 
         Assert.Equal(statusCode, httpResult.StatusCode);
     }

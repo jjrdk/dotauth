@@ -75,7 +75,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidClient, result!.Details.Title);
     }
 
@@ -110,7 +110,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(
             string.Format(
@@ -153,7 +153,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidResponse, result.Details.Title);
         Assert.Equal(
             string.Format(
@@ -197,7 +197,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(Strings.TheAuthorizationCodeIsNotCorrect, result.Details.Detail);
     }
@@ -241,7 +241,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheCodeVerifierIsNotCorrect, result.Details.Detail);
     }
@@ -285,7 +285,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(
             string.Format(
@@ -337,7 +337,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
         Assert.Equal(Strings.TheRedirectionUrlIsNotTheSame, result.Details.Detail);
     }
@@ -386,7 +386,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.ExpiredAuthorizationCode, result.Details.Title);
         Assert.Equal(Strings.TheAuthorizationCodeIsObsolete, result.Details.Detail);
     }
@@ -436,7 +436,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
         Assert.Equal(
             string.Format(Strings.RedirectUrlIsNotValid, "https://redirecturi/"),
@@ -455,7 +455,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             null,
             null,
             DateTime.Now,
-            await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false));
+            await _inMemoryJwksRepository.GetDefaultSigningKey());
         const string identityToken = "identityToken";
         const string clientId = "clientId";
         var clientSecret = "clientSecret";
@@ -518,7 +518,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(r);
     }
@@ -583,7 +583,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         await _tokenStoreFake.Received().AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>());
         await _eventPublisher.Received().Publish(Arg.Any<TokenGranted>());

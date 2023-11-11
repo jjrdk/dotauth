@@ -19,7 +19,7 @@ public partial class FeatureTest
     [Given(@"an admin token")]
     public async Task GivenAnAdminToken()
     {
-        var option = await _tokenClient.GetToken(TokenRequest.FromScopes("admin")).ConfigureAwait(false);
+        var option = await _tokenClient.GetToken(TokenRequest.FromScopes("admin"));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
 
@@ -32,7 +32,7 @@ public partial class FeatureTest
         _addResourceOwnerResponseOption = await _managerClient.AddResourceOwner(
                 new AddResourceOwnerRequest { Password = "test", Subject = "test" },
                 _token.AccessToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     [Then(@"add response has error")]
@@ -48,7 +48,7 @@ public partial class FeatureTest
         _option = await _managerClient.UpdateResourceOwnerPassword(
                 new UpdateResourceOwnerPasswordRequest { Password = "blah", Subject = "administrator" },
                 _token.AccessToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     [Then(@"update response has error")]
@@ -64,7 +64,7 @@ public partial class FeatureTest
         _option = await _managerClient.DeleteResourceOwner(
                 "administrator",
                 _token.AccessToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     [Then(@"delete response has error")]
@@ -78,7 +78,7 @@ public partial class FeatureTest
     public async Task WhenListingResourceOwners()
     {
         _listResourceOwnerResponseOption = await _managerClient.GetAllResourceOwners(_token.AccessToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     [Then(@"list response has error")]

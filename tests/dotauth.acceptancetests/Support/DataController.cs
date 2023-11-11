@@ -35,9 +35,9 @@ public sealed class DataController : ControllerBase
             return Ok("Hello");
         }
 
-        var token = await HttpContext.GetTokenAsync("access_token").ConfigureAwait(false);
+        var token = await HttpContext.GetTokenAsync("access_token");
         var request = new PermissionRequest {ResourceSetId = id, Scopes = new[] {"api1"}};
-        var option = await _umaClient.RequestPermission(token!, cancellationToken, request).ConfigureAwait(false);
+        var option = await _umaClient.RequestPermission(token!, cancellationToken, request);
         if (option is Option<TicketResponse>.Result ticket)
         {
             Response.StatusCode = (int)HttpStatusCode.Unauthorized;

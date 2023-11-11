@@ -19,7 +19,7 @@ public partial class FeatureTest
     [Given(@"a manager client")]
     public async Task GivenAManagerClient()
     {
-        _managerClient = await ManagementClient.Create(_fixture.Client, new Uri(WellKnownUmaConfiguration)).ConfigureAwait(false);
+        _managerClient = await ManagementClient.Create(_fixture.Client, new Uri(WellKnownUmaConfiguration));
     }
 
     [Given(@"a manager token")]
@@ -27,7 +27,7 @@ public partial class FeatureTest
     {
         var response = await _tokenClient.GetToken(
                 TokenRequest.FromPassword("administrator", "password", new[] { "manager", "offline" }))
-            .ConfigureAwait(false);
+            ;
 
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(response);
 
@@ -37,7 +37,7 @@ public partial class FeatureTest
     [When(@"getting all clients")]
     public async Task WhenGettingAllClients()
     {
-        var option = await _managerClient.GetAllClients(_token.AccessToken).ConfigureAwait(false);
+        var option = await _managerClient.GetAllClients(_token.AccessToken);
 
         var response = Assert.IsType<Option<Client[]>.Result>(option);
 
@@ -65,7 +65,7 @@ public partial class FeatureTest
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
         };
         _addClientResponse = await _managerClient.AddClient(client, _token.AccessToken)
-            .ConfigureAwait(false);
+            ;
     }
 
     [Then(@"operation succeeds")]

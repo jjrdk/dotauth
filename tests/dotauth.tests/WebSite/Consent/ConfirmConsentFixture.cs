@@ -72,7 +72,7 @@ public sealed class ConfirmConsentFixture
                 claimsPrincipal,
                 "null",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(ErrorCodes.InvalidRequest, exception.Error!.Title);
         Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, exception.Error.Detail);
@@ -114,7 +114,7 @@ public sealed class ConfirmConsentFixture
             .AndDoes(c => insertedConsent = c.Arg<Consent>());
 
         await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, "null", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Contains(OpenIdClaimTypes.Subject, insertedConsent!.Claims);
         Assert.Equal(subject, insertedConsent.Subject);
@@ -146,7 +146,7 @@ public sealed class ConfirmConsentFixture
 
         var result = await _confirmConsentAction
             .Execute(authorizationParameter, claimsPrincipal, "null", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         await _consentRepositoryFake.Received().Insert(Arg.Any<Consent>(), Arg.Any<CancellationToken>());
         Assert.Equal(DotAuth.ResponseModes.Query, result.RedirectInstruction!.ResponseMode);

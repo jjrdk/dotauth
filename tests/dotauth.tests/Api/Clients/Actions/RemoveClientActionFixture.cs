@@ -41,8 +41,7 @@ public sealed class RemoveClientActionFixture
     [Fact]
     public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryStub.Delete(null, CancellationToken.None))
-            .ConfigureAwait(false);
+        await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryStub.Delete(null, CancellationToken.None));
     }
 
     [Fact]
@@ -50,7 +49,7 @@ public sealed class RemoveClientActionFixture
     {
         const string clientId = "invalid_client_id";
 
-        var result = await _clientRepositoryStub.Delete(clientId, CancellationToken.None).ConfigureAwait(false);
+        var result = await _clientRepositoryStub.Delete(clientId, CancellationToken.None);
 
         Assert.False(result);
     }

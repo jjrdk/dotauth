@@ -24,7 +24,7 @@ public partial class FeatureTest
     public async Task WhenRequestingAnSms()
     {
         var response = await _tokenClient.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option.Success>(response);
     }
@@ -34,7 +34,7 @@ public partial class FeatureTest
     {
         var option = await _tokenClient
             .GetToken(TokenRequest.FromPassword("phone", "123", new[] {"openid"}, "sms"))
-            .ConfigureAwait(false);
+            ;
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         _token = response.Item;
     }

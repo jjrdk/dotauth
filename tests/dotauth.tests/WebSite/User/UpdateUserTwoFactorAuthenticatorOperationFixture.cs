@@ -36,7 +36,7 @@ public sealed class UpdateUserTwoFactorAuthenticatorOperationFixture
                 "subject",
                 "two_factor",
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option.Error;
+             as Option.Error;
 
         Assert.Equal(ErrorCodes.InternalError, exception!.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);
@@ -49,7 +49,7 @@ public sealed class UpdateUserTwoFactorAuthenticatorOperationFixture
             .Returns(new ResourceOwner());
 
         await _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         await _resourceOwnerRepositoryStub.Received().Update(Arg.Any<ResourceOwner>(), Arg.Any<CancellationToken>());
     }

@@ -42,9 +42,9 @@ public partial class FeatureTest
             new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(WellKnownOpenidConfiguration) };
         request.Headers.Accept.Clear();
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        var response = await _fixture.Client().SendAsync(request);
 
-        var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var serializedContent = await response.Content.ReadAsStringAsync();
 
         _doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent)!;
     }
@@ -63,7 +63,7 @@ public partial class FeatureTest
             _fixture.Client,
             new Uri(WellKnownOpenidConfiguration));
         var option = await authClient.GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }))
-            .ConfigureAwait(false);
+            ;
 
         var tokenResponse = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         _token = tokenResponse.Item;
@@ -73,7 +73,7 @@ public partial class FeatureTest
     public async Task WhenADeviceRequestsAuthorization()
     {
         var option = await _tokenClient.GetAuthorization(new DeviceAuthorizationRequest(ClientId))
-            .ConfigureAwait(false);
+            ;
 
         var genericResponse = Assert.IsType<Option<DeviceAuthorizationResponse>.Result>(option);
 
@@ -102,7 +102,7 @@ public partial class FeatureTest
         };
         msg.Headers.Authorization = new AuthenticationHeaderValue(_token.TokenType, _token.AccessToken);
 
-        var approval = await client.SendAsync(msg).ConfigureAwait(false);
+        var approval = await client.SendAsync(msg);
 
         Assert.Equal(HttpStatusCode.OK, approval.StatusCode);
     }
@@ -110,7 +110,7 @@ public partial class FeatureTest
     [Then(@"token is returned from polling")]
     public async Task ThenTokenIsReturnedFromPolling()
     {
-        var tokenResponse = await _pollingTask.ConfigureAwait(false);
+        var tokenResponse = await _pollingTask;
 
         Assert.IsType<Option<GrantedTokenResponse>.Result>(tokenResponse);
     }
@@ -120,7 +120,7 @@ public partial class FeatureTest
     {
         var fastPoll = Assert.IsType<Option<GrantedTokenResponse>.Error>(
             await _tokenClient.GetToken(TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode, 1))
-                .ConfigureAwait(false) );
+                 );
 
         Assert.NotNull(fastPoll);
         Assert.Equal(ErrorCodes.SlowDown, fastPoll.Details.Title);
@@ -139,7 +139,7 @@ public partial class FeatureTest
     public async Task WhenTheDevicePollsTheTokenServerAfterExpiry()
     {
         _expiredPoll = await _tokenClient.GetToken(TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode, 7))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Then(@"error shows request expiry")]

@@ -38,7 +38,7 @@ public sealed class ValidateConfirmationCodeActionFixture
     public async Task When_Passing_Null_Parameter_Then_Returns_False()
     {
         var result = await _validateConfirmationCodeAction.Execute(null, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.False(result);
     }
@@ -47,7 +47,7 @@ public sealed class ValidateConfirmationCodeActionFixture
     public async Task When_Passing_Empty_Parameter_Then_Returns_False()
     {
         var result = await _validateConfirmationCodeAction.Execute(string.Empty, string.Empty, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.False(result);
     }
@@ -60,7 +60,7 @@ public sealed class ValidateConfirmationCodeActionFixture
             .Returns((ConfirmationCode)null);
 
         var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
         Assert.False(result);
     }
 
@@ -73,7 +73,7 @@ public sealed class ValidateConfirmationCodeActionFixture
             .Returns(confirmationCode);
 
         var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.False(result);
     }
@@ -87,7 +87,7 @@ public sealed class ValidateConfirmationCodeActionFixture
             .Returns(confirmationCode);
 
         var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.True(result);
     }

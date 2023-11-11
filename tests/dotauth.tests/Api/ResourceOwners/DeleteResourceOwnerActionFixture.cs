@@ -32,7 +32,7 @@ public sealed class DeleteResourceOwnerActionFixture
         InitializeFakeObjects();
 
         var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.False(result);
     }
@@ -44,7 +44,7 @@ public sealed class DeleteResourceOwnerActionFixture
         InitializeFakeObjects(new ResourceOwner());
 
         var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.False(result);
     }

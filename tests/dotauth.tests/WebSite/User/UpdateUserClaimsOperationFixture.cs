@@ -37,7 +37,7 @@ public sealed class UpdateUserClaimsOperationFixture
 
         var exception = await _updateUserClaimsOperation
             .Execute("subject", new List<Claim>(), CancellationToken.None)
-            .ConfigureAwait(false) as Option.Error;
+             as Option.Error;
 
         Assert.Equal(ErrorCodes.InternalError, exception!.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);
@@ -54,7 +54,7 @@ public sealed class UpdateUserClaimsOperationFixture
                 "subjet",
                 new List<Claim> { new("type", "value1") },
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         await _resourceOwnerRepositoryStub.Received().Update(
             Arg.Is<ResourceOwner>(r => r.Claims.Any(c => c.Type == "type" && c.Value == "value1")),

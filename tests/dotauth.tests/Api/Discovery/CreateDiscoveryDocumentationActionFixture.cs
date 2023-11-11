@@ -36,7 +36,7 @@ public sealed class CreateDiscoveryDocumentationActionFixture
 
         var discoveryInformation = await _createDiscoveryDocumentationAction
             .CreateDiscoveryInformation("http://test", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(2, discoveryInformation.ScopesSupported.Length);
         Assert.Contains(firstScopeName, discoveryInformation.ScopesSupported);

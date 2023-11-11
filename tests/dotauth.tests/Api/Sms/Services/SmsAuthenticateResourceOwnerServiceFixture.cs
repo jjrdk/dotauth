@@ -34,7 +34,7 @@ public sealed class SmsAuthenticateResourceOwnerServiceFixture
 
         var result = await _authenticateResourceOwnerService
             .AuthenticateResourceOwner("login", "password", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result);
     }
@@ -47,7 +47,7 @@ public sealed class SmsAuthenticateResourceOwnerServiceFixture
 
         var result = await _authenticateResourceOwnerService
             .AuthenticateResourceOwner("login", "password", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result);
     }
@@ -65,7 +65,7 @@ public sealed class SmsAuthenticateResourceOwnerServiceFixture
 
         var result = await _authenticateResourceOwnerService
             .AuthenticateResourceOwner(login, "password", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result);
     }
@@ -84,7 +84,7 @@ public sealed class SmsAuthenticateResourceOwnerServiceFixture
             .Returns(new ResourceOwner { Subject = login });
 
         await _authenticateResourceOwnerService.AuthenticateResourceOwner(login, "password", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         await _resourceOwnerRepositoryStub.Received().GetResourceOwnerByClaim(
             OpenIdClaimTypes.PhoneNumber,

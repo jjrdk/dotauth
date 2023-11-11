@@ -6,7 +6,7 @@ internal sealed class TestHttpClientFactory : IHttpClientFactory
 {
     private readonly HttpClient _client;
 
-    public TestHttpClientFactory(HttpClient client = null)
+    public TestHttpClientFactory(HttpClient? client = null)
     {
         _client = client ?? new HttpClient();
     }

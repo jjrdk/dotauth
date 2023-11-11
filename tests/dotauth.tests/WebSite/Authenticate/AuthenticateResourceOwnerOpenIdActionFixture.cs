@@ -57,7 +57,7 @@ public sealed class AuthenticateResourceOwnerOpenIdActionFixture
         var authorizationParameter = new AuthorizationParameter();
 
         var result = await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(
             JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
@@ -73,7 +73,7 @@ public sealed class AuthenticateResourceOwnerOpenIdActionFixture
 
         var result = await _authenticateResourceOwnerOpenIdAction
             .Execute(authorizationParameter, claimsPrincipal, null, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(
             JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
@@ -98,7 +98,7 @@ public sealed class AuthenticateResourceOwnerOpenIdActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(
             JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
@@ -122,7 +122,7 @@ public sealed class AuthenticateResourceOwnerOpenIdActionFixture
                 code,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result.RedirectInstruction);
     }

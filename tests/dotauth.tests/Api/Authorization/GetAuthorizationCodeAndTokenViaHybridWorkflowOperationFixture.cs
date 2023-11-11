@@ -47,7 +47,7 @@ public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixtur
                     null,
                     null,
                     CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixtur
                 new Client(),
                 "",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
         Assert.Equal(ActionResultType.BadRequest, ex.Type);
     }
 
@@ -85,7 +85,7 @@ public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixtur
                 client,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
         Assert.Equal(ActionResultType.BadRequest, ex.Type);
     }
 }

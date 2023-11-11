@@ -87,7 +87,7 @@ public sealed class GenerateAuthorizationResponseFixture
                     new Client(),
                     "",
                     CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public sealed class GenerateAuthorizationResponseFixture
                     null,
                     null,
                     CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public sealed class GenerateAuthorizationResponseFixture
                 client,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
@@ -171,7 +171,7 @@ public sealed class GenerateAuthorizationResponseFixture
                 client,
                 "issuer",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
@@ -197,7 +197,7 @@ public sealed class GenerateAuthorizationResponseFixture
         var handler = new JwtSecurityTokenHandler();
         var issuedAt = DateTime.UtcNow;
         const int expiresIn = 20000;
-        var defaultSigningKey = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
+        var defaultSigningKey = await _inMemoryJwksRepository.GetDefaultSigningKey();
         var accessToken = handler.CreateEncodedJwt(
             "test",
             clientId,
@@ -229,7 +229,7 @@ public sealed class GenerateAuthorizationResponseFixture
                 new Client { ClientId = clientId },
                 "test",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(
             grantedToken.AccessToken,
@@ -270,7 +270,7 @@ public sealed class GenerateAuthorizationResponseFixture
                 new Client(),
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
@@ -308,7 +308,7 @@ public sealed class GenerateAuthorizationResponseFixture
                 new Client(),
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(DotAuth.ResponseModes.Fragment, actionResult.RedirectInstruction!.ResponseMode);
     }

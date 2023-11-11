@@ -18,7 +18,7 @@ public partial class FeatureTest
         var option = await _managerClient.AddResourceOwner(
                 new AddResourceOwnerRequest {Subject = "tester", Password = "tester"},
                 _token.AccessToken)
-            .ConfigureAwait(false);
+            ;
         var created = Assert.IsType<Option<AddResourceOwnerResponse>.Result>(option);
 
         Assert.Equal("tester", created.Item.Subject);
@@ -29,7 +29,7 @@ public partial class FeatureTest
     {
         var option = await _tokenClient
             .GetToken(TokenRequest.FromPassword("tester", "tester", new[] {"openid"}))
-            .ConfigureAwait(false);
+            ;
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         _token = token.Item;
     }
@@ -51,7 +51,7 @@ public partial class FeatureTest
     {
         var option = await _tokenClient.GetToken(
                 TokenRequest.FromPassword("administrator", "password", new[] {"manager", "offline"}))
-            .ConfigureAwait(false);
+            ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
 

@@ -36,7 +36,7 @@ public sealed class UpdateResourceOwnerClaimsActionFixture
         await Assert
             .ThrowsAsync<ArgumentNullException>(
                 () => _resourceOwnerRepositoryStub.Update(null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public sealed class UpdateResourceOwnerClaimsActionFixture
 
         InitializeFakeObjects();
 
-        var owner = await _resourceOwnerRepositoryStub.Get(subject, CancellationToken.None).ConfigureAwait(false);
+        var owner = await _resourceOwnerRepositoryStub.Get(subject, CancellationToken.None);
 
         Assert.Null(owner);
     }
@@ -58,7 +58,7 @@ public sealed class UpdateResourceOwnerClaimsActionFixture
 
         var result = await _resourceOwnerRepositoryStub
             .Update(new ResourceOwner { Subject = "blah" }, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option.Error>(result);
     }

@@ -15,7 +15,7 @@ public partial class FeatureTest
     {
         var option = await _tokenClient.GetToken(
                 TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
-            .ConfigureAwait(false);
+            ;
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         
         _token = response.Item;
@@ -27,7 +27,7 @@ public partial class FeatureTest
     public async Task ThenCanGetUserInformation()
     {
         var userInfo = Assert.IsType<Option<JwtPayload>.Result>(
-            await _tokenClient.GetUserInfo(_token.AccessToken).ConfigureAwait(false));
+            await _tokenClient.GetUserInfo(_token.AccessToken));
 
         Assert.NotNull(userInfo.Item.Sub);
     }

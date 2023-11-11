@@ -56,7 +56,7 @@ public sealed class RevokeTokenActionFixture
 
         var error = Assert.IsType<Option.Error>(await _revokeTokenAction
             .Execute(parameter, null, null, null, CancellationToken.None)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidClient, error.Details.Title);
     }
 
@@ -87,7 +87,7 @@ public sealed class RevokeTokenActionFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option.Error;
+             as Option.Error;
 
         Assert.Equal("invalid_token", result.Details.Title);
     }
@@ -119,7 +119,7 @@ public sealed class RevokeTokenActionFixture
             "Basic",
             $"{clientid}:{clientsecret}".Base64Encode());
         await _revokeTokenAction.Execute(parameter, authenticationHeader, null, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         await _grantedTokenRepositoryStub.Received()
             .RemoveRefreshToken(parent.RefreshToken, Arg.Any<CancellationToken>());
@@ -151,7 +151,7 @@ public sealed class RevokeTokenActionFixture
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
         await _revokeTokenAction.Execute(parameter, authenticationHeader, null, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         await _grantedTokenRepositoryStub.Received()
             .RemoveAccessToken(grantedToken.AccessToken, Arg.Any<CancellationToken>());

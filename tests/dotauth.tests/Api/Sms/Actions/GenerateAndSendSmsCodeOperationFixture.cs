@@ -37,7 +37,7 @@ public sealed class GenerateAndSendSmsCodeOperationFixture
 
         var exception = Assert.IsType<Option<string>.Error>(
             await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
         Assert.Equal("The SMS account is not properly configured", exception.Details.Detail);
@@ -53,7 +53,7 @@ public sealed class GenerateAndSendSmsCodeOperationFixture
 
         var exception = Assert.IsType<Option<string>.Error>(
             await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
         Assert.Equal("The confirmation code cannot be saved", exception.Details.Detail);
@@ -68,7 +68,7 @@ public sealed class GenerateAndSendSmsCodeOperationFixture
             .Returns(Task.FromResult(true));
 
         var confirmationCode = await _generateAndSendSmsCodeOperation.Execute("phoneNumber", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(confirmationCode);
     }

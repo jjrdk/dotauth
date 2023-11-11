@@ -26,7 +26,7 @@ public partial class FeatureTest
     [Given(@"an out of band dynamic client registration token")]
     public async Task GivenAnOutOfBandDynamicClientRegistrationToken()
     {
-        var option = await _tokenClient.GetToken(TokenRequest.FromScopes("dcr")).ConfigureAwait(false);
+        var option = await _tokenClient.GetToken(TokenRequest.FromScopes("dcr"));
         switch (option)
         {
             case Option<GrantedTokenResponse>.Result result:
@@ -60,7 +60,7 @@ public partial class FeatureTest
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _dcrToken!.AccessToken);
         var client = _fixture.Client();
-        _dcrResponse = await client.SendAsync(request).ConfigureAwait(false);
+        _dcrResponse = await client.SendAsync(request);
     }
 
     [Then(@"the response should be a 201")]
@@ -72,7 +72,7 @@ public partial class FeatureTest
     [Then(@"the response should contain a client_id and client_secret")]
     public async Task ThenTheResponseShouldContainAClientIdAndClientSecret()
     {
-        var json = await _dcrResponse!.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var json = await _dcrResponse!.Content.ReadAsStringAsync();
         var clientInfo = JsonConvert.DeserializeObject<DynamicClientRegistrationResponse>(json);
 
         Assert.False(string.IsNullOrWhiteSpace(clientInfo?.ClientId));

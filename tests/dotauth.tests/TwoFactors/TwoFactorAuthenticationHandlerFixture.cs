@@ -34,17 +34,17 @@ public sealed class TwoFactorAuthenticationHandlerFixture
     {
         await Assert
             .ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, null, null))
-            .ConfigureAwait(false);
+            ;
         await Assert
             .ThrowsAsync<ArgumentNullException>(
                 () => _twoFactorAuthenticationHandler.SendCode(string.Empty, null, null))
-            .ConfigureAwait(false);
+            ;
         await Assert
             .ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", null, null))
-            .ConfigureAwait(false);
+            ;
         await Assert
             .ThrowsAsync<ArgumentNullException>(
                 () => _twoFactorAuthenticationHandler.SendCode("code", string.Empty, null))
-            .ConfigureAwait(false);
+            ;
     }
 }

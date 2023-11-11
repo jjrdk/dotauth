@@ -32,7 +32,7 @@ public partial class FeatureTest
             await _managerClient.AddResourceOwner(
                     new AddResourceOwnerRequest { Password = password, Subject = subject },
                     _token.AccessToken)
-                .ConfigureAwait(false));
+                );
 
         Assert.NotNull(response);
     }
@@ -42,7 +42,7 @@ public partial class FeatureTest
     {
         var response = Assert.IsType<Option<ResourceOwner>.Result>(
             await _managerClient.GetResourceOwner(subject, _token.AccessToken)
-                .ConfigureAwait(false));
+                );
 
         Assert.True(response.Item.IsLocalAccount);
     }
@@ -53,7 +53,7 @@ public partial class FeatureTest
         var response = await _managerClient.UpdateResourceOwnerPassword(
                 new UpdateResourceOwnerPasswordRequest { Subject = subject, Password = password },
                 _token.AccessToken)
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option.Success>(response);
     }
@@ -63,7 +63,7 @@ public partial class FeatureTest
     {
         var option =
             await _tokenClient.GetToken(TokenRequest.FromPassword(subject, password, new[] { "manager" }))
-                .ConfigureAwait(false);
+                ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
     }
@@ -89,7 +89,7 @@ public partial class FeatureTest
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             _token.AccessToken);
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
     }
 
     [Then(@"is ok request")]
@@ -101,7 +101,7 @@ public partial class FeatureTest
     [Then(@"has new token")]
     public async Task ThenHasNewToken()
     {
-        var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var json = await _responseMessage.Content.ReadAsStringAsync();
 
         _updatedToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json)!;
 
@@ -111,7 +111,7 @@ public partial class FeatureTest
     [Then(@"has new admin token")]
     public async Task ThenHasNewAdminToken()
     {
-        var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var json = await _responseMessage.Content.ReadAsStringAsync();
 
         _token = JsonConvert.DeserializeObject<GrantedTokenResponse>(json)!;
 
@@ -123,7 +123,7 @@ public partial class FeatureTest
     {
         var option = await _tokenClient
             .GetToken(TokenRequest.FromRefreshToken(_token.RefreshToken!))
-            .ConfigureAwait(false);
+            ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
 
@@ -136,7 +136,7 @@ public partial class FeatureTest
     public async Task WhenRevokingToken()
     {
         var result = await _tokenClient.RevokeToken(RevokeTokenRequest.Create(_updatedToken))
-            .ConfigureAwait(false);
+            ;
         Assert.IsType<Option.Success>(result);
     }
 
@@ -145,7 +145,7 @@ public partial class FeatureTest
     {
         var option = await _tokenClient
             .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" }))
-            .ConfigureAwait(false);
+            ;
 
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
 
@@ -170,7 +170,7 @@ public partial class FeatureTest
         var option =
             await _tokenClient.GetToken(
                     TokenRequest.FromPassword("administrator", "password", new[] { "manager", "offline" }))
-                .ConfigureAwait(false);
+                ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
 
@@ -191,7 +191,7 @@ public partial class FeatureTest
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             _token.AccessToken);
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
     }
 
     [Then(@"resource owner no longer has claim")]
@@ -200,7 +200,7 @@ public partial class FeatureTest
         var option =
             await _tokenClient
                 .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" }))
-                .ConfigureAwait(false);
+                ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
 
@@ -218,7 +218,7 @@ public partial class FeatureTest
             RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
     }
 
 
@@ -229,7 +229,7 @@ public partial class FeatureTest
     {
         var store = (IResourceOwnerStore)_fixture.Server.Host.Services.GetRequiredService(
             typeof(IResourceOwnerStore));
-        _resourceOwner = (await store.Get("administrator", CancellationToken.None).ConfigureAwait(false))!;
+        _resourceOwner = (await store.Get("administrator", CancellationToken.None))!;
     }
 
     [Then(@"resource owner still has claim")]
@@ -252,7 +252,7 @@ public partial class FeatureTest
             Method = HttpMethod.Delete, RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
     }
 
     [When(@"putting user claims")]
@@ -281,6 +281,6 @@ public partial class FeatureTest
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             _token.AccessToken);
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
     }
 }

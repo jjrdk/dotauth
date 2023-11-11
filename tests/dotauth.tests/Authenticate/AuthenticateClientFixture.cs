@@ -28,7 +28,7 @@ public sealed class AuthenticateClientFixture
         await Assert
             .ThrowsAsync<NullReferenceException>(
                 () => _authenticateClient.Authenticate(null, null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public sealed class AuthenticateClientFixture
         var authenticationInstruction = new AuthenticateInstruction();
 
         var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result.Client);
         Assert.Equal(SharedStrings.TheClientDoesntExist, result.ErrorMessage);
@@ -51,7 +51,7 @@ public sealed class AuthenticateClientFixture
             .Returns(Task.FromResult((Client)null));
 
         var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result.Client);
         Assert.Equal(SharedStrings.TheClientDoesntExist, result.ErrorMessage);
@@ -79,7 +79,7 @@ public sealed class AuthenticateClientFixture
             .Returns(client);
 
         var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result.Client);
     }
@@ -100,7 +100,7 @@ public sealed class AuthenticateClientFixture
             .Returns(client);
 
         var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result.Client);
     }

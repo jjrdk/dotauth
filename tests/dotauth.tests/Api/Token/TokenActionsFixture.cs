@@ -74,7 +74,7 @@ public sealed class TokenActionsFixture
                     null,
                     null,
                     CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public sealed class TokenActionsFixture
                     null,
                     null,
                     CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public sealed class TokenActionsFixture
     {
         await Assert.ThrowsAsync<NullReferenceException>(
                 () => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null, null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public sealed class TokenActionsFixture
                     null,
                     null,
                     CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public sealed class TokenActionsFixture
                 null,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(clientId, result.Item.ClientId);
     }
@@ -139,6 +139,6 @@ public sealed class TokenActionsFixture
         await Assert
             .ThrowsAsync<NullReferenceException>(
                 () => _tokenActions.RevokeToken(null, null, null, null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 }

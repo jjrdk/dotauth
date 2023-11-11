@@ -29,7 +29,7 @@ public partial class FeatureTest
         var authorizationRequest = new AuthorizationRequest {client_id = "client"};
         var code = Uri.EscapeDataString(Protect(_dataProtector, authorizationRequest));
         var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/authenticate/openid?code={code}");
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
     }
     
     private static string Protect<T>(IDataProtector dataProtector, T toEncode)

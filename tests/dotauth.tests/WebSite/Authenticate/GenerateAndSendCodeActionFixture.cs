@@ -54,7 +54,7 @@ public sealed class GenerateAndSendCodeActionFixture
     public async Task WhenPassingEmptyParameterThenErrorIsReturned()
     {
         var error = await _generateAndSendCodeAction.Send("", CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option<string>.Error>(error);
     }
@@ -67,7 +67,7 @@ public sealed class GenerateAndSendCodeActionFixture
 
         var exception = Assert.IsType<Option<string>.Error>(
             await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);
@@ -81,7 +81,7 @@ public sealed class GenerateAndSendCodeActionFixture
 
         var exception = Assert.IsType<Option<string>.Error>(
             await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TwoFactorAuthenticationIsNotEnabled, exception.Details.Detail);
@@ -106,7 +106,7 @@ public sealed class GenerateAndSendCodeActionFixture
         await Assert
             .ThrowsAsync<ClaimRequiredException>(
                 () => _generateAndSendCodeAction.Send("subject", CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public sealed class GenerateAndSendCodeActionFixture
 
         var exception = Assert.IsType<Option<string>.Error>(
             await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TheConfirmationCodeCannotBeSaved, exception.Details.Detail);
@@ -159,7 +159,7 @@ public sealed class GenerateAndSendCodeActionFixture
         _confirmationCodeStoreStub.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(true);
 
-        await _generateAndSendCodeAction.Send("subject", CancellationToken.None).ConfigureAwait(false);
+        await _generateAndSendCodeAction.Send("subject", CancellationToken.None);
 
         await _twoFactorAuthenticationHandlerStub.Received()
             .SendCode(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ResourceOwner>());

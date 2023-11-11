@@ -48,7 +48,7 @@ public sealed class GrantedTokenGeneratorHelperFixture
                 "",
                 CancellationToken.None,
                 userInformationPayload: null)
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option<GrantedToken>.Error>(result);
     }
@@ -66,7 +66,7 @@ public sealed class GrantedTokenGeneratorHelperFixture
                 "",
                 CancellationToken.None,
                 userInformationPayload: null)
-            .ConfigureAwait(false));
+            );
         Assert.Equal(ErrorCodes.InvalidClient, ex.Details.Title);
         Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Details.Detail);
     }
@@ -94,7 +94,7 @@ public sealed class GrantedTokenGeneratorHelperFixture
                 "issuer",
                 CancellationToken.None,
                 userInformationPayload: null)
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(3700, result.Item.ExpiresIn);
     }

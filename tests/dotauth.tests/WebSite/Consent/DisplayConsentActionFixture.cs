@@ -54,7 +54,7 @@ public sealed class DisplayConsentActionFixture
                 new ClaimsPrincipal(),
                 "",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(error.EndpointResult.Error);
     }
@@ -97,7 +97,7 @@ public sealed class DisplayConsentActionFixture
             .Returns(Array.Empty<Client>());
         var result = await _displayConsentAction
             .Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(DotAuth.ResponseModes.Fragment, result.EndpointResult.RedirectInstruction.ResponseMode);
     }
@@ -144,7 +144,7 @@ public sealed class DisplayConsentActionFixture
                 claimsPrincipal,
                 "issuer",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.EndpointResult.Error.Title);
         Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, result.EndpointResult.Error.Detail);
@@ -168,7 +168,7 @@ public sealed class DisplayConsentActionFixture
                 claimsPrincipal,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
         Assert.Equal(ErrorCodes.InvalidRequest, result.EndpointResult.Error.Title);
         Assert.Equal(string.Format(Strings.ClientIsNotValid, clientId), result.EndpointResult.Error.Detail);
     }
@@ -197,7 +197,7 @@ public sealed class DisplayConsentActionFixture
             .Returns(scopes);
 
         await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Contains(scopes, s => s.Name == scopeName);
     }

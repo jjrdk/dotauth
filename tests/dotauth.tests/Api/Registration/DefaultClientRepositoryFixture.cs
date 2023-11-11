@@ -53,7 +53,7 @@ public sealed class DefaultClientRepositoryFixture
         var result = await _clientRepositoryFake.Search(
                 new SearchClientsRequest { ClientIds = new[] { clientId } },
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
         Assert.Empty(result.Content);
     }
 
@@ -67,12 +67,12 @@ public sealed class DefaultClientRepositoryFixture
             AllowedScopes = new[] { "scope" },
             RedirectionUrls = new[] { new Uri("https://localhost"), }
         };
-        _ = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
+        _ = await _clientRepositoryFake.Insert(client, CancellationToken.None);
 
         var result = await _clientRepositoryFake.Search(
                 new SearchClientsRequest { ClientIds = new[] { client.ClientId } },
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(client.ClientId, result.Content.First().ClientId);
     }
@@ -82,7 +82,7 @@ public sealed class DefaultClientRepositoryFixture
     {
         await Assert
             .ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public sealed class DefaultClientRepositoryFixture
             InitiateLoginUri = initiateLoginUri
         };
 
-        var result = await _clientRepositoryFake.Insert(client, CancellationToken.None).ConfigureAwait(false);
+        var result = await _clientRepositoryFake.Insert(client, CancellationToken.None);
         Assert.True(result);
     }
 }

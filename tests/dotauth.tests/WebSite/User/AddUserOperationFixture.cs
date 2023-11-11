@@ -56,7 +56,7 @@ public sealed class AddUserOperationFixture
             .Returns(new ResourceOwner());
 
         var (success, _) =
-            await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
+            await _addResourceOwnerAction.Execute(parameter, CancellationToken.None);
         Assert.False(success);
     }
 
@@ -68,7 +68,7 @@ public sealed class AddUserOperationFixture
         var parameter = new ResourceOwner { Subject = "name", Password = "password" };
 
         var (success, _) =
-            await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
+            await _addResourceOwnerAction.Execute(parameter, CancellationToken.None);
         Assert.False(success);
     }
 
@@ -82,7 +82,7 @@ public sealed class AddUserOperationFixture
         _resourceOwnerRepositoryStub.Insert(Arg.Any<ResourceOwner>(), Arg.Any<CancellationToken>())
             .Returns(true);
 
-        await _addResourceOwnerAction.Execute(parameter, CancellationToken.None).ConfigureAwait(false);
+        await _addResourceOwnerAction.Execute(parameter, CancellationToken.None);
 
         await _resourceOwnerRepositoryStub.Received().Insert(Arg.Any<ResourceOwner>(), Arg.Any<CancellationToken>());
         await _eventPublisher.Received().Publish(Arg.Any<ResourceOwnerAdded>());

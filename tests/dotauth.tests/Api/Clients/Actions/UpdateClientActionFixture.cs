@@ -31,16 +31,16 @@ using Xunit;
 
 public sealed class UpdateClientActionFixture
 {
-    private IClientRepository _clientRepositoryMock;
-    private IScopeRepository _scopeRepositoryStub;
+    private IClientRepository _clientRepositoryMock = null!;
+    private IScopeRepository _scopeRepositoryStub = null!;
 
     [Fact]
     public async Task WhenNoClientIdIsPassedThenReturnsError()
     {
         InitializeFakeObjects();
-        var parameter = new Client { ClientId = null };
+        var parameter = new Client { ClientId = "" };
 
-        var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None).ConfigureAwait(false);
+        var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None);
 
         Assert.IsType<Option.Error>(result);
     }
@@ -58,7 +58,7 @@ public sealed class UpdateClientActionFixture
             Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "test" } }
         };
 
-        var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None).ConfigureAwait(false);
+        var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None);
 
         Assert.IsType<Option.Error>(result);
     }
@@ -80,14 +80,13 @@ public sealed class UpdateClientActionFixture
         _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(new[] { new Scope { Name = "scope" } });
 
-        var ex =
-            await _clientRepositoryMock.Update(parameter, CancellationToken.None).ConfigureAwait(false) as
-                Option.Error;
+        var ex = Assert.IsType<Option.Error>(
+            await _clientRepositoryMock.Update(parameter, CancellationToken.None));
 
         Assert.Equal("Unknown scopes: not_supported_scope", ex.Details.Detail);
     }
 
-    private void InitializeFakeObjects(IReadOnlyCollection<Client> clients = null)
+    private void InitializeFakeObjects(IReadOnlyCollection<Client>? clients = null)
     {
         _clientRepositoryMock = new InMemoryClientRepository(
             Substitute.For<IHttpClientFactory>(),

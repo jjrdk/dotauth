@@ -50,7 +50,7 @@ public static class ResourceOwnersControllerTests
                 }
             };
 
-            var response = await _controller.DeleteMe(CancellationToken.None).ConfigureAwait(false);
+            var response = await _controller.DeleteMe(CancellationToken.None);
 
             Assert.IsType<BadRequestResult>(response);
         }

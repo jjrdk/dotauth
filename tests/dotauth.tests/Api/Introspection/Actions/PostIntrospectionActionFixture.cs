@@ -44,7 +44,7 @@ public sealed class PostIntrospectionActionFixture
         await Assert
             .ThrowsAsync<NullReferenceException>(
                 () => _postIntrospectionAction.Execute(null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public sealed class PostIntrospectionActionFixture
 
         var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
             .Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         Assert.False(response.Item.Active);
     }
@@ -91,7 +91,7 @@ public sealed class PostIntrospectionActionFixture
 
         var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
             .Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         var result = response.Item;
         Assert.False(result.Active);
@@ -125,7 +125,7 @@ public sealed class PostIntrospectionActionFixture
 
         var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
             .Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         var result = response.Item;
         Assert.True(result.Active);
@@ -156,7 +156,7 @@ public sealed class PostIntrospectionActionFixture
 
         var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
             .Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         var result = response.Item;
         Assert.False(result.Active);
@@ -190,7 +190,7 @@ public sealed class PostIntrospectionActionFixture
 
         var response = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await _postIntrospectionAction
             .Execute(parameter, CancellationToken.None)
-            .ConfigureAwait(false));
+            );
 
         var result = response.Item;
         Assert.True(result.Active);

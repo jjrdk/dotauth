@@ -32,7 +32,7 @@ public sealed class ConsentHelperFixture
 
         var result = await _consentRepositoryFake
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result);
     }
@@ -61,7 +61,7 @@ public sealed class ConsentHelperFixture
 
         var result = await _consentRepositoryFake
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result);
         Assert.Single(result.Claims);
@@ -85,7 +85,7 @@ public sealed class ConsentHelperFixture
 
         var result = await _consentRepositoryFake
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result);
         Assert.Single(result.GrantedScopes);
@@ -119,7 +119,7 @@ public sealed class ConsentHelperFixture
 
         var result = await _consentRepositoryFake
             .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Null(result);
     }

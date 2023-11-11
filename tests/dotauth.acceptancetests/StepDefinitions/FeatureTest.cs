@@ -36,7 +36,7 @@ public partial class FeatureTest : IDisposable
     [Given(@"the server's signing key")]
     public async Task GivenTheServersSigningKey()
     {
-        var json = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks").ConfigureAwait(false);
+        var json = await _fixture.Client().GetStringAsync(BaseUrl + "/jwks");
         _serverKeySet = new JsonWebKeySet(json);
 
         Assert.NotEmpty(_serverKeySet.Keys);

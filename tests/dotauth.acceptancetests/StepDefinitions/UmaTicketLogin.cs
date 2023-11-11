@@ -40,7 +40,7 @@ public partial class FeatureTest
             }
         };
 
-        var option = await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false);
+        var option = await _umaClient.AddResourceSet(resourceSet, _token.AccessToken);
         var resourceResponse = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
 
         _resourceSetResponse = resourceResponse.Item;
@@ -57,7 +57,7 @@ public partial class FeatureTest
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
 
-        var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        var response = await _fixture.Client().SendAsync(request);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         var httpHeaderValueCollection = response.Headers.WwwAuthenticate;
@@ -74,7 +74,7 @@ public partial class FeatureTest
     public async Task WhenGettingTokenFromTicket()
     {
         var option = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _token.IdToken!))
-            .ConfigureAwait(false);
+            ;
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         _umaToken = response.Item;
 
@@ -89,8 +89,8 @@ public partial class FeatureTest
             Method = HttpMethod.Get, RequestUri = new Uri($"http://localhost/data/{_resourceSetResponse.Id}")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(_umaToken!.TokenType, _umaToken.AccessToken);
-        var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
-        var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var response = await _fixture.Client().SendAsync(request);
+        var content = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("\"Hello\"", content);
@@ -108,7 +108,7 @@ public partial class FeatureTest
         };
 
         var resourceResponse =
-            await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+            await _umaClient.AddResourceSet(resourceSet, _token.AccessToken) as
                 Option<AddResourceSetResponse>.Result;
         _resourceSetResponse = resourceResponse!.Item;
 
@@ -119,7 +119,7 @@ public partial class FeatureTest
     public async Task ThenCannotGetToken()
     {
         var response = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _token.IdToken!))
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option<GrantedTokenResponse>.Error>(response);
     }
@@ -145,7 +145,7 @@ public partial class FeatureTest
         };
 
         var resourceResponse =
-            await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+            await _umaClient.AddResourceSet(resourceSet, _token.AccessToken) as
                 Option<AddResourceSetResponse>.Result;
 
         Assert.NotNull(resourceResponse);
@@ -157,7 +157,7 @@ public partial class FeatureTest
     public async Task WhenRequestingPermissionTicket()
     {
         var permission = new PermissionRequest { ResourceSetId = _resourceSetResponse.Id, Scopes = new[] { "api1" } };
-        var option = await _umaClient.RequestPermission(_token.AccessToken, requests: permission).ConfigureAwait(false);
+        var option = await _umaClient.RequestPermission(_token.AccessToken, requests: permission);
 
         var permissionResponse = Assert.IsType<Option<TicketResponse>.Result>(option);
 
@@ -168,7 +168,7 @@ public partial class FeatureTest
     public async Task ThenCannotGetTokenFromTicket()
     {
         var option = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _token.IdToken!))
-            .ConfigureAwait(false);
+            ;
         Assert.IsType<Option<GrantedTokenResponse>.Error>(option);
     }
 }

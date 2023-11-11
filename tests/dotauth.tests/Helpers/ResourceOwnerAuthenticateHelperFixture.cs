@@ -15,9 +15,9 @@ public sealed class ResourceOwnerAuthenticateHelperFixture
         IAuthenticateResourceOwnerService[] services = null;
         await Assert
             .ThrowsAsync<ArgumentNullException>(() => services.Authenticate(null, null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
         await Assert
             .ThrowsAsync<ArgumentNullException>(() => services.Authenticate("login", null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 }

@@ -62,7 +62,7 @@ public sealed class JwtGeneratorFixture
     {
         await Assert.ThrowsAsync<NullReferenceException>(
                 () => _jwtGenerator.GenerateAccessToken(null, null, null, default, null))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public sealed class JwtGeneratorFixture
     {
         await Assert.ThrowsAsync<NullReferenceException>(
                 () => _jwtGenerator.GenerateAccessToken(null, null, null, default, null))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public sealed class JwtGeneratorFixture
         };
 
         var result = await _jwtGenerator.GenerateAccessToken(client, scopes, "issuer")
-            .ConfigureAwait(false);
+            ;
 
         Assert.NotNull(result);
     }
@@ -115,7 +115,7 @@ public sealed class JwtGeneratorFixture
                 authorizationParameter,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
         Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
@@ -145,7 +145,7 @@ public sealed class JwtGeneratorFixture
                 authorizationParameter,
                 issuerName,
                 CancellationToken.None)
-            .ConfigureAwait(false) as Option<JwtPayload>.Result)!.Item;
+             as Option<JwtPayload>.Result)!.Item;
 
         Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
         Assert.True(result.Aud.Count > 1);
@@ -172,7 +172,7 @@ public sealed class JwtGeneratorFixture
                 authorizationParameter,
                 issuerName,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
         Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
@@ -206,7 +206,7 @@ public sealed class JwtGeneratorFixture
                 authorizationParameter,
                 issuerName,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
         Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Role);
@@ -245,7 +245,7 @@ public sealed class JwtGeneratorFixture
                 authorizationParameter,
                 issuerName,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
         Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Role);
@@ -273,7 +273,7 @@ public sealed class JwtGeneratorFixture
                 authorizationParameter,
                 "",
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
         Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
@@ -321,7 +321,7 @@ public sealed class JwtGeneratorFixture
                     claimsParameter,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
         Assert.NotNull(exception);
         Assert.Equal(ErrorCodes.InvalidGrant, exception.Details.Title);
         Assert.Equal(
@@ -368,7 +368,7 @@ public sealed class JwtGeneratorFixture
                     claimsParameter,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(
             new Option<JwtPayload>.Error(
@@ -419,7 +419,7 @@ public sealed class JwtGeneratorFixture
                     claimsParameter,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
         Assert.Equal(
             new Option<JwtPayload>.Error(
                 new ErrorDetails
@@ -466,7 +466,7 @@ public sealed class JwtGeneratorFixture
                     claimsParameter,
                     null,
                     CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(
             new Option<JwtPayload>.Error(
@@ -553,7 +553,7 @@ public sealed class JwtGeneratorFixture
                 claimsParameter,
                 null,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
         Assert.Equal(subject, result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
@@ -585,7 +585,7 @@ public sealed class JwtGeneratorFixture
                 claimsPrincipal,
                 authorizationParameter,
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(subject, result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
         Assert.Equal(name, result.Claims.First(c => c.Type == OpenIdClaimTypes.Name).Value);

@@ -17,7 +17,7 @@ public partial class FeatureTest
     {
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri(BaseUrl + "/authenticate/logout"));
 
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
     }
 
     [Then(@"receives redirect to login page")]
@@ -39,7 +39,7 @@ public partial class FeatureTest
                 })
         };
 
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
     }
 
     [Then(@"receives auth cookie")]
@@ -61,7 +61,7 @@ public partial class FeatureTest
                 })
         };
 
-        _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
+        _responseMessage = await _fixture.Client().SendAsync(request);
 
         Assert.NotNull(_responseMessage);
     }

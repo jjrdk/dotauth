@@ -32,7 +32,7 @@ public partial class FeatureTest
     {
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(await _tokenClient
             .GetToken(TokenRequest.FromScopes("uma_protection"))
-            .ConfigureAwait(false));
+            );
         var handler = new JwtSecurityTokenHandler();
         var principal = handler.ReadJwtToken(token.Item.AccessToken);
         Assert.NotNull(principal.Issuer);
@@ -64,7 +64,7 @@ public partial class FeatureTest
                 }
             };
             var resource =
-                (await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+                (await _umaClient.AddResourceSet(resourceSet, _token.AccessToken) as
                     Option<AddResourceSetResponse>.Result)!;
             _resourceId = resource.Item.Id;
         }
@@ -89,7 +89,7 @@ public partial class FeatureTest
                     }
                 }
             },
-            _token.AccessToken).ConfigureAwait(false);
+            _token.AccessToken);
 
         Assert.IsType<Option<UpdateResourceSetResponse>.Result>(option);
     }
@@ -102,7 +102,7 @@ public partial class FeatureTest
                 _token.AccessToken,
                 requests: new PermissionRequest
                     { IdToken = _token.IdToken, ResourceSetId = _resourceId, Scopes = scopes })
-            .ConfigureAwait(false));
+            );
 
         Assert.NotNull(response);
 
@@ -117,7 +117,7 @@ public partial class FeatureTest
                 CancellationToken.None,
                 new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "write" } },
                 new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "read" } })
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option<TicketResponse>.Result>(response);
 
@@ -135,14 +135,14 @@ public partial class FeatureTest
     {
         var option = await _tokenClient.GetToken(
             TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }),
-            CancellationToken.None).ConfigureAwait(false);
+            CancellationToken.None);
 
         switch (option)
         {
             case Option<GrantedTokenResponse>.Result result:
             {
                 var rpt = await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, result.Item.IdToken!))
-                    .ConfigureAwait(false);
+                    ;
 
                 Assert.IsType<Option<GrantedTokenResponse>.Result>(rpt);
                 break;

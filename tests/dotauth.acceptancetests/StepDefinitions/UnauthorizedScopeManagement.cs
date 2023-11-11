@@ -23,6 +23,6 @@ public partial class FeatureTest
         _scope = await _managerClient.AddScope(
                 new Scope { Name = "test", Claims = new[] { "openid" } },
                 _token.AccessToken)
-            .ConfigureAwait(false);
+            ;
     }
 }

@@ -37,6 +37,6 @@ public sealed class IntrospectionActionsFixture
         await Assert
             .ThrowsAsync<NullReferenceException>(
                 () => _introspectionActions.Execute(null, CancellationToken.None))
-            .ConfigureAwait(false);
+            ;
     }
 }

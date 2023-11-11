@@ -48,7 +48,7 @@ public sealed class GetUserOperationFixture
 
         var exception = Assert.IsType<Option<ResourceOwner>.Error>(
             await _getUserOperation.Execute(emptyClaimsPrincipal, CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TheUserNeedsToBeAuthenticated, exception.Details.Detail);
@@ -63,7 +63,7 @@ public sealed class GetUserOperationFixture
 
         var exception = Assert.IsType<Option<ResourceOwner>.Error>(
             await _getUserOperation.Execute(claimsPrincipal, CancellationToken.None)
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
         Assert.Equal(Strings.TheSubjectCannotBeRetrieved, exception.Details.Detail);

@@ -18,7 +18,7 @@ public partial class FeatureTest
     {
         var option = await _tokenClient.GetToken(
                 TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
-            .ConfigureAwait(false);
+            ;
 
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(response.Item.AccessToken);
@@ -35,7 +35,7 @@ public partial class FeatureTest
             Description = "Test resource", Name = "Test resource", Scopes = new[] { "read" }, Type = "Test resource"
         };
         var response =
-            await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+            await _umaClient.AddResourceSet(resourceSet, _token.AccessToken) as
                 Option<AddResourceSetResponse>.Result;
 
         Assert.NotNull(response);
@@ -63,7 +63,7 @@ public partial class FeatureTest
             Type = "Test resource"
         };
         var response =
-            await _umaClient.UpdateResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
+            await _umaClient.UpdateResourceSet(resourceSet, _token.AccessToken) as
                 Option<UpdateResourceSetResponse>.Result;
 
         Assert.NotNull(response);
@@ -78,7 +78,7 @@ public partial class FeatureTest
             await _umaClient.RequestPermission(
                     _token.AccessToken,
                     requests: new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "read" } })
-                .ConfigureAwait(false));
+                );
 
         Assert.NotNull(ticketResponse);
 
@@ -90,7 +90,7 @@ public partial class FeatureTest
     {
         var rptResponse = Assert.IsType<Option<GrantedTokenResponse>.Result>(
             await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _token.IdToken!))
-                .ConfigureAwait(false));
+                );
 
         Assert.NotNull(rptResponse);
 
@@ -102,7 +102,7 @@ public partial class FeatureTest
     {
         var introspectResult = await _umaClient
             .Introspect(DotAuth.Client.IntrospectionRequest.Create(_rptToken!, "access_token", _token.AccessToken))
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option<UmaIntrospectionResponse>.Result>(introspectResult);
     }

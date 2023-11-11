@@ -31,7 +31,7 @@ public sealed class GetResourceOwnerActionFixture
         const string subject = "invalid_subject";
         InitializeFakeObjects();
 
-        var owner = await _resourceOwnerRepository.Get(subject, CancellationToken.None).ConfigureAwait(false);
+        var owner = await _resourceOwnerRepository.Get(subject, CancellationToken.None);
 
         Assert.Null(owner);
     }
@@ -42,7 +42,7 @@ public sealed class GetResourceOwnerActionFixture
         const string subject = "subject";
         InitializeFakeObjects(new ResourceOwner {Subject = "subject"});
 
-        var result = await _resourceOwnerRepository.Get(subject, CancellationToken.None).ConfigureAwait(false);
+        var result = await _resourceOwnerRepository.Get(subject, CancellationToken.None);
 
         Assert.NotNull(result);
     }
