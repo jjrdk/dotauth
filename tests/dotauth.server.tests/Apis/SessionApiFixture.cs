@@ -25,8 +25,8 @@ public sealed class SessionApiFixture
             RequestUri = new System.Uri($"{BaseUrl}/check_session")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        _ = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        _ = await httpResult.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
     }

@@ -109,7 +109,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                     ticket.Requester.Select(c => new Claim(c.Type, c.Value)).ToArray(),
                     CancellationToken.None,
                     resourceSet!.AuthorizationPolicies)
-                .ConfigureAwait(false);
+                ;
             kind = result.Result;
             if (kind == AuthorizationPolicyResultKind.Authorized)
             {
@@ -125,12 +125,12 @@ public sealed class DefaultAuthorizationPolicyFixture
     {
         await Assert.ThrowsAsync<NullReferenceException>(
                 () => _authorizationPolicy.Execute(
-                    null,
+                    null!,
                     UmaConstants.IdTokenType,
                     Array.Empty<Claim>(),
                     CancellationToken.None,
                     new PolicyRule()))
-            .ConfigureAwait(false);
+            ;
     }
 
     [Fact]
@@ -143,10 +143,10 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 UmaConstants.IdTokenType,
-                null,
+                null!,
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NotAuthorized, result.Result);
     }
@@ -168,7 +168,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NotAuthorized, result.Result);
     }
@@ -200,11 +200,11 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
 
-        var errorDetails = (Dictionary<string, object>)result.ErrorDetails;
+        var errorDetails = (Dictionary<string, object>)result.ErrorDetails!;
 
         Assert.True(errorDetails.ContainsKey("requesting_party_claims"));
 
@@ -258,7 +258,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
     }
@@ -290,7 +290,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
     }
@@ -322,7 +322,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
     }
@@ -354,7 +354,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
     }
@@ -386,7 +386,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
     }
@@ -418,7 +418,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NeedInfo, result.Result);
     }
@@ -444,7 +444,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.RequestSubmitted, result.Result);
     }
@@ -470,7 +470,7 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Array.Empty<Claim>(),
                 CancellationToken.None,
                 authorizationPolicy)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.Authorized, result.Result);
     }

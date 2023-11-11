@@ -48,11 +48,11 @@ public sealed class TokenIntrospectionFixture
             Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/introspect")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal("no parameter in body request", error.Detail);
     }
@@ -67,10 +67,10 @@ public sealed class TokenIntrospectionFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/introspect")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
 
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal("no parameter in body request", error.Detail);
     }
@@ -84,7 +84,7 @@ public sealed class TokenIntrospectionFixture
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
                 IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken, "pat"))
-            .ConfigureAwait(false));
+            );
 
         Assert.False(introspection.Item.Active);
     }
@@ -98,10 +98,10 @@ public sealed class TokenIntrospectionFixture
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
             await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-                .ConfigureAwait(false));
+                );
         var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
                 IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
-            .ConfigureAwait(false));
+            );
 
         Assert.Single(introspection.Item.Scope);
         Assert.Equal("scim", introspection.Item.Scope.First());
@@ -116,11 +116,11 @@ public sealed class TokenIntrospectionFixture
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient.GetToken(
                 TokenRequest.FromPassword("administrator", "password", new[] { "scim", "offline" }))
-            .ConfigureAwait(false));
+            );
 
         var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
                 IntrospectionRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken, "pat"))
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(2, introspection.Item.Scope.Length);
         Assert.Equal("scim", introspection.Item.Scope.First());

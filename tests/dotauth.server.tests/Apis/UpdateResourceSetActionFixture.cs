@@ -53,7 +53,7 @@ public sealed class UpdateResourceSetActionFixture
         _resourceSetRepositoryStub.Update(Arg.Any<ResourceSet>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<Option>(new Option.Error(new ErrorDetails())));
 
-        var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None).ConfigureAwait(false);
+        var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None);
         Assert.IsType<Option.Error>(result);
     }
 
@@ -74,7 +74,7 @@ public sealed class UpdateResourceSetActionFixture
             .Returns(new Option.Success());
 
         var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option.Success>(result);
     }

@@ -30,7 +30,7 @@ public sealed class SmsCodeFixture : IDisposable
         var client = CreateTokenClient();
         var noPhoneNumberResult = Assert.IsType<Option.Error>(await client
             .RequestSms(new ConfirmationCodeRequest { PhoneNumber = string.Empty })
-            .ConfigureAwait(false));
+            );
 
         // ASSERT : NO PHONE NUMBER
         Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.Details.Status);
@@ -52,7 +52,7 @@ public sealed class SmsCodeFixture : IDisposable
         // ACT : TWILIO NO CONFIGURED
         _server.SharedCtx.ConfirmationCodeStore
             .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((ConfirmationCode)null));
+            .Returns(Task.FromResult<ConfirmationCode?>(default));
         _server.SharedCtx.ConfirmationCodeStore
             .Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(true));
@@ -61,7 +61,7 @@ public sealed class SmsCodeFixture : IDisposable
         var client = CreateTokenClient();
         var twilioNotConfigured = Assert.IsType<Option.Error>(await client
             .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, twilioNotConfigured.Details.Title);
         Assert.Equal("The SMS account is not properly configured", twilioNotConfigured.Details.Detail);
@@ -73,7 +73,7 @@ public sealed class SmsCodeFixture : IDisposable
     {
         _server.SharedCtx.ConfirmationCodeStore
             .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((ConfirmationCode)null));
+            .Returns(Task.FromResult<ConfirmationCode?>(null));
         _server.SharedCtx.ConfirmationCodeStore
             .Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(false));
@@ -82,7 +82,7 @@ public sealed class SmsCodeFixture : IDisposable
         var client = CreateTokenClient();
         var cannotInsertConfirmationCode = Assert.IsType<Option.Error>(await client
             .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            .ConfigureAwait(false));
+            );
 
         // ASSERT : CANNOT INSERT CONFIRMATION CODE
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, cannotInsertConfirmationCode.Details.Title);
@@ -97,16 +97,16 @@ public sealed class SmsCodeFixture : IDisposable
             .Returns((true, ""));
         _server.SharedCtx.ConfirmationCodeStore
             .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((ConfirmationCode)null));
+            .Returns(Task.FromResult<ConfirmationCode?>(null));
         _server.SharedCtx.ConfirmationCodeStore
             .Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Throws(new Exception());
         var client = CreateTokenClient();
         var unhandledException = Assert.IsType<Option.Error>(await client
             .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            .ConfigureAwait(false));
+            );
 
-        Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Details!.Title);
+        Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Details.Title);
         Assert.Equal(
             "unhandled exception occurred please contact the administrator",
             unhandledException.Details.Detail);
@@ -118,7 +118,7 @@ public sealed class SmsCodeFixture : IDisposable
     {
         _server.SharedCtx.ConfirmationCodeStore
             .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((ConfirmationCode)null));
+            .Returns(Task.FromResult<ConfirmationCode?>(null));
         _server.SharedCtx.ConfirmationCodeStore
             .Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(true));
@@ -126,13 +126,13 @@ public sealed class SmsCodeFixture : IDisposable
             .Returns((true, null));
         var client = CreateTokenClient();
         var happyPath = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option.Success>(happyPath);
     }
 
     public void Dispose()
     {
-        _server?.Dispose();
+        _server.Dispose();
     }
 }

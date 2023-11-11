@@ -15,8 +15,7 @@ public sealed class TestAuthenticationHandler : AuthenticationHandler<TestAuthen
     public TestAuthenticationHandler(
         IOptionsMonitor<TestAuthenticationOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock) : base(options, logger, encoder, clock)
+        UrlEncoder encoder) : base(options, logger, encoder)
     {
     }
 
@@ -31,7 +30,7 @@ public sealed class TestAuthenticationHandler : AuthenticationHandler<TestAuthen
         if (UserStore.Instance().AuthenticationOffset != null)
         {
             claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
-                UserStore.Instance().AuthenticationOffset.Value.ConvertToUnixTimestamp()
+                UserStore.Instance().AuthenticationOffset!.Value.ConvertToUnixTimestamp()
                     .ToString(CultureInfo.InvariantCulture)));
         }
 

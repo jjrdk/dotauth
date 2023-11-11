@@ -4,7 +4,7 @@ using System;
 
 public sealed class UserStore
 {
-    private static UserStore _instance;
+    private static readonly UserStore InnerInstance = new ();
     private static readonly string DefaultSubject = "administrator";
 
     private UserStore()
@@ -14,7 +14,7 @@ public sealed class UserStore
 
     public static UserStore Instance()
     {
-        return _instance ??= new UserStore();
+        return InnerInstance;
     }
 
     public bool IsInactive { get; set; }

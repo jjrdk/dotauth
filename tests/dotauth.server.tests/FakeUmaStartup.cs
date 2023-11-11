@@ -85,7 +85,7 @@ public sealed class FakeUmaStartup
                 {
                     Clients = sp => new InMemoryClientRepository(
                         Substitute.For<IHttpClientFactory>(),
-                        sp.GetService<IScopeStore>(),
+                        sp.GetRequiredService<IScopeStore>(),
                         Substitute.For<ILogger<InMemoryClientRepository>>(),
                         OAuthStores.GetClients()),
                     Scopes = _ => new InMemoryScopeRepository(OAuthStores.GetScopes()),
@@ -120,7 +120,7 @@ public sealed class FakeUmaStartup
                     },
                     "fakests");
                 context.User = new ClaimsPrincipal(claimsIdentity);
-                await next.Invoke().ConfigureAwait(false);
+                await next.Invoke();
             });
 
         app.UseDotAuthServer(applicationTypes: typeof(IDefaultUi));

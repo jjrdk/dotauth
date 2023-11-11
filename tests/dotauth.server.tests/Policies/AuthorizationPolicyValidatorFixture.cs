@@ -54,18 +54,18 @@ public sealed class AuthorizationPolicyValidatorFixture
     public async Task WhenResourceSetDoesNotExistThenReturnsNotAuthorized()
     {
         var handler = new JwtSecurityTokenHandler();
-        var jsonWebKey = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
+        var jsonWebKey = await _inMemoryJwksRepository.GetDefaultSigningKey();
         var token = handler.CreateEncodedJwt("test", "test", new ClaimsIdentity(), null, null, null, jsonWebKey);
         var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "resource_set_id" } } };
         _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((ResourceSet)null));
+            .Returns(Task.FromResult<ResourceSet?>(null));
 
         var result = await _authorizationPolicyValidator.IsAuthorized(
                 ticket,
                 new Client { ClientId = "client_id" },
                 new ClaimTokenParameter { Format = UmaConstants.IdTokenType, Token = token },
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.NotAuthorized, result.Result);
     }
@@ -74,7 +74,7 @@ public sealed class AuthorizationPolicyValidatorFixture
     public async Task When_Policy_Does_Not_Exist_Then_RequestSubmitted_Is_Returned()
     {
         var handler = new JwtSecurityTokenHandler();
-        var key = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
+        var key = await _inMemoryJwksRepository.GetDefaultSigningKey();
 
         var token = handler.CreateEncodedJwt(
             "test",
@@ -94,7 +94,7 @@ public sealed class AuthorizationPolicyValidatorFixture
                 new Client { ClientId = "client_id" },
                 new ClaimTokenParameter { Format = "access_token", Token = token },
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.RequestSubmitted, result.Result);
     }
@@ -103,7 +103,7 @@ public sealed class AuthorizationPolicyValidatorFixture
     public async Task When_AuthorizationPolicy_Is_Correct_Then_Authorized_Is_Returned()
     {
         var handler = new JwtSecurityTokenHandler();
-        var key = await _inMemoryJwksRepository.GetDefaultSigningKey().ConfigureAwait(false);
+        var key = await _inMemoryJwksRepository.GetDefaultSigningKey();
 
         var token = handler.CreateEncodedJwt(
             "test",
@@ -114,7 +114,7 @@ public sealed class AuthorizationPolicyValidatorFixture
             DateTime.UtcNow,
             key);
         _clientStoreStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(s => Task.FromResult(new Client { ClientId = s.ArgAt<string>(0) }));
+            .Returns(s => Task.FromResult<Client?>(new Client { ClientId = s.ArgAt<string>(0) }));
 
         var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1", Scopes = new[] { "read" } } } };
         var resourceSet = new[]
@@ -141,7 +141,7 @@ public sealed class AuthorizationPolicyValidatorFixture
                 new Client { ClientId = "client_id" },
                 new ClaimTokenParameter { Token = token, Format = UmaConstants.IdTokenType },
                 CancellationToken.None)
-            .ConfigureAwait(false);
+            ;
 
         Assert.Equal(AuthorizationPolicyResultKind.Authorized, result.Result);
     }

@@ -29,7 +29,7 @@ public sealed class UserInfoClientFixture
     public async Task When_Pass_Invalid_Token_To_UserInfo_Then_Error_Is_Returned()
     {
         var getUserInfoResult = Assert.IsType<Option<JwtPayload>.Error>(
-            await _userInfoClient.GetUserInfo("invalid_access_token").ConfigureAwait(false));
+            await _userInfoClient.GetUserInfo("invalid_access_token"));
 
         Assert.Equal("invalid_token", getUserInfoResult.Details.Title);
         Assert.Equal(Strings.TheTokenIsNotValid, getUserInfoResult.Details.Detail);
@@ -44,8 +44,8 @@ public sealed class UserInfoClientFixture
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result =
             Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-                .GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false));
-        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
+                .GetToken(TokenRequest.FromScopes("openid")));
+        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
 
         Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
     }
@@ -59,9 +59,9 @@ public sealed class UserInfoClientFixture
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient.GetToken(
                 TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-            .ConfigureAwait(false));
+            );
 
-        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
+        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
 
         Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
     }
@@ -75,9 +75,9 @@ public sealed class UserInfoClientFixture
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
             .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-            .ConfigureAwait(false));
+            );
 
-        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
+        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
 
         Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
     }
@@ -91,9 +91,9 @@ public sealed class UserInfoClientFixture
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
             .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-            .ConfigureAwait(false));
+            );
 
-        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken).ConfigureAwait(false);
+        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
 
         Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
     }

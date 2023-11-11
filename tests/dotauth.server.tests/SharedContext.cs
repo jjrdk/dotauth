@@ -50,7 +50,7 @@ public sealed class SharedContext
 
     public ISmsClient TwilioClient { get; }
 
-    public Func<HttpClient> Client { get; set; }
+    public Func<HttpClient> Client { get; set; } = null!;
 
-    public HttpMessageHandler ClientHandler { get; set; }
+    public HttpMessageHandler ClientHandler { get; set; } = null!;
 }

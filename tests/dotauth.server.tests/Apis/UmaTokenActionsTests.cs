@@ -85,7 +85,7 @@ public class UmaTokenActionsTests
             new AuthenticationHeaderValue("Bearer", "rtttdvdtgdtg"),
             null,
             "test",
-            CancellationToken.None).ConfigureAwait(false);
+            CancellationToken.None);
 
         Assert.IsType<Option<GrantedToken>.Result>(option);
     }

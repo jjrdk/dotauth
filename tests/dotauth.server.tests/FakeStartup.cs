@@ -89,7 +89,7 @@ public sealed class FakeStartup
                 sp =>
                 {
                     var server = sp.GetRequiredService<IServer>() as TestServer;
-                    return server.CreateClient();
+                    return server!.CreateClient();
                 });
         services.ConfigureOptions<JwtBearerPostConfigureOptions>();
     }

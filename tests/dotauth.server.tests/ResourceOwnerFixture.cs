@@ -33,7 +33,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     {
         var resourceOwnerId = "invalid_login";
         var result = Assert.IsType<Option<ResourceOwner>.Error>(
-            await _resourceOwnerClient.GetResourceOwner(resourceOwnerId, "token").ConfigureAwait(false));
+            await _resourceOwnerClient.GetResourceOwner(resourceOwnerId, "token"));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, result.Details.Detail);
@@ -45,7 +45,7 @@ public sealed class ResourceOwnerFixture : IDisposable
         var result = Assert.IsType<Option<AddResourceOwnerResponse>.Error>(
             await _resourceOwnerClient
                 .AddResourceOwner(new AddResourceOwnerRequest { Subject = "subject" }, "token")
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
     }
@@ -57,7 +57,7 @@ public sealed class ResourceOwnerFixture : IDisposable
             await _resourceOwnerClient.AddResourceOwner(
                     new AddResourceOwnerRequest { Subject = "administrator", Password = "password" },
                     "token")
-                .ConfigureAwait(false));
+                );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
         Assert.Equal("A resource owner with same credentials already exists", result.Details.Detail);
@@ -68,7 +68,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     {
         var result = Assert.IsType<Option.Error>(await _resourceOwnerClient
             .UpdateResourceOwnerClaims(new UpdateResourceOwnerClaimsRequest(), "token")
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "login"), result.Details.Detail);
@@ -80,7 +80,7 @@ public sealed class ResourceOwnerFixture : IDisposable
         var result = Assert.IsType<Option.Error>(await _resourceOwnerClient.UpdateResourceOwnerClaims(
                 new UpdateResourceOwnerClaimsRequest { Subject = "invalid_login" },
                 "token")
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
         Assert.Equal("The resource owner doesn't exist", result.Details.Detail);
@@ -91,7 +91,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     {
         var option = await _resourceOwnerClient
             .UpdateResourceOwnerPassword(new UpdateResourceOwnerPasswordRequest(), "token")
-            .ConfigureAwait(false) as Option.Error;
+             as Option.Error;
 
         var result = Assert.IsType<Option.Error>(option);
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
@@ -104,7 +104,7 @@ public sealed class ResourceOwnerFixture : IDisposable
         var result = Assert.IsType<Option.Error>(await _resourceOwnerClient.UpdateResourceOwnerPassword(
                 new UpdateResourceOwnerPasswordRequest { Subject = "login" },
                 "token")
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "password"), result.Details.Detail);
@@ -116,7 +116,7 @@ public sealed class ResourceOwnerFixture : IDisposable
         var result = Assert.IsType<Option.Error>(await _resourceOwnerClient.UpdateResourceOwnerPassword(
                 new UpdateResourceOwnerPasswordRequest { Subject = "invalid_login", Password = "password" },
                 "token")
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, result.Details.Detail);
@@ -126,7 +126,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Delete_Unknown_Resource_Owner_Then_Error_Is_Returned()
     {
         var result = Assert.IsType<Option.Error>(
-            await _resourceOwnerClient.DeleteResourceOwner("invalid_login", "token").ConfigureAwait(false));
+            await _resourceOwnerClient.DeleteResourceOwner("invalid_login", "token"));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
         Assert.Equal(Strings.TheResourceOwnerCannotBeRemoved, result.Details.Detail);
@@ -146,9 +146,9 @@ public sealed class ResourceOwnerFixture : IDisposable
                     }
                 },
                 "token")
-            .ConfigureAwait(false);
+            ;
         var resourceOwner = Assert.IsType<Option<ResourceOwner>.Result>(
-            await _resourceOwnerClient.GetResourceOwner("administrator", "token").ConfigureAwait(false));
+            await _resourceOwnerClient.GetResourceOwner("administrator", "token"));
 
         Assert.Equal("role", resourceOwner.Item.Claims.First(c => c.Type == "role").Value);
     }
@@ -159,9 +159,9 @@ public sealed class ResourceOwnerFixture : IDisposable
         _ = await _resourceOwnerClient.UpdateResourceOwnerPassword(
                 new UpdateResourceOwnerPasswordRequest { Subject = "administrator", Password = "pass" },
                 "token")
-            .ConfigureAwait(false);
+            ;
         var resourceOwner = Assert.IsType<Option<ResourceOwner>.Result>(
-            await _resourceOwnerClient.GetResourceOwner("administrator", "token").ConfigureAwait(false));
+            await _resourceOwnerClient.GetResourceOwner("administrator", "token"));
 
         Assert.Equal("pass".ToSha256Hash(string.Empty), resourceOwner.Item.Password);
     }
@@ -173,7 +173,7 @@ public sealed class ResourceOwnerFixture : IDisposable
             await _resourceOwnerClient.SearchResourceOwners(
                     new SearchResourceOwnersRequest { StartIndex = 0, NbResults = 1 },
                     "token")
-                .ConfigureAwait(false));
+                );
 
         Assert.Single(result.Item.Content);
     }
@@ -183,7 +183,7 @@ public sealed class ResourceOwnerFixture : IDisposable
     {
         var resourceOwners = Assert.IsType<Option<ResourceOwner[]>.Result>(
             await _resourceOwnerClient.GetAllResourceOwners("token") // "administrator"
-                .ConfigureAwait(false));
+                );
 
         Assert.NotEmpty(resourceOwners.Item);
     }
@@ -194,7 +194,7 @@ public sealed class ResourceOwnerFixture : IDisposable
         var result = await _resourceOwnerClient.AddResourceOwner(
                 new AddResourceOwnerRequest { Subject = "login", Password = "password" },
                 "token")
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option<AddResourceOwnerResponse>.Result>(result);
     }
@@ -205,9 +205,9 @@ public sealed class ResourceOwnerFixture : IDisposable
         var result = Assert.IsType<Option<AddResourceOwnerResponse>.Result>(await _resourceOwnerClient.AddResourceOwner(
                 new AddResourceOwnerRequest { Subject = "login1", Password = "password" },
                 "token")
-            .ConfigureAwait(false));
+            );
         var remove = await _resourceOwnerClient.DeleteResourceOwner(result.Item.Subject!, "token")
-            .ConfigureAwait(false);
+            ;
 
         Assert.IsType<Option.Success>(remove);
     }

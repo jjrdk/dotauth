@@ -60,9 +60,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
@@ -79,9 +79,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
@@ -101,9 +101,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
@@ -123,9 +123,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
@@ -149,9 +149,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal("invalid_client", error.Title);
@@ -176,9 +176,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal("invalid_client", error.Title);
@@ -204,9 +204,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal("invalid_credentials", error.Title);
@@ -231,9 +231,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidScope, error.Title);
@@ -250,9 +250,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
@@ -275,9 +275,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidGrant, error.Title);
@@ -303,9 +303,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal("invalid_client", error.Title);
@@ -330,9 +330,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidScope, error.Title);
@@ -349,9 +349,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
@@ -373,9 +373,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal("invalid_client", error.Title);
@@ -398,9 +398,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidGrant, error.Title);
@@ -415,13 +415,13 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("openid", "offline")).ConfigureAwait(false));
+            await tokenClient.GetToken(TokenRequest.FromScopes("openid", "offline")));
         var refreshToken = Assert.IsType<Option<GrantedTokenResponse>.Error>(await new TokenClient(
                 TokenCredentials.FromClientCredentials("client", "client"),
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl))
             .GetToken(TokenRequest.FromRefreshToken(result.Item.RefreshToken!))
-            .ConfigureAwait(false));
+            );
 
         Assert.Equal(HttpStatusCode.BadRequest, refreshToken.Details.Status);
         Assert.Equal(ErrorCodes.InvalidGrant, refreshToken.Details.Title);
@@ -438,9 +438,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
@@ -460,9 +460,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
@@ -485,9 +485,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal("invalid_client", error.Title);
@@ -512,9 +512,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidGrant, error.Title);
@@ -538,9 +538,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidResponse, error.Title);
@@ -566,9 +566,9 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest).ConfigureAwait(false);
-        var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var json = await httpResult.Content.ReadAsStringAsync();
+        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         Assert.Equal(ErrorCodes.InvalidGrant, error.Title);
@@ -585,7 +585,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("openid")).ConfigureAwait(false));
+            await tokenClient.GetToken(TokenRequest.FromScopes("openid")));
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -599,7 +599,7 @@ public sealed class TokenClientFixture
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
             await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-                .ConfigureAwait(false));
+                );
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -613,7 +613,7 @@ public sealed class TokenClientFixture
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
             .GetToken(TokenRequest.FromPassword("superuser", "password", new[] { "role" }))
-            .ConfigureAwait(false));
+            );
 
         var payload = new JwtSecurityToken(result.Item.IdToken);
         var roles = payload.Claims.Where(x => x.Type == "role").ToArray();
@@ -632,7 +632,7 @@ public sealed class TokenClientFixture
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
             .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "openid" }))
-            .ConfigureAwait(false));
+            );
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -646,7 +646,7 @@ public sealed class TokenClientFixture
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
             await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-                .ConfigureAwait(false));
+                );
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -661,7 +661,7 @@ public sealed class TokenClientFixture
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
             .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
-            .ConfigureAwait(false));
+            );
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -674,7 +674,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false));
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1")));
 
         Assert.NotEmpty(token.Item.AccessToken);
     }
@@ -687,7 +687,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var firstToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false));
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1")));
 
         Assert.NotEmpty(firstToken.Item.AccessToken);
     }
@@ -725,7 +725,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var token =
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false) as
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1")) as
                 Option<GrantedTokenResponse>.Result;
 
         Assert.NotNull(token);
@@ -758,7 +758,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")).ConfigureAwait(false));
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1")));
 
         Assert.NotEmpty(token.Item.AccessToken);
     }

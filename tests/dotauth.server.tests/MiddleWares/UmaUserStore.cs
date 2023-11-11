@@ -2,8 +2,8 @@
 
 public sealed class UmaUserStore
 {
-    private static UmaUserStore _instance;
-    private static readonly string DefaultClient = "client";
+    private static readonly UmaUserStore InnerInstance = new();
+    private const string DefaultClient = "client";
 
     private UmaUserStore()
     {
@@ -12,7 +12,7 @@ public sealed class UmaUserStore
 
     public static UmaUserStore Instance()
     {
-        return _instance ??= new UmaUserStore();
+        return InnerInstance;
     }
 
     public bool IsInactive { get; set; }
