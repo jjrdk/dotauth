@@ -91,23 +91,6 @@ public sealed class GenerateAuthorizationResponseFixture
     }
 
     [Fact]
-    public async Task When_No_Client_Is_Passed_Then_Exception_Is_Thrown()
-    {
-        var redirectInstruction = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
-
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _generateAuthorizationResponse.Generate(
-                    redirectInstruction,
-                    new AuthorizationParameter(),
-                    claimsPrincipal,
-                    null,
-                    null,
-                    CancellationToken.None))
-            ;
-    }
-
-    [Fact]
     public async Task When_Generating_AuthorizationResponse_With_IdToken_Then_IdToken_Is_Added_To_The_Parameters()
     {
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
@@ -131,13 +114,13 @@ public sealed class GenerateAuthorizationResponseFixture
                 authorizationParameter,
                 claimsPrincipal,
                 client,
-                null,
+                "",
                 CancellationToken.None)
             ;
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
-            p => p.Name == DotAuth.StandardAuthorizationResponseNames.IdTokenName);
+            p => p.Name == StandardAuthorizationResponseNames.IdTokenName);
     }
 
     [Fact]
@@ -268,9 +251,8 @@ public sealed class GenerateAuthorizationResponseFixture
                 authorizationParameter,
                 claimsPrincipal,
                 new Client(),
-                null,
-                CancellationToken.None)
-            ;
+                "",
+                CancellationToken.None);
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
@@ -306,9 +288,8 @@ public sealed class GenerateAuthorizationResponseFixture
                 authorizationParameter,
                 claimsPrincipal,
                 new Client(),
-                null,
-                CancellationToken.None)
-            ;
+                "",
+                CancellationToken.None);
 
         Assert.Equal(DotAuth.ResponseModes.Fragment, actionResult.RedirectInstruction!.ResponseMode);
     }

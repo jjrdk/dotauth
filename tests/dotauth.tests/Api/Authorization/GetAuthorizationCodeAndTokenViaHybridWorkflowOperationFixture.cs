@@ -38,19 +38,6 @@ public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixtur
     }
 
     [Fact]
-    public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
-                    null,
-                    null,
-                    null,
-                    null,
-                    CancellationToken.None))
-            ;
-    }
-
-    [Fact]
     public async Task WhenNonceParameterIsNotSetThenAnErrorIsReturned()
     {
         var authorizationParameter = new AuthorizationParameter { State = "state" };
@@ -83,7 +70,7 @@ public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixtur
                 authorizationParameter,
                 new ClaimsPrincipal(),
                 client,
-                null,
+                "",
                 CancellationToken.None)
             ;
         Assert.Equal(ActionResultType.BadRequest, ex.Type);

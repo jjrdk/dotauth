@@ -35,19 +35,9 @@ public sealed class ValidateConfirmationCodeActionFixture
     }
 
     [Fact]
-    public async Task When_Passing_Null_Parameter_Then_Returns_False()
-    {
-        var result = await _validateConfirmationCodeAction.Execute(null, null, CancellationToken.None)
-            ;
-
-        Assert.False(result);
-    }
-
-    [Fact]
     public async Task When_Passing_Empty_Parameter_Then_Returns_False()
     {
-        var result = await _validateConfirmationCodeAction.Execute(string.Empty, string.Empty, CancellationToken.None)
-            ;
+        var result = await _validateConfirmationCodeAction.Execute(string.Empty, string.Empty, CancellationToken.None);
 
         Assert.False(result);
     }
@@ -57,10 +47,9 @@ public sealed class ValidateConfirmationCodeActionFixture
     public async Task When_Code_Does_Not_Exist_Then_False_Is_Returned()
     {
         _confirmationCodeStoreStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((ConfirmationCode)null);
+            .Returns((ConfirmationCode?)null);
 
-        var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
-            ;
+        var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None);
         Assert.False(result);
     }
 
@@ -72,8 +61,7 @@ public sealed class ValidateConfirmationCodeActionFixture
             .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(confirmationCode);
 
-        var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
-            ;
+        var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None);
 
         Assert.False(result);
     }
@@ -86,8 +74,7 @@ public sealed class ValidateConfirmationCodeActionFixture
             .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(confirmationCode);
 
-        var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None)
-            ;
+        var result = await _validateConfirmationCodeAction.Execute("code", "test", CancellationToken.None);
 
         Assert.True(result);
     }

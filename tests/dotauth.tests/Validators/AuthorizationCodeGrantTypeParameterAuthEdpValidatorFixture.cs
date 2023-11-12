@@ -242,7 +242,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
         };
 
         _clientRepository.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((Client)null));
+            .Returns(Task.FromResult((Client?)null));
 
         var exception = Assert.IsType<Option<Client>.Error>(
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(

@@ -20,28 +20,15 @@ using Client = Shared.Models.Client;
 public sealed class GetAuthorizationCodeOperationFixture
 {
     private const string HttpsLocalhost = "https://localhost";
-    private readonly GetAuthorizationCodeOperation _getAuthorizationCodeOperation;
-
-    public GetAuthorizationCodeOperationFixture()
-    {
-        _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
-            Substitute.For<IAuthorizationCodeStore>(),
-            Substitute.For<ITokenStore>(),
-            Substitute.For<IScopeRepository>(),
-            Substitute.For<IClientStore>(),
-            Substitute.For<IConsentRepository>(),
-            new InMemoryJwksRepository(),
-            new NoOpPublisher(),
-            NullLogger.Instance);
-    }
-
-    [Fact]
-    public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _getAuthorizationCodeOperation.Execute(null, null, null, null, CancellationToken.None))
-            ;
-    }
+    private readonly GetAuthorizationCodeOperation _getAuthorizationCodeOperation = new(
+        Substitute.For<IAuthorizationCodeStore>(),
+        Substitute.For<ITokenStore>(),
+        Substitute.For<IScopeRepository>(),
+        Substitute.For<IClientStore>(),
+        Substitute.For<IConsentRepository>(),
+        new InMemoryJwksRepository(),
+        new NoOpPublisher(),
+        NullLogger.Instance);
 
     [Fact]
     public async Task WhenTheClientGrantTypeIsNotSupportedThenAnErrorIsReturned()
@@ -100,7 +87,7 @@ public sealed class GetAuthorizationCodeOperationFixture
         };
 
         var result = await _getAuthorizationCodeOperation
-            .Execute(authorizationParameter, new ClaimsPrincipal(), client, null, CancellationToken.None)
+            .Execute(authorizationParameter, new ClaimsPrincipal(), client, "", CancellationToken.None)
             ;
 
         Assert.NotNull(result.RedirectInstruction);

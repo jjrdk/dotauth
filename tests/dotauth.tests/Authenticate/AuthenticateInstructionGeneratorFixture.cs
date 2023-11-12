@@ -24,7 +24,7 @@ public sealed class AuthenticateInstructionGeneratorFixture
     [Fact]
     public void When_Passing_No_Parameter_Then_Empty_Result_Is_Returned()
     {
-        var header = (AuthenticationHeaderValue) null;
+        var header = (AuthenticationHeaderValue?) null;
         var result = header.GetAuthenticateInstruction(null);
 
         Assert.True(string.IsNullOrWhiteSpace(result.ClientIdFromAuthorizationHeader));

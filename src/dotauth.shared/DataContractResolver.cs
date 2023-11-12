@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -41,7 +42,7 @@ internal class DataContractResolver : IJsonTypeInfoResolver
 
         var type = obj.GetType();
 
-        return type.IsValueType && FormatterServices.GetUninitializedObject(type).Equals(obj);
+        return type.IsValueType && RuntimeHelpers.GetUninitializedObject(type).Equals(obj);
     }
 
     private static IEnumerable<MemberInfo> EnumerateFieldsAndProperties(Type type, BindingFlags bindingFlags)
@@ -84,7 +85,12 @@ internal class DataContractResolver : IJsonTypeInfoResolver
             }
         }
 
-        var members = Infos[jsonTypeInfo.Type];
+        TypeMembers[] members;
+        lock (Infos)
+        {
+            members = Infos[jsonTypeInfo.Type];
+        }
+
         return members.Select(typeMembers =>
         {
             var jsonPropertyInfo =

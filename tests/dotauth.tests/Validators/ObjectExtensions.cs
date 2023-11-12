@@ -14,6 +14,6 @@ internal static class ObjectExtensions
 
     public static T DeserializeWithJavascript<T>(this string parameter)
     {
-        return JsonConvert.DeserializeObject<T>(parameter, Converters);
+        return JsonConvert.DeserializeObject<T>(parameter, Converters)!;
     }
 }

@@ -27,22 +27,11 @@ using Xunit;
 
 public sealed class RemoveClientActionFixture
 {
-    private readonly IClientRepository _clientRepositoryStub;
-
-    public RemoveClientActionFixture()
-    {
-        _clientRepositoryStub = new InMemoryClientRepository(
-            Substitute.For<IHttpClientFactory>(),
-            new InMemoryScopeRepository(),
-            Substitute.For<ILogger<InMemoryClientRepository>>(),
-            Array.Empty<Client>());
-    }
-
-    [Fact]
-    public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _clientRepositoryStub.Delete(null, CancellationToken.None));
-    }
+    private readonly IClientRepository _clientRepositoryStub = new InMemoryClientRepository(
+        Substitute.For<IHttpClientFactory>(),
+        new InMemoryScopeRepository(),
+        Substitute.For<ILogger<InMemoryClientRepository>>(),
+        Array.Empty<Client>());
 
     [Fact]
     public async Task When_Passing_Not_Existing_Client_Id_Then_ReturnsFalse()

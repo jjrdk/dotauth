@@ -63,11 +63,11 @@ public sealed class GenerateAndSendCodeActionFixture
     public async Task When_ResourceOwner_Does_Not_Exist_Then_Exception_Is_Thrown()
     {
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((ResourceOwner)null);
+            .Returns((ResourceOwner?)null);
 
         var exception = Assert.IsType<Option<string>.Error>(
             await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-                );
+        );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);
@@ -81,7 +81,7 @@ public sealed class GenerateAndSendCodeActionFixture
 
         var exception = Assert.IsType<Option<string>.Error>(
             await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-                );
+        );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TwoFactorAuthenticationIsNotEnabled, exception.Details.Detail);
@@ -92,20 +92,19 @@ public sealed class GenerateAndSendCodeActionFixture
     {
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(
-                Task.FromResult(
-                    new ResourceOwner
-                    {
-                        TwoFactorAuthentication = "email",
-                        Claims = new[] { new Claim("key", "value") },
-                        Subject = "subject"
-                    }));
+                new ResourceOwner
+                {
+                    TwoFactorAuthentication = "email",
+                    Claims = new[] { new Claim("key", "value") },
+                    Subject = "subject"
+                });
         var fakeAuthService = Substitute.For<ITwoFactorAuthenticationService>();
         fakeAuthService.RequiredClaim.Returns("claim");
         _twoFactorAuthenticationHandlerStub.Get(Arg.Any<string>()).Returns(fakeAuthService);
 
         await Assert
-            .ThrowsAsync<ClaimRequiredException>(
-                () => _generateAndSendCodeAction.Send("subject", CancellationToken.None))
+                .ThrowsAsync<ClaimRequiredException>(
+                    () => _generateAndSendCodeAction.Send("subject", CancellationToken.None))
             ;
     }
 
@@ -114,25 +113,24 @@ public sealed class GenerateAndSendCodeActionFixture
     {
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(
-                Task.FromResult(
-                    new ResourceOwner
-                    {
-                        TwoFactorAuthentication = "email",
-                        Claims = new[] { new Claim("key", "value") },
-                        Subject = "subject"
-                    }));
+                new ResourceOwner
+                {
+                    TwoFactorAuthentication = "email",
+                    Claims = new[] { new Claim("key", "value") },
+                    Subject = "subject"
+                });
         var fakeAuthService = Substitute.For<ITwoFactorAuthenticationService>();
         fakeAuthService.RequiredClaim.Returns("key");
         _twoFactorAuthenticationHandlerStub.Get(Arg.Any<string>()).Returns(fakeAuthService);
         _confirmationCodeStoreStub
             .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((ConfirmationCode)null);
+            .Returns((ConfirmationCode?)null);
         _confirmationCodeStoreStub.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(false);
 
         var exception = Assert.IsType<Option<string>.Error>(
             await _generateAndSendCodeAction.Send("subject", CancellationToken.None)
-                );
+        );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TheConfirmationCodeCannotBeSaved, exception.Details.Detail);
@@ -143,19 +141,18 @@ public sealed class GenerateAndSendCodeActionFixture
     {
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(
-                Task.FromResult(
-                    new ResourceOwner
-                    {
-                        TwoFactorAuthentication = "email",
-                        Claims = new[] { new Claim("key", "value") },
-                        Subject = "subject"
-                    }));
+                new ResourceOwner
+                {
+                    TwoFactorAuthentication = "email",
+                    Claims = new[] { new Claim("key", "value") },
+                    Subject = "subject"
+                });
         var fakeAuthService = Substitute.For<ITwoFactorAuthenticationService>();
         fakeAuthService.RequiredClaim.Returns("key");
         _twoFactorAuthenticationHandlerStub.Get(Arg.Any<string>()).Returns(fakeAuthService);
         _confirmationCodeStoreStub
             .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((ConfirmationCode)null);
+            .Returns((ConfirmationCode?)null);
         _confirmationCodeStoreStub.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(true);
 

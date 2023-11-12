@@ -20,27 +20,15 @@ using Client = Shared.Models.Client;
 
 public sealed class GetTokenViaImplicitWorkflowOperationFixture
 {
-    private readonly GetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;
-
-    public GetTokenViaImplicitWorkflowOperationFixture()
-    {
-        _getTokenViaImplicitWorkflowOperation = new GetTokenViaImplicitWorkflowOperation(
-            Substitute.For<IClientStore>(),
-            Substitute.For<IConsentRepository>(),
-            Substitute.For<IAuthorizationCodeStore>(),
-            Substitute.For<ITokenStore>(),
-            Substitute.For<IScopeRepository>(),
-            new InMemoryJwksRepository(),
-            new NoOpPublisher(),
-            NullLogger.Instance);
-    }
-
-    [Fact]
-    public async Task When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-            () => _getTokenViaImplicitWorkflowOperation.Execute(null, null, null, null, CancellationToken.None));
-    }
+    private readonly GetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation = new(
+        Substitute.For<IClientStore>(),
+        Substitute.For<IConsentRepository>(),
+        Substitute.For<IAuthorizationCodeStore>(),
+        Substitute.For<ITokenStore>(),
+        Substitute.For<IScopeRepository>(),
+        new InMemoryJwksRepository(),
+        new NoOpPublisher(),
+        NullLogger.Instance);
 
     [Fact]
     public async Task WhenPassingEmptyAuthorizationRequestThenErrorIsReturned()
@@ -50,8 +38,7 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
                 new ClaimsPrincipal(),
                 new Client(),
                 "",
-                CancellationToken.None)
-            ;
+                CancellationToken.None);
 
         Assert.Equal(ActionResultType.BadRequest, result.Type);
     }
@@ -122,7 +109,7 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
             authorizationParameter,
             claimsPrincipal,
             client,
-            null,
+            "",
             CancellationToken.None);
 
         Assert.NotNull(result.RedirectInstruction);

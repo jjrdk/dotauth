@@ -42,29 +42,20 @@ public sealed class AuthenticateHelperFixture
     }
 
     [Fact]
-    public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _authenticateHelper.ProcessRedirection(null, null, null, null, null, CancellationToken.None))
-            ;
-    }
-
-    [Fact]
     public async Task When_Client_Does_Not_Exist_Then_Exception_Is_Thrown()
     {
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((Client)null);
+            .Returns((Client?)null);
         var authorizationParameter = new AuthorizationParameter { ClientId = "client_id" };
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
-                () => _authenticateHelper.ProcessRedirection(
-                    authorizationParameter,
-                    null,
-                    null,
-                    null,
-                    null,
-                    CancellationToken.None))
-            ;
+            () => _authenticateHelper.ProcessRedirection(
+                authorizationParameter,
+                null,
+                "",
+                Array.Empty<Claim>(),
+                "",
+                CancellationToken.None));
         Assert.Equal(
             string.Format(SharedStrings.TheClientDoesntExist),
             exception.Message);
@@ -79,20 +70,17 @@ public sealed class AuthenticateHelperFixture
         var authorizationParameter = new AuthorizationParameter { ClientId = "abc" };
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new Client());
-        //_parameterParserHelperFake.ParsePrompts(Arg.Any<string>())
-        //    .Returns(prompts);
 
         var actionResult = await _authenticateHelper.ProcessRedirection(
                 authorizationParameter,
                 code,
                 subject,
                 Array.Empty<Claim>(),
-                null,
-                CancellationToken.None)
-            ;
+                "",
+                CancellationToken.None);
 
-        Assert.Equal(DotAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
-        Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
+        Assert.Equal(DotAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction!.Action);
+        Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p is { Name: code, Value: code });
     }
 
     [Fact]
@@ -126,11 +114,10 @@ public sealed class AuthenticateHelperFixture
                 code,
                 subject,
                 Array.Empty<Claim>(),
-                null,
-                CancellationToken.None)
-            ;
+                "",
+                CancellationToken.None);
 
-        Assert.Equal(DotAuth.ResponseModes.FormPost, actionResult.RedirectInstruction.ResponseMode);
+        Assert.Equal(DotAuth.ResponseModes.FormPost, actionResult.RedirectInstruction!.ResponseMode);
     }
 
     [Fact]
@@ -148,11 +135,10 @@ public sealed class AuthenticateHelperFixture
                 code,
                 subject,
                 Array.Empty<Claim>(),
-                null,
-                CancellationToken.None)
-            ;
+                "",
+                CancellationToken.None);
 
-        Assert.Equal(DotAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction.Action);
-        Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p.Name == code && p.Value == code);
+        Assert.Equal(DotAuthEndPoints.ConsentIndex, actionResult.RedirectInstruction!.Action);
+        Assert.Contains(actionResult.RedirectInstruction.Parameters, p => p is { Name: code, Value: code });
     }
 }

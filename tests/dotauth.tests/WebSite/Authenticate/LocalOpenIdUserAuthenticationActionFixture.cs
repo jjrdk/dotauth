@@ -20,7 +20,7 @@ using Xunit.Abstractions;
 public sealed class LocalOpenIdUserAuthenticationActionFixture
 {
     private readonly ITestOutputHelper _outputHelper;
-    private LocalOpenIdUserAuthenticationAction _localUserAuthenticationAction;
+    private LocalOpenIdUserAuthenticationAction _localUserAuthenticationAction = null!;
 
     public LocalOpenIdUserAuthenticationActionFixture(ITestOutputHelper outputHelper)
     {

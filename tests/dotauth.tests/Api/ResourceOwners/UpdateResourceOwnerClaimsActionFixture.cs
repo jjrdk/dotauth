@@ -26,18 +26,7 @@ using Xunit;
 
 public sealed class UpdateResourceOwnerClaimsActionFixture
 {
-    private IResourceOwnerRepository _resourceOwnerRepositoryStub;
-
-    [Fact]
-    public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
-    {
-        InitializeFakeObjects();
-
-        await Assert
-            .ThrowsAsync<ArgumentNullException>(
-                () => _resourceOwnerRepositoryStub.Update(null, CancellationToken.None))
-            ;
-    }
+    private IResourceOwnerRepository _resourceOwnerRepositoryStub = null!;
 
     [Fact]
     public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsNull()
@@ -57,7 +46,7 @@ public sealed class UpdateResourceOwnerClaimsActionFixture
         InitializeFakeObjects();
 
         var result = await _resourceOwnerRepositoryStub
-            .Update(new ResourceOwner { Subject = "blah" }, CancellationToken.None)
+                .Update(new ResourceOwner { Subject = "blah" }, CancellationToken.None)
             ;
 
         Assert.IsType<Option.Error>(result);
@@ -65,6 +54,7 @@ public sealed class UpdateResourceOwnerClaimsActionFixture
 
     private void InitializeFakeObjects(params ResourceOwner[] resourceOwners)
     {
-        _resourceOwnerRepositoryStub = new InMemoryResourceOwnerRepository(string.Empty, new List<ResourceOwner>(resourceOwners));
+        _resourceOwnerRepositoryStub =
+            new InMemoryResourceOwnerRepository(string.Empty, new List<ResourceOwner>(resourceOwners));
     }
 }

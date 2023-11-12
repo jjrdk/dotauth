@@ -78,7 +78,7 @@ public sealed class AddUserOperationFixture
         var parameter = new ResourceOwner { Subject = "name", Password = "password" };
 
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((ResourceOwner)null);
+            .Returns((ResourceOwner?)null);
         _resourceOwnerRepositoryStub.Insert(Arg.Any<ResourceOwner>(), Arg.Any<CancellationToken>())
             .Returns(true);
 

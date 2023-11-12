@@ -78,14 +78,6 @@ public sealed class DefaultClientRepositoryFixture
     }
 
     [Fact]
-    public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-    {
-        await Assert
-            .ThrowsAsync<ArgumentNullException>(() => _clientRepositoryFake.Insert(null, CancellationToken.None))
-            ;
-    }
-
-    [Fact]
     public async Task When_Passing_Registration_Parameter_With_Specific_Values_Then_ReturnsTrue()
     {
         const string clientName = "client_name";

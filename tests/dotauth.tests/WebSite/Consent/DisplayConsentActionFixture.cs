@@ -96,10 +96,9 @@ public sealed class DisplayConsentActionFixture
         _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
             .Returns(Array.Empty<Client>());
         var result = await _displayConsentAction
-            .Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
-            ;
+                .Execute(authorizationParameter, claimsPrincipal, "", CancellationToken.None);
 
-        Assert.Equal(DotAuth.ResponseModes.Fragment, result.EndpointResult.RedirectInstruction.ResponseMode);
+        Assert.Equal(DotAuth.ResponseModes.Fragment, result.EndpointResult.RedirectInstruction?.ResponseMode);
     }
 
     [Fact]
@@ -116,7 +115,7 @@ public sealed class DisplayConsentActionFixture
             Scope = "scope",
             ClientId = clientId,
             State = state,
-            ResponseMode = DotAuth.ResponseModes.None // No response mode is defined
+            ResponseMode = ResponseModes.None // No response mode is defined
         };
         var consent = new Consent
         {
@@ -143,12 +142,10 @@ public sealed class DisplayConsentActionFixture
                 authorizationParameter,
                 claimsPrincipal,
                 "issuer",
-                CancellationToken.None)
-            ;
+                CancellationToken.None);
 
-        Assert.Equal(ErrorCodes.InvalidRequest, result.EndpointResult.Error.Title);
-        Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, result.EndpointResult.Error.Detail);
-
+        Assert.Equal(ErrorCodes.InvalidRequest, result.EndpointResult.Error?.Title);
+        Assert.Equal(Strings.TheAuthorizationFlowIsNotSupported, result.EndpointResult.Error?.Detail);
     }
 
     [Fact]
@@ -161,15 +158,14 @@ public sealed class DisplayConsentActionFixture
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId, State = state };
 
         _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((Client)null);
+            .Returns((Client?)null);
 
         var result = await _displayConsentAction.Execute(
-                authorizationParameter,
-                claimsPrincipal,
-                null,
-                CancellationToken.None)
-            ;
-        Assert.Equal(ErrorCodes.InvalidRequest, result.EndpointResult.Error.Title);
+            authorizationParameter,
+            claimsPrincipal,
+            "",
+            CancellationToken.None);
+        Assert.Equal(ErrorCodes.InvalidRequest, result.EndpointResult.Error!.Title);
         Assert.Equal(string.Format(Strings.ClientIsNotValid, clientId), result.EndpointResult.Error.Detail);
     }
 
@@ -196,8 +192,7 @@ public sealed class DisplayConsentActionFixture
         _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(scopes);
 
-        await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, null, CancellationToken.None)
-            ;
+        await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, "", CancellationToken.None);
 
         Assert.Contains(scopes, s => s.Name == scopeName);
     }

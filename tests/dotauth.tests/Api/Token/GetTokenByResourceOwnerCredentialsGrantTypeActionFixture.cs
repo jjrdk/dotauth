@@ -42,10 +42,10 @@ using Xunit.Abstractions;
 public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
 {
     private readonly ITestOutputHelper _outputHelper;
-    private IEventPublisher _eventPublisher;
-    private IClientStore _clientStore;
-    private ITokenStore _tokenStoreStub;
-    private GetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
+    private IEventPublisher _eventPublisher = null!;
+    private IClientStore _clientStore = null!;
+    private ITokenStore _tokenStoreStub = null!;
+    private GetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction = null!;
     private readonly IScopeRepository _scopeRepository;
 
     public GetTokenByResourceOwnerCredentialsGrantTypeActionFixture(ITestOutputHelper outputHelper)
@@ -78,7 +78,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     resourceOwnerGrantTypeParameter,
                     authenticationHeader,
                     null,
-                    null,
+                    "",
                     CancellationToken.None)
                 );
 
@@ -118,7 +118,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     resourceOwnerGrantTypeParameter,
                     authenticationHeader,
                     null,
-                    null,
+                    "",
                     CancellationToken.None)
                 );
 
@@ -160,7 +160,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     resourceOwnerGrantTypeParameter,
                     authenticationHeader,
                     null,
-                    null,
+                    "",
                     CancellationToken.None)
                 );
 
@@ -209,7 +209,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     resourceOwnerGrantTypeParameter,
                     authenticationHeader,
                     null,
-                    null,
+                    "",
                     CancellationToken.None)
                 );
         Assert.Equal(ErrorCodes.InvalidCredentials, result.Details.Title);
@@ -259,7 +259,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
                     resourceOwnerGrantTypeParameter,
                     authenticationHeader,
                     null,
-                    null,
+                    "",
                     CancellationToken.None)
                 );
 

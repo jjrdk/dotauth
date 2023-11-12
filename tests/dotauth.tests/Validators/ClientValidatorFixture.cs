@@ -28,7 +28,6 @@ public sealed class ClientValidatorFixture
     [Fact]
     public void When_Client_Does_Not_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
     {
-        Assert.Empty(new Client().GetRedirectionUrls(null));
         Assert.Empty(new Client().GetRedirectionUrls(new Uri("https://url")));
         Assert.Empty(new Client().GetRedirectionUrls(new Uri("https://url")));
     }
@@ -69,7 +68,7 @@ public sealed class ClientValidatorFixture
     public void When_Checking_Client_Grant_Types_Then_True_Is_Returned()
     {
         var client = new Client { GrantTypes = new[] { GrantTypes.Implicit, GrantTypes.Password } };
-            
+
         Assert.True(client.CheckGrantTypes(GrantTypes.Implicit, GrantTypes.Password));
         Assert.True(client.CheckGrantTypes(GrantTypes.Implicit));
     }
@@ -81,18 +80,6 @@ public sealed class ClientValidatorFixture
 
         Assert.False(client.CheckGrantTypes(GrantTypes.RefreshToken));
         Assert.False(client.CheckGrantTypes(GrantTypes.RefreshToken, GrantTypes.Password));
-    }
-
-    [Fact]
-    public void WhenPassingNullNullClientThenThrows()
-    {
-        Assert.Throws<NullReferenceException>(() => ((Client)null).CheckPkce(null, null));
-    }
-
-    [Fact]
-    public void WhenPassingNullParametersThenReturnsFalse()
-    {
-        Assert.Throws<NullReferenceException>(() => new Client {RequirePkce = true}.CheckPkce(null, null));
     }
 
     [Fact]

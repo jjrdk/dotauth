@@ -58,22 +58,6 @@ public sealed class JwtGeneratorFixture
     }
 
     [Fact]
-    public async Task When_Passing_Null_Parameters_To_GenerateAccessToken_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _jwtGenerator.GenerateAccessToken(null, null, null, default, null))
-            ;
-    }
-
-    [Fact]
-    public async Task When_Passing_Empty_Parameters_To_GenerateAccessToken_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _jwtGenerator.GenerateAccessToken(null, null, null, default, null))
-            ;
-    }
-
-    [Fact]
     public async Task WhenSignatureParametersAreConfiguredThenCanGenerateAccessToken()
     {
         const string clientId = "client_id";
@@ -85,8 +69,7 @@ public sealed class JwtGeneratorFixture
             ClientId = clientId
         };
 
-        var result = await _jwtGenerator.GenerateAccessToken(client, scopes, "issuer")
-            ;
+        var result = await _jwtGenerator.GenerateAccessToken(client, scopes, "issuer");
 
         Assert.NotNull(result);
     }
@@ -163,7 +146,7 @@ public sealed class JwtGeneratorFixture
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((Client)null);
+            .Returns((Client?)null);
         _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
             .Returns(Array.Empty<Client>());
 
@@ -820,20 +803,13 @@ public sealed class JwtGeneratorFixture
     }
 
     [Fact]
-    public void When_Passing_Null_Parameters_To_FillInOtherClaimsIdentityTokenPayload_Then_Exceptions_Are_Thrown()
-    {
-        Assert.Throws<NullReferenceException>(
-            () => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(null, null, null, null));
-    }
-
-    [Fact]
     public void When_JwsAlg_Is_None_And_Trying_To_FillIn_Other_Claims_Then_The_Properties_Are_Not_Filled_In()
     {
         var client = FakeOpenIdAssets.GetClients().First();
         client.IdTokenSignedResponseAlg = "none";
         var jwsPayload = new JwtPayload();
 
-        _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, null, null, new Client());
+        _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "", "", new Client());
 
         Assert.DoesNotContain(jwsPayload.Claims, c => c.Type == StandardClaimNames.AtHash);
         Assert.DoesNotContain(jwsPayload.Claims, c => c.Type == StandardClaimNames.CHash);

@@ -30,13 +30,13 @@ public sealed class UpdateUserTwoFactorAuthenticatorOperationFixture
     public async Task When_ResourceOwner_Does_not_Exist_Then_Exception_Is_Thrown()
     {
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((ResourceOwner)null);
+            .Returns(Task.FromResult<ResourceOwner?>(null));
 
         var exception = await _updateUserTwoFactorAuthenticatorOperation.Execute(
                 "subject",
                 "two_factor",
                 CancellationToken.None)
-             as Option.Error;
+            as Option.Error;
 
         Assert.Equal(ErrorCodes.InternalError, exception!.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, exception.Details.Detail);

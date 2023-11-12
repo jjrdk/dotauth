@@ -1,5 +1,6 @@
 ﻿namespace DotAuth.Tests.Helpers;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -21,17 +22,17 @@ public sealed class ConsentHelperFixture
     }
 
     [Fact]
-    public async Task When_No_Consent_Has_Been_Given_By_The_Resource_Owner_Then_Null_Is_Returned()
+    public async Task When_No_Consent_Has_Been_Given_By_The_Resource_Owner_Then_Empty_List_Is_Returned()
     {
         const string subject = "subject";
         var authorizationParameter = new AuthorizationParameter();
 
         _consentRepositoryFake
             .GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((IReadOnlyCollection<Consent>)null));
+            .Returns(Array.Empty<Consent>());
 
         var result = await _consentRepositoryFake
-            .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
+                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             ;
 
         Assert.Null(result);
@@ -60,7 +61,7 @@ public sealed class ConsentHelperFixture
             .Returns(consents);
 
         var result = await _consentRepositoryFake
-            .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
+                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             ;
 
         Assert.NotNull(result);
@@ -84,7 +85,7 @@ public sealed class ConsentHelperFixture
             .Returns(consents);
 
         var result = await _consentRepositoryFake
-            .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
+                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             ;
 
         Assert.NotNull(result);
@@ -118,7 +119,7 @@ public sealed class ConsentHelperFixture
             .Returns(consents);
 
         var result = await _consentRepositoryFake
-            .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
+                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
             ;
 
         Assert.Null(result);

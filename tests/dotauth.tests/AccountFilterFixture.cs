@@ -24,13 +24,6 @@ public sealed class AccountFilterFixture
     }
 
     [Fact]
-    public async Task When_Pass_Null_Parameter_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _accountFilter.Check(null, CancellationToken.None))
-            ;
-    }
-
-    [Fact]
     public async Task When_Claim_Does_Not_Exist_Then_Error_Is_Returned()
     {
         var filters = new[]
@@ -39,7 +32,7 @@ public sealed class AccountFilterFixture
         };
         _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
-        var result = await _accountFilter.Check(new List<Claim> {new("keyv", "valv")}, CancellationToken.None)
+        var result = await _accountFilter.Check(new List<Claim> { new("keyv", "valv") }, CancellationToken.None)
             ;
 
         Assert.False(result.IsValid);
@@ -56,7 +49,7 @@ public sealed class AccountFilterFixture
         };
         _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
-        var result = await _accountFilter.Check(new List<Claim> {new("key", "valv")}, CancellationToken.None)
+        var result = await _accountFilter.Check(new List<Claim> { new("key", "valv") }, CancellationToken.None)
             ;
 
         Assert.False(result.IsValid);
@@ -75,7 +68,7 @@ public sealed class AccountFilterFixture
         };
         _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
-        var result = await _accountFilter.Check(new List<Claim> {new("key", "val")}, CancellationToken.None)
+        var result = await _accountFilter.Check(new List<Claim> { new("key", "val") }, CancellationToken.None)
             ;
 
         Assert.False(result.IsValid);
@@ -94,7 +87,7 @@ public sealed class AccountFilterFixture
         };
         _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
-        var result = await _accountFilter.Check(new List<Claim> {new("key", "111")}, CancellationToken.None)
+        var result = await _accountFilter.Check(new List<Claim> { new("key", "111") }, CancellationToken.None)
             ;
 
         Assert.False(result.IsValid);
@@ -113,7 +106,7 @@ public sealed class AccountFilterFixture
         };
         _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
-        var result = await _accountFilter.Check(new List<Claim> {new("key", "val")}, CancellationToken.None)
+        var result = await _accountFilter.Check(new List<Claim> { new("key", "val") }, CancellationToken.None)
             ;
 
         Assert.True(result.IsValid);
@@ -130,7 +123,7 @@ public sealed class AccountFilterFixture
         };
         _filterRepositoryStub.GetAll(Arg.Any<CancellationToken>()).Returns(filters);
 
-        var result = await _accountFilter.Check(new List<Claim> {new("key", "val")}, CancellationToken.None)
+        var result = await _accountFilter.Check(new List<Claim> { new("key", "val") }, CancellationToken.None)
             ;
 
         Assert.True(result.IsValid);

@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015 Habart Thierry, © 2018 Jacob Reimers
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ using Xunit;
 
 public sealed class DeleteResourceOwnerActionFixture
 {
-    private IResourceOwnerRepository _resourceOwnerRepositoryStub;
+    private IResourceOwnerRepository _resourceOwnerRepositoryStub = null!;
 
     [Fact]
     public async Task When_ResourceOwner_Does_Not_Exist_Then_ReturnsFalse()
@@ -31,8 +31,7 @@ public sealed class DeleteResourceOwnerActionFixture
         const string subject = "invalid_subject";
         InitializeFakeObjects();
 
-        var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None)
-            ;
+        var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None);
 
         Assert.False(result);
     }
@@ -43,8 +42,7 @@ public sealed class DeleteResourceOwnerActionFixture
         const string subject = "subject";
         InitializeFakeObjects(new ResourceOwner());
 
-        var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None)
-            ;
+        var result = await _resourceOwnerRepositoryStub.Delete(subject, CancellationToken.None);
 
         Assert.False(result);
     }

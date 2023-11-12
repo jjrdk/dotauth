@@ -65,53 +65,6 @@ public sealed class TokenActionsFixture
     }
 
     [Fact]
-    public async Task When_Passing_No_Request_To_ResourceOwner_Grant_Type_Then_Error_Is_Returned()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(
-                    null,
-                    null,
-                    null,
-                    null,
-                    CancellationToken.None))
-            ;
-    }
-
-    [Fact]
-    public async Task When_Passing_No_Request_To_AuthorizationCode_Grant_Type_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _tokenActions.GetTokenByAuthorizationCodeGrantType(
-                    null,
-                    null,
-                    null,
-                    null,
-                    CancellationToken.None))
-            ;
-    }
-
-    [Fact]
-    public async Task When_Passing_No_Request_To_Refresh_Token_Grant_Type_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null, null, CancellationToken.None))
-            ;
-    }
-
-    [Fact]
-    public async Task When_Passing_Null_Parameter_To_ClientCredentials_GrantType_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _tokenActions.GetTokenByClientCredentialsGrantType(
-                    null,
-                    null,
-                    null,
-                    null,
-                    CancellationToken.None))
-            ;
-    }
-
-    [Fact]
     public async Task When_Getting_Token_Via_ClientCredentials_GrantType_Then_GrantedToken_Is_Returned()
     {
         const string scope = "valid_scope";
@@ -126,19 +79,10 @@ public sealed class TokenActionsFixture
                 parameter,
                 authenticationHeader,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
+        );
 
         Assert.Equal(clientId, result.Item.ClientId);
-    }
-
-    [Fact]
-    public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-    {
-        await Assert
-            .ThrowsAsync<NullReferenceException>(
-                () => _tokenActions.RevokeToken(null, null, null, null, CancellationToken.None))
-            ;
     }
 }

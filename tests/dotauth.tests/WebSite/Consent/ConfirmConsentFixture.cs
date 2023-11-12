@@ -108,7 +108,7 @@ public sealed class ConfirmConsentFixture
         _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(Array.Empty<Scope>());
 
-        Consent insertedConsent = null;
+        Consent? insertedConsent = null;
         _consentRepositoryFake.Insert(Arg.Any<Consent>(), Arg.Any<CancellationToken>())
             .Returns(true)
             .AndDoes(c => insertedConsent = c.Arg<Consent>());

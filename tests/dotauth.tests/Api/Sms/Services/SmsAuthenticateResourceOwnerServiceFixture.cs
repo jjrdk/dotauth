@@ -30,10 +30,10 @@ public sealed class SmsAuthenticateResourceOwnerServiceFixture
     public async Task When_ConfirmationCode_Does_Not_Exist_Then_Null_Is_Returned()
     {
         _confirmationCodeStoreStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((ConfirmationCode)null));
+            .Returns((ConfirmationCode?)null);
 
         var result = await _authenticateResourceOwnerService
-            .AuthenticateResourceOwner("login", "password", CancellationToken.None)
+                .AuthenticateResourceOwner("login", "password", CancellationToken.None)
             ;
 
         Assert.Null(result);
@@ -43,11 +43,10 @@ public sealed class SmsAuthenticateResourceOwnerServiceFixture
     public async Task When_Subject_Is_Different_Then_Null_Is_Returned()
     {
         _confirmationCodeStoreStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(new ConfirmationCode { Subject = "sub" }));
+            .Returns(new ConfirmationCode { Subject = "sub" });
 
         var result = await _authenticateResourceOwnerService
-            .AuthenticateResourceOwner("login", "password", CancellationToken.None)
-            ;
+            .AuthenticateResourceOwner("login", "password", CancellationToken.None);
 
         Assert.Null(result);
     }
@@ -57,15 +56,13 @@ public sealed class SmsAuthenticateResourceOwnerServiceFixture
     {
         const string login = "login";
         _confirmationCodeStoreStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(
-                new ConfirmationCode
-                {
-                    Subject = login, IssueAt = DateTimeOffset.UtcNow.AddDays(-1), ExpiresIn = 100
-                }));
+            .Returns(new ConfirmationCode
+            {
+                Subject = login, IssueAt = DateTimeOffset.UtcNow.AddDays(-1), ExpiresIn = 100
+            });
 
         var result = await _authenticateResourceOwnerService
-            .AuthenticateResourceOwner(login, "password", CancellationToken.None)
-            ;
+            .AuthenticateResourceOwner(login, "password", CancellationToken.None);
 
         Assert.Null(result);
     }
@@ -75,8 +72,7 @@ public sealed class SmsAuthenticateResourceOwnerServiceFixture
     {
         const string login = "login";
         _confirmationCodeStoreStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(
-                new ConfirmationCode { Subject = login, IssueAt = DateTimeOffset.UtcNow, ExpiresIn = 100 }));
+            .Returns(new ConfirmationCode { Subject = login, IssueAt = DateTimeOffset.UtcNow, ExpiresIn = 100 });
         _resourceOwnerRepositoryStub.GetResourceOwnerByClaim(
                 Arg.Any<string>(),
                 Arg.Any<string>(),

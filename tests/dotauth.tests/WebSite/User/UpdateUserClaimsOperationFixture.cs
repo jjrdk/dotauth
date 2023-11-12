@@ -33,7 +33,7 @@ public sealed class UpdateUserClaimsOperationFixture
     public async Task When_ResourceOwner_DoesntExist_Then_Exception_Is_Thrown()
     {
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((ResourceOwner)null);
+            .Returns(Task.FromResult<ResourceOwner?>(null));
 
         var exception = await _updateUserClaimsOperation
             .Execute("subject", new List<Claim>(), CancellationToken.None)

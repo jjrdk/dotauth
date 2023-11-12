@@ -7,19 +7,14 @@ using Xunit;
 
 public sealed class InMemoryJwksRepositoryFixture
 {
-    private readonly InMemoryJwksRepository _repository;
-
-    public InMemoryJwksRepositoryFixture()
-    {
-        _repository = new InMemoryJwksRepository();
-    }
+    private readonly InMemoryJwksRepository _repository = new();
 
     [Fact]
     public async Task WhenGettingPublicKeysThenHasTwoKeys()
     {
         var publicKeys = await _repository.GetPublicKeys();
 
-        Assert.Equal(2, publicKeys.Keys.Count);
+        Assert.Equal(2, publicKeys!.Keys.Count);
     }
 
     [Fact]
@@ -27,7 +22,7 @@ public sealed class InMemoryJwksRepositoryFixture
     {
         var publicKeys = await _repository.GetPublicKeys();
 
-        Assert.All(publicKeys.Keys, jwk => Assert.False(jwk.HasPrivateKey));
+        Assert.All(publicKeys!.Keys, jwk => Assert.False(jwk.HasPrivateKey));
     }
 
     [Fact]

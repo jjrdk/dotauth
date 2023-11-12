@@ -40,13 +40,13 @@ using Xunit;
 
 public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
 {
-    private IEventPublisher _eventPublisher;
-    private IAuthorizationCodeStore _authorizationCodeStoreFake;
-    private RuntimeSettings _dotAuthOptions;
-    private ITokenStore _tokenStoreFake;
-    private IClientStore _clientStore;
-    private GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
-    private InMemoryJwksRepository _inMemoryJwksRepository;
+    private IEventPublisher _eventPublisher = null!;
+    private IAuthorizationCodeStore _authorizationCodeStoreFake = null!;
+    private RuntimeSettings _dotAuthOptions = null!;
+    private ITokenStore _tokenStoreFake = null!;
+    private IClientStore _clientStore = null!;
+    private GetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction = null!;
+    private InMemoryJwksRepository _inMemoryJwksRepository = null!;
 
     public GetTokenByAuthorizationCodeGrantTypeActionFixture()
     {
@@ -73,10 +73,10 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 null,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
-        Assert.Equal(ErrorCodes.InvalidClient, result!.Details.Title);
+        );
+        Assert.Equal(ErrorCodes.InvalidClient, result.Details.Title);
     }
 
     [Fact]
@@ -108,9 +108,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
+        );
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(
             string.Format(
@@ -151,9 +151,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 authenticationValue,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
+        );
         Assert.Equal(ErrorCodes.InvalidResponse, result.Details.Title);
         Assert.Equal(
             string.Format(
@@ -195,9 +195,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 authorizationHeader,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
+        );
         Assert.Equal(ErrorCodes.InvalidGrant, result.Details.Title);
         Assert.Equal(Strings.TheAuthorizationCodeIsNotCorrect, result.Details.Detail);
     }
@@ -229,7 +229,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
         _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(authorizationCode));
+            .Returns(authorizationCode);
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -239,9 +239,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
+        );
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheCodeVerifierIsNotCorrect, result.Details.Detail);
     }
@@ -273,7 +273,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
 
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
         _authorizationCodeStoreFake.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(authorizationCode));
+            .Returns(Task.FromResult<AuthorizationCode?>(authorizationCode));
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -283,9 +283,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
+        );
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(
             string.Format(
@@ -335,9 +335,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
+        );
         Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
         Assert.Equal(Strings.TheRedirectionUrlIsNotTheSame, result.Details.Detail);
     }
@@ -384,9 +384,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
+        );
         Assert.Equal(ErrorCodes.ExpiredAuthorizationCode, result.Details.Title);
         Assert.Equal(Strings.TheAuthorizationCodeIsObsolete, result.Details.Detail);
     }
@@ -434,9 +434,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
-                null,
+                "",
                 CancellationToken.None)
-            );
+        );
         Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
         Assert.Equal(
             string.Format(Strings.RedirectUrlIsNotValid, "https://redirecturi/"),
@@ -516,7 +516,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
                 authorizationCodeGrantTypeParameter,
                 authenticationHeader,
                 null,
-                null,
+                "",
                 CancellationToken.None)
             ;
 
@@ -577,13 +577,12 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientId}:{clientSecret}".Base64Encode());
-        var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
-                authorizationCodeGrantTypeParameter,
-                authenticationHeader,
-                null,
-                null,
-                CancellationToken.None)
-            ;
+        _ = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(
+            authorizationCodeGrantTypeParameter,
+            authenticationHeader,
+            null,
+            "",
+            CancellationToken.None);
 
         await _tokenStoreFake.Received().AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>());
         await _eventPublisher.Received().Publish(Arg.Any<TokenGranted>());

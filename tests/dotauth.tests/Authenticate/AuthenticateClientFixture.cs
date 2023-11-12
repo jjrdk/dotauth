@@ -1,6 +1,5 @@
 ﻿namespace DotAuth.Tests.Authenticate;
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Authenticate;
@@ -23,21 +22,11 @@ public sealed class AuthenticateClientFixture
     }
 
     [Fact]
-    public async Task When_Passing_No_Authentication_Instruction_Then_Exception_Is_Thrown()
-    {
-        await Assert
-            .ThrowsAsync<NullReferenceException>(
-                () => _authenticateClient.Authenticate(null, null, CancellationToken.None))
-            ;
-    }
-
-    [Fact]
     public async Task When_The_ClientId_Cannot_Be_Fetch_Then_Message_Error_Is_Returned_And_Result_Is_Null()
     {
         var authenticationInstruction = new AuthenticateInstruction();
 
-        var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
-            ;
+        var result = await _authenticateClient.Authenticate(authenticationInstruction, "", CancellationToken.None);
 
         Assert.Null(result.Client);
         Assert.Equal(SharedStrings.TheClientDoesntExist, result.ErrorMessage);
@@ -48,10 +37,9 @@ public sealed class AuthenticateClientFixture
     {
         var authenticationInstruction = new AuthenticateInstruction();
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult((Client)null));
+            .Returns((Client?)null);
 
-        var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
-            ;
+        var result = await _authenticateClient.Authenticate(authenticationInstruction, "", CancellationToken.None);
 
         Assert.Null(result.Client);
         Assert.Equal(SharedStrings.TheClientDoesntExist, result.ErrorMessage);
@@ -78,8 +66,7 @@ public sealed class AuthenticateClientFixture
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(client);
 
-        var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
-            ;
+        var result = await _authenticateClient.Authenticate(authenticationInstruction, "", CancellationToken.None);
 
         Assert.NotNull(result.Client);
     }
@@ -99,8 +86,7 @@ public sealed class AuthenticateClientFixture
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(client);
 
-        var result = await _authenticateClient.Authenticate(authenticationInstruction, null, CancellationToken.None)
-            ;
+        var result = await _authenticateClient.Authenticate(authenticationInstruction, "", CancellationToken.None);
 
         Assert.Null(result.Client);
     }

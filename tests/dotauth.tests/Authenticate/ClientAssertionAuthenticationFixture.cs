@@ -70,23 +70,11 @@ public sealed class ClientAssertionAuthenticationFixture
     }
 
     [Fact]
-    public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
-    {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(
-                    null,
-                    null,
-                    CancellationToken.None))
-            ;
-    }
-
-    [Fact]
     public async Task When_A_Not_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
     {
         var instruction = new AuthenticateInstruction {ClientAssertion = "invalid_header.invalid_payload"};
         var result = await _clientAssertionAuthentication
-            .AuthenticateClientWithPrivateKeyJwt(instruction, null, CancellationToken.None)
-            ;
+            .AuthenticateClientWithPrivateKeyJwt(instruction, "", CancellationToken.None);
 
         Assert.Null(result.Client);
         Assert.Equal(Strings.TheClientAssertionIsNotAJwsToken, result.ErrorMessage);
