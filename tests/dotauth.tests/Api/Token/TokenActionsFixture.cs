@@ -23,7 +23,7 @@ using Xunit;
 public sealed class TokenActionsFixture
 {
     private const string ClientId = "valid_client_id";
-    private const string Clientsecret = "secret";
+    private const string ClientSecret = "secret";
     private readonly TokenActions _tokenActions;
 
     public TokenActionsFixture()
@@ -44,7 +44,7 @@ public sealed class TokenActionsFixture
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ClientId = ClientId,
                     Secrets =
-                        new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Clientsecret } },
+                        new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = ClientSecret } },
                     AllowedScopes = new[] { scope },
                     ResponseTypes = new[] { ResponseTypeNames.Token },
                     GrantTypes = new[] { GrantTypes.ClientCredentials }
@@ -73,7 +73,7 @@ public sealed class TokenActionsFixture
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
-            $"{clientId}:{Clientsecret}".Base64Encode());
+            $"{clientId}:{ClientSecret}".Base64Encode());
         var result = Assert.IsType<Option<GrantedToken>.Result>(await _tokenActions
             .GetTokenByClientCredentialsGrantType(
                 parameter,
