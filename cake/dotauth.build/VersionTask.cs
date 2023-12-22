@@ -1,7 +1,5 @@
 namespace DotAuth.Build;
 
-using System.ComponentModel;
-using System.Reflection;
 using Cake.Common.Tools.GitVersion;
 using Cake.Core.Diagnostics;
 using Cake.Frosting;
@@ -10,37 +8,9 @@ using Cake.Frosting;
 [TaskDescription("Retrieves the current version from the git repository")]
 public sealed class VersionTask : FrostingTask<BuildContext>
 {
-    // Tasks can be asynchronous
     public override async void Run(BuildContext context)
     {
-        GitVersion versionInfo;
-        try
-        {
-            versionInfo = context.GitVersion(new GitVersionSettings { UpdateAssemblyInfo = false });
-        }
-        catch (Win32Exception)
-        {
-            context.Log.Information("Reverting to assembly version");
-
-            var version = Assembly.GetAssembly(typeof(VersionTask))!.GetName().Version!;
-            var versionString = version.ToString();
-            context.Log.Information(versionString);
-            versionInfo = new GitVersion
-            {
-                AssemblySemVer = versionString,
-                BranchName = "master",
-                InformationalVersion = versionString,
-                FullSemVer = versionString,
-                SemVer = versionString,
-                LegacySemVer = versionString,
-                Major = version.Major,
-                Minor = version.Minor,
-                Patch = version.Build,
-                MajorMinorPatch = $"{version.Major}.{version.Minor}.{version.Build}",
-                CommitsSinceVersionSource = 0,
-                NuGetVersion = versionString
-            };
-        }
+        var versionInfo = context.GitVersion(new GitVersionSettings { UpdateAssemblyInfo = false });
 
         if (versionInfo.BranchName == "master" || versionInfo.BranchName.StartsWith("tags/"))
         {

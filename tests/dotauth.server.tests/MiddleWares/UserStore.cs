@@ -5,7 +5,7 @@ using System;
 public sealed class UserStore
 {
     private static readonly UserStore InnerInstance = new ();
-    private static readonly string DefaultSubject = "administrator";
+    private const string DefaultSubject = "administrator";
 
     private UserStore()
     {

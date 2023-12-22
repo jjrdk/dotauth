@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Authenticate;
@@ -79,7 +80,7 @@ internal sealed class UmaTokenActions
         var client = authResult.Client;
         if (client == null)
         {
-            _logger.LogError("Client not found.");
+            _logger.LogError("Client not found");
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -105,7 +106,7 @@ internal sealed class UmaTokenActions
         var ticket = await _ticketStore.Get(parameter.Ticket, cancellationToken).ConfigureAwait(false);
         if (ticket == null)
         {
-            _logger.LogError("Ticket {ticket} not found", parameter.Ticket);
+            _logger.LogError("Ticket {Ticket} not found", parameter.Ticket);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -213,7 +214,7 @@ internal sealed class UmaTokenActions
         // 2. Construct the JWT token (client).
         var permissions = ticketLines.Select(x => x.ToPermission(_configurationService.RptLifeTime))
             .ToArray();
-        jwsPayload.Payload.Add(UmaConstants.RptClaims.Permissions, permissions);
+        jwsPayload.Payload.Add(UmaConstants.RptClaims.Permissions, JsonSerializer.Serialize(permissions, DefaultJsonSerializerOptions.Instance));
         var handler = new JwtSecurityTokenHandler();
         var accessToken = handler.WriteToken(jwsPayload);
 

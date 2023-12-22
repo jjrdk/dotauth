@@ -51,14 +51,11 @@ public static class ClaimPrincipalExtensions
 
         try
         {
-            tickets = claims.Where(c => c.Type == "permissions")
+            tickets = claims.Where(c => c.Type == UmaConstants.RptClaims.Permissions)
                 .SelectMany(
-                    c => c.Value.StartsWith("[")
+                    c => c.Value.StartsWith('[')
                         ? JsonSerializer.Deserialize<Permission[]>(c.Value, DefaultJsonSerializerOptions.Instance)!
-                        : new[]
-                        {
-                            JsonSerializer.Deserialize<Permission>(c.Value, DefaultJsonSerializerOptions.Instance)!
-                        })
+                        : [JsonSerializer.Deserialize<Permission>(c.Value, DefaultJsonSerializerOptions.Instance)!])
                 .ToArray();
             return tickets.Length > 0;
         }
