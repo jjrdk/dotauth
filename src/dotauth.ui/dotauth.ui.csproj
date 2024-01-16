@@ -22,7 +22,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.1" />
     </ItemGroup>
 
 </Project>
