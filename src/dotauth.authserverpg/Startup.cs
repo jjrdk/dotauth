@@ -42,6 +42,9 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Weasel.Core;
 
+/// <summary>
+/// Configuration class.
+/// </summary>
 public sealed class Startup
 {
     private const string DotAuthScheme = "dotauth";
@@ -49,6 +52,10 @@ public sealed class Startup
     private readonly IConfiguration _configuration;
     private readonly DotAuthConfiguration _dotAuthConfiguration;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Startup"/> class.
+    /// </summary>
+    /// <param name="configuration">The configuration to use.</param>
     public Startup(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -115,6 +122,10 @@ public sealed class Startup
                 };
     }
 
+    /// <summary>
+    /// Configures services.
+    /// </summary>
+    /// <param name="services">The services to configure or extend.</param>
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
@@ -245,6 +256,10 @@ public sealed class Startup
         }
     }
 
+    /// <summary>
+    /// Configures the application.
+    /// </summary>
+    /// <param name="app">The app to configure</param>
     public void Configure(IApplicationBuilder app)
     {
         var knownProxies = Array.Empty<IPAddress>();

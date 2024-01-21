@@ -14,6 +14,10 @@ internal sealed class LogEventPublisher : IEventPublisher
 {
     private readonly ILogger<LogEventPublisher> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogEventPublisher"/> class.
+    /// </summary>
+    /// <param name="logger">The logger to use.</param>
     public LogEventPublisher(ILogger<LogEventPublisher> logger)
     {
         _logger = logger;

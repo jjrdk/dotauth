@@ -20,8 +20,14 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 
+/// <summary>
+/// Server program.
+/// </summary>
 public sealed class Program
 {
+    /// <summary>
+    /// Entry point method.
+    /// </summary>
     public static async Task Main()
     {
 #if DEBUG
