@@ -38,17 +38,17 @@
                 <div class="card-content">
                     <div class="row">
                         <h4 class="col s12">Client: @client.Key</h4>
-                        <div class="col s12 m3">
+                        <div class="col s12 m2">
                             @if (string.IsNullOrWhiteSpace(client.First().LogoUri))
                             {
-                                <img class="center-align left" alt="logo" src="@Url.Content("~/img/oauth2.png")" alt="logo" width="250" height="250"  />
+                                <img class="center-align left" alt="logo" src="@Url.Content("~/img/oauth2.png")" width="150" height="150"  />
                             }
                             else
                             {
-                                <img class="center-align left" alt="logo" src="@Url.Content(client.First().LogoUri)" alt="logo" width="250" height="250"  />
+                                <img class="center-align left" alt="logo" src="@Url.Content(client.First().LogoUri)" width="150" height="150"  />
                             }
                         </div>
-                        <div class="col s12 m9">
+                        <div class="col s12 m10">
                         @foreach (var consent in client)
                         {
                             <form method="post" action="@Url.Action("Consent", new { id = consent.Id })">
