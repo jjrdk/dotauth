@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="../../shared.proj" />
+	<PropertyGroup>
+		<RootNamespace>DotAuth.Uma.Web</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\dotauth.uma\dotauth.uma.csproj" />
+	</ItemGroup>
+
+</Project>
