@@ -112,14 +112,14 @@ public sealed class ClientsController : BaseController
                 : ApplicationTypes.Web,
             RedirectionUrls = request.RedirectUris.Select(x => new Uri(x)).ToArray(),
             GrantTypes =
-                new[] { GrantTypes.AuthorizationCode, GrantTypes.ClientCredentials, GrantTypes.RefreshToken },
+                [GrantTypes.AuthorizationCode, GrantTypes.ClientCredentials, GrantTypes.RefreshToken],
             ClientId = Id.Create(),
             Contacts = request.Contacts,
             ResponseTypes = ResponseTypeNames.All,
             RequirePkce = true,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Id.Create() } },
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Id.Create() }],
             TokenLifetime = TimeSpan.FromHours(1),
-            UserClaimsToIncludeInAuthToken = new[] { new Regex("^sub$", RegexOptions.Compiled) },
+            UserClaimsToIncludeInAuthToken = [new Regex("^sub$", RegexOptions.Compiled)],
             TokenEndPointAuthMethod =
                 request.TokenEndpointAuthMethod ?? TokenEndPointAuthenticationMethods.ClientSecretPost
         };

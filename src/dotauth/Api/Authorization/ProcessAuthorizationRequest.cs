@@ -58,7 +58,7 @@ internal sealed class ProcessAuthorizationRequest
         string issuerName,
         CancellationToken cancellationToken = default)
     {
-        var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
+        var endUserIsAuthenticated = claimsPrincipal.Identity?.IsAuthenticated ?? false;
         Consent? confirmedConsent = null;
         if (endUserIsAuthenticated)
         {
@@ -285,7 +285,7 @@ internal sealed class ProcessAuthorizationRequest
                 });
         }
 
-        var endUserIsAuthenticated = IsAuthenticated(principal);
+        var endUserIsAuthenticated = principal.Identity?.IsAuthenticated ?? false;
 
         // Raise "login_required" exception : if the prompt authorizationParameter is "none" AND the user is not authenticated
         // Raise "interaction_required" exception : if there's no consent from the user.
@@ -357,10 +357,5 @@ internal sealed class ProcessAuthorizationRequest
 
         return await _consentRepository.GetConfirmedConsents(subject, authorizationParameter, cancellationToken)
             .ConfigureAwait(false);
-    }
-
-    private static bool IsAuthenticated(ClaimsPrincipal principal)
-    {
-        return principal.Identity?.IsAuthenticated ?? false;
     }
 }

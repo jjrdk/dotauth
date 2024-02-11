@@ -60,10 +60,10 @@ internal sealed class DiscoveryActions
             GrantTypesSupported = GrantTypes.All,
             SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray(),
             TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods,
-            IdTokenSigningAlgValuesSupported = new[] {SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256},
+            IdTokenSigningAlgValuesSupported = [SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256],
             IdTokenEncryptionEncValuesSupported = Array.Empty<string>(),
-            ClaimsLocalesSupported = new[] {"en"},
-            UiLocalesSupported = new[] {"en"},
+            ClaimsLocalesSupported = ["en"],
+            UiLocalesSupported = ["en"],
             Version = _version,
 
             // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html

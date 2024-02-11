@@ -34,10 +34,10 @@ internal static class ClientValidator
     {
         if (client.GrantTypes.Length == 0)
         {
-            client.GrantTypes = new[]
-            {
+            client.GrantTypes =
+            [
                 GrantTypes.AuthorizationCode
-            };
+            ];
         }
 
         return grantTypes.All(gt => client.GrantTypes.Contains(gt));
@@ -47,10 +47,10 @@ internal static class ClientValidator
     {
         if (client.ResponseTypes.Length == 0)
         {
-            client.ResponseTypes = new[]
-            {
+            client.ResponseTypes =
+            [
                 ResponseTypeNames.Code
-            };
+            ];
         }
 
         return responseTypes.All(rt => client.ResponseTypes.Contains(rt));

@@ -796,14 +796,14 @@ public abstract class BaseAuthenticateController : BaseController
             .Concat(externalClaims.Select(x => new Claim(x.Type, x.Value, x.ValueType, x.Issuer)))
             .Concat(
                 externalClaims.Any(x => x.Type == OpenIdClaimTypes.Email)
-                    ? new[]
-                    {
+                    ?
+                    [
                         new Claim(
                             "domain",
                             externalClaims.First(x => x.Type == OpenIdClaimTypes.Email)
                                 .Value[externalClaims.First(x => x.Type == OpenIdClaimTypes.Email)
                                     .Value.LastIndexOf('@')..])
-                    }
+                    ]
                     : Array.Empty<Claim>())
             .ToOpenidClaims()
             .OrderBy(x => x.Type)
@@ -814,9 +814,8 @@ public abstract class BaseAuthenticateController : BaseController
         {
             Subject = Id.Create(),
             ExternalLogins =
-                new[]
-                {
-                    new ExternalAccountLink
+            [
+                new ExternalAccountLink
                     {
                         Subject = authenticatedUser.GetSubject()!,
                         Issuer = authenticatedUser.Identity!.AuthenticationType!,
@@ -824,7 +823,7 @@ public abstract class BaseAuthenticateController : BaseController
                             .Select(x => new Claim(x.Type, x.Value, x.ValueType, x.Issuer))
                             .ToArray()
                     }
-                },
+            ],
             Password = Id.Create().ToSha256Hash(string.Empty),
             IsLocalAccount = false,
             Claims = userClaims,

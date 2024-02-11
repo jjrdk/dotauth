@@ -33,11 +33,11 @@ internal sealed class InMemoryTicketStore : ITicketStore
                     Expires = DateTimeOffset.MaxValue,
                     Id = "1234",
                     IsAuthorizedByRo = false,
-                    Lines = new[]
-                    {
-                        new TicketLine {ResourceSetId = "abc", Scopes = new[] {"read", "write"}},
-                        new TicketLine {ResourceSetId = "def", Scopes = new[] {"read", "write", "print"}},
-                    }
+                    Lines =
+                    [
+                        new TicketLine {ResourceSetId = "abc", Scopes = ["read", "write"] },
+                        new TicketLine {ResourceSetId = "def", Scopes = ["read", "write", "print"] }
+                    ]
                 }
             }
         };

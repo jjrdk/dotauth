@@ -19,8 +19,8 @@ internal sealed class InMemoryScopeRepository : IScopeRepository
 {
     private readonly ICollection<Scope> _scopes;
 
-    private readonly List<Scope> _defaultScopes = new()
-    {
+    private readonly List<Scope> _defaultScopes =
+    [
         new Scope
         {
             Name = "offline",
@@ -30,6 +30,7 @@ internal sealed class InMemoryScopeRepository : IScopeRepository
             Type = ScopeTypes.ProtectedApi,
             Claims = Array.Empty<string>()
         },
+
         new Scope
         {
             Name = "openid",
@@ -39,13 +40,14 @@ internal sealed class InMemoryScopeRepository : IScopeRepository
             Type = ScopeTypes.ResourceOwner,
             Claims = Array.Empty<string>()
         },
+
         new Scope
         {
             Name = "profile",
             IsExposed = true,
             Description = Strings.AccessToProfileInformation,
-            Claims = new[]
-            {
+            Claims =
+            [
                 OpenIdClaimTypes.Name,
                 OpenIdClaimTypes.FamilyName,
                 OpenIdClaimTypes.GivenName,
@@ -60,74 +62,81 @@ internal sealed class InMemoryScopeRepository : IScopeRepository
                 OpenIdClaimTypes.ZoneInfo,
                 OpenIdClaimTypes.Locale,
                 OpenIdClaimTypes.UpdatedAt
-            },
+            ],
             Type = ScopeTypes.ResourceOwner,
             IsDisplayedInConsent = true
         },
+
         new Scope
         {
             Name = "email",
             IsExposed = true,
             IsDisplayedInConsent = true,
             Description = Strings.AccessToEmailAddresses,
-            Claims = new[] { OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified },
+            Claims = [OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified],
             Type = ScopeTypes.ResourceOwner
         },
+
         new Scope
         {
             Name = "address",
             IsExposed = true,
             IsDisplayedInConsent = true,
             Description = Strings.AccessToAddressInformation,
-            Claims = new[] { OpenIdClaimTypes.Address },
+            Claims = [OpenIdClaimTypes.Address],
             Type = ScopeTypes.ResourceOwner
         },
+
         new Scope
         {
             Name = "phone",
             IsExposed = true,
             IsDisplayedInConsent = true,
             Description = Strings.AccessToPhoneInformation,
-            Claims = new[] { OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified },
+            Claims = [OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified],
             Type = ScopeTypes.ResourceOwner
         },
+
         new Scope
         {
             Name = "role",
             IsExposed = true,
             IsDisplayedInConsent = true,
             Description = Strings.AccessToRoles,
-            Claims = new[] { OpenIdClaimTypes.Role },
+            Claims = [OpenIdClaimTypes.Role],
             Type = ScopeTypes.ResourceOwner
         },
+
         new Scope
         {
-            Claims = new[] { OpenIdClaimTypes.Role },
+            Claims = [OpenIdClaimTypes.Role],
             Name = "register_client",
             IsExposed = false,
             IsDisplayedInConsent = false,
             Description = Strings.RegisterAClient,
             Type = ScopeTypes.ProtectedApi
         },
+
         new Scope
         {
-            Claims = new[] { OpenIdClaimTypes.Role },
+            Claims = [OpenIdClaimTypes.Role],
             Description = Strings.ManageServerResources,
             IsDisplayedInConsent = true,
             IsExposed = false,
             Name = "manager",
             Type = ScopeTypes.ProtectedApi
         },
+
         new Scope
         {
-            Claims = new[] { OpenIdClaimTypes.Subject },
+            Claims = [OpenIdClaimTypes.Subject],
             Description = Strings.ManageUma,
             IsDisplayedInConsent = true,
             IsExposed = true,
             Name = "uma_protection",
             Type = ScopeTypes.ProtectedApi
         }
-    };
+    ];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InMemoryScopeRepository"/> class.

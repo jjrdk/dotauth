@@ -176,10 +176,10 @@ internal static class CoreConstants
     }
 
     public static readonly string[] AllStandardTokenTypeHintNames =
-    {
+    [
         StandardTokenTypeHintNames.AccessToken,
         StandardTokenTypeHintNames.RefreshToken
-    };
+    ];
 
     /// <summary>
     /// Parameter names of an authorization request
@@ -219,50 +219,44 @@ internal static class CoreConstants
         new()
         {
             {
-                new[]
-                {
+                [
                     ResponseTypeNames.Code
-                },
+                ],
                 AuthorizationFlow.AuthorizationCodeFlow
             },
             {
-                new[]
-                {
+                [
                     ResponseTypeNames.IdToken
-                },
+                ],
                 AuthorizationFlow.ImplicitFlow
             },
             {
-                new[]
-                {
+                [
                     ResponseTypeNames.IdToken,
                     ResponseTypeNames.Token
-                },
+                ],
                 AuthorizationFlow.ImplicitFlow
             },
             {
-                new[]
-                {
+                [
                     ResponseTypeNames.Code,
                     ResponseTypeNames.IdToken
-                },
+                ],
                 AuthorizationFlow.HybridFlow
             },
             {
-                new[]
-                {
+                [
                     ResponseTypeNames.Code,
                     ResponseTypeNames.Token
-                },
+                ],
                 AuthorizationFlow.HybridFlow
             },
             {
-                new[]
-                {
+                [
                     ResponseTypeNames.Code,
                     ResponseTypeNames.IdToken,
                     ResponseTypeNames.Token
-                },
+                ],
                 AuthorizationFlow.HybridFlow
             }
         };
@@ -292,28 +286,28 @@ internal static class CoreConstants
     internal static class Supported
     {
         public static readonly AuthorizationFlow[] SupportedAuthorizationFlows =
-        {
+        [
             AuthorizationFlow.AuthorizationCodeFlow,
             AuthorizationFlow.ImplicitFlow,
             AuthorizationFlow.HybridFlow
-        };
+        ];
 
-        public static readonly string[] SupportedResponseModes = { "query" };
+        public static readonly string[] SupportedResponseModes = ["query"];
 
         public static readonly string[] SupportedSubjectTypes =
-        {
+        [
             // Same subject value to all clients.
             SubjectTypeNames.Public, SubjectTypeNames.PairWise
-        };
+        ];
 
         public static readonly string[] SupportedTokenEndPointAuthenticationMethods =
-        {
+        [
             TokenEndPointAuthenticationMethods.ClientSecretBasic,
             TokenEndPointAuthenticationMethods.ClientSecretPost,
             TokenEndPointAuthenticationMethods.ClientSecretJwt,
             TokenEndPointAuthenticationMethods.PrivateKeyJwt,
             TokenEndPointAuthenticationMethods.TlsClientAuth
-        };
+        ];
     }
 
     public static class EndPoints

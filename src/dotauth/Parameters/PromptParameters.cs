@@ -7,5 +7,5 @@ internal static class PromptParameters
     public const string Consent = "consent";
     public const string SelectAccount = "select_account";
 
-    public static string[] All() => new[] {None, Login, Consent, SelectAccount};
+    public static string[] All() => [None, Login, Consent, SelectAccount];
 }

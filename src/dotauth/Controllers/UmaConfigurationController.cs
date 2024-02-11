@@ -35,9 +35,9 @@ public sealed class UmaConfigurationController : ControllerBase
     private readonly IScopeStore _scopeStore;
 
     private static readonly string[] UmaProfilesSupported =
-    {
+    [
         "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
-    };
+    ];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UmaConfigurationController"/> class.
@@ -76,7 +76,7 @@ public sealed class UmaConfigurationController : ControllerBase
             RegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Clients),
             IntrospectionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Introspection),
             RevocationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token + "/revoke"),
-            UiLocalesSupported = new[] { "en" },
+            UiLocalesSupported = ["en"],
             GrantTypesSupported = GrantTypes.All,
             ResponseTypesSupported = ResponseTypeNames.All
         };

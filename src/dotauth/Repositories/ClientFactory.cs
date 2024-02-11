@@ -141,7 +141,7 @@ internal sealed class ClientFactory
         client.DefaultAcrValues = newClient.DefaultAcrValues;
 
         // If omitted then the default value is authorization code response type
-        client.ResponseTypes = newClient.ResponseTypes.Length == 0 ? new[] { ResponseTypeNames.Code } : newClient.ResponseTypes;
+        client.ResponseTypes = newClient.ResponseTypes.Length == 0 ? [ResponseTypeNames.Code] : newClient.ResponseTypes;
         client.SectorIdentifierUri = newClient.SectorIdentifierUri;
         client.TokenEndPointAuthMethod = newClient.TokenEndPointAuthMethod;
         client.TokenEndPointAuthSigningAlg = newClient.TokenEndPointAuthSigningAlg;
@@ -151,10 +151,10 @@ internal sealed class ClientFactory
 
         client.Secrets = newClient.Secrets.Length switch
         {
-            0 when client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.PrivateKeyJwt => new[]
-            {
+            0 when client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.PrivateKeyJwt =>
+            [
                 new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = Id.Create()}
-            },
+            ],
             > 0 => newClient.Secrets.Select(
                     secret => secret.Type == ClientSecretTypes.SharedSecret
                         ? new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = Id.Create()}
@@ -165,7 +165,7 @@ internal sealed class ClientFactory
 
         // If omitted then the default value is authorization code grant type
         client.GrantTypes = newClient.GrantTypes.Length == 0
-            ? new[] { GrantTypes.AuthorizationCode }
+            ? [GrantTypes.AuthorizationCode]
             : newClient.GrantTypes;
 
         client.IdTokenEncryptedResponseAlg = !string.IsNullOrWhiteSpace(newClient.IdTokenEncryptedResponseAlg)

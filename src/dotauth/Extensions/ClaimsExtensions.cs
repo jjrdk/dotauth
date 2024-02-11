@@ -26,7 +26,7 @@ internal static class ClaimsExtensions
     {
         return claimTypes.SelectMany(claim =>
             MappingToOpenidClaims.ContainsKey(claim)
-                ? new[] {MappingToOpenidClaims[claim], claim}
+                ? [MappingToOpenidClaims[claim], claim]
                 : new[] {claim});
     }
 
@@ -41,7 +41,7 @@ internal static class ClaimsExtensions
 
     public static bool HasClaimValue(this Claim claim, string value, char separator = ' ')
     {
-        return HasClaimValue(claim, value, new[] {separator});
+        return HasClaimValue(claim, value, [separator]);
     }
 
     public static bool HasClaimValue(this Claim claim, string value, params char[] separators)

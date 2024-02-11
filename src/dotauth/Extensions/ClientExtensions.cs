@@ -34,7 +34,7 @@ internal static class ClientExtensions
         {
             var key = await jwksStore.GetEncryptionKey(client.IdTokenEncryptedResponseAlg, cancellationToken).ConfigureAwait(false);
 
-            encryptionKeys = new[] { key };
+            encryptionKeys = [key];
         }
         var parameters = new TokenValidationParameters
         {
@@ -92,7 +92,7 @@ internal static class ClientExtensions
                 : jwksStore.GetSigningKey(client.IdTokenSignedResponseAlg, cancellationToken))
             .ConfigureAwait(false);
 
-        return new[] { keys };
+        return [keys];
     }
 
     public static async Task<string> GenerateIdToken(

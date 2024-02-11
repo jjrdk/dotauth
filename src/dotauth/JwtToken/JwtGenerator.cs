@@ -633,6 +633,6 @@ internal sealed class JwtGenerator
         var secondHalf = new byte[halfIndex];
         Buffer.BlockCopy(arr, 0, firstHalf, 0, halfIndex);
         Buffer.BlockCopy(arr, halfIndex, secondHalf, 0, halfIndex);
-        return new[] { firstHalf, secondHalf };
+        return [firstHalf, secondHalf];
     }
 }
