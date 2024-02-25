@@ -37,7 +37,7 @@ internal static class ParameterParserHelper
 
         var promptNames = PromptParameters.All(); //Enum.GetNames(typeof(PromptParameter));
 
-        var prompts = parameter.Split(' ')
+        var prompts = parameter.Split(' ', StringSplitOptions.TrimEntries| StringSplitOptions.RemoveEmptyEntries)
             .Where(c => !string.IsNullOrWhiteSpace(c) && promptNames.Contains(c))
             .ToList();
         return prompts;

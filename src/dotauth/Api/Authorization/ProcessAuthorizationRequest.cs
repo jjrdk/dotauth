@@ -83,7 +83,7 @@ internal sealed class ProcessAuthorizationRequest
         }
 
         if (authorizationParameter.RedirectUrl == null
-            || client.GetRedirectionUrls(authorizationParameter.RedirectUrl).Length == 0)
+         || client.GetRedirectionUrls(authorizationParameter.RedirectUrl).Length == 0)
         {
             var message = string.Format(Strings.RedirectUrlIsNotValid, authorizationParameter.RedirectUrl);
             _logger.LogError(message);
@@ -117,13 +117,12 @@ internal sealed class ProcessAuthorizationRequest
         //}
 
         var responseTypes = authorizationParameter.ResponseType.ParseResponseTypes();
-        if (!responseTypes.Any())
+        if (responseTypes.Length == 0)
         {
             var message = string.Format(
                 Strings.MissingParameter,
                 CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName);
-            _logger.LogError(
-                message);
+            _logger.LogError("{ErrorMessage}", message);
             return EndpointResult.CreateBadRequestResult(
                 new ErrorDetails
                 {
@@ -159,7 +158,8 @@ internal sealed class ProcessAuthorizationRequest
                 var authenticationDateTime = long.Parse(authenticationDateTimeClaim.Value);
                 if (maxAge < currentDateTimeUtc - authenticationDateTime)
                 {
-                    result = EndpointResult.CreateAnEmptyActionResultWithRedirection(DotAuthEndPoints.AuthenticateIndex);
+                    result = EndpointResult.CreateAnEmptyActionResultWithRedirection(DotAuthEndPoints
+                        .AuthenticateIndex);
                 }
             }
         }
@@ -174,6 +174,7 @@ internal sealed class ProcessAuthorizationRequest
         {
             return result;
         }
+
         var success = await ProcessIdTokenHint(
                 result,
                 authorizationParameter,
@@ -187,7 +188,6 @@ internal sealed class ProcessAuthorizationRequest
             Option.Error e => EndpointResult.CreateBadRequestResult(e.Details),
             _ => result
         };
-
     }
 
     private async Task<Option> ProcessIdTokenHint(
@@ -199,8 +199,8 @@ internal sealed class ProcessAuthorizationRequest
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(authorizationParameter.IdTokenHint)
-            || !prompts.Contains(PromptParameters.None)
-            || endpointResult.Type != ActionResultType.RedirectToCallBackUrl)
+         || !prompts.Contains(PromptParameters.None)
+         || endpointResult.Type != ActionResultType.RedirectToCallBackUrl)
         {
             return new Option.Success();
         }
@@ -316,7 +316,6 @@ internal sealed class ProcessAuthorizationRequest
                     Detail = Strings.TheUserNeedsToGiveHisConsent,
                     Status = HttpStatusCode.BadRequest
                 });
-
         }
 
         // Redirects to the authentication screen
