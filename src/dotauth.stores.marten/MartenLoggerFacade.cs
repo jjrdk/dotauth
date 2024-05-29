@@ -55,7 +55,37 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
             (current, npgsqlParameter) => current.Replace(
                 npgsqlParameter.ParameterName,
                 $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
-        _logger.LogError("{Entry}", entry);
+        _logger.LogError(ex, "{Entry}", entry);
+    }
+
+    /// <inheritdoc />
+    public void LogSuccess(NpgsqlBatch batch)
+    {
+        var entry = batch.BatchCommands.OfType<NpgsqlBatchCommand>().Aggregate("", (s, command) =>
+            s + Environment.NewLine + command.Parameters.Aggregate(
+                command.CommandText,
+                (current, npgsqlParameter) => current.Replace(
+                    npgsqlParameter.ParameterName,
+                    $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}")));
+        _logger.LogInformation("{BatchEntry}", entry);
+    }
+
+    /// <inheritdoc />
+    public void LogFailure(NpgsqlBatch batch, Exception ex)
+    {
+        var entry = batch.BatchCommands.OfType<NpgsqlBatchCommand>().Aggregate("", (s, command) =>
+            s + Environment.NewLine + command.Parameters.Aggregate(
+                command.CommandText,
+                (current, npgsqlParameter) => current.Replace(
+                    npgsqlParameter.ParameterName,
+                    $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}")));
+        _logger.LogError(ex, "{BatchError}", entry);
+    }
+
+    /// <inheritdoc />
+    public void LogFailure(Exception ex, string message)
+    {
+        _logger.LogError(ex, "{Error}", message);
     }
 
     /// <inheritdoc />
@@ -72,5 +102,10 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
     public void OnBeforeExecute(NpgsqlCommand command)
     {
         _logger.LogError("Before PostgreSql command: {CommandText}", command.CommandText);
+    }
+
+    /// <inheritdoc />
+    public void OnBeforeExecute(NpgsqlBatch batch)
+    {
     }
 }
