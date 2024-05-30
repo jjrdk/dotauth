@@ -33,7 +33,7 @@ public record DynamicClientRegistrationRequest
     /// Gets or sets the redirect uris.
     /// </summary>
     [DataMember(Name = "redirect_uris")]
-    public string[] RedirectUris { get; set; } = Array.Empty<string>();
+    public string[] RedirectUris { get; set; } = [];
 
     /// <summary>
     /// Gets or sets teh client name.
@@ -57,5 +57,5 @@ public record DynamicClientRegistrationRequest
     /// Gets or sets the contacts.
     /// </summary>
     [DataMember(Name = "contacts")]
-    public string[] Contacts { get; set; } = Array.Empty<string>();
+    public string[] Contacts { get; set; } = [];
 }

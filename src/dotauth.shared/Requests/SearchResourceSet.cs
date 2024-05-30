@@ -22,7 +22,7 @@ public sealed record SearchResourceSet
     /// The search terms.
     /// </value>
     [DataMember(Name = "terms")]
-    public string[] Terms { get; set; } = Array.Empty<string>();
+    public string[] Terms { get; set; } = [];
     
     /// <summary>
     /// Gets or sets the requested resource types.
@@ -31,7 +31,7 @@ public sealed record SearchResourceSet
     /// The requested resource types.
     /// </value>
     [DataMember(Name = "types")]
-    public string[] Types { get; set; } = Array.Empty<string>();
+    public string[] Types { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the start index.

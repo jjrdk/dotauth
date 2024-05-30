@@ -129,7 +129,7 @@ public sealed record UmaConfiguration
     /// The claim token profiles supported.
     /// </value>
     [DataMember(Name = "claim_token_profiles_supported")]
-    public string[] ClaimTokenProfilesSupported { get; set; } = Array.Empty<string>();
+    public string[] ClaimTokenProfilesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the uma profiles supported.
@@ -138,7 +138,7 @@ public sealed record UmaConfiguration
     /// The uma profiles supported.
     /// </value>
     [DataMember(Name = "uma_profiles_supported")]
-    public string[] UmaProfilesSupported { get; set; } = Array.Empty<string>();
+    public string[] UmaProfilesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the scopes supported.
@@ -147,7 +147,7 @@ public sealed record UmaConfiguration
     /// The scopes supported.
     /// </value>
     [DataMember(Name = "scopes_supported")]
-    public string[] ScopesSupported { get; set; } = Array.Empty<string>();
+    public string[] ScopesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the response types supported.
@@ -156,7 +156,7 @@ public sealed record UmaConfiguration
     /// The response types supported.
     /// </value>
     [DataMember(Name = "response_types_supported")]
-    public string[] ResponseTypesSupported { get; set; } = Array.Empty<string>();
+    public string[] ResponseTypesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the grant types supported.
@@ -165,7 +165,7 @@ public sealed record UmaConfiguration
     /// The grant types supported.
     /// </value>
     [DataMember(Name = "grant_types_supported")]
-    public string[] GrantTypesSupported { get; set; } = Array.Empty<string>();
+    public string[] GrantTypesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the token endpoint authentication methods supported.
@@ -174,7 +174,7 @@ public sealed record UmaConfiguration
     /// The token endpoint authentication methods supported.
     /// </value>
     [DataMember(Name = "token_endpoint_auth_methods_supported")]
-    public string[] TokenEndpointAuthMethodsSupported { get; set; } = Array.Empty<string>();
+    public string[] TokenEndpointAuthMethodsSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the token endpoint authentication signing alg values supported.
@@ -183,7 +183,7 @@ public sealed record UmaConfiguration
     /// The token endpoint authentication signing alg values supported.
     /// </value>
     [DataMember(Name = "token_endpoint_auth_signing_alg_values_supported")]
-    public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; } = Array.Empty<string>();
+    public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the UI locales supported.
@@ -192,5 +192,5 @@ public sealed record UmaConfiguration
     /// The UI locales supported.
     /// </value>
     [DataMember(Name = "ui_locales_supported")]
-    public string[] UiLocalesSupported { get; set; } = Array.Empty<string>();
+    public string[] UiLocalesSupported { get; set; } = [];
 }

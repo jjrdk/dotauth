@@ -29,7 +29,7 @@ public sealed class AuthenticateHelperFixture
         _consentRepository = Substitute.For<IConsentRepository>();
         var scopeRepository = Substitute.For<IScopeRepository>();
         scopeRepository.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
-            .Returns(new[] { new Scope { Name = "scope" } });
+            .Returns([new Scope { Name = "scope" }]);
         _authenticateHelper = new AuthenticateHelper(
             Substitute.For<IAuthorizationCodeStore>(),
             Substitute.For<ITokenStore>(),
@@ -53,7 +53,7 @@ public sealed class AuthenticateHelperFixture
                 authorizationParameter,
                 null,
                 "",
-                Array.Empty<Claim>(),
+                [],
                 "",
                 CancellationToken.None));
         Assert.Equal(
@@ -75,7 +75,7 @@ public sealed class AuthenticateHelperFixture
                 authorizationParameter,
                 code,
                 subject,
-                Array.Empty<Claim>(),
+                [],
                 "",
                 CancellationToken.None);
 
@@ -100,10 +100,10 @@ public sealed class AuthenticateHelperFixture
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new Client());
         _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<Client>());
+            .Returns([]);
         var consent = new Consent
         {
-            GrantedScopes = new[] { "scope" },
+            GrantedScopes = ["scope"],
             ClientId = "client"
         };
         _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -113,7 +113,7 @@ public sealed class AuthenticateHelperFixture
                 authorizationParameter,
                 code,
                 subject,
-                Array.Empty<Claim>(),
+                [],
                 "",
                 CancellationToken.None);
 
@@ -134,7 +134,7 @@ public sealed class AuthenticateHelperFixture
                 authorizationParameter,
                 code,
                 subject,
-                Array.Empty<Claim>(),
+                [],
                 "",
                 CancellationToken.None);
 

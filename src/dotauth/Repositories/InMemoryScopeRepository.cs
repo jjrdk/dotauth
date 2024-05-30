@@ -28,7 +28,7 @@ internal sealed class InMemoryScopeRepository : IScopeRepository
             IsDisplayedInConsent = true,
             Description = Strings.AccessToRefreshToken,
             Type = ScopeTypes.ProtectedApi,
-            Claims = Array.Empty<string>()
+            Claims = []
         },
 
         new Scope
@@ -38,7 +38,7 @@ internal sealed class InMemoryScopeRepository : IScopeRepository
             IsDisplayedInConsent = true,
             Description = Strings.AccessToOpenIdScope,
             Type = ScopeTypes.ResourceOwner,
-            Claims = Array.Empty<string>()
+            Claims = []
         },
 
         new Scope

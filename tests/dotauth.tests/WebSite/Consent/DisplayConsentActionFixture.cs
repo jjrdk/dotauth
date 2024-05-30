@@ -74,13 +74,13 @@ public sealed class DisplayConsentActionFixture
                     .ToSet(),
             IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
             ClientId = clientid,
-            AllowedScopes = new[] { scope }
+            AllowedScopes = [scope]
         };
-        var consent = new Consent { ClientId = client.ClientId, GrantedScopes = new[] { scope } };
+        var consent = new Consent { ClientId = client.ClientId, GrantedScopes = [scope] };
         _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new List<Consent> { consent });
         _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
-            .Returns(new[] { new Scope { Name = scope, IsDisplayedInConsent = true } });
+            .Returns([new Scope { Name = scope, IsDisplayedInConsent = true }]);
         var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test"), }, "test");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
@@ -94,7 +94,7 @@ public sealed class DisplayConsentActionFixture
         _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(client);
         _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<Client>());
+            .Returns([]);
         var result = await _displayConsentAction
                 .Execute(authorizationParameter, claimsPrincipal, "", CancellationToken.None);
 
@@ -119,7 +119,7 @@ public sealed class DisplayConsentActionFixture
         };
         var consent = new Consent
         {
-            GrantedScopes = new[] { "scope" },
+            GrantedScopes = ["scope"],
             ClientId = clientId
         };
         var returnedClient = new Client
@@ -135,7 +135,7 @@ public sealed class DisplayConsentActionFixture
         _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(returnedClient);
         _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<Client>());
+            .Returns([]);
         _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new[] { consent });
         var result = await _displayConsentAction.Execute(

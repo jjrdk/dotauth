@@ -213,7 +213,7 @@ public record TokenRequest : IEnumerable<KeyValuePair<string?, string?>>
     /// </exception>
     public static TokenRequest FromPassword(string userName, string password, string[] scopes, string amrValue = "pwd")
     {
-        return FromPassword(userName, password, scopes, new[] { amrValue });
+        return FromPassword(userName, password, scopes, [amrValue]);
     }
 
     /// <summary>

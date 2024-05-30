@@ -30,7 +30,7 @@ public sealed class RedisTokenStore : ITokenStore
         var token = await _database.StringGetAsync(clientId + scopes).ConfigureAwait(false);
         var options = token.HasValue
             ? JsonSerializer.Deserialize<GrantedToken[]>(token!, DefaultJsonSerializerOptions.Instance)!
-            : Array.Empty<GrantedToken>();
+            : [];
         return options.FirstOrDefault(
             x =>
             {
@@ -68,7 +68,7 @@ public sealed class RedisTokenStore : ITokenStore
             .ConfigureAwait(false);
         var existingScopeToken = existingScopeValue.HasValue
             ? JsonSerializer.Deserialize<GrantedToken[]>(existingScopeValue!, DefaultJsonSerializerOptions.Instance)!
-            : Array.Empty<GrantedToken>();
+            : [];
         var scopeTokens = JsonSerializer.Serialize(existingScopeToken.Concat(new[] { grantedToken }).ToArray(),
             DefaultJsonSerializerOptions.Instance);
         var expiry = TimeSpan.FromSeconds(grantedToken.ExpiresIn);

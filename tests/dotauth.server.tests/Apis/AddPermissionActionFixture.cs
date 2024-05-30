@@ -83,7 +83,7 @@ public sealed class AddPermissionActionFixture
         const string resourceSetId = "resource_set_id";
         InitializeFakeObjects(new ResourceSet { Id = DotAuth.Id.Create(), Name = "resource" });
         var addPermissionParameter =
-            new PermissionRequest { ResourceSetId = resourceSetId, Scopes = new[] { "scope" } };
+            new PermissionRequest { ResourceSetId = resourceSetId, Scopes = ["scope"] };
 
         var exception = Assert.IsType<Option<Ticket>.Error>(
             await _requestPermissionHandler.Execute("tester", CancellationToken.None, addPermissionParameter));
@@ -98,9 +98,9 @@ public sealed class AddPermissionActionFixture
         var addPermissionParameter = new PermissionRequest
         {
             ResourceSetId = resourceSetId,
-            Scopes = new[] { ErrorCodes.InvalidScope }
+            Scopes = [ErrorCodes.InvalidScope]
         };
-        var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
+        var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = ["scope"] } };
         InitializeFakeObjects(resources);
 
         var exception = Assert.IsType<Option<Ticket>.Error>(
@@ -125,10 +125,10 @@ public sealed class AddPermissionActionFixture
         var addPermissionParameter = new PermissionRequest
         {
             ResourceSetId = resourceSetId,
-            Scopes = new[] { "scope" },
+            Scopes = ["scope"],
             IdToken = idToken
         };
-        var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = new[] { "scope" } } };
+        var resources = new[] { new ResourceSet { Id = resourceSetId, Scopes = ["scope"] } };
         InitializeFakeObjects(resources);
         _ticketStoreStub.Add(Arg.Any<Ticket>(), Arg.Any<CancellationToken>()).Returns(true);
 

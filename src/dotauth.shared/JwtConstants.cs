@@ -20,15 +20,15 @@ using System.Security.Claims;
 internal sealed class JwtConstants
 {
     public static readonly string[] NotEditableResourceOwnerClaimNames =
-    {
+    [
         OpenIdClaimTypes.Subject,
         OpenIdClaimTypes.EmailVerified,
         OpenIdClaimTypes.PhoneNumberVerified,
-        OpenIdClaimTypes.UpdatedAt,
-    };
+        OpenIdClaimTypes.UpdatedAt
+    ];
 
     public static readonly string[] AllStandardResourceOwnerClaimNames =
-    {
+    [
         OpenIdClaimTypes.Subject,
         OpenIdClaimTypes.Address,
         OpenIdClaimTypes.BirthDate,
@@ -50,10 +50,10 @@ internal sealed class JwtConstants
         OpenIdClaimTypes.UpdatedAt,
         OpenIdClaimTypes.WebSite,
         OpenIdClaimTypes.ZoneInfo
-    };
+    ];
 
     public static readonly string[] AllStandardClaimNames =
-    {
+    [
         StandardClaimNames.Acr,
         StandardClaimNames.Amr,
         StandardClaimNames.Audiences,
@@ -65,7 +65,7 @@ internal sealed class JwtConstants
         StandardClaimNames.Jti,
         StandardClaimNames.Nonce,
         StandardClaimNames.Subject
-    };
+    ];
 
     public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new()
     {

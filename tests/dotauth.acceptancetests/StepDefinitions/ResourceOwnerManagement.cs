@@ -62,7 +62,7 @@ public partial class FeatureTest
     public async Task ThenUserCanLoginWithNewPassword(string subject, string password)
     {
         var option =
-            await _tokenClient.GetToken(TokenRequest.FromPassword(subject, password, new[] { "manager" }))
+            await _tokenClient.GetToken(TokenRequest.FromPassword(subject, password, ["manager"]))
                 ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
@@ -144,7 +144,7 @@ public partial class FeatureTest
     public async Task WhenLoggingInAgain()
     {
         var option = await _tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" }))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["manager"]))
             ;
 
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
@@ -169,7 +169,7 @@ public partial class FeatureTest
     {
         var option =
             await _tokenClient.GetToken(
-                    TokenRequest.FromPassword("administrator", "password", new[] { "manager", "offline" }))
+                    TokenRequest.FromPassword("administrator", "password", ["manager", "offline"]))
                 ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
@@ -199,7 +199,7 @@ public partial class FeatureTest
     {
         var option =
             await _tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "manager" }))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", ["manager"]))
                 ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
@@ -261,13 +261,13 @@ public partial class FeatureTest
         var updateRequest = new UpdateResourceOwnerClaimsRequest
         {
             Subject = "user",
-            Claims = new[]
-            {
+            Claims =
+            [
                 new ClaimData { Type = OpenIdClaimTypes.Subject, Value = "user" },
                 new ClaimData { Type = OpenIdClaimTypes.Name, Value = "John Doe" },
                 new ClaimData { Type = "acceptance_test", Value = "test" },
                 new ClaimData { Type = "test", Value = "something" }
-            }
+            ]
         };
 
         var json = JsonConvert.SerializeObject(updateRequest);

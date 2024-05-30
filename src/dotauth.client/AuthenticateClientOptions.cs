@@ -64,7 +64,7 @@ public record AuthenticateClientOptions
     /// <summary>
     /// Gets or sets the scopes to authenticate for.
     /// </summary>
-    public string[] Scopes { get; set; } = Array.Empty<string>();
+    public string[] Scopes { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the scopes to authenticate for.

@@ -16,7 +16,7 @@ public sealed record SearchAuthPoliciesResponse
     /// The content.
     /// </value>
     [DataMember(Name = "content")]
-    public PolicyResponse[] Content { get; set; } = Array.Empty<PolicyResponse>();
+    public PolicyResponse[] Content { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the total results.

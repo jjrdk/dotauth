@@ -123,8 +123,8 @@ public static class OpenIdClaimTypes
     /// <summary>
     /// Gets all openid claim types.
     /// </summary>
-    public static readonly string[] All = new[]
-    {
+    public static readonly string[] All =
+    [
         Subject,
         Name,
         NickName,
@@ -145,5 +145,5 @@ public static class OpenIdClaimTypes
         Role,
         WebSite,
         ZoneInfo
-    };
+    ];
 }

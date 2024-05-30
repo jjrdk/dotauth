@@ -26,5 +26,5 @@ public sealed record UpdateResourceOwnerClaimsRequest
     /// The claims.
     /// </value>
     [DataMember(Name = "claims")]
-    public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
+    public ClaimData[] Claims { get; set; } = [];
 }

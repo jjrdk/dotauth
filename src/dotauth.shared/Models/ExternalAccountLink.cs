@@ -30,5 +30,5 @@ public sealed record ExternalAccountLink
     /// <value>
     /// The external claims.
     /// </value>
-    public Claim[] ExternalClaims { get; set; } = Array.Empty<Claim>();
+    public Claim[] ExternalClaims { get; set; } = [];
 }

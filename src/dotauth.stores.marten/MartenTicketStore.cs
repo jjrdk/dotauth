@@ -46,7 +46,7 @@ public sealed class MartenTicketStore : ITicketStore
         var ticket = await session.LoadAsync<Ticket>(ticketId, cancellationToken).ConfigureAwait(false);
         if (ticket == null)
         {
-            return (false, Array.Empty<ClaimData>());
+            return (false, []);
         }
 
         if (ticket.IsAuthorizedByRo)

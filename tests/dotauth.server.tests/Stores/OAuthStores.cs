@@ -11,8 +11,8 @@ public static class OAuthStores
 {
     public static List<Scope> GetScopes()
     {
-        return new()
-        {
+        return
+        [
             new Scope
             {
                 Name = "uma_protection",
@@ -20,6 +20,7 @@ public static class OAuthStores
                 IsDisplayedInConsent = true,
                 Type = ScopeTypes.ProtectedApi
             },
+
             new Scope
             {
                 Name = "uma_authorization",
@@ -27,41 +28,42 @@ public static class OAuthStores
                 IsDisplayedInConsent = true,
                 Type = ScopeTypes.ProtectedApi
             }
-        };
+        ];
     }
 
     public static List<Client> GetClients()
     {
-        return new()
-        {
+        return
+        [
             new Client
             {
                 ClientId = "resource_server",
                 ClientName = "Resource server",
-                Secrets = new[]
-                {
-                    new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "resource_server"}
-                },
+                Secrets =
+                [
+                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "resource_server" }
+                ],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                AllowedScopes = new[] {"uma_protection", "uma_authorization"},
-                GrantTypes = new[] {GrantTypes.ClientCredentials, GrantTypes.UmaTicket},
-                ResponseTypes = new[] {ResponseTypeNames.Token},
+                AllowedScopes = ["uma_protection", "uma_authorization"],
+                GrantTypes = [GrantTypes.ClientCredentials, GrantTypes.UmaTicket],
+                ResponseTypes = [ResponseTypeNames.Token],
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Native
             },
+
             new Client
             {
                 ClientId = "anonymous",
                 ClientName = "Anonymous",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "anonymous"}},
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "anonymous" }],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                AllowedScopes = Array.Empty<string>(),
-                GrantTypes = new[] {GrantTypes.ClientCredentials},
-                ResponseTypes = new[] {ResponseTypeNames.Token},
+                AllowedScopes = [],
+                GrantTypes = [GrantTypes.ClientCredentials],
+                ResponseTypes = [ResponseTypeNames.Token],
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Native
             }
-        };
+        ];
     }
 }

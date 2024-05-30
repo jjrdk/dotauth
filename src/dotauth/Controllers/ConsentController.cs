@@ -139,7 +139,7 @@ public sealed class ConsentController : BaseController
             ClientDisplayName = client.ClientName,
             AllowedScopeDescriptions =
                 actionResult?.Scopes == null
-                    ? new List<string>()
+                    ? []
                     : actionResult.Scopes.Select(s => s.Description).ToList(),
             AllowedIndividualClaims = actionResult?.AllowedClaims ?? new List<string>(),
             LogoUri = client.LogoUri?.AbsoluteUri,
@@ -204,7 +204,7 @@ public sealed class ConsentController : BaseController
                 new ConsentRejected(
                     Id.Create(),
                     request.client_id ?? string.Empty,
-                    request.scope == null ? Array.Empty<string>() : request.scope.Trim().Split(' '),
+                    request.scope == null ? [] : request.scope.Trim().Split(' '),
                     DateTimeOffset.UtcNow))
             .ConfigureAwait(false);
         return Redirect(request.redirect_uri.AbsoluteUri);

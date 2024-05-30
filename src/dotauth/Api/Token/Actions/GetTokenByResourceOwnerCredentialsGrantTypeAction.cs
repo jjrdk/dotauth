@@ -167,7 +167,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
         var generatedIdTokenPayload = await _jwtGenerator.GenerateFilteredIdTokenPayload(
             claimsPrincipal,
             authorizationParameter,
-            Array.Empty<ClaimParameter>(),
+            [],
             issuerName,
             cancellationToken).ConfigureAwait(false);
         if (generatedIdTokenPayload is Option<JwtPayload>.Error error)

@@ -9,7 +9,7 @@ public class RegistrationData : ResourceRegistration
     /// Gets or sets the content description
     /// </summary>
     [DataMember(Name = "files")]
-    public FileDescription[] Data { get; set; } = Array.Empty<FileDescription>();
+    public FileDescription[] Data { get; set; } = [];
 
     public override RegistrationData ToRegistrationData()
     {

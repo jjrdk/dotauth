@@ -63,7 +63,7 @@ public sealed class ServerStartup
             Scopes = _ => new InMemoryScopeRepository(DefaultStores.Scopes()),
             Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents()),
             Users = _ => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users()),
-            ClaimsIncludedInUserCreation = new[] { "acceptance_test" },
+            ClaimsIncludedInUserCreation = ["acceptance_test"],
             DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5),
             DevicePollingInterval = TimeSpan.FromSeconds(3)
         };
@@ -78,11 +78,10 @@ public sealed class ServerStartup
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         services.AddDotAuthServer(
                 _configuration,
-                new[]
-                {
+                [
                     CookieAuthenticationDefaults.AuthenticationScheme,
-                    JwtBearerDefaults.AuthenticationScheme,
-                })
+                    JwtBearerDefaults.AuthenticationScheme
+                ])
             .AddDotAuthUi(typeof(IDefaultUi));
         services
             .AddAccountFilter()

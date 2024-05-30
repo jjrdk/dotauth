@@ -33,10 +33,10 @@ public sealed class RedisDockerBuildTask : FrostingTask<BuildContext>
             File = "./DockerfilePgRedis",
             ForceRm = true,
             Rm = true,
-            Tag = new[]
-            {
+            Tag =
+            [
                 "jjrdk/dotauth:pgredis-canary", "jjrdk/dotauth:" + context.BuildVersion + "-pgredis"
-            }
+            ]
         };
         context.DockerBuild(settings, "./");
     }

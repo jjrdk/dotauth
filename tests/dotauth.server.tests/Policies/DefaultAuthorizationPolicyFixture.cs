@@ -138,7 +138,7 @@ public sealed class DefaultAuthorizationPolicyFixture
     {
         var ticket = new TicketLineParameter("client_id", new[] { "read", "create", "update" });
 
-        var authorizationPolicy = new[] { new PolicyRule { Scopes = new[] { "read" } } };
+        var authorizationPolicy = new[] { new PolicyRule { Scopes = ["read"] } };
 
         var result = await _authorizationPolicy.Execute(
                 ticket,
@@ -158,8 +158,8 @@ public sealed class DefaultAuthorizationPolicyFixture
 
         var authorizationPolicy = new PolicyRule
         {
-            ClientIdsAllowed = new[] { "client_id" },
-            Scopes = new[] { "read", "create", "update" }
+            ClientIdsAllowed = ["client_id"],
+            Scopes = ["read", "create", "update"]
         };
 
         var result = await _authorizationPolicy.Execute(
@@ -183,13 +183,13 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             new PolicyRule
             {
-                ClientIdsAllowed = new[] {"client_id"},
-                Scopes = new[] {"read", "create", "update"},
-                Claims = new[]
-                {
+                ClientIdsAllowed = ["client_id"],
+                Scopes = ["read", "create", "update"],
+                Claims =
+                [
                     new ClaimData {Type = "name", Value = ""},
                     new ClaimData {Type = "email", Value = ""}
-                },
+                ],
                 OpenIdProvider = configurationUrl
             }
         };
@@ -241,13 +241,13 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             new PolicyRule
             {
-                ClientIdsAllowed = new[] {"client_id"},
-                Scopes = new[] {"read", "create", "update"},
-                Claims = new[]
-                {
+                ClientIdsAllowed = ["client_id"],
+                Scopes = ["read", "create", "update"],
+                Claims =
+                [
                     new ClaimData {Type = "name", Value = ""},
                     new ClaimData {Type = "email", Value = ""}
-                },
+                ],
                 OpenIdProvider = configurationUrl
             }
         };
@@ -273,13 +273,13 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             new PolicyRule
             {
-                ClientIdsAllowed = new[] {"client_id"},
-                Scopes = new[] {"read", "create", "update"},
-                Claims = new[]
-                {
+                ClientIdsAllowed = ["client_id"],
+                Scopes = ["read", "create", "update"],
+                Claims =
+                [
                     new ClaimData {Type = "role", Value = "role1"},
                     new ClaimData {Type = "role", Value = "role2"}
-                },
+                ],
                 OpenIdProvider = configurationUrl
             }
         };
@@ -305,13 +305,13 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             new PolicyRule
             {
-                ClientIdsAllowed = new[] {"client_id"},
-                Scopes = new[] {"read", "create", "update"},
-                Claims = new[]
-                {
+                ClientIdsAllowed = ["client_id"],
+                Scopes = ["read", "create", "update"],
+                Claims =
+                [
                     new ClaimData {Type = "role", Value = "role1"},
                     new ClaimData {Type = "role", Value = "role2"}
-                },
+                ],
                 OpenIdProvider = configurationUrl
             }
         };
@@ -337,13 +337,13 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             new PolicyRule
             {
-                ClientIdsAllowed = new[] {"client_id"},
-                Scopes = new[] {"read", "create", "update"},
-                Claims = new[]
-                {
+                ClientIdsAllowed = ["client_id"],
+                Scopes = ["read", "create", "update"],
+                Claims =
+                [
                     new ClaimData {Type = "role", Value = "role1"},
                     new ClaimData {Type = "role", Value = "role2"}
-                },
+                ],
                 OpenIdProvider = configurationUrl
             }
         };
@@ -369,13 +369,13 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             new PolicyRule
             {
-                ClientIdsAllowed = new[] {"client_id"},
-                Scopes = new[] {"read", "create", "update"},
-                Claims = new[]
-                {
+                ClientIdsAllowed = ["client_id"],
+                Scopes = ["read", "create", "update"],
+                Claims =
+                [
                     new ClaimData {Type = "role", Value = "role1"},
                     new ClaimData {Type = "role", Value = "role2"}
-                },
+                ],
                 OpenIdProvider = configurationUrl
             }
         };
@@ -401,13 +401,13 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             new PolicyRule
             {
-                ClientIdsAllowed = new[] {"client_id"},
-                Scopes = new[] {"read", "create", "update"},
-                Claims = new[]
-                {
+                ClientIdsAllowed = ["client_id"],
+                Scopes = ["read", "create", "update"],
+                Claims =
+                [
                     new ClaimData {Type = "name", Value = "name"},
                     new ClaimData {Type = "email", Value = "email"}
-                },
+                ],
                 OpenIdProvider = configurationUrl
             }
         };
@@ -432,9 +432,9 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             new PolicyRule
             {
-                ClientIdsAllowed = new[] {"client_id"},
+                ClientIdsAllowed = ["client_id"],
                 IsResourceOwnerConsentNeeded = true,
-                Scopes = new[] {"read", "create", "update"}
+                Scopes = ["read", "create", "update"]
             }
         };
 
@@ -458,9 +458,9 @@ public sealed class DefaultAuthorizationPolicyFixture
         {
             new PolicyRule
             {
-                ClientIdsAllowed = new[] {"client_id"},
+                ClientIdsAllowed = ["client_id"],
                 IsResourceOwnerConsentNeeded = true,
-                Scopes = new[] {"create"}
+                Scopes = ["create"]
             }
         };
 

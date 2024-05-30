@@ -78,8 +78,8 @@ public sealed class Startup
                 DotAuthConfiguration(
                     salt,
                     ticketLifetime: TimeSpan.FromDays(7),
-                    claimsIncludedInUserCreation: new[]
-                    {
+                    claimsIncludedInUserCreation:
+                    [
                         ClaimTypes.Name,
                         ClaimTypes.Uri,
                         ClaimTypes.Country,
@@ -93,7 +93,7 @@ public sealed class Startup
                         ClaimTypes.StateOrProvince,
                         ClaimTypes.StreetAddress,
                         ClaimTypes.Surname
-                    })
+                    ])
                 {
                     DataProtector = dataProtector,
                     AllowHttp = allowHttp,
@@ -237,7 +237,7 @@ public sealed class Startup
         {
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                    [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])
                 .AddDotAuthUi(GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi))
                 .AddSmsAuthentication(
                     new AwsSmsClient(
@@ -251,7 +251,7 @@ public sealed class Startup
         {
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                    [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])
                 .AddDotAuthUi(GetType(), typeof(IDefaultUi));
         }
     }

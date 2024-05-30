@@ -48,7 +48,7 @@ public sealed class UpdateUserClaimsOperationFixture
     {
         _resourceOwnerRepositoryStub.Get(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(
-                new ResourceOwner { Claims = new[] { new Claim("type", "value"), new Claim("type1", "value") } });
+                new ResourceOwner { Claims = [new Claim("type", "value"), new Claim("type1", "value")] });
 
         await _updateUserClaimsOperation.Execute(
                 "subjet",

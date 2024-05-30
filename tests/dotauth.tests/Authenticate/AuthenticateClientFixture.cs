@@ -58,7 +58,7 @@ public sealed class AuthenticateClientFixture
         };
         var client = new Client
         {
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = secret } },
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = secret }],
             TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
             ClientId = clientId
         };

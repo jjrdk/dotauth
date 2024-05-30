@@ -80,7 +80,7 @@ public sealed class FakeStartup
                     options.Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents());
                     options.Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users());
                 },
-                new[] { JwtBearerDefaults.AuthenticationScheme })
+                [JwtBearerDefaults.AuthenticationScheme])
             .AddSmsAuthentication(_context.TwilioClient)
             .AddLogging(b => b.AddXunit(_testOutputHelper))
             .AddAccountFilter()

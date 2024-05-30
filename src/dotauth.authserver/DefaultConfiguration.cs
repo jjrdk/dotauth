@@ -12,65 +12,64 @@ public static class DefaultConfiguration
 {
     public static List<Client> GetClients()
     {
-        return new()
-        {
+        return
+        [
             new Client
             {
                 ClientId = "web",
                 ClientName = "web",
-                AllowedScopes = new[] {"openid", "role", "profile", "email", "manager", "uma_protection"},
+                AllowedScopes = ["openid", "role", "profile", "email", "manager", "uma_protection"],
                 ApplicationType = ApplicationTypes.Web,
                 GrantTypes = GrantTypes.All,
                 RequirePkce = true,
                 RedirectionUrls =
-                    new[]
-                    {
-                        new Uri("http://localhost:4200/login"),
+                [
+                    new Uri("http://localhost:4200/login"),
                         new Uri("https://localhost:50001/signin-oidc"),
                         new Uri("https://localhost:5001/signin-oidc"),
                         new Uri("https://localhost:5001/callback"),
                         new Uri("http://localhost:5000/callback"),
-                        new Uri("http://localhost/callback"),
-                    },
+                        new Uri("http://localhost/callback")
+                ],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
-                PostLogoutRedirectUris = new[] {new Uri("http://localhost/login")},
+                PostLogoutRedirectUris = [new Uri("http://localhost/login")],
                 ResponseTypes = ResponseTypeNames.All,
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "secret"}},
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }],
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
-                UserClaimsToIncludeInAuthToken = new[]
-                {
+                UserClaimsToIncludeInAuthToken =
+                [
                     new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
                     new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled)
-                },
+                ],
             }
-        };
+        ];
     }
 
     public static List<Scope> GetScopes()
     {
-        return new();
+        return [];
     }
 
     public static List<ResourceOwner> GetUsers(string salt)
     {
-        return new()
-        {
+        return
+        [
             new ResourceOwner
             {
                 Subject = "administrator",
-                Claims = new[]
-                {
+                Claims =
+                [
                     new Claim(StandardClaimNames.Subject, "administrator"),
                     new Claim("role", "administrator"),
                     new Claim("role", "uma_admin"),
                     new Claim(OpenIdClaimTypes.Name, "Anne Admin"),
                     new Claim(OpenIdClaimTypes.Email, "admin@server.com"),
                     new Claim(OpenIdClaimTypes.EmailVerified, bool.TrueString)
-                },
+                ],
                 Password = "password".ToSha256Hash(salt),
                 IsLocalAccount = true,
                 CreateDateTime = DateTimeOffset.UtcNow,
             }
-        };
+        ];
     }
 }

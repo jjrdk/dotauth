@@ -162,7 +162,7 @@ public sealed class ResourceFixture : IDisposable
     public async Task When_Update_Unknown_Resource_Then_Error_Is_Returned()
     {
         var resource = Assert.IsType<Option<UpdateResourceSetResponse>.Error>(await _umaClient.UpdateResourceSet(
-                new ResourceSet { Id = "invalid", Name = "name", Scopes = new[] { "scope" } },
+                new ResourceSet { Id = "invalid", Name = "name", Scopes = ["scope"] },
                 "header")
             );
 
@@ -204,7 +204,7 @@ public sealed class ResourceFixture : IDisposable
     public async Task When_Adding_Resource_Then_Information_Can_Be_Retrieved()
     {
         var resource = await _umaClient.AddResourceSet(
-                new ResourceSet { Name = "name", Scopes = new[] { "scope" } },
+                new ResourceSet { Name = "name", Scopes = ["scope"] },
                 "header")
             ;
 
@@ -215,7 +215,7 @@ public sealed class ResourceFixture : IDisposable
     public async Task When_Search_Resources_Then_List_Is_Returned()
     {
         var option = await _umaClient.SearchResources(
-                new SearchResourceSet { Terms = new[] { "Resources" }, StartIndex = 0, PageSize = 100 },
+                new SearchResourceSet { Terms = ["Resources"], StartIndex = 0, PageSize = 100 },
                 "header")
             ;
         Assert.IsType<Option<PagedResult<ResourceSetDescription>>.Result>(option);
@@ -225,12 +225,12 @@ public sealed class ResourceFixture : IDisposable
     public async Task When_Updating_Resource_Then_Changes_Are_Persisted()
     {
         var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(await _umaClient.AddResourceSet(
-                new ResourceSet { Name = "name", Scopes = new[] { "scope" } },
+                new ResourceSet { Name = "name", Scopes = ["scope"] },
                 "header")
             );
 
         var updateResult = Assert.IsType<Option<UpdateResourceSetResponse>.Result>(await _umaClient.UpdateResourceSet(
-                new ResourceSet { Id = resource.Item.Id, Name = "name2", Type = "type", Scopes = new[] { "scope2" } },
+                new ResourceSet { Id = resource.Item.Id, Name = "name2", Type = "type", Scopes = ["scope2"] },
                 "header")
             );
         var information = Assert.IsType<Option<ResourceSet>.Result>(

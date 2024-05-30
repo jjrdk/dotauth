@@ -128,7 +128,7 @@ internal sealed class ConfirmConsentAction
                     ClientName = client.ClientName,
                     GrantedScopes =
                         authorizationParameter.Scope == null
-                            ? Array.Empty<string>()
+                            ? []
                             : (await GetScopes(authorizationParameter.Scope, cancellationToken)
                                 .ConfigureAwait(false)).ToArray(),
                     Subject = subject,

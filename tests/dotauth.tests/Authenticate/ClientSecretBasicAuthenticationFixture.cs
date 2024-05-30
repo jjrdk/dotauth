@@ -15,7 +15,7 @@ public sealed class ClientSecretBasicAuthenticationFixture
         };
         var client = new Client
         {
-            Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.X509Thumbprint}}
+            Secrets = [new ClientSecret {Type = ClientSecretTypes.X509Thumbprint}]
         };
 
         Assert.Null(authenticateInstruction.AuthenticateClient(client));
@@ -30,7 +30,7 @@ public sealed class ClientSecretBasicAuthenticationFixture
         };
         var client = new Client
         {
-            Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "not_correct"}}
+            Secrets = [new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "not_correct"}]
         };
 
         var result = authenticateInstruction.AuthenticateClient(client);
@@ -48,7 +48,7 @@ public sealed class ClientSecretBasicAuthenticationFixture
         };
         var client = new Client
         {
-            Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}}
+            Secrets = [new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = clientSecret}]
         };
 
         var result = authenticateInstruction.AuthenticateClient(client);

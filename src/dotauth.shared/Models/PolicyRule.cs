@@ -30,7 +30,7 @@ public sealed record PolicyRule
     /// The client ids allowed.
     /// </value>
     [DataMember(Name = "clients")]
-    public string[] ClientIdsAllowed { get; set; } = Array.Empty<string>();
+    public string[] ClientIdsAllowed { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the scopes.
@@ -39,7 +39,7 @@ public sealed record PolicyRule
     /// The scopes.
     /// </value>
     [DataMember(Name = "scopes")]
-    public string[] Scopes { get; set; } = Array.Empty<string>();
+    public string[] Scopes { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the claims.
@@ -48,7 +48,7 @@ public sealed record PolicyRule
     /// The claims.
     /// </value>
     [DataMember(Name = "claims")]
-    public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
+    public ClaimData[] Claims { get; set; } = [];
 
     /// <summary>
     /// Gets or sets a value indicating whether this instance is resource owner consent needed.

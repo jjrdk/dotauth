@@ -44,9 +44,9 @@ public partial class FeatureTest
         var registration = new DynamicClientRegistrationRequest
         {
             ApplicationType = ApplicationTypes.Web,
-            Contacts = new[] { "A. Tester" },
+            Contacts = ["A. Tester"],
             ClientName = "Test Client",
-            RedirectUris = new[] { "app://somewhere" },
+            RedirectUris = ["app://somewhere"],
             TokenEndpointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost
         };
         var request = new HttpRequestMessage
@@ -93,9 +93,9 @@ public partial class FeatureTest
             new DynamicClientRegistrationRequest
             {
                 ApplicationType = ApplicationTypes.Web,
-                Contacts = new[] { "A. Tester" },
+                Contacts = ["A. Tester"],
                 ClientName = "Test Client",
-                RedirectUris = new[] { "app://somewhere" },
+                RedirectUris = ["app://somewhere"],
                 TokenEndpointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost
             },
             CancellationToken.None);
@@ -113,9 +113,9 @@ public partial class FeatureTest
             new DynamicClientRegistrationRequest
             {
                 ApplicationType = ApplicationTypes.Web,
-                Contacts = new[] { "Another Tester" },
+                Contacts = ["Another Tester"],
                 ClientName = "New Name",
-                RedirectUris = new[] { "app://somewhere" },
+                RedirectUris = ["app://somewhere"],
                 TokenEndpointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost
             },
             CancellationToken.None);

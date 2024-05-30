@@ -32,7 +32,7 @@ public abstract class ResourceRegistration
     /// <summary>Gets or sets the scopes.</summary>
     /// <value>The scopes.</value>
     [DataMember(Name = "resource_scopes")]
-    public string[] Scopes { get; set; } = Array.Empty<string>();
+    public string[] Scopes { get; set; } = [];
         
     /// <summary>
     /// Gets or sets the access policy <see cref="Uri"/>.
@@ -68,13 +68,13 @@ public abstract class ResourceRegistration
     /// Gets or sets the tags for the registration.
     /// </summary>
     [DataMember(Name = "tags")]
-    public string[] Tags { get; set; } = Array.Empty<string>();
+    public string[] Tags { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the metadata
     /// </summary>
     [DataMember(Name = "metadata")]
-    public Metadata[] Metadata { get; set; } = Array.Empty<Metadata>();
+    public Metadata[] Metadata { get; set; } = [];
 
     public abstract RegistrationData ToRegistrationData();
 }

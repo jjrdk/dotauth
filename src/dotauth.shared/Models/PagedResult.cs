@@ -35,5 +35,5 @@ public sealed class PagedResult<T>
     /// The content.
     /// </value>
     [DataMember(Name = "content")]
-    public T[] Content { get; set; } = Array.Empty<T>();
+    public T[] Content { get; set; } = [];
 }

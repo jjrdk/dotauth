@@ -71,7 +71,7 @@ internal sealed class RequestPermissionHandler
             .Where(claim => OpenIdClaimTypes.All.Contains(claim.Type))
             .Where(claim => !string.IsNullOrWhiteSpace(claim.Value))
             .Select(x => new ClaimData { Type = x.Type, Value = x.Value })
-            .ToArray() ?? Array.Empty<ClaimData>();
+            .ToArray() ?? [];
 
         var lines = addPermissionParameters.Where(x => x is { Scopes: { }, ResourceSetId: { } })
             .Select(

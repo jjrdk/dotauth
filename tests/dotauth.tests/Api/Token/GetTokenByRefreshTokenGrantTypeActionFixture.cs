@@ -81,8 +81,8 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
         var client = new Client
         {
             ClientId = "id",
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }],
+            GrantTypes = [GrantTypes.AuthorizationCode]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
@@ -108,8 +108,8 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
         var client = new Client
         {
             ClientId = "id",
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
-            GrantTypes = new[] { GrantTypes.RefreshToken }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }],
+            GrantTypes = [GrantTypes.RefreshToken]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
@@ -135,8 +135,8 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
         var client = new Client
         {
             ClientId = "id",
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
-            GrantTypes = new[] { GrantTypes.RefreshToken }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }],
+            GrantTypes = [GrantTypes.RefreshToken]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
@@ -168,8 +168,8 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
                 TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                     .ToSet(),
             IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
-            GrantTypes = new[] { GrantTypes.RefreshToken }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }],
+            GrantTypes = [GrantTypes.RefreshToken]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
         _tokenStoreStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())

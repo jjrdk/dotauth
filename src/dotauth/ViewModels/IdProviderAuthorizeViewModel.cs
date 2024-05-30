@@ -15,5 +15,5 @@ public abstract class IdProviderAuthorizeViewModel
     /// <value>
     /// The identifier providers.
     /// </value>
-    public IdProviderViewModel[] IdProviders { get; set; } = Array.Empty<IdProviderViewModel>();
+    public IdProviderViewModel[] IdProviders { get; set; } = [];
 }

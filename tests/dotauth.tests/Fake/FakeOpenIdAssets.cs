@@ -30,16 +30,16 @@ public static class FakeOpenIdAssets
     /// <returns></returns>
     public static Client[] GetClients()
     {
-        return new[]
-        {
+        return
+        [
             new Client
             {
                 ClientId = "MyBlog",
                 ClientName = "My blog",
-                Secrets = new[] {new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "MyBlog"}},
+                Secrets = [new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = "MyBlog"}],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic,
-                AllowedScopes = new[]
-                {
+                AllowedScopes =
+                [
                     // PROTECTED API SCOPES
                     "BlogApi",
                     "BlogApi:AddArticle",
@@ -49,21 +49,21 @@ public static class FakeOpenIdAssets
                     "email",
                     "address",
                     "phone"
-                },
-                GrantTypes = new[] {GrantTypes.Implicit, GrantTypes.AuthorizationCode},
-                ResponseTypes = new[] {ResponseTypeNames.Token, ResponseTypeNames.Code, ResponseTypeNames.IdToken},
+                ],
+                GrantTypes = [GrantTypes.Implicit, GrantTypes.AuthorizationCode],
+                ResponseTypes = [ResponseTypeNames.Token, ResponseTypeNames.Code, ResponseTypeNames.IdToken],
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256, //"RS256",
                 // IdTokenEncryptedResponseAlg = "RSA1_5",
                 // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
-                RedirectionUrls = new []
-                {
+                RedirectionUrls =
+                [
                     new Uri("https://op.certification.openid.net:60360/authz_cb"),
                     new Uri("http://localhost"),
                     new Uri("https://op.certification.openid.net:60186/authz_cb")
-                }
+                ]
             }
-        };
+        ];
     }
 
     /// <summary>
@@ -72,8 +72,8 @@ public static class FakeOpenIdAssets
     /// <returns></returns>
     public static List<Scope> GetScopes()
     {
-        return new()
-        {
+        return
+        [
             new Scope
             {
                 Name = "BlogApi",
@@ -81,6 +81,7 @@ public static class FakeOpenIdAssets
                 Type = ScopeTypes.ProtectedApi,
                 IsDisplayedInConsent = true
             },
+
             new Scope
             {
                 Name = "BlogApi:AddArticle",
@@ -88,6 +89,7 @@ public static class FakeOpenIdAssets
                 Type = ScopeTypes.ProtectedApi,
                 IsDisplayedInConsent = true
             },
+
             new Scope
             {
                 Name = "openid",
@@ -96,13 +98,14 @@ public static class FakeOpenIdAssets
                 IsDisplayedInConsent = false,
                 Description = "openid"
             },
+
             new Scope
             {
                 Name = "profile",
                 IsExposed = true,
                 Description = "Access to the profile",
-                Claims = new[]
-                {
+                Claims =
+                [
                     OpenIdClaimTypes.Name,
                     OpenIdClaimTypes.FamilyName,
                     OpenIdClaimTypes.GivenName,
@@ -117,37 +120,40 @@ public static class FakeOpenIdAssets
                     OpenIdClaimTypes.ZoneInfo,
                     OpenIdClaimTypes.Locale,
                     OpenIdClaimTypes.UpdatedAt
-                },
+                ],
                 Type = ScopeTypes.ResourceOwner,
                 IsDisplayedInConsent = true
             },
+
             new Scope
             {
                 Name = "email",
                 IsExposed = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the email",
-                Claims = new[] {OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified},
+                Claims = [OpenIdClaimTypes.Email, OpenIdClaimTypes.EmailVerified],
                 Type = ScopeTypes.ResourceOwner
             },
+
             new Scope
             {
                 Name = "address",
                 IsExposed = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the address",
-                Claims = new[] {OpenIdClaimTypes.Address},
+                Claims = [OpenIdClaimTypes.Address],
                 Type = ScopeTypes.ResourceOwner
             },
+
             new Scope
             {
                 Name = "phone",
                 IsExposed = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the phone",
-                Claims = new[] {OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified},
+                Claims = [OpenIdClaimTypes.PhoneNumber, OpenIdClaimTypes.PhoneNumberVerified],
                 Type = ScopeTypes.ResourceOwner
             }
-        };
+        ];
     }
 }

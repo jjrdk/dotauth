@@ -48,7 +48,7 @@ public sealed class DotAuthConfiguration
         AuthorizationCodeValidityPeriod = authorizationCodeValidity == default
             ? TimeSpan.FromMinutes(30)
             : authorizationCodeValidity;
-        ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
+        ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? [];
     }
 
     /// <summary>

@@ -18,7 +18,7 @@ public sealed record TicketLineParameter
     public TicketLineParameter(string clientId, IEnumerable<string>? scopes = null, bool isAuthorizedByRo = false)
     {
         ClientId = clientId;
-        Scopes = scopes == null ? Array.Empty<string>() : scopes.ToArray();
+        Scopes = scopes == null ? [] : scopes.ToArray();
         IsAuthorizedByRo = isAuthorizedByRo;
     }
 

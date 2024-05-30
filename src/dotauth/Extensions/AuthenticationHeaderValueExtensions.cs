@@ -59,7 +59,7 @@ internal static class AuthenticationHeaderValueExtensions
     {
         if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         var decodedParameter = authorizationHeaderValue.Base64Decode();

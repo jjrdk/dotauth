@@ -44,10 +44,10 @@ public sealed class TokenActionsFixture
                     IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                     ClientId = ClientId,
                     Secrets =
-                        new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = ClientSecret } },
-                    AllowedScopes = new[] { scope },
-                    ResponseTypes = new[] { ResponseTypeNames.Token },
-                    GrantTypes = new[] { GrantTypes.ClientCredentials }
+                        [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = ClientSecret }],
+                    AllowedScopes = [scope],
+                    ResponseTypes = [ResponseTypeNames.Token],
+                    GrantTypes = [GrantTypes.ClientCredentials]
                 });
 
         _tokenActions = new TokenActions(

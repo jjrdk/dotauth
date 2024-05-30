@@ -598,7 +598,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
                 );
 
         Assert.NotEmpty(result.Item.AccessToken);
@@ -612,7 +612,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("superuser", "password", new[] { "role" }))
+            .GetToken(TokenRequest.FromPassword("superuser", "password", ["role"]))
             );
 
         var payload = new JwtSecurityToken(result.Item.IdToken);
@@ -631,7 +631,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "openid" }))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["openid"]))
             );
 
         Assert.NotEmpty(result.Item.AccessToken);
@@ -645,7 +645,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
                 );
 
         Assert.NotEmpty(result.Item.AccessToken);
@@ -660,7 +660,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
             );
 
         Assert.NotEmpty(result.Item.AccessToken);

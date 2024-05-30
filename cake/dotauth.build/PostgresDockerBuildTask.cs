@@ -31,10 +31,10 @@ public sealed class PostgresDockerBuildTask : FrostingTask<BuildContext>
             File = "./DockerfilePostgres",
             ForceRm = true,
             Rm = true,
-            Tag = new[]
-            {
+            Tag =
+            [
                 "jjrdk/dotauth:postgres-canary", "jjrdk/dotauth:" + context.BuildVersion + "-postgres"
-            }
+            ]
         };
         context.DockerBuild(settings, "./");
     }

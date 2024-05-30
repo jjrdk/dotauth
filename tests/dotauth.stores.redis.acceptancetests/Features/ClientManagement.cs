@@ -25,7 +25,7 @@ public partial class FeatureTest
     public async Task GivenAManagerToken()
     {
         var response = await _tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", new[] { "manager", "offline" }))
+                TokenRequest.FromPassword("administrator", "password", ["manager", "offline"]))
             .ConfigureAwait(false);
 
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(response);
@@ -56,11 +56,11 @@ public partial class FeatureTest
         {
             ClientId = "test_client",
             ClientName = "Test Client",
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } },
-            AllowedScopes = new[] { "test" },
-            RedirectionUrls = new[] { new Uri("http://localhost/callback"), },
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }],
+            AllowedScopes = ["test"],
+            RedirectionUrls = [new Uri("http://localhost/callback")],
             ApplicationType = ApplicationTypes.Native,
-            GrantTypes = new[] { GrantTypes.ClientCredentials },
+            GrantTypes = [GrantTypes.ClientCredentials],
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
         };
         _addClientResponse = await _managerClient.AddClient(client, _token.AccessToken)

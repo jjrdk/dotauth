@@ -95,7 +95,7 @@ internal sealed class ServerStartup
         services.AddCors(
             options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         // 2. Configure server
-        services.AddDotAuthServer(_martenConfiguration, new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme })
+        services.AddDotAuthServer(_martenConfiguration, [DefaultSchema, JwtBearerDefaults.AuthenticationScheme])
             .AddDotAuthUi(typeof(IDefaultUi));
         services
 #if DEBUG

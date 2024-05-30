@@ -101,9 +101,9 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
         var client = new Client
         {
             ResponseTypes = ResponseTypeNames.All,
-            RedirectionUrls = new[] { new Uri("https://localhost"), },
-            GrantTypes = new[] { GrantTypes.Implicit },
-            AllowedScopes = new[] { "openid" }
+            RedirectionUrls = [new Uri("https://localhost")],
+            GrantTypes = [GrantTypes.Implicit],
+            AllowedScopes = ["openid"]
         };
         var result = await _getTokenViaImplicitWorkflowOperation.Execute(
             authorizationParameter,

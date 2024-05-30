@@ -247,10 +247,10 @@ public sealed class RegisterClientFixture : IDisposable
                     new Client
                     {
                         JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                        AllowedScopes = new[] { "openid" },
+                        AllowedScopes = ["openid"],
                         ClientName = "Test",
                         ClientId = "id",
-                        RedirectionUrls = new[] { new Uri("https://localhost"), },
+                        RedirectionUrls = [new Uri("https://localhost")],
                     },
                     grantedToken.Item.AccessToken));
 

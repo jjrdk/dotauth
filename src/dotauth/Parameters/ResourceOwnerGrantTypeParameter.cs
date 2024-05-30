@@ -24,5 +24,5 @@ internal sealed record ResourceOwnerGrantTypeParameter : GrantTypeParameter
 
     public string? Password { get; init; }
 
-    public string[] AmrValues { get; init; } = Array.Empty<string>();
+    public string[] AmrValues { get; init; } = [];
 }

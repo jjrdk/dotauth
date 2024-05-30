@@ -42,10 +42,10 @@ public sealed class ClientFixture : IDisposable
             new Client
             {
                 JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                AllowedScopes = new[] { "openid" },
+                AllowedScopes = ["openid"],
                 ClientId = "test",
                 ClientName = "name",
-                RedirectionUrls = new[] { new Uri("http://localhost#fragment") }
+                RedirectionUrls = [new Uri("http://localhost#fragment")]
             },
             "")
         );
@@ -71,20 +71,20 @@ public sealed class ClientFixture : IDisposable
         {
             ClientId = Guid.NewGuid().ToString("N"),
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-            AllowedScopes = new[] { "openid" },
+            AllowedScopes = ["openid"],
             ApplicationType = ApplicationTypes.Web,
             ClientName = "client_name",
             ClientUri = new Uri("http://clienturi.com"),
-            Contacts = new[] { "contact" },
+            Contacts = ["contact"],
             DefaultAcrValues = "sms",
-            GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
-            RedirectionUrls = new[] { new Uri("http://localhost") },
-            PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") }
+            GrantTypes = [GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken],
+            RedirectionUrls = [new Uri("http://localhost")],
+            PostLogoutRedirectUris = [new Uri("http://localhost/callback")]
         };
         var addClientResult = Assert.IsType<Option<Client>.Result>(
             await _openidClients.AddClient(client, "token"));
         client = addClientResult.Item;
-        client.AllowedScopes = new[] { "not_valid" };
+        client.AllowedScopes = ["not_valid"];
         var result =
             Assert.IsType<Option<Client>.Error>(
                 await _openidClients.UpdateClient(client, "token"));
@@ -118,7 +118,7 @@ public sealed class ClientFixture : IDisposable
         {
             ClientId = Guid.NewGuid().ToString("N"),
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-            AllowedScopes = new[] { "openid" },
+            AllowedScopes = ["openid"],
             ApplicationType = ApplicationTypes.Web,
             ClientName = "client_name",
             IdTokenSignedResponseAlg = "RS256",
@@ -133,12 +133,12 @@ public sealed class ClientFixture : IDisposable
             TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
             InitiateLoginUri = new Uri("https://initloginuri"),
             ClientUri = new Uri("http://clienturi.com"),
-            Contacts = new[] { "contact" },
+            Contacts = ["contact"],
             DefaultAcrValues = "sms",
-            GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
-            ResponseTypes = new[] { ResponseTypeNames.Code, ResponseTypeNames.IdToken, ResponseTypeNames.Token },
-            RedirectionUrls = new[] { new Uri("http://localhost"), },
-            PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback"), },
+            GrantTypes = [GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken],
+            ResponseTypes = [ResponseTypeNames.Code, ResponseTypeNames.IdToken, ResponseTypeNames.Token],
+            RedirectionUrls = [new Uri("http://localhost")],
+            PostLogoutRedirectUris = [new Uri("http://localhost/callback")],
             //LogoUri = new Uri("http://logouri.com")
         };
         var result =
@@ -166,27 +166,27 @@ public sealed class ClientFixture : IDisposable
         {
             ClientId = Guid.NewGuid().ToString("N"),
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-            AllowedScopes = new[] { "openid" },
+            AllowedScopes = ["openid"],
             ApplicationType = ApplicationTypes.Web,
             ClientName = "client_name",
             ClientUri = new Uri("http://clienturi.com"),
-            Contacts = new[] { "contact" },
+            Contacts = ["contact"],
             DefaultAcrValues = "sms",
             // DefaultMaxAge = 10,
-            GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
-            RedirectionUrls = new[] { new Uri("http://localhost") },
-            PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+            GrantTypes = [GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken],
+            RedirectionUrls = [new Uri("http://localhost")],
+            PostLogoutRedirectUris = [new Uri("http://localhost/callback")],
             //LogoUri = new Uri("http://logouri.com")
         };
 
         var addClientResult = Assert.IsType<Option<Client>.Result>(
             await _openidClients.AddClient(client, "token"));
         client = addClientResult.Item;
-        client.PostLogoutRedirectUris = new[]
-        {
-            new Uri("http://localhost/callback"), new Uri("http://localhost/callback2"),
-        };
-        client.GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, };
+        client.PostLogoutRedirectUris =
+        [
+            new Uri("http://localhost/callback"), new Uri("http://localhost/callback2")
+        ];
+        client.GrantTypes = [GrantTypes.AuthorizationCode, GrantTypes.Implicit];
         var result =
             Assert.IsType<Option<Client>.Result>(await _openidClients.UpdateClient(client, "token")
             );
@@ -208,17 +208,16 @@ public sealed class ClientFixture : IDisposable
                 {
                     ClientId = Guid.NewGuid().ToString("N"),
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                    AllowedScopes = new[] { "openid" },
+                    AllowedScopes = ["openid"],
                     ApplicationType = ApplicationTypes.Web,
                     ClientName = "client_name",
                     ClientUri = new Uri("http://clienturi.com"),
-                    Contacts = new[] { "contact" },
+                    Contacts = ["contact"],
                     DefaultAcrValues = "sms",
                     //DefaultMaxAge = 10,
-                    GrantTypes = new[]
-                        { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
-                    RedirectionUrls = new[] { new Uri("http://localhost") },
-                    PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                    GrantTypes = [GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken],
+                    RedirectionUrls = [new Uri("http://localhost")],
+                    PostLogoutRedirectUris = [new Uri("http://localhost/callback")],
                     //LogoUri = new Uri("http://logouri.com")
                 },
                 "")
@@ -237,7 +236,7 @@ public sealed class ClientFixture : IDisposable
                 new Client
                 {
                     ClientId = Guid.NewGuid().ToString("N"),
-                    AllowedScopes = new[] { "openid" },
+                    AllowedScopes = ["openid"],
                     ApplicationType = ApplicationTypes.Web,
                     ClientName = "client_name",
                     IdTokenSignedResponseAlg = "RS256",
@@ -252,17 +251,17 @@ public sealed class ClientFixture : IDisposable
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                     InitiateLoginUri = new Uri("https://initloginuri"),
                     ClientUri = new Uri("http://clienturi.com"),
-                    Contacts = new[] { "contact" },
+                    Contacts = ["contact"],
                     DefaultAcrValues = "sms",
                     //DefaultMaxAge = 10,
-                    GrantTypes = new[] { GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken },
-                    ResponseTypes = new[]
-                    {
+                    GrantTypes = [GrantTypes.AuthorizationCode, GrantTypes.Implicit, GrantTypes.RefreshToken],
+                    ResponseTypes =
+                    [
                         ResponseTypeNames.Code, ResponseTypeNames.IdToken, ResponseTypeNames.Token
-                    },
+                    ],
                     JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                    RedirectionUrls = new[] { new Uri("http://localhost") },
-                    PostLogoutRedirectUris = new[] { new Uri("http://localhost/callback") },
+                    RedirectionUrls = [new Uri("http://localhost")],
+                    PostLogoutRedirectUris = [new Uri("http://localhost/callback")],
                     //LogoUri = new Uri("http://logouri.com")
                 },
                 "")

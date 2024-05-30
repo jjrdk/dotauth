@@ -24,5 +24,5 @@ public record ResourceDownload : ResourceResult
     public string? Type { get; init; }
 
     [DataMember(Name = "data")]
-    public DownloadData[] Data { get; set; } = Array.Empty<DownloadData>();
+    public DownloadData[] Data { get; set; } = [];
 }

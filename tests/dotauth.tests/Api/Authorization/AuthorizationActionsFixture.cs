@@ -49,10 +49,10 @@ public sealed class AuthorizationActionsFixture
         InitializeFakeObjects(
             new Client
             {
-                ResponseTypes = new[] { ResponseTypeNames.IdToken },
+                ResponseTypes = [ResponseTypeNames.IdToken],
                 ClientId = clientId,
                 RequirePkce = true,
-                RedirectionUrls = new[] { redirectUrl }
+                RedirectionUrls = [redirectUrl]
             });
 
         var authorizationParameter = new AuthorizationParameter

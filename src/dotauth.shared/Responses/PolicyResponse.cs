@@ -39,5 +39,5 @@ public sealed record PolicyResponse
     /// The rules.
     /// </value>
     [DataMember(Name = "rules")]
-    public PolicyRuleResponse[] Rules { get; set; } = Array.Empty<PolicyRuleResponse>();
+    public PolicyRuleResponse[] Rules { get; set; } = [];
 }

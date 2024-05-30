@@ -11,7 +11,7 @@ public sealed record AccountFilterResult
     /// Initializes a new instance of the <see cref="AccountFilterResult"/> class.
     /// </summary>
     public AccountFilterResult(bool isValid)
-        : this(isValid, Array.Empty<AccountFilterRuleResult>()) { }
+        : this(isValid, []) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AccountFilterResult"/> class.

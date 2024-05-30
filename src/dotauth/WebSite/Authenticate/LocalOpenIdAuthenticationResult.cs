@@ -23,7 +23,7 @@ internal sealed class LocalOpenIdAuthenticationResult
     /// <value>
     /// The claims.
     /// </value>
-    public Claim[] Claims { get; set; } = Array.Empty<Claim>();
+    public Claim[] Claims { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the two factor.

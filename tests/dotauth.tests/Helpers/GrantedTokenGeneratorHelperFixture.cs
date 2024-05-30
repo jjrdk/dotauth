@@ -44,7 +44,7 @@ public sealed class GrantedTokenGeneratorHelperFixture
         var result = await _clientRepositoryStub.GenerateToken(
                 new InMemoryJwksRepository(),
                 string.Empty,
-                Array.Empty<string>(),
+                [],
                 "",
                 CancellationToken.None,
                 userInformationPayload: null)
@@ -62,7 +62,7 @@ public sealed class GrantedTokenGeneratorHelperFixture
         var ex = Assert.IsType<Option<GrantedToken>.Error>(await _clientRepositoryStub.GenerateToken(
                 new InMemoryJwksRepository(),
                 "invalid_client",
-                Array.Empty<string>(),
+                [],
                 "",
                 CancellationToken.None,
                 userInformationPayload: null)
@@ -90,7 +90,7 @@ public sealed class GrantedTokenGeneratorHelperFixture
         var result = Assert.IsType<Option<GrantedToken>.Result>(await _clientRepositoryStub.GenerateToken(
                 new InMemoryJwksRepository(),
                 "client_id",
-                new[] { "scope" },
+                ["scope"],
                 "issuer",
                 CancellationToken.None,
                 userInformationPayload: null)

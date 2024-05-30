@@ -116,7 +116,7 @@ public sealed class RevokeTokenClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
         );
         var revokeClient = new TokenClient(
             TokenCredentials.FromClientCredentials("client", "client"),
@@ -137,7 +137,7 @@ public sealed class RevokeTokenClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
         );
         var revoke = await tokenClient
                 .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken))
@@ -158,7 +158,7 @@ public sealed class RevokeTokenClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim", "offline" }))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim", "offline"]))
         );
         var revoke = await tokenClient
             .RevokeToken(RevokeTokenRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken));

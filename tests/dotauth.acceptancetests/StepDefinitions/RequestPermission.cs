@@ -58,10 +58,10 @@ public partial class FeatureTest
                 Type = row["Type"],
                 Description = row["Description"],
                 Scopes = scopes,
-                AuthorizationPolicies = new[]
-                {
+                AuthorizationPolicies =
+                [
                     new PolicyRule { Scopes = scopes, IsResourceOwnerConsentNeeded = false }
-                }
+                ]
             };
             var resource =
                 (await _umaClient.AddResourceSet(resourceSet, _token.AccessToken) as
@@ -78,16 +78,16 @@ public partial class FeatureTest
             {
                 Id = _resourceId,
                 Name = "picture",
-                Scopes = new[] { "read", "write" },
-                AuthorizationPolicies = new[]
-                {
+                Scopes = ["read", "write"],
+                AuthorizationPolicies =
+                [
                     new PolicyRule
                     {
-                        ClientIdsAllowed = new[] { "clientCredentials" },
-                        Scopes = new[] { "read" },
+                        ClientIdsAllowed = ["clientCredentials"],
+                        Scopes = ["read"],
                         IsResourceOwnerConsentNeeded = false
                     }
-                }
+                ]
             },
             _token.AccessToken);
 
@@ -115,8 +115,8 @@ public partial class FeatureTest
         var response = await _umaClient.RequestPermission(
                 _token.AccessToken,
                 CancellationToken.None,
-                new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "write" } },
-                new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "read" } })
+                new PermissionRequest { ResourceSetId = _resourceId, Scopes = ["write"] },
+                new PermissionRequest { ResourceSetId = _resourceId, Scopes = ["read"] })
             ;
 
         Assert.IsType<Option<TicketResponse>.Result>(response);
@@ -134,7 +134,7 @@ public partial class FeatureTest
     public async Task ThenCanGetAccessTokenForResource()
     {
         var option = await _tokenClient.GetToken(
-            TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }),
+            TokenRequest.FromPassword("administrator", "password", ["uma_protection"]),
             CancellationToken.None);
 
         switch (option)

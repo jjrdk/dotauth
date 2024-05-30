@@ -27,24 +27,22 @@ public sealed class ClientAssertionAuthenticationFixture
     {
         return new[]
         {
-            new[]
-            {
+            [
                 new JwtPayload
                 {
                     {StandardClaimNames.Issuer, "issuer"},
                     {StandardClaimNames.Subject, "issuer"},
                     {StandardClaimNames.Audiences, "audience"}
                 }
-            },
-            new[]
-            {
+            ],
+            [
                 new JwtPayload
                 {
                     {StandardClaimNames.Issuer, "issuer"},
                     {StandardClaimNames.Subject, "issuer"},
                     {StandardClaimNames.Audiences, "audience"}
                 }
-            },
+            ],
             new[]
             {
                 new JwtPayload

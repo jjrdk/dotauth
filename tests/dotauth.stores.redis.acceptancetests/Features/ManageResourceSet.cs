@@ -27,7 +27,7 @@ public partial class FeatureTest
     public async Task WhenGettingAPatToken()
     {
         var option = await _tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
+                TokenRequest.FromPassword("administrator", "password", ["uma_protection"]))
             .ConfigureAwait(false);
 
         var tokenResponse = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
@@ -42,17 +42,17 @@ public partial class FeatureTest
     {
         var resource = new ResourceSet
         {
-            AuthorizationPolicies = new[]
-            {
+            AuthorizationPolicies =
+            [
                 new PolicyRule
                 {
-                    ClientIdsAllowed = new[] { "clientCredentials" },
+                    ClientIdsAllowed = ["clientCredentials"],
                     IsResourceOwnerConsentNeeded = true,
-                    Scopes = new[] { "read" }
+                    Scopes = ["read"]
                 }
-            },
+            ],
             Name = "test resource",
-            Scopes = new[] { "read" },
+            Scopes = ["read"],
             Type = "test"
         };
         var option = await _umaClient.AddResourceSet(resource, _token.AccessToken).ConfigureAwait(false);

@@ -23,11 +23,11 @@ public sealed class ClaimsParameterExtensionsFixture
         const string notStandardClaimName = "not_standard";
         var claimsParameter = new ClaimsParameter
         {
-            UserInfo = new[]
-            {
+            UserInfo =
+            [
                 new ClaimParameter {Name = OpenIdClaimTypes.Subject},
                 new ClaimParameter {Name = notStandardClaimName}
-            }
+            ]
         };
 
         var claimNames = claimsParameter.GetClaimNames();

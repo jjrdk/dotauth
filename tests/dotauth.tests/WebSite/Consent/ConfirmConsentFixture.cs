@@ -63,10 +63,10 @@ public sealed class ConfirmConsentFixture
         _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(client);
         _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<Client>());
+            .Returns([]);
 
         _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
-            .Returns(Array.Empty<Scope>());
+            .Returns([]);
         var exception = await _confirmConsentAction.Execute(
                 authorizationParameter,
                 claimsPrincipal,
@@ -89,10 +89,10 @@ public sealed class ConfirmConsentFixture
             ResponseType = "code",
             Claims = new ClaimsParameter
             {
-                UserInfo = new[]
-                {
+                UserInfo =
+                [
                     new ClaimParameter { Name = OpenIdClaimTypes.Subject }
-                }
+                ]
             },
             Scope = "profile"
         };
@@ -104,9 +104,9 @@ public sealed class ConfirmConsentFixture
         _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(client);
         _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<Client>());
+            .Returns([]);
         _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
-            .Returns(Array.Empty<Scope>());
+            .Returns([]);
 
         Consent? insertedConsent = null;
         _consentRepositoryFake.Insert(Arg.Any<Consent>(), Arg.Any<CancellationToken>())
@@ -140,9 +140,9 @@ public sealed class ConfirmConsentFixture
         _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(client);
         _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<Client>());
+            .Returns([]);
         _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
-            .Returns(Array.Empty<Scope>());
+            .Returns([]);
 
         var result = await _confirmConsentAction
             .Execute(authorizationParameter, claimsPrincipal, "null", CancellationToken.None)

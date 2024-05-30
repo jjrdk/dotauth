@@ -35,7 +35,7 @@ public sealed class DataController : ControllerBase
         }
 
         var token = await HttpContext.GetTokenAsync("access_token").ConfigureAwait(false);
-        var request = new PermissionRequest {ResourceSetId = id, Scopes = new[] {"api1"}};
+        var request = new PermissionRequest {ResourceSetId = id, Scopes = ["api1"] };
         var option =
             await _umaClient.RequestPermission(token!, cancellationToken, request).ConfigureAwait(false);
         var ticket = option as Option<TicketResponse>.Result;

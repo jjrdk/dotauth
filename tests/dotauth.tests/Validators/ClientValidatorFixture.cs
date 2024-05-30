@@ -36,7 +36,7 @@ public sealed class ClientValidatorFixture
     public void When_Checking_RedirectionUri_Then_Uri_Is_Returned()
     {
         var url = new Uri("https://url/");
-        var client = new Client { RedirectionUrls = new[] { url } };
+        var client = new Client { RedirectionUrls = [url] };
 
         var result = client.GetRedirectionUrls(url);
 
@@ -57,7 +57,7 @@ public sealed class ClientValidatorFixture
     [Fact]
     public void When_Checking_Client_Has_Implicit_Grant_Type_Then_True_Is_Returned()
     {
-        var client = new Client { GrantTypes = new[] { GrantTypes.Implicit } };
+        var client = new Client { GrantTypes = [GrantTypes.Implicit] };
 
         var result = client.CheckGrantTypes(GrantTypes.Implicit);
 
@@ -67,7 +67,7 @@ public sealed class ClientValidatorFixture
     [Fact]
     public void When_Checking_Client_Grant_Types_Then_True_Is_Returned()
     {
-        var client = new Client { GrantTypes = new[] { GrantTypes.Implicit, GrantTypes.Password } };
+        var client = new Client { GrantTypes = [GrantTypes.Implicit, GrantTypes.Password] };
 
         Assert.True(client.CheckGrantTypes(GrantTypes.Implicit, GrantTypes.Password));
         Assert.True(client.CheckGrantTypes(GrantTypes.Implicit));
@@ -76,7 +76,7 @@ public sealed class ClientValidatorFixture
     [Fact]
     public void When_Checking_Client_Grant_Types_Then_False_Is_Returned()
     {
-        var client = new Client { GrantTypes = new[] { GrantTypes.Implicit, GrantTypes.Password } };
+        var client = new Client { GrantTypes = [GrantTypes.Implicit, GrantTypes.Password] };
 
         Assert.False(client.CheckGrantTypes(GrantTypes.RefreshToken));
         Assert.False(client.CheckGrantTypes(GrantTypes.RefreshToken, GrantTypes.Password));

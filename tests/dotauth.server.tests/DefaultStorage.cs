@@ -9,28 +9,29 @@ public static class DefaultStorage
 {
     public static List<ResourceOwner> GetUsers()
     {
-        return new()
-        {
+        return
+        [
             new ResourceOwner
             {
                 Subject = "administrator",
-                Claims = new []
-                {
+                Claims =
+                [
                     new Claim(OpenIdClaimTypes.Subject, "administrator")
-                },
+                ],
                 Password = "password",
                 IsLocalAccount = true
             },
+
             new ResourceOwner
             {
                 Subject = "user",
                 Password = "password",
-                Claims = new []
-                {
+                Claims =
+                [
                     new Claim(OpenIdClaimTypes.Subject, "user")
-                },
+                ],
                 IsLocalAccount = true
             }
-        };
+        ];
     }
 }

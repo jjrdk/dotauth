@@ -68,7 +68,7 @@ internal sealed class InMemoryTicketStore : ITicketStore
             await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             if (!_tickets.ContainsKey(ticketId))
             {
-                return (false, Array.Empty<ClaimData>());
+                return (false, []);
             }
 
             _tickets[ticketId] = _tickets[ticketId] with { IsAuthorizedByRo = true };

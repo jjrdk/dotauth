@@ -57,7 +57,7 @@ public sealed class DeviceAuthorizationController : ControllerBase
         }
 
         var scopeArray = string.IsNullOrWhiteSpace(request.scope)
-            ? Array.Empty<string>()
+            ? []
             : request.scope.Split(' ', StringSplitOptions.TrimEntries).ToArray();
         var response = await _actions.StartDeviceAuthorizationRequest(
                 request.client_id,

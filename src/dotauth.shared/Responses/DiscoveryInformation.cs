@@ -55,7 +55,7 @@ public sealed record DiscoveryInformation
     /// Gets or sets the list of the Claim Types supported.
     /// </summary>
     [DataMember(Name = "claim_types_supported")]
-    public string[] ClaimTypesSupported { get; set; } = Array.Empty<string>();
+    public string[] ClaimTypesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets boolean specifying whether the OP supports use of the claims parameter.
@@ -67,7 +67,7 @@ public sealed record DiscoveryInformation
     /// Gets or sets a list of the Claim Names of the Claims.
     /// </summary>
     [DataMember(Name = "claims_supported")]
-    public string[] ClaimsSupported { get; set; } = Array.Empty<string>();
+    public string[] ClaimsSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the end session end point.
@@ -88,7 +88,7 @@ public sealed record DiscoveryInformation
     /// Gets or sets the list of the JWS signing algorithms (alg values) supported.
     /// </summary>
     [DataMember(Name = "id_token_signing_alg_values_supported")]
-    public string[] IdTokenSigningAlgValuesSupported { get; set; } = Array.Empty<string>();
+    public string[] IdTokenSigningAlgValuesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the issuer.
@@ -124,13 +124,13 @@ public sealed record DiscoveryInformation
     /// Gets or sets the response modes supported : query, fragment
     /// </summary>
     [DataMember(Name = "response_modes_supported")]
-    public string[] ResponseModesSupported { get; set; } = Array.Empty<string>();
+    public string[] ResponseModesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the response types supported : code, id_token &amp; token id_token
     /// </summary>
     [DataMember(Name = "response_types_supported")]
-    public string[] ResponseTypesSupported { get; set; } = Array.Empty<string>();
+    public string[] ResponseTypesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the revocation end point.
@@ -154,13 +154,13 @@ public sealed record DiscoveryInformation
     /// Gets or sets the list of supported scopes.
     /// </summary>
     [DataMember(Name = "scopes_supported")]
-    public string[] ScopesSupported { get; set; } = Array.Empty<string>();
+    public string[] ScopesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the subject types supported : pairwise &amp; public.
     /// </summary>
     [DataMember(Name = "subject_types_supported")]
-    public string[] SubjectTypesSupported { get; set; } = Array.Empty<string>();
+    public string[] SubjectTypesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the token endpoint.
@@ -172,7 +172,7 @@ public sealed record DiscoveryInformation
     /// Gets or sets the list of Client Authentication methods supported by the TokenEndpoint : client_secret_post, client_secret_basic etc ...
     /// </summary>
     [DataMember(Name = "token_endpoint_auth_methods_supported")]
-    public string[] TokenEndpointAuthMethodSupported { get; set; } = Array.Empty<string>();
+    public string[] TokenEndpointAuthMethodSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the user-info endpoint.
@@ -195,57 +195,57 @@ public sealed record DiscoveryInformation
     /// <summary>
     /// Gets or sets the acr values supported.
     /// </summary>
-    public string[] AcrValuesSupported { get; set; } = { "pwd" };
+    public string[] AcrValuesSupported { get; set; } = ["pwd"];
 
     /// <summary>
     /// Gets or sets the list of the JWE encryption algorithms (alg values)
     /// </summary>
-    public string[] IdTokenEncryptionAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
+    public string[] IdTokenEncryptionAlgValuesSupported { get; set; } = [SecurityAlgorithms.RsaSha256];
 
     /// <summary>
     /// Gets or sets the list of the JWE encryption algorithms (enc values)
     /// </summary>
-    public string[] IdTokenEncryptionEncValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
+    public string[] IdTokenEncryptionEncValuesSupported { get; set; } = [SecurityAlgorithms.RsaSha256];
 
     /// <summary>
     /// Gets or sets the list of the JWS signing algorithms (alg values) supported by the UserInfo endpoint.
     /// </summary>
-    public string[] UserInfoSigningAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
+    public string[] UserInfoSigningAlgValuesSupported { get; set; } = [SecurityAlgorithms.RsaSha256];
 
     /// <summary>
     /// Gets or sets the list of the JWE encryption algorithms (alg values) supported by the UserInfo endpoint.
     /// </summary>
-    public string[] UserInfoEncryptionAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
+    public string[] UserInfoEncryptionAlgValuesSupported { get; set; } = [SecurityAlgorithms.RsaSha256];
 
     /// <summary>
     /// Gets or sets the list of the JWE encryption algorithms (enc values) supported by the UserInfo endpoint.
     /// </summary>
-    public string[] UserInfoEncryptionEncValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
+    public string[] UserInfoEncryptionEncValuesSupported { get; set; } = [SecurityAlgorithms.RsaSha256];
 
     /// <summary>
     /// Gets or sets the list of the JWS signing algorithms (alg values) supported by the OP for Request objects.
     /// </summary>
-    public string[] RequestObjectSigningAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
+    public string[] RequestObjectSigningAlgValuesSupported { get; set; } = [SecurityAlgorithms.RsaSha256];
 
     /// <summary>
     /// Gets or sets the list of the JWE encryption algorithms (alg values) supported by the OP for Request objects.
     /// </summary>
-    public string[] RequestObjectEncryptionAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
+    public string[] RequestObjectEncryptionAlgValuesSupported { get; set; } = [SecurityAlgorithms.RsaSha256];
 
     /// <summary>
     /// Gets or sets the list of the JWE encryption algorithms (enc values) supported by the OP for Request objects.
     /// </summary>
-    public string[] RequestObjectEncryptionEncValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
+    public string[] RequestObjectEncryptionEncValuesSupported { get; set; } = [SecurityAlgorithms.RsaSha256];
 
     /// <summary>
     /// Gets or sets the list of the JWS algorithms (alg values) supported by the Token Endpoint for the signature on the JWT.
     /// </summary>
-    public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; } = { SecurityAlgorithms.RsaSha256 };
+    public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; } = [SecurityAlgorithms.RsaSha256];
 
     /// <summary>
     /// Gets or sets a list of display parameter values.
     /// </summary>
-    public string[] DisplayValuesSupported { get; set; } = Array.Empty<string>();
+    public string[] DisplayValuesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the service documentation.
@@ -255,12 +255,12 @@ public sealed record DiscoveryInformation
     /// <summary>
     /// Gets or sets the languages &amp; scripts supported for values in Claims being returned.
     /// </summary>
-    public string[] ClaimsLocalesSupported { get; set; } = { "en" };
+    public string[] ClaimsLocalesSupported { get; set; } = ["en"];
 
     /// <summary>
     /// Gets or sets the languages &amp; scripts supported for the UI.
     /// </summary>
-    public string[] UiLocalesSupported { get; set; } = { "en" };
+    public string[] UiLocalesSupported { get; set; } = ["en"];
 
     /// <summary>
     /// Gets or sets the OP policy.

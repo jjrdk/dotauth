@@ -2,7 +2,7 @@
 
 using CommandLine;
 
-[Verb("token", true, new[] { "t" }, HelpText = "Authenticate and get tokens", Hidden = false)]
+[Verb("token", true, ["t"], HelpText = "Authenticate and get tokens", Hidden = false)]
 
 public class TokenArgs
 {

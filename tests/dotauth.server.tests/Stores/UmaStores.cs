@@ -21,10 +21,10 @@ public static class UmaStores
 {
     public static List<(string, ResourceSet)> GetResources()
     {
-        return new()
-        {
-            ("tester", new ResourceSet {Id = "bad180b5-4a96-422d-a088-c71a9f7c7afc", Name = "Resources"}),
-            ("tester", new ResourceSet {Id = "67c50eac-23ef-41f0-899c-dffc03add961", Name = "Apis"})
-        };
+        return
+        [
+            ("tester", new ResourceSet { Id = "bad180b5-4a96-422d-a088-c71a9f7c7afc", Name = "Resources" }),
+            ("tester", new ResourceSet { Id = "67c50eac-23ef-41f0-899c-dffc03add961", Name = "Apis" })
+        ];
     }
 }

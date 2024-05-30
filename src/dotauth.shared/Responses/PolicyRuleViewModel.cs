@@ -26,7 +26,7 @@ public sealed record PolicyRuleViewModel
     /// Gets or sets the claims.
     /// </summary>
     [DataMember(Name = "claims")]
-    public ClaimData[] Claims { get; set; } = Array.Empty<ClaimData>();
+    public ClaimData[] Claims { get; set; } = [];
 
     /// <summary>
     /// Gets or sets a value indicating whether this instance is resource owner consent needed.

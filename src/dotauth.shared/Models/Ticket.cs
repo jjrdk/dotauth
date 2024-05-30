@@ -64,10 +64,10 @@ public sealed record Ticket
     /// <value>
     /// The lines.
     /// </value>
-    public TicketLine[] Lines { get; set; } = Array.Empty<TicketLine>();
+    public TicketLine[] Lines { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the claims associated with the requester.
     /// </summary>
-    public ClaimData[] Requester { get; set; } = Array.Empty<ClaimData>();
+    public ClaimData[] Requester { get; set; } = [];
 }

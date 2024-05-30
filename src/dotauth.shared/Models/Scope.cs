@@ -81,5 +81,5 @@ public record Scope
     /// The claims.
     /// </value>
     [DataMember(Name = "claims")]
-    public string[] Claims { get; set; } = Array.Empty<string>();
+    public string[] Claims { get; set; } = [];
 }

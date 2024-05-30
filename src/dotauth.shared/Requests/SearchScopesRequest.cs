@@ -16,7 +16,7 @@ public sealed record SearchScopesRequest
     /// The scope types.
     /// </value>
     [DataMember(Name = "types")]
-    public string[] ScopeTypes { get; set; } = Array.Empty<string>();
+    public string[] ScopeTypes { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the scope names.
@@ -25,7 +25,7 @@ public sealed record SearchScopesRequest
     /// The scope names.
     /// </value>
     [DataMember(Name = "names")]
-    public string[] ScopeNames { get; set; } = Array.Empty<string>();
+    public string[] ScopeNames { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the start index.

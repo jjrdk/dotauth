@@ -14,7 +14,7 @@ public partial class FeatureTest
     public async Task WhenGettingAPatTokenFor(string user, string password)
     {
         var option = await _tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
+                TokenRequest.FromPassword("administrator", "password", ["uma_protection"]))
             ;
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         

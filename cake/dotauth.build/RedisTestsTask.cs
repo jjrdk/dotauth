@@ -25,7 +25,7 @@ public sealed class RedisTestsTask : FrostingTask<BuildContext>
             var upsettings = new DockerComposeUpSettings
             {
                 Detach = true,
-                Files = new [] { "./tests/dotauth.stores.redis.acceptancetests/docker-compose.yml" }
+                Files = ["./tests/dotauth.stores.redis.acceptancetests/docker-compose.yml"]
             };
             context.DockerComposeUp(upsettings);
 
@@ -58,7 +58,7 @@ public sealed class RedisTestsTask : FrostingTask<BuildContext>
 
             var downsettings = new DockerComposeDownSettings
             {
-                Files = new string[] { "./tests/dotauth.stores.redis.acceptancetests/docker-compose.yml" }
+                Files = ["./tests/dotauth.stores.redis.acceptancetests/docker-compose.yml"]
             };
             context.DockerComposeDown(downsettings);
         }

@@ -20,7 +20,7 @@ internal sealed record AuthorizationParameter
 {
     public string? ClientId { get; init; }
     public string? Scope { get; init; }
-    public string[] AmrValues { get; init; } = Array.Empty<string>();
+    public string[] AmrValues { get; init; } = [];
     public string? ResponseType { get; init; }
     public Uri? RedirectUrl { get; init; }
     public string? State { get; init; }

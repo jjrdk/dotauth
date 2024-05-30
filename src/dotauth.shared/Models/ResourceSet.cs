@@ -31,13 +31,13 @@ public record ResourceSet : ResourceSetDescription
     /// The scopes.
     /// </value>
     [DataMember(Name = "resource_scopes")]
-    public string[] Scopes { get; set; } = Array.Empty<string>();
+    public string[] Scopes { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the authorization policies for the resource.
     /// </summary>
     [DataMember(Name = "authorization_policies")]
-    public PolicyRule[] AuthorizationPolicies { get; set; } = Array.Empty<PolicyRule>();
+    public PolicyRule[] AuthorizationPolicies { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the creation time.

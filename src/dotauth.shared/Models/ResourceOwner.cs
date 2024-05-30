@@ -50,7 +50,7 @@ public sealed class ResourceOwner
     /// <summary>
     /// Gets or sets the list of claims.
     /// </summary>
-    public Claim[] Claims { get; set; } = Array.Empty<Claim>();
+    public Claim[] Claims { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the two factor authentications
@@ -92,5 +92,5 @@ public sealed class ResourceOwner
     /// <value>
     /// The external logins.
     /// </value>
-    public ExternalAccountLink[] ExternalLogins { get; set; } = Array.Empty<ExternalAccountLink>();
+    public ExternalAccountLink[] ExternalLogins { get; set; } = [];
 }

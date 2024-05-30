@@ -53,7 +53,7 @@ internal static class ParameterParserHelper
         //var responseTypeNames = Enum.GetNames(typeof (string));
         if (string.IsNullOrWhiteSpace(parameter))
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         var responses = parameter.Split(' ')
@@ -70,7 +70,7 @@ internal static class ParameterParserHelper
     public static string[] ParseScopes(this string? parameter)
     {
         return string.IsNullOrWhiteSpace(parameter)
-            ? Array.Empty<string>()
+            ? []
             : parameter.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
     }
 }

@@ -26,7 +26,7 @@ internal static class ClientValidator
     public static Uri[] GetRedirectionUrls(this Client client, params Uri[] urls)
     {
         return client.RedirectionUrls.Length == 0
-            ? Array.Empty<Uri>()
+            ? []
             : client.RedirectionUrls.Where(urls.Contains).ToArray();
     }
 

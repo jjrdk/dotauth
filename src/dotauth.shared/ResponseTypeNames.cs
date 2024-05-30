@@ -23,5 +23,5 @@ public static class ResponseTypeNames
     /// <summary>
     /// All
     /// </summary>
-    public static readonly string[] All = { Code, IdToken, Token };
+    public static readonly string[] All = [Code, IdToken, Token];
 }

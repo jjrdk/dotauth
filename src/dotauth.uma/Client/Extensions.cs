@@ -19,7 +19,7 @@ public static class Extensions
     {
         if (stream == null)
         {
-            return Array.Empty<byte>();
+            return [];
         }
         var buffer = new byte[stream.Length];
         var offset = 0;

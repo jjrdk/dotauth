@@ -59,10 +59,10 @@ public sealed class UmaConfigurationController : ControllerBase
         var scopes = await _scopeStore.GetAll(cancellationToken).ConfigureAwait(false);
         var scopeSupportedNames = scopes != null && scopes.Any()
             ? scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray()
-            : Array.Empty<string>();
+            : [];
         var result = new UmaConfiguration
         {
-            ClaimTokenProfilesSupported = Array.Empty<string>(),
+            ClaimTokenProfilesSupported = [],
             UmaProfilesSupported = UmaProfilesSupported,
             ResourceRegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.ResourceSet),
             PermissionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Permission),

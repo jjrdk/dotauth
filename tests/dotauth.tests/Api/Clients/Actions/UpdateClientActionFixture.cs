@@ -54,8 +54,8 @@ public sealed class UpdateClientActionFixture
         var parameter = new Client
         {
             ClientId = clientId,
-            RedirectionUrls = new[] { new Uri("https://localhost") },
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "test" } }
+            RedirectionUrls = [new Uri("https://localhost")],
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "test" }]
         };
 
         var result = await _clientRepositoryMock.Update(parameter, CancellationToken.None);
@@ -72,13 +72,13 @@ public sealed class UpdateClientActionFixture
         {
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
             ClientId = clientId,
-            AllowedScopes = new[] { "not_supported_scope" },
-            RedirectionUrls = new[] { new Uri("https://localhost") }
+            AllowedScopes = ["not_supported_scope"],
+            RedirectionUrls = [new Uri("https://localhost")]
         };
         InitializeFakeObjects(new[] { client });
 
         _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
-            .Returns(new[] { new Scope { Name = "scope" } });
+            .Returns([new Scope { Name = "scope" }]);
 
         var ex = Assert.IsType<Option.Error>(
             await _clientRepositoryMock.Update(parameter, CancellationToken.None));

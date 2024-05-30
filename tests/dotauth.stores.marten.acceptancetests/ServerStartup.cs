@@ -79,7 +79,7 @@ public sealed class ServerStartup
 
         services.AddDotAuthServer(
                 _martenConfiguration,
-                new[] { DefaultSchema, JwtBearerDefaults.AuthenticationScheme })
+                [DefaultSchema, JwtBearerDefaults.AuthenticationScheme])
             .AddDotAuthUi(typeof(IDefaultUi));
         services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
         services.AddAuthentication(

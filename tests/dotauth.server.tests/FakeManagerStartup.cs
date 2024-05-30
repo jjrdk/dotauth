@@ -46,7 +46,7 @@ public sealed class FakeManagerStartup
                 {
                     Users = _ => new InMemoryResourceOwnerRepository(string.Empty, DefaultStorage.GetUsers()),
                 },
-                new[] { JwtBearerDefaults.AuthenticationScheme })
+                [JwtBearerDefaults.AuthenticationScheme])
             .AddDotAuthUi(typeof(IDefaultUi));
         serviceCollection.AddAuthentication(opts =>
         {

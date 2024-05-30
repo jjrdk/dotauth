@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 public class ResourceContent : ResourceRegistration
 {
-    [DataMember(Name = "files")] public FileDetails[] Files { get; set; } = Array.Empty<FileDetails>();
+    [DataMember(Name = "files")] public FileDetails[] Files { get; set; } = [];
 
     public override RegistrationData ToRegistrationData()
     {

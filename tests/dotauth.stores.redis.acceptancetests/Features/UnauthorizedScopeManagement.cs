@@ -21,7 +21,7 @@ public partial class FeatureTest
     public async Task WhenAddingNewScope()
     {
         _scope = await _managerClient.AddScope(
-                new Scope { Name = "test", Claims = new[] { "openid" } },
+                new Scope { Name = "test", Claims = ["openid"] },
                 _token.AccessToken)
             .ConfigureAwait(false);
     }

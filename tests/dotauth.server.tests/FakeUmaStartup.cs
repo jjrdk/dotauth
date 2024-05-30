@@ -93,7 +93,7 @@ public sealed class FakeUmaStartup
                         new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>(),
                             UmaStores.GetResources())
                 },
-                new[] { DefaultSchema })
+                [DefaultSchema])
             .AddDotAuthUi(typeof(IDefaultUi));
 
         // 3. Enable logging.

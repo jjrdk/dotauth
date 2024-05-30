@@ -56,7 +56,7 @@ public sealed class AuthorizationPolicyValidatorFixture
         var handler = new JwtSecurityTokenHandler();
         var jsonWebKey = await _inMemoryJwksRepository.GetDefaultSigningKey();
         var token = handler.CreateEncodedJwt("test", "test", new ClaimsIdentity(), null, null, null, jsonWebKey);
-        var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "resource_set_id" } } };
+        var ticket = new Ticket { Lines = [new TicketLine { ResourceSetId = "resource_set_id" }] };
         _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<ResourceSet?>(null));
 
@@ -84,7 +84,7 @@ public sealed class AuthorizationPolicyValidatorFixture
             DateTime.UtcNow.AddYears(1),
             DateTime.UtcNow,
             key);
-        var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1" } } };
+        var ticket = new Ticket { Lines = [new TicketLine { ResourceSetId = "1" }] };
         var resourceSet = new[] { new ResourceSet { Id = "1" } };
         _resourceSetRepositoryStub.Get(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(resourceSet);
@@ -116,21 +116,21 @@ public sealed class AuthorizationPolicyValidatorFixture
         _clientStoreStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(s => Task.FromResult<Client?>(new Client { ClientId = s.ArgAt<string>(0) }));
 
-        var ticket = new Ticket { Lines = new[] { new TicketLine { ResourceSetId = "1", Scopes = new[] { "read" } } } };
+        var ticket = new Ticket { Lines = [new TicketLine { ResourceSetId = "1", Scopes = ["read"] }] };
         var resourceSet = new[]
         {
             new ResourceSet
             {
                 Id = "1",
-                AuthorizationPolicies = new[]
-                {
+                AuthorizationPolicies =
+                [
                     new PolicyRule
                     {
-                        Scopes = new[] { "read" },
-                        ClientIdsAllowed = new[] { "client_id" },
-                        Claims = new[] { new ClaimData { Type = "test", Value = "test" } }
+                        Scopes = ["read"],
+                        ClientIdsAllowed = ["client_id"],
+                        Claims = [new ClaimData { Type = "test", Value = "test" }]
                     }
-                }
+                ]
             }
         };
         _resourceSetRepositoryStub.Get(Arg.Any<CancellationToken>(), Arg.Any<string[]>())

@@ -104,7 +104,7 @@ public partial class FeatureTest
     {
         var updateRequest = new UpdateResourceOwnerClaimsRequest
         {
-            Subject = "user", Claims = new[] {new ClaimData {Type = "test", Value = "something"}}
+            Subject = "user", Claims = [new ClaimData {Type = "test", Value = "something"}]
         };
 
         var json = JsonConvert.SerializeObject(updateRequest);

@@ -87,15 +87,15 @@ public sealed class TokenFixture : IDisposable
         var resourceSet = new ResourceSet
         {
             Name = "name",
-            Scopes = new[] { "read", "write", "execute" },
-            AuthorizationPolicies = new[]
-            {
+            Scopes = ["read", "write", "execute"],
+            AuthorizationPolicies =
+            [
                 new PolicyRule
                 {
-                    ClientIdsAllowed = new[] { "resource_server" },
-                    Scopes = new[] { "read", "write", "execute" }
+                    ClientIdsAllowed = ["resource_server"],
+                    Scopes = ["read", "write", "execute"]
                 }
-            }
+            ]
         };
         var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(
             await _umaClient.AddResourceSet(resourceSet, result.Item.AccessToken));
@@ -106,7 +106,7 @@ public sealed class TokenFixture : IDisposable
                 "header",
                 requests: new PermissionRequest // Add permission & retrieve a ticket id.
                 {
-                    ResourceSetId = resource.Item.Id, Scopes = new[] { "read" }
+                    ResourceSetId = resource.Item.Id, Scopes = ["read"]
                 }));
 
         Assert.NotNull(ticket.Item);

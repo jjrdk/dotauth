@@ -65,7 +65,7 @@ public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixtur
             ResponseType = ResponseTypeNames.Code,
         };
 
-        var client = new Client { RedirectionUrls = new[] { redirectUrl }, AllowedScopes = new[] { "openid" }, };
+        var client = new Client { RedirectionUrls = [redirectUrl], AllowedScopes = ["openid"], };
         var ex = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
                 authorizationParameter,
                 new ClaimsPrincipal(),

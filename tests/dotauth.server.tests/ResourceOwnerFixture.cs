@@ -139,11 +139,11 @@ public sealed class ResourceOwnerFixture : IDisposable
                 new UpdateResourceOwnerClaimsRequest
                 {
                     Subject = "administrator",
-                    Claims = new[]
-                    {
+                    Claims =
+                    [
                         new ClaimData { Type = "role", Value = "role" },
                         new ClaimData { Type = "not_valid", Value = "not_valid" }
-                    }
+                    ]
                 },
                 "token")
             ;

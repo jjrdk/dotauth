@@ -33,7 +33,7 @@ public partial class FeatureTest
     public async Task WhenThenRequestingToken()
     {
         var option = await _tokenClient
-            .GetToken(TokenRequest.FromPassword("phone", "123", new[] {"openid"}, "sms"))
+            .GetToken(TokenRequest.FromPassword("phone", "123", ["openid"], "sms"))
             ;
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         _token = response.Item;

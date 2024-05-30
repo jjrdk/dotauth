@@ -148,7 +148,7 @@ public sealed record UmaConfigurationResponse
     /// The scopes supported.
     /// </value>
     [DataMember(Name = "scopes_supported")]
-    public string[] ScopesSupported { get; set; } = Array.Empty<string>();
+    public string[] ScopesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the response types supported.
@@ -157,7 +157,7 @@ public sealed record UmaConfigurationResponse
     /// The response types supported.
     /// </value>
     [DataMember(Name = "response_types_supported")]
-    public string[] ResponseTypesSupported { get; set; } = Array.Empty<string>();
+    public string[] ResponseTypesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the grant types supported.
@@ -166,7 +166,7 @@ public sealed record UmaConfigurationResponse
     /// The grant types supported.
     /// </value>
     [DataMember(Name = "grant_types_supported")]
-    public string[] GrantTypesSupported { get; set; } = Array.Empty<string>();
+    public string[] GrantTypesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the token endpoint authentication methods supported.
@@ -175,7 +175,7 @@ public sealed record UmaConfigurationResponse
     /// The token endpoint authentication methods supported.
     /// </value>
     [DataMember(Name = "token_endpoint_auth_methods_supported")]
-    public string[] TokenEndpointAuthMethodsSupported { get; set; } = Array.Empty<string>();
+    public string[] TokenEndpointAuthMethodsSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the token endpoint authentication signing alg values supported.
@@ -184,7 +184,7 @@ public sealed record UmaConfigurationResponse
     /// The token endpoint authentication signing alg values supported.
     /// </value>
     [DataMember(Name = "token_endpoint_auth_signing_alg_values_supported")]
-    public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; } = Array.Empty<string>();
+    public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the UI locales supported.
@@ -193,5 +193,5 @@ public sealed record UmaConfigurationResponse
     /// The UI locales supported.
     /// </value>
     [DataMember(Name = "ui_locales_supported")]
-    public string[] UiLocalesSupported { get; set; } = Array.Empty<string>();
+    public string[] UiLocalesSupported { get; set; } = [];
 }

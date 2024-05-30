@@ -407,7 +407,7 @@ public sealed class ResourceSetController : ControllerBase
         {
             Scopes =
                 viewModel.Scopes == null
-                    ? Array.Empty<string>()
+                    ? []
                     : viewModel.Scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => x.Trim())
                         .ToArray(),
@@ -417,7 +417,7 @@ public sealed class ResourceSetController : ControllerBase
                     .ToArray(),
             ClientIdsAllowed =
                 viewModel.ClientIdsAllowed == null
-                    ? Array.Empty<string>()
+                    ? []
                     : viewModel.ClientIdsAllowed.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => x.Trim())
                         .ToArray(),

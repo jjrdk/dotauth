@@ -44,7 +44,7 @@ public sealed class RedisTicketStore : ITicketStore
         var value = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
         if (!value.HasValue)
         {
-            return (false, Array.Empty<ClaimData>());
+            return (false, []);
         }
 
         var ticket = JsonSerializer.Deserialize<Ticket>(value!, DefaultJsonSerializerOptions.Instance)! with
@@ -55,7 +55,7 @@ public sealed class RedisTicketStore : ITicketStore
                 JsonSerializer.Serialize(ticket, DefaultJsonSerializerOptions.Instance), _expiry)
             .ConfigureAwait(false);
 
-        return (result, result ? ticket.Requester : Array.Empty<ClaimData>());
+        return (result, result ? ticket.Requester : []);
     }
 
     /// <inheritdoc />

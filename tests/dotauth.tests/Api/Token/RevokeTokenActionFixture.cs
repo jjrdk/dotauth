@@ -69,7 +69,7 @@ public sealed class RevokeTokenActionFixture
         var client = new Client
         {
             ClientId = clientid,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret } }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret }]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
         _grantedTokenRepositoryStub.GetAccessToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -102,7 +102,7 @@ public sealed class RevokeTokenActionFixture
         var client = new Client
         {
             ClientId = clientid,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret } }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientsecret }]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
@@ -133,7 +133,7 @@ public sealed class RevokeTokenActionFixture
         var client = new Client
         {
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 

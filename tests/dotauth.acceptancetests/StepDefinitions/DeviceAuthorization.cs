@@ -62,7 +62,7 @@ public partial class FeatureTest
             TokenCredentials.FromClientCredentials(ClientId, "client"),
             _fixture.Client,
             new Uri(WellKnownOpenidConfiguration));
-        var option = await authClient.GetToken(TokenRequest.FromPassword("user", "password", new[] { "openid" }))
+        var option = await authClient.GetToken(TokenRequest.FromPassword("user", "password", ["openid"]))
             ;
 
         var tokenResponse = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);

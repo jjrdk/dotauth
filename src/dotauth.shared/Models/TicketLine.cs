@@ -16,7 +16,7 @@ public sealed record TicketLine
     /// The scopes.
     /// </value>
     [DataMember(Name = "scopes")]
-    public string[] Scopes { get; set; } = Array.Empty<string>();
+    public string[] Scopes { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the resource set identifier.

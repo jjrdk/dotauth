@@ -26,7 +26,7 @@ public sealed record DeviceAuthorizationData
     /// <summary>
     /// Gets or sets the requested scopes.
     /// </summary>
-    public string[] Scopes { get; set; } = Array.Empty<string>();
+    public string[] Scopes { get; set; } = [];
 
     /// <summary>
     /// Gets or sets whether the request has been approved.

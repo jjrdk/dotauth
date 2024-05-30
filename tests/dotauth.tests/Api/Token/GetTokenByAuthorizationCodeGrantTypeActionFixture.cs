@@ -96,7 +96,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         var client = new Client
         {
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }]
         };
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
@@ -136,10 +136,10 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         };
         var client = new Client
         {
-            ResponseTypes = Array.Empty<string>(),
+            ResponseTypes = [],
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
@@ -179,9 +179,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         var client = new Client
         {
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode },
-            ResponseTypes = new[] { ResponseTypeNames.Code }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode],
+            ResponseTypes = [ResponseTypeNames.Code]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
@@ -222,9 +222,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         {
             RequirePkce = true,
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode },
-            ResponseTypes = new[] { ResponseTypeNames.Code }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode],
+            ResponseTypes = [ResponseTypeNames.Code]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
@@ -265,9 +265,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         {
             RequirePkce = false,
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode },
-            ResponseTypes = new[] { ResponseTypeNames.Code }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode],
+            ResponseTypes = [ResponseTypeNames.Code]
         };
         var authorizationCode = new AuthorizationCode { ClientId = "clientId" };
 
@@ -314,9 +314,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         {
             RequirePkce = false,
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode },
-            ResponseTypes = new[] { ResponseTypeNames.Code }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode],
+            ResponseTypes = [ResponseTypeNames.Code]
         };
         var authorizationCode = new AuthorizationCode
         {
@@ -361,9 +361,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         {
             RequirePkce = false,
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode },
-            ResponseTypes = new[] { ResponseTypeNames.Code }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode],
+            ResponseTypes = [ResponseTypeNames.Code]
         };
         var authorizationCode = new AuthorizationCode
         {
@@ -410,9 +410,9 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         {
             RequirePkce = false,
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode },
-            ResponseTypes = new[] { ResponseTypeNames.Code }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode],
+            ResponseTypes = [ResponseTypeNames.Code]
         };
         var authorizationCode = new AuthorizationCode
         {
@@ -470,12 +470,12 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
 
         var client = new Client
         {
-            AllowedScopes = new[] { "scope" },
-            RedirectionUrls = new[] { new Uri("https://redirectUri") },
+            AllowedScopes = ["scope"],
+            RedirectionUrls = [new Uri("https://redirectUri")],
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode },
-            ResponseTypes = new[] { ResponseTypeNames.Code },
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode],
+            ResponseTypes = [ResponseTypeNames.Code],
             IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
             IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1,
             IdTokenEncryptedResponseEnc = SecurityAlgorithms.Aes128CbcHmacSha256
@@ -543,11 +543,11 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         {
             RequirePkce = false,
             ClientName = clientId,
-            RedirectionUrls = new[] { new Uri("https://redirectUri") },
+            RedirectionUrls = [new Uri("https://redirectUri")],
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode },
-            ResponseTypes = new[] { ResponseTypeNames.Code },
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode],
+            ResponseTypes = [ResponseTypeNames.Code],
             JsonWebKeys =
                 "supersecretlongkey".CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                     .ToSet(),

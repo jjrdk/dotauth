@@ -33,8 +33,8 @@ public class UmaTokenActionsTests
                     Expires = DateTimeOffset.MaxValue,
                     Id = "ticket",
                     IsAuthorizedByRo = false,
-                    Lines = Array.Empty<TicketLine>(),
-                    Requester = Array.Empty<ClaimData>(),
+                    Lines = [],
+                    Requester = [],
                     ResourceOwner = "ro"
                 });
         ticketStore.Remove(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(true);
@@ -44,9 +44,9 @@ public class UmaTokenActionsTests
                 new Client
                 {
                     ClientId = "test_client",
-                    GrantTypes = new[] { GrantTypes.UmaTicket },
+                    GrantTypes = [GrantTypes.UmaTicket],
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-                    Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" } }
+                    Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }]
                 });
         var scopeStore = Substitute.For<IScopeStore>();
         var tokenStore = Substitute.For<ITokenStore>();

@@ -45,7 +45,7 @@ public sealed class UpdateResourceSetActionFixture
         {
             Id = id,
             Name = "blah",
-            Scopes = new[] { "scope" }
+            Scopes = ["scope"]
         };
         var resourceSet = new Shared.Models.ResourceSet { Id = id };
         _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -65,7 +65,7 @@ public sealed class UpdateResourceSetActionFixture
         {
             Id = id,
             Name = "blah",
-            Scopes = new[] { "scope" }
+            Scopes = ["scope"]
         };
         var resourceSet = new Shared.Models.ResourceSet { Id = id };
         _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())

@@ -18,7 +18,7 @@ using System;
 
 internal sealed record RedirectInstruction
 {
-    public Parameter[] Parameters { get; init; } = Array.Empty<Parameter>();
+    public Parameter[] Parameters { get; init; } = [];
 
     public DotAuthEndPoints Action { get; init; }
 

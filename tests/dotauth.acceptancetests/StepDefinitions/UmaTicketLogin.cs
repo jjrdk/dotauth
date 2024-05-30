@@ -26,18 +26,18 @@ public partial class FeatureTest
         var resourceSet = new ResourceSet
         {
             Name = "Local",
-            Scopes = new[] { "api1" },
+            Scopes = ["api1"],
             Type = "url",
-            AuthorizationPolicies = new[]
-            {
+            AuthorizationPolicies =
+            [
                 new PolicyRule
                 {
-                    Scopes = new[] { "api1" },
-                    Claims = new[] { new ClaimData { Type = ClaimTypes.NameIdentifier, Value = "user" } },
-                    ClientIdsAllowed = new[] { "post_client" },
+                    Scopes = ["api1"],
+                    Claims = [new ClaimData { Type = ClaimTypes.NameIdentifier, Value = "user" }],
+                    ClientIdsAllowed = ["post_client"],
                     IsResourceOwnerConsentNeeded = false
                 }
-            }
+            ]
         };
 
         var option = await _umaClient.AddResourceSet(resourceSet, _token.AccessToken);
@@ -102,9 +102,9 @@ public partial class FeatureTest
         var resourceSet = new ResourceSet
         {
             Name = "Local",
-            Scopes = new[] { "api1" },
+            Scopes = ["api1"],
             Type = "url",
-            AuthorizationPolicies = Array.Empty<PolicyRule>()
+            AuthorizationPolicies = []
         };
 
         var resourceResponse =
@@ -130,18 +130,18 @@ public partial class FeatureTest
         var resourceSet = new ResourceSet
         {
             Name = "Local",
-            Scopes = new[] { "api1" },
+            Scopes = ["api1"],
             Type = "url",
-            AuthorizationPolicies = new[]
-            {
+            AuthorizationPolicies =
+            [
                 new PolicyRule
                 {
-                    Scopes = new[] { "anotherApi" },
-                    Claims = new[] { new ClaimData { Type = "sub", Value = "user" } },
-                    ClientIdsAllowed = new[] { "post_client" },
+                    Scopes = ["anotherApi"],
+                    Claims = [new ClaimData { Type = "sub", Value = "user" }],
+                    ClientIdsAllowed = ["post_client"],
                     IsResourceOwnerConsentNeeded = false
                 }
-            }
+            ]
         };
 
         var resourceResponse =
@@ -156,7 +156,7 @@ public partial class FeatureTest
     [When(@"requesting permission ticket")]
     public async Task WhenRequestingPermissionTicket()
     {
-        var permission = new PermissionRequest { ResourceSetId = _resourceSetResponse.Id, Scopes = new[] { "api1" } };
+        var permission = new PermissionRequest { ResourceSetId = _resourceSetResponse.Id, Scopes = ["api1"] };
         var option = await _umaClient.RequestPermission(_token.AccessToken, requests: permission);
 
         var permissionResponse = Assert.IsType<Option<TicketResponse>.Result>(option);

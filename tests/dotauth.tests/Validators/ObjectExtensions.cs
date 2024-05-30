@@ -5,7 +5,7 @@ using Newtonsoft.Json.Converters;
 
 internal static class ObjectExtensions
 {
-    private static readonly JsonConverter[] Converters = { new StringEnumConverter() };
+    private static readonly JsonConverter[] Converters = [new StringEnumConverter()];
 
     public static string SerializeWithJavascript(this object parameter)
     {

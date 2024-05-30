@@ -114,7 +114,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
                     result.AuthCode.IdTokenPayload?.Claims.Where(
                             c => result.Client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
                         .ToArray()
-                    ?? Array.Empty<Claim>())
+                    ?? [])
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
                     new TokenGranted(

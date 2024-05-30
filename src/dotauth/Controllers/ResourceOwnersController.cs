@@ -188,7 +188,7 @@ public sealed class ResourceOwnersController : ControllerBase
                         Id.Create(),
                         sub,
                         resourceOwner?.Claims == null
-                            ? Array.Empty<ClaimData>()
+                            ? []
                             : resourceOwner.Claims.Select(x => new ClaimData { Type = x.Type, Value = x.Value })
                                 .ToArray(),
                         DateTimeOffset.UtcNow))

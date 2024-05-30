@@ -174,7 +174,7 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var subjects = parameter.Subjects ?? Array.Empty<string>();
+        var subjects = parameter.Subjects ?? [];
         var results = await session.Query<ResourceOwner>()
             .Where(r => r.Claims.Any(x => x.Type == OpenIdClaimTypes.Subject && x.Value.IsOneOf(subjects)))
             .ToPagedListAsync(parameter.StartIndex + 1, parameter.NbResults, cancellationToken)

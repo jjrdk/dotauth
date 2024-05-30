@@ -16,7 +16,7 @@ public record PermissionRegistration
         var jwt = handler.ReadJwtToken(umaToken.AccessToken);
         var permissionsClaim = jwt.Claims.TryGetUmaTickets(out var permissions);
         Expires = permissionsClaim ? new DateTimeOffset(jwt.ValidTo).ToUnixTimeSeconds() : 0;
-        Permissions = permissionsClaim ? permissions : Array.Empty<Permission>();
+        Permissions = permissionsClaim ? permissions : [];
     }
 
     public Permission[] Permissions { get; }

@@ -31,10 +31,10 @@ public sealed class InMemoryDockerBuildTask : FrostingTask<BuildContext>
             File = "./DockerfileInMemory",
             ForceRm = true,
             Rm = true,
-            Tag = new[]
-            {
+            Tag =
+            [
                 "jjrdk/dotauth:inmemory-canary", "jjrdk/dotauth:" + context.BuildVersion + "-inmemory"
-            }
+            ]
         };
         context.DockerBuild(settings, "./");
     }

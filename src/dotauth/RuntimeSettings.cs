@@ -47,7 +47,7 @@ public sealed class RuntimeSettings
             : authorizationCodeValidityPeriod;
         RptLifeTime = rptLifeTime == default ? TimeSpan.FromHours(1) : rptLifeTime;
         TicketLifeTime = ticketLifeTime == default ? TimeSpan.FromHours(1) : ticketLifeTime;
-        ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? Array.Empty<string>();
+        ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? [];
     }
 
     /// <summary>

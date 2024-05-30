@@ -96,8 +96,8 @@ internal sealed class Startup
             ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>,
                 sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
             EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
-            ClaimsIncludedInUserCreation = new[]
-            {
+            ClaimsIncludedInUserCreation =
+            [
                 ClaimTypes.Name,
                 ClaimTypes.Uri,
                 ClaimTypes.Country,
@@ -111,7 +111,7 @@ internal sealed class Startup
                 ClaimTypes.StateOrProvince,
                 ClaimTypes.StreetAddress,
                 ClaimTypes.Surname
-            }
+            ]
         };
     }
 
@@ -217,7 +217,7 @@ internal sealed class Startup
         {
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                    [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])
                 .AddDotAuthUi(GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi))
                 .AddSmsAuthentication(
                     new AwsSmsClient(
@@ -231,7 +231,7 @@ internal sealed class Startup
         {
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                    [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])
                 .AddDotAuthUi(GetType(), typeof(IDefaultUi));
         }
     }

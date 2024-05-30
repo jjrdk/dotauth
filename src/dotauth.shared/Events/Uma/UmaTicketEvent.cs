@@ -30,7 +30,7 @@ public abstract record UmaTicketEvent : Event
         TicketId = ticketId;
         ClientId = clientId;
         Requester = requester == null
-            ? Array.Empty<ClaimData>()
+            ? []
             : requester.ToArray();
     }
 

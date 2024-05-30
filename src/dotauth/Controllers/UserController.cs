@@ -460,9 +460,9 @@ public sealed class UserController : BaseController
                 Id = consent.Id,
                 ClientDisplayName = consent.ClientName,
                 AllowedScopeDescriptions = scopeNames?.Any() != true
-                    ? new List<string>()
+                    ? []
                     : scopeNames.Select(g => scopes[g].Description).ToList(),
-                AllowedIndividualClaims = claims ?? Array.Empty<string>(),
+                AllowedIndividualClaims = claims ?? [],
                 //LogoUri = client?.LogoUri?.AbsoluteUri,
                 PolicyUri = consent.PolicyUri?.AbsoluteUri,
                 TosUri = consent.TosUri?.AbsoluteUri

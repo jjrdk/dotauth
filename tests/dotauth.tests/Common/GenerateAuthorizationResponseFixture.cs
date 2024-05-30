@@ -56,12 +56,12 @@ public sealed class GenerateAuthorizationResponseFixture
         _eventPublisher = Substitute.For<IEventPublisher>();
         _eventPublisher.Publish(Arg.Any<TokenGranted>()).Returns(Task.CompletedTask);
         _clientStore = Substitute.For<IClientStore>();
-        _clientStore.GetAll(Arg.Any<CancellationToken>()).Returns(Array.Empty<Client>());
+        _clientStore.GetAll(Arg.Any<CancellationToken>()).Returns([]);
 
         _consentRepository = Substitute.For<IConsentRepository>();
         var scopeRepository = Substitute.For<IScopeRepository>();
         scopeRepository.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
-            .Returns(new[] { new Scope { Name = "openid" } });
+            .Returns([new Scope { Name = "openid" }]);
         _inMemoryJwksRepository = new InMemoryJwksRepository();
         _generateAuthorizationResponse = new GenerateAuthorizationResponse(
             _authorizationCodeRepositoryFake,
@@ -239,7 +239,7 @@ public sealed class GenerateAuthorizationResponseFixture
 
         var consent = new Consent
         {
-            GrantedScopes = new[] { scope },
+            GrantedScopes = [scope],
             ClientId = clientId
         };
 

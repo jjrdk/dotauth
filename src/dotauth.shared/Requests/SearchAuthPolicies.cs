@@ -16,7 +16,7 @@ public sealed record SearchAuthPolicies
     /// The ids.
     /// </value>
     [DataMember(Name = "ids")]
-    public string[] Ids { get; set; } = Array.Empty<string>();
+    public string[] Ids { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the start index.

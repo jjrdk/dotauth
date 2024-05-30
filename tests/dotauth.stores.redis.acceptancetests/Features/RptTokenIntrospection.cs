@@ -17,7 +17,7 @@ public partial class FeatureTest
     public async Task GivenAPatToken()
     {
         var option = await _tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", new[] { "uma_protection" }))
+                TokenRequest.FromPassword("administrator", "password", ["uma_protection"]))
             .ConfigureAwait(false);
 
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
@@ -32,7 +32,7 @@ public partial class FeatureTest
     {
         var resourceSet = new ResourceSet
         {
-            Description = "Test resource", Name = "Test resource", Scopes = new[] { "read" }, Type = "Test resource"
+            Description = "Test resource", Name = "Test resource", Scopes = ["read"], Type = "Test resource"
         };
         var response =
             await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
@@ -50,16 +50,15 @@ public partial class FeatureTest
         {
             Id = _resourceId,
             AuthorizationPolicies =
-                new[]
-                {
-                    new PolicyRule
+            [
+                new PolicyRule
                     {
-                        ClientIdsAllowed = new[] { "clientCredentials" }, Scopes = new[] { "read" }
+                        ClientIdsAllowed = ["clientCredentials"], Scopes = ["read"]
                     }
-                },
+            ],
             Description = "Test resource",
             Name = "Test resource",
-            Scopes = new[] { "read" },
+            Scopes = ["read"],
             Type = "Test resource"
         };
         var response =
@@ -76,7 +75,7 @@ public partial class FeatureTest
     {
         var ticketResponse = Assert.IsType<Option<TicketResponse>.Result>( await _umaClient.RequestPermission(
                 _token.AccessToken,
-                requests: new PermissionRequest { ResourceSetId = _resourceId, Scopes = new[] { "read" } })
+                requests: new PermissionRequest { ResourceSetId = _resourceId, Scopes = ["read"] })
             .ConfigureAwait(false) );
 
         _ticketId = ticketResponse.Item.TicketId;

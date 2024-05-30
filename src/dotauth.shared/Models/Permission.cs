@@ -20,7 +20,7 @@ public sealed record Permission
     /// <para>Each scope MUST correspond to a scope that was registered by this resource server for the referenced resource set.</para>
     /// </summary>
     [DataMember(Name = "scopes")]
-    public string[] Scopes { get; set; } = Array.Empty<string>();
+    public string[] Scopes { get; set; } = [];
 
     /// <summary>
     /// <para>Gets or sets an integer timestamp, measured in the number of seconds since January 1 1970 UTC,

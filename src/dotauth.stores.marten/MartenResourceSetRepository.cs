@@ -85,7 +85,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
             _logger.LogError(ex, "{error}", ex.Message);
             return new PagedResult<ResourceSetDescription>
             {
-                Content = Array.Empty<ResourceSetDescription>(),
+                Content = [],
                 StartIndex = 0,
                 TotalResults = 0
             };

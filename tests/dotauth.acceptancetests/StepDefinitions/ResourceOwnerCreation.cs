@@ -28,7 +28,7 @@ public partial class FeatureTest
     public async Task WhenUserLogsIn()
     {
         var option = await _tokenClient
-            .GetToken(TokenRequest.FromPassword("tester", "tester", new[] {"openid"}))
+            .GetToken(TokenRequest.FromPassword("tester", "tester", ["openid"]))
             ;
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         _token = token.Item;
@@ -50,7 +50,7 @@ public partial class FeatureTest
     public async Task GivenAnManagerToken()
     {
         var option = await _tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", new[] {"manager", "offline"}))
+                TokenRequest.FromPassword("administrator", "password", ["manager", "offline"]))
             ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);

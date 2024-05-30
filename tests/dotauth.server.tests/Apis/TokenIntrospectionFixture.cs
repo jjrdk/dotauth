@@ -97,7 +97,7 @@ public sealed class TokenIntrospectionFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
                 );
         var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
                 IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
@@ -115,7 +115,7 @@ public sealed class TokenIntrospectionFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", new[] { "scim", "offline" }))
+                TokenRequest.FromPassword("administrator", "password", ["scim", "offline"]))
             );
 
         var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(

@@ -69,7 +69,7 @@ public sealed record Consent
     /// <value>
     /// The granted scopes.
     /// </value>
-    public string[] GrantedScopes { get; init; } = Array.Empty<string>();
+    public string[] GrantedScopes { get; init; } = [];
 
     /// <summary>
     /// Gets or sets the claims.
@@ -77,5 +77,5 @@ public sealed record Consent
     /// <value>
     /// The claims.
     /// </value>
-    public string[] Claims { get; init; } = Array.Empty<string>();
+    public string[] Claims { get; init; } = [];
 }

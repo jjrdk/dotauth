@@ -5,10 +5,10 @@ namespace DotAuth.Shared;
 /// </summary>
 public static class GrantTypes
 {
-    private static readonly string[] AllGrantTypes = 
-    {
+    private static readonly string[] AllGrantTypes =
+    [
         ClientCredentials, Password, AuthorizationCode, Implicit, RefreshToken, UmaTicket, ValidateBearer
-    };
+    ];
 
     /// <summary>
     /// Client Credentials

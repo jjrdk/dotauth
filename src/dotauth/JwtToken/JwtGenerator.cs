@@ -141,7 +141,7 @@ internal sealed class JwtGenerator
         var result = await FillInIdentityTokenClaims(
                 new JwtPayload(),
                 authorizationParameter,
-                Array.Empty<ClaimParameter>(),
+                [],
                 claimsPrincipal,
                 issuerName,
                 cancellationToken)

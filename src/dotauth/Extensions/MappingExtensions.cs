@@ -54,7 +54,7 @@ internal static class MappingExtensions
             ClientAssertionType = request.client_assertion_type,
             ClientSecret = request.client_secret,
             AmrValues = string.IsNullOrWhiteSpace(request.amr_values)
-                ? Array.Empty<string>()
+                ? []
                 : request.amr_values.Split(' ')
         };
     }
@@ -162,7 +162,7 @@ internal static class MappingExtensions
             OriginUrl = request.origin_url,
             SessionId = request.session_id,
             AmrValues = string.IsNullOrWhiteSpace(request.amr_values)
-                ? Array.Empty<string>()
+                ? []
                 : request.amr_values.Split(' ')
         };
 

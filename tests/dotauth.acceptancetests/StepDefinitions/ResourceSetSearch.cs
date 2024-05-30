@@ -16,7 +16,7 @@ public partial class FeatureTest
     public async Task WhenSearchingByTerm(string term)
     {
         var searchOption = await _umaClient.SearchResources(
-            new SearchResourceSet { Terms = new[] { term } },
+            new SearchResourceSet { Terms = [term] },
             token: _token.AccessToken);
         _searchResults = Assert.IsType<Option<PagedResult<ResourceSetDescription>>.Result>(searchOption);
     }

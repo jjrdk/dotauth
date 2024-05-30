@@ -48,13 +48,13 @@ public sealed class ConsentHelperFixture
         {
             Claims = new ClaimsParameter
             {
-                UserInfo = new[] { new ClaimParameter { Name = claimName } }
+                UserInfo = [new ClaimParameter { Name = claimName }]
             },
             ClientId = clientId
         };
         IReadOnlyCollection<Consent> consents = new List<Consent>
         {
-            new() { Claims = new[] { claimName }, ClientId = clientId }
+            new() { Claims = [claimName], ClientId = clientId }
         };
 
         _consentRepositoryFake.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -78,7 +78,7 @@ public sealed class ConsentHelperFixture
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
         IReadOnlyCollection<Consent> consents = new List<Consent>
         {
-            new() { ClientId = clientId, GrantedScopes = new[] { scope } }
+            new() { ClientId = clientId, GrantedScopes = [scope] }
         };
 
         _consentRepositoryFake.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -111,7 +111,7 @@ public sealed class ConsentHelperFixture
         {
             new()
             {
-                ClientId = clientId, GrantedScopes = new[] { profileScope, openIdScope }
+                ClientId = clientId, GrantedScopes = [profileScope, openIdScope]
             }
         };
 

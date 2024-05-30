@@ -46,9 +46,9 @@ public sealed class GetAuthorizationCodeOperationFixture
 
         var client = new Client
         {
-            GrantTypes = new[] { GrantTypes.ClientCredentials },
-            AllowedScopes = new[] { scope },
-            RedirectionUrls = new[] { new Uri(HttpsLocalhost), }
+            GrantTypes = [GrantTypes.ClientCredentials],
+            AllowedScopes = [scope],
+            RedirectionUrls = [new Uri(HttpsLocalhost)]
         };
         var result = await _getAuthorizationCodeOperation.Execute(
                 authorizationParameter,
@@ -73,9 +73,9 @@ public sealed class GetAuthorizationCodeOperationFixture
 
         var client = new Client
         {
-            ResponseTypes = new[] { ResponseTypeNames.Code },
-            AllowedScopes = new[] { scope },
-            RedirectionUrls = new[] { new Uri(HttpsLocalhost), }
+            ResponseTypes = [ResponseTypeNames.Code],
+            AllowedScopes = [scope],
+            RedirectionUrls = [new Uri(HttpsLocalhost)]
         };
         var authorizationParameter = new AuthorizationParameter
         {

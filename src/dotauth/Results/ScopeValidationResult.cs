@@ -16,7 +16,7 @@ internal sealed record ScopeValidationResult
     {
         IsValid = false;
         ErrorMessage = errorMessage;
-        Scopes = Array.Empty<string>();
+        Scopes = [];
     }
 
     public bool IsValid { get; }

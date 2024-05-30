@@ -75,28 +75,28 @@ internal sealed class Startup
                              Id = "abc",
                              Name = "Test Resource",
                              Type = "Content",
-                             Scopes = new[] { "read" },
-                             AuthorizationPolicies = new[]
-                             {
+                             Scopes = ["read"],
+                             AuthorizationPolicies =
+                             [
                                  new PolicyRule
                                  {
-                                     Claims = new[]
-                                     {
+                                     Claims =
+                                     [
                                          new ClaimData
                                          {
                                              Type = "sub", Value = "administrator"
                                          }
-                                     },
-                                     ClientIdsAllowed = new[] { "web" },
-                                     Scopes = new[] { "read" },
+                                     ],
+                                     ClientIdsAllowed = ["web"],
+                                     Scopes = ["read"],
                                      IsResourceOwnerConsentNeeded = true
                                  }
-                             }
+                             ]
                          })
                     }),
             EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
-            ClaimsIncludedInUserCreation = new[]
-            {
+            ClaimsIncludedInUserCreation =
+            [
                 ClaimTypes.Name,
                 ClaimTypes.Uri,
                 ClaimTypes.Country,
@@ -110,7 +110,7 @@ internal sealed class Startup
                 ClaimTypes.StateOrProvince,
                 ClaimTypes.StreetAddress,
                 ClaimTypes.Surname
-            }
+            ]
         };
     }
 
@@ -195,7 +195,7 @@ internal sealed class Startup
         {
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                    [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])
                 .AddDotAuthUi(GetType(), typeof(IDefaultUi), typeof(IDefaultSmsUi))
                 .AddSmsAuthentication(
                     new AwsSmsClient(
@@ -209,7 +209,7 @@ internal sealed class Startup
         {
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
-                    new[] { CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme })
+                    [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])
                 .AddDotAuthUi(GetType(), typeof(IDefaultUi));
         }
     }

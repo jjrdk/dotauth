@@ -69,7 +69,7 @@ public sealed record DynamicClientRegistrationResponse
     /// Gets or sets the redirect uris.
     /// </summary>
     [DataMember(Name = "redirect_uris")]
-    public string[] RedirectUris { get; set; } = Array.Empty<string>();
+    public string[] RedirectUris { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the client name.
@@ -81,5 +81,5 @@ public sealed record DynamicClientRegistrationResponse
     /// Gets or sets the contacts.
     /// </summary>
     [DataMember(Name = "contacts")]
-    public string[] Contacts { get; set; } = Array.Empty<string>();
+    public string[] Contacts { get; set; } = [];
 }

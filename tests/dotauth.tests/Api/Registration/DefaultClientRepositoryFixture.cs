@@ -51,7 +51,7 @@ public sealed class DefaultClientRepositoryFixture
         const string clientId = "client_id";
 
         var result = await _clientRepositoryFake.Search(
-                new SearchClientsRequest { ClientIds = new[] { clientId } },
+                new SearchClientsRequest { ClientIds = [clientId] },
                 CancellationToken.None)
             ;
         Assert.Empty(result.Content);
@@ -64,13 +64,13 @@ public sealed class DefaultClientRepositoryFixture
         {
             ClientId = "test",
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-            AllowedScopes = new[] { "scope" },
-            RedirectionUrls = new[] { new Uri("https://localhost"), }
+            AllowedScopes = ["scope"],
+            RedirectionUrls = [new Uri("https://localhost")]
         };
         _ = await _clientRepositoryFake.Insert(client, CancellationToken.None);
 
         var result = await _clientRepositoryFake.Search(
-                new SearchClientsRequest { ClientIds = new[] { client.ClientId } },
+                new SearchClientsRequest { ClientIds = [client.ClientId] },
                 CancellationToken.None)
             ;
 
@@ -93,17 +93,17 @@ public sealed class DefaultClientRepositoryFixture
         var client = new Client
         {
             ClientName = clientName,
-            ResponseTypes = new[] { ResponseTypeNames.Token },
-            GrantTypes = new[] { GrantTypes.Implicit },
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "test" } },
-            AllowedScopes = new[] { "scope" },
+            ResponseTypes = [ResponseTypeNames.Token],
+            GrantTypes = [GrantTypes.Implicit],
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "test" }],
+            AllowedScopes = ["scope"],
             ApplicationType = ApplicationTypes.Native,
             ClientUri = clientUri,
             PolicyUri = policyUri,
             TosUri = tosUri,
             //JwksUri = jwksUri,
             JsonWebKeys = new List<JsonWebKey> { new() { Kid = kid } }.ToJwks(),
-            RedirectionUrls = new[] { new Uri("https://localhost"), },
+            RedirectionUrls = [new Uri("https://localhost")],
             //SectorIdentifierUri = sectorIdentifierUri,
             IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
             IdTokenEncryptedResponseAlg = SecurityAlgorithms.RsaPKCS1,

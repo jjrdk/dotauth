@@ -43,7 +43,7 @@ internal sealed class DiscoveryActions
         var scopes = await _scopeRepository.GetAll(cancellationToken).ConfigureAwait(false);
         var scopeSupportedNames = scopes != null && scopes.Any()
             ? scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray()
-            : Array.Empty<string>();
+            : [];
 
         var responseTypesSupported = GetSupportedResponseTypes(CoreConstants.Supported.SupportedAuthorizationFlows);
 
@@ -53,7 +53,7 @@ internal sealed class DiscoveryActions
             RequestParameterSupported = true,
             RequestUriParameterSupported = true,
             RequireRequestUriRegistration = true,
-            ClaimsSupported = Array.Empty<string>(),
+            ClaimsSupported = [],
             ScopesSupported = scopeSupportedNames,
             ResponseTypesSupported = responseTypesSupported,
             ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes.ToArray(),
@@ -61,7 +61,7 @@ internal sealed class DiscoveryActions
             SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray(),
             TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods,
             IdTokenSigningAlgValuesSupported = [SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256],
-            IdTokenEncryptionEncValuesSupported = Array.Empty<string>(),
+            IdTokenEncryptionEncValuesSupported = [],
             ClaimsLocalesSupported = ["en"],
             UiLocalesSupported = ["en"],
             Version = _version,

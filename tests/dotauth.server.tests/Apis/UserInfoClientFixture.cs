@@ -58,7 +58,7 @@ public sealed class UserInfoClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+                TokenRequest.FromPassword("administrator", "password", ["scim"]))
             );
 
         var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
@@ -74,7 +74,7 @@ public sealed class UserInfoClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
             );
 
         var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
@@ -90,7 +90,7 @@ public sealed class UserInfoClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", new[] { "scim" }))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
             );
 
         var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);

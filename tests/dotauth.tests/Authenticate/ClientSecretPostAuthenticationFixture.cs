@@ -16,17 +16,17 @@ public sealed class ClientSecretPostAuthenticationFixture
         };
         var firstClient = new Client
         {
-            Secrets = Array.Empty<ClientSecret>()
+            Secrets = []
         };
         var secondClient = new Client
         {
-            Secrets = new []
-            {
+            Secrets =
+            [
                 new ClientSecret
                 {
                     Type = ClientSecretTypes.X509Thumbprint
                 }
-            }
+            ]
         };
 
 
@@ -43,14 +43,14 @@ public sealed class ClientSecretPostAuthenticationFixture
         };
         var client = new Client
         {
-            Secrets = new []
-            {
+            Secrets =
+            [
                 new ClientSecret
                 {
                     Type = ClientSecretTypes.SharedSecret,
                     Value = "secret"
                 }
-            }
+            ]
         };
 
         var result = ClientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, client);
@@ -68,14 +68,14 @@ public sealed class ClientSecretPostAuthenticationFixture
         };
         var client = new Client
         {
-            Secrets = new []
-            {
+            Secrets =
+            [
                 new ClientSecret
                 {
                     Type = ClientSecretTypes.SharedSecret,
                     Value = clientSecret
                 }
-            }
+            ]
         };
 
         var result = ClientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, client);

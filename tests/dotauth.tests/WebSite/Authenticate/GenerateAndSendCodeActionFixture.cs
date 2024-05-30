@@ -95,7 +95,7 @@ public sealed class GenerateAndSendCodeActionFixture
                 new ResourceOwner
                 {
                     TwoFactorAuthentication = "email",
-                    Claims = new[] { new Claim("key", "value") },
+                    Claims = [new Claim("key", "value")],
                     Subject = "subject"
                 });
         var fakeAuthService = Substitute.For<ITwoFactorAuthenticationService>();
@@ -116,7 +116,7 @@ public sealed class GenerateAndSendCodeActionFixture
                 new ResourceOwner
                 {
                     TwoFactorAuthentication = "email",
-                    Claims = new[] { new Claim("key", "value") },
+                    Claims = [new Claim("key", "value")],
                     Subject = "subject"
                 });
         var fakeAuthService = Substitute.For<ITwoFactorAuthenticationService>();
@@ -144,7 +144,7 @@ public sealed class GenerateAndSendCodeActionFixture
                 new ResourceOwner
                 {
                     TwoFactorAuthentication = "email",
-                    Claims = new[] { new Claim("key", "value") },
+                    Claims = [new Claim("key", "value")],
                     Subject = "subject"
                 });
         var fakeAuthService = Substitute.For<ITwoFactorAuthenticationService>();

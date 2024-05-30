@@ -47,7 +47,7 @@ public static class ClaimPrincipalExtensions
     /// <returns><c>true</c> if any tickets are found, otherwise <c>false</c>.</returns>
     public static bool TryGetUmaTickets(this IEnumerable<Claim> claims, out Permission[] tickets)
     {
-        tickets = Array.Empty<Permission>();
+        tickets = [];
 
         try
         {

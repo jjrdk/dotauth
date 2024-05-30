@@ -19,5 +19,5 @@ public sealed record EditPolicyResponse
     /// Gets or sets the authorization policies.
     /// </summary>
     [DataMember(Name = "rules")]
-    public PolicyRuleViewModel[] Rules { get; set; } = Array.Empty<PolicyRuleViewModel>();
+    public PolicyRuleViewModel[] Rules { get; set; } = [];
 }

@@ -117,7 +117,7 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
             additionalClaims = resourceOwner?.Claims
                                    .Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
                                    .ToArray()
-                               ?? Array.Empty<Claim>();
+                               ?? [];
         }
 
         // 4. Generate a new access token & insert it

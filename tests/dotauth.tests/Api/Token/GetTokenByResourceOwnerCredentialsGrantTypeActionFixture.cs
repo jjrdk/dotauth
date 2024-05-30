@@ -105,8 +105,8 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         var client = new Client
         {
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.AuthorizationCode }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.AuthorizationCode]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
@@ -145,10 +145,10 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         };
         var client = new Client
         {
-            ResponseTypes = Array.Empty<string>(),
+            ResponseTypes = [],
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.Password }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.Password]
         };
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
 
@@ -187,9 +187,9 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         var client = new Client
         {
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.Password },
-            ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.Password],
+            ResponseTypes = [ResponseTypeNames.IdToken, ResponseTypeNames.Token]
         };
 
         var authenticateService = Substitute.For<IAuthenticateResourceOwnerService>();
@@ -235,9 +235,9 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         var client = new Client
         {
             ClientId = "id",
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
-            GrantTypes = new[] { GrantTypes.Password },
-            ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
+            GrantTypes = [GrantTypes.Password],
+            ResponseTypes = [ResponseTypeNames.IdToken, ResponseTypeNames.Token]
         };
 
         var resourceOwner = new ResourceOwner();
@@ -285,15 +285,15 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         };
         var client = new Client
         {
-            AllowedScopes = new[] { invalidScope },
+            AllowedScopes = [invalidScope],
             ClientId = clientId,
-            Secrets = new[] { new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret } },
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = clientSecret }],
             JsonWebKeys =
                 TestKeys.SecretKey.CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify)
                     .ToSet(),
             IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
-            GrantTypes = new[] { GrantTypes.Password },
-            ResponseTypes = new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token }
+            GrantTypes = [GrantTypes.Password],
+            ResponseTypes = [ResponseTypeNames.IdToken, ResponseTypeNames.Token]
         };
         var resourceOwner = new ResourceOwner { Subject = "tester" };
         var authenticateService = Substitute.For<IAuthenticateResourceOwnerService>();
@@ -306,7 +306,7 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
         InitializeFakeObjects(authenticateService);
         _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
         _scopeRepository.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
-            .Returns(new[] { new Scope { Name = invalidScope } });
+            .Returns([new Scope { Name = invalidScope }]);
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
