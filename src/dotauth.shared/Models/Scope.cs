@@ -16,11 +16,11 @@ namespace DotAuth.Shared.Models;
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the scope.
 /// </summary>
-[DataContract]
 public record Scope
 {
     /// <summary>
@@ -29,13 +29,13 @@ public record Scope
     /// <value>
     /// The name.
     /// </value>
-    [DataMember(Name = "name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the icon uri.
     /// </summary>
-    [DataMember(Name = "icon_uri")]
+    [JsonPropertyName("icon_uri")]
     public Uri? IconUri { get; set; }
 
     /// <summary>
@@ -44,7 +44,7 @@ public record Scope
     /// <value>
     /// The description.
     /// </value>
-    [DataMember(Name = "description")]
+    [JsonPropertyName("description")]
     public string Description { get; set; } = string.Empty;
 
     /// <summary>
@@ -53,7 +53,7 @@ public record Scope
     /// <value>
     ///   <c>true</c> if this instance is displayed in consent; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "is_displayed_in_consent")]
+    [JsonPropertyName("is_displayed_in_consent")]
     public bool IsDisplayedInConsent { get; set; }
 
     /// <summary>
@@ -62,7 +62,7 @@ public record Scope
     /// <value>
     ///   <c>true</c> if this instance is exposed; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "is_exposed")]
+    [JsonPropertyName("is_exposed")]
     public bool IsExposed { get; set; }
 
     /// <summary>
@@ -71,7 +71,7 @@ public record Scope
     /// <value>
     /// The type.
     /// </value>
-    [DataMember(Name = "type")]
+    [JsonPropertyName("type")]
     public string Type { get; set; } = null!;
 
     /// <summary>
@@ -80,6 +80,6 @@ public record Scope
     /// <value>
     /// The claims.
     /// </value>
-    [DataMember(Name = "claims")]
+    [JsonPropertyName("claims")]
     public string[] Claims { get; set; } = [];
 }

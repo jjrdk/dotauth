@@ -3,12 +3,13 @@ namespace DotAuth.Stores.Marten.AcceptanceTests.Features;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
+
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -79,7 +80,7 @@ public partial class FeatureTest
         Assert.True(policyResponse.IsSuccessStatusCode);
 
         var content = await policyResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        _policyRules = JsonConvert.DeserializeObject<EditPolicyResponse>(content)!;
+        _policyRules = JsonSerializer.Deserialize<EditPolicyResponse>(content, DefaultJsonSerializerOptions.Instance)!;
 
         Assert.Single(_policyRules.Rules);
     }
@@ -93,7 +94,7 @@ public partial class FeatureTest
         {
             Method = HttpMethod.Put,
             RequestUri = new Uri(_resourceSetResponse.UserAccessPolicyUri),
-            Content = new StringContent(JsonConvert.SerializeObject(_policyRules))
+            Content = new StringContent(JsonSerializer.Serialize(_policyRules, DefaultJsonSerializerOptions.Instance))
         };
         msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
 

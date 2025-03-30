@@ -17,11 +17,11 @@ namespace DotAuth.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the resource set request.
 /// </summary>
-[DataContract]
 public record ResourceSet : ResourceSetDescription
 {
     /// <summary>
@@ -30,18 +30,18 @@ public record ResourceSet : ResourceSetDescription
     /// <value>
     /// The scopes.
     /// </value>
-    [DataMember(Name = "resource_scopes")]
+    [JsonPropertyName("resource_scopes")]
     public string[] Scopes { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the authorization policies for the resource.
     /// </summary>
-    [DataMember(Name = "authorization_policies")]
+    [JsonPropertyName("authorization_policies")]
     public PolicyRule[] AuthorizationPolicies { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the creation time.
     /// </summary>
-    [DataMember(Name = "created")]
+    [JsonPropertyName("created")]
     public DateTimeOffset Created { get; set; } = DateTimeOffset.UtcNow;
 }

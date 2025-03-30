@@ -16,11 +16,11 @@ namespace DotAuth.Shared.Responses;
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the resource set response.
 /// </summary>
-[DataContract]
 public sealed record ResourceSetResponse
 {
     /// <summary>
@@ -29,7 +29,7 @@ public sealed record ResourceSetResponse
     /// <value>
     /// The identifier.
     /// </value>
-    [DataMember(Name = "_id")]
+    [JsonPropertyName("_id")]
     public string Id { get; set; } = null!;
 
     /// <summary>
@@ -38,7 +38,7 @@ public sealed record ResourceSetResponse
     /// <value>
     /// The name.
     /// </value>
-    [DataMember(Name = "name")]
+    [JsonPropertyName("name")]
     public string? Name { get; set; }
 
     /// <summary>
@@ -47,7 +47,7 @@ public sealed record ResourceSetResponse
     /// <value>
     /// The URI.
     /// </value>
-    [DataMember(Name = "uri")]
+    [JsonPropertyName("uri")]
     public string? Uri { get; set; }
 
     /// <summary>
@@ -56,7 +56,7 @@ public sealed record ResourceSetResponse
     /// <value>
     /// The type.
     /// </value>
-    [DataMember(Name = "type")]
+    [JsonPropertyName("type")]
     public string? Type { get; set; }
 
     /// <summary>
@@ -65,7 +65,7 @@ public sealed record ResourceSetResponse
     /// <value>
     /// The scopes.
     /// </value>
-    [DataMember(Name = "scopes")]
+    [JsonPropertyName("scopes")]
     public string[] Scopes { get; set; } = [];
 
     /// <summary>
@@ -74,6 +74,6 @@ public sealed record ResourceSetResponse
     /// <value>
     /// The icon URI.
     /// </value>
-    [DataMember(Name = "icon_uri")]
+    [JsonPropertyName("icon_uri")]
     public string? IconUri { get; set; }
 }

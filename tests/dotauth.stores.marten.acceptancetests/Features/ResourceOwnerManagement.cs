@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Client;
@@ -16,7 +17,6 @@ using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -77,13 +77,13 @@ public partial class FeatureTest
             Claims = claimData
         };
 
-        var json = JsonConvert.SerializeObject(updateRequest);
+        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
 
         var request = new HttpRequestMessage
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
             Method = HttpMethod.Post,
-            RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+            RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners/claims")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
@@ -102,7 +102,7 @@ public partial class FeatureTest
     {
         var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _updatedToken = JsonConvert.DeserializeObject<GrantedTokenResponse>(json)!;
+        _updatedToken = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
 
         Assert.NotNull(_updatedToken);
     }
@@ -112,7 +112,7 @@ public partial class FeatureTest
     {
         var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _token = JsonConvert.DeserializeObject<GrantedTokenResponse>(json)!;
+        _token = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
 
         Assert.NotNull(_token);
     }
@@ -185,7 +185,7 @@ public partial class FeatureTest
         {
             Method = HttpMethod.Delete,
             RequestUri = new Uri(
-                _fixture.Server.BaseAddress + "resource_owners/claims?type=acceptance_test")
+                $"{_fixture.Server.BaseAddress}resource_owners/claims?type=acceptance_test")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
@@ -214,7 +214,7 @@ public partial class FeatureTest
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Delete,
-            RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims?type=some_other_claim")
+            RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners/claims?type=some_other_claim")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
         _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
@@ -248,7 +248,7 @@ public partial class FeatureTest
     {
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Delete, RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners")
+            Method = HttpMethod.Delete, RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
         _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
@@ -269,13 +269,13 @@ public partial class FeatureTest
             ]
         };
 
-        var json = JsonConvert.SerializeObject(updateRequest);
+        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
 
         var request = new HttpRequestMessage
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
             Method = HttpMethod.Put,
-            RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+            RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners/claims")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",

@@ -224,7 +224,7 @@ public sealed class TokenClient : ClientBase, ITokenClient
         CancellationToken cancellationToken = default)
     {
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
-        var requestUri = new Uri(discoveryInformation.Issuer + "code");
+        var requestUri = new Uri($"{discoveryInformation.Issuer}code");
 
         var json = JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance);
         var req = new HttpRequestMessage

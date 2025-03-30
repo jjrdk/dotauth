@@ -2,17 +2,17 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the search resource set request.
 /// </summary>
-[DataContract]
 public sealed record SearchResourceSet
 {
     /// <summary>
     /// Gets or sets the id token for the query.
     /// </summary>
-    [DataMember(Name = "id_token")]
+    [JsonPropertyName("id_token")]
     public string IdToken { get; set; } = "";
     
     /// <summary>
@@ -21,7 +21,7 @@ public sealed record SearchResourceSet
     /// <value>
     /// The search terms.
     /// </value>
-    [DataMember(Name = "terms")]
+    [JsonPropertyName("terms")]
     public string[] Terms { get; set; } = [];
     
     /// <summary>
@@ -30,7 +30,7 @@ public sealed record SearchResourceSet
     /// <value>
     /// The requested resource types.
     /// </value>
-    [DataMember(Name = "types")]
+    [JsonPropertyName("types")]
     public string[] Types { get; set; } = [];
 
     /// <summary>
@@ -39,7 +39,7 @@ public sealed record SearchResourceSet
     /// <value>
     /// The start index.
     /// </value>
-    [DataMember(Name = "start_index")]
+    [JsonPropertyName("start_index")]
     public int StartIndex { get; set; }
 
     /// <summary>
@@ -48,6 +48,6 @@ public sealed record SearchResourceSet
     /// <value>
     /// The page size of the result set.
     /// </value>
-    [DataMember(Name = "count")]
+    [JsonPropertyName("count")]
     public int PageSize { get; set; } = 100;
 }

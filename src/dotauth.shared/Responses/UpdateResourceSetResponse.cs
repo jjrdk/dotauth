@@ -15,11 +15,11 @@
 namespace DotAuth.Shared.Responses;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Contains the response for resource set updates.
 /// </summary>
-[DataContract]
 public sealed record UpdateResourceSetResponse
 {
     /// <summary>
@@ -28,6 +28,6 @@ public sealed record UpdateResourceSetResponse
     /// <value>
     /// The identifier.
     /// </value>
-    [DataMember(Name = "_id")]
+    [JsonPropertyName("_id")]
     public string Id { get; set; } = null!;
 }

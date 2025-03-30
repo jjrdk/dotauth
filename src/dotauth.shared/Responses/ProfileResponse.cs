@@ -2,11 +2,11 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the profile response.
 /// </summary>
-[DataContract]
 public sealed record ProfileResponse
 {
     /// <summary>
@@ -15,7 +15,7 @@ public sealed record ProfileResponse
     /// <value>
     /// The user identifier.
     /// </value>
-    [DataMember(Name = "user_id")]
+    [JsonPropertyName("user_id")]
     public string UserId { get; set; } = null!;
 
     /// <summary>
@@ -24,7 +24,7 @@ public sealed record ProfileResponse
     /// <value>
     /// The issuer.
     /// </value>
-    [DataMember(Name = "issuer")]
+    [JsonPropertyName("issuer")]
     public string Issuer { get; set; } = null!;
 
     /// <summary>
@@ -33,7 +33,7 @@ public sealed record ProfileResponse
     /// <value>
     /// The create date time.
     /// </value>
-    [DataMember(Name = "create_datetime")]
+    [JsonPropertyName("create_datetime")]
     public DateTimeOffset CreateDateTime { get; set; }
 
     /// <summary>
@@ -42,6 +42,6 @@ public sealed record ProfileResponse
     /// <value>
     /// The update time.
     /// </value>
-    [DataMember(Name = "update_datetime")]
+    [JsonPropertyName("update_datetime")]
     public DateTimeOffset UpdateTime { get; set; }
 }

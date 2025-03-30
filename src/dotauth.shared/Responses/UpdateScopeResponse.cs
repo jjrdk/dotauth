@@ -15,11 +15,11 @@
 namespace DotAuth.Shared.Responses;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the update scope response.
 /// </summary>
-[DataContract]
 public sealed record UpdateScopeResponse
 {
     /// <summary>
@@ -28,6 +28,6 @@ public sealed record UpdateScopeResponse
     /// <value>
     /// The identifier.
     /// </value>
-    [DataMember(Name = "id")]
+    [JsonPropertyName("id")]
     public string Id { get; set; } = null!;
 }

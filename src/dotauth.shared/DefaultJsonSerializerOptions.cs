@@ -8,6 +8,9 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using DotAuth.Shared.Models;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
 
 internal static class DefaultJsonSerializerOptions
@@ -16,7 +19,6 @@ internal static class DefaultJsonSerializerOptions
     {
         Instance = new JsonSerializerOptions
         {
-            TypeInfoResolver = DataContractResolver.Default,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             WriteIndented = false,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -32,7 +34,8 @@ internal static class DefaultJsonSerializerOptions
             },
             ReadCommentHandling = JsonCommentHandling.Skip,
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-            UnknownTypeHandling = JsonUnknownTypeHandling.JsonNode
+            UnknownTypeHandling = JsonUnknownTypeHandling.JsonNode,
+            TypeInfoResolverChain = { SharedSerializerContext.Default }
         };
     }
 
@@ -56,23 +59,15 @@ internal static class DefaultJsonSerializerOptions
     {
         public override Claim Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var obj = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
+            var obj = JsonNode.Parse(ref reader);
             if (obj == null)
             {
                 throw new Exception("Failed to read json");
             }
 
-            var properties = obj.Select(x => x.Key).ToArray();
-            if (properties.Length == 1)
-            {
-                var type = obj.First().Key;
-                var value = obj[type];
-                return new Claim(type, value?.GetValue<string>() ?? string.Empty);
-            }
-
             return new Claim(
-                obj["type"]!.GetValue<string>(),
-                obj["value"]!.GetValue<string>(),
+                obj["type"]?.GetValue<string>() ?? "",
+                obj["value"]?.GetValue<string>() ?? "",
                 obj["valueType"]?.GetValue<string>(),
                 obj["issuer"]?.GetValue<string>());
         }
@@ -89,14 +84,19 @@ internal static class DefaultJsonSerializerOptions
     {
         public override JwtPayload Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var obj = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
-            var jsonNode = obj!["claims"]!.AsArray();
+            var obj = JsonNode.Parse(ref reader) as JsonObject;
+            if (obj == null)
+            {
+                throw new Exception("Failed to read json");
+            }
+            var nbf = obj["nbf"];
+            var exp = obj["exp"];
             return new JwtPayload(
-                null,
-                null,
-                jsonNode.AsArray().Deserialize<Claim[]>(options),
-                null,
-                null);
+                obj["iss"]?.GetValue<string>(),
+                obj["aud"]?.GetValue<string>(),
+                obj["claims"]?.GetValue<Claim[]>(),
+                nbf == null ? null : DateTimeOffset.FromUnixTimeSeconds(nbf.GetValue<long>()).DateTime,
+                exp == null ? null : DateTimeOffset.FromUnixTimeSeconds(exp.GetValue<long>()).DateTime);
         }
 
         public override void Write(Utf8JsonWriter writer, JwtPayload value, JsonSerializerOptions options)
@@ -125,7 +125,7 @@ internal static class DefaultJsonSerializerOptions
             Type typeToConvert,
             JsonSerializerOptions options)
         {
-            var obj = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
+            var obj = JsonNode.Parse(ref reader);
             var json = obj?.ToJsonString();
             return new JsonWebKeySet(json);
         }
@@ -138,4 +138,67 @@ internal static class DefaultJsonSerializerOptions
             writer.WriteEndObject();
         }
     }
+}
+
+/// <inheritdoc cref="System.Text.Json.Serialization.JsonSerializerContext" />
+[JsonSerializable(typeof(Client))]
+[JsonSerializable(typeof(ClientSecret))]
+[JsonSerializable(typeof(ClaimData))]
+[JsonSerializable(typeof(ErrorDetails))]
+[JsonSerializable(typeof(GrantedToken))]
+[JsonSerializable(typeof(Permission))]
+[JsonSerializable(typeof(Permission[]))]
+[JsonSerializable(typeof(PolicyRule))]
+[JsonSerializable(typeof(PagedResult<Client>))]
+[JsonSerializable(typeof(PagedResult<ResourceSetDescription>))]
+[JsonSerializable(typeof(PagedResult<ResourceOwner>))]
+[JsonSerializable(typeof(ResourceOwner))]
+[JsonSerializable(typeof(ResourceSet))]
+[JsonSerializable(typeof(ResourceSetDescription))]
+[JsonSerializable(typeof(Scope))]
+[JsonSerializable(typeof(Ticket))]
+[JsonSerializable(typeof(TicketLine))]
+[JsonSerializable(typeof(AddResourceOwnerRequest))]
+[JsonSerializable(typeof(AuthorizationRequest))]
+[JsonSerializable(typeof(ConfirmationCodeRequest))]
+[JsonSerializable(typeof(DeviceAuthorizationData))]
+[JsonSerializable(typeof(DeviceAuthorizationRequest))]
+[JsonSerializable(typeof(DynamicClientRegistrationRequest))]
+[JsonSerializable(typeof(IntrospectionRequest))]
+[JsonSerializable(typeof(LinkProfileRequest))]
+[JsonSerializable(typeof(PermissionRequest))]
+[JsonSerializable(typeof(PermissionRequest[]))]
+[JsonSerializable(typeof(RevokeSessionRequest))]
+[JsonSerializable(typeof(SearchAuthPolicies))]
+[JsonSerializable(typeof(SearchClientsRequest))]
+[JsonSerializable(typeof(SearchResourceOwnersRequest))]
+[JsonSerializable(typeof(SearchResourceSet))]
+[JsonSerializable(typeof(SearchScopesRequest))]
+[JsonSerializable(typeof(UpdateResourceOwnerClaimsRequest))]
+[JsonSerializable(typeof(UpdateResourceOwnerPasswordRequest))]
+[JsonSerializable(typeof(AddPolicyResponse))]
+[JsonSerializable(typeof(AddResourceSetResponse))]
+[JsonSerializable(typeof(AddResourceOwnerResponse))]
+[JsonSerializable(typeof(AddScopeResponse))]
+[JsonSerializable(typeof(AuthorizationResponse))]
+[JsonSerializable(typeof(DeviceAuthorizationResponse))]
+[JsonSerializable(typeof(DiscoveryInformation))]
+[JsonSerializable(typeof(DynamicClientRegistrationResponse))]
+[JsonSerializable(typeof(EditPolicyResponse))]
+[JsonSerializable(typeof(GrantedTokenResponse))]
+[JsonSerializable(typeof(IntrospectionResponse))]
+[JsonSerializable(typeof(OauthIntrospectionResponse))]
+[JsonSerializable(typeof(PolicyResponse))]
+[JsonSerializable(typeof(PolicyRuleResponse))]
+[JsonSerializable(typeof(ProfileResponse))]
+[JsonSerializable(typeof(ResourceSetResponse))]
+[JsonSerializable(typeof(SearchAuthPoliciesResponse))]
+[JsonSerializable(typeof(TicketResponse))]
+[JsonSerializable(typeof(UmaConfiguration))]
+[JsonSerializable(typeof(UmaConfigurationResponse))]
+[JsonSerializable(typeof(UmaIntrospectionResponse))]
+[JsonSerializable(typeof(UpdateResourceSetResponse))]
+[JsonSerializable(typeof(UpdateScopeResponse))]
+public partial class SharedSerializerContext : JsonSerializerContext
+{
 }

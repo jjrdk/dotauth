@@ -2,11 +2,11 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the ticket line content.
 /// </summary>
-[DataContract]
 public sealed record TicketLine
 {
     /// <summary>
@@ -15,7 +15,7 @@ public sealed record TicketLine
     /// <value>
     /// The scopes.
     /// </value>
-    [DataMember(Name = "scopes")]
+    [JsonPropertyName("scopes")]
     public string[] Scopes { get; set; } = [];
 
     /// <summary>
@@ -24,6 +24,6 @@ public sealed record TicketLine
     /// <value>
     /// The resource set identifier.
     /// </value>
-    [DataMember(Name = "resource_id")]
+    [JsonPropertyName("resource_id")]
     public string ResourceSetId { get; set; } = null!;
 }

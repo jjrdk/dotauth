@@ -2,12 +2,12 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the generic result.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-[DataContract]
 public sealed class PagedResult<T>
 {
     /// <summary>
@@ -16,7 +16,7 @@ public sealed class PagedResult<T>
     /// <value>
     /// The total results.
     /// </value>
-    [DataMember(Name = "count")]
+    [JsonPropertyName("count")]
     public long TotalResults { get; set; }
 
     /// <summary>
@@ -25,7 +25,7 @@ public sealed class PagedResult<T>
     /// <value>
     /// The start index.
     /// </value>
-    [DataMember(Name = "start_index")]
+    [JsonPropertyName("start_index")]
     public long StartIndex { get; set; }
 
     /// <summary>
@@ -34,6 +34,6 @@ public sealed class PagedResult<T>
     /// <value>
     /// The content.
     /// </value>
-    [DataMember(Name = "content")]
+    [JsonPropertyName("content")]
     public T[] Content { get; set; } = [];
 }

@@ -20,11 +20,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the authorization request.
 /// </summary>
-[DataContract]
 public sealed record AuthorizationRequest
 {
     /// <summary>
@@ -69,7 +69,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The scope.
     /// </value>
-    [DataMember(Name = "scope")]
+    [JsonPropertyName("scope")]
     public string? scope { get; set; }
 
     /// <summary>
@@ -78,7 +78,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The type of the response.
     /// </value>
-    [DataMember(Name = "response_type")]
+    [JsonPropertyName("response_type")]
     public string? response_type { get; set; }
 
     /// <summary>
@@ -87,7 +87,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The redirect URI.
     /// </value>
-    [DataMember(Name = "redirect_uri")]
+    [JsonPropertyName("redirect_uri")]
     public Uri? redirect_uri { get; set; }
 
     /// <summary>
@@ -96,7 +96,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The state.
     /// </value>
-    [DataMember(Name = "state")]
+    [JsonPropertyName("state")]
     public string? state { get; set; }
 
     /// <summary>
@@ -105,7 +105,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The response mode.
     /// </value>
-    [DataMember(Name = "response_mode")]
+    [JsonPropertyName("response_mode")]
     public string? response_mode { get; set; }
 
     /// <summary>
@@ -114,7 +114,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The nonce.
     /// </value>
-    [DataMember(Name = "nonce")]
+    [JsonPropertyName("nonce")]
     public string? nonce { get; set; }
 
     /// <summary>
@@ -123,13 +123,13 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The display.
     /// </value>
-    [DataMember(Name = "display")]
+    [JsonPropertyName("display")]
     public DisplayModes? display { get; set; }
 
     /// <summary>
     /// The possible values are : none, login, consent, select_account
     /// </summary>
-    [DataMember(Name = "prompt")]
+    [JsonPropertyName("prompt")]
     public string? prompt { get; set; }
 
     /// <summary>
@@ -137,61 +137,61 @@ public sealed record AuthorizationRequest
     /// Specifies allowable elapsed time in seconds since the last time the end-user
     ///  was actively authenticated by the OP.
     /// </summary>
-    [DataMember(Name = "max_age")]
+    [JsonPropertyName("max_age")]
     public double max_age { get; set; }
 
     /// <summary>
     /// End-User's preferred languages
     /// </summary>
-    [DataMember(Name = "ui_locales")]
+    [JsonPropertyName("ui_locales")]
     public string? ui_locales { get; set; }
 
     /// <summary>
     /// Token previousely issued by the Authorization Server.
     /// </summary>
-    [DataMember(Name = "id_token_hint")]
+    [JsonPropertyName("id_token_hint")]
     public string? id_token_hint { get; set; }
 
     /// <summary>
     /// Hint to the authorization server about the login identifier the end-user might use to log in.
     /// </summary>
-    [DataMember(Name = "login_hint")]
+    [JsonPropertyName("login_hint")]
     public string? login_hint { get; set; }
 
     /// <summary>
     /// Request that specific Claims be returned from the UserInfo endpoint and/or in the id token.
     /// </summary>
-    [DataMember(Name = "claims")]
+    [JsonPropertyName("claims")]
     public string? claims { get; set; }
 
     /// <summary>
     /// Requested Authentication Context sealed class References values.
     /// </summary>
-    [DataMember(Name = "acr_values")]
+    [JsonPropertyName("acr_values")]
     public string? acr_values { get; set; }
 
     /// <summary>
     /// Self-contained parameter and can be optionally be signed and / or encrypted
     /// </summary>
-    [DataMember(Name = "request")]
+    [JsonPropertyName("request")]
     public string? request { get; set; }
 
     /// <summary>
     /// Enables OpenID connect requests to be passed by reference rather than by value.
     /// </summary>
-    [DataMember(Name = "request_uri")]
+    [JsonPropertyName("request_uri")]
     public Uri? request_uri { get; set; }
 
     /// <summary>
     /// Code challenge.
     /// </summary>
-    [DataMember(Name = "code_challenge")]
+    [JsonPropertyName("code_challenge")]
     public string? code_challenge { get; set; }
 
     /// <summary>
     /// Code challenge method.
     /// </summary>
-    [DataMember(Name = "code_challenge_method")]
+    [JsonPropertyName("code_challenge_method")]
     public string? code_challenge_method { get; set; }
 
     /// <summary>
@@ -200,7 +200,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The client identifier.
     /// </value>
-    [DataMember(Name = "client_id")]
+    [JsonPropertyName("client_id")]
     public string? client_id { get; set; }
 
     /// <summary>
@@ -209,7 +209,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The aggregate identifier.
     /// </value>
-    [DataMember(Name = "aggregate_id")]
+    [JsonPropertyName("aggregate_id")]
     public string? aggregate_id { get; set; }
 
     /// <summary>
@@ -218,7 +218,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The origin URL.
     /// </value>
-    [DataMember(Name = "origin_url")]
+    [JsonPropertyName("origin_url")]
     public string? origin_url { get; set; }
 
     /// <summary>
@@ -227,7 +227,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The session identifier.
     /// </value>
-    [DataMember(Name = "session_id")]
+    [JsonPropertyName("session_id")]
     public string? session_id { get; set; }
 
     /// <summary>
@@ -236,7 +236,7 @@ public sealed record AuthorizationRequest
     /// <value>
     /// The amr values.
     /// </value>
-    [DataMember(Name = "amr_values")]
+    [JsonPropertyName("amr_values")]
     public string? amr_values { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
 
@@ -248,7 +248,7 @@ public sealed record AuthorizationRequest
     {
         var properties = typeof(AuthorizationRequest).GetProperties()
             .Where(x => x.GetValue(this) != null)
-            .Select(x => x.GetCustomAttribute<DataMemberAttribute>()!.Name + "=" + x.GetValue(this));
+            .Select(x => $"{x.GetCustomAttribute<JsonPropertyNameAttribute>()!.Name}={x.GetValue(this)}");
 
         return string.Join("&", properties);
     }

@@ -2,19 +2,20 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 public class DownloadData
 {
     /// <summary>
     /// Gets or sets the resource mime type.
     /// </summary>
-    [DataMember(Name = "mime_type")]
+    [JsonPropertyName("mime_type")]
     public string? MimeType { get; init; }
 
     /// <summary>
     /// Gets or sets the content of the resource.
     /// </summary>
-    [DataMember(Name = "content")]
+    [JsonPropertyName("content")]
     public byte[]? Content { get; init; }
 
     public string ToDataString()

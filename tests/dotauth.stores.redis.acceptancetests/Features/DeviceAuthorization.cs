@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -47,7 +47,8 @@ public partial class FeatureTest
 
         var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent)!;
+        _doc = JsonSerializer.Deserialize(serializedContent,
+            SharedSerializerContext.Default.DiscoveryInformation)!;
     }
 
     [Then(@"discovery document has uri for device authorization")]

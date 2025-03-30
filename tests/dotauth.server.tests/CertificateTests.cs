@@ -11,7 +11,7 @@ public sealed class CertificateTests
     [Fact]
     public void CanCreateJwk()
     {
-        var jwk = new X509Certificate2(
+        var jwk = X509CertificateLoader.LoadPkcs12FromFile(
                 "mycert.pfx",
                 "simpleauth",
                 X509KeyStorageFlags.Exportable)

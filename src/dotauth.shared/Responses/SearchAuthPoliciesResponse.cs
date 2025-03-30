@@ -2,11 +2,11 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the search auth policies response.
 /// </summary>
-[DataContract]
 public sealed record SearchAuthPoliciesResponse
 {
     /// <summary>
@@ -15,7 +15,7 @@ public sealed record SearchAuthPoliciesResponse
     /// <value>
     /// The content.
     /// </value>
-    [DataMember(Name = "content")]
+    [JsonPropertyName("content")]
     public PolicyResponse[] Content { get; set; } = [];
 
     /// <summary>
@@ -24,7 +24,7 @@ public sealed record SearchAuthPoliciesResponse
     /// <value>
     /// The total results.
     /// </value>
-    [DataMember(Name = "count")]
+    [JsonPropertyName("count")]
     public long TotalResults { get; set; }
 
     /// <summary>
@@ -33,6 +33,6 @@ public sealed record SearchAuthPoliciesResponse
     /// <value>
     /// The start index.
     /// </value>
-    [DataMember(Name = "start_index")]
+    [JsonPropertyName("start_index")]
     public int StartIndex { get; set; }
 }

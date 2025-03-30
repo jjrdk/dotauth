@@ -40,7 +40,7 @@ internal static class HttpRequestsExtensions
         try
         {
             var encoded = Convert.FromBase64String(header!);
-            return new X509Certificate2(encoded);
+            return X509CertificateLoader.LoadCertificate(encoded);
         }
         catch
         {

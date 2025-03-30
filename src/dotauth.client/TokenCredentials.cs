@@ -103,7 +103,7 @@ public sealed class TokenCredentials : IEnumerable<KeyValuePair<string?, string?
             dict,
             new AuthenticationHeaderValue(
                 "Basic",
-                Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret))));
+                Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}"))));
     }
 
     /// <summary>

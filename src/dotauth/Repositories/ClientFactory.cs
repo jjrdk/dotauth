@@ -131,7 +131,7 @@ internal sealed class ClientFactory
         };
 
         client.ClientName = string.IsNullOrWhiteSpace(newClient.ClientName)
-            ? "Unnamed_" + client.ClientId
+            ? $"Unnamed_{client.ClientId}"
             : newClient.ClientName;
 
         client.TokenLifetime = newClient.TokenLifetime;

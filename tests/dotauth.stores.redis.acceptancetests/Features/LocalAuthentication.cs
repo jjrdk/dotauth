@@ -15,7 +15,7 @@ public partial class FeatureTest
     [When(@"logging out")]
     public async Task WhenLoggingOut()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri(BaseUrl + "/authenticate/logout"));
+        var request = new HttpRequestMessage(HttpMethod.Get, new Uri($"{BaseUrl}/authenticate/logout"));
 
         _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
     }
@@ -29,7 +29,7 @@ public partial class FeatureTest
     [When(@"posting valid local authorization credentials")]
     public async Task WhenPostingValidLocalAuthorizationCredentials()
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, new Uri(BaseUrl + "/authenticate/locallogin"))
+        var request = new HttpRequestMessage(HttpMethod.Post, new Uri($"{BaseUrl}/authenticate/locallogin"))
         {
             Content = new FormUrlEncodedContent(
                 new[]
@@ -51,7 +51,7 @@ public partial class FeatureTest
     [When(@"posting invalid local authorization credentials")]
     public async Task WhenPostingInvalidLocalAuthorizationCredentials()
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, new Uri(BaseUrl + "/authenticate/locallogin"))
+        var request = new HttpRequestMessage(HttpMethod.Post, new Uri($"{BaseUrl}/authenticate/locallogin"))
         {
             Content = new FormUrlEncodedContent(
                 new[]

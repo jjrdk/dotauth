@@ -1,11 +1,11 @@
 ﻿namespace DotAuth.Shared.Requests;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the confirmation code request.
 /// </summary>
-[DataContract]
 public sealed record ConfirmationCodeRequest
 {
     /// <summary>
@@ -14,6 +14,6 @@ public sealed record ConfirmationCodeRequest
     /// <value>
     /// The phone number.
     /// </value>
-    [DataMember(Name = "phone_number")]
+    [JsonPropertyName("phone_number")]
     public string? PhoneNumber { get; set; }
 }

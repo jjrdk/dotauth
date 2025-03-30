@@ -3,10 +3,11 @@
 using System;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 public class ResourceContent : ResourceRegistration
 {
-    [DataMember(Name = "files")] public FileDetails[] Files { get; set; } = [];
+    [JsonPropertyName("files")] public FileDetails[] Files { get; set; } = [];
 
     public override RegistrationData ToRegistrationData()
     {

@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Client;
@@ -12,7 +13,6 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -54,7 +54,8 @@ public partial class FeatureTest
             Method = HttpMethod.Post,
             RequestUri = new Uri(new Uri(BaseUrl), "clients/register"),
             Content = new StringContent(
-                JsonConvert.SerializeObject(registration),
+                JsonSerializer.Serialize(registration,
+                    SharedSerializerContext.Default.DynamicClientRegistrationRequest),
                 Encoding.UTF8,
                 MediaTypeHeaderValue.Parse("application/json"))
         };
@@ -73,7 +74,8 @@ public partial class FeatureTest
     public async Task ThenTheResponseShouldContainAClientIdAndClientSecret()
     {
         var json = await _dcrResponse!.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var clientInfo = JsonConvert.DeserializeObject<DynamicClientRegistrationResponse>(json);
+        var clientInfo =
+            JsonSerializer.Deserialize(json, SharedSerializerContext.Default.DynamicClientRegistrationResponse);
 
         Assert.False(string.IsNullOrWhiteSpace(clientInfo?.ClientId));
         Assert.False(string.IsNullOrWhiteSpace(clientInfo?.ClientSecret));

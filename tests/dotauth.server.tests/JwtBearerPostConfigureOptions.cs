@@ -1,7 +1,6 @@
 ﻿namespace DotAuth.Server.Tests;
 
 using System;
-using System.Net.Http;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
@@ -56,13 +55,7 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
     {
         if (string.IsNullOrEmpty(options.MetadataAddress) && !string.IsNullOrEmpty(options.Authority))
         {
-            options.MetadataAddress = options.Authority;
-            if (!options.MetadataAddress.EndsWith('/'))
-            {
-                options.MetadataAddress += "/";
-            }
-
-            options.MetadataAddress += ".well-known/openid-configuration";
+            options.MetadataAddress = $"{options.Authority.TrimEnd()}/.well-known/openid-configuration";
         }
 
         if (options.RequireHttpsMetadata
@@ -71,16 +64,5 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
             throw new InvalidOperationException(
                 "The MetadataAddress or Authority must use HTTPS unless disabled for development by setting RequireHttpsMetadata=false.");
         }
-
-        var httpClient = new HttpClient(options.BackchannelHttpHandler ?? new HttpClientHandler())
-        {
-            Timeout = options.BackchannelTimeout,
-            MaxResponseContentBufferSize = 1024 * 1024 * 10 // 10 MB
-        };
-
-        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-            options.MetadataAddress,
-            new OpenIdConnectConfigurationRetriever(),
-            new HttpDocumentRetriever(httpClient) { RequireHttps = options.RequireHttpsMetadata });
     }
 }

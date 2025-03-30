@@ -2,12 +2,12 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the request to update resource owner claims.
 /// </summary>
-[DataContract]
 public sealed record UpdateResourceOwnerClaimsRequest
 {
     /// <summary>
@@ -16,7 +16,7 @@ public sealed record UpdateResourceOwnerClaimsRequest
     /// <value>
     /// The login.
     /// </value>
-    [DataMember(Name = "sub")]
+    [JsonPropertyName("sub")]
     public string? Subject { get; set; }
 
     /// <summary>
@@ -25,6 +25,6 @@ public sealed record UpdateResourceOwnerClaimsRequest
     /// <value>
     /// The claims.
     /// </value>
-    [DataMember(Name = "claims")]
+    [JsonPropertyName("claims")]
     public ClaimData[] Claims { get; set; } = [];
 }

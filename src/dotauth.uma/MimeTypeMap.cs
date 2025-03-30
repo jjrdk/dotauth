@@ -747,7 +747,7 @@ public static class MimeTypeMap
         }
         if (throwErrorIfNotFound)
         {
-            throw new ArgumentException("Requested mime type is not registered: " + mimeType);
+            throw new ArgumentException($"Requested mime type is not registered: {mimeType}");
         }
 
         return string.Empty;

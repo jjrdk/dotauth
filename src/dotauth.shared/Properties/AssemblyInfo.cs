@@ -7,6 +7,8 @@
 [assembly:InternalsVisibleTo("dotauth.sms")]
 [assembly:InternalsVisibleTo("dotauth.stores.marten")]
 [assembly:InternalsVisibleTo("dotauth.stores.redis")]
+[assembly:InternalsVisibleTo("dotauth.authserverpgredis")]
+[assembly:InternalsVisibleTo("dotauth.authserverpg")]
 [assembly:InternalsVisibleTo("dotauth.sms.tests")]
 [assembly:InternalsVisibleTo("dotauth.tool")]
 [assembly:InternalsVisibleTo("dotauth.tests")]

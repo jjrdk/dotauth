@@ -2,11 +2,11 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the client search request.
 /// </summary>
-[DataContract]
 public sealed record SearchClientsRequest
 {
     /// <summary>
@@ -15,7 +15,7 @@ public sealed record SearchClientsRequest
     /// <value>
     /// The client names.
     /// </value>
-    [DataMember(Name = "client_names")]
+    [JsonPropertyName("client_names")]
     public string[] ClientNames { get; set; } = [];
 
     /// <summary>
@@ -24,7 +24,7 @@ public sealed record SearchClientsRequest
     /// <value>
     /// The client ids.
     /// </value>
-    [DataMember(Name = "client_ids")]
+    [JsonPropertyName("client_ids")]
     public string[] ClientIds { get; set; } = [];
 
     /// <summary>
@@ -33,7 +33,7 @@ public sealed record SearchClientsRequest
     /// <value>
     /// The client types.
     /// </value>
-    [DataMember(Name = "client_types")]
+    [JsonPropertyName("client_types")]
     public string[] ClientTypes { get; set; } = [];
 
     /// <summary>
@@ -42,7 +42,7 @@ public sealed record SearchClientsRequest
     /// <value>
     /// The start index.
     /// </value>
-    [DataMember(Name = "start_index")]
+    [JsonPropertyName("start_index")]
     public int StartIndex { get; set; }
 
     /// <summary>
@@ -51,7 +51,7 @@ public sealed record SearchClientsRequest
     /// <value>
     /// The nb results.
     /// </value>
-    [DataMember(Name = "count")]
+    [JsonPropertyName("count")]
     public int NbResults { get; set; }
 
     /// <summary>
@@ -60,6 +60,6 @@ public sealed record SearchClientsRequest
     /// <value>
     ///   <c>true</c> if descending; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "order")]
+    [JsonPropertyName("order")]
     public bool Descending { get; set; }
 }

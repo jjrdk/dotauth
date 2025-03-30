@@ -48,7 +48,7 @@ public static class JsonWebKeySetExtensions
     public static IEnumerable<SecurityKey?> GetEncryptionKeys(this JsonWebKeySet? jwks)
     {
         return jwks?.Keys.Where(x => x.Use == JsonWebKeyUseNames.Enc && x.KeyOps.Contains(KeyOperations.Encrypt))
-               ?? Enumerable.Empty<SecurityKey?>();
+         ?? Enumerable.Empty<SecurityKey?>();
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public static class JsonWebKeySetExtensions
                     foreach (var certString in webKey.X5c)
                     {
                         return new X509SigningCredentials(
-                            new X509Certificate2(Convert.FromBase64String(certString)));
+                            X509CertificateLoader.LoadCertificate(Convert.FromBase64String(certString)));
                     }
 
                     return new SigningCredentials(webKey, alg);

@@ -2,17 +2,17 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the resource set search result.
 /// </summary>
-[DataContract]
 public record ResourceSetDescription
 {
     /// <summary>
     /// Gets or sets the id of the resource set.
     /// </summary>
-    [DataMember(Name = "_id")]
+    [JsonPropertyName("_id")]
     public string Id { get; set; } = null!;
 
     /// <summary>
@@ -21,13 +21,13 @@ public record ResourceSetDescription
     /// <value>
     /// The name.
     /// </value>
-    [DataMember(Name = "name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; } = "";
 
     /// <summary>
     /// Gets or sets the resource description.
     /// </summary>
-    [DataMember(Name = "description")]
+    [JsonPropertyName("description")]
     public string Description { get; set; } = "";
 
     /// <summary>
@@ -36,7 +36,7 @@ public record ResourceSetDescription
     /// <value>
     /// The type.
     /// </value>
-    [DataMember(Name = "type")]
+    [JsonPropertyName("type")]
     public string Type { get; set; } = "";
 
     /// <summary>
@@ -45,6 +45,6 @@ public record ResourceSetDescription
     /// <value>
     /// The icon URI.
     /// </value>
-    [DataMember(Name = "icon_uri")]
+    [JsonPropertyName("icon_uri")]
     public Uri? IconUri { get; set; }
 }

@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -39,14 +39,16 @@ public partial class FeatureTest
     public async Task WhenRequestingDiscoveryDocument()
     {
         var request =
-            new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(FeatureTest.WellKnownOpenidConfiguration) };
+            new HttpRequestMessage
+                { Method = HttpMethod.Get, RequestUri = new Uri(FeatureTest.WellKnownOpenidConfiguration) };
         request.Headers.Accept.Clear();
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
 
         var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent)!;
+        _doc = JsonSerializer.Deserialize<DiscoveryInformation>(serializedContent,
+            DefaultJsonSerializerOptions.Instance)!;
     }
 
     [Then(@"discovery document has uri for device authorization")]
@@ -120,7 +122,7 @@ public partial class FeatureTest
     {
         var fastPoll = Assert.IsType<Option<GrantedTokenResponse>.Error>(
             await _tokenClient.GetToken(TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode, 1))
-                .ConfigureAwait(false) );
+                .ConfigureAwait(false));
 
         Assert.NotNull(fastPoll);
         Assert.Equal(ErrorCodes.SlowDown, fastPoll.Details.Title);

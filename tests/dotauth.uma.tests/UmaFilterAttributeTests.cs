@@ -5,9 +5,11 @@ namespace DotAuth.Uma.Tests;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Client;
+using DotAuth.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -17,7 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Newtonsoft.Json;
 using Shared.Models;
 using Shared.Requests;
 using Shared.Responses;
@@ -82,14 +83,14 @@ public class UmaFilterAttributeTests
         {
             new Claim(
                 "permissions",
-                JsonConvert.SerializeObject(
+                JsonSerializer.Serialize(
                     new Permission
                     {
                         Expiry = DateTimeOffset.MaxValue.ToUnixTimeSeconds(),
                         IssuedAt = DateTimeOffset.UtcNow.AddDays(-1).ToUnixTimeSeconds(),
                         ResourceSetId = "a",
                         Scopes = ["read"]
-                    }))
+                    }, SharedSerializerContext.Default.Permission))
         };
         var httpContext = new DefaultHttpContext
         {

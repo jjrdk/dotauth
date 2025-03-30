@@ -1,7 +1,7 @@
 <Project>
 	<PropertyGroup>
 		<Version>5.8.0</Version>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<Authors>Thierry Habart, Jacob Reimers</Authors>
 		<Company>Reimers.dk</Company>
 		<Product>DotAuth</Product>

@@ -1,11 +1,11 @@
 ﻿namespace DotAuth.Shared.Requests;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the link profile request.
 /// </summary>
-[DataContract]
 public sealed record LinkProfileRequest
 {
     /// <summary>
@@ -14,7 +14,7 @@ public sealed record LinkProfileRequest
     /// <value>
     /// The user identifier.
     /// </value>
-    [DataMember(Name = "user_id")]
+    [JsonPropertyName("user_id")]
     public string UserId { get; set; } = null!;
 
     /// <summary>
@@ -23,7 +23,7 @@ public sealed record LinkProfileRequest
     /// <value>
     /// The issuer.
     /// </value>
-    [DataMember(Name = "issuer")]
+    [JsonPropertyName("issuer")]
     public string Issuer { get; set; } = null!;
 
     /// <summary>
@@ -32,6 +32,6 @@ public sealed record LinkProfileRequest
     /// <value>
     ///   <c>true</c> if force; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "force")]
+    [JsonPropertyName("force")]
     public bool Force { get; set; }
 }

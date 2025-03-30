@@ -93,7 +93,7 @@ public sealed class ScopesController : ControllerBase
     public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
     {
         var scope = await _scopeRepository.Get(id, cancellationToken).ConfigureAwait(false);
-        return scope == null ? (IActionResult)BadRequest() : Ok(scope);
+        return scope == null ? BadRequest() : Ok(scope);
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public sealed class ScopesController : ControllerBase
         var deleted = await _scopeRepository.Delete(scope, CancellationToken.None).ConfigureAwait(false);
 
         return deleted
-            ? (IActionResult)NoContent()
+            ? NoContent()
             : BadRequest(
                 new ErrorDetails
                 {

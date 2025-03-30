@@ -15,11 +15,11 @@
 namespace DotAuth.AuthServerPg;
 
 using System;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text.Json;
 using Amazon;
 using Amazon.Runtime;
 using DotAuth;
@@ -33,13 +33,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using Weasel.Core;
 
 /// <summary>
@@ -126,6 +125,7 @@ public sealed class Startup
     /// Configures services.
     /// </summary>
     /// <param name="services">The services to configure or extend.</param>
+    // ReSharper disable once CognitiveComplexity
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
@@ -145,17 +145,6 @@ public sealed class Startup
                 var host = context?.Request.Host.Host ?? "localhost";
                 return sp.GetRequiredService<IDocumentStore>().LightweightSession(host);
             })
-            .AddResponseCompression(
-                x =>
-                {
-                    x.EnableForHttps = true;
-                    x.Providers.Add(
-                        new GzipCompressionProvider(
-                            new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
-                    x.Providers.Add(
-                        new BrotliCompressionProvider(
-                            new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
-                })
             .AddLogging(
                 log =>
                 {
@@ -282,10 +271,11 @@ public sealed class Startup
                 async (ctx, next) =>
                 {
                     var logger = ctx.RequestServices.GetRequiredService<ILogger<HttpRequest>>();
-                    var headers = JsonConvert.SerializeObject(
+                    var jsonOptions = ctx.RequestServices.GetRequiredService<JsonOptions>();
+                    var headers = JsonSerializer.Serialize(
                         ctx.Request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
-                        Formatting.None);
-                    logger.LogInformation("Request headers: {headers}", headers);
+                        jsonOptions.SerializerOptions);
+                    logger.LogInformation("Request headers: {Headers}", headers);
                     await next(ctx).ConfigureAwait(false);
                 })
             .UseDotAuthServer(x =>

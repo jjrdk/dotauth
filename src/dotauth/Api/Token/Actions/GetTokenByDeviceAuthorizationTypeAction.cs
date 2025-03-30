@@ -78,25 +78,25 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         var lastPolled = authRequest.LastPolled;
         authRequest.LastPolled = now;
         await _deviceAuthorizationStore.Save(authRequest, cancellationToken).ConfigureAwait(false);
-        if (lastPolled.AddSeconds(authRequest.Interval) > now)
+        if (lastPolled.AddSeconds(authRequest.Interval) <= now)
         {
-            const string detail = "Device with client id {0} polled after only {1} seconds.";
-
-            var totalSeconds = (now - lastPolled).TotalSeconds;
-            _logger.LogInformation(detail, authRequest.ClientId, totalSeconds);
-
             return new ErrorDetails
             {
-                Title = ErrorCodes.SlowDown,
-                Detail = string.Format(detail, authRequest.DeviceCode, totalSeconds),
+                Title = ErrorCodes.AuthorizationPending,
+                Detail = ErrorCodes.AuthorizationPending,
                 Status = HttpStatusCode.BadRequest
             };
         }
 
+        const string detail = "Device with client id {0} polled after only {1} seconds.";
+
+        var totalSeconds = (now - lastPolled).TotalSeconds;
+        _logger.LogInformation(detail, authRequest.ClientId, totalSeconds);
+
         return new ErrorDetails
         {
-            Title = ErrorCodes.AuthorizationPending,
-            Detail = ErrorCodes.AuthorizationPending,
+            Title = ErrorCodes.SlowDown,
+            Detail = string.Format(detail, authRequest.DeviceCode, totalSeconds),
             Status = HttpStatusCode.BadRequest
         };
     }
@@ -112,44 +112,44 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
                 scopes,
                 authRequest.ClientId,
                 cancellationToken: cancellationToken)
-            //idTokenJwsPayload: result.AuthCode.IdTokenPayload,
-            //userInfoJwsPayload: result.AuthCode.UserInfoPayLoad)
             .ConfigureAwait(false);
-        if (grantedToken == null)
+        if (grantedToken != null)
         {
-            var client = await _clientStore.GetById(authRequest.ClientId, cancellationToken).ConfigureAwait(false);
-            grantedToken = await client!.GenerateToken(
-                    _jwksStore,
-                    authRequest.Scopes,
-                    issuerName,
-                    cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
-            await _eventPublisher.Publish(
-                    new TokenGranted(
-                        Id.Create(),
-                        grantedToken.UserInfoPayLoad?.Sub,
-                        authRequest.ClientId,
-                        string.Join(" ", authRequest.Scopes),
-                        GrantTypes.AuthorizationCode,
-                        DateTimeOffset.UtcNow))
-                .ConfigureAwait(false);
-            // Fill-in the id-token
-            if (grantedToken.IdTokenPayLoad != null)
-            {
-                grantedToken = grantedToken with
-                {
-                    IdTokenPayLoad =
-                    JwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, client!.TokenLifetime),
-                    IdToken = await client.GenerateIdToken(
-                            grantedToken.IdTokenPayLoad,
-                            _jwksStore,
-                            cancellationToken)
-                        .ConfigureAwait(false)
-                };
-            }
-
-            await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
+            return grantedToken;
         }
+
+        var client = await _clientStore.GetById(authRequest.ClientId, cancellationToken).ConfigureAwait(false);
+        grantedToken = await client!.GenerateToken(
+                _jwksStore,
+                authRequest.Scopes,
+                issuerName,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+        await _eventPublisher.Publish(
+                new TokenGranted(
+                    Id.Create(),
+                    grantedToken.UserInfoPayLoad?.Sub,
+                    authRequest.ClientId,
+                    string.Join(" ", authRequest.Scopes),
+                    GrantTypes.AuthorizationCode,
+                    DateTimeOffset.UtcNow))
+            .ConfigureAwait(false);
+        // Fill-in the id-token
+        if (grantedToken.IdTokenPayLoad != null)
+        {
+            grantedToken = grantedToken with
+            {
+                IdTokenPayLoad =
+                JwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad, client!.TokenLifetime),
+                IdToken = await client.GenerateIdToken(
+                        grantedToken.IdTokenPayLoad,
+                        _jwksStore,
+                        cancellationToken)
+                    .ConfigureAwait(false)
+            };
+        }
+
+        await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
 
         return grantedToken;
     }

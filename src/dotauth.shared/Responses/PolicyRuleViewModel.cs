@@ -2,30 +2,30 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the policy rule view model.
 /// </summary>
-[DataContract]
 public sealed record PolicyRuleViewModel
 {
     /// <summary>
     /// Gets or sets a comma separated string with allowed client ids.
     /// </summary>
-    [DataMember(Name = "client_ids_allowed")]
+    [JsonPropertyName("client_ids_allowed")]
     public string? ClientIdsAllowed { get; set; }
 
     /// <summary>
     /// Gets or sets the scopes.
     /// </summary>
-    [DataMember(Name = "scopes")]
+    [JsonPropertyName("scopes")]
     public string? Scopes { get; set; }
 
     /// <summary>
     /// Gets or sets the claims.
     /// </summary>
-    [DataMember(Name = "claims")]
+    [JsonPropertyName("claims")]
     public ClaimData[] Claims { get; set; } = [];
 
     /// <summary>
@@ -34,12 +34,12 @@ public sealed record PolicyRuleViewModel
     /// <value>
     ///   <c>true</c> if this instance is resource owner consent needed; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "is_resource_owner_consent_needed")]
+    [JsonPropertyName("is_resource_owner_consent_needed")]
     public bool IsResourceOwnerConsentNeeded { get; set; }
 
     /// <summary>
     /// Gets or sets the open identifier provider.
     /// </summary>
-    [DataMember(Name = "openid_provider")]
+    [JsonPropertyName("openid_provider")]
     public string? OpenIdProvider { get; set; }
 }

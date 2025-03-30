@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 
 /// <summary>
 /// Defines the management client interface.

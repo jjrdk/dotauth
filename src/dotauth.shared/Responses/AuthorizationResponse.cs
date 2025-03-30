@@ -15,11 +15,11 @@
 namespace DotAuth.Shared.Responses;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the authorization response.
 /// </summary>
-[DataContract]
 public sealed record AuthorizationResponse
 {
     /// <summary>
@@ -28,6 +28,6 @@ public sealed record AuthorizationResponse
     /// <value>
     /// The RPT.
     /// </value>
-    [DataMember(Name = "rpt")]
+    [JsonPropertyName("rpt")]
     public string Rpt { get; set; } = null!;
 }

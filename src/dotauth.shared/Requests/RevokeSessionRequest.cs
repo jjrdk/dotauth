@@ -2,11 +2,11 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the revoke session request.
 /// </summary>
-[DataContract]
 public sealed record RevokeSessionRequest
 {
     /// <summary>
@@ -15,7 +15,7 @@ public sealed record RevokeSessionRequest
     /// <value>
     /// The identifier token hint.
     /// </value>
-    [DataMember(Name = "id_token_hint")]
+    [JsonPropertyName("id_token_hint")]
 #pragma warning disable IDE1006 // Naming Styles
     public string? id_token_hint { get; set; }
 
@@ -25,7 +25,7 @@ public sealed record RevokeSessionRequest
     /// <value>
     /// The post logout redirect URI.
     /// </value>
-    [DataMember(Name = "post_logout_redirect_uri")]
+    [JsonPropertyName("post_logout_redirect_uri")]
     public Uri? post_logout_redirect_uri { get; set; }
 
     /// <summary>
@@ -34,7 +34,7 @@ public sealed record RevokeSessionRequest
     /// <value>
     /// The state.
     /// </value>
-    [DataMember(Name = "state")]
+    [JsonPropertyName("state")]
     public string? state { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
 }

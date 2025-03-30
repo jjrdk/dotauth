@@ -1,11 +1,11 @@
 ﻿namespace DotAuth.Shared.Requests;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the request to update a resource owner password.
 /// </summary>
-[DataContract]
 public sealed record UpdateResourceOwnerPasswordRequest
 {
     /// <summary>
@@ -14,7 +14,7 @@ public sealed record UpdateResourceOwnerPasswordRequest
     /// <value>
     /// The login.
     /// </value>
-    [DataMember(Name = "sub")]
+    [JsonPropertyName("sub")]
     public string? Subject { get; set; }
 
     /// <summary>
@@ -23,6 +23,6 @@ public sealed record UpdateResourceOwnerPasswordRequest
     /// <value>
     /// The password.
     /// </value>
-    [DataMember(Name = "password")]
+    [JsonPropertyName("password")]
     public string? Password { get; set; }
 }

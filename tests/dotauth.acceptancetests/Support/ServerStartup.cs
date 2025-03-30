@@ -67,7 +67,7 @@ public sealed class ServerStartup
             Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents()),
             Users = _ => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users()),
             ClaimsIncludedInUserCreation = ["acceptance_test"],
-            DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5),
+            DeviceAuthorizationLifetime = TimeSpan.FromSeconds(600),
             DevicePollingInterval = TimeSpan.FromSeconds(3)
         };
         _context = context;

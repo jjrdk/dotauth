@@ -12,6 +12,6 @@ public sealed class TestController : ControllerBase
     public string Index()
     {
         var user = User;
-        return "Hello " + user.GetName();
+        return $"Hello {user.GetName()}";
     }
 }

@@ -468,22 +468,24 @@ public static class DefaultStores
                 Secrets =
                 [
                     new ClientSecret
-                        {
-                            Type = ClientSecretTypes.X509Thumbprint,
-                            Value = "0772F57C594FA1EFD619AF8D84A48F4C1741C715"
-                        },
-                        new ClientSecret
-                        {
-                            Type = ClientSecretTypes.X509Name, Value = "O=reimers.dk, L=Zurich, S=ZH, C=CH"
-                        }
+                    {
+                        Type = ClientSecretTypes.X509Thumbprint,
+                        Value = "0772F57C594FA1EFD619AF8D84A48F4C1741C715"
+                    },
+                    new ClientSecret
+                    {
+                        Type = ClientSecretTypes.X509Name, Value = "O=reimers.dk, L=Zurich, S=ZH, C=CH"
+                    }
                 ],
                 JsonWebKeys =
                     new JsonWebKeySet()
                         .AddKey(
-                            new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable)
+                            X509CertificateLoader
+                                .LoadPkcs12FromFile("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable)
                                 .CreateJwk(JsonWebKeyUseNames.Sig, KeyOperations.Sign, KeyOperations.Verify))
                         .AddKey(
-                            new X509Certificate2("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable)
+                            X509CertificateLoader
+                                .LoadPkcs12FromFile("mycert.pfx", "simpleauth", X509KeyStorageFlags.Exportable)
                                 .CreateJwk(JsonWebKeyUseNames.Enc, KeyOperations.Encrypt, KeyOperations.Decrypt)),
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.TlsClientAuth,
 

@@ -15,11 +15,11 @@
 namespace DotAuth.Shared.Responses;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the add policy response.
 /// </summary>
-[DataContract]
 public sealed record AddPolicyResponse
 {
     /// <summary>
@@ -28,6 +28,6 @@ public sealed record AddPolicyResponse
     /// <value>
     /// The policy identifier.
     /// </value>
-    [DataMember(Name = "policy")]
+    [JsonPropertyName("policy")]
     public string PolicyId { get; set; } = null!;
 }

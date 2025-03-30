@@ -53,7 +53,7 @@ public sealed class DeviceAuthorizationActions
         if (string.IsNullOrWhiteSpace(clientId)
             || await _clientStore.GetById(clientId, cancellationToken).ConfigureAwait(false) == null)
         {
-            _logger.LogError("Client not found: {clientId}", clientId);
+            _logger.LogError("Client not found: {ClientId}", clientId);
             return new ErrorDetails
             {
                 Detail = $"Client not found: {clientId}",

@@ -43,7 +43,7 @@ public sealed class SmsCodeFixture : IDisposable
         return new(
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
-            new Uri(BaseUrl + "/.well-known/openid-configuration"));
+            new Uri($"{BaseUrl}/.well-known/openid-configuration"));
     }
 
     [Fact]

@@ -1,11 +1,11 @@
 ﻿namespace DotAuth.Shared.Requests;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the add resource owner request.
 /// </summary>
-[DataContract]
 public sealed record AddResourceOwnerRequest
 {
     /// <summary>
@@ -14,7 +14,7 @@ public sealed record AddResourceOwnerRequest
     /// <value>
     /// The subject.
     /// </value>
-    [DataMember(Name = "sub")]
+    [JsonPropertyName("sub")]
     public string? Subject { get; set; }
 
     /// <summary>
@@ -23,6 +23,6 @@ public sealed record AddResourceOwnerRequest
     /// <value>
     /// The password.
     /// </value>
-    [DataMember(Name = "password")]
+    [JsonPropertyName("password")]
     public string? Password { get; set; }
 }

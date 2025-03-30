@@ -52,7 +52,7 @@ public sealed class JwksController : ControllerBase
     {
         var result = await _jwksStore.Add(jsonWebKey, cancellationToken).ConfigureAwait(false);
 
-        return result ? Ok() : (IActionResult)BadRequest();
+        return result ? Ok() : BadRequest();
     }
 
     /// <summary>
@@ -67,6 +67,6 @@ public sealed class JwksController : ControllerBase
     {
         var result = await _jwksStore.Rotate(jsonWebKeySet, cancellationToken).ConfigureAwait(false);
 
-        return result ? Ok() : (IActionResult)BadRequest();
+        return result ? Ok() : BadRequest();
     }
 }

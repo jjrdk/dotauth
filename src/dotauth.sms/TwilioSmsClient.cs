@@ -69,7 +69,7 @@ public sealed class TwilioSmsClient : ISmsClient
 
     private static string CreateBasicAuthenticationHeader(string username, string password)
     {
-        var credentials = username + ":" + password;
+        var credentials = $"{username}:{password}";
         var encoded = System.Text.Encoding.UTF8.GetBytes(credentials);
         return Convert.ToBase64String(encoded);
     }

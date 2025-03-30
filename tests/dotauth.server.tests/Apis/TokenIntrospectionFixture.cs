@@ -19,13 +19,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -52,7 +53,7 @@ public sealed class TokenIntrospectionFixture
         var json = await httpResult.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
+        var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal("no parameter in body request", error.Detail);
     }
@@ -70,7 +71,7 @@ public sealed class TokenIntrospectionFixture
         var httpResult = await _server.Client().SendAsync(httpRequest);
         var json = await httpResult.Content.ReadAsStringAsync();
 
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
+        var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal("no parameter in body request", error.Detail);
     }

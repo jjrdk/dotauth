@@ -105,7 +105,7 @@ public sealed class ConsentHelperFixture
         var authorizationParameter = new AuthorizationParameter
         {
             ClientId = clientId,
-            Scope = openIdScope + " " + profileScope + " " + emailScope
+            Scope = $"{openIdScope} {profileScope} {emailScope}"
         };
         IReadOnlyCollection<Consent> consents = new List<Consent>
         {

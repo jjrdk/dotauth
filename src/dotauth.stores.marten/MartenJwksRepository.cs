@@ -61,7 +61,8 @@ public sealed class MartenJwksRepository : IJwksRepository
         {
             foreach (var certString in webKey.Jwk.X5c)
             {
-                return new X509SigningCredentials(new X509Certificate2(Convert.FromBase64String(certString)));
+                return new X509SigningCredentials(
+                    X509CertificateLoader.LoadCertificate(Convert.FromBase64String(certString)));
             }
         }
 
@@ -85,12 +86,14 @@ public sealed class MartenJwksRepository : IJwksRepository
 
         var webKey = webKeys.First(x => x.Jwk.KeyOps.Contains(KeyOperations.Encrypt));
 
-        if (webKey.Jwk.X5c != null)
+        if (webKey.Jwk.X5c == null)
         {
-            foreach (var certString in webKey.Jwk.X5c)
-            {
-                return new X509SecurityKey(new X509Certificate2(Convert.FromBase64String(certString)));
-            }
+            return webKey.Jwk;
+        }
+
+        foreach (var certString in webKey.Jwk.X5c)
+        {
+            return new X509SecurityKey(X509CertificateLoader.LoadCertificate(Convert.FromBase64String(certString)));
         }
 
         return webKey.Jwk;
@@ -112,12 +115,15 @@ public sealed class MartenJwksRepository : IJwksRepository
 
         var webKey = webKeys.OrderBy(x => x.Jwk.KeyId).First(x => x.Jwk.KeyOps.Contains(KeyOperations.Sign));
 
-        if (webKey.Jwk.X5c != null)
+        if (webKey.Jwk.X5c == null)
         {
-            foreach (var certString in webKey.Jwk.X5c)
-            {
-                return new X509SigningCredentials(new X509Certificate2(Convert.FromBase64String(certString)));
-            }
+            return new SigningCredentials(webKey.Jwk, webKey.Jwk.Alg);
+        }
+
+        foreach (var certString in webKey.Jwk.X5c)
+        {
+            return new X509SigningCredentials(
+                X509CertificateLoader.LoadCertificate(Convert.FromBase64String(certString)));
         }
 
         return new SigningCredentials(webKey.Jwk, webKey.Jwk.Alg);

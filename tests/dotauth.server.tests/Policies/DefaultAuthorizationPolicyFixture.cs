@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Policies;
@@ -25,7 +26,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Policies;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
+
 using Xunit;
 
 public sealed class DefaultAuthorizationPolicyFixture
@@ -40,9 +41,9 @@ public sealed class DefaultAuthorizationPolicyFixture
     [Fact]
     public async Task WhenTicketIsValidThenPolicyAuthorizes()
     {
-        var ticketJson = @"{
-    ""Id"": ""95FE0861AFF41E4ABECC748C026C36F8"",
-    ""Lines"": [
+        const string ticketJson = @"{
+    ""id"": ""95FE0861AFF41E4ABECC748C026C36F8"",
+    ""lines"": [
         {
             ""scopes"": [
                 ""read""
@@ -50,9 +51,9 @@ public sealed class DefaultAuthorizationPolicyFixture
             ""resource_id"": ""RES123""
         }
     ],
-    ""Created"": ""2021-04-30T21:42:25.7091988+00:00"",
-    ""Expires"": ""2021-04-30T22:12:25.7092013+00:00"",
-    ""Requester"": [
+    ""created"": ""2021-04-30T21:42:25.7091988+00:00"",
+    ""expires"": ""2021-04-30T22:12:25.7092013+00:00"",
+    ""requester"": [
         {
             ""type"": ""sub"",
             ""value"": ""abc123""
@@ -74,10 +75,10 @@ public sealed class DefaultAuthorizationPolicyFixture
             ""value"": ""Tester""
         }
     ],
-    ""ResourceOwner"": ""98765"",
-    ""IsAuthorizedByRo"": true
+    ""resource_owner"": ""98765"",
+    ""is_authorized_by_ro"": true
 }";
-        var resourceSetJson = @"{
+        const string resourceSetJson = @"{
     ""_id"": ""RES123"",
     ""name"": ""tux.jpg"",
     ""type"": ""Picture"",
@@ -98,8 +99,8 @@ public sealed class DefaultAuthorizationPolicyFixture
         }
     ]
 }";
-        var resourceSet = JsonConvert.DeserializeObject<ResourceSet>(resourceSetJson);
-        var ticket = JsonConvert.DeserializeObject<Ticket>(ticketJson);
+        var resourceSet = JsonSerializer.Deserialize<ResourceSet>(resourceSetJson, DefaultJsonSerializerOptions.Instance);
+        var ticket = JsonSerializer.Deserialize<Ticket>(ticketJson, DefaultJsonSerializerOptions.Instance);
         var kind = AuthorizationPolicyResultKind.NotAuthorized;
         foreach (var ticketLine in ticket!.Lines)
         {

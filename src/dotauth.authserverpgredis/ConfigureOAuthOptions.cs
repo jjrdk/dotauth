@@ -25,9 +25,9 @@ internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions
     /// <inheritdoc />
     public void PostConfigure(string? name, OAuthOptions options)
     {
-        options.AuthorizationEndpoint = _configuration["OAUTH:AUTHORITY"] + "/authorization";
-        options.TokenEndpoint = _configuration["OAUTH:AUTHORITY"] + "/token";
-        options.UserInformationEndpoint = _configuration["OAUTH:AUTHORITY"] + "/userinfo";
+        options.AuthorizationEndpoint = $"{_configuration["OAUTH:AUTHORITY"]}/authorization";
+        options.TokenEndpoint = $"{_configuration["OAUTH:AUTHORITY"]}/token";
+        options.UserInformationEndpoint = $"{_configuration["OAUTH:AUTHORITY"]}/userinfo";
         options.UsePkce = true;
         options.CallbackPath = "/callback";
         if (bool.TryParse(_configuration["SERVER:ALLOWSELFSIGNEDCERT"], out var allowSelfSignedCert) && allowSelfSignedCert)

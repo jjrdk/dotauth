@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Properties;
@@ -27,7 +28,7 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;
-using Newtonsoft.Json;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -55,7 +56,7 @@ public sealed class RevokeTokenClientFixture
         var json = await httpResult.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
+        var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "token"), error.Detail);
@@ -74,7 +75,7 @@ public sealed class RevokeTokenClientFixture
         var httpResult = await _server.Client().SendAsync(httpRequest);
         var json = await httpResult.Content.ReadAsStringAsync();
 
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json)!;
+        var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "token"), error.Detail);

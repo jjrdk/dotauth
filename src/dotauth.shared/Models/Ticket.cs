@@ -15,6 +15,7 @@
 namespace DotAuth.Shared.Models;
 
 using System;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the ticket content.
@@ -27,11 +28,13 @@ public sealed record Ticket
     /// <value>
     /// The identifier.
     /// </value>
+    [JsonPropertyName("id")]
     public string Id { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the owner of the resource that the ticket relates to.
     /// </summary>
+    [JsonPropertyName("resource_owner")]
     public string ResourceOwner { get; set; } = null!;
 
     /// <summary>
@@ -40,6 +43,7 @@ public sealed record Ticket
     /// <value>
     ///   <c>true</c> if this instance is authorized by ro; otherwise, <c>false</c>.
     /// </value>
+    [JsonPropertyName("is_authorized_by_ro")]
     public bool IsAuthorizedByRo { get; set; }
 
     /// <summary>
@@ -48,14 +52,16 @@ public sealed record Ticket
     /// <value>
     /// The expiration date time.
     /// </value>
+    [JsonPropertyName("expires")]
     public DateTimeOffset Expires { get; set; }
 
     /// <summary>
     /// Gets or sets the create date time.
     /// </summary>
     /// <value>
-    /// The create date time.
+    /// The created date time.
     /// </value>
+    [JsonPropertyName("created")]
     public DateTimeOffset Created { get; set; }
 
     /// <summary>
@@ -64,10 +70,12 @@ public sealed record Ticket
     /// <value>
     /// The lines.
     /// </value>
+    [JsonPropertyName("lines")]
     public TicketLine[] Lines { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the claims associated with the requester.
     /// </summary>
+    [JsonPropertyName("requester")]
     public ClaimData[] Requester { get; set; } = [];
 }

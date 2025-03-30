@@ -212,10 +212,7 @@ public static class ServiceCollectionExtensions
         Action<MvcOptions>? mvcConfig = null,
         IRequestThrottle? requestThrottle = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentNullException.ThrowIfNull(configuration);
 
         services.Replace(
             new ServiceDescriptor(
@@ -233,6 +230,32 @@ public static class ServiceCollectionExtensions
                         new BrotliCompressionProvider(
                             new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                 })
+            .ConfigureHttpJsonOptions(o =>
+            {
+                var instance = DefaultJsonSerializerOptions.Instance;
+                var options = o.SerializerOptions;
+                foreach (var converter in instance.Converters)
+                {
+                    options.Converters.Add(converter);
+                }
+
+                foreach (var resolver in instance.TypeInfoResolverChain)
+                {
+                    options.TypeInfoResolverChain.Add(resolver);
+                }
+                options.NumberHandling = instance.NumberHandling;
+                options.WriteIndented = instance.WriteIndented;
+                options.AllowTrailingCommas = instance.AllowTrailingCommas;
+                options.DefaultIgnoreCondition = instance.DefaultIgnoreCondition;
+                options.DictionaryKeyPolicy = instance.DictionaryKeyPolicy;
+                options.PropertyNamingPolicy = instance.PropertyNamingPolicy;
+                options.ReadCommentHandling = instance.ReadCommentHandling;
+                options.TypeInfoResolver = instance.TypeInfoResolver;
+                options.UnknownTypeHandling = instance.UnknownTypeHandling;
+                options.IgnoreReadOnlyFields = instance.IgnoreReadOnlyFields;
+                options.IgnoreReadOnlyProperties = instance.IgnoreReadOnlyProperties;
+                options.PropertyNameCaseInsensitive = instance.PropertyNameCaseInsensitive;
+            })
             .AddAntiforgery(
                 o =>
                 {
@@ -246,29 +269,7 @@ public static class ServiceCollectionExtensions
                 {
                     o.OutputFormatters.Insert(1, new RazorOutputFormatter());
                     mvcConfig?.Invoke(o);
-                })
-            .AddJsonOptions(o =>
-            {
-                var instance = DefaultJsonSerializerOptions.Instance;
-                var options = o.JsonSerializerOptions;
-                foreach (var converter in instance.Converters)
-                {
-                    options.Converters.Add(converter);
-                }
-
-                options.NumberHandling = instance.NumberHandling;
-                options.WriteIndented = instance.WriteIndented;
-                options.AllowTrailingCommas = instance.AllowTrailingCommas;
-                options.DefaultIgnoreCondition = instance.DefaultIgnoreCondition;
-                options.DictionaryKeyPolicy = instance.DictionaryKeyPolicy;
-                options.PropertyNamingPolicy = instance.PropertyNamingPolicy;
-                options.ReadCommentHandling = instance.ReadCommentHandling;
-                options.TypeInfoResolver = instance.TypeInfoResolver;
-                options.UnknownTypeHandling = instance.UnknownTypeHandling;
-                options.IgnoreReadOnlyFields = instance.IgnoreReadOnlyFields;
-                options.IgnoreReadOnlyProperties = instance.IgnoreReadOnlyProperties;
-                options.PropertyNameCaseInsensitive = instance.PropertyNameCaseInsensitive;
-            });
+                });
 
         Globals.ApplicationName = configuration.ApplicationName;
         var runtimeConfig = GetRuntimeConfig(configuration);
@@ -372,7 +373,7 @@ public static class ServiceCollectionExtensions
                     OnPrepareResponse = ctx =>
                     {
                         ctx.Context.Response.Headers[HeaderNames.CacheControl] =
-                            "public,max-age=" + TimeSpan.FromDays(7).TotalSeconds;
+                            $"public,max-age={TimeSpan.FromDays(7).TotalSeconds}";
                     },
                     FileProvider = new CompositeFileProvider(
                         assemblies.Select(x => new EmbeddedFileProvider(x.assembly, x.defaultNamespace)))

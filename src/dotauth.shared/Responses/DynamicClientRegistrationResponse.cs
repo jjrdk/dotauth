@@ -16,70 +16,70 @@ namespace DotAuth.Shared.Responses;
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the dynamic client registration response.
 /// </summary>
-[DataContract]
 public sealed record DynamicClientRegistrationResponse
 {
     /// <summary>
     /// Gets or sets the client id.
     /// </summary>
-    [DataMember(Name = "client_id")]
+    [JsonPropertyName("client_id")]
     public string ClientId { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the client secret.
     /// </summary>
-    [DataMember(Name = "client_secret")]
+    [JsonPropertyName("client_secret")]
     public string ClientSecret { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the client secret expires at.
     /// </summary>
-    [DataMember(Name = "client_secret_expires_at")]
+    [JsonPropertyName("client_secret_expires_at")]
     public int ClientSecretExpiresAt { get; set; }
 
     /// <summary>
     /// Gets or sets the registration access token.
     /// </summary>
-    [DataMember(Name = "registration_access_token")]
+    [JsonPropertyName("registration_access_token")]
     public string RegistrationAccessToken { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the registration client uri.
     /// </summary>
-    [DataMember(Name = "registration_client_uri")]
+    [JsonPropertyName("registration_client_uri")]
     public string RegistrationClientUri { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the token endpoint auth method.
     /// </summary>
-    [DataMember(Name = "token_endpoint_auth_method")]
+    [JsonPropertyName("token_endpoint_auth_method")]
     public string TokenEndpointAuthMethod { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the application type.
     /// </summary>
-    [DataMember(Name = "application_type")]
+    [JsonPropertyName("application_type")]
     public string ApplicationType { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the redirect uris.
     /// </summary>
-    [DataMember(Name = "redirect_uris")]
+    [JsonPropertyName("redirect_uris")]
     public string[] RedirectUris { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the client name.
     /// </summary>
-    [DataMember(Name = "client_name")]
+    [JsonPropertyName("client_name")]
     public string ClientName { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the contacts.
     /// </summary>
-    [DataMember(Name = "contacts")]
+    [JsonPropertyName("contacts")]
     public string[] Contacts { get; set; } = [];
 }

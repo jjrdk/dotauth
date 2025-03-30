@@ -4,7 +4,9 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using DotAuth.Shared.Requests;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +16,7 @@ using Xunit;
 public partial class FeatureTest
 {
     private IDataProtector _dataProtector = null!;
-    
+
     [Given(@"a data protector instance")]
     public void GivenADataProtectorInstance()
     {
@@ -31,11 +33,11 @@ public partial class FeatureTest
         var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/authenticate/openid?code={code}");
         _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
     }
-    
+
     private static string Protect<T>(IDataProtector dataProtector, T toEncode)
         where T : class
     {
-        var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(toEncode);
+        var serialized = JsonSerializer.Serialize(toEncode, DefaultJsonSerializerOptions.Instance);
 
         var bytes = Encoding.ASCII.GetBytes(serialized);
         var protectedBytes = dataProtector.Protect(bytes);

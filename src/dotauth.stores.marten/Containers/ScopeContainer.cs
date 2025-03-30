@@ -2,18 +2,18 @@ namespace DotAuth.Stores.Marten.Containers;
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using DotAuth.Shared.Models;
 
 /// <summary>
 /// Defines the storage container type for <see cref="Scope"/>.
 /// </summary>
-[DataContract]
 public sealed record ScopeContainer : Scope
 {
     /// <summary>
     /// Gets the identifier.
     /// </summary>
-    [DataMember(Name = "id")]
+    [JsonPropertyName("id")]
     public string Id { get; init; } = null!;
 
     /// <summary>

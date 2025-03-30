@@ -15,31 +15,30 @@
 namespace DotAuth.Shared.Responses;
 
 using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 
 /// <summary>
 /// Defines the discovery information.
 /// </summary>
-[DataContract]
 public sealed record DiscoveryInformation
 {
     /// <summary>
     /// Gets or sets the dynamic client registration endpoint.
     /// </summary>
-    [DataMember(Name = "dynamic_registration")]
+    [JsonPropertyName("dynamic_registration")]
     public Uri DynamicClientRegistrationEndpoint { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the device authorization endpoint.
     /// </summary>
-    [DataMember(Name = "device_authorization_endpoint")]
+    [JsonPropertyName("device_authorization_endpoint")]
     public Uri DeviceAuthorizationEndPoint { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the authorization end point.
     /// </summary>
-    [DataMember(Name = "authorization_endpoint")]
+    [JsonPropertyName("authorization_endpoint")]
     public Uri AuthorizationEndPoint { get; set; } = null!;
 
     /// <summary>
@@ -48,25 +47,25 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The check session end point.
     /// </value>
-    [DataMember(Name = "check_session_iframe")]
+    [JsonPropertyName("check_session_iframe")]
     public Uri CheckSessionEndPoint { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the list of the Claim Types supported.
     /// </summary>
-    [DataMember(Name = "claim_types_supported")]
+    [JsonPropertyName("claim_types_supported")]
     public string[] ClaimTypesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets boolean specifying whether the OP supports use of the claims parameter.
     /// </summary>
-    [DataMember(Name = "claims_parameter_supported")]
+    [JsonPropertyName("claims_parameter_supported")]
     public bool ClaimsParameterSupported { get; set; }
 
     /// <summary>
     /// Gets or sets a list of the Claim Names of the Claims.
     /// </summary>
-    [DataMember(Name = "claims_supported")]
+    [JsonPropertyName("claims_supported")]
     public string[] ClaimsSupported { get; set; } = [];
 
     /// <summary>
@@ -75,61 +74,61 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The end session end point.
     /// </value>
-    [DataMember(Name = "end_session_endpoint")]
+    [JsonPropertyName("end_session_endpoint")]
     public Uri EndSessionEndPoint { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the grant-types supported : authorization_code, implicit
     /// </summary>
-    [DataMember(Name = "grant_types_supported")]
+    [JsonPropertyName("grant_types_supported")]
     public string[] GrantTypesSupported { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the list of the JWS signing algorithms (alg values) supported.
     /// </summary>
-    [DataMember(Name = "id_token_signing_alg_values_supported")]
+    [JsonPropertyName("id_token_signing_alg_values_supported")]
     public string[] IdTokenSigningAlgValuesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the issuer.
     /// </summary>
-    [DataMember(Name = "issuer")]
+    [JsonPropertyName("issuer")]
     public Uri Issuer { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the JSON Web Key Set document.
     /// </summary>
-    [DataMember(Name = "jwks_uri")]
+    [JsonPropertyName("jwks_uri")]
     public Uri JwksUri { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets boolean specifying whether the OP supports use of the request parameter.
     /// </summary>
-    [DataMember(Name = "request_parameter_supported")]
+    [JsonPropertyName("request_parameter_supported")]
     public bool RequestParameterSupported { get; set; }
 
     /// <summary>
     /// Gets or sets boolean specifying whether the OP supports use of the request request_uri
     /// </summary>
-    [DataMember(Name = "request_uri_parameter_supported")]
+    [JsonPropertyName("request_uri_parameter_supported")]
     public bool RequestUriParameterSupported { get; set; }
 
     /// <summary>
     /// Gets or sets boolean specifying whether the OP requires any request_uri values.
     /// </summary>
-    [DataMember(Name = "require_request_uri_registration")]
+    [JsonPropertyName("require_request_uri_registration")]
     public bool RequireRequestUriRegistration { get; set; }
 
     /// <summary>
     /// Gets or sets the response modes supported : query, fragment
     /// </summary>
-    [DataMember(Name = "response_modes_supported")]
+    [JsonPropertyName("response_modes_supported")]
     public string[] ResponseModesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the response types supported : code, id_token &amp; token id_token
     /// </summary>
-    [DataMember(Name = "response_types_supported")]
+    [JsonPropertyName("response_types_supported")]
     public string[] ResponseTypesSupported { get; set; } = [];
 
     /// <summary>
@@ -138,7 +137,7 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The revocation end point.
     /// </value>
-    [DataMember(Name = "revocation_endpoint")]
+    [JsonPropertyName("revocation_endpoint")]
     public Uri RevocationEndPoint { get; set; } = null!;
 
     /// <summary>
@@ -147,49 +146,49 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The introspection end point.
     /// </value>
-    [DataMember(Name = "introspection_endpoint")]
+    [JsonPropertyName("introspection_endpoint")]
     public Uri IntrospectionEndpoint { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the list of supported scopes.
     /// </summary>
-    [DataMember(Name = "scopes_supported")]
+    [JsonPropertyName("scopes_supported")]
     public string[] ScopesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the subject types supported : pairwise &amp; public.
     /// </summary>
-    [DataMember(Name = "subject_types_supported")]
+    [JsonPropertyName("subject_types_supported")]
     public string[] SubjectTypesSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the token endpoint.
     /// </summary>
-    [DataMember(Name = "token_endpoint")]
+    [JsonPropertyName("token_endpoint")]
     public Uri TokenEndPoint { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the list of Client Authentication methods supported by the TokenEndpoint : client_secret_post, client_secret_basic etc ...
     /// </summary>
-    [DataMember(Name = "token_endpoint_auth_methods_supported")]
+    [JsonPropertyName("token_endpoint_auth_methods_supported")]
     public string[] TokenEndpointAuthMethodSupported { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the user-info endpoint.
     /// </summary>
-    [DataMember(Name = "userinfo_endpoint")]
+    [JsonPropertyName("userinfo_endpoint")]
     public Uri UserInfoEndPoint { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the version of the discovery document
     /// </summary>
-    [DataMember(Name = "version")]
+    [JsonPropertyName("version")]
     public string Version { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the Registration End Point.
     /// </summary>
-    [DataMember(Name = "registration_endpoint")]
+    [JsonPropertyName("registration_endpoint")]
     public Uri RegistrationEndPoint { get; set; } = null!;
 
     /// <summary>
@@ -278,7 +277,7 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The JWS.
     /// </value>
-    [DataMember(Name = "jws")]
+    [JsonPropertyName("jws")]
     public Uri Jws { get; set; } = null!;
 
     /// <summary>
@@ -287,7 +286,7 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The jwe.
     /// </value>
-    [DataMember(Name = "jwe")]
+    [JsonPropertyName("jwe")]
     public Uri Jwe { get; set; } = null!;
 
     /// <summary>
@@ -296,7 +295,7 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The clients.
     /// </value>
-    [DataMember(Name = "clients")]
+    [JsonPropertyName("clients")]
     public Uri Clients { get; set; } = null!;
 
     /// <summary>
@@ -305,7 +304,7 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The scopes.
     /// </value>
-    [DataMember(Name = "scopes")]
+    [JsonPropertyName("scopes")]
     public Uri Scopes { get; set; } = null!;
 
     /// <summary>
@@ -314,7 +313,7 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The resource owners.
     /// </value>
-    [DataMember(Name = "resource_owners")]
+    [JsonPropertyName("resource_owners")]
     public Uri ResourceOwners { get; set; } = null!;
 
     /// <summary>
@@ -323,7 +322,7 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The manage.
     /// </value>
-    [DataMember(Name = "manage")]
+    [JsonPropertyName("manage")]
     public Uri Manage { get; set; } = null!;
 
     /// <summary>
@@ -332,6 +331,6 @@ public sealed record DiscoveryInformation
     /// <value>
     /// The claims.
     /// </value>
-    [DataMember(Name = "claims")]
+    [JsonPropertyName("claims")]
     public Uri Claims { get; set; } = null!;
 }

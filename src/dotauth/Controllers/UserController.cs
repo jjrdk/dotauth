@@ -539,7 +539,8 @@ public sealed class UserController : BaseController
             .ToArray();
         if (unlink.Length <= 0)
         {
-            return new Option.Error(new ErrorDetails { Title = ErrorCodes.InvalidRequest });
+            return new Option.Error(new ErrorDetails
+                { Title = ErrorCodes.InvalidRequest, Detail = ErrorCodes.InvalidRequest });
         }
 
         resourceOwner.ExternalLogins = resourceOwner.ExternalLogins.Remove(unlink);

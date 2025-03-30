@@ -1,16 +1,15 @@
-﻿namespace DotAuth.Client;
+﻿namespace DotAuth.Shared.Responses;
 
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the add resource owner response.
 /// </summary>
-[DataContract]
 public sealed class AddResourceOwnerResponse
 {
     /// <summary>
     /// Gets or sets the subject.
     /// </summary>
-    [DataMember(Name = "subject")]
+    [JsonPropertyName("subject")]
     public string? Subject { get; set; }
 }

@@ -15,11 +15,11 @@
 namespace DotAuth.Shared.Responses;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the add resource set response.
 /// </summary>
-[DataContract]
 public sealed record AddResourceSetResponse
 {
     /// <summary>
@@ -28,7 +28,7 @@ public sealed record AddResourceSetResponse
     /// <value>
     /// The identifier.
     /// </value>
-    [DataMember(Name = "_id")]
+    [JsonPropertyName("_id")]
     public string Id { get; set; } = null!;
 
     /// <summary>
@@ -37,6 +37,6 @@ public sealed record AddResourceSetResponse
     /// <value>
     /// The user access policy URI.
     /// </value>
-    [DataMember(Name = "user_access_policy_uri")]
+    [JsonPropertyName("user_access_policy_uri")]
     public string UserAccessPolicyUri { get; set; } = null!;
 }

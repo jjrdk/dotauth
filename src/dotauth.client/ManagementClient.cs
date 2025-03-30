@@ -71,7 +71,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = new Uri(discoveryInformation.Clients + "/" + clientId)
+            Method = HttpMethod.Get, RequestUri = new Uri($"{discoveryInformation.Clients}/{clientId}")
         };
         return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
@@ -119,7 +119,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Delete, RequestUri = new Uri(discoveryInformation.Clients + "/" + clientId)
+            Method = HttpMethod.Delete, RequestUri = new Uri($"{discoveryInformation.Clients}/{clientId}")
         };
         return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
@@ -186,7 +186,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(discoveryInformation.Clients + "/.search"),
+            RequestUri = new Uri($"{discoveryInformation.Clients}/.search"),
             Content = body
         };
         return await GetResult<PagedResult<Client>>(
@@ -462,7 +462,7 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(discoveryInformation.ResourceOwners + "/.search"),
+            RequestUri = new Uri($"{discoveryInformation.ResourceOwners}/.search"),
             Content = body
         };
 

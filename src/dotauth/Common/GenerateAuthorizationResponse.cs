@@ -311,7 +311,7 @@ internal sealed class GenerateAuthorizationResponse
         var s = $"{clientId}{originUrl}{sessionId}";
         var hex = s.ToSha256Hash(salt);
 
-        return string.Concat(hex.Base64Encode(), "==.", salt);
+        return $"{hex.Base64Encode()}==.{salt}";
     }
 
     private async Task<Option<JwtPayload>> GenerateIdTokenPayload(

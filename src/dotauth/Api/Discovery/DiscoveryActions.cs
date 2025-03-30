@@ -41,7 +41,7 @@ internal sealed class DiscoveryActions
         issuer = issuer.TrimEnd('/');
         // Returns only the exposed scopes
         var scopes = await _scopeRepository.GetAll(cancellationToken).ConfigureAwait(false);
-        var scopeSupportedNames = scopes != null && scopes.Any()
+        var scopeSupportedNames = scopes.Length != 0
             ? scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray()
             : [];
 
@@ -56,9 +56,9 @@ internal sealed class DiscoveryActions
             ClaimsSupported = [],
             ScopesSupported = scopeSupportedNames,
             ResponseTypesSupported = responseTypesSupported,
-            ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes.ToArray(),
+            ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes,
             GrantTypesSupported = GrantTypes.All,
-            SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes.ToArray(),
+            SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes,
             TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods,
             IdTokenSigningAlgValuesSupported = [SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256],
             IdTokenEncryptionEncValuesSupported = [],
@@ -69,24 +69,24 @@ internal sealed class DiscoveryActions
             // default : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
 
             Issuer = new Uri(issuer),
-            DynamicClientRegistrationEndpoint = new Uri(issuer + "/" + CoreConstants.EndPoints.DynamicClientRegistration),
-            DeviceAuthorizationEndPoint = new Uri(issuer+"/"+CoreConstants.EndPoints.DeviceAuthorization),
-            AuthorizationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Authorization),
-            TokenEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Token),
-            UserInfoEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.UserInfo),
-            JwksUri = new Uri(issuer + "/" + CoreConstants.EndPoints.Jwks),
-            RegistrationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Clients),
-            RevocationEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Revocation),
-            IntrospectionEndpoint = new Uri(issuer + "/" + CoreConstants.EndPoints.Introspection),
-            Jws = new Uri(issuer + "/" + CoreConstants.EndPoints.Jws),
-            Jwe = new Uri(issuer + "/" + CoreConstants.EndPoints.Jwe),
-            Clients = new Uri(issuer + "/" + CoreConstants.EndPoints.Clients),
-            Scopes = new Uri(issuer + "/" + CoreConstants.EndPoints.Scopes),
-            ResourceOwners = new Uri(issuer + "/" + CoreConstants.EndPoints.ResourceOwners),
-            Manage = new Uri(issuer + "/" + CoreConstants.EndPoints.Manage),
-            Claims = new Uri(issuer + "/" + CoreConstants.EndPoints.Claims),
-            CheckSessionEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.CheckSession),
-            EndSessionEndPoint = new Uri(issuer + "/" + CoreConstants.EndPoints.EndSession),
+            DynamicClientRegistrationEndpoint = new Uri($"{issuer}/{CoreConstants.EndPoints.DynamicClientRegistration}"),
+            DeviceAuthorizationEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.DeviceAuthorization}"),
+            AuthorizationEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.Authorization}"),
+            TokenEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.Token}"),
+            UserInfoEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.UserInfo}"),
+            JwksUri = new Uri($"{issuer}/{CoreConstants.EndPoints.Jwks}"),
+            RegistrationEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.Clients}"),
+            RevocationEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.Revocation}"),
+            IntrospectionEndpoint = new Uri($"{issuer}/{CoreConstants.EndPoints.Introspection}"),
+            Jws = new Uri($"{issuer}/{CoreConstants.EndPoints.Jws}"),
+            Jwe = new Uri($"{issuer}/{CoreConstants.EndPoints.Jwe}"),
+            Clients = new Uri($"{issuer}/{CoreConstants.EndPoints.Clients}"),
+            Scopes = new Uri($"{issuer}/{CoreConstants.EndPoints.Scopes}"),
+            ResourceOwners = new Uri($"{issuer}/{CoreConstants.EndPoints.ResourceOwners}"),
+            Manage = new Uri($"{issuer}/{CoreConstants.EndPoints.Manage}"),
+            Claims = new Uri($"{issuer}/{CoreConstants.EndPoints.Claims}"),
+            CheckSessionEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.CheckSession}"),
+            EndSessionEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.EndSession}"),
         };
         return result;
     }

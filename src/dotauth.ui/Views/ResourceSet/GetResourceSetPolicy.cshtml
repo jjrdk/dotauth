@@ -70,10 +70,10 @@
                             <div class="col s12"><h6>Claims</h6></div>
                             <hr />
 
-                            <div id="@string.Concat("rule",@i,"claims")">
+                            <div id="@($"rule{@i}claims")">
                                 @for (var j = 0; j < Model.Rules[i].Claims.Length; j++)
                                 {
-                                    <div id="@string.Concat("rule", i, "claim", j)">
+                                    <div id="@($"rule{i}claim{j}")">
                                         <div class="input-field col s5">
                                             <label asp-for="@Model.Rules[i].Claims[j].Type"></label>
                                             <input asp-for="@Model.Rules[i].Claims[j].Type" />

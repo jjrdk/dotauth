@@ -9,6 +9,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Xunit;
 
 public sealed class ResourceOwnerFixture : IDisposable

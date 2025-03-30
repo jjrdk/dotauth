@@ -15,11 +15,11 @@
 namespace DotAuth.Shared.Requests;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the introspection request.
 /// </summary>
-[DataContract]
 public sealed record IntrospectionRequest
 {
     /// <summary>
@@ -28,7 +28,7 @@ public sealed record IntrospectionRequest
     /// <value>
     /// The token.
     /// </value>
-    [DataMember(Name = "token")]
+    [JsonPropertyName("token")]
 #pragma warning disable IDE1006 // Naming Styles
     public string? token { get; set; }
 
@@ -38,7 +38,7 @@ public sealed record IntrospectionRequest
     /// <value>
     /// The token type hint.
     /// </value>
-    [DataMember(Name = "token_type_hint")]
+    [JsonPropertyName("token_type_hint")]
     public string? token_type_hint { get; set; }
 
     /// <summary>
@@ -47,7 +47,7 @@ public sealed record IntrospectionRequest
     /// <value>
     /// The client identifier.
     /// </value>
-    [DataMember(Name = "client_id")]
+    [JsonPropertyName("client_id")]
     public string? client_id { get; set; }
 
     /// <summary>
@@ -56,7 +56,7 @@ public sealed record IntrospectionRequest
     /// <value>
     /// The client secret.
     /// </value>
-    [DataMember(Name = "client_secret")]
+    [JsonPropertyName("client_secret")]
     public string? client_secret { get; set; }
 
     /// <summary>
@@ -65,7 +65,7 @@ public sealed record IntrospectionRequest
     /// <value>
     /// The client assertion.
     /// </value>
-    [DataMember(Name = "client_assertion")]
+    [JsonPropertyName("client_assertion")]
     public string? client_assertion { get; set; }
 
     /// <summary>
@@ -74,7 +74,7 @@ public sealed record IntrospectionRequest
     /// <value>
     /// The type of the client assertion.
     /// </value>
-    [DataMember(Name = "client_assertion_type")]
+    [JsonPropertyName("client_assertion_type")]
     public string? client_assertion_type { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
 }

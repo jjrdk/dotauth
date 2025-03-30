@@ -16,6 +16,7 @@ namespace DotAuth.Tests.WebSite.Authenticate;
 
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
@@ -27,7 +28,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.Authenticate;
-using Newtonsoft.Json;
+
 using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
@@ -61,8 +62,8 @@ public sealed class AuthenticateResourceOwnerOpenIdActionFixture
                 CancellationToken.None);
 
         Assert.Equal(
-            JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
-            JsonConvert.SerializeObject(result));
+            JsonSerializer.Serialize(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+            JsonSerializer.Serialize(result));
     }
 
     [Fact]
@@ -76,8 +77,8 @@ public sealed class AuthenticateResourceOwnerOpenIdActionFixture
             .Execute(authorizationParameter, claimsPrincipal, null, "", CancellationToken.None);
 
         Assert.Equal(
-            JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
-            JsonConvert.SerializeObject(result));
+            JsonSerializer.Serialize(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+            JsonSerializer.Serialize(result));
     }
 
     [Fact]
@@ -101,8 +102,8 @@ public sealed class AuthenticateResourceOwnerOpenIdActionFixture
             ;
 
         Assert.Equal(
-            JsonConvert.SerializeObject(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
-            JsonConvert.SerializeObject(result));
+            JsonSerializer.Serialize(EndpointResult.CreateAnEmptyActionResultWithNoEffect()),
+            JsonSerializer.Serialize(result));
     }
 
     [Fact]

@@ -4,11 +4,11 @@ namespace DotAuth.Uma;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the UMA ticket info class.
 /// </summary>
-[DataContract]
 public partial record UmaTicketInfo : ResourceResult
 {
     /// <summary>
@@ -30,19 +30,19 @@ public partial record UmaTicketInfo : ResourceResult
     /// <summary>
     /// Gets the ticket id.
     /// </summary>
-    [DataMember(Name = "ticket_id")]
+    [JsonPropertyName("ticket_id")]
     public string TicketId { get; }
 
     /// <summary>
     /// Gets the UMA authority.
     /// </summary>
-    [DataMember(Name = "uma_authority")]
+    [JsonPropertyName("uma_authority")]
     public string UmaAuthority { get; }
 
     /// <summary>
     /// Gets the application realm.
     /// </summary>
-    [DataMember(Name = "realm")]
+    [JsonPropertyName("realm")]
     public string? Realm { get; }
 
     public static bool TryParse(string header, out UmaTicketInfo? info)

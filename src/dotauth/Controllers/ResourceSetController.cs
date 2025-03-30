@@ -308,7 +308,9 @@ public sealed class ResourceSetController : ControllerBase
             ? resourceSet with
             {
                 Id = Id.Create(),
-                AuthorizationPolicies = [new PolicyRule { IsResourceOwnerConsentNeeded = true, Scopes = ["read"] }
+                AuthorizationPolicies =
+                [
+                    new PolicyRule { IsResourceOwnerConsentNeeded = true, Scopes = ["read"] }
                 ]
             }
             : resourceSet with { Id = Id.Create() };
@@ -380,7 +382,14 @@ public sealed class ResourceSetController : ControllerBase
         }
 
         var resourceSetExists = await _resourceSetRepository.Remove(id, cancellationToken).ConfigureAwait(false);
-        return !resourceSetExists ? BadRequest(new ErrorDetails { Status = HttpStatusCode.BadRequest }) : NoContent();
+        return !resourceSetExists
+            ? BadRequest(new ErrorDetails
+            {
+                Title = ErrorCodes.InvalidResourceSetId,
+                Detail = ErrorCodes.InvalidResourceSetId,
+                Status = HttpStatusCode.BadRequest
+            })
+            : NoContent();
     }
 
     private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)

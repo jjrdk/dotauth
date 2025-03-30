@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
+
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -46,7 +47,7 @@ public partial class FeatureTest
 
         var serializedContent = await response.Content.ReadAsStringAsync();
 
-        _doc = JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent)!;
+        _doc = JsonSerializer.Deserialize<DiscoveryInformation>(serializedContent, DefaultJsonSerializerOptions.Instance)!;
     }
 
     [Then(@"discovery document has uri for device authorization")]
@@ -62,8 +63,7 @@ public partial class FeatureTest
             TokenCredentials.FromClientCredentials(ClientId, "client"),
             _fixture.Client,
             new Uri(WellKnownOpenidConfiguration));
-        var option = await authClient.GetToken(TokenRequest.FromPassword("user", "password", ["openid"]))
-            ;
+        var option = await authClient.GetToken(TokenRequest.FromPassword("user", "password", ["openid"]));
 
         var tokenResponse = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         _token = tokenResponse.Item;
@@ -72,8 +72,7 @@ public partial class FeatureTest
     [When(@"a device requests authorization")]
     public async Task WhenADeviceRequestsAuthorization()
     {
-        var option = await _tokenClient.GetAuthorization(new DeviceAuthorizationRequest(ClientId))
-            ;
+        var option = await _tokenClient.GetAuthorization(new DeviceAuthorizationRequest(ClientId));
 
         var genericResponse = Assert.IsType<Option<DeviceAuthorizationResponse>.Result>(option);
 

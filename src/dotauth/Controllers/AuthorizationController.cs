@@ -109,6 +109,7 @@ public sealed class AuthorizationController : ControllerBase
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
     [HttpGet]
+    // ReSharper disable once CognitiveComplexity
     public async Task<IActionResult?> Get([FromQuery] AuthorizationRequest authorizationRequest, CancellationToken cancellationToken)
     {
         var originUrl = this.GetOriginUrl();
@@ -232,7 +233,7 @@ public sealed class AuthorizationController : ControllerBase
             && dotAuthEndPoints != DotAuthEndPoints.ConsentIndex
             && dotAuthEndPoints != DotAuthEndPoints.FormIndex)
         {
-            partialUri = "/" + amr + partialUri;
+            partialUri = $"/{amr}{partialUri}";
         }
 
         return uri + partialUri;

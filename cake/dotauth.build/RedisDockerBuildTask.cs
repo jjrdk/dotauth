@@ -35,7 +35,7 @@ public sealed class RedisDockerBuildTask : FrostingTask<BuildContext>
             Rm = true,
             Tag =
             [
-                "jjrdk/dotauth:pgredis-canary", "jjrdk/dotauth:" + context.BuildVersion + "-pgredis"
+                "jjrdk/dotauth:pgredis-canary", $"jjrdk/dotauth:{context.BuildVersion}-pgredis"
             ]
         };
         context.DockerBuild(settings, "./");

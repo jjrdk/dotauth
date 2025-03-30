@@ -47,11 +47,11 @@ public sealed class UpdateResourceSetActionFixture
             Name = "blah",
             Scopes = ["scope"]
         };
-        var resourceSet = new Shared.Models.ResourceSet { Id = id };
+        var resourceSet = new ResourceSet { Id = id };
         _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(resourceSet);
         _resourceSetRepositoryStub.Update(Arg.Any<ResourceSet>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<Option>(new Option.Error(new ErrorDetails())));
+            .Returns(Task.FromResult<Option>(new Option.Error(new ErrorDetails{Title = "", Detail = ""})));
 
         var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None);
         Assert.IsType<Option.Error>(result);
@@ -67,10 +67,10 @@ public sealed class UpdateResourceSetActionFixture
             Name = "blah",
             Scopes = ["scope"]
         };
-        var resourceSet = new Shared.Models.ResourceSet { Id = id };
+        var resourceSet = new ResourceSet { Id = id };
         _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(resourceSet);
-        _resourceSetRepositoryStub.Update(Arg.Any<Shared.Models.ResourceSet>(), Arg.Any<CancellationToken>())
+        _resourceSetRepositoryStub.Update(Arg.Any<ResourceSet>(), Arg.Any<CancellationToken>())
             .Returns(new Option.Success());
 
         var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None)

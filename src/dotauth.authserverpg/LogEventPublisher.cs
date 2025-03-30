@@ -1,11 +1,12 @@
 ﻿namespace DotAuth.AuthServerPg;
 
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Events;
 using DotAuth.Shared;
 using DotAuth.Shared.Events.Logging;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+
 
 /// <summary>
 /// Defines the trace event publisher.
@@ -27,7 +28,7 @@ public sealed class LogEventPublisher : IEventPublisher
     public Task Publish<T>(T evt)
         where T : Event
     {
-        var json = JsonConvert.SerializeObject(evt);
+        var json = JsonSerializer.Serialize(evt, DefaultJsonSerializerOptions.Instance);
         if (typeof(DotAuthError).IsAssignableFrom(typeof(T)))
         {
             _logger.LogError(json);

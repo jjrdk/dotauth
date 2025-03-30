@@ -1,8 +1,8 @@
 ﻿namespace DotAuth.Uma;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
-[DataContract]
 public record UmaRequestSubmitted : ResourceResult
 {
     public UmaRequestSubmitted(string ticketId)
@@ -13,6 +13,6 @@ public record UmaRequestSubmitted : ResourceResult
     /// <summary>
     /// Gets the ticket id for the request submission.
     /// </summary>
-    [DataMember(Name = "ticket_id")]
+    [JsonPropertyName("ticket_id")]
     public string TicketId { get; }
 }

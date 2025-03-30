@@ -5,10 +5,12 @@ using System.Data.Common;
 using System.IO;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Shared;
 using global::Marten;
-using Newtonsoft.Json;
 using Weasel.Core;
 
 /// <summary>
@@ -35,6 +37,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
         {
             Logger(logger);
         }
+
         Schema.Include<DotAuthRegistry>();
         if (!string.IsNullOrWhiteSpace(searchPath))
         {
@@ -46,163 +49,128 @@ public sealed class DotAuthMartenOptions : StoreOptions
         Advanced.DuplicatedFieldEnumStorage = EnumStorage.AsString;
         Advanced.DuplicatedFieldUseTimestampWithoutTimeZoneForDateTime = true;
     }
-
-    private sealed class ClaimConverter : JsonConverter<Claim>
-    {
-        public override void WriteJson(JsonWriter writer, Claim? value, JsonSerializer serializer)
-        {
-            if (value == null)
-            {
-                return;
-            }
-
-            var info = new ClaimInfo(value.Type, value.Value);
-            serializer.Serialize(writer, info);
-        }
-
-        public override Claim ReadJson(
-            JsonReader reader,
-            Type objectType,
-            Claim? existingValue,
-            bool hasExistingValue,
-            JsonSerializer serializer)
-        {
-            var info = serializer.Deserialize<ClaimInfo>(reader);
-            return new Claim(info.Type, info.Value);
-        }
-    }
-
-    private readonly struct ClaimInfo
-    {
-        public ClaimInfo(string type, string value)
-        {
-            Type = type;
-            Value = value;
-        }
-
-        public string Type { get; }
-
-        public string Value { get; }
-    }
+//
+//    private sealed class ClaimConverter : JsonSerializerer<Claim>
+//    {
+//        public override void WriteJson(JsonWriter writer, Claim? value, JsonSerializer serializer)
+//        {
+//            if (value == null)
+//            {
+//                return;
+//            }
+//
+//            var info = new ClaimInfo(value.Type, value.Value);
+//            serializer.Serialize(writer, info);
+//        }
+//
+//        public override Claim? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+//        {
+//            reader.Read()
+//            return new Claim(info.Type, info.Value);
+//        }
+//
+//        public override void Write(Utf8JsonWriter writer, Claim value, JsonSerializerOptions options)
+//        {
+//            throw new NotImplementedException();
+//        }
+//    }
+//
+//    private readonly struct ClaimInfo
+//    {
+//        public ClaimInfo(string type, string value)
+//        {
+//            Type = type;
+//            Value = value;
+//        }
+//
+//        public string Type { get; }
+//
+//        public string Value { get; }
+//    }
 
     private sealed class CustomJsonSerializer : ISerializer
     {
-        private readonly JsonSerializer _innerSerializer;
-
-        public CustomJsonSerializer()
-        {
-            _innerSerializer = new JsonSerializer
-            {
-                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
-                DefaultValueHandling = DefaultValueHandling.Include,
-                NullValueHandling = NullValueHandling.Include,
-                MissingMemberHandling = MissingMemberHandling.Ignore,
-                DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                FloatFormatHandling = FloatFormatHandling.DefaultValue,
-                FloatParseHandling = FloatParseHandling.Double,
-                Formatting = Formatting.None,
-                TypeNameHandling = TypeNameHandling.Auto,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                StringEscapeHandling = StringEscapeHandling.EscapeHtml
-            };
-            _innerSerializer.Converters.Add(new ClaimConverter());
-        }
-
         public string ToJson(object? document)
         {
             if (document == null)
             {
                 return "null";
             }
-            var sb = new StringBuilder();
-            using var writer = new StringWriter(sb);
-            _innerSerializer.Serialize(writer, document, document.GetType());
 
-            return sb.ToString();
+            return JsonSerializer.Serialize(document, document.GetType(), SharedSerializerContext.Default);
         }
 
         /// <inheritdoc />
         public T FromJson<T>(Stream stream)
         {
-            using var streamReader = new StreamReader(stream);
-            using var reader = new JsonTextReader(streamReader);
-            return _innerSerializer.Deserialize<T>(reader)
-                   ?? throw new NullReferenceException("Could not deserialize from stream");
+            return JsonSerializer.Deserialize<T>(stream, DefaultJsonSerializerOptions.Instance) ??
+                throw new NullReferenceException("Could not deserialize from stream");
         }
 
         /// <inheritdoc />
         public T FromJson<T>(DbDataReader reader, int index)
         {
-            using var sr = new StringReader(reader.GetString(index));
-            using var r = new JsonTextReader(sr);
-            return _innerSerializer.Deserialize<T>(r)
-                   ?? throw new NullReferenceException("Could not deserialize from DbDataReader");
+            return JsonSerializer.Deserialize<T>(reader.GetString(index), DefaultJsonSerializerOptions.Instance)
+             ?? throw new NullReferenceException("Could not deserialize from DbDataReader");
         }
 
         /// <inheritdoc />
-        public ValueTask<T> FromJsonAsync<T>(Stream stream, CancellationToken cancellationToken = new())
+        public async ValueTask<T> FromJsonAsync<T>(Stream stream, CancellationToken cancellationToken = new())
         {
-            using var streamReader = new StreamReader(stream);
-            using var reader = new JsonTextReader(streamReader);
-            var item = _innerSerializer.Deserialize<T>(reader)
-                       ?? throw new NullReferenceException("Could not deserialize from stream");
-            return new ValueTask<T>(item);
+            return await JsonSerializer.DeserializeAsync<T>(stream, DefaultJsonSerializerOptions.Instance,
+                    cancellationToken)
+             ?? throw new NullReferenceException("Could not deserialize from stream");
         }
 
         /// <inheritdoc />
-        public ValueTask<T> FromJsonAsync<T>(
+        public async ValueTask<T> FromJsonAsync<T>(
             DbDataReader reader,
             int index,
             CancellationToken cancellationToken = new())
         {
-            using var sr = new StringReader(reader.GetString(index));
-            using var r = new JsonTextReader(sr);
-            var item = _innerSerializer.Deserialize<T>(r)
-                       ?? throw new NullReferenceException("Could not deserialize from stream");
-            return new ValueTask<T>(item);
+            return await JsonSerializer.DeserializeAsync<T>(reader.GetStream(index),
+                    DefaultJsonSerializerOptions.Instance,
+                    cancellationToken)
+             ?? throw new NullReferenceException("Could not deserialize from stream");
         }
 
         /// <inheritdoc />
         public object FromJson(Type type, Stream stream)
         {
-            using var streamReader = new StreamReader(stream);
-            using var reader = new JsonTextReader(streamReader);
-            return _innerSerializer.Deserialize(reader, type)
-                   ?? throw new NullReferenceException("Could not deserialize from stream");
+            return JsonSerializer.Deserialize(stream, type, DefaultJsonSerializerOptions.Instance)
+             ?? throw new NullReferenceException("Could not deserialize from stream");
         }
 
         /// <inheritdoc />
         public object FromJson(Type type, DbDataReader reader, int index)
         {
-            using var sr = new StringReader(reader.GetString(index));
-            using var r = new JsonTextReader(sr);
-            return _innerSerializer.Deserialize(r, type)
-                   ?? throw new NullReferenceException("Could not deserialize from DbDataReader");
+            return JsonSerializer.Deserialize(reader.GetString(index), type)
+             ?? throw new NullReferenceException("Could not deserialize from DbDataReader");
         }
 
         /// <inheritdoc />
-        public ValueTask<object> FromJsonAsync(Type type, Stream stream, CancellationToken cancellationToken = new())
+        public async ValueTask<object> FromJsonAsync(
+            Type type,
+            Stream stream,
+            CancellationToken cancellationToken = new())
         {
-            using var streamReader = new StreamReader(stream);
-            using var reader = new JsonTextReader(streamReader);
-            var item = _innerSerializer.Deserialize(reader, type)
-                       ?? throw new NullReferenceException("Could not deserialize from stream");
-            return new ValueTask<object>(item);
+            return await JsonSerializer.DeserializeAsync(stream,
+                    options: DefaultJsonSerializerOptions.Instance,
+                    returnType: type,
+                    cancellationToken: cancellationToken)
+             ?? throw new NullReferenceException("Could not deserialize from stream");
         }
 
         /// <inheritdoc />
-        public ValueTask<object> FromJsonAsync(
+        public async ValueTask<object> FromJsonAsync(
             Type type,
             DbDataReader reader,
             int index,
             CancellationToken cancellationToken = new())
         {
-            using var sr = new StringReader(reader.GetString(index));
-            using var r = new JsonTextReader(sr);
-            var item = _innerSerializer.Deserialize(r, type)
-                       ?? throw new NullReferenceException("Could not deserialize from stream");
-            return new ValueTask<object>(item);
+            return await JsonSerializer.DeserializeAsync(reader.GetStream(index), type, SharedSerializerContext.Default,
+                    cancellationToken)
+             ?? throw new NullReferenceException("Could not deserialize from stream");
         }
 
         public string ToCleanJson(object? document)

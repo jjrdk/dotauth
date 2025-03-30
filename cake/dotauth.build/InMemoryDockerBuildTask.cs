@@ -33,7 +33,7 @@ public sealed class InMemoryDockerBuildTask : FrostingTask<BuildContext>
             Rm = true,
             Tag =
             [
-                "jjrdk/dotauth:inmemory-canary", "jjrdk/dotauth:" + context.BuildVersion + "-inmemory"
+                "jjrdk/dotauth:inmemory-canary", $"jjrdk/dotauth:{context.BuildVersion}-inmemory"
             ]
         };
         context.DockerBuild(settings, "./");

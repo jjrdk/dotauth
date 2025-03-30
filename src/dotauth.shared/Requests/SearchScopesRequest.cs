@@ -2,11 +2,11 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the search scopes request.
 /// </summary>
-[DataContract]
 public sealed record SearchScopesRequest
 {
     /// <summary>
@@ -15,7 +15,7 @@ public sealed record SearchScopesRequest
     /// <value>
     /// The scope types.
     /// </value>
-    [DataMember(Name = "types")]
+    [JsonPropertyName("types")]
     public string[] ScopeTypes { get; set; } = [];
 
     /// <summary>
@@ -24,7 +24,7 @@ public sealed record SearchScopesRequest
     /// <value>
     /// The scope names.
     /// </value>
-    [DataMember(Name = "names")]
+    [JsonPropertyName("names")]
     public string[] ScopeNames { get; set; } = [];
 
     /// <summary>
@@ -33,7 +33,7 @@ public sealed record SearchScopesRequest
     /// <value>
     /// The start index.
     /// </value>
-    [DataMember(Name = "start_index")]
+    [JsonPropertyName("start_index")]
     public int StartIndex { get; set; }
 
     /// <summary>
@@ -42,7 +42,7 @@ public sealed record SearchScopesRequest
     /// <value>
     /// The nb results.
     /// </value>
-    [DataMember(Name = "count")]
+    [JsonPropertyName("count")]
     public int NbResults { get; set; } = int.MaxValue;
 
     /// <summary>
@@ -51,6 +51,6 @@ public sealed record SearchScopesRequest
     /// <value>
     ///   <c>true</c> if descending; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "order")]
+    [JsonPropertyName("order")]
     public bool Descending { get; set; }
 }

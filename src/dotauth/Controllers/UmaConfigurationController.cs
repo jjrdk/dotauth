@@ -64,18 +64,19 @@ public sealed class UmaConfigurationController : ControllerBase
         {
             ClaimTokenProfilesSupported = [],
             UmaProfilesSupported = UmaProfilesSupported,
-            ResourceRegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.ResourceSet),
-            PermissionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Permission),
+            ResourceRegistrationEndpoint = new Uri(
+                $"{absoluteUriWithVirtualPath}/{UmaConstants.RouteValues.ResourceSet}"),
+            PermissionEndpoint = new Uri($"{absoluteUriWithVirtualPath}/{UmaConstants.RouteValues.Permission}"),
             ScopesSupported = scopeSupportedNames,
             //PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
             // OAUTH2.0
             Issuer = new Uri(absoluteUriWithVirtualPath),
-            AuthorizationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Authorization),
-            TokenEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token),
-            JwksUri = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Jwks),
-            RegistrationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Clients),
-            IntrospectionEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + UmaConstants.RouteValues.Introspection),
-            RevocationEndpoint = new Uri(absoluteUriWithVirtualPath + '/' + CoreConstants.EndPoints.Token + "/revoke"),
+            AuthorizationEndpoint = new Uri($"{absoluteUriWithVirtualPath}/{CoreConstants.EndPoints.Authorization}"),
+            TokenEndpoint = new Uri($"{absoluteUriWithVirtualPath}/{CoreConstants.EndPoints.Token}"),
+            JwksUri = new Uri($"{absoluteUriWithVirtualPath}/{CoreConstants.EndPoints.Jwks}"),
+            RegistrationEndpoint = new Uri($"{absoluteUriWithVirtualPath}/{CoreConstants.EndPoints.Clients}"),
+            IntrospectionEndpoint = new Uri($"{absoluteUriWithVirtualPath}/{UmaConstants.RouteValues.Introspection}"),
+            RevocationEndpoint = new Uri($"{absoluteUriWithVirtualPath}/{CoreConstants.EndPoints.Token}/revoke"),
             UiLocalesSupported = ["en"],
             GrantTypesSupported = GrantTypes.All,
             ResponseTypesSupported = ResponseTypeNames.All

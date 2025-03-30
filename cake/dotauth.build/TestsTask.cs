@@ -23,12 +23,9 @@ public sealed class TestsTask : FrostingTask<BuildContext>
 
         foreach (var project in projects)
         {
-            context.Log.Information("Testing: " + project.FullPath);
-            var reportName = "./artifacts/testreports/"
-                             + context.BuildVersion
-                             + "_"
-                             + System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_')
-                             + ".xml";
+            context.Log.Information($"Testing: {project.FullPath}");
+            var reportName =
+                $"./artifacts/testreports/{context.BuildVersion}_{System.IO.Path.GetFileNameWithoutExtension(project.FullPath).Replace('.', '_')}.xml";
             reportName = System.IO.Path.GetFullPath(reportName);
 
             context.Log.Information(reportName);
@@ -39,7 +36,7 @@ public sealed class TestsTask : FrostingTask<BuildContext>
                 NoRestore = true,
                 // Set configuration as passed by command line
                 Configuration = context.BuildConfiguration,
-                ArgumentCustomization = x => x.Append("--logger \"trx;LogFileName=" + reportName + "\"")
+                ArgumentCustomization = x => x.Append($"--logger \"trx;LogFileName={reportName}\"")
             };
 
             context.DotNetTest(project.FullPath, coreTestSettings);

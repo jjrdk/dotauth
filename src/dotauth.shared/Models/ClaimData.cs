@@ -2,11 +2,11 @@
 
 using System.Runtime.Serialization;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the posted claim.
 /// </summary>
-[DataContract]
 public sealed record ClaimData
 {
     /// <summary>
@@ -15,7 +15,7 @@ public sealed record ClaimData
     /// <value>
     /// The type.
     /// </value>
-    [DataMember(Name = "type")]
+    [JsonPropertyName("type")]
     public string Type { get; set; } = null!;
 
     /// <summary>
@@ -24,7 +24,7 @@ public sealed record ClaimData
     /// <value>
     /// The value.
     /// </value>
-    [DataMember(Name = "value")]
+    [JsonPropertyName("value")]
     public string Value { get; set; } = null!;
 
     /// <summary>

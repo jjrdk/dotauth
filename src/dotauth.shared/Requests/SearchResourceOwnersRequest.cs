@@ -1,11 +1,11 @@
 ﻿namespace DotAuth.Shared.Requests;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the request for resource owner searches.
 /// </summary>
-[DataContract]
 public sealed record SearchResourceOwnersRequest
 {
     /// <summary>
@@ -14,7 +14,7 @@ public sealed record SearchResourceOwnersRequest
     /// <value>
     /// The subjects.
     /// </value>
-    [DataMember(Name = "subjects")]
+    [JsonPropertyName("subjects")]
     public string[]? Subjects { get; set; }
 
     /// <summary>
@@ -23,7 +23,7 @@ public sealed record SearchResourceOwnersRequest
     /// <value>
     /// The start index.
     /// </value>
-    [DataMember(Name = "start_index")]
+    [JsonPropertyName("start_index")]
     public int StartIndex { get; set; }
 
     /// <summary>
@@ -32,7 +32,7 @@ public sealed record SearchResourceOwnersRequest
     /// <value>
     /// The nb results.
     /// </value>
-    [DataMember(Name = "count")]
+    [JsonPropertyName("count")]
     public int NbResults { get; set; }
 
     /// <summary>
@@ -41,6 +41,6 @@ public sealed record SearchResourceOwnersRequest
     /// <value>
     ///   <c>true</c> if descending; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "order")]
+    [JsonPropertyName("order")]
     public bool Descending { get; set; }
 }

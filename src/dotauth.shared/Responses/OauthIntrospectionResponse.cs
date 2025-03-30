@@ -16,6 +16,7 @@ namespace DotAuth.Shared.Responses;
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the OAuth introspection response.
@@ -25,6 +26,6 @@ public sealed record OauthIntrospectionResponse : IntrospectionResponse
     /// <summary>
     /// Gets or sets a list of scopes
     /// </summary>
-    [DataMember(Name = "scope")]
+    [JsonPropertyName("scope")]
     public string[] Scope { get; set; } = [];
 }

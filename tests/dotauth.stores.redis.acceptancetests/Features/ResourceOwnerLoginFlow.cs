@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Extensions;
@@ -15,7 +16,7 @@ using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
+
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -107,13 +108,13 @@ public partial class FeatureTest
             Subject = "user", Claims = [new ClaimData {Type = "test", Value = "something"}]
         };
 
-        var json = JsonConvert.SerializeObject(updateRequest);
+        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
 
         var request = new HttpRequestMessage
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
             Method = HttpMethod.Post,
-            RequestUri = new Uri(_fixture.Server.BaseAddress + "resource_owners/claims")
+            RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners/claims")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             JwtBearerDefaults.AuthenticationScheme,

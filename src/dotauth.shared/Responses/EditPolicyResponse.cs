@@ -2,22 +2,22 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the view model for editing policies.
 /// </summary>
-[DataContract]
 public sealed record EditPolicyResponse
 {
     /// <summary>
     /// Gets or sets the resource id.
     /// </summary>
-    [DataMember(Name = "id")]
+    [JsonPropertyName("id")]
     public string Id { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the authorization policies.
     /// </summary>
-    [DataMember(Name = "rules")]
+    [JsonPropertyName("rules")]
     public PolicyRuleViewModel[] Rules { get; set; } = [];
 }

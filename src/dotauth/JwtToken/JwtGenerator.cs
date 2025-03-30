@@ -373,7 +373,7 @@ internal sealed class JwtGenerator
         var azpParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Azp);
 
         var (expirationInSeconds, issuedAtTime) = GetExpirationAndIssuedTime(cl?.TokenLifetime);
-        const string acrValues = CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
+        const string acrValues = $"{CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel}.password=1";
         var amr = new[] { "password" };
 
         var azp = string.Empty;

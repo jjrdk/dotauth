@@ -61,7 +61,7 @@ public sealed class UserInfoController : ControllerBase
         var accessToken = await TryToGetTheAccessToken().ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(accessToken))
         {
-            return BadRequest(new ErrorDetails { Title = ErrorCodes.InvalidToken });
+            return BadRequest(new ErrorDetails { Title = ErrorCodes.InvalidToken, Detail = ErrorCodes.InvalidToken});
         }
 
         var grantedToken = await _tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);

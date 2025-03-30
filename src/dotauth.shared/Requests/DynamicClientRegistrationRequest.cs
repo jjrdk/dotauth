@@ -16,46 +16,46 @@ namespace DotAuth.Shared.Requests;
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the dynamic client registration request.
 /// </summary>
-[DataContract]
 public record DynamicClientRegistrationRequest
 {
     /// <summary>
     /// Gets or sets the application type.
     /// </summary>
-    [DataMember(Name = "application_type")]
+    [JsonPropertyName("application_type")]
     public string? ApplicationType { get; set; }
 
     /// <summary>
     /// Gets or sets the redirect uris.
     /// </summary>
-    [DataMember(Name = "redirect_uris")]
+    [JsonPropertyName("redirect_uris")]
     public string[] RedirectUris { get; set; } = [];
 
     /// <summary>
     /// Gets or sets teh client name.
     /// </summary>
-    [DataMember(Name = "client_name")]
+    [JsonPropertyName("client_name")]
     public string? ClientName { get; set; }
 
     /// <summary>
     /// Gets or sets the logo uri.
     /// </summary>
-    [DataMember(Name = "logo_uri")]
+    [JsonPropertyName("logo_uri")]
     public string? LogoUri { get; set; }
     
     /// <summary>
     /// Get or sets the token endpoint auth method.
     /// </summary>
-    [DataMember(Name = "token_endpoint_auth_method")]
+    [JsonPropertyName("token_endpoint_auth_method")]
     public string? TokenEndpointAuthMethod { get; set; }
 
     /// <summary>
     /// Gets or sets the contacts.
     /// </summary>
-    [DataMember(Name = "contacts")]
+    [JsonPropertyName("contacts")]
     public string[] Contacts { get; set; } = [];
 }

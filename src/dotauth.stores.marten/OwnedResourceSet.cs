@@ -1,6 +1,7 @@
 ﻿namespace DotAuth.Stores.Marten;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using DotAuth.Shared.Models;
 
 /// <summary>
@@ -11,7 +12,7 @@ public sealed record OwnedResourceSet : ResourceSet
     /// <summary>
     /// Gets or sets the resource set owner.
     /// </summary>
-    [DataMember(Name = "owner")]
+    [JsonPropertyName("owner")]
     public string Owner { get; init; } = null!;
 
     /// <summary>

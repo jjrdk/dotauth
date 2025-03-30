@@ -50,7 +50,7 @@ public sealed class AddPermissionActionFixture
     [Fact]
     public async Task When_RequiredParameter_ResourceSetId_Is_Not_Specified_Then_Exception_Is_Thrown()
     {
-        InitializeFakeObjects(new ResourceSet { Id = DotAuth.Id.Create(), Name = "resource" });
+        InitializeFakeObjects(new ResourceSet { Id = Id.Create(), Name = "resource" });
         var addPermissionParameter = new PermissionRequest();
 
         var exception = Assert.IsType<Option<Ticket>.Error>(await _requestPermissionHandler
@@ -66,7 +66,7 @@ public sealed class AddPermissionActionFixture
     [Fact]
     public async Task When_RequiredParameter_Scopes_Is_Not_Specified_Then_Exception_Is_Thrown()
     {
-        InitializeFakeObjects(new ResourceSet { Id = DotAuth.Id.Create(), Name = "resource" });
+        InitializeFakeObjects(new ResourceSet { Id = Id.Create(), Name = "resource" });
         var addPermissionParameter = new PermissionRequest { ResourceSetId = "resource_set_id" };
 
         var exception = Assert.IsType<Option<Ticket>.Error>(
@@ -81,7 +81,7 @@ public sealed class AddPermissionActionFixture
     public async Task When_ResourceSet_Does_Not_Exist_Then_Exception_Is_Thrown()
     {
         const string resourceSetId = "resource_set_id";
-        InitializeFakeObjects(new ResourceSet { Id = DotAuth.Id.Create(), Name = "resource" });
+        InitializeFakeObjects(new ResourceSet { Id = Id.Create(), Name = "resource" });
         var addPermissionParameter =
             new PermissionRequest { ResourceSetId = resourceSetId, Scopes = ["scope"] };
 

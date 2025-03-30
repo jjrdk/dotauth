@@ -1,11 +1,14 @@
 ﻿namespace DotAuth.Client;
 
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
@@ -99,8 +102,15 @@ public abstract class ClientBase
                     cancellationToken))!;
         }
 
+        if (content is MemoryStream ms)
+        {
+            var j = Encoding.UTF8.GetString(ms.ToArray());
+            ms.Position = 0;
+        }
+
         var genericResult = content.Length == 0
-            ? new ErrorDetails { Status = result.StatusCode }
+            ? new ErrorDetails
+                { Status = result.StatusCode, Title = result.ReasonPhrase!, Detail = result.ReasonPhrase! }
             : await JsonSerializer.DeserializeAsync<ErrorDetails>(content, DefaultJsonSerializerOptions.Instance,
                 cancellationToken);
 

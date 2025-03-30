@@ -13,7 +13,7 @@ public sealed class PackTask : FrostingTask<BuildContext>
     /// <inheritdoc />
     public override void Run(BuildContext context)
     {
-        context.Log.Information("Package version: " + context.BuildVersion);
+        context.Log.Information($"Package version: {context.BuildVersion}");
 
         var packSettings = new DotNetPackSettings
         {

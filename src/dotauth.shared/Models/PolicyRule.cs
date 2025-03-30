@@ -16,11 +16,11 @@ namespace DotAuth.Shared.Models;
 
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the update policy rule.
 /// </summary>
-[DataContract]
 public sealed record PolicyRule
 {
     /// <summary>
@@ -29,7 +29,7 @@ public sealed record PolicyRule
     /// <value>
     /// The client ids allowed.
     /// </value>
-    [DataMember(Name = "clients")]
+    [JsonPropertyName("clients")]
     public string[] ClientIdsAllowed { get; set; } = [];
 
     /// <summary>
@@ -38,7 +38,7 @@ public sealed record PolicyRule
     /// <value>
     /// The scopes.
     /// </value>
-    [DataMember(Name = "scopes")]
+    [JsonPropertyName("scopes")]
     public string[] Scopes { get; set; } = [];
 
     /// <summary>
@@ -47,7 +47,7 @@ public sealed record PolicyRule
     /// <value>
     /// The claims.
     /// </value>
-    [DataMember(Name = "claims")]
+    [JsonPropertyName("claims")]
     public ClaimData[] Claims { get; set; } = [];
 
     /// <summary>
@@ -56,7 +56,7 @@ public sealed record PolicyRule
     /// <value>
     ///   <c>true</c> if this instance is resource owner consent needed; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "consent_needed")]
+    [JsonPropertyName("consent_needed")]
     public bool IsResourceOwnerConsentNeeded { get; set; }
 
     /// <summary>
@@ -65,7 +65,7 @@ public sealed record PolicyRule
     /// <value>
     /// The script.
     /// </value>
-    [DataMember(Name = "script")]
+    [JsonPropertyName("script")]
     public string? Script { get; set; }
 
     /// <summary>
@@ -74,6 +74,6 @@ public sealed record PolicyRule
     /// <value>
     /// The open identifier provider.
     /// </value>
-    [DataMember(Name = "provider")]
+    [JsonPropertyName("provider")]
     public string? OpenIdProvider { get; set; }
 }

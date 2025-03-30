@@ -19,6 +19,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Extensions;
@@ -27,7 +28,6 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Responses;
-using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -51,11 +51,11 @@ public sealed class RegisterClientFixture : IDisposable
             new Uri($"{BaseUrl}/.well-known/openid-configuration"));
         var grantedToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
             .GetToken(TokenRequest.FromScopes("register_client"))
-);
+        );
         var obj = new { fake = "fake" };
-        var fakeJson = JsonConvert.SerializeObject(
+        var fakeJson = JsonSerializer.Serialize(
             obj,
-            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            DefaultJsonSerializerOptions.Instance);
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -88,9 +88,7 @@ public sealed class RegisterClientFixture : IDisposable
             tos_uri = new Uri("http://google.com"),
             jwks = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
         };
-        var fakeJson = JsonConvert.SerializeObject(
-            obj,
-            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        var fakeJson = JsonSerializer.Serialize(obj);
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -104,7 +102,7 @@ public sealed class RegisterClientFixture : IDisposable
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         var json = await httpResult.Content.ReadAsStringAsync();
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.Equal(ErrorCodes.InvalidRedirectUri, error!.Title);
     }
@@ -127,9 +125,8 @@ public sealed class RegisterClientFixture : IDisposable
             //LogoUri = "http://google.com",
             ClientUri = new Uri("https://valid")
         };
-        var fakeJson = JsonConvert.SerializeObject(
-            obj,
-            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        var fakeJson = JsonSerializer.Serialize(
+            obj, DefaultJsonSerializerOptions.Instance);
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -146,7 +143,7 @@ public sealed class RegisterClientFixture : IDisposable
         //Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
 
         var json = await httpResult.Content.ReadAsStringAsync();
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.Equal("invalid_redirect_uri", error!.Title);
         Assert.Equal(
@@ -171,9 +168,8 @@ public sealed class RegisterClientFixture : IDisposable
             LogoUri = "http://google.com",
             ClientUri = "invalid_client_uri"
         };
-        var fakeJson = JsonConvert.SerializeObject(
-            obj,
-            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        var fakeJson = JsonSerializer.Serialize(
+            obj, DefaultJsonSerializerOptions.Instance);
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -185,7 +181,7 @@ public sealed class RegisterClientFixture : IDisposable
 
         var httpResult = await _server.Client().SendAsync(httpRequest);
         var json = await httpResult.Content.ReadAsStringAsync();
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.Equal("invalid_client_metadata", error!.Title);
         Assert.Equal("the parameter client_uri is not correct", error.Detail);
@@ -209,9 +205,8 @@ public sealed class RegisterClientFixture : IDisposable
             ClientUri = new Uri("https://valid_client_uri"),
             TosUri = "invalid"
         };
-        var fakeJson = JsonConvert.SerializeObject(
-            obj,
-            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        var fakeJson = JsonSerializer.Serialize(
+            obj, DefaultJsonSerializerOptions.Instance);
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -223,7 +218,7 @@ public sealed class RegisterClientFixture : IDisposable
 
         var httpResult = await _server.Client().SendAsync(httpRequest);
         var json = await httpResult.Content.ReadAsStringAsync();
-        var error = JsonConvert.DeserializeObject<ErrorDetails>(json);
+        var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.Equal("invalid_client_metadata", error!.Title);
         Assert.Equal("the parameter tos_uri is not correct", error.Detail);
@@ -240,19 +235,19 @@ public sealed class RegisterClientFixture : IDisposable
             await tokenClient.GetToken(TokenRequest.FromScopes("manager")));
 
         var registrationClient = await ManagementClient.Create(
-                _server.Client,
-                new Uri($"{BaseUrl}/.well-known/openid-configuration"));
+            _server.Client,
+            new Uri($"{BaseUrl}/.well-known/openid-configuration"));
         var client = Assert.IsType<Option<Client>.Result>(
             await registrationClient.Register(
-                    new Client
-                    {
-                        JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                        AllowedScopes = ["openid"],
-                        ClientName = "Test",
-                        ClientId = "id",
-                        RedirectionUrls = [new Uri("https://localhost")],
-                    },
-                    grantedToken.Item.AccessToken));
+                new Client
+                {
+                    JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                    AllowedScopes = ["openid"],
+                    ClientName = "Test",
+                    ClientId = "id",
+                    RedirectionUrls = [new Uri("https://localhost")],
+                },
+                grantedToken.Item.AccessToken));
 
         Assert.NotNull(client);
     }

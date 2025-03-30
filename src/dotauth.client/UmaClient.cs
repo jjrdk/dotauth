@@ -203,7 +203,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
 
         var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
         var resourceSetUrl = configuration.ResourceRegistrationEndpoint.AbsoluteUri;
-        resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
+        resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : $"/{resourceSetId}";
 
         var request = new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri(resourceSetUrl) };
         var result = await GetResult<object>(request, token, cancellationToken: cancellationToken)
@@ -253,7 +253,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
         var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
         var resourceSetUrl = configuration.ResourceRegistrationEndpoint.AbsoluteUri;
 
-        resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : "/" + resourceSetId;
+        resourceSetUrl += resourceSetUrl.EndsWith("/") ? resourceSetId : $"/{resourceSetId}";
 
         var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(resourceSetUrl) };
         return await GetResult<ResourceSet>(request, token, cancellationToken: cancellationToken).ConfigureAwait(false);

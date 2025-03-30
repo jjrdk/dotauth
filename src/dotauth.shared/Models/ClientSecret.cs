@@ -1,11 +1,11 @@
 ﻿namespace DotAuth.Shared.Models;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the client secret.
 /// </summary>
-[DataContract]
 public sealed record ClientSecret
 {
     /// <summary>
@@ -14,7 +14,7 @@ public sealed record ClientSecret
     /// <value>
     /// The type.
     /// </value>
-    [DataMember(Name = "type")]
+    [JsonPropertyName("type")]
     public ClientSecretTypes Type { get; set; }
 
     /// <summary>
@@ -23,6 +23,6 @@ public sealed record ClientSecret
     /// <value>
     /// The value.
     /// </value>
-    [DataMember(Name = "value")]
+    [JsonPropertyName("value")]
     public string Value { get; set; } = null!;
 }

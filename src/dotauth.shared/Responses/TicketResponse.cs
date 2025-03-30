@@ -15,11 +15,11 @@
 namespace DotAuth.Shared.Responses;
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Defines the add permission response.
 /// </summary>
-[DataContract]
 public sealed record TicketResponse
 {
     /// <summary>
@@ -28,6 +28,6 @@ public sealed record TicketResponse
     /// <value>
     /// The ticket identifier.
     /// </value>
-    [DataMember(Name = "ticket_id")]
+    [JsonPropertyName("ticket_id")]
     public string TicketId { get; set; } = null!;
 }

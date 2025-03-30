@@ -124,7 +124,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
                 r => parameter.Terms.Any(t => r.Resource.Name.Contains(t, StringComparison.OrdinalIgnoreCase))
                      || parameter.Terms.Any(t => r.Resource.Description.Contains(t, StringComparison.OrdinalIgnoreCase))
                      || parameter.Terms.Any(t => r.Resource.Type.Contains(t, StringComparison.OrdinalIgnoreCase)));
-        
+
         if (parameter.Types.Any())
         {
             result = result.Where(r => parameter.Types.Contains(r.Resource.Type, StringComparer.OrdinalIgnoreCase));
@@ -146,7 +146,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
             TotalResults = nbResult
         };
     }
-    
+
     private async Task<ResourceSetDescription[]> Filter(IReadOnlyList<Claim> requestor, IEnumerable<OwnedResourceSet> resourceSets, CancellationToken cancellationToken)
     {
         List<ResourceSetDescription> results = new();
@@ -179,11 +179,6 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     /// <inheritdoc />
     public  Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken = default)
     {
-        if (resourceSet == null)
-        {
-            throw new ArgumentNullException(nameof(resourceSet));
-        }
-
         var rec = _resources.FirstOrDefault(p => p.Resource.Id == resourceSet.Id);
         if (rec == null)
         {
