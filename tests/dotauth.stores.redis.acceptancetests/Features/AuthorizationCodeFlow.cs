@@ -28,8 +28,8 @@ public partial class FeatureTest
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var authorizationRequest = new AuthorizationRequest(
-            new[] { scope },
-            new[] { ResponseTypeNames.Code },
+            [scope],
+            [ResponseTypeNames.Code],
             "authcode_client",
             new Uri("http://localhost:5000/callback"),
             pkce.CodeChallenge,
@@ -65,8 +65,8 @@ public partial class FeatureTest
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         _response = await _tokenClient.GetAuthorization(
                 new AuthorizationRequest(
-                    new[] { "api1" },
-                    new[] { ResponseTypeNames.Code },
+                    ["api1"],
+                    [ResponseTypeNames.Code],
                     "authcode_client",
                     new Uri("http://localhost:1000/callback"),
                     pkce.CodeChallenge,

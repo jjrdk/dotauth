@@ -44,7 +44,7 @@ public abstract class AuthenticateClientBase : IDisposable
         var pkce = CodeChallengeMethods.Rs256.BuildPkce();
         var request = new AuthorizationRequest(
             scopes.Length == 0 ? _options.Scopes : scopes,
-            new[] { ResponseTypeNames.Code },
+            [ResponseTypeNames.Code],
             _options.ClientId,
             _options.Callback,
             pkce.CodeChallenge,

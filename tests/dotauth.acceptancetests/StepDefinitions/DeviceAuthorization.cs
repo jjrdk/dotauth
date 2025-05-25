@@ -97,7 +97,7 @@ public partial class FeatureTest
             Method = HttpMethod.Post,
             RequestUri = new Uri(_deviceResponse.VerificationUri),
             Content = new FormUrlEncodedContent(
-                new[] { new KeyValuePair<string, string>("code", _deviceResponse.UserCode) })
+                [new KeyValuePair<string, string>("code", _deviceResponse.UserCode)])
         };
         msg.Headers.Authorization = new AuthenticationHeaderValue(_token.TokenType, _token.AccessToken);
 

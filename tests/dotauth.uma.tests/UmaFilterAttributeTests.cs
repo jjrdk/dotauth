@@ -69,7 +69,7 @@ public class UmaFilterAttributeTests
         var httpContext = new DefaultHttpContext
         {
             User = new ClaimsPrincipal(
-                new ClaimsIdentity(new[] { new Claim("scope", "tester") }, JwtBearerConstants.BearerScheme))
+                new ClaimsIdentity([new Claim("scope", "tester")], JwtBearerConstants.BearerScheme))
         };
         var result = await GetFilterResult(httpContext);
 

@@ -40,7 +40,7 @@ public sealed class DefaultClientRepositoryFixture
     {
         _clientRepositoryFake = new InMemoryClientRepository(
             new TestHttpClientFactory(),
-            new InMemoryScopeRepository(new[] { new Scope { Name = "scope" } }),
+            new InMemoryScopeRepository([new Scope { Name = "scope" }]),
             Substitute.For<ILogger<InMemoryClientRepository>>(),
             Array.Empty<Client>());
     }

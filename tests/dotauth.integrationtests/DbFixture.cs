@@ -9,14 +9,22 @@ using DotAuth.Shared.Models;
 using DotAuth.Stores.Marten;
 using Marten;
 using Microsoft.Extensions.Logging.Abstractions;
+using Testcontainers.PostgreSql;
 
-public sealed class DbFixture : IDisposable
+public sealed class DbFixture : IAsyncDisposable
 {
     private readonly DocumentStore _store;
+    private readonly PostgreSqlContainer _container;
 
     public DbFixture()
     {
-        var connectionString = "Server=odin;Port=5432;Database=dotauth;User Id=dotauth;Password=dotauth;";
+        var dotauth = "dotauth";
+        _container = new PostgreSqlBuilder()
+            .WithDatabase(dotauth).WithUsername(dotauth).WithPassword(dotauth).WithExposedPort(5432).WithImage("postgres:alpine").Build();
+            new PostgreSqlConfiguration(dotauth, dotauth, dotauth);
+        _container.StartAsync().Wait();
+        var connectionString =
+            $"Server=localhost;Port={_container.GetMappedPublicPort(5432)};Database={dotauth};User Id={dotauth};Password={dotauth};";
         _store = new DocumentStore(
             new DotAuthMartenOptions(
                 connectionString,
@@ -37,12 +45,11 @@ public sealed class DbFixture : IDisposable
                 Password = "password".ToSha256Hash(string.Empty)
             };
             existing.Claims = existing.Claims.Concat(
-                    new[]
-                    {
-                        new Claim("scope", "manager"),
+                [
+                    new Claim("scope", "manager"),
                         new Claim("scope", "uma_protection"),
-                        new Claim("role", "administrator"),
-                    })
+                        new Claim("role", "administrator")
+                ])
                 .ToArray();
             session.Store(existing);
             await session.SaveChangesAsync().ConfigureAwait(false);
@@ -52,8 +59,9 @@ public sealed class DbFixture : IDisposable
     }
 
     /// <inheritdoc />
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _store.Dispose();
+        await _store.DisposeAsync();
+        await _container.DisposeAsync();
     }
 }

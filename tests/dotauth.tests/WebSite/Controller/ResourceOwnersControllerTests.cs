@@ -46,7 +46,7 @@ public static class ResourceOwnersControllerTests
             {
                 HttpContext = new DefaultHttpContext
                 {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "me"), }))
+                    User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", "me")]))
                 }
             };
 

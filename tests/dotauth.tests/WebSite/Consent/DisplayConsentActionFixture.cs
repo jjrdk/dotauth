@@ -81,7 +81,7 @@ public sealed class DisplayConsentActionFixture
             .Returns(new List<Consent> { consent });
         _scopeRepositoryFake.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns([new Scope { Name = scope, IsDisplayedInConsent = true }]);
-        var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test"), }, "test");
+        var claimsIdentity = new ClaimsIdentity([new Claim("sub", "test")], "test");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
         var authorizationParameter = new AuthorizationParameter
@@ -107,7 +107,7 @@ public sealed class DisplayConsentActionFixture
     {
         const string clientId = "clientId";
         const string state = "state";
-        var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test") }, "test");
+        var claimsIdentity = new ClaimsIdentity([new Claim("sub", "test")], "test");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var authorizationParameter = new AuthorizationParameter
         {
@@ -137,7 +137,7 @@ public sealed class DisplayConsentActionFixture
         _clientRepositoryFake.GetAll(Arg.Any<CancellationToken>())
             .Returns([]);
         _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new[] { consent });
+            .Returns([consent]);
         var result = await _displayConsentAction.Execute(
                 authorizationParameter,
                 claimsPrincipal,
@@ -175,7 +175,7 @@ public sealed class DisplayConsentActionFixture
         const string clientId = "clientId";
         const string state = "state";
         const string scopeName = "profile";
-        var claimsIdentity = new ClaimsIdentity(new[] { new Claim("sub", "test") });
+        var claimsIdentity = new ClaimsIdentity([new Claim("sub", "test")]);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var client = new Client();
         var authorizationParameter = new AuthorizationParameter

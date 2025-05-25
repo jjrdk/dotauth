@@ -30,7 +30,7 @@ public sealed class ClientFactoryFixture
         _httpClientFake = new HttpClient();
         _factory = new ClientFactory(
             new TestHttpClientFactory(_httpClientFake),
-            new InMemoryScopeRepository(new[] { new Scope { Name = "test" } }),
+            new InMemoryScopeRepository([new Scope { Name = "test" }]),
             s => s.DeserializeWithJavascript<Uri[]>(),
             new TestOutputLogger("test", outputHelper));
     }

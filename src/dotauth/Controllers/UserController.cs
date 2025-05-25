@@ -585,15 +585,14 @@ public sealed class UserController : BaseController
         resourceOwner.Claims = resourceOwner.Claims.Add(newClaims);
 
         resourceOwner.ExternalLogins = resourceOwner.ExternalLogins.Concat(
-                new[]
-                {
-                    new ExternalAccountLink
+            [
+                new ExternalAccountLink
                     {
                         Issuer = issuer!,
                         Subject = externalSubject!,
                         ExternalClaims = externalPrincipal.Claims.ToArray()
                     }
-                })
+            ])
             .ToArray();
         await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
         return new Option.Success();

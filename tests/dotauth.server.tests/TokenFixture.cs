@@ -70,7 +70,7 @@ public sealed class TokenFixture : IDisposable
         var securityToken = new JwtSecurityToken(
             "http://server.example.com",
             "s6BhdRkqt3",
-            new[] { new Claim("sub", "248289761001") },
+            [new Claim("sub", "248289761001")],
             null,
             DateTime.UtcNow.AddYears(1),
             new SigningCredentials(set.GetSignKeys().First(), SecurityAlgorithms.HmacSha256));

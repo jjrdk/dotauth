@@ -18,6 +18,7 @@ public class MauiAuthenticateClient : AuthenticateClientBase
     }
 
     /// <inheritdoc />
+    [System.Runtime.Versioning.UnsupportedOSPlatform("windows")]
     protected override async Task<string> Authenticate(Uri uri, Uri callback)
     {
         var authResult = await WebAuthenticator.AuthenticateAsync(uri, callback);

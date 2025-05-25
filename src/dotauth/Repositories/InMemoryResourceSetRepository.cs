@@ -33,7 +33,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     public InMemoryResourceSetRepository(IAuthorizationPolicy policy, IEnumerable<(string owner, ResourceSet resource)>? resources = null)
     {
         _policy = policy;
-        _resources = resources?.Select(x => new OwnedResourceSet(x.owner, x.resource)).ToList() ?? new List<OwnedResourceSet>();
+        _resources = resources?.Select(x => new OwnedResourceSet(x.owner, x.resource)).ToList() ?? [];
     }
 
     /// <inheritdoc />
@@ -149,10 +149,10 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
 
     private async Task<ResourceSetDescription[]> Filter(IReadOnlyList<Claim> requestor, IEnumerable<OwnedResourceSet> resourceSets, CancellationToken cancellationToken)
     {
-        List<ResourceSetDescription> results = new();
+        List<ResourceSetDescription> results = [];
         foreach (var resourceSet in resourceSets)
         {
-            var ticket = new TicketLineParameter(requestor.GetClientId(), new[] { "search" });
+            var ticket = new TicketLineParameter(requestor.GetClientId(), ["search"]);
             if ((await _policy.Execute(
                     ticket,
                     UmaConstants.IdTokenType,

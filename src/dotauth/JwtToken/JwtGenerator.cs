@@ -106,9 +106,8 @@ internal sealed class JwtGenerator
 
         var jwtHeader = new JwtHeader(key);
         var payload = new JwtPayload(
-            new[]
-            {
-                new Claim(StandardClaimNames.Audiences, client.ClientId),
+        [
+            new Claim(StandardClaimNames.Audiences, client.ClientId),
                 new Claim(StandardClaimNames.Issuer, issuerName),
                 new Claim(
                     StandardClaimNames.ExpirationTime,
@@ -119,7 +118,7 @@ internal sealed class JwtGenerator
                     issuedAtTime.ToString(CultureInfo.InvariantCulture),
                     ClaimValueTypes.Double),
                 new Claim(StandardClaimNames.Scopes, string.Join(" ", scopes))
-            });
+        ]);
         var token = new JwtSecurityToken(jwtHeader, payload);
 
         payload.AddClaims(additionalClaims);

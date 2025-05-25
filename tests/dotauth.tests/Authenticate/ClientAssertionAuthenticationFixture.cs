@@ -25,8 +25,8 @@ public sealed class ClientAssertionAuthenticationFixture
 
     public static IEnumerable<object[]> InvalidPayloads()
     {
-        return new[]
-        {
+        return
+        [
             [
                 new JwtPayload
                 {
@@ -43,8 +43,7 @@ public sealed class ClientAssertionAuthenticationFixture
                     {StandardClaimNames.Audiences, "audience"}
                 }
             ],
-            new[]
-            {
+            [
                 new JwtPayload
                 {
                     {StandardClaimNames.Issuer, "issuer"},
@@ -55,8 +54,8 @@ public sealed class ClientAssertionAuthenticationFixture
                         DateTime.Now.AddDays(-2).ConvertToUnixTimestamp()
                     }
                 }
-            }
-        };
+            ]
+        ];
     }
 
     public ClientAssertionAuthenticationFixture()

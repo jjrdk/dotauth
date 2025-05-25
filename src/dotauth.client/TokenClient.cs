@@ -315,7 +315,7 @@ public sealed class TokenClient : ClientBase, ITokenClient
         {
             request.Method = HttpMethod.Post;
             request.Content =
-                new FormUrlEncodedContent(new[] { new KeyValuePair<string?, string?>("access_token", accessToken) });
+                new FormUrlEncodedContent([new KeyValuePair<string?, string?>("access_token", accessToken)]);
         }
         else
         {

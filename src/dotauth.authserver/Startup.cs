@@ -67,8 +67,7 @@ internal sealed class Startup
             ResourceSets =
                 sp => new InMemoryResourceSetRepository(
                     sp.GetRequiredService<IAuthorizationPolicy>(),
-                    new[]
-                    {
+                    [
                         ("administrator",
                          new ResourceSet
                          {
@@ -93,7 +92,7 @@ internal sealed class Startup
                                  }
                              ]
                          })
-                    }),
+                    ]),
             EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
             ClaimsIncludedInUserCreation =
             [

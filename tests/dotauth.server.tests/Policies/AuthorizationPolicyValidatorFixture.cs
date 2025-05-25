@@ -79,7 +79,7 @@ public sealed class AuthorizationPolicyValidatorFixture
         var token = handler.CreateEncodedJwt(
             "test",
             "test",
-            new ClaimsIdentity(new[] { new Claim("test", "test") }),
+            new ClaimsIdentity([new Claim("test", "test")]),
             null,
             DateTime.UtcNow.AddYears(1),
             DateTime.UtcNow,
@@ -108,7 +108,7 @@ public sealed class AuthorizationPolicyValidatorFixture
         var token = handler.CreateEncodedJwt(
             "test",
             "test",
-            new ClaimsIdentity(new[] { new Claim("test", "test") }),
+            new ClaimsIdentity([new Claim("test", "test")]),
             null,
             DateTime.UtcNow.AddYears(1),
             DateTime.UtcNow,

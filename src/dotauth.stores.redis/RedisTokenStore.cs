@@ -69,7 +69,7 @@ public sealed class RedisTokenStore : ITokenStore
         var existingScopeToken = existingScopeValue.HasValue
             ? JsonSerializer.Deserialize<GrantedToken[]>(existingScopeValue!, DefaultJsonSerializerOptions.Instance)!
             : [];
-        var scopeTokens = JsonSerializer.Serialize(existingScopeToken.Concat(new[] { grantedToken }).ToArray(),
+        var scopeTokens = JsonSerializer.Serialize(existingScopeToken.Concat([grantedToken]).ToArray(),
             DefaultJsonSerializerOptions.Instance);
         var expiry = TimeSpan.FromSeconds(grantedToken.ExpiresIn);
         var idTask = _database.StringSetAsync(grantedToken.Id, value, expiry, when: When.NotExists);

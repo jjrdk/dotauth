@@ -247,13 +247,12 @@ public sealed class ResourceOwnersController : ControllerBase
             .Where(c => c.Type != OpenIdClaimTypes.UpdatedAt)
             .Select(claim => new Claim(claim.Type, claim.Value))
             .Concat(
-                new[]
-                {
-                    new Claim(OpenIdClaimTypes.Subject, request.Subject),
+            [
+                new Claim(OpenIdClaimTypes.Subject, request.Subject),
                     new Claim(
                         OpenIdClaimTypes.UpdatedAt,
                         DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString())
-                });
+            ]);
 
         resourceOwner.Claims = claims.ToArray();
 
@@ -307,11 +306,10 @@ public sealed class ResourceOwnersController : ControllerBase
             .Concat(claims)
             .Where(c => c.Type != OpenIdClaimTypes.Subject)
             .Where(c => c.Type != OpenIdClaimTypes.UpdatedAt)
-            .Concat(new[]
-            {
+            .Concat([
                 new Claim(OpenIdClaimTypes.Subject, request.Subject),
                 new Claim(OpenIdClaimTypes.UpdatedAt, DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString())
-            });
+            ]);
 
         resourceOwner.Claims = resourceOwnerClaims.ToArray();
 

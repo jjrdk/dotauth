@@ -21,7 +21,7 @@ public class AuthenticationTests
             new Uri("https://identity.reimers.dk"));
         var option = await client.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "email", "profile", "role", "offline", UmaConstants.UmaProtectionScope },
+                ["openid", "email", "profile", "role", "offline", UmaConstants.UmaProtectionScope],
                 ResponseTypeNames.All,
                 "dataapp",
                 new Uri("dataapp://callback"),

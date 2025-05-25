@@ -116,7 +116,7 @@ public sealed class AddPermissionActionFixture
         var idToken = handler.CreateEncodedJwt(
             "test",
             "test",
-            new ClaimsIdentity(new[] { new Claim("sub", "tester") }),
+            new ClaimsIdentity([new Claim("sub", "tester")]),
             null,
             null,
             null,

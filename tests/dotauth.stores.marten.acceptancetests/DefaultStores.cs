@@ -590,8 +590,8 @@ public static class DefaultStores
 
     public static IReadOnlyCollection<Scope> Scopes()
     {
-        return new[]
-        {
+        return
+        [
             new Scope
             {
                 Claims = [],
@@ -610,7 +610,7 @@ public static class DefaultStores
                 Name = "uma_protection",
                 Type = ScopeTypes.ProtectedApi
             }
-        };
+        ];
     }
 }
 #pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.

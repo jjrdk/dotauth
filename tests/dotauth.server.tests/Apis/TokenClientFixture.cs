@@ -697,15 +697,14 @@ public sealed class TokenClientFixture
     public async Task When_Using_ClientSecretJwtAuthentication_Then_AccessToken_Is_Returned()
     {
         var payload = new JwtPayload(
-            new[]
-            {
-                new Claim(StandardClaimNames.Issuer, "jwt_client"),
+        [
+            new Claim(StandardClaimNames.Issuer, "jwt_client"),
                 new Claim(OpenIdClaimTypes.Subject, "jwt_client"),
                 new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
                 new Claim(
                     StandardClaimNames.ExpirationTime,
                     DateTimeOffset.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
-            });
+        ]);
         var handler = new JwtSecurityTokenHandler();
 
         var jwe = handler.CreateEncodedJwt(
@@ -736,15 +735,14 @@ public sealed class TokenClientFixture
     public async Task When_Using_PrivateKeyJwtAuthentication_Then_AccessToken_Is_Returned()
     {
         var payload = new JwtPayload(
-            new[]
-            {
-                new Claim(StandardClaimNames.Issuer, "private_key_client"),
+        [
+            new Claim(StandardClaimNames.Issuer, "private_key_client"),
                 new Claim(OpenIdClaimTypes.Subject, "private_key_client"),
                 new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
                 new Claim(
                     StandardClaimNames.ExpirationTime,
                     DateTimeOffset.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
-            });
+        ]);
         var handler = new JwtSecurityTokenHandler();
 
         var header = new JwtHeader(

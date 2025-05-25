@@ -35,7 +35,7 @@ public sealed class GrantedTokenValidatorTests
         var token = handler.CreateEncodedJwt(
             "http://localhost",
             "test",
-            new ClaimsIdentity(new[] { new Claim("sub", "tester"), }),
+            new ClaimsIdentity([new Claim("sub", "tester")]),
             DateTime.UtcNow,
             DateTime.UtcNow.AddYears(1),
             DateTime.UtcNow,
@@ -66,7 +66,7 @@ public sealed class GrantedTokenValidatorTests
         var token = handler.CreateEncodedJwt(
             "http://localhost",
             "test",
-            new ClaimsIdentity(new[] { new Claim("sub", "tester"), }),
+            new ClaimsIdentity([new Claim("sub", "tester")]),
             DateTime.UtcNow,
             DateTime.UtcNow.AddYears(1),
             DateTime.UtcNow,

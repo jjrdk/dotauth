@@ -38,7 +38,7 @@ public sealed class ResourceOwner
             }
             var claim = new Claim(OpenIdClaimTypes.Subject, value);
 
-            Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.Subject).Concat(new[] { claim }).ToArray();
+            Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.Subject).Concat([claim]).ToArray();
         }
     }
 

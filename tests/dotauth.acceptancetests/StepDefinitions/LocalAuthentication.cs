@@ -32,11 +32,10 @@ public partial class FeatureTest
         var request = new HttpRequestMessage(HttpMethod.Post, new Uri($"{BaseUrl}/authenticate/locallogin"))
         {
             Content = new FormUrlEncodedContent(
-                new[]
-                {
-                    new KeyValuePair<string, string>("Login", "user"),
-                    new KeyValuePair<string, string>("Password", "password"),
-                })
+            [
+                new KeyValuePair<string, string>("Login", "user"),
+                    new KeyValuePair<string, string>("Password", "password")
+            ])
         };
 
         _responseMessage = await _fixture.Client().SendAsync(request);
@@ -54,11 +53,10 @@ public partial class FeatureTest
         var request = new HttpRequestMessage(HttpMethod.Post, new Uri($"{BaseUrl}/authenticate/locallogin"))
         {
             Content = new FormUrlEncodedContent(
-                new[]
-                {
-                    new KeyValuePair<string, string>("Login", "blah"),
-                    new KeyValuePair<string, string>("Password", "blah"),
-                })
+            [
+                new KeyValuePair<string, string>("Login", "blah"),
+                    new KeyValuePair<string, string>("Password", "blah")
+            ])
         };
 
         _responseMessage = await _fixture.Client().SendAsync(request);

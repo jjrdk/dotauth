@@ -254,8 +254,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "implicit_client",
                 new Uri($"{baseUrl}/invalid_callback"),
                 pkce.CodeChallenge,
@@ -272,8 +272,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         UserStore.Instance().IsInactive = true;
         var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -293,8 +293,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         UserStore.Instance().Subject = "user";
         var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -312,8 +312,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -332,7 +332,7 @@ public sealed class AuthorizationClientFixture : IDisposable
         var jws = _jwsGenerator.CreateEncodedJwt(
             new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("sub", "administrator") }),
+                Subject = new ClaimsIdentity([new Claim("sub", "administrator")]),
                 SigningCredentials = new SigningCredentials(
                     TestKeys.SecretKey.CreateSignatureJwk(),
                     SecurityAlgorithms.HmacSha256Signature)
@@ -340,8 +340,8 @@ public sealed class AuthorizationClientFixture : IDisposable
 
         var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -360,7 +360,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             new SecurityTokenDescriptor
             {
                 Audience = "http://localhost:5000",
-                Subject = new ClaimsIdentity(new[] { new Claim("sub", "adm") }),
+                Subject = new ClaimsIdentity([new Claim("sub", "adm")]),
                 SigningCredentials = new SigningCredentials(
                     TestKeys.SecretKey.CreateSignatureJwk(),
                     SecurityAlgorithms.HmacSha256)
@@ -369,8 +369,8 @@ public sealed class AuthorizationClientFixture : IDisposable
 
         var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -389,8 +389,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         // NOTE : The consent has already been given in the database.
         var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{baseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -416,8 +416,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         UserStore.Instance().AuthenticationOffset = DateTimeOffset.UtcNow.AddDays(-2);
         var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -435,8 +435,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -453,8 +453,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         UserStore.Instance().IsInactive = true;
         var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -471,8 +471,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -489,7 +489,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             new SecurityTokenDescriptor
             {
                 Audience = "http://localhost:5000",
-                Subject = new ClaimsIdentity(new[] { new Claim("sub", "administrator") }),
+                Subject = new ClaimsIdentity([new Claim("sub", "administrator")]),
                 SigningCredentials =
                     new SigningCredentials(
                         TestKeys.SecretKey.CreateSignatureJwk(),
@@ -503,8 +503,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var result = await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "authcode_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -521,8 +521,8 @@ public sealed class AuthorizationClientFixture : IDisposable
 
         var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.Code],
                 "pkce_client",
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -552,8 +552,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         // NOTE : The consent has already been given in the database.
         var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token },
+                ["openid", "api1"],
+                [ResponseTypeNames.IdToken, ResponseTypeNames.Token],
                 "implicit_client",
                 new Uri($"{baseUrl}/callback"),
                 pkce.CodeChallenge,
@@ -577,8 +577,8 @@ public sealed class AuthorizationClientFixture : IDisposable
         // NOTE : The consent has already been given in the database.
         var result = Assert.IsType<Option<Uri>.Result>(await _authorizationClient.GetAuthorization(
             new AuthorizationRequest(
-                new[] { "openid", "api1" },
-                new[] { ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code },
+                ["openid", "api1"],
+                [ResponseTypeNames.IdToken, ResponseTypeNames.Token, ResponseTypeNames.Code],
                 "hybrid_client",
                 new Uri($"{baseUrl}/callback"),
                 pkce.CodeChallenge,

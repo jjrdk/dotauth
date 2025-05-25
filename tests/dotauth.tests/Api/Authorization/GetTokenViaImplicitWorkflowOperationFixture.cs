@@ -96,7 +96,7 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
             RedirectUrl = new Uri("https://localhost")
         };
 
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "test") }, "fake"));
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", "test")], "fake"));
 
         var client = new Client
         {

@@ -75,7 +75,7 @@ public sealed class UpdateClientActionFixture
             AllowedScopes = ["not_supported_scope"],
             RedirectionUrls = [new Uri("https://localhost")]
         };
-        InitializeFakeObjects(new[] { client });
+        InitializeFakeObjects([client]);
 
         _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns([new Scope { Name = "scope" }]);

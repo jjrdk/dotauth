@@ -1,22 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.proj" />
+    <Import Project="../../shared.proj"/>
     <PropertyGroup>
         <IsPackable>false</IsPackable>
         <RootNamespace>DotAuth.IntegrationTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
+        <PackageReference Include="Testcontainers.PostgreSql" Version="4.4.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="xunit" Version="2.9.3" />
-        <ProjectReference Include="..\..\src\dotauth.client\dotauth.client.csproj" />
-        <ProjectReference Include="..\..\src\dotauth.stores.marten\dotauth.stores.marten.csproj" />
+        <PackageReference Include="xunit" Version="2.9.3"/>
+        <ProjectReference Include="..\..\src\dotauth.client\dotauth.client.csproj"/>
+        <ProjectReference Include="..\..\src\dotauth.stores.marten\dotauth.stores.marten.csproj"/>
     </ItemGroup>
 
 </Project>

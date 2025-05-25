@@ -51,6 +51,6 @@ public sealed class TestUmaServer : IDisposable
     {
         GC.SuppressFinalize(this);
         Server.Dispose();
-        Client?.Invoke()?.Dispose();
+        Client.Invoke().Dispose();
     }
 }

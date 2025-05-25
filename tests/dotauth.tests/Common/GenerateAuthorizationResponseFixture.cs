@@ -228,7 +228,7 @@ public sealed class GenerateAuthorizationResponseFixture
         //const string idToken = "idToken";
         const string clientId = "clientId";
         const string scope = "openid";
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "test"), }, "fake"));
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", "test")], "fake"));
         var authorizationParameter = new AuthorizationParameter
         {
             RedirectUrl = new Uri("http://localhost"),
@@ -244,7 +244,7 @@ public sealed class GenerateAuthorizationResponseFixture
         };
 
         _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new[] { consent });
+            .Returns([consent]);
 
         var actionResult = await _generateAuthorizationResponse.Generate(
                 new EndpointResult { RedirectInstruction = new RedirectInstruction() },

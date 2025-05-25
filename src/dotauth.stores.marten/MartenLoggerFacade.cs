@@ -62,7 +62,7 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
     public void LogSuccess(NpgsqlBatch batch)
     {
         var entry = batch.BatchCommands.OfType<NpgsqlBatchCommand>().Aggregate("", (s, command) =>
-            s + Environment.NewLine + command.Parameters.Aggregate(
+            s + Environment.NewLine + command.Parameters.Where(p => !string.IsNullOrEmpty(p.ParameterName)).Aggregate(
                 command.CommandText,
                 (current, npgsqlParameter) => current.Replace(
                     npgsqlParameter.ParameterName,

@@ -23,8 +23,8 @@ public sealed class TestManagerServerFixture : IDisposable
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         Server.Dispose();
-        Client?.Invoke()?.Dispose();
+        Client().Dispose();
+        GC.SuppressFinalize(this);
     }
 }

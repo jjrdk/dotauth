@@ -107,7 +107,7 @@ public sealed class AuthenticateHelperFixture
             ClientId = "client"
         };
         _consentRepository.GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new[] { consent });
+            .Returns([consent]);
 
         var actionResult = await _authenticateHelper.ProcessRedirection(
                 authorizationParameter,

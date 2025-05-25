@@ -389,7 +389,7 @@ public sealed class ClientsController : BaseController
             LogoUri = viewModel.LogoUri,
             ApplicationType = viewModel.ApplicationType ?? ApplicationTypes.Web,
             RedirectionUrls =
-                viewModel.RedirectionUrls.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                viewModel.RedirectionUrls.Split([',', ';'], StringSplitOptions.RemoveEmptyEntries)
                     .Select(x => new Uri(x))
                     .ToArray(),
             GrantTypes = viewModel.GrantTypes.ToArray()
