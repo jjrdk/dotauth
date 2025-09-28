@@ -20,7 +20,7 @@
         <ProjectReference Include="..\dotauth\dotauth.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="4.0.0.4" />
+        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="4.0.1.3" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Properties\SmsStrings.Designer.cs">
