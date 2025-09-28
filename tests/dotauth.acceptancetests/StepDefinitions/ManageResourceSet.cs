@@ -21,7 +21,7 @@ public partial class FeatureTest
     [Given(@"a UMA client")]
     public void GivenAUmaClient()
     {
-        _umaClient = new UmaClient(_fixture.Client, new Uri(BaseUrl));
+        _umaClient = new UmaClient(_fixture!.Client, new Uri(BaseUrl));
     }
 
     [When(@"getting a PAT token")]
@@ -75,7 +75,7 @@ public partial class FeatureTest
         msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
 
-        var policyResponse = await _fixture.Client().SendAsync(msg);
+        var policyResponse = await _fixture!.Client().SendAsync(msg);
 
         Assert.True(policyResponse.IsSuccessStatusCode);
 
@@ -98,7 +98,7 @@ public partial class FeatureTest
         };
         msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
 
-        var policyResponse = await _fixture.Client().SendAsync(msg);
+        var policyResponse = await _fixture!.Client().SendAsync(msg);
 
         Assert.True(policyResponse.IsSuccessStatusCode);
     }

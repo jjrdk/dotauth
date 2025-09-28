@@ -23,7 +23,7 @@ public partial class FeatureTest
     {
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials("clientCredentials", "clientCredentials"),
-            _fixture.Client,
+            _fixture!.Client,
             new Uri(WellKnownUmaConfiguration));
     }
 
@@ -42,7 +42,7 @@ public partial class FeatureTest
     [Given(@"a properly configured uma client")]
     public void GivenAProperlyConfiguredUmaClient()
     {
-        _umaClient = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration));
+        _umaClient = new UmaClient(_fixture!.Client, new Uri(WellKnownUmaConfiguration));
     }
 
     [When(@"registering resource")]

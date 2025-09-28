@@ -21,7 +21,7 @@ public sealed class DbFixture : IAsyncDisposable
         var dotauth = "dotauth";
         _container = new PostgreSqlBuilder()
             .WithDatabase(dotauth).WithUsername(dotauth).WithPassword(dotauth).WithExposedPort(5432).WithImage("postgres:alpine").Build();
-            new PostgreSqlConfiguration(dotauth, dotauth, dotauth);
+//            new PostgreSqlConfiguration(dotauth, dotauth, dotauth);
         _container.StartAsync().Wait();
         var connectionString =
             $"Server=localhost;Port={_container.GetMappedPublicPort(5432)};Database={dotauth};User Id={dotauth};Password={dotauth};";
@@ -31,7 +31,7 @@ public sealed class DbFixture : IAsyncDisposable
                 new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance)));
     }
 
-    public async Task<ResourceOwner> GetUser()
+    public async Task GetUser()
     {
         var session = _store.LightweightSession();
         await using var _ = session.ConfigureAwait(false);
@@ -54,7 +54,7 @@ public sealed class DbFixture : IAsyncDisposable
             session.Store(existing);
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            return existing;
+            return;
         }
     }
 

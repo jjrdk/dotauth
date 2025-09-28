@@ -10,20 +10,20 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private HttpResponseMessage _responseMessage = null!;
+    private HttpResponseMessage? _responseMessage;
 
     [When(@"logging out")]
     public async Task WhenLoggingOut()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri($"{BaseUrl}/authenticate/logout"));
 
-        _responseMessage = await _fixture.Client().SendAsync(request);
+        _responseMessage = await _fixture!.Client().SendAsync(request);
     }
 
     [Then(@"receives redirect to login page")]
     public void ThenReceivesRedirectToLoginPage()
     {
-        Assert.Equal(HttpStatusCode.Redirect, _responseMessage.StatusCode);
+        Assert.Equal(HttpStatusCode.Redirect, _responseMessage!.StatusCode);
     }
 
     [When(@"posting valid local authorization credentials")]
@@ -38,13 +38,13 @@ public partial class FeatureTest
             ])
         };
 
-        _responseMessage = await _fixture.Client().SendAsync(request);
+        _responseMessage = await _fixture!.Client().SendAsync(request);
     }
 
     [Then(@"receives auth cookie")]
     public void ThenReceivesAuthCookie()
     {
-        Assert.Equal(HttpStatusCode.Redirect, _responseMessage.StatusCode);
+        Assert.Equal(HttpStatusCode.Redirect, _responseMessage!.StatusCode);
     }
 
     [When(@"posting invalid local authorization credentials")]
@@ -59,7 +59,7 @@ public partial class FeatureTest
             ])
         };
 
-        _responseMessage = await _fixture.Client().SendAsync(request);
+        _responseMessage = await _fixture!.Client().SendAsync(request);
 
         Assert.NotNull(_responseMessage);
     }
@@ -67,6 +67,6 @@ public partial class FeatureTest
     [Then(@"returns login page")]
     public void ThenReturnsLoginPage()
     {
-        Assert.Equal(HttpStatusCode.OK, _responseMessage.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, _responseMessage!.StatusCode);
     }
 }

@@ -17,7 +17,7 @@ public partial class FeatureTest : IDisposable
     private const string WellKnownOpenidConfiguration = "https://localhost/.well-known/openid-configuration";
     private const string WellKnownUmaConfiguration = "https://localhost/.well-known/uma2-configuration";
     private const string BaseUrl = "http://localhost:5000";
-    private TestServerFixture _fixture = null!;
+    private TestServerFixture? _fixture;
     private JsonWebKeySet _serverKeySet = null!;
     private ManagementClient _managerClient = null!;
 
@@ -36,7 +36,7 @@ public partial class FeatureTest : IDisposable
     [Given(@"the server's signing key")]
     public async Task GivenTheServersSigningKey()
     {
-        var json = await _fixture.Client().GetStringAsync($"{BaseUrl}/jwks");
+        var json = await _fixture!.Client().GetStringAsync($"{BaseUrl}/jwks");
         _serverKeySet = new JsonWebKeySet(json);
 
         Assert.NotEmpty(_serverKeySet.Keys);
@@ -47,7 +47,7 @@ public partial class FeatureTest : IDisposable
     {
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials(id, secret),
-            _fixture.Client,
+            _fixture!.Client,
             new Uri(WellKnownOpenidConfiguration));
     }
 

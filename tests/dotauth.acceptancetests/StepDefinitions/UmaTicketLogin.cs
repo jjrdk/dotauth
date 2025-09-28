@@ -57,7 +57,7 @@ public partial class FeatureTest
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
 
-        var response = await _fixture.Client().SendAsync(request);
+        var response = await _fixture!.Client().SendAsync(request);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         var httpHeaderValueCollection = response.Headers.WwwAuthenticate;
@@ -89,7 +89,7 @@ public partial class FeatureTest
             Method = HttpMethod.Get, RequestUri = new Uri($"http://localhost/data/{_resourceSetResponse.Id}")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(_umaToken!.TokenType, _umaToken.AccessToken);
-        var response = await _fixture.Client().SendAsync(request);
+        var response = await _fixture!.Client().SendAsync(request);
         var content = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

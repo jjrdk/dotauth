@@ -373,8 +373,7 @@ public static class DefaultStores
                 ResponseTypes = [ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken],
                 JsonWebKeys =
                     TestKeys.SecretKey.CreateSignatureJwk()
-                        .ToSet()
-                        .AddKey(TestKeys.SecretKey.CreateEncryptionJwk()),
+                        .ToSet(),
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = [new Uri("http://localhost:5000/callback")]
@@ -449,7 +448,6 @@ public static class DefaultStores
                 Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "hybrid_client" }],
                 JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
-
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
                 AllowedScopes = ["api1", "openid"],

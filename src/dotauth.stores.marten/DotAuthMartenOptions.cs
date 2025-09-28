@@ -3,14 +3,12 @@
 using System;
 using System.Data.Common;
 using System.IO;
-using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
 using global::Marten;
+using JasperFx;
 using Weasel.Core;
 
 /// <summary>

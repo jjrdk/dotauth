@@ -59,7 +59,7 @@ public partial class FeatureTest
                 MediaTypeHeaderValue.Parse("application/json"))
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _dcrToken!.AccessToken);
-        var client = _fixture.Client();
+        var client = _fixture!.Client();
         _dcrResponse = await client.SendAsync(request);
     }
 
@@ -83,7 +83,7 @@ public partial class FeatureTest
     [When(@"creating a new DynamicRegistrationClient")]
     public void WhenCreatingANewDynamicRegistrationClient()
     {
-        _registrationClient = new DynamicRegistrationClient(_fixture.Client, new Uri(BaseUrl));
+        _registrationClient = new DynamicRegistrationClient(_fixture!.Client, new Uri(BaseUrl));
     }
 
     [Then(@"can use it to create a new client")]

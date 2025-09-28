@@ -85,7 +85,7 @@ public partial class FeatureTest
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
             Method = HttpMethod.Post,
-            RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners/claims")
+            RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners/claims")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
@@ -96,13 +96,13 @@ public partial class FeatureTest
     [Then(@"is ok request")]
     public void ThenIsOkRequest()
     {
-        Assert.Equal(HttpStatusCode.OK, _responseMessage.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, _responseMessage?.StatusCode);
     }
 
     [Then(@"has new token")]
     public async Task ThenHasNewToken()
     {
-        var json = await _responseMessage.Content.ReadAsStringAsync();
+        var json = await _responseMessage!.Content.ReadAsStringAsync();
 
         _updatedToken = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
 
@@ -112,7 +112,7 @@ public partial class FeatureTest
     [Then(@"has new admin token")]
     public async Task ThenHasNewAdminToken()
     {
-        var json = await _responseMessage.Content.ReadAsStringAsync();
+        var json = await _responseMessage!.Content.ReadAsStringAsync();
 
         _token = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
 
@@ -187,7 +187,7 @@ public partial class FeatureTest
         {
             Method = HttpMethod.Delete,
             RequestUri = new Uri(
-                $"{_fixture.Server.BaseAddress}resource_owners/claims?type=acceptance_test")
+                $"{_fixture!.Server.BaseAddress}resource_owners/claims?type=acceptance_test")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
@@ -216,7 +216,7 @@ public partial class FeatureTest
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Delete,
-            RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners/claims?type=some_other_claim")
+            RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners/claims?type=some_other_claim")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
         _responseMessage = await _fixture.Client().SendAsync(request);
@@ -228,7 +228,7 @@ public partial class FeatureTest
     [Then(@"when getting resource owner from store")]
     public async Task ThenWhenGettingResourceOwnerFromStore()
     {
-        var store = (IResourceOwnerStore)_fixture.Server.Host.Services.GetRequiredService(
+        var store = (IResourceOwnerStore)_fixture!.Server.Host.Services.GetRequiredService(
             typeof(IResourceOwnerStore));
         _resourceOwner = (await store.Get("administrator", CancellationToken.None))!;
     }
@@ -242,7 +242,7 @@ public partial class FeatureTest
     [Then(@"is bad request")]
     public void ThenIsBadRequest()
     {
-        Assert.Equal(HttpStatusCode.BadRequest, _responseMessage.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, _responseMessage?.StatusCode);
     }
 
     [When(@"deleting own account")]
@@ -250,7 +250,7 @@ public partial class FeatureTest
     {
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Delete, RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners")
+            Method = HttpMethod.Delete, RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
         _responseMessage = await _fixture.Client().SendAsync(request);
@@ -277,7 +277,7 @@ public partial class FeatureTest
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
             Method = HttpMethod.Put,
-            RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners/claims")
+            RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners/claims")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",

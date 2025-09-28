@@ -96,7 +96,7 @@ public partial class FeatureTest
         };
         userinfoRequest.Headers.Authorization =
             new AuthenticationHeaderValue(_token.TokenType, _token.AccessToken);
-        var userinfo = await _fixture.Client().SendAsync(userinfoRequest);
+        var userinfo = await _fixture!.Client().SendAsync(userinfoRequest);
 
         Assert.True(userinfo.IsSuccessStatusCode);
     }
@@ -115,7 +115,7 @@ public partial class FeatureTest
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
             Method = HttpMethod.Post,
-            RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners/claims")
+            RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners/claims")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             JwtBearerDefaults.AuthenticationScheme,
@@ -126,7 +126,7 @@ public partial class FeatureTest
     [Then(@"update is successful")]
     public void ThenUpdateIsSuccessful()
     {
-        Assert.Equal(HttpStatusCode.OK, _responseMessage.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, _responseMessage?.StatusCode);
     }
 
     [Then(@"token has custom custom claims")]

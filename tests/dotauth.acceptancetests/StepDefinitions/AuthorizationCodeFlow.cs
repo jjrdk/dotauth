@@ -19,7 +19,7 @@ public partial class FeatureTest
     {
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials(string.Empty, string.Empty),
-            _fixture.Client,
+            _fixture!.Client,
             new Uri(WellKnownOpenidConfiguration));
     }
 

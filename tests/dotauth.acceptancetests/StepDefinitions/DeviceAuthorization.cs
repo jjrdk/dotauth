@@ -21,7 +21,7 @@ public partial class FeatureTest
     private const string ClientId = "device";
     private DiscoveryInformation _doc = null!;
     private ITokenClient _tokenClient = null!;
-    private Task<Option<GrantedTokenResponse>> _pollingTask = null!;
+    private Task<Option<GrantedTokenResponse>>? _pollingTask;
     private Option<GrantedTokenResponse> _expiredPoll = null!;
     private DeviceAuthorizationResponse _deviceResponse = null!;
 
@@ -30,7 +30,7 @@ public partial class FeatureTest
     {
         _tokenClient = new TokenClient(
             TokenCredentials.AsDevice(),
-            _fixture.Client,
+            _fixture!.Client,
             new Uri(WellKnownOpenidConfiguration));
 
         Assert.NotNull(_tokenClient);
@@ -43,7 +43,7 @@ public partial class FeatureTest
             new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri(WellKnownOpenidConfiguration) };
         request.Headers.Accept.Clear();
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var response = await _fixture.Client().SendAsync(request);
+        var response = await _fixture!.Client().SendAsync(request);
 
         var serializedContent = await response.Content.ReadAsStringAsync();
 
@@ -61,7 +61,7 @@ public partial class FeatureTest
     {
         var authClient = new TokenClient(
             TokenCredentials.FromClientCredentials(ClientId, "client"),
-            _fixture.Client,
+            _fixture!.Client,
             new Uri(WellKnownOpenidConfiguration));
         var option = await authClient.GetToken(TokenRequest.FromPassword("user", "password", ["openid"]));
 
@@ -91,7 +91,7 @@ public partial class FeatureTest
     [When(@"user successfully posts user code")]
     public async Task WhenUserSuccessfullyPostsUserCode()
     {
-        var client = _fixture.Client();
+        var client = _fixture!.Client();
         var msg = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -109,7 +109,7 @@ public partial class FeatureTest
     [Then(@"token is returned from polling")]
     public async Task ThenTokenIsReturnedFromPolling()
     {
-        var tokenResponse = await _pollingTask;
+        var tokenResponse = await _pollingTask!;
 
         Assert.IsType<Option<GrantedTokenResponse>.Result>(tokenResponse);
     }

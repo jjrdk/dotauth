@@ -19,7 +19,7 @@ public partial class FeatureTest
     [Given(@"a manager client")]
     public async Task GivenAManagerClient()
     {
-        _managerClient = await ManagementClient.Create(_fixture.Client, new Uri(WellKnownUmaConfiguration));
+        _managerClient = await ManagementClient.Create(_fixture!.Client, new Uri(WellKnownUmaConfiguration));
     }
 
     [Given(@"a manager token")]

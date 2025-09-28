@@ -20,7 +20,7 @@ public partial class FeatureTest
     [Given(@"a data protector instance")]
     public void GivenADataProtectorInstance()
     {
-        _dataProtector = _fixture.Server.Host.Services
+        _dataProtector = _fixture!.Server.Host.Services
             .GetRequiredService<IDataProtectionProvider>()
             .CreateProtector("Request");
     }
@@ -31,7 +31,7 @@ public partial class FeatureTest
         var authorizationRequest = new AuthorizationRequest {client_id = "client"};
         var code = Uri.EscapeDataString(Protect(_dataProtector, authorizationRequest));
         var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/authenticate/openid?code={code}");
-        _responseMessage = await _fixture.Client().SendAsync(request);
+        _responseMessage = await _fixture!.Client().SendAsync(request);
     }
 
     private static string Protect<T>(IDataProtector dataProtector, T toEncode)
@@ -47,6 +47,6 @@ public partial class FeatureTest
     [Then(@"response has status code OK")]
     public void ThenResponseHasStatusCodeOk()
     {
-        Assert.Equal(HttpStatusCode.OK, _responseMessage.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, _responseMessage?.StatusCode);
     }
 }

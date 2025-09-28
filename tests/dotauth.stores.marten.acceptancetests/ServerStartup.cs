@@ -8,6 +8,7 @@ using DotAuth.Repositories;
 using DotAuth.Stores.Marten;
 using DotAuth.UI;
 using global::Marten;
+using JasperFx;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
