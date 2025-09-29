@@ -14,8 +14,6 @@
 
 namespace DotAuth.Parameters;
 
-using System;
-
 internal sealed record ResourceOwnerGrantTypeParameter : GrantTypeParameter
 {
     public string? Scope { get; init; }

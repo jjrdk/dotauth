@@ -14,8 +14,6 @@
 
 namespace DotAuth.Results;
 
-using System;
-
 internal sealed record RedirectInstruction
 {
     public Parameter[] Parameters { get; init; } = [];

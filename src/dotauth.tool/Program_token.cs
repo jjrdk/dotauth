@@ -31,7 +31,7 @@ internal partial class Program
         var code = await authenticateClient.LogIn(CancellationToken.None).ConfigureAwait(false);
         if (code is Option<GrantedTokenResponse>.Result tokenResponse)
         {
-            var options = DefaultJsonSerializerOptions.Instance;
+            var options = SharedSerializerContext.Default.Options;
             options.WriteIndented = true;
             var json = JsonSerializer.Serialize(tokenResponse.Item, options);
             await Console.Out.WriteLineAsync(json).ConfigureAwait(false);

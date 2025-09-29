@@ -1,7 +1,6 @@
 namespace DotAuth.Stores.Marten.Containers;
 
 using System;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using DotAuth.Shared.Models;
 

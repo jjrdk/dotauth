@@ -1,6 +1,5 @@
 ﻿namespace DotAuth.Server.Tests.Stores;
 
-using System;
 using System.Collections.Generic;
 using DotAuth.Extensions;
 using DotAuth.Shared;

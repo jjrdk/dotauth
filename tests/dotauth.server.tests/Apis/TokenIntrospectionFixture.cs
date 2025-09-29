@@ -24,7 +24,6 @@ using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
-using DotAuth.Shared.Models;
 using DotAuth.Shared.Responses;
 
 using Xunit;

@@ -26,7 +26,6 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Policies;
 using DotAuth.Shared.Responses;
-
 using Xunit;
 
 public sealed class DefaultAuthorizationPolicyFixture
@@ -99,8 +98,9 @@ public sealed class DefaultAuthorizationPolicyFixture
         }
     ]
 }";
-        var resourceSet = JsonSerializer.Deserialize<ResourceSet>(resourceSetJson, DefaultJsonSerializerOptions.Instance);
-        var ticket = JsonSerializer.Deserialize<Ticket>(ticketJson, DefaultJsonSerializerOptions.Instance);
+        var resourceSet =
+            JsonSerializer.Deserialize<ResourceSet>(resourceSetJson, SharedSerializerContext.Default.ResourceSet);
+        var ticket = JsonSerializer.Deserialize<Ticket>(ticketJson, SharedSerializerContext.Default.Ticket);
         var kind = AuthorizationPolicyResultKind.NotAuthorized;
         foreach (var ticketLine in ticket!.Lines)
         {
@@ -124,13 +124,12 @@ public sealed class DefaultAuthorizationPolicyFixture
     [Fact]
     public async Task WhenPassingNullTicketLineParameterThenExceptionIsThrown()
     {
-        await Assert.ThrowsAsync<NullReferenceException>(
-                () => _authorizationPolicy.Execute(
-                    null!,
-                    UmaConstants.IdTokenType,
-                    Array.Empty<Claim>(),
-                    CancellationToken.None,
-                    new PolicyRule()))
+        await Assert.ThrowsAsync<NullReferenceException>(() => _authorizationPolicy.Execute(
+                null!,
+                UmaConstants.IdTokenType,
+                Array.Empty<Claim>(),
+                CancellationToken.None,
+                new PolicyRule()))
             ;
     }
 
@@ -188,8 +187,8 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Scopes = ["read", "create", "update"],
                 Claims =
                 [
-                    new ClaimData {Type = "name", Value = ""},
-                    new ClaimData {Type = "email", Value = ""}
+                    new ClaimData { Type = "name", Value = "" },
+                    new ClaimData { Type = "email", Value = "" }
                 ],
                 OpenIdProvider = configurationUrl
             }
@@ -246,8 +245,8 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Scopes = ["read", "create", "update"],
                 Claims =
                 [
-                    new ClaimData {Type = "name", Value = ""},
-                    new ClaimData {Type = "email", Value = ""}
+                    new ClaimData { Type = "name", Value = "" },
+                    new ClaimData { Type = "email", Value = "" }
                 ],
                 OpenIdProvider = configurationUrl
             }
@@ -278,8 +277,8 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Scopes = ["read", "create", "update"],
                 Claims =
                 [
-                    new ClaimData {Type = "role", Value = "role1"},
-                    new ClaimData {Type = "role", Value = "role2"}
+                    new ClaimData { Type = "role", Value = "role1" },
+                    new ClaimData { Type = "role", Value = "role2" }
                 ],
                 OpenIdProvider = configurationUrl
             }
@@ -310,8 +309,8 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Scopes = ["read", "create", "update"],
                 Claims =
                 [
-                    new ClaimData {Type = "role", Value = "role1"},
-                    new ClaimData {Type = "role", Value = "role2"}
+                    new ClaimData { Type = "role", Value = "role1" },
+                    new ClaimData { Type = "role", Value = "role2" }
                 ],
                 OpenIdProvider = configurationUrl
             }
@@ -342,8 +341,8 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Scopes = ["read", "create", "update"],
                 Claims =
                 [
-                    new ClaimData {Type = "role", Value = "role1"},
-                    new ClaimData {Type = "role", Value = "role2"}
+                    new ClaimData { Type = "role", Value = "role1" },
+                    new ClaimData { Type = "role", Value = "role2" }
                 ],
                 OpenIdProvider = configurationUrl
             }
@@ -374,8 +373,8 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Scopes = ["read", "create", "update"],
                 Claims =
                 [
-                    new ClaimData {Type = "role", Value = "role1"},
-                    new ClaimData {Type = "role", Value = "role2"}
+                    new ClaimData { Type = "role", Value = "role1" },
+                    new ClaimData { Type = "role", Value = "role2" }
                 ],
                 OpenIdProvider = configurationUrl
             }
@@ -406,8 +405,8 @@ public sealed class DefaultAuthorizationPolicyFixture
                 Scopes = ["read", "create", "update"],
                 Claims =
                 [
-                    new ClaimData {Type = "name", Value = "name"},
-                    new ClaimData {Type = "email", Value = "email"}
+                    new ClaimData { Type = "name", Value = "name" },
+                    new ClaimData { Type = "email", Value = "email" }
                 ],
                 OpenIdProvider = configurationUrl
             }

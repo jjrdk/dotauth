@@ -8,7 +8,6 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
@@ -98,7 +97,7 @@ public abstract class ClientBase
         {
             return content.Length == 0
                 ? new Option<T>.Result(default!)
-                : (await JsonSerializer.DeserializeAsync<T>(content, DefaultJsonSerializerOptions.Instance,
+                : (await JsonSerializer.DeserializeAsync<T>(content, SharedSerializerContext.Default.Options,
                     cancellationToken))!;
         }
 
@@ -111,7 +110,7 @@ public abstract class ClientBase
         var genericResult = content.Length == 0
             ? new ErrorDetails
                 { Status = result.StatusCode, Title = result.ReasonPhrase!, Detail = result.ReasonPhrase! }
-            : await JsonSerializer.DeserializeAsync<ErrorDetails>(content, DefaultJsonSerializerOptions.Instance,
+            : await JsonSerializer.DeserializeAsync<ErrorDetails>(content, SharedSerializerContext.Default.ErrorDetails,
                 cancellationToken);
 
         return genericResult!;

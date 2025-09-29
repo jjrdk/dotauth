@@ -27,13 +27,13 @@ public sealed class RedisConsentStore : IConsentRepository
     {
         var consent = await _database.StringGetAsync(subject).ConfigureAwait(false);
         return consent.HasValue
-            ? JsonSerializer.Deserialize<Consent[]>(consent!, DefaultJsonSerializerOptions.Instance)!
+            ? JsonSerializer.Deserialize<Consent[]>(consent!, SharedSerializerContext.Default.ConsentArray)!
             : [];
     }
 
     public Task<bool> Insert(Consent record, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(record, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(record, SharedSerializerContext.Default.Consent);
         return _database.StringSetAsync(record.Subject, json, _expiry);
     }
 

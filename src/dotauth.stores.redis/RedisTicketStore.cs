@@ -32,7 +32,7 @@ public sealed class RedisTicketStore : ITicketStore
     /// <inheritdoc />
     public Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(ticket, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(ticket, SharedSerializerContext.Default.Ticket);
         return _database.StringSetAsync(ticket.Id, json, _expiry);
     }
 
@@ -47,12 +47,12 @@ public sealed class RedisTicketStore : ITicketStore
             return (false, []);
         }
 
-        var ticket = JsonSerializer.Deserialize<Ticket>(value!, DefaultJsonSerializerOptions.Instance)! with
+        var ticket = JsonSerializer.Deserialize<Ticket>(value!, SharedSerializerContext.Default.Ticket)! with
         {
             IsAuthorizedByRo = true
         };
         var result = await _database.StringSetAsync(ticket.Id,
-                JsonSerializer.Serialize(ticket, DefaultJsonSerializerOptions.Instance), _expiry)
+                JsonSerializer.Serialize(ticket, SharedSerializerContext.Default.Ticket), _expiry)
             .ConfigureAwait(false);
 
         return (result, result ? ticket.Requester : []);
@@ -69,7 +69,7 @@ public sealed class RedisTicketStore : ITicketStore
     {
         var ticket = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
         return ticket.HasValue
-            ? JsonSerializer.Deserialize<Ticket>(ticket!, DefaultJsonSerializerOptions.Instance)
+            ? JsonSerializer.Deserialize<Ticket>(ticket!, SharedSerializerContext.Default.Ticket)
             : null;
     }
 

@@ -56,7 +56,7 @@ internal sealed class ExceptionHandlerMiddleware
                     foreach (var ex in aggregateException.InnerExceptions)
                     {
                         await PublishError(ex).ConfigureAwait(false);
-                        _logger.LogError("{Error}",ex.StackTrace);
+                        _logger.LogError("{Error}", ex.StackTrace);
                     }
 
                     SetRedirection(context, exception);
@@ -65,7 +65,7 @@ internal sealed class ExceptionHandlerMiddleware
                 default:
                 {
                     await PublishError(exception).ConfigureAwait(false);
-                    _logger.LogError("{Error}",exception.StackTrace);
+                    _logger.LogError("{Error}", exception.StackTrace);
 
                     SetRedirection(context, exception);
                     break;
@@ -97,7 +97,11 @@ internal sealed class ExceptionHandlerMiddleware
             .ConfigureAwait(false);
     }
 
-    private static void SetRedirection(HttpContext context, Exception exception, string? code = null, string? title = null)
+    private static void SetRedirection(
+        HttpContext context,
+        Exception exception,
+        string? code = null,
+        string? title = null)
     {
         context.Request.Path = "/error";
         context.Request.QueryString = new QueryString()

@@ -14,7 +14,6 @@
 
 namespace DotAuth.Shared;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -54,8 +53,8 @@ public static class ClaimPrincipalExtensions
             tickets = claims.Where(c => c.Type == UmaConstants.RptClaims.Permissions)
                 .SelectMany(
                     c => c.Value.StartsWith('[')
-                        ? JsonSerializer.Deserialize<Permission[]>(c.Value, DefaultJsonSerializerOptions.Instance)!
-                        : [JsonSerializer.Deserialize<Permission>(c.Value, DefaultJsonSerializerOptions.Instance)!])
+                        ? JsonSerializer.Deserialize<Permission[]>(c.Value, SharedSerializerContext.Default.PermissionArray)!
+                        : [JsonSerializer.Deserialize<Permission>(c.Value, SharedSerializerContext.Default.Permission)!])
                 .ToArray();
             return tickets.Length > 0;
         }

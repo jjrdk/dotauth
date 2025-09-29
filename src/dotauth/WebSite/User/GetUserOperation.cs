@@ -56,7 +56,7 @@ internal sealed class GetUserOperation
         var subject = claimsPrincipal.GetSubject();
         if (string.IsNullOrWhiteSpace(subject))
         {
-            _logger.LogError(Strings.TheSubjectCannotBeRetrieved);
+            _logger.LogError("{Error}", Strings.TheSubjectCannotBeRetrieved);
             return new Option<ResourceOwner>.Error(
                 new ErrorDetails
                 {

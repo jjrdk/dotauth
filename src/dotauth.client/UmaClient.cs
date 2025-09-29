@@ -117,8 +117,8 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
         }
 
         var serializedPostPermission = requests.Length > 1
-            ? JsonSerializer.Serialize(requests, DefaultJsonSerializerOptions.Instance)
-            : JsonSerializer.Serialize(requests[0], DefaultJsonSerializerOptions.Instance);
+            ? JsonSerializer.Serialize(requests, SharedSerializerContext.Default.PermissionRequestArray)
+            : JsonSerializer.Serialize(requests[0], SharedSerializerContext.Default.PermissionRequest);
         var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
         var httpRequest =
             new HttpRequestMessage { Method = HttpMethod.Post, Content = body, RequestUri = new Uri(url) };
@@ -144,7 +144,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
         }
 
         var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
-        var serializedPostResourceSet = JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance);
+        var serializedPostResourceSet = JsonSerializer.Serialize(request, SharedSerializerContext.Default.ResourceSet);
         var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
         var httpRequest = new HttpRequestMessage
         {
@@ -172,7 +172,7 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
             throw new ArgumentNullException(nameof(token));
         }
 
-        var serializedPostResourceSet = JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance);
+        var serializedPostResourceSet = JsonSerializer.Serialize(request, SharedSerializerContext.Default.ResourceSet);
         var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, JsonMimeType);
         var umaConfiguration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
         var httpRequest = new HttpRequestMessage
@@ -273,7 +273,8 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
         var configuration = await GetUmaConfiguration(cancellationToken).ConfigureAwait(false);
         var url = $"{configuration.ResourceRegistrationEndpoint}/.search";
 
-        var serializedPostPermission = JsonSerializer.Serialize(parameter, DefaultJsonSerializerOptions.Instance);
+        var serializedPostPermission =
+            JsonSerializer.Serialize(parameter, SharedSerializerContext.Default.SearchResourceSet);
         var body = new StringContent(serializedPostPermission, Encoding.UTF8, JsonMimeType);
         var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(url), Content = body };
         return await GetResult<PagedResult<ResourceSetDescription>>(request, token,

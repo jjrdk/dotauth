@@ -1,7 +1,6 @@
 ﻿namespace DotAuth.Uma;
 
 using System;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 /// <summary>

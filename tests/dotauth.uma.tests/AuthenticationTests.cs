@@ -13,7 +13,9 @@ public class AuthenticationTests
     [Fact]
     public async Task GetUrl()
     {
-        var http = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
+        var http = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false, ServerCertificateCustomValidationCallback =
+            (msg,cert,chain,policyErrors) => { return true;}
+        });
         var pkce = CodeChallengeMethods.Rs256.BuildPkce();
         var client = new TokenClient(
             TokenCredentials.FromClientCredentials("dataapp", "nvnwvnervsrakri"),

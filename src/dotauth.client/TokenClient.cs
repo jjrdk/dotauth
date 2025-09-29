@@ -149,7 +149,6 @@ public sealed class TokenClient : ClientBase, ITokenClient
         var requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = uriBuilder.Uri };
         requestMessage.Headers.Accept.Clear();
         requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
-
         var response = await _client().SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
         return (int)response.StatusCode switch
@@ -160,10 +159,10 @@ public sealed class TokenClient : ClientBase, ITokenClient
                 Detail = ClientStrings.NotRedirectResponse,
                 Status = HttpStatusCode.UnprocessableEntity
             },
-            >= 300 and < 400 => response.Headers.Location!,
+            < 400 => response.Headers.Location!,
             _ => (await JsonSerializer.DeserializeAsync<ErrorDetails>(
                 await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false),
-                DefaultJsonSerializerOptions.Instance, cancellationToken))!
+                SharedSerializerContext.Default.ErrorDetails, cancellationToken))!
         };
     }
 
@@ -190,10 +189,10 @@ public sealed class TokenClient : ClientBase, ITokenClient
         {
             < 300 => (await JsonSerializer.DeserializeAsync<DeviceAuthorizationResponse>(
                 stream,
-                DefaultJsonSerializerOptions.Instance, cancellationToken))!,
+                SharedSerializerContext.Default.DeviceAuthorizationResponse, cancellationToken))!,
             _ => (await JsonSerializer.DeserializeAsync<ErrorDetails>(
                 stream,
-                DefaultJsonSerializerOptions.Instance, cancellationToken))!,
+                SharedSerializerContext.Default.ErrorDetails, cancellationToken))!,
         };
     }
 
@@ -226,7 +225,7 @@ public sealed class TokenClient : ClientBase, ITokenClient
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var requestUri = new Uri($"{discoveryInformation.Issuer}code");
 
-        var json = JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(request, SharedSerializerContext.Default.ConfirmationCodeRequest);
         var req = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -240,7 +239,8 @@ public sealed class TokenClient : ClientBase, ITokenClient
         var content = await result.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         if (!result.IsSuccessStatusCode)
         {
-            return (await JsonSerializer.DeserializeAsync<ErrorDetails>(content, DefaultJsonSerializerOptions.Instance,
+            return (await JsonSerializer.DeserializeAsync<ErrorDetails>(content,
+                SharedSerializerContext.Default.ErrorDetails,
                 cancellationToken))!;
         }
 
@@ -281,7 +281,7 @@ public sealed class TokenClient : ClientBase, ITokenClient
         }
 
         var json = await result.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        return (await JsonSerializer.DeserializeAsync<ErrorDetails>(json, DefaultJsonSerializerOptions.Instance,
+        return (await JsonSerializer.DeserializeAsync<ErrorDetails>(json, SharedSerializerContext.Default.ErrorDetails,
             cancellationToken))!;
     }
 

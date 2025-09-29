@@ -84,8 +84,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                     idx.TenancyScope = TenancyScope.PerTenant;
                     idx.IsConcurrent = false;
                 })
-            .GinIndexJsonData(
-                idx => { idx.IsConcurrent = false; });
+            .GinIndexJsonData(idx => { idx.IsConcurrent = false; });
         For<Consent>()
             .Identity(x => x.Id)
             .Duplicate(x => x.Subject, notNull: true)
@@ -101,12 +100,12 @@ public sealed class DotAuthRegistry : MartenRegistry
             .GinIndexJsonData();
         For<OwnedResourceSet>()
             .Identity(x => x.Id)
+            .FullTextIndex(x => x.Description)
             .Duplicate(x => x.Owner, configure: index => index.TenancyScope = TenancyScope.PerTenant)
             .Duplicate(x => x.Name, configure: index => index.TenancyScope = TenancyScope.PerTenant)
             .Duplicate(x => x.Description, configure: index => index.TenancyScope = TenancyScope.PerTenant)
             .Duplicate(x => x.Type, configure: index => index.TenancyScope = TenancyScope.PerTenant)
-            .GinIndexJsonData(
-                idx => { idx.IsConcurrent = false; });
+            .GinIndexJsonData(idx => { idx.IsConcurrent = false; });
         For<Ticket>()
             .Identity(x => x.Id)
             .Duplicate(
@@ -200,8 +199,7 @@ public sealed class DotAuthRegistry : MartenRegistry
                     idx.IsUnique = false;
                     idx.IsConcurrent = false;
                 })
-            .GinIndexJsonData(
-                idx => { idx.IsConcurrent = false; });
+            .GinIndexJsonData(idx => { idx.IsConcurrent = false; });
         For<JsonWebKeyContainer>()
             .Identity(x => x.Id)
             .Duplicate(x => x.Jwk.Alg, pgType: "character(20)")

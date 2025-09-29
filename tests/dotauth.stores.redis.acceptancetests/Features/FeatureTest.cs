@@ -3,10 +3,11 @@
 using System;
 using System.Threading.Tasks;
 using DotAuth.Client;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
+using Testcontainers.PostgreSql;
+using Testcontainers.Redis;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,20 +22,28 @@ public partial class FeatureTest : IAsyncDisposable
     private JsonWebKeySet _serverKeySet = null!;
     private ManagementClient _managerClient = null!;
     private string _connectionString = null!;
+    private string _redisConnectionString = null!;
+    private PostgreSqlContainer _postgresContainer = null!;
+    private RedisContainer _redisContainer = null!;
 
     public FeatureTest(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper;
-        #if DEBUG
+#if DEBUG
         IdentityModelEventSource.ShowPII = true;
-        #endif
+#endif
     }
 
-    [BeforeScenario(Order = 1)]
+    [BeforeScenario(Order = 5)]
     public async Task SetupConnectionString()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
-        _connectionString = configuration["Db:ConnectionString"]!;
+        _postgresContainer = new PostgreSqlBuilder().WithUsername("dotauth").WithPassword("dotauth")
+            .WithDatabase("dotauth").Build();
+        _redisContainer = new RedisBuilder().Build();
+        await _postgresContainer.StartAsync();
+        await _redisContainer.StartAsync();
+        _connectionString = _postgresContainer.GetConnectionString();
+        _redisConnectionString = _redisContainer.GetConnectionString();
         Assert.False(string.IsNullOrWhiteSpace(_connectionString));
     }
 
@@ -56,12 +65,16 @@ public partial class FeatureTest : IAsyncDisposable
     public async Task Teardown()
     {
         await DbInitializer.Drop(_connectionString).ConfigureAwait(false);
+        await _postgresContainer.StopAsync();
+        await _redisContainer.StopAsync();
+        await _postgresContainer.DisposeAsync();
+        await _redisContainer.DisposeAsync();
     }
 
     [Given(@"a running auth server")]
     public async Task GivenARunningAuthServer()
     {
-        _fixture = new TestServerFixture(_outputHelper, _connectionString, BaseUrl);
+        _fixture = new TestServerFixture(_outputHelper, _connectionString, _redisConnectionString, BaseUrl);
     }
 
     [Given(@"the server's signing key")]
@@ -85,9 +98,9 @@ public partial class FeatureTest : IAsyncDisposable
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        _fixture?.Dispose();
-        _responseMessage?.Dispose();
-        _pollingTask?.Dispose();
+        _fixture.Dispose();
+        _responseMessage.Dispose();
+        _pollingTask.Dispose();
         await DbInitializer.Drop(_connectionString).ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }

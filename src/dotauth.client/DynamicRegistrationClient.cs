@@ -34,7 +34,7 @@ public sealed class DynamicRegistrationClient : ClientBase, IDynamicRegistration
             Method = HttpMethod.Post,
             RequestUri = discovery.DynamicClientRegistrationEndpoint,
             Content = new StringContent(
-                JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance),
+                JsonSerializer.Serialize(request, SharedSerializerContext.Default.DynamicClientRegistrationRequest),
                 Encoding.UTF8,
                 "application/json")
         };
@@ -58,7 +58,7 @@ public sealed class DynamicRegistrationClient : ClientBase, IDynamicRegistration
         {
             Method = HttpMethod.Put,
             RequestUri = new Uri(discovery.DynamicClientRegistrationEndpoint, $"register/{clientId}"),
-            Content = new StringContent(JsonSerializer.Serialize(request, DefaultJsonSerializerOptions.Instance),
+            Content = new StringContent(JsonSerializer.Serialize(request, SharedSerializerContext.Default.DynamicClientRegistrationRequest),
                 Encoding.UTF8, "application/json")
         };
 

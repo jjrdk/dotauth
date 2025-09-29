@@ -77,7 +77,8 @@ public partial class FeatureTest
             Claims = claimData
         };
 
-        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(updateRequest,
+            SharedSerializerContext.Default.UpdateResourceOwnerClaimsRequest);
 
         var request = new HttpRequestMessage
         {
@@ -102,7 +103,9 @@ public partial class FeatureTest
     {
         var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _updatedToken = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
+        _updatedToken =
+            JsonSerializer.Deserialize<GrantedTokenResponse>(json, SharedSerializerContext.Default.GrantedTokenResponse)
+            !;
 
         Assert.NotNull(_updatedToken);
     }
@@ -112,7 +115,8 @@ public partial class FeatureTest
     {
         var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _token = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
+        _token = JsonSerializer.Deserialize<GrantedTokenResponse>(json,
+            SharedSerializerContext.Default.GrantedTokenResponse)!;
 
         Assert.NotNull(_token);
     }
@@ -269,7 +273,8 @@ public partial class FeatureTest
             ]
         };
 
-        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(updateRequest,
+            SharedSerializerContext.Default.UpdateResourceOwnerClaimsRequest);
 
         var request = new HttpRequestMessage
         {

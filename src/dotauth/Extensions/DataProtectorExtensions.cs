@@ -25,7 +25,7 @@ internal static class DataProtectorExtensions
     public static T Unprotect<T>(this IDataProtector dataProtector, string encoded)
     {
         var unprotected = Unprotect(dataProtector, encoded);
-        return JsonSerializer.Deserialize<T>(unprotected, DefaultJsonSerializerOptions.Instance)!;
+        return JsonSerializer.Deserialize<T>(unprotected, SharedSerializerContext.Default.Options)!;
     }
 
     private static string Unprotect(this IDataProtector dataProtector, string encoded)
@@ -37,7 +37,7 @@ internal static class DataProtectorExtensions
 
     public static string Protect<T>(this IDataProtector dataProtector, T toEncode)
     {
-        var serialized = JsonSerializer.Serialize(toEncode, DefaultJsonSerializerOptions.Instance);
+        var serialized = JsonSerializer.Serialize(toEncode, SharedSerializerContext.Default.Options);
 
         var bytes = Encoding.ASCII.GetBytes(serialized);
         var protectedBytes = dataProtector.Protect(bytes);

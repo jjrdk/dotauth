@@ -37,6 +37,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
@@ -83,25 +84,24 @@ public static class ServiceCollectionExtensions
             {
                 policy.AddAuthenticationSchemes(authenticationSchemes);
                 policy.RequireAuthenticatedUser();
-                policy.RequireAssertion(
-                    p =>
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User.Identity?.IsAuthenticated != true)
                     {
-                        if (p.User.Identity?.IsAuthenticated != true)
-                        {
-                            return false;
-                        }
+                        return false;
+                    }
 
-                        if (p.User.Claims.Where(c => c.Type == ScopeType)
-                            .Any(c => c.HasClaimValue("uma_protection")))
-                        {
-                            return true;
-                        }
+                    if (p.User.Claims.Where(c => c.Type == ScopeType)
+                        .Any(c => c.HasClaimValue("uma_protection")))
+                    {
+                        return true;
+                    }
 
-                        var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == ScopeType);
-                        return claimScopes != null
-                         && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries)
-                                .Any(s => s == "uma_protection");
-                    });
+                    var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == ScopeType);
+                    return claimScopes != null
+                     && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries)
+                            .Any(s => s == "uma_protection");
+                });
             });
         options.AddPolicy(
             "dcr",
@@ -109,24 +109,23 @@ public static class ServiceCollectionExtensions
             {
                 policy.AddAuthenticationSchemes(authenticationSchemes);
                 policy.RequireAuthenticatedUser();
-                policy.RequireAssertion(
-                    p =>
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User.Identity?.IsAuthenticated != true)
                     {
-                        if (p.User.Identity?.IsAuthenticated != true)
-                        {
-                            return false;
-                        }
+                        return false;
+                    }
 
-                        if (p.User.Claims.Where(c => c.Type == ScopeType)
-                            .Any(c => c.HasClaimValue("dcr")))
-                        {
-                            return true;
-                        }
+                    if (p.User.Claims.Where(c => c.Type == ScopeType)
+                        .Any(c => c.HasClaimValue("dcr")))
+                    {
+                        return true;
+                    }
 
-                        var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == ScopeType);
-                        return claimScopes != null
-                         && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries).Any(s => s == "dcr");
-                    });
+                    var claimScopes = p.User.Claims.FirstOrDefault(c => c.Type == ScopeType);
+                    return claimScopes != null
+                     && claimScopes.Value.Split(' ', StringSplitOptions.TrimEntries).Any(s => s == "dcr");
+                });
             });
         options.AddPolicy(
             "manager",
@@ -134,26 +133,25 @@ public static class ServiceCollectionExtensions
             {
                 policy.AddAuthenticationSchemes(authenticationSchemes);
                 policy.RequireAuthenticatedUser();
-                policy.RequireAssertion(
-                    p =>
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User.Identity?.IsAuthenticated != true)
                     {
-                        if (p.User.Identity?.IsAuthenticated != true)
-                        {
-                            return false;
-                        }
+                        return false;
+                    }
 
-                        var result =
-                            p.User.Claims.Where(c => c.Type == ScopeType).Any(c => c.HasClaimValue("manager"));
-                        if (administratorRoleDefinition == default)
-                        {
-                            return result;
-                        }
+                    var result =
+                        p.User.Claims.Where(c => c.Type == ScopeType).Any(c => c.HasClaimValue("manager"));
+                    if (administratorRoleDefinition == default)
+                    {
+                        return result;
+                    }
 
-                        var (roleName, roleClaim) = administratorRoleDefinition;
-                        return result
-                         && p.User.Claims.Where(c => c.Type == roleName)
-                                .Any(c => c.HasClaimValue(roleClaim));
-                    });
+                    var (roleName, roleClaim) = administratorRoleDefinition;
+                    return result
+                     && p.User.Claims.Where(c => c.Type == roleName)
+                            .Any(c => c.HasClaimValue(roleClaim));
+                });
             });
 
         return options;
@@ -219,20 +217,19 @@ public static class ServiceCollectionExtensions
                 typeof(IActionResultExecutor<ObjectResult>),
                 typeof(ConnegObjectResultExecutor),
                 ServiceLifetime.Transient));
-        var mvcBuilder = services.AddResponseCompression(
-                o =>
-                {
-                    o.EnableForHttps = true;
-                    o.Providers.Add(
-                        new GzipCompressionProvider(
-                            new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
-                    o.Providers.Add(
-                        new BrotliCompressionProvider(
-                            new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
-                })
+        var mvcBuilder = services.AddResponseCompression(o =>
+            {
+                o.EnableForHttps = true;
+                o.Providers.Add(
+                    new GzipCompressionProvider(
+                        new GzipCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+                o.Providers.Add(
+                    new BrotliCompressionProvider(
+                        new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
+            })
             .ConfigureHttpJsonOptions(o =>
             {
-                var instance = DefaultJsonSerializerOptions.Instance;
+                var instance = SharedSerializerContext.Default.Options;
                 var options = o.SerializerOptions;
                 foreach (var converter in instance.Converters)
                 {
@@ -243,6 +240,7 @@ public static class ServiceCollectionExtensions
                 {
                     options.TypeInfoResolverChain.Add(resolver);
                 }
+
                 options.NumberHandling = instance.NumberHandling;
                 options.WriteIndented = instance.WriteIndented;
                 options.AllowTrailingCommas = instance.AllowTrailingCommas;
@@ -256,20 +254,22 @@ public static class ServiceCollectionExtensions
                 options.IgnoreReadOnlyProperties = instance.IgnoreReadOnlyProperties;
                 options.PropertyNameCaseInsensitive = instance.PropertyNameCaseInsensitive;
             })
-            .AddAntiforgery(
-                o =>
-                {
-                    o.FormFieldName = "XrsfField";
-                    o.HeaderName = "XSRF-TOKEN";
-                    o.SuppressXFrameOptionsHeader = false;
-                })
-            .AddCors(o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
-            .AddControllersWithViews(
-                o =>
-                {
-                    o.OutputFormatters.Insert(1, new RazorOutputFormatter());
-                    mvcConfig?.Invoke(o);
-                });
+            .AddAntiforgery(o =>
+            {
+                o.FormFieldName = "XrsfField";
+                o.HeaderName = "XSRF-TOKEN";
+                o.SuppressXFrameOptionsHeader = false;
+            })
+            .AddCors(o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()))
+            .AddControllersWithViews(o =>
+            {
+                o.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
+                o.OutputFormatters.Insert(1, new RazorOutputFormatter());
+                o.OutputFormatters.Insert(2, new SystemTextJsonOutputFormatter(SharedSerializerContext.Default.Options));
+                mvcConfig?.Invoke(o);
+            });
 
         Globals.ApplicationName = configuration.ApplicationName;
         var runtimeConfig = GetRuntimeConfig(configuration);
@@ -288,12 +288,11 @@ public static class ServiceCollectionExtensions
             .AddSingleton(sp => configuration.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
             .AddSingleton(sp => configuration.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
             .AddSingleton<IJwksStore>(sp => sp.GetRequiredService<IJwksRepository>())
-            .AddSingleton(
-                sp => configuration.Clients?.Invoke(sp)
-                 ?? new InMemoryClientRepository(
-                        sp.GetRequiredService<IHttpClientFactory>(),
-                        sp.GetRequiredService<IScopeStore>(),
-                        sp.GetRequiredService<ILogger<InMemoryClientRepository>>()))
+            .AddSingleton(sp => configuration.Clients?.Invoke(sp)
+             ?? new InMemoryClientRepository(
+                    sp.GetRequiredService<IHttpClientFactory>(),
+                    sp.GetRequiredService<IScopeStore>(),
+                    sp.GetRequiredService<ILogger<InMemoryClientRepository>>()))
             .AddSingleton<IClientStore>(sp => sp.GetRequiredService<IClientRepository>())
             .AddSingleton(sp => configuration.Consents?.Invoke(sp) ?? new InMemoryConsentRepository())
             .AddSingleton<IConsentStore>(sp => sp.GetRequiredService<IConsentRepository>())
@@ -302,8 +301,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IResourceOwnerStore>(sp => sp.GetRequiredService<IResourceOwnerRepository>())
             .AddSingleton(sp => configuration.Scopes?.Invoke(sp) ?? new InMemoryScopeRepository())
             .AddSingleton<IScopeStore>(sp => sp.GetRequiredService<IScopeRepository>())
-            .AddSingleton(
-                sp => configuration.DeviceAuthorizations?.Invoke(sp) ?? new InMemoryDeviceAuthorizationStore())
+            .AddSingleton(sp =>
+                configuration.DeviceAuthorizations?.Invoke(sp) ?? new InMemoryDeviceAuthorizationStore())
             .AddSingleton(sp =>
                 configuration.ResourceSets?.Invoke(sp) ??
                 new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>()))
@@ -382,13 +381,12 @@ public static class ServiceCollectionExtensions
             .UseAuthentication()
             .UseAuthorization()
             .UseCors("AllowAll")
-            .UseEndpoints(
-                endpoint =>
-                {
-                    endpoint.MapControllerRoute("areaexists", "{area:exists}/{controller=Home}/{action=Index}");
-                    endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Home}/{action=Index}");
-                    endpoint.MapControllerRoute("default", "{controller=Home}/{action=Index}");
-                });
+            .UseEndpoints(endpoint =>
+            {
+                endpoint.MapControllerRoute("areaexists", "{area:exists}/{controller=Home}/{action=Index}");
+                endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Home}/{action=Index}");
+                endpoint.MapControllerRoute("default", "{controller=Home}/{action=Index}");
+            });
     }
 
     private static RuntimeSettings GetRuntimeConfig(DotAuthConfiguration configuration)

@@ -1,6 +1,7 @@
 ﻿namespace DotAuth.AcceptanceTests.Support;
 
 using System;
+using System.Net.Http;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
@@ -30,21 +31,21 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
             ValidateIssuer = false,
             ValidateIssuerSigningKey = false,
             ValidIssuer = "http://localhost",
-//            IssuerSigningKeyResolver = (
-//                string token,
-//                SecurityToken securityToken,
-//                string kid,
-//                TokenValidationParameters validationParameters) =>
-//            {
-//                var metadataAddress = options.MetadataAddress;
-//                var client = new HttpClient(options.BackchannelHttpHandler);
-//                var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-//                    metadataAddress,
-//                    new OpenIdConnectConfigurationRetriever(),
-//                    new HttpDocumentRetriever(client) { RequireHttps = options.RequireHttpsMetadata });
-//                var config = configurationManager.GetConfigurationAsync().GetAwaiter().GetResult();
-//                return config.SigningKeys;
-//            }
+            IssuerSigningKeyResolver = (
+                string token,
+                SecurityToken securityToken,
+                string kid,
+                TokenValidationParameters validationParameters) =>
+            {
+                var metadataAddress = options.MetadataAddress;
+                var client = new HttpClient(options.BackchannelHttpHandler);
+                var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                    metadataAddress,
+                    new OpenIdConnectConfigurationRetriever(),
+                    new HttpDocumentRetriever(client) { RequireHttps = options.RequireHttpsMetadata });
+                var config = configurationManager.GetConfigurationAsync().GetAwaiter().GetResult();
+                return config.SigningKeys;
+            }
         };
         if (string.IsNullOrEmpty(options.TokenValidationParameters.ValidAudience)
          && !string.IsNullOrEmpty(options.Audience))

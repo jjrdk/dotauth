@@ -10,7 +10,6 @@ using DotAuth.Stores.Marten;
 using DotAuth.Stores.Redis;
 using DotAuth.UI;
 using global::Marten;
-using JasperFx;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -19,7 +18,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using StackExchange.Redis;
-using Weasel.Core;
 using Xunit.Abstractions;
 
 internal sealed class ServerStartup
@@ -28,10 +26,11 @@ internal sealed class ServerStartup
     private readonly DotAuthConfiguration _martenConfiguration;
     private readonly SharedContext _context;
     private readonly string _connectionString;
+    private readonly string _redisConnectionString;
     private readonly ITestOutputHelper _outputHelper;
     private readonly string _schemaName;
 
-    public ServerStartup(SharedContext context, string connectionString, ITestOutputHelper outputHelper)
+    public ServerStartup(SharedContext context, string connectionString, string redisHost, ITestOutputHelper outputHelper)
     {
         _martenConfiguration = new DotAuthConfiguration
         {
@@ -67,6 +66,7 @@ internal sealed class ServerStartup
         };
         _context = context;
         _connectionString = connectionString;
+        _redisConnectionString = redisHost;
         _outputHelper = outputHelper;
         var builder = new NpgsqlConnectionStringBuilder { ConnectionString = _connectionString };
         _schemaName = builder.SearchPath ?? "public";
@@ -77,15 +77,14 @@ internal sealed class ServerStartup
         services.AddHttpClient<HttpClient>()
             .AddHttpMessageHandler(() => new TestDelegatingHandler(_context.Handler!()));
         var db = new Random(DateTime.UtcNow.Millisecond).Next(16);
-        services.AddSingleton(ConnectionMultiplexer.Connect("localhost"));
+        services.AddSingleton(ConnectionMultiplexer.Connect(_redisConnectionString));
         services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase(db));
         services.AddSingleton<IDocumentStore>(
             provider => new DocumentStore(
                 new DotAuthMartenOptions(
                     _connectionString,
                     new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
-                    _schemaName,
-                    AutoCreate.CreateOrUpdate)));
+                    _schemaName)));
         services.AddTransient<Func<IDocumentSession>>(
             sp =>
             {

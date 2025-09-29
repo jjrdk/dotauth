@@ -12,7 +12,6 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
-
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -47,7 +46,8 @@ public partial class FeatureTest
 
         var serializedContent = await response.Content.ReadAsStringAsync();
 
-        _doc = JsonSerializer.Deserialize<DiscoveryInformation>(serializedContent, DefaultJsonSerializerOptions.Instance)!;
+        _doc = JsonSerializer.Deserialize<DiscoveryInformation>(serializedContent,
+            SharedSerializerContext.Default.DiscoveryInformation)!;
     }
 
     [Then(@"discovery document has uri for device authorization")]
@@ -119,7 +119,7 @@ public partial class FeatureTest
     {
         var fastPoll = Assert.IsType<Option<GrantedTokenResponse>.Error>(
             await _tokenClient.GetToken(TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode, 1))
-                 );
+        );
 
         Assert.NotNull(fastPoll);
         Assert.Equal(ErrorCodes.SlowDown, fastPoll.Details.Title);

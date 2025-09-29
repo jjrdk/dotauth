@@ -1,6 +1,5 @@
 ﻿namespace DotAuth.WebSite.Authenticate;
 
-using System;
 using System.Security.Claims;
 using DotAuth.Results;
 

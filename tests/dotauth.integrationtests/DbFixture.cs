@@ -18,10 +18,9 @@ public sealed class DbFixture : IAsyncDisposable
 
     public DbFixture()
     {
-        var dotauth = "dotauth";
+        const string dotauth = "dotauth";
         _container = new PostgreSqlBuilder()
             .WithDatabase(dotauth).WithUsername(dotauth).WithPassword(dotauth).WithExposedPort(5432).WithImage("postgres:alpine").Build();
-//            new PostgreSqlConfiguration(dotauth, dotauth, dotauth);
         _container.StartAsync().Wait();
         var connectionString =
             $"Server=localhost;Port={_container.GetMappedPublicPort(5432)};Database={dotauth};User Id={dotauth};Password={dotauth};";

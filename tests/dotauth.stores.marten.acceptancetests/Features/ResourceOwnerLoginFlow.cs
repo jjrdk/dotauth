@@ -16,7 +16,6 @@ using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -105,10 +104,11 @@ public partial class FeatureTest
     {
         var updateRequest = new UpdateResourceOwnerClaimsRequest
         {
-            Subject = "user", Claims = [new ClaimData {Type = "test", Value = "something"}]
+            Subject = "user", Claims = [new ClaimData { Type = "test", Value = "something" }]
         };
 
-        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(updateRequest,
+            SharedSerializerContext.Default.UpdateResourceOwnerClaimsRequest);
 
         var request = new HttpRequestMessage
         {

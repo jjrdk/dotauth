@@ -89,16 +89,18 @@ internal sealed class AuthenticateClient
 
                 break;
             case TokenEndPointAuthenticationMethods.ClientSecretJwt:
-                if (client.Secrets.All(s => s.Type != ClientSecretTypes.SharedSecret))
+                if (client.Secrets.Any(s => s.Type == ClientSecretTypes.SharedSecret))
                 {
-                    errorMessage = string.Format(
-                        Strings.TheClientDoesntContainASharedSecret,
-                        client.ClientId);
-                    break;
+                    return await _clientAssertionAuthentication
+                        .AuthenticateClientWithClientSecretJwt(instruction, cancellationToken)
+                        .ConfigureAwait(false);
                 }
 
-                return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction, cancellationToken)
-                    .ConfigureAwait(false);
+                errorMessage = string.Format(
+                    Strings.TheClientDoesntContainASharedSecret,
+                    client.ClientId);
+                break;
+
             case TokenEndPointAuthenticationMethods.PrivateKeyJwt:
                 return await _clientAssertionAuthentication
                     .AuthenticateClientWithPrivateKeyJwt(instruction, issuerName, cancellationToken)

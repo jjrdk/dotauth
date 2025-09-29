@@ -14,20 +14,24 @@ public sealed class TestServerFixture : IDisposable
     public Func<HttpClient> Client { get; }
     public SharedContext SharedCtx { get; }
 
-    public TestServerFixture(ITestOutputHelper outputHelper, string connectionString, params string[] urls)
+    public TestServerFixture(
+        ITestOutputHelper outputHelper,
+        string connectionString,
+        string redisConnectionString,
+        params string[] urls)
     {
         SharedCtx = SharedContext.Instance;
-        var startup = new ServerStartup(SharedCtx, connectionString, outputHelper);
+        var startup = new ServerStartup(SharedCtx, connectionString, redisConnectionString, outputHelper);
         Server = new TestServer(
             new WebHostBuilder().UseUrls(urls)
                 .UseConfiguration(
-                    new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).AddEnvironmentVariables().Build())
-                .ConfigureServices(
-                    services =>
-                    {
-                        services.AddSingleton(SharedCtx);
-                        startup.ConfigureServices(services);
-                    })
+                    new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).AddEnvironmentVariables()
+                        .Build())
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton(SharedCtx);
+                    startup.ConfigureServices(services);
+                })
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
                 .Configure(startup.Configure));
         Client = () => Server.CreateClient();

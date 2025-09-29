@@ -75,7 +75,7 @@ public static class DbInitializer
         IEnumerable<Client>? clients,
         IEnumerable<Scope>? scopes)
     {
-        using var store = new DocumentStore(
+        await using var store = new DocumentStore(
             new DotAuthMartenOptions(
                 connectionString,
                 new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),

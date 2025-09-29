@@ -15,7 +15,6 @@
 namespace DotAuth.Shared.Models;
 
 using System;
-using System.Runtime.Serialization;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;

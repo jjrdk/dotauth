@@ -53,22 +53,22 @@ public sealed class FakeStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
-        services.AddCors(
-            options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+        services.AddCors(options =>
+            options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-        services.AddAuthentication(
-                opts =>
-                {
-                    opts.DefaultAuthenticateScheme = DefaultSchema;
-                    opts.DefaultChallengeScheme = DefaultSchema;
-                })
+        services.AddAuthentication(opts =>
+            {
+                opts.DefaultAuthenticateScheme = DefaultSchema;
+                opts.DefaultChallengeScheme = DefaultSchema;
+            })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { })
             .AddFakeCustomAuth(_ => { });
 
         var symmetricAlgorithm = Aes.Create();
         symmetricAlgorithm.GenerateIV();
         symmetricAlgorithm.GenerateKey();
-        services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>().AddDotAuthServer(options =>
+        services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
+            .AddDotAuthServer(options =>
                 {
                     options.DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm);
                     options.AdministratorRoleDefinition = default;
@@ -85,12 +85,11 @@ public sealed class FakeStartup
             .AddLogging(b => b.AddXunit(_testOutputHelper))
             .AddAccountFilter()
             .AddSingleton(_context.ConfirmationCodeStore)
-            .AddSingleton(
-                sp =>
-                {
-                    var server = sp.GetRequiredService<IServer>() as TestServer;
-                    return server!.CreateClient();
-                });
+            .AddSingleton(sp =>
+            {
+                var server = sp.GetRequiredService<IServer>() as TestServer;
+                return server!.CreateClient();
+            });
         services.ConfigureOptions<JwtBearerPostConfigureOptions>();
     }
 

@@ -40,7 +40,7 @@
             }
 
             return await JsonSerializer.DeserializeAsync<ToolConfig>(File.OpenRead(configFile),
-                DefaultJsonSerializerOptions.Instance);
+                SharedSerializerContext.Default.Options);
         }
 
         private static string GetConfigFilePath()

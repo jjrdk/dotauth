@@ -18,8 +18,9 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
+using Testcontainers.PostgreSql;
+using Testcontainers.Redis;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -28,23 +29,29 @@ public sealed class EndpointFixture : IDisposable
     private const string BaseUrl = "http://localhost:5000";
     private readonly TestServerFixture _server;
     private readonly string _connectionString;
+    private readonly PostgreSqlContainer _postgresContainer;
+    private readonly RedisContainer _redisContainer;
 
     public EndpointFixture(ITestOutputHelper output)
-    {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-
+    {_postgresContainer = new PostgreSqlBuilder().WithUsername("dotauth").WithPassword("dotauth")
+            .WithDatabase("dotauth").Build();
+        _redisContainer = new RedisBuilder().Build();
+        _postgresContainer.StartAsync().GetAwaiter().GetResult();
+        _redisContainer.StartAsync().GetAwaiter().GetResult();
+        _connectionString = _postgresContainer.GetConnectionString();
+        var redisConnectionString = _redisContainer.GetConnectionString();
         IdentityModelEventSource.ShowPII = true;
 
         _connectionString = DbInitializer.Init(
                 output,
-                configuration["Db:ConnectionString"]!,
+                _connectionString,
                 DefaultStores.Consents(),
                 DefaultStores.Users(),
                 DefaultStores.Clients(SharedContext.Instance),
                 DefaultStores.Scopes())
-            .Result;
+            .GetAwaiter().GetResult();
 
-        _server = new TestServerFixture(output, _connectionString, BaseUrl);
+        _server = new TestServerFixture(output, _connectionString, redisConnectionString, BaseUrl);
     }
 
     [Theory]
@@ -70,7 +77,9 @@ public sealed class EndpointFixture : IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        _server?.Dispose();
+        _server.Dispose();
         DbInitializer.Drop(_connectionString).Wait();
+        _postgresContainer.StopAsync().GetAwaiter().GetResult();
+        _redisContainer.StopAsync().GetAwaiter().GetResult();
     }
 }

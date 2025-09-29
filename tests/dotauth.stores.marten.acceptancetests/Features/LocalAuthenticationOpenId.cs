@@ -28,7 +28,7 @@ public partial class FeatureTest
     [When(@"posting code to openid authentication")]
     public async Task WhenPostingCodeToOpenidAuthentication()
     {
-        var authorizationRequest = new AuthorizationRequest {client_id = "client"};
+        var authorizationRequest = new AuthorizationRequest { client_id = "client" };
         var code = Uri.EscapeDataString(Protect(_dataProtector, authorizationRequest));
         var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/authenticate/openid?code={code}");
         _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);
@@ -37,7 +37,7 @@ public partial class FeatureTest
     private static string Protect<T>(IDataProtector dataProtector, T toEncode)
         where T : class
     {
-        var serialized = JsonSerializer.Serialize(toEncode, DefaultJsonSerializerOptions.Instance);
+        var serialized = JsonSerializer.Serialize(toEncode, SharedSerializerContext.Default.Options);
 
         var bytes = Encoding.ASCII.GetBytes(serialized);
         var protectedBytes = dataProtector.Protect(bytes);

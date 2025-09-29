@@ -27,7 +27,7 @@ internal sealed class LogEventPublisher : IEventPublisher
     public Task Publish<T>(T evt)
         where T : Event
     {
-        var json = JsonSerializer.Serialize(evt, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(evt, SharedSerializerContext.Default.Options);
         if (evt is DotAuthError)
         {
             _logger.LogError(json);

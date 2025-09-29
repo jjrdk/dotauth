@@ -27,7 +27,7 @@ internal partial class Program
             .ConfigureAwait(false);
         if (tokenOption is Option<GrantedTokenResponse>.Result token)
         {
-            var options = DefaultJsonSerializerOptions.Instance;
+            var options = SharedSerializerContext.Default.Options;
             options.WriteIndented = true;
             var json = JsonSerializer.Serialize(token.Item, options);
             await Console.Out.WriteLineAsync(json).ConfigureAwait(false);

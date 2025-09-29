@@ -69,7 +69,7 @@ public sealed class MartenScopeRepository : IScopeRepository
     /// <inheritdoc />
     public async Task<Scope[]> SearchByNames(CancellationToken cancellationToken = default, params string[] names)
     {
-        var session = this._sessionFactory();
+        var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
         var scopes = await session.Query<ScopeContainer>()
             .Where(x => x.Name.IsOneOf(names))

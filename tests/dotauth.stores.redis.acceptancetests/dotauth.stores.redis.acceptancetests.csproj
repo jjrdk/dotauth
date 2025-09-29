@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <Import Project="../../shared.proj" />
+    <Import Project="../../shared.proj"/>
     <PropertyGroup>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <SpecFlowObsoleteCodeBehindFiles Remove="Features\DynamicClientRegistration.feature.cs" />
+        <SpecFlowObsoleteCodeBehindFiles Remove="Features\DynamicClientRegistration.feature.cs"/>
     </ItemGroup>
     <ItemGroup>
         <None Include="..\mycert.pfx" Link="mycert.pfx">
@@ -17,38 +17,40 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NSubstitute" Version="5.3.0" />
-        <PackageReference Include="Divergic.Logging.Xunit" Version="4.3.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-        <PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
-        <PackageReference Include="xunit" Version="2.9.3" />
+        <PackageReference Include="Testcontainers.PostgreSql" Version="4.7.0" />
+        <PackageReference Include="Testcontainers.Redis" Version="4.7.0" />
+        <PackageReference Include="NSubstitute" Version="5.3.0"/>
+        <PackageReference Include="Divergic.Logging.Xunit" Version="4.3.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+        <PackageReference Include="SpecFlow.xUnit" Version="3.9.74"/>
+        <PackageReference Include="xunit" Version="2.9.3"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.9" />
+        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.9"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\dotauth.client\dotauth.client.csproj" />
-        <ProjectReference Include="..\..\src\dotauth.stores.marten\dotauth.stores.marten.csproj" />
-        <ProjectReference Include="..\..\src\dotauth.stores.redis\dotauth.stores.redis.csproj" />
-        <ProjectReference Include="..\..\src\dotauth.ui\dotauth.ui.csproj" />
-        <ProjectReference Include="..\..\src\dotauth\dotauth.csproj" />
+        <ProjectReference Include="..\..\src\dotauth.client\dotauth.client.csproj"/>
+        <ProjectReference Include="..\..\src\dotauth.stores.marten\dotauth.stores.marten.csproj"/>
+        <ProjectReference Include="..\..\src\dotauth.stores.redis\dotauth.stores.redis.csproj"/>
+        <ProjectReference Include="..\..\src\dotauth.ui\dotauth.ui.csproj"/>
+        <ProjectReference Include="..\..\src\dotauth\dotauth.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Features\DynamicClientRegistration.feature.cs">
-        <DependentUpon>%(Filename)</DependentUpon>
-      </Compile>
+        <Compile Update="Features\DynamicClientRegistration.feature.cs">
+            <DependentUpon>%(Filename)</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <SpecFlowFeatureFiles Update="Features\DynamicClientRegistration.feature">
-        <Visible>$(UsingMicrosoftNETSdk)</Visible>
-        <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-      </SpecFlowFeatureFiles>
+        <SpecFlowFeatureFiles Update="Features\DynamicClientRegistration.feature">
+            <Visible>$(UsingMicrosoftNETSdk)</Visible>
+            <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+        </SpecFlowFeatureFiles>
     </ItemGroup>
 
 </Project>

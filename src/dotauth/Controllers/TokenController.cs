@@ -140,7 +140,7 @@ public sealed class TokenController : ControllerBase
         var e = (Option<GrantedToken>.Error)result;
 
         _logger.LogError(
-            "Could not issue token. {title} - {detail} - {status}",
+            "Could not issue token. {Title} - {Detail} - {Status}",
             e.Details.Title,
             e.Details.Detail,
             e.Details.Status);

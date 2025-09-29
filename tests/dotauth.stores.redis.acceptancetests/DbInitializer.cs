@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace DotAuth.Stores.Redis.AcceptanceTests;
+﻿namespace DotAuth.Stores.Redis.AcceptanceTests;
 
 using System;
 using System.Collections.Generic;
@@ -70,11 +69,12 @@ public static class DbInitializer
         IEnumerable<Client>? clients,
         IEnumerable<Scope>? scopes)
     {
-        using var store = new DocumentStore(
-            new DotAuthMartenOptions(
-                connectionString,
-                new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
-                searchPath));
+        var options = new DotAuthMartenOptions(
+            connectionString,
+            new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
+            searchPath);
+        await using var store = new DocumentStore(
+            options);
         var session = store.LightweightSession();
         await using var _ = session.ConfigureAwait(false);
         if (consents != null) session.Store(consents.ToArray());
@@ -95,4 +95,3 @@ public static class DbInitializer
         await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
     }
 }
-#nullable disable

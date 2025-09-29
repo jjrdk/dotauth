@@ -43,7 +43,7 @@ internal sealed class InMemoryClientRepository : IClientRepository
         _clientFactory = new ClientFactory(
             httpClient,
             scopeStore,
-            u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!,
+            u => JsonSerializer.Deserialize<Uri[]>(u, SharedSerializerContext.Default.UriArray)!,
             logger);
         _clients = clients == null
             ? new List<Client>()

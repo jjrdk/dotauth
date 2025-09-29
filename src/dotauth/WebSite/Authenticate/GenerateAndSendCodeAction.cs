@@ -52,7 +52,7 @@ internal sealed class GenerateAndSendCodeAction
     {
         if (string.IsNullOrWhiteSpace(subject))
         {
-            _logger.LogError(Strings.TheSubjectCannotBeRetrieved);
+            _logger.LogError("{Error}",Strings.TheSubjectCannotBeRetrieved);
             return new Option<string>.Error(
                 new ErrorDetails
                 {
@@ -65,7 +65,7 @@ internal sealed class GenerateAndSendCodeAction
         var resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
         if (resourceOwner == null)
         {
-            _logger.LogError(Strings.TheRoDoesntExist);
+            _logger.LogError("{Error}",Strings.TheRoDoesntExist);
             return new Option<string>.Error(
                 new ErrorDetails
                 {

@@ -17,7 +17,6 @@ using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using Microsoft.Extensions.DependencyInjection;
-
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -29,10 +28,10 @@ public partial class FeatureTest
     [When(@"adding resource owner with (.+), (.+)")]
     public async Task WhenAddingResourceOwnerWith(string subject, string password)
     {
-        var response =Assert.IsType<Option<AddResourceOwnerResponse>.Result>( await _managerClient.AddResourceOwner(
-                new AddResourceOwnerRequest {Password = password, Subject = subject},
+        var response = Assert.IsType<Option<AddResourceOwnerResponse>.Result>(await _managerClient.AddResourceOwner(
+                new AddResourceOwnerRequest { Password = password, Subject = subject },
                 _token.AccessToken)
-            .ConfigureAwait(false) );
+            .ConfigureAwait(false));
 
         Assert.NotNull(response);
     }
@@ -50,7 +49,7 @@ public partial class FeatureTest
     public async Task ThenCanUpdateResourceOwnerWithPassword(string subject, string password)
     {
         var response = await _managerClient.UpdateResourceOwnerPassword(
-                new UpdateResourceOwnerPasswordRequest {Subject = subject, Password = password},
+                new UpdateResourceOwnerPasswordRequest { Subject = subject, Password = password },
                 _token.AccessToken)
             .ConfigureAwait(false);
 
@@ -77,7 +76,8 @@ public partial class FeatureTest
             Claims = claimData
         };
 
-        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(updateRequest,
+            SharedSerializerContext.Default.UpdateResourceOwnerClaimsRequest);
 
         var request = new HttpRequestMessage
         {
@@ -102,7 +102,9 @@ public partial class FeatureTest
     {
         var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _updatedToken = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
+        _updatedToken =
+            JsonSerializer.Deserialize<GrantedTokenResponse>(json, SharedSerializerContext.Default.GrantedTokenResponse)
+            !;
 
         Assert.NotNull(_updatedToken);
     }
@@ -112,7 +114,8 @@ public partial class FeatureTest
     {
         var json = await _responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        _token = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
+        _token = JsonSerializer.Deserialize<GrantedTokenResponse>(json,
+            SharedSerializerContext.Default.GrantedTokenResponse)!;
 
         Assert.NotNull(_token);
     }
@@ -174,7 +177,7 @@ public partial class FeatureTest
         Assert.NotNull(result.Item);
 
         var handler = new JwtSecurityTokenHandler();
-        var token = (JwtSecurityToken) handler.ReadToken(result.Item.AccessToken);
+        var token = (JwtSecurityToken)handler.ReadToken(result.Item.AccessToken);
         Assert.Contains(token.Claims, c => c.Type == "added_claim_test" && c.Value == "something");
     }
 
@@ -204,7 +207,7 @@ public partial class FeatureTest
         Assert.NotNull(result.Item);
 
         var handler = new JwtSecurityTokenHandler();
-        var token = (JwtSecurityToken) handler.ReadToken(result.Item.AccessToken);
+        var token = (JwtSecurityToken)handler.ReadToken(result.Item.AccessToken);
         Assert.DoesNotContain(token.Claims, c => c.Type == "acceptance_test");
     }
 
@@ -226,7 +229,7 @@ public partial class FeatureTest
     [Then(@"when getting resource owner from store")]
     public async Task ThenWhenGettingResourceOwnerFromStore()
     {
-        var store = (IResourceOwnerStore) _fixture.Server.Host.Services.GetRequiredService(
+        var store = (IResourceOwnerStore)_fixture.Server.Host.Services.GetRequiredService(
             typeof(IResourceOwnerStore));
         _resourceOwner = (await store.Get("administrator", CancellationToken.None).ConfigureAwait(false))!;
     }
@@ -262,14 +265,15 @@ public partial class FeatureTest
             Subject = "user",
             Claims =
             [
-                new ClaimData {Type = OpenIdClaimTypes.Subject, Value = "user"},
-                new ClaimData {Type = OpenIdClaimTypes.Name, Value = "John Doe"},
-                new ClaimData {Type = "acceptance_test", Value = "test"},
-                new ClaimData {Type = "test", Value = "something"}
+                new ClaimData { Type = OpenIdClaimTypes.Subject, Value = "user" },
+                new ClaimData { Type = OpenIdClaimTypes.Name, Value = "John Doe" },
+                new ClaimData { Type = "acceptance_test", Value = "test" },
+                new ClaimData { Type = "test", Value = "something" }
             ]
         };
 
-        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(updateRequest,
+            SharedSerializerContext.Default.UpdateResourceOwnerClaimsRequest);
 
         var request = new HttpRequestMessage
         {

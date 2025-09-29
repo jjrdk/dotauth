@@ -55,7 +55,7 @@ public sealed class RegisterClientFixture : IDisposable
         var obj = new { fake = "fake" };
         var fakeJson = JsonSerializer.Serialize(
             obj,
-            DefaultJsonSerializerOptions.Instance);
+            SharedSerializerContext.Default.Options);
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -126,7 +126,7 @@ public sealed class RegisterClientFixture : IDisposable
             ClientUri = new Uri("https://valid")
         };
         var fakeJson = JsonSerializer.Serialize(
-            obj, DefaultJsonSerializerOptions.Instance);
+            obj, SharedSerializerContext.Default.Options);
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -169,7 +169,7 @@ public sealed class RegisterClientFixture : IDisposable
             ClientUri = "invalid_client_uri"
         };
         var fakeJson = JsonSerializer.Serialize(
-            obj, DefaultJsonSerializerOptions.Instance);
+            obj, SharedSerializerContext.Default.Options);
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -206,7 +206,7 @@ public sealed class RegisterClientFixture : IDisposable
             TosUri = "invalid"
         };
         var fakeJson = JsonSerializer.Serialize(
-            obj, DefaultJsonSerializerOptions.Instance);
+            obj, SharedSerializerContext.Default.Options);
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
@@ -237,17 +237,17 @@ public sealed class RegisterClientFixture : IDisposable
         var registrationClient = await ManagementClient.Create(
             _server.Client,
             new Uri($"{BaseUrl}/.well-known/openid-configuration"));
-        var client = Assert.IsType<Option<Client>.Result>(
-            await registrationClient.Register(
-                new Client
-                {
-                    JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
-                    AllowedScopes = ["openid"],
-                    ClientName = "Test",
-                    ClientId = "id",
-                    RedirectionUrls = [new Uri("https://localhost")],
-                },
-                grantedToken.Item.AccessToken));
+        var register = await registrationClient.Register(
+            new Client
+            {
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                AllowedScopes = ["openid"],
+                ClientName = "Test",
+                ClientId = "id",
+                RedirectionUrls = [new Uri("https://localhost")],
+            },
+            grantedToken.Item.AccessToken);
+        var client = Assert.IsType<Option<Client>.Result>(register);
 
         Assert.NotNull(client);
     }

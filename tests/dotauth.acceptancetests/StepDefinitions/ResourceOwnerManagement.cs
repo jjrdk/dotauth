@@ -17,7 +17,6 @@ using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using Microsoft.Extensions.DependencyInjection;
-
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -31,9 +30,9 @@ public partial class FeatureTest
     {
         var response = Assert.IsType<Option<AddResourceOwnerResponse>.Result>(
             await _managerClient.AddResourceOwner(
-                    new AddResourceOwnerRequest { Password = password, Subject = subject },
-                    _token.AccessToken)
-                );
+                new AddResourceOwnerRequest { Password = password, Subject = subject },
+                _token.AccessToken)
+        );
 
         Assert.NotNull(response);
     }
@@ -43,7 +42,7 @@ public partial class FeatureTest
     {
         var response = Assert.IsType<Option<ResourceOwner>.Result>(
             await _managerClient.GetResourceOwner(subject, _token.AccessToken)
-                );
+        );
 
         Assert.True(response.Item.IsLocalAccount);
     }
@@ -63,8 +62,8 @@ public partial class FeatureTest
     public async Task ThenUserCanLoginWithNewPassword(string subject, string password)
     {
         var option =
-            await _tokenClient.GetToken(TokenRequest.FromPassword(subject, password, ["manager"]))
-                ;
+                await _tokenClient.GetToken(TokenRequest.FromPassword(subject, password, ["manager"]))
+            ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
     }
@@ -79,7 +78,8 @@ public partial class FeatureTest
             Claims = claimData
         };
 
-        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(updateRequest,
+            SharedSerializerContext.Default.UpdateResourceOwnerClaimsRequest);
 
         var request = new HttpRequestMessage
         {
@@ -104,7 +104,9 @@ public partial class FeatureTest
     {
         var json = await _responseMessage!.Content.ReadAsStringAsync();
 
-        _updatedToken = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
+        _updatedToken =
+            JsonSerializer.Deserialize<GrantedTokenResponse>(json, SharedSerializerContext.Default.GrantedTokenResponse)
+            !;
 
         Assert.NotNull(_updatedToken);
     }
@@ -114,7 +116,8 @@ public partial class FeatureTest
     {
         var json = await _responseMessage!.Content.ReadAsStringAsync();
 
-        _token = JsonSerializer.Deserialize<GrantedTokenResponse>(json, DefaultJsonSerializerOptions.Instance)!;
+        _token = JsonSerializer.Deserialize<GrantedTokenResponse>(json,
+            SharedSerializerContext.Default.GrantedTokenResponse)!;
 
         Assert.NotNull(_token);
     }
@@ -123,7 +126,7 @@ public partial class FeatureTest
     public async Task WhenRefreshingTokenThenHasUpdatedClaims()
     {
         var option = await _tokenClient
-            .GetToken(TokenRequest.FromRefreshToken(_token.RefreshToken!))
+                .GetToken(TokenRequest.FromRefreshToken(_token.RefreshToken!))
             ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
@@ -145,7 +148,7 @@ public partial class FeatureTest
     public async Task WhenLoggingInAgain()
     {
         var option = await _tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", ["manager"]))
+                .GetToken(TokenRequest.FromPassword("administrator", "password", ["manager"]))
             ;
 
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
@@ -169,9 +172,9 @@ public partial class FeatureTest
     public async Task ThenResourceOwnerHasNewClaim()
     {
         var option =
-            await _tokenClient.GetToken(
+                await _tokenClient.GetToken(
                     TokenRequest.FromPassword("administrator", "password", ["manager", "offline"]))
-                ;
+            ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
 
@@ -199,9 +202,9 @@ public partial class FeatureTest
     public async Task ThenResourceOwnerNoLongerHasClaim()
     {
         var option =
-            await _tokenClient
-                .GetToken(TokenRequest.FromPassword("administrator", "password", ["manager"]))
-                ;
+                await _tokenClient
+                    .GetToken(TokenRequest.FromPassword("administrator", "password", ["manager"]))
+            ;
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
         Assert.NotNull(result.Item);
 
@@ -271,7 +274,8 @@ public partial class FeatureTest
             ]
         };
 
-        var json = JsonSerializer.Serialize(updateRequest, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(updateRequest,
+            SharedSerializerContext.Default.UpdateResourceOwnerClaimsRequest);
 
         var request = new HttpRequestMessage
         {

@@ -51,13 +51,13 @@ internal partial class Program
         }
 
         await File.WriteAllTextAsync(configFile,
-                JsonSerializer.Serialize(config, DefaultJsonSerializerOptions.Instance), Encoding.UTF8)
+                JsonSerializer.Serialize(config, SharedSerializerContext.Default.Options), Encoding.UTF8)
             .ConfigureAwait(false);
 
         await Console.Out.WriteLineAsync("Tool configured").ConfigureAwait(false);
         if (args.OutputResulting)
         {
-            var options = DefaultJsonSerializerOptions.Instance;
+            var options = SharedSerializerContext.Default.Options;
             options.WriteIndented = true;
             var json = JsonSerializer.Serialize(config, options);
             await Console.Out.WriteLineAsync(json).ConfigureAwait(false);

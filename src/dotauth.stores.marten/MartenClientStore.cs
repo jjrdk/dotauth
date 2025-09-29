@@ -52,11 +52,11 @@ public sealed class MartenClientStore : IClientRepository
 
         if (session is IMartenSession martenSession)
         {
-            _logger.LogWarning("Client {clientId} not found in tenant {tenant}", clientId, martenSession.TenantId);
+            _logger.LogWarning("Client {ClientId} not found in tenant {Tenant}", clientId, martenSession.TenantId);
         }
         else
         {
-            _logger.LogWarning("Client {clientId} not found", clientId);
+            _logger.LogWarning("Client {ClientId} not found", clientId);
         }
 
         return default;

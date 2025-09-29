@@ -25,30 +25,20 @@ using NSubstitute;
 
 public sealed class SharedContext
 {
-    public SharedContext()
-    {
-        SignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
-        ModelSignatureKey = TestKeys.SecretKey.CreateSignatureJwk();
-        EncryptionKey = TestKeys.SecretKey.CreateEncryptionJwk();
-        ModelEncryptionKey = TestKeys.SecretKey.CreateJwk(
-            JsonWebKeyUseNames.Enc,
-            KeyOperations.Decrypt,
-            KeyOperations.Encrypt);
-        ConfirmationCodeStore = Substitute.For<IConfirmationCodeStore>();
-        TwilioClient = Substitute.For<ISmsClient>();
-    }
+    public JsonWebKey EncryptionKey { get; } = TestKeys.SecretKey.CreateEncryptionJwk();
 
-    public JsonWebKey EncryptionKey { get; }
+    public JsonWebKey ModelEncryptionKey { get; } = TestKeys.SecretKey.CreateJwk(
+        JsonWebKeyUseNames.Enc,
+        KeyOperations.Decrypt,
+        KeyOperations.Encrypt);
 
-    public JsonWebKey ModelEncryptionKey { get; }
+    public JsonWebKey SignatureKey { get; } = TestKeys.SecretKey.CreateSignatureJwk();
 
-    public JsonWebKey SignatureKey { get; }
+    public JsonWebKey ModelSignatureKey { get; } = TestKeys.SecretKey.CreateSignatureJwk();
 
-    public JsonWebKey ModelSignatureKey { get; }
+    public IConfirmationCodeStore ConfirmationCodeStore { get; } = Substitute.For<IConfirmationCodeStore>();
 
-    public IConfirmationCodeStore ConfirmationCodeStore { get; }
-
-    public ISmsClient TwilioClient { get; }
+    public ISmsClient TwilioClient { get; } = Substitute.For<ISmsClient>();
 
     public Func<HttpClient> Client { get; set; } = null!;
 

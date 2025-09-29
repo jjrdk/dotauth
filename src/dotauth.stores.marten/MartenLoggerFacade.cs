@@ -38,11 +38,17 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
     /// <inheritdoc />
     public void LogSuccess(NpgsqlCommand command)
     {
-        var entry = command.Parameters.Aggregate(
-            command.CommandText,
-            (current, npgsqlParameter) => current.Replace(
-                npgsqlParameter.ParameterName,
-                $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
+        var entry = command.Parameters.Count == 0
+            ? command.CommandText
+            : command.Parameters.Aggregate(
+                command.CommandText,
+                (current, npgsqlParameter) =>
+                {
+                    var usedName = npgsqlParameter.ParameterName == ""
+                        ? $"${command.Parameters.IndexOf(npgsqlParameter) + 1}"
+                        : npgsqlParameter.ParameterName;
+                    return current.Replace(usedName, $"({usedName} -> {npgsqlParameter.Value})");
+                });
         _logger.LogInformation("{Entry}", entry);
     }
 

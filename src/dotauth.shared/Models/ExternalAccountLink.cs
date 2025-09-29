@@ -1,6 +1,5 @@
 ﻿namespace DotAuth.Shared.Models;
 
-using System;
 using System.Security.Claims;
 
 /// <summary>

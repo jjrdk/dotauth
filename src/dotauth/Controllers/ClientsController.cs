@@ -74,7 +74,7 @@ public sealed class ClientsController : BaseController
         _httpClient = httpClient;
         _logger = logger;
         _httpClient = httpClient;
-        _urlReader = u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!;
+        _urlReader = u => JsonSerializer.Deserialize<Uri[]>(u, SharedSerializerContext.Default.UriArray)!;
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public sealed class ClientsController : BaseController
         };
 
         var factory = new ClientFactory(_httpClient, _scopeStore,
-            u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!, _logger);
+            u => JsonSerializer.Deserialize<Uri[]>(u, SharedSerializerContext.Default.UriArray)!, _logger);
         var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
         switch (toInsert)
         {
@@ -175,7 +175,7 @@ public sealed class ClientsController : BaseController
         var client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
         if (client == null)
         {
-            _logger.LogError("Client with id: {clientId} not found.", clientId);
+            _logger.LogError("Client with id: {ClientId} not found", clientId);
             return BadRequest();
         }
 
@@ -353,7 +353,7 @@ public sealed class ClientsController : BaseController
     public async Task<IActionResult> Add([FromBody] Client client, CancellationToken cancellationToken)
     {
         var factory = new ClientFactory(_httpClient, _scopeStore,
-            u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!, _logger);
+            u => JsonSerializer.Deserialize<Uri[]>(u, SharedSerializerContext.Default.UriArray)!, _logger);
         var option = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
         switch (option)
         {
@@ -396,7 +396,7 @@ public sealed class ClientsController : BaseController
         };
 
         var factory = new ClientFactory(_httpClient, _scopeStore,
-            u => JsonSerializer.Deserialize<Uri[]>(u, DefaultJsonSerializerOptions.Instance)!, _logger);
+            u => JsonSerializer.Deserialize<Uri[]>(u, SharedSerializerContext.Default.UriArray)!, _logger);
         var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
         switch (toInsert)
         {
@@ -426,7 +426,7 @@ public sealed class ClientsController : BaseController
 
     private IActionResult BuildError(string code, string message, HttpStatusCode statusCode)
     {
-        _logger.LogError("Error with client, {error}", message);
+        _logger.LogError("Error with client, {Error}", message);
         var error = new ErrorDetails { Title = code, Detail = message, Status = statusCode };
         return StatusCode((int)statusCode, error);
     }

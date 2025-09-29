@@ -15,6 +15,8 @@ using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using global::Marten;
+using global::Marten.Pagination;
+using JasperFx.Core;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using NpgsqlTypes;
@@ -34,7 +36,9 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     /// </summary>
     /// <param name="sessionFactory">The session factory.</param>
     /// <param name="logger">The logger</param>
-    public MartenResourceSetRepository(Func<IDocumentSession> sessionFactory, ILogger<MartenResourceSetRepository> logger)
+    public MartenResourceSetRepository(
+        Func<IDocumentSession> sessionFactory,
+        ILogger<MartenResourceSetRepository> logger)
     {
         _sessionFactory = sessionFactory;
         _logger = logger;
@@ -50,39 +54,59 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
         {
             var session = _sessionFactory();
             await using var _ = session.ConfigureAwait(false);
-            var command = CreateQueryCommand(parameter, claims, session);
-            var reader = await session.ExecuteReaderAsync(command, cancellationToken).ConfigureAwait(false);
-            var resultSet = new List<ResourceSetDescription>();
-            var totalCount = 0;
-            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            var queryable = session.Query<OwnedResourceSet>().Where(set =>
+                set.Name.IsOneOf(parameter.Terms)
+             || set.Description.NgramSearch(string.Join(' ', parameter.Terms))
+             || set.Type.IsOneOf(parameter.Terms));
+            if (parameter.Types.Length > 0)
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    break;
-                }
-
-                var set = await session.DocumentStore.Advanced.Serializer.FromJsonAsync<ResourceSetDescription>(
-                    reader,
-                    0,
-                    cancellationToken).ConfigureAwait(false);
-
-                resultSet.Add(set);
-
-                totalCount = Math.Max(totalCount, reader.GetInt32(1));
+                queryable = queryable.Where(set => set.Type.IsOneOf(parameter.Types));
             }
 
+            const string search = "search";
+            var issuer = claims.FirstOrDefault(c => c.Type == "iss")?.Value;
+            var clientId = claims.GetClientId();
+            queryable = queryable.Where(set => set.AuthorizationPolicies.Any(p =>
+                (p.Scopes.Contains(search)
+                 && p.ClientIdsAllowed.Length == 0
+                 && p.OpenIdProvider == null)
+             || (p.Scopes.Contains(search)
+                 && p.ClientIdsAllowed.Contains(clientId)
+                 && p.OpenIdProvider == null)
+             || (p.Scopes.Contains(search)
+                 && p.ClientIdsAllowed.Length == 0
+                 && p.OpenIdProvider == issuer)
+             || (p.Scopes.Contains(search)
+                 && p.ClientIdsAllowed.Contains(clientId)
+                 && p.OpenIdProvider == issuer)));
+
+            var query = queryable
+                .OrderBy(x => x.Name)
+                .Select(x => new ResourceSetDescription
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description,
+                    Type = x.Type
+                });
+
+            var pageNumber = (parameter.StartIndex / parameter.PageSize) + 1;
+            var resultSet = await query.ToPagedListAsync(
+                pageNumber: pageNumber,
+                pageSize: parameter.PageSize,
+                token: cancellationToken);
             return cancellationToken.IsCancellationRequested
                 ? new PagedResult<ResourceSetDescription>()
                 : new PagedResult<ResourceSetDescription>
                 {
                     Content = resultSet.ToArray(),
                     StartIndex = parameter.StartIndex,
-                    TotalResults = totalCount
+                    TotalResults = resultSet.TotalItemCount
                 };
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{error}", ex.Message);
+            _logger.LogError(ex, "{Error}", ex.Message);
             return new PagedResult<ResourceSetDescription>
             {
                 Content = [],
@@ -92,7 +116,10 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
         }
     }
 
-    private static NpgsqlCommand CreateQueryCommand(SearchResourceSet parameter, IReadOnlyList<Claim> claims, IQuerySession session)
+    private static NpgsqlCommand CreateQueryCommand(
+        SearchResourceSet parameter,
+        IReadOnlyList<Claim> claims,
+        IQuerySession session)
     {
         var builder = new StringBuilder();
         builder.Append(
@@ -108,7 +135,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
             builder.Append(" AND d.type = any (@type)");
         }
 
-        builder.Append(" AND (d.data @> @onlySearchScope OR d.data @> @onlyClient OR d.data @> @onlyProvider OR d.data @> @clientAndProvider)");
+        builder.Append(
+            " AND (d.data @> @onlySearchScope OR d.data @> @onlyClient OR d.data @> @onlyProvider OR d.data @> @clientAndProvider)");
         builder.Append(
             @" AND exists 
  (
@@ -135,7 +163,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
         var provider = claims.First(c => c.Type == "iss").Value;
         var command = new NpgsqlCommand(builder.ToString(), session.Connection);
 
-        if (parameter.Terms.Length>0)
+        if (parameter.Terms.Length > 0)
         {
             command.AddNamedParameter("terms", parameter.Terms, NpgsqlDbType.Array | NpgsqlDbType.Text);
         }
@@ -152,11 +180,11 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
             {
                 authorization_policies = new[]
                 {
-                    new
+                    new PolicyRule
                     {
-                        clients = Array.Empty<string>(),
-                        scopes = new[] { "search" },
-                        provider = (string?)null
+                        ClientIdsAllowed = [],
+                        Scopes = ["search"],
+                        OpenIdProvider = null
                     }
                 }
             },
@@ -167,11 +195,11 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
             {
                 authorization_policies = new[]
                 {
-                    new
+                    new PolicyRule
                     {
-                        clients = new[] { clientId },
-                        scopes = new[] { "search" },
-                        provider = (string?)null
+                        ClientIdsAllowed = [clientId],
+                        Scopes = ["search"],
+                        OpenIdProvider = null
                     }
                 }
             },
@@ -182,7 +210,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
             {
                 authorization_policies = new[]
                 {
-                    new { clients = Array.Empty<string>(), scopes = new[] { "search" }, provider = provider }
+                    new PolicyRule { ClientIdsAllowed = [], Scopes = ["search"], OpenIdProvider = provider }
                 }
             },
             NpgsqlDbType.Jsonb);
@@ -192,11 +220,11 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
             {
                 authorization_policies = new[]
                 {
-                    new
+                    new PolicyRule
                     {
-                        clients = new[] { clientId },
-                        scopes = new[] { "search" },
-                        provider = provider
+                        ClientIdsAllowed = [clientId],
+                        Scopes = ["search"],
+                        OpenIdProvider = provider
                     }
                 }
             },
@@ -211,6 +239,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
         {
             command.AddNamedParameter("offset", parameter.StartIndex * parameter.PageSize, NpgsqlDbType.Integer);
         }
+
         return command;
     }
 
@@ -252,7 +281,8 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var existing = await session.LoadAsync<OwnedResourceSet>(resourceSet.Id, cancellationToken).ConfigureAwait(false);
+        var existing = await session.LoadAsync<OwnedResourceSet>(resourceSet.Id, cancellationToken)
+            .ConfigureAwait(false);
         if (existing == null)
         {
             return new ErrorDetails
@@ -262,6 +292,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
                 Detail = SharedStrings.ResourceCannotBeUpdated
             };
         }
+
         session.Update(OwnedResourceSet.FromResourceSet(resourceSet, existing.Owner));
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return new Option.Success();

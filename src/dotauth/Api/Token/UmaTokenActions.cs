@@ -154,7 +154,8 @@ internal sealed class UmaTokenActions
                     ticket.Id,
                     client.ClientId,
                     ticket.ResourceOwner,
-                    authorizationResult.Principal.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
+                    authorizationResult.Principal.Select(claim => new ClaimData
+                        { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow)).ConfigureAwait(false);
             return new ErrorDetails
             {
@@ -171,7 +172,8 @@ internal sealed class UmaTokenActions
                         Id.Create(),
                         parameter.Ticket,
                         parameter.ClientId ?? string.Empty,
-                        authorizationResult.Principal.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
+                        authorizationResult.Principal.Select(claim => new ClaimData
+                            { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             return new ErrorDetails
@@ -187,7 +189,8 @@ internal sealed class UmaTokenActions
                     Id.Create(),
                     parameter.Ticket,
                     parameter.ClientId ?? string.Empty,
-                    authorizationResult.Principal.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
+                    authorizationResult.Principal.Select(claim => new ClaimData
+                        { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow))
             .ConfigureAwait(false);
         return new ErrorDetails
@@ -214,7 +217,8 @@ internal sealed class UmaTokenActions
         // 2. Construct the JWT token (client).
         var permissions = ticketLines.Select(x => x.ToPermission(_configurationService.RptLifeTime))
             .ToArray();
-        jwsPayload.Payload.Add(UmaConstants.RptClaims.Permissions, JsonSerializer.Serialize(permissions, DefaultJsonSerializerOptions.Instance));
+        jwsPayload.Payload.Add(UmaConstants.RptClaims.Permissions,
+            JsonSerializer.Serialize(permissions, SharedSerializerContext.Default.PermissionArray));
         var handler = new JwtSecurityTokenHandler();
         var accessToken = handler.WriteToken(jwsPayload);
 

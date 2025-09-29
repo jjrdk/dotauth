@@ -1,6 +1,5 @@
 ﻿namespace DotAuth.ViewModels;
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>

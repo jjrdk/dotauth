@@ -48,7 +48,7 @@ public partial class FeatureTest
         var serializedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         _doc = JsonSerializer.Deserialize<DiscoveryInformation>(serializedContent,
-            DefaultJsonSerializerOptions.Instance)!;
+            SharedSerializerContext.Default.DiscoveryInformation)!;
     }
 
     [Then(@"discovery document has uri for device authorization")]

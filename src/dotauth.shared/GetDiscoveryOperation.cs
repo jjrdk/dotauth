@@ -87,7 +87,8 @@ internal sealed class GetDiscoveryOperation
             var serializedContent = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
             doc = await JsonSerializer.DeserializeAsync<DiscoveryInformation>(
                 serializedContent,
-                DefaultJsonSerializerOptions.Instance, cancellationToken: cancellationToken);
+                SharedSerializerContext.Default.Options,
+                cancellationToken: cancellationToken);
             _cache.Add(key, doc!);
             return doc!;
         }

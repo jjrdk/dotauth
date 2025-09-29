@@ -294,7 +294,7 @@ internal static class MappingExtensions
                         JsonNode? node = subChild.Value.Value!;
                         var parameters =
                             JsonSerializer.Deserialize<Dictionary<string, object>>(node.ToJsonString(),
-                                DefaultJsonSerializerOptions.Instance)!;
+                                SharedSerializerContext.Default.DictionaryStringObject)!;
                         record = record with { Parameters = parameters };
                     }
 

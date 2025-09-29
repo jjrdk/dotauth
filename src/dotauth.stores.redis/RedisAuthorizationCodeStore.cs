@@ -33,14 +33,14 @@ public sealed class RedisAuthorizationCodeStore : IAuthorizationCodeStore
     {
         var authCode = await _database.StringGetAsync(code).ConfigureAwait(false);
         return authCode.HasValue
-            ? JsonSerializer.Deserialize<AuthorizationCode>(authCode!, DefaultJsonSerializerOptions.Instance)
+            ? JsonSerializer.Deserialize<AuthorizationCode>(authCode!, SharedSerializerContext.Default.AuthorizationCode)
             : null;
     }
 
     /// <inheritdoc />
     public Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(authorizationCode, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(authorizationCode, SharedSerializerContext.Default.AuthorizationCode);
         return _database.StringSetAsync(authorizationCode.Code, json, _expiry);
     }
 

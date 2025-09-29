@@ -1,6 +1,5 @@
 ﻿namespace DotAuth.Shared.Requests;
 
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 /// <summary>

@@ -24,13 +24,14 @@ public sealed class RedisConfirmationCodeStore : IConfirmationCodeStore
     {
         var confirmationCode = await _database.StringGetAsync(code).ConfigureAwait(false);
         return confirmationCode.HasValue
-            ? JsonSerializer.Deserialize<ConfirmationCode>(confirmationCode!, DefaultJsonSerializerOptions.Instance)
+            ? JsonSerializer.Deserialize<ConfirmationCode>(confirmationCode!,
+                SharedSerializerContext.Default.ConfirmationCode)
             : null;
     }
 
     public Task<bool> Add(ConfirmationCode confirmationCode, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(confirmationCode, DefaultJsonSerializerOptions.Instance);
+        var json = JsonSerializer.Serialize(confirmationCode, SharedSerializerContext.Default.ConfirmationCode);
         return _database.StringSetAsync(confirmationCode.Value, json, _expiry, when: When.NotExists);
     }
 

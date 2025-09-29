@@ -1,7 +1,5 @@
 ﻿namespace DotAuth.Shared.Models;
 
-using System;
-
 /// <summary>
 /// Defines the account filtering result.
 /// </summary>

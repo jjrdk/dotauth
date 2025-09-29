@@ -7,11 +7,11 @@ internal static class ObjectExtensions
 {
     public static string SerializeWithJavascript(this object parameter)
     {
-        return JsonSerializer.Serialize(parameter, DefaultJsonSerializerOptions.Instance);
+        return JsonSerializer.Serialize(parameter, SharedSerializerContext.Default.Options);
     }
 
     public static T DeserializeWithJavascript<T>(this string parameter)
     {
-        return JsonSerializer.Deserialize<T>(parameter, DefaultJsonSerializerOptions.Instance)!;
+        return JsonSerializer.Deserialize<T>(parameter, SharedSerializerContext.Default.Options)!;
     }
 }

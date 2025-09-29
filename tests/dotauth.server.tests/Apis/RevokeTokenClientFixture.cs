@@ -24,7 +24,6 @@ using DotAuth.Client;
 using DotAuth.Properties;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
-using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;

@@ -9,7 +9,6 @@ using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Responses;
-
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -80,7 +79,9 @@ public partial class FeatureTest
         Assert.True(policyResponse.IsSuccessStatusCode);
 
         var content = await policyResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        _policyRules = JsonSerializer.Deserialize<EditPolicyResponse>(content, DefaultJsonSerializerOptions.Instance)!;
+        _policyRules =
+            JsonSerializer.Deserialize<EditPolicyResponse>(content,
+                SharedSerializerContext.Default.EditPolicyResponse)!;
 
         Assert.Single(_policyRules.Rules);
     }
@@ -94,7 +95,8 @@ public partial class FeatureTest
         {
             Method = HttpMethod.Put,
             RequestUri = new Uri(_resourceSetResponse.UserAccessPolicyUri),
-            Content = new StringContent(JsonSerializer.Serialize(_policyRules, DefaultJsonSerializerOptions.Instance))
+            Content = new StringContent(JsonSerializer.Serialize(_policyRules,
+                SharedSerializerContext.Default.EditPolicyResponse))
         };
         msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
 

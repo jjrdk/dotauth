@@ -37,7 +37,7 @@ public partial class FeatureTest
     private static string Protect<T>(IDataProtector dataProtector, T toEncode)
         where T : class
     {
-        var serialized = JsonSerializer.Serialize(toEncode, DefaultJsonSerializerOptions.Instance);
+        var serialized = JsonSerializer.Serialize(toEncode, SharedSerializerContext.Default.Options);
 
         var bytes = Encoding.ASCII.GetBytes(serialized);
         var protectedBytes = dataProtector.Protect(bytes);

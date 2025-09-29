@@ -13,7 +13,6 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
-
 using TechTalk.SpecFlow;
 using Xunit;
 
@@ -55,7 +54,8 @@ public partial class FeatureTest
             Method = HttpMethod.Post,
             RequestUri = new Uri(new Uri(BaseUrl), "clients/register"),
             Content = new StringContent(
-                JsonSerializer.Serialize(registration, DefaultJsonSerializerOptions.Instance),
+                JsonSerializer.Serialize(registration,
+                    SharedSerializerContext.Default.DynamicClientRegistrationRequest),
                 Encoding.UTF8,
                 MediaTypeHeaderValue.Parse("application/json"))
         };
@@ -74,7 +74,9 @@ public partial class FeatureTest
     public async Task ThenTheResponseShouldContainAClientIdAndClientSecret()
     {
         var json = await _dcrResponse!.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var clientInfo = JsonSerializer.Deserialize<DynamicClientRegistrationResponse>(json, DefaultJsonSerializerOptions.Instance);
+        var clientInfo =
+            JsonSerializer.Deserialize<DynamicClientRegistrationResponse>(json,
+                SharedSerializerContext.Default.DynamicClientRegistrationResponse);
 
         Assert.False(string.IsNullOrWhiteSpace(clientInfo?.ClientId));
         Assert.False(string.IsNullOrWhiteSpace(clientInfo?.ClientSecret));

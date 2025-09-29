@@ -1,6 +1,5 @@
 ﻿namespace DotAuth.Tests.Authenticate;
 
-using System;
 using DotAuth.Authenticate;
 using DotAuth.Shared.Models;
 using Xunit;

@@ -534,7 +534,7 @@ public sealed class ResourceOwnersController : ControllerBase
             await _addUserOperation.Execute(resourceOwner, cancellationToken).ConfigureAwait(false);
         if (success)
         {
-            return Ok(new { subject });
+            return Ok(new SubjectResponse { Subject = subject });
         }
 
         return BadRequest(

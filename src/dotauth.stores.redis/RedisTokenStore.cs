@@ -29,7 +29,7 @@ public sealed class RedisTokenStore : ITokenStore
     {
         var token = await _database.StringGetAsync(clientId + scopes).ConfigureAwait(false);
         var options = token.HasValue
-            ? JsonSerializer.Deserialize<GrantedToken[]>(token!, DefaultJsonSerializerOptions.Instance)!
+            ? JsonSerializer.Deserialize<GrantedToken[]>(token!, SharedSerializerContext.Default.GrantedTokenArray)!
             : [];
         return options.FirstOrDefault(
             x =>
@@ -58,19 +58,19 @@ public sealed class RedisTokenStore : ITokenStore
         var value = await _database.StringGetAsync(token).ConfigureAwait(false);
         return value.IsNullOrEmpty
             ? null
-            : JsonSerializer.Deserialize<GrantedToken>(value!, DefaultJsonSerializerOptions.Instance);
+            : JsonSerializer.Deserialize<GrantedToken>(value!, SharedSerializerContext.Default.GrantedToken);
     }
 
     public async Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
     {
-        var value = JsonSerializer.Serialize(grantedToken, DefaultJsonSerializerOptions.Instance);
+        var value = JsonSerializer.Serialize(grantedToken, SharedSerializerContext.Default.GrantedToken);
         var existingScopeValue = await _database.StringGetAsync(grantedToken.ClientId + grantedToken.Scope)
             .ConfigureAwait(false);
         var existingScopeToken = existingScopeValue.HasValue
-            ? JsonSerializer.Deserialize<GrantedToken[]>(existingScopeValue!, DefaultJsonSerializerOptions.Instance)!
+            ? JsonSerializer.Deserialize<GrantedToken[]>(existingScopeValue!, SharedSerializerContext.Default.GrantedTokenArray)!
             : [];
         var scopeTokens = JsonSerializer.Serialize(existingScopeToken.Concat([grantedToken]).ToArray(),
-            DefaultJsonSerializerOptions.Instance);
+            SharedSerializerContext.Default.GrantedTokenArray);
         var expiry = TimeSpan.FromSeconds(grantedToken.ExpiresIn);
         var idTask = _database.StringSetAsync(grantedToken.Id, value, expiry, when: When.NotExists);
         var scopeTokenTask = _database.StringSetAsync(
