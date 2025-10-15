@@ -33,7 +33,8 @@ public sealed class EndpointFixture : IDisposable
     private readonly RedisContainer _redisContainer;
 
     public EndpointFixture(ITestOutputHelper output)
-    {_postgresContainer = new PostgreSqlBuilder().WithUsername("dotauth").WithPassword("dotauth")
+    {
+        _postgresContainer = new PostgreSqlBuilder().WithUsername("dotauth").WithPassword("dotauth")
             .WithDatabase("dotauth").Build();
         _redisContainer = new RedisBuilder().Build();
         _postgresContainer.StartAsync().GetAwaiter().GetResult();

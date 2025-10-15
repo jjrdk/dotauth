@@ -3,10 +3,10 @@
 using System;
 using System.Threading.Tasks;
 using DotAuth.Client;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
+using Testcontainers.PostgreSql;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,6 +20,7 @@ public partial class FeatureTest : IAsyncDisposable
     private TestServerFixture _fixture = null!;
     private JsonWebKeySet _serverKeySet = null!;
     private ManagementClient _managerClient = null!;
+    private PostgreSqlContainer _postgresContainer = null!;
     private string _connectionString = null!;
     public FeatureTest(ITestOutputHelper outputHelper)
     {
@@ -32,8 +33,10 @@ public partial class FeatureTest : IAsyncDisposable
     [BeforeScenario(Order = 1)]
     public async Task SetupConnectionString()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
-        _connectionString = configuration["Db:ConnectionString"]!;
+        _postgresContainer = new PostgreSqlBuilder().WithUsername("dotauth").WithPassword("dotauth")
+            .WithDatabase("dotauth").Build();
+        await _postgresContainer.StartAsync();
+        _connectionString = _postgresContainer.GetConnectionString();
         Assert.False(string.IsNullOrWhiteSpace(_connectionString));
     }
 
@@ -48,13 +51,12 @@ public partial class FeatureTest : IAsyncDisposable
                 DefaultStores.Clients(SharedContext.Instance),
                 DefaultStores.Scopes())
             .ConfigureAwait(false);
-        // var builder = new NpgsqlConnectionStringBuilder(_connectionString);
     }
 
     [AfterScenario]
     public async Task Teardown()
     {
-        await DbInitializer.Drop(_connectionString, _outputHelper).ConfigureAwait(false);
+        await DbInitializer.Drop(_connectionString).ConfigureAwait(false);
     }
 
     [Given(@"a running auth server")]
@@ -84,10 +86,12 @@ public partial class FeatureTest : IAsyncDisposable
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        _fixture?.Dispose();
-        _responseMessage?.Dispose();
-        _pollingTask?.Dispose();
-        await DbInitializer.Drop(_connectionString, _outputHelper).ConfigureAwait(false);
+        _fixture.Dispose();
+        _responseMessage.Dispose();
+        _pollingTask.Dispose();
+        await DbInitializer.Drop(_connectionString);
+        await _postgresContainer.StopAsync();
+        await _postgresContainer.DisposeAsync();
         GC.SuppressFinalize(this);
     }
 }

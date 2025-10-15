@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace DotAuth.Stores.Marten.AcceptanceTests;
+﻿namespace DotAuth.Stores.Marten.AcceptanceTests;
 
 using System;
 using System.Collections.Generic;
@@ -21,16 +20,12 @@ public static class DbInitializer
     public static async Task<string> Init(
         ITestOutputHelper output,
         string connectionString,
-        IEnumerable<Consent> consents,
-        IEnumerable<ResourceOwner> users,
-        IEnumerable<Client> clients,
-        IEnumerable<Scope> scopes)
+        IEnumerable<Consent>? consents = null,
+        IEnumerable<ResourceOwner>? users = null,
+        IEnumerable<Client>? clients = null,
+        IEnumerable<Scope>? scopes = null)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            throw new ArgumentException("Connection string cannot be null or empty", nameof(connectionString));
-        }
-
+        var builder = new NpgsqlConnectionStringBuilder(connectionString);
         var connection = new NpgsqlConnection(connectionString);
         await using var _ = connection.ConfigureAwait(false);
         try
@@ -51,12 +46,11 @@ public static class DbInitializer
                 }
             }
 
-            var schema = $"test_{DateTimeOffset.UtcNow.Ticks}";
+            var schema = $"test_{DateTime.UtcNow.Ticks}";
             var cmd = connection.CreateCommand();
             cmd.CommandText = $"CREATE SCHEMA {schema} AUTHORIZATION dotauth; ";
             await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-
-            var builder = new NpgsqlConnectionStringBuilder(connectionString) { Timezone = "UTC", SearchPath = schema };
+            builder.SearchPath = schema;
 
             await Seed(builder.ConnectionString, schema, consents, users, clients, scopes).ConfigureAwait(false);
             return builder.ConnectionString;
@@ -75,38 +69,28 @@ public static class DbInitializer
         IEnumerable<Client>? clients,
         IEnumerable<Scope>? scopes)
     {
-        await using var store = new DocumentStore(
-            new DotAuthMartenOptions(
-                connectionString,
-                new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
-                searchPath));
-        var session = store.LightweightSession("test");
+        var options = new DotAuthMartenOptions(
+            connectionString,
+            new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
+            searchPath);
+        await using var store = new DocumentStore(options);
+        await using var session = store.LightweightSession();
         await using var _ = session.ConfigureAwait(false);
-        if (users != null) session.Store(users.ToArray());
         if (consents != null) session.Store(consents.ToArray());
+        if (users != null) session.Store(users.ToArray());
         if (clients != null) session.Store(clients.ToArray());
         if (scopes != null) session.Store(scopes.Select(ScopeContainer.Create).ToArray());
         await session.SaveChangesAsync().ConfigureAwait(false);
     }
 
-    public static async Task Drop(string connectionString, ITestOutputHelper outputHelper)
+    public static async Task Drop(string connectionString)
     {
-        try
-        {
-            var connection = new NpgsqlConnection(connectionString);
-            NpgsqlConnection.ClearPool(connection);
-            await using var _ = connection.ConfigureAwait(false);
-            await connection.OpenAsync().ConfigureAwait(false);
-            var builder = new NpgsqlConnectionStringBuilder(connectionString);
-            var cmd = connection.CreateCommand();
-            cmd.CommandText = $"DROP SCHEMA {builder.SearchPath} CASCADE;";
-
-            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-        }
-        catch (Exception exception)
-        {
-            outputHelper.WriteLine(exception.Message);
-        }
+        NpgsqlConnection.ClearAllPools();
+        using var connection = new NpgsqlConnection(connectionString);
+        await connection.OpenAsync().ConfigureAwait(false);
+        var builder = new NpgsqlConnectionStringBuilder { ConnectionString = connectionString };
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = $"DROP SCHEMA {builder.SearchPath} CASCADE;";
+        await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
     }
 }
-#nullable disable

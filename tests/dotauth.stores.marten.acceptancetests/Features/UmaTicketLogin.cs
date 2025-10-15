@@ -90,7 +90,7 @@ public partial class FeatureTest
         var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal("Hello", content);
+        Assert.Equal("\"Hello\"", content);
     }
 
     [When(@"creating resource set without policy")]

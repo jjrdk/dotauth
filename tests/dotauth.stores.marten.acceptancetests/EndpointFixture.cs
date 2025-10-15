@@ -18,36 +18,34 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
+using Testcontainers.PostgreSql;
 using Xunit;
 using Xunit.Abstractions;
 
-public sealed class EndpointFixture : IDisposable
+public sealed class EndpointFixture : IAsyncDisposable
 {
-    private readonly ITestOutputHelper _outputHelper;
     private const string BaseUrl = "http://localhost:5000";
     private readonly TestServerFixture _server;
     private readonly string _connectionString;
+    private readonly PostgreSqlContainer _postgresContainer;
 
     public EndpointFixture(ITestOutputHelper outputHelper)
     {
-        _outputHelper = outputHelper;
-        _outputHelper.WriteLine("Created endpoint fixture");
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).Build();
-
+        _postgresContainer = new PostgreSqlBuilder().WithUsername("dotauth").WithPassword("dotauth")
+            .WithDatabase("dotauth").Build();
+        _postgresContainer.StartAsync().GetAwaiter().GetResult();
+        _connectionString = _postgresContainer.GetConnectionString();
         IdentityModelEventSource.ShowPII = true;
 
         _connectionString = DbInitializer.Init(
                 outputHelper,
-                configuration["Db:ConnectionString"]!,
+                _connectionString,
                 DefaultStores.Consents(),
                 DefaultStores.Users(),
                 DefaultStores.Clients(SharedContext.Instance),
                 DefaultStores.Scopes())
-            .Result;
-        _outputHelper.WriteLine("Created connection string");
-        _outputHelper.WriteLine(_connectionString);
+            .GetAwaiter().GetResult();
         _server = new TestServerFixture(outputHelper, _connectionString, BaseUrl);
     }
 
@@ -71,12 +69,11 @@ public sealed class EndpointFixture : IDisposable
         Assert.Equal(statusCode, httpResult.StatusCode);
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
-        _server?.Dispose();
-        _outputHelper.WriteLine("Dropping db with connection string");
-        _outputHelper.WriteLine(_connectionString);
-        DbInitializer.Drop(_connectionString, _outputHelper).Wait();
+        _server.Dispose();
+        await DbInitializer.Drop(_connectionString);
+        await _postgresContainer.DisposeAsync().AsTask();
     }
 }

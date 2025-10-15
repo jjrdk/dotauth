@@ -58,7 +58,6 @@ public partial class FeatureTest : IAsyncDisposable
                 DefaultStores.Clients(SharedContext.Instance),
                 DefaultStores.Scopes())
             .ConfigureAwait(false);
-        // var builder = new NpgsqlConnectionStringBuilder(_connectionString);
     }
 
     [AfterScenario]
@@ -101,7 +100,11 @@ public partial class FeatureTest : IAsyncDisposable
         _fixture.Dispose();
         _responseMessage.Dispose();
         _pollingTask.Dispose();
-        await DbInitializer.Drop(_connectionString).ConfigureAwait(false);
+        await DbInitializer.Drop(_connectionString);
+        await _redisContainer.StopAsync();
+        await _postgresContainer.StopAsync();
+        await _redisContainer.DisposeAsync();
+        await _postgresContainer.DisposeAsync();
         GC.SuppressFinalize(this);
     }
 }

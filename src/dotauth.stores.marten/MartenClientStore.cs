@@ -59,7 +59,7 @@ public sealed class MartenClientStore : IClientRepository
             _logger.LogWarning("Client {ClientId} not found", clientId);
         }
 
-        return default;
+        return null;
     }
 
     /// <inheritdoc />
@@ -146,6 +146,5 @@ public sealed class MartenClientStore : IClientRepository
         session.Delete<Client>(existing);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
-
     }
 }

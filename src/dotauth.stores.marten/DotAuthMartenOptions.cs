@@ -17,7 +17,6 @@ using DotAuth.Stores.Marten.Containers;
 using global::Marten;
 using JasperFx;
 using JasperFx.Core.Reflection;
-using Npgsql;
 using Weasel.Core;
 
 /// <summary>
@@ -38,7 +37,6 @@ public sealed class DotAuthMartenOptions : StoreOptions
         string searchPath = "",
         AutoCreate autoCreate = AutoCreate.CreateOrUpdate)
     {
-        NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
         Serializer<CustomJsonSerializer>();
         Connection(connectionString);
         if (logger != null)
@@ -109,9 +107,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
                 return jsonObj.ToJsonString(MartenSerializerContext.Default.Options);
             }
 
-            return document == null
-                ? "null"
-                : JsonSerializer.Serialize(document, document.GetType(), MartenSerializerContext.Default);
+            return JsonSerializer.Serialize(document, document.GetType(), MartenSerializerContext.Default);
         }
 
         /// <inheritdoc />

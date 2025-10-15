@@ -8,7 +8,6 @@ using DotAuth.Repositories;
 using DotAuth.Stores.Marten;
 using DotAuth.UI;
 using global::Marten;
-using JasperFx;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -52,7 +51,7 @@ public sealed class ServerStartup
         _context = context;
         _connectionString = connectionString;
         _outputHelper = outputHelper;
-        var builder = new NpgsqlConnectionStringBuilder { ConnectionString = _connectionString };
+        var builder = new NpgsqlConnectionStringBuilder { ConnectionString = _connectionString};
         _schemaName = builder.SearchPath ?? "public";
     }
 
@@ -65,13 +64,12 @@ public sealed class ServerStartup
                 new DotAuthMartenOptions(
                     _connectionString,
                     new MartenLoggerFacade(NullLogger<MartenLoggerFacade>.Instance),
-                    _schemaName,
-                    AutoCreate.CreateOrUpdate)));
+                    _schemaName)));
         services.AddTransient<Func<IDocumentSession>>(
             sp =>
             {
                 var store = sp.GetRequiredService<IDocumentStore>();
-                return () => store.LightweightSession("test");
+                return () => store.LightweightSession();
             });
 
         services.AddCors(
