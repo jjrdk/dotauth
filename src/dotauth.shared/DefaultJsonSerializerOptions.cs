@@ -213,6 +213,7 @@ internal sealed class RegexConverter : JsonConverter<Regex>
 [JsonSerializable(typeof(AddResourceSetResponse))]
 [JsonSerializable(typeof(AddResourceOwnerResponse))]
 [JsonSerializable(typeof(AddScopeResponse))]
+[JsonSerializable(typeof(CheckSessionResponse))]
 [JsonSerializable(typeof(AuthorizationResponse))]
 [JsonSerializable(typeof(DeviceAuthorizationResponse))]
 [JsonSerializable(typeof(DiscoveryInformation))]

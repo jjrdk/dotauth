@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 /// <summary>
 /// Defines the client secret types.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<ClientSecretTypes>))]
 public enum ClientSecretTypes
 {
     /// <summary>

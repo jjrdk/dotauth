@@ -10,6 +10,7 @@ using DotAuth.Filters;
 using DotAuth.Shared;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -48,7 +49,7 @@ public sealed class SessionController : ControllerBase
     [HttpGet(CoreConstants.EndPoints.CheckSession)]
     public Task<IActionResult> CheckSession()
     {
-        return Task.FromResult<IActionResult>(Ok(new { CookieName = CoreConstants.SessionId }));
+        return Task.FromResult<IActionResult>(Ok(new CheckSessionResponse{ CookieName = CoreConstants.SessionId }));
     }
 
     /// <summary>

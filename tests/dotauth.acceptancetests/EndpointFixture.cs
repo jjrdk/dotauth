@@ -40,15 +40,20 @@ public sealed class EndpointFixture
     [InlineData("error/404", HttpStatusCode.NotFound)]
     [InlineData("home", HttpStatusCode.OK)]
     [InlineData(".well-known/openid-configuration", HttpStatusCode.OK)]
-    [InlineData("authenticate", HttpStatusCode.OK)]
+    [InlineData("authenticate", HttpStatusCode.OK, true)]
     [InlineData("jwks", HttpStatusCode.OK)]
-    public async Task WhenRequestingEndpointThenReturnsExpectedStatus(string path, HttpStatusCode statusCode)
+    public async Task WhenRequestingEndpointThenReturnsExpectedStatus(string path, HttpStatusCode statusCode, bool asHtml = false)
     {
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
             RequestUri = new Uri($"{BaseUrl}/{path}")
         };
+        if (asHtml)
+        {
+            httpRequest.Headers.Accept.Clear();
+            httpRequest.Headers.Accept.Add(new("text/html"));
+        }
 
         var httpResult = await _server.Client().SendAsync(httpRequest);
 

@@ -64,13 +64,10 @@ public sealed class FakeStartup
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { })
             .AddFakeCustomAuth(_ => { });
 
-        var symmetricAlgorithm = Aes.Create();
-        symmetricAlgorithm.GenerateIV();
-        symmetricAlgorithm.GenerateKey();
         services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>()
             .AddDotAuthServer(options =>
                 {
-                    options.DataProtector = _ => new SymmetricDataProtector(symmetricAlgorithm);
+                    options.DataProtector = _ => new SymmetricDataProtector(CreateSymmetricAlgorithm());
                     options.AdministratorRoleDefinition = default;
                     options.Clients = sp => new InMemoryClientRepository(
                         sp.GetRequiredService<IHttpClientFactory>(),
@@ -91,6 +88,14 @@ public sealed class FakeStartup
                 return server!.CreateClient();
             });
         services.ConfigureOptions<JwtBearerPostConfigureOptions>();
+    }
+
+    private static Aes CreateSymmetricAlgorithm()
+    {
+        var symmetricAlgorithm = Aes.Create();
+        symmetricAlgorithm.GenerateIV();
+        symmetricAlgorithm.GenerateKey();
+        return symmetricAlgorithm;
     }
 
     public void Configure(IApplicationBuilder app)

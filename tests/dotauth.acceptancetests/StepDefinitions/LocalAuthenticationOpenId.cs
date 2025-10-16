@@ -31,6 +31,7 @@ public partial class FeatureTest
         var authorizationRequest = new AuthorizationRequest {client_id = "client"};
         var code = Uri.EscapeDataString(Protect(_dataProtector, authorizationRequest));
         var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/authenticate/openid?code={code}");
+        request.Headers.Add("Accept", "text/html");
         _responseMessage = await _fixture!.Client().SendAsync(request);
     }
 
