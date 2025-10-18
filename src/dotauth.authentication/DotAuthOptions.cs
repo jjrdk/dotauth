@@ -13,17 +13,17 @@ public class DotAuthOptions : RemoteAuthenticationOptions
     /// <summary>
     /// Gets or sets the provider-assigned client id.
     /// </summary>
-    public string ClientId { get; set; } = default!;
+    public string ClientId { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the provider-assigned client secret.
     /// </summary>
-    public string ClientSecret { get; set; } = default!;
+    public string ClientSecret { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the base URI of the authentication authority.
     /// </summary>
-    public Uri Authority { get; set; } = default!;
+    public Uri Authority { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the token validation parameters.

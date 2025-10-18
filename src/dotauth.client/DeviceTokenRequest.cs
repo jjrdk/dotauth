@@ -1,5 +1,6 @@
 ﻿namespace DotAuth.Client;
 
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -12,9 +13,9 @@ public sealed record DeviceTokenRequest : TokenRequest
     /// </summary>
     /// <param name="form">The request form.</param>
     /// <param name="interval">The polling interval.</param>
-    public DeviceTokenRequest(Dictionary<string, string> form, int interval) : base(form)
+    public DeviceTokenRequest(Dictionary<string, string> form, TimeSpan interval) : base(form)
     {
-        Interval = interval;
+        Interval = (int)interval.TotalSeconds;
     }
 
     /// <summary>

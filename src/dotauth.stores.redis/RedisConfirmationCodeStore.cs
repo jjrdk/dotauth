@@ -17,7 +17,7 @@ public sealed class RedisConfirmationCodeStore : IConfirmationCodeStore
     public RedisConfirmationCodeStore(IDatabaseAsync database, TimeSpan expiry = default)
     {
         _database = database;
-        _expiry = expiry == default ? TimeSpan.FromMinutes(30) : expiry;
+        _expiry = expiry == TimeSpan.Zero ? TimeSpan.FromMinutes(30) : expiry;
     }
 
     public async Task<ConfirmationCode?> Get(string code, string subject, CancellationToken cancellationToken)

@@ -89,7 +89,7 @@ public sealed class AuthorizationActionsFixture
             Substitute.For<IConsentRepository>(),
             new InMemoryJwksRepository(),
             _eventPublisherStub,
-            Array.Empty<IAuthenticateResourceOwnerService>(),
+            [],
             Substitute.For<ILogger>());
     }
 }

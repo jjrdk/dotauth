@@ -41,7 +41,7 @@ public partial class FeatureTest
         _addUserOperation = new AddUserOperation(
             _runtimeSettings!,
             _resourceOwnerRepository,
-            System.Array.Empty<IAccountFilter>(),
+            [],
             _subjectBuilder,
             _eventPublisher);
     }

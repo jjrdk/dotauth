@@ -52,7 +52,7 @@ public sealed class SmsCodeFixture : IDisposable
         // ACT : TWILIO NO CONFIGURED
         _server.SharedCtx.ConfirmationCodeStore
             .Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<ConfirmationCode?>(default));
+            .Returns(Task.FromResult<ConfirmationCode?>(null));
         _server.SharedCtx.ConfirmationCodeStore
             .Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(true));

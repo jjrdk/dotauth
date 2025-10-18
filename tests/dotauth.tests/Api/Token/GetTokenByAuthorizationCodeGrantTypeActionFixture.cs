@@ -595,7 +595,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         _tokenStoreFake = Substitute.For<ITokenStore>();
         _clientStore = Substitute.For<IClientStore>();
         _dotAuthOptions = new RuntimeSettings(
-            authorizationCodeValidityPeriod: authorizationCodeValidity == default
+            authorizationCodeValidityPeriod: authorizationCodeValidity == TimeSpan.Zero
                 ? TimeSpan.FromSeconds(3600)
                 : authorizationCodeValidity);
         _inMemoryJwksRepository = new InMemoryJwksRepository();

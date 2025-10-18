@@ -35,7 +35,7 @@ public sealed class DeviceAuthorizationController : ControllerBase
         RuntimeSettings settings,
         IClientStore clientStore,
         IDeviceAuthorizationStore deviceAuthorizationStore,
-        ILogger<DeviceController> logger)
+        ILogger<DeviceAuthorizationController> logger)
     {
         _actions = new DeviceAuthorizationActions(settings, deviceAuthorizationStore, clientStore, logger);
     }

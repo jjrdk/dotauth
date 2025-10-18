@@ -243,7 +243,7 @@ public class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
 
             return AuthenticationHeaderValue.TryParse(request.Headers[_idTokenHeader], out var idTokenHeader)
                 ? idTokenHeader.Parameter
-                : default;
+                : null;
         }
 
         private async Task<GrantedTokenResponse?> HasServerAccessToken()

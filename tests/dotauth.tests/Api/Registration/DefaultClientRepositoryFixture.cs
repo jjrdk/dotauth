@@ -42,7 +42,7 @@ public sealed class DefaultClientRepositoryFixture
             new TestHttpClientFactory(),
             new InMemoryScopeRepository([new Scope { Name = "scope" }]),
             Substitute.For<ILogger<InMemoryClientRepository>>(),
-            Array.Empty<Client>());
+            []);
     }
 
     [Fact]

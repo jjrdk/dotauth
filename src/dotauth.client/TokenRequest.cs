@@ -223,7 +223,7 @@ public record TokenRequest : IEnumerable<KeyValuePair<string?, string?>>
     /// <param name="deviceCode">The device code.</param>
     /// <param name="interval">The polling interval.</param>
     /// <returns>A <see cref="TokenRequest"/> instance.</returns>
-    public static TokenRequest FromDeviceCode(string clientId, string deviceCode, int interval)
+    public static TokenRequest FromDeviceCode(string clientId, string deviceCode, TimeSpan interval)
     {
         var dictionary = new Dictionary<string, string>
         {

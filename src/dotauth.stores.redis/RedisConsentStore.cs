@@ -18,7 +18,7 @@ public sealed class RedisConsentStore : IConsentRepository
     public RedisConsentStore(IDatabaseAsync database, TimeSpan expiry = default)
     {
         _database = database;
-        _expiry = expiry == default ? TimeSpan.FromDays(365 * 5) : expiry;
+        _expiry = expiry == TimeSpan.Zero ? TimeSpan.FromDays(365 * 5) : expiry;
     }
 
     public async Task<IReadOnlyCollection<Consent>> GetConsentsForGivenUser(

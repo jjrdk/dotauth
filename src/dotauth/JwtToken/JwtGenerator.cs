@@ -495,7 +495,7 @@ internal sealed class JwtGenerator
 
         // Set the auth_time if it's requested as an essential claim OR the max_age request is specified
         if ((authenticationTimeParameter is { Essential: true }
-             || !maxAge.Equals(default))
+             || !maxAge.Equals(0))
             && !string.IsNullOrWhiteSpace(authenticationInstantValue))
         {
             jwsPayload.Add(StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstantValue));

@@ -42,7 +42,7 @@ public sealed class AddUserOperationFixture
         _addResourceOwnerAction = new AddUserOperation(
             new RuntimeSettings(),
             _resourceOwnerRepositoryStub,
-            Array.Empty<IAccountFilter>(),
+            [],
             new DefaultSubjectBuilder(),
             _eventPublisher);
     }

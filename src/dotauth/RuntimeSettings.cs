@@ -35,18 +35,18 @@ public sealed class RuntimeSettings
         bool allowHttp = false,
         bool redirectToLogin = false)
     {
-        DevicePollingInterval = devicePollingInterval == default ? TimeSpan.FromSeconds(5) : devicePollingInterval;
-        DeviceAuthorizationLifetime = deviceAuthorizationLifetime == default ? TimeSpan.FromSeconds(1800) : deviceAuthorizationLifetime;
+        DevicePollingInterval = devicePollingInterval == TimeSpan.Zero ? TimeSpan.FromSeconds(5) : devicePollingInterval;
+        DeviceAuthorizationLifetime = deviceAuthorizationLifetime == TimeSpan.Zero ? TimeSpan.FromSeconds(1800) : deviceAuthorizationLifetime;
         AllowHttp = allowHttp;
         Salt = salt;
         PatLifeTime = patLifeTime;
         RedirectToLogin = redirectToLogin;
         OnResourceOwnerCreated = onResourceOwnerCreated ?? (r => { });
-        AuthorizationCodeValidityPeriod = authorizationCodeValidityPeriod == default
+        AuthorizationCodeValidityPeriod = authorizationCodeValidityPeriod == TimeSpan.Zero
             ? TimeSpan.FromHours(1)
             : authorizationCodeValidityPeriod;
-        RptLifeTime = rptLifeTime == default ? TimeSpan.FromHours(1) : rptLifeTime;
-        TicketLifeTime = ticketLifeTime == default ? TimeSpan.FromHours(1) : ticketLifeTime;
+        RptLifeTime = rptLifeTime == TimeSpan.Zero ? TimeSpan.FromHours(1) : rptLifeTime;
+        TicketLifeTime = ticketLifeTime == TimeSpan.Zero ? TimeSpan.FromHours(1) : ticketLifeTime;
         ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? [];
     }
 

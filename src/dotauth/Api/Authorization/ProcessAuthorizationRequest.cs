@@ -147,7 +147,7 @@ internal sealed class ProcessAuthorizationRequest
         }
 
         // Check if the user connection is still valid.
-        if (endUserIsAuthenticated && !authorizationParameter.MaxAge.Equals(default))
+        if (endUserIsAuthenticated && !authorizationParameter.MaxAge.Equals(0))
         {
             var authenticationDateTimeClaim =
                 claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);

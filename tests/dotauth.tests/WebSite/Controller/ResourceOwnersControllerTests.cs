@@ -35,7 +35,7 @@ public static class ResourceOwnersControllerTests
                     Substitute.For<IHttpClientFactory>(),
                     inMemoryScopeRepository,
                     Substitute.For<ILogger<InMemoryClientRepository>>()),
-                Array.Empty<AccountFilter>(),
+                [],
                 new NoOpPublisher());
         }
 

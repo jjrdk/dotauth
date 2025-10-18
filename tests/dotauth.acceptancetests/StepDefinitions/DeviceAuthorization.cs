@@ -83,7 +83,8 @@ public partial class FeatureTest
     public void WhenTheDevicePollsTheTokenServer()
     {
         _pollingTask = _tokenClient.GetToken(
-            TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode, _deviceResponse.Interval));
+            TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode,
+                TimeSpan.FromSeconds(_deviceResponse.Interval)));
 
         Assert.False(_pollingTask.IsCompleted);
     }
@@ -118,7 +119,8 @@ public partial class FeatureTest
     public async Task WhenTheDevicePollsTheTokenServerTooFast()
     {
         var fastPoll = Assert.IsType<Option<GrantedTokenResponse>.Error>(
-            await _tokenClient.GetToken(TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode, 1))
+            await _tokenClient.GetToken(TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode,
+                TimeSpan.FromSeconds(1)))
         );
 
         Assert.NotNull(fastPoll);
@@ -129,7 +131,8 @@ public partial class FeatureTest
     public void WhenTheDevicePollsTheTokenServerPollsProperly()
     {
         _pollingTask = _tokenClient.GetToken(
-            TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode, _deviceResponse.Interval));
+            TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode,
+                TimeSpan.FromSeconds(_deviceResponse.Interval)));
 
         Assert.False(_pollingTask.IsCompleted);
     }
@@ -137,8 +140,9 @@ public partial class FeatureTest
     [When(@"the device polls the token server after expiry")]
     public async Task WhenTheDevicePollsTheTokenServerAfterExpiry()
     {
-        _expiredPoll = await _tokenClient.GetToken(TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode, 7))
-            ;
+        _expiredPoll =
+            await _tokenClient.GetToken(TokenRequest.FromDeviceCode(ClientId, _deviceResponse.DeviceCode,
+                TimeSpan.FromSeconds(7)));
     }
 
     [Then(@"error shows request expiry")]

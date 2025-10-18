@@ -61,7 +61,7 @@
                                             }
                                         </td>
                                         <td>
-                                            <span>@string.Join(", ", ro.ExternalLogins?.Select(e => e.Issuer) ?? Array.Empty<string>())</span>
+                                            <span>@string.Join(", ", ro.ExternalLogins?.Select(e => e.Issuer) ?? [])</span>
                                         </td>
                                         <td>
                                             <span>@ro.CreateDateTime</span>

@@ -92,7 +92,7 @@ internal sealed class RazorOutputFormatter : TextOutputFormatter
                 ? new ErrorViewModel { Code = (int)details.Status, Title = details.Title, Message = details.Detail }
                 : context.Object;
             var view = viewEngineResult.View;
-            viewEngineResult.EnsureSuccessful(Array.Empty<string>());
+            viewEngineResult.EnsureSuccessful([]);
             var output = new StreamWriter(httpContext.Response.Body);
             await using var _ = output.ConfigureAwait(false);
 

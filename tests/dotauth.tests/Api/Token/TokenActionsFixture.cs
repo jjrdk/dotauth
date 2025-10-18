@@ -57,7 +57,7 @@ public sealed class TokenActionsFixture
             Substitute.For<IScopeRepository>(),
             new InMemoryJwksRepository(),
             new InMemoryResourceOwnerRepository(string.Empty),
-            Array.Empty<IAuthenticateResourceOwnerService>(),
+            [],
             eventPublisher,
             Substitute.For<ITokenStore>(),
             Substitute.For<IDeviceAuthorizationStore>(),

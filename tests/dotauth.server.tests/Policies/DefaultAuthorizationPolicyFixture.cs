@@ -127,7 +127,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         await Assert.ThrowsAsync<NullReferenceException>(() => _authorizationPolicy.Execute(
                 null!,
                 UmaConstants.IdTokenType,
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 new PolicyRule()))
             ;
@@ -165,7 +165,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#IDToken",
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;
@@ -197,7 +197,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "bad_format",
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;
@@ -255,7 +255,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;
@@ -287,7 +287,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;
@@ -319,7 +319,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;
@@ -351,7 +351,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;
@@ -383,7 +383,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;
@@ -415,7 +415,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;
@@ -441,7 +441,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 UmaConstants.IdTokenType,
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;
@@ -467,7 +467,7 @@ public sealed class DefaultAuthorizationPolicyFixture
         var result = await _authorizationPolicy.Execute(
                 ticket,
                 UmaConstants.IdTokenType,
-                Array.Empty<Claim>(),
+                [],
                 CancellationToken.None,
                 authorizationPolicy)
             ;

@@ -147,7 +147,7 @@ internal sealed class InMemoryScopeRepository : IScopeRepository
     {
         _scopes = scopes == null || scopes.Count == 0
             ? _defaultScopes
-            : scopes.Concat(includeDefaultScopes ? _defaultScopes.AsEnumerable() : Array.Empty<Scope>())
+            : scopes.Concat(includeDefaultScopes ? _defaultScopes.AsEnumerable() : [])
                 .Distinct()
                 .ToList();
     }

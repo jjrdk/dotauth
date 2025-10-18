@@ -92,7 +92,7 @@ public sealed class UpdateClientActionFixture
             Substitute.For<IHttpClientFactory>(),
             new InMemoryScopeRepository(),
             Substitute.For<ILogger<InMemoryClientRepository>>(),
-            clients ?? Array.Empty<Client>());
+            clients ?? []);
         _scopeRepositoryStub = Substitute.For<IScopeRepository>();
     }
 }

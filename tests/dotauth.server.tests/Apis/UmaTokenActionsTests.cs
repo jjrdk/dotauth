@@ -58,7 +58,7 @@ public class UmaTokenActionsTests
                     Arg.Any<ClaimTokenParameter>(),
                     Arg.Any<CancellationToken>())
             .Returns(
-                new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, Array.Empty<Claim>()));
+                new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, []));
         var jwksStore = Substitute.For<IJwksStore>();
         var eventPublisher = Substitute.For<IEventPublisher>();
         _tokenActions = new UmaTokenActions(

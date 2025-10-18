@@ -25,7 +25,7 @@ public sealed class RedisAuthorizationCodeStore : IAuthorizationCodeStore
     public RedisAuthorizationCodeStore(IDatabaseAsync database, TimeSpan expiry = default)
     {
         _database = database;
-        _expiry = expiry == default ? TimeSpan.FromMinutes(30) : expiry;
+        _expiry = expiry == TimeSpan.Zero ? TimeSpan.FromMinutes(30) : expiry;
     }
 
     /// <inheritdoc />

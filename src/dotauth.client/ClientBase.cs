@@ -96,7 +96,7 @@ public abstract class ClientBase
         if (result.IsSuccessStatusCode && result.StatusCode != HttpStatusCode.NoContent)
         {
             return content.Length == 0
-                ? new Option<T>.Result(default!)
+                ? new Option<T>.Result(null!)
                 : (await JsonSerializer.DeserializeAsync<T>(content, SharedSerializerContext.Default.Options,
                     cancellationToken))!;
         }

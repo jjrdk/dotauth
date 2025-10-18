@@ -29,7 +29,7 @@ public sealed class ConsentHelperFixture
 
         _consentRepositoryFake
             .GetConsentsForGivenUser(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<Consent>());
+            .Returns([]);
 
         var result = await _consentRepositoryFake
                 .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)

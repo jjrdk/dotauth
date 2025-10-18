@@ -52,7 +52,7 @@ public sealed class MartenJwksRepository : IJwksRepository
             .ConfigureAwait(false);
         if (webKeys.Count == 0)
         {
-            return default;
+            return null;
         }
 
         var webKey = webKeys.First(x => x.Jwk.KeyOps.Contains(KeyOperations.Sign));
@@ -81,7 +81,7 @@ public sealed class MartenJwksRepository : IJwksRepository
             .ConfigureAwait(false);
         if (webKeys.Count == 0)
         {
-            return default;
+            return null;
         }
 
         var webKey = webKeys.First(x => x.Jwk.KeyOps.Contains(KeyOperations.Encrypt));
@@ -110,7 +110,7 @@ public sealed class MartenJwksRepository : IJwksRepository
             .ConfigureAwait(false);
         if (webKeys.Count == 0)
         {
-            return default;
+            return null;
         }
 
         var webKey = webKeys.OrderBy(x => x.Jwk.KeyId).First(x => x.Jwk.KeyOps.Contains(KeyOperations.Sign));

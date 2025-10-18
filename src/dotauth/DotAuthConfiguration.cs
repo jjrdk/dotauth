@@ -36,16 +36,16 @@ public sealed class DotAuthConfiguration
     /// <param name="ticketLifetime">The ticket lifetime.</param>
     /// <param name="claimsIncludedInUserCreation">The claims included in user creation.</param>
     public DotAuthConfiguration(
-        string? salt = default,
+        string? salt = null,
         TimeSpan authorizationCodeValidity = default,
         TimeSpan rptLifetime = default,
         TimeSpan ticketLifetime = default,
         string[]? claimsIncludedInUserCreation = null)
     {
         Salt = salt ?? string.Empty;
-        RptLifeTime = rptLifetime == default ? TimeSpan.FromMinutes(30) : rptLifetime;
-        TicketLifeTime = ticketLifetime == default ? TimeSpan.FromMinutes(30) : ticketLifetime;
-        AuthorizationCodeValidityPeriod = authorizationCodeValidity == default
+        RptLifeTime = rptLifetime == TimeSpan.Zero ? TimeSpan.FromMinutes(30) : rptLifetime;
+        TicketLifeTime = ticketLifetime == TimeSpan.Zero ? TimeSpan.FromMinutes(30) : ticketLifetime;
+        AuthorizationCodeValidityPeriod = authorizationCodeValidity == TimeSpan.Zero
             ? TimeSpan.FromMinutes(30)
             : authorizationCodeValidity;
         ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? [];

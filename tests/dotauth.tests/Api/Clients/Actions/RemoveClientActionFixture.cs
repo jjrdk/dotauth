@@ -31,7 +31,7 @@ public sealed class RemoveClientActionFixture
         Substitute.For<IHttpClientFactory>(),
         new InMemoryScopeRepository(),
         Substitute.For<ILogger<InMemoryClientRepository>>(),
-        Array.Empty<Client>());
+        []);
 
     [Fact]
     public async Task When_Passing_Not_Existing_Client_Id_Then_ReturnsFalse()
