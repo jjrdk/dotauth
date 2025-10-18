@@ -64,8 +64,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotauth.client.maui", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotauth.authentication", "src\dotauth.authentication\dotauth.authentication.csproj", "{9175D30E-4F3F-4C99-ADE9-31CF905BF341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotauth.authentication.acceptancetests", "tests\dotauth.authentication.acceptancetests\dotauth.authentication.acceptancetests.csproj", "{8BE474A7-D727-40B7-A934-9294BFC39A23}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotauth.uma", "src\dotauth.uma\dotauth.uma.csproj", "{A4CD1FF6-44DB-4548-B5EA-C214B869DBB6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotauth.uma.web", "src\dotauth.uma.web\dotauth.uma.web.csproj", "{ECE1D125-31C7-44E6-A048-B60F438600B3}"
@@ -158,10 +156,6 @@ Global
 		{9175D30E-4F3F-4C99-ADE9-31CF905BF341}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9175D30E-4F3F-4C99-ADE9-31CF905BF341}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9175D30E-4F3F-4C99-ADE9-31CF905BF341}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8BE474A7-D727-40B7-A934-9294BFC39A23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8BE474A7-D727-40B7-A934-9294BFC39A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8BE474A7-D727-40B7-A934-9294BFC39A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8BE474A7-D727-40B7-A934-9294BFC39A23}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A4CD1FF6-44DB-4548-B5EA-C214B869DBB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4CD1FF6-44DB-4548-B5EA-C214B869DBB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4CD1FF6-44DB-4548-B5EA-C214B869DBB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -188,7 +182,6 @@ Global
 		{FD6C01E0-2D69-4E99-9BCE-D22D2FFE81C3} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{CC911812-F5B2-4CA0-BCED-A4E5BDCDF8B2} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{EA158D2F-FACE-4F2D-B25E-7871164B0626} = {6E546AD0-8248-45A6-AA58-F4FED3C7396F}
-		{8BE474A7-D727-40B7-A934-9294BFC39A23} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 		{6FE8D8B0-F77C-43E4-8A08-06C340CC7138} = {61FEE5E3-A936-4471-89F8-B1A4637FADF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
