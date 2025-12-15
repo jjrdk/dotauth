@@ -421,8 +421,7 @@ public sealed class ResourceSetController : ControllerBase
                         .Select(x => x.Trim())
                         .ToArray(),
             Claims =
-                viewModel.Claims.Where(
-                        x => !string.IsNullOrWhiteSpace(x.Type) && !string.IsNullOrWhiteSpace(x.Value))
+                viewModel.Claims.Where(x => !string.IsNullOrWhiteSpace(x.Type) && !string.IsNullOrWhiteSpace(x.Value))
                     .ToArray(),
             ClientIdsAllowed =
                 viewModel.ClientIdsAllowed == null

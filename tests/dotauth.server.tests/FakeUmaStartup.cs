@@ -62,7 +62,7 @@ public sealed class FakeUmaStartup
         services.AddAuthorization(
             opts =>
             {
-                opts.AddAuthPolicies((OpenIdClaimTypes.Role, "administrator"), DefaultSchema)
+                opts.AddAuthPolicies((OpenIdClaimTypes.Role, "administrator"), [DefaultSchema])
                     .AddPolicy(
                         "UmaProtection",
                         policy =>

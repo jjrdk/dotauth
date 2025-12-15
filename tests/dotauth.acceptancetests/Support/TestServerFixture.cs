@@ -5,13 +5,14 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
 using Xunit.Abstractions;
 
 public sealed class TestServerFixture : IDisposable
 {
     private readonly SharedContext _sharedCtx;
 
-    public TestServer Server { get; }
+    public IHost Server { get; }
 
     public Func<HttpClient> Client { get; }
 
@@ -19,27 +20,27 @@ public sealed class TestServerFixture : IDisposable
     {
         _sharedCtx = SharedContext.Instance;
         var startup = new ServerStartup(_sharedCtx, outputHelper);
-        Server = new TestServer(
-            new WebHostBuilder().UseUrls(urls)
-                .ConfigureServices(
-                    services => { startup.ConfigureServices(services); })
+        Server = new HostBuilder().ConfigureWebHost(builder =>
+        {
+            builder.UseUrls(urls).UseTestServer()
+                .ConfigureServices(services => { startup.ConfigureServices(services); })
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
-                .Configure(startup.Configure));
+                .Configure(startup.Configure);
+        }).Start();
         Client = () =>
         {
-            var c = Server.CreateClient();
+            var c = Server.GetTestClient();
             c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             return c;
         };
 
-        _sharedCtx.Client = Server.CreateClient();
-        _sharedCtx.Handler = Server.CreateHandler();
+        _sharedCtx.Client = Server.GetTestClient();
     }
 
     public void Dispose()
     {
-        Server.Dispose();
         Client.Invoke().Dispose();
+        Server.Dispose();
         GC.SuppressFinalize(this);
     }
 }

@@ -239,6 +239,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
 [JsonSerializable(typeof(Client))]
 [JsonSerializable(typeof(ClientSecret))]
 [JsonSerializable(typeof(ClaimData))]
+[JsonSerializable(typeof(Dictionary<string, object[]>))]
 [JsonSerializable(typeof(Dictionary<string, object>))]
 [JsonSerializable(typeof(ErrorDetails))]
 [JsonSerializable(typeof(GrantedToken))]

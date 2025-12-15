@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Xunit.Abstractions;
 
 public sealed class TestServerFixture : IDisposable
@@ -22,8 +23,11 @@ public sealed class TestServerFixture : IDisposable
     {
         SharedCtx = SharedContext.Instance;
         var startup = new ServerStartup(SharedCtx, connectionString, redisConnectionString, outputHelper);
-        Server = new TestServer(
-            new WebHostBuilder().UseUrls(urls)
+        var host = new HostBuilder().ConfigureWebHost(builder =>
+        {
+            builder
+                .UseTestServer()
+                .UseUrls(urls)
                 .UseConfiguration(
                     new ConfigurationBuilder().AddJsonFile("appsettings.json", false, false).AddEnvironmentVariables()
                         .Build())
@@ -33,7 +37,10 @@ public sealed class TestServerFixture : IDisposable
                     startup.ConfigureServices(services);
                 })
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(ServerStartup).Assembly.FullName)
-                .Configure(startup.Configure));
+                .Configure(startup.Configure);
+        }).Build();
+        host.Start();
+        Server = host.GetTestServer();
         Client = () => Server.CreateClient();
         SharedCtx.Client = Client;
         SharedCtx.Handler = () => Server.CreateHandler();

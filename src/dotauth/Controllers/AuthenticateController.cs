@@ -23,8 +23,8 @@ using DotAuth.ViewModels;
 using DotAuth.WebSite.Authenticate;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 
@@ -46,7 +46,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     /// </summary>
     /// <param name="dataProtectionProvider">The data protection provider.</param>
     /// <param name="urlHelperFactory">The URL helper factory.</param>
-    /// <param name="actionContextAccessor">The action context accessor.</param>
+    /// <param name="httpContextAccessor">The HTTP Context accessor</param>
     /// <param name="eventPublisher">The event publisher.</param>
     /// <param name="authenticationService">The authentication service.</param>
     /// <param name="authenticationSchemeProvider">The authentication scheme provider.</param>
@@ -67,7 +67,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     public AuthenticateController(
         IDataProtectionProvider dataProtectionProvider,
         IUrlHelperFactory urlHelperFactory,
-        IActionContextAccessor actionContextAccessor,
+        IHttpContextAccessor httpContextAccessor,
         IEventPublisher eventPublisher,
         IAuthenticationService authenticationService,
         IAuthenticationSchemeProvider authenticationSchemeProvider,
@@ -88,7 +88,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         : base(
             dataProtectionProvider,
             urlHelperFactory,
-            actionContextAccessor,
+            httpContextAccessor,
             eventPublisher,
             authenticationService,
             authenticationSchemeProvider,
@@ -131,7 +131,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     {
         var authenticatedUser = await SetUser().ConfigureAwait(false);
         var hasReturnUrl = Request.Query.TryGetValue("ReturnUrl", out var returnUrl);
-        if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
+        if (authenticatedUser?.Identity is not { IsAuthenticated: true })
         {
             var viewModel = new AuthorizeViewModel { ReturnUrl = returnUrl };
             await SetIdProviders(viewModel).ConfigureAwait(false);
@@ -160,7 +160,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         }
 
         var authenticatedUser = await SetUser().ConfigureAwait(false);
-        if (authenticatedUser?.Identity != null && authenticatedUser.Identity.IsAuthenticated)
+        if (authenticatedUser?.Identity is { IsAuthenticated: true })
         {
             return RedirectToAction("Index", "User");
         }
@@ -182,7 +182,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 .ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                _logger.LogError(Strings.TheResourceOwnerCredentialsAreNotCorrect);
+                _logger.LogError("{Error}", Strings.TheResourceOwnerCredentialsAreNotCorrect);
                 var viewModel = new AuthorizeViewModel
                 {
                     Password = authorizeViewModel.Password,

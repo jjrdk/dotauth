@@ -76,8 +76,8 @@ public sealed class ServerStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddHttpClient<HttpClient>(_ => { })
-            .AddHttpMessageHandler(_ => new TestDelegatingHandler(_context.Handler!));
+        services.AddHttpClient<HttpClient>(_ => { });
+//            .AddHttpMessageHandler(_ => new TestDelegatingHandler(_context.Handler!));
         services.AddTransient(_ => _context.Client!);
         var mockSmsClient = Substitute.For<ISmsClient>();
         mockSmsClient.SendMessage(Arg.Any<string>(), Arg.Any<string>()).Returns((true, null));

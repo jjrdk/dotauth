@@ -105,7 +105,7 @@ public static class ClaimPrincipalExtensions
     /// <returns>the user's client.</returns>
     public static string GetClientId(this ClaimsPrincipal? principal)
     {
-        if (principal?.Identity == null || !principal.Identity.IsAuthenticated)
+        if (principal?.Identity is not { IsAuthenticated: true })
         {
             return string.Empty;
         }

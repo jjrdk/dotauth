@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 
 /// <summary>
@@ -33,14 +34,16 @@ public sealed class Program
 #if DEBUG
         IdentityModelEventSource.ShowPII = true;
 #endif
-        using var webHost = new WebHostBuilder().UseKestrel(
-                o =>
-                {
-                    o.AddServerHeader = false;
-                    o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
-                })
-            .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
-            .UseStartup<Startup>()
+        using var webHost = new HostBuilder().ConfigureWebHost(builder =>
+            {
+                builder.UseKestrel(o =>
+                    {
+                        o.AddServerHeader = false;
+                        o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
+                    })
+                    .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
+                    .UseStartup<Startup>();
+            })
             .Build();
         await webHost.RunAsync()
             .ConfigureAwait(false);

@@ -16,6 +16,7 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using TechTalk.SpecFlow;
 using Xunit;
@@ -85,7 +86,7 @@ public partial class FeatureTest
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
             Method = HttpMethod.Post,
-            RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners/claims")
+            RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners/claims")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
@@ -190,7 +191,7 @@ public partial class FeatureTest
         {
             Method = HttpMethod.Delete,
             RequestUri = new Uri(
-                $"{_fixture!.Server.BaseAddress}resource_owners/claims?type=acceptance_test")
+                $"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners/claims?type=acceptance_test")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
@@ -219,7 +220,7 @@ public partial class FeatureTest
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Delete,
-            RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners/claims?type=some_other_claim")
+            RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners/claims?type=some_other_claim")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
         _responseMessage = await _fixture.Client().SendAsync(request);
@@ -231,7 +232,7 @@ public partial class FeatureTest
     [Then(@"when getting resource owner from store")]
     public async Task ThenWhenGettingResourceOwnerFromStore()
     {
-        var store = (IResourceOwnerStore)_fixture!.Server.Host.Services.GetRequiredService(
+        var store = (IResourceOwnerStore)_fixture!.Server.Services.GetRequiredService(
             typeof(IResourceOwnerStore));
         _resourceOwner = (await store.Get("administrator", CancellationToken.None))!;
     }
@@ -253,7 +254,7 @@ public partial class FeatureTest
     {
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Delete, RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners")
+            Method = HttpMethod.Delete, RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
         _responseMessage = await _fixture.Client().SendAsync(request);
@@ -281,7 +282,7 @@ public partial class FeatureTest
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
             Method = HttpMethod.Put,
-            RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners/claims")
+            RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners/claims")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",

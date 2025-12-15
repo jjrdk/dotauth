@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.Extensions.Hosting;
 
 public sealed class Program
 {
@@ -31,15 +32,17 @@ public sealed class Program
         Trace.Listeners.Clear();
         Trace.Listeners.Add(new ConsoleTraceListener
             { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
-        using var webHost = new WebHostBuilder()
-            .UseKestrel(
-                o =>
-                {
-                    o.AddServerHeader = false;
-                    o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
-                })
-            .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
-            .UseStartup<Startup>()
+        using var webHost = new HostBuilder().ConfigureWebHost(builder =>
+            {
+                builder
+                    .UseKestrel(o =>
+                    {
+                        o.AddServerHeader = false;
+                        o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
+                    })
+                    .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
+                    .UseStartup<Startup>();
+            })
             .Build();
         await webHost
             .RunAsync()

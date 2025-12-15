@@ -19,6 +19,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
 using Xunit.Abstractions;
 
 public sealed class TestOauthServerFixture : IDisposable
@@ -31,12 +32,17 @@ public sealed class TestOauthServerFixture : IDisposable
     {
         SharedCtx = new SharedContext();
         var startup = new FakeStartup(SharedCtx, outputHelper);
-        Server = new TestServer(
-            new WebHostBuilder()
+        var host = new HostBuilder().ConfigureWebHost(builder =>
+        {
+            builder
+                .UseTestServer()
                 .UseUrls("http://localhost:5000")
                 .ConfigureServices(startup.ConfigureServices)
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).Assembly.FullName)
-                .Configure(startup.Configure));
+                .Configure(startup.Configure);
+        }).Build();
+        host.Start();
+        Server = host.GetTestServer();
         Client = () =>
         {
             var c = Server.CreateClient();

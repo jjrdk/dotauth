@@ -19,6 +19,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
 using Xunit.Abstractions;
 
 public sealed class TestUmaServer : IDisposable
@@ -31,14 +32,17 @@ public sealed class TestUmaServer : IDisposable
     {
         SharedUmaCtx = new SharedUmaContext();
         var startup = new FakeUmaStartup(outputHelper);
-        Server = new TestServer(new WebHostBuilder()
-            .UseUrls("http://localhost:5000")
-            .ConfigureServices(services =>
-            {
-                startup.ConfigureServices(services);
-            })
-            .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).Assembly.FullName)
-            .Configure(startup.Configure));
+        var host = new HostBuilder().ConfigureWebHost(builder =>
+        {
+            builder
+                .UseTestServer()
+                .UseUrls("http://localhost:5000")
+                .ConfigureServices(services => { startup.ConfigureServices(services); })
+                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).Assembly.FullName)
+                .Configure(startup.Configure);
+        }).Build();
+        host.Start();
+        Server = host.GetTestServer();
         Client = () =>
         {
             var c = Server.CreateClient();

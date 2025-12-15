@@ -16,6 +16,7 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.IdentityModel.Tokens;
 using TechTalk.SpecFlow;
 using Xunit;
@@ -115,7 +116,7 @@ public partial class FeatureTest
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
             Method = HttpMethod.Post,
-            RequestUri = new Uri($"{_fixture!.Server.BaseAddress}resource_owners/claims")
+            RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners/claims")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             JwtBearerDefaults.AuthenticationScheme,

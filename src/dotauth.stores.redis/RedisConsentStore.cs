@@ -27,7 +27,7 @@ public sealed class RedisConsentStore : IConsentRepository
     {
         var consent = await _database.StringGetAsync(subject).ConfigureAwait(false);
         return consent.HasValue
-            ? JsonSerializer.Deserialize<Consent[]>(consent!, SharedSerializerContext.Default.ConsentArray)!
+            ? JsonSerializer.Deserialize<Consent[]>(consent.ToString(), SharedSerializerContext.Default.ConsentArray)!
             : [];
     }
 

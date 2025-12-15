@@ -24,7 +24,7 @@ public sealed class RedisConfirmationCodeStore : IConfirmationCodeStore
     {
         var confirmationCode = await _database.StringGetAsync(code).ConfigureAwait(false);
         return confirmationCode.HasValue
-            ? JsonSerializer.Deserialize<ConfirmationCode>(confirmationCode!,
+            ? JsonSerializer.Deserialize<ConfirmationCode>(confirmationCode.ToString(),
                 SharedSerializerContext.Default.ConfirmationCode)
             : null;
     }

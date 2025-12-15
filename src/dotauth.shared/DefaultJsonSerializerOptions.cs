@@ -30,7 +30,7 @@ internal sealed class JsonWebKeySetConverter : JsonConverter<JsonWebKeySet>
     {
         writer.WriteStartObject();
         writer.WritePropertyName("keys");
-        writer.WriteRawValue(JsonSerializer.Serialize(value.Keys, options));
+        writer.WriteRawValue(JsonSerializer.Serialize(value.Keys, options.GetTypeInfo(typeof(IList<JsonWebKey>))));
         writer.WriteEndObject();
     }
 }

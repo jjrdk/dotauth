@@ -49,19 +49,26 @@ public partial class FeatureTest
     {
         foreach (var row in table.Rows)
         {
-            var scopes = row["Scopes"]
-                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            var resourceSet = new ResourceSet
+            try
             {
-                Name = row["Name"],
-                Type = row["Type"],
-                Description = row["Description"],
-                Scopes = scopes,
-                AuthorizationPolicies = [new PolicyRule { Scopes = scopes }]
-            };
-            var option = await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false);
-            var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
-            _resourceId = resource.Item.Id;
+                var scopes = row["Scopes"]
+                    .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                var resourceSet = new ResourceSet
+                {
+                    Name = row["Name"],
+                    Type = row["Type"],
+                    Description = row["Description"],
+                    Scopes = scopes,
+                    AuthorizationPolicies = [new PolicyRule { Scopes = scopes }]
+                };
+                var option = await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false);
+                var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
+                _resourceId = resource.Item.Id;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
     }
 

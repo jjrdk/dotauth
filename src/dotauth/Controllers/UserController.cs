@@ -20,7 +20,6 @@ using DotAuth.WebSite.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 
@@ -49,7 +48,6 @@ public sealed class UserController : BaseController
     /// <param name="authenticationService">The authentication service.</param>
     /// <param name="authenticationSchemeProvider">The authentication scheme provider.</param>
     /// <param name="urlHelperFactory">The URL helper factory.</param>
-    /// <param name="actionContextAccessor">The action context accessor.</param>
     /// <param name="consentRepository">The consent repository.</param>
     /// <param name="scopeRepository"></param>
     /// <param name="twoFactorAuthenticationHandler">The two factor authentication handler.</param>
@@ -59,7 +57,6 @@ public sealed class UserController : BaseController
         IAuthenticationService authenticationService,
         IAuthenticationSchemeProvider authenticationSchemeProvider,
         IUrlHelperFactory urlHelperFactory,
-        IActionContextAccessor actionContextAccessor,
         IConsentRepository consentRepository,
         IScopeRepository scopeRepository,
         ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
@@ -73,7 +70,7 @@ public sealed class UserController : BaseController
         _authenticationSchemeProvider = authenticationSchemeProvider;
         _consentRepository = consentRepository;
         _scopeRepository = scopeRepository;
-        _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
+        _urlHelper = urlHelperFactory.GetUrlHelper(HttpContext.GetActionContext());
         _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
         _logger = logger;
     }
@@ -275,7 +272,7 @@ public sealed class UserController : BaseController
     {
         if (!string.IsNullOrWhiteSpace(error))
         {
-            _logger.LogError(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error);
+            _logger.LogError("{Error}", Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate);
             return SetRedirection(
                 string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error),
                 "500",
@@ -325,9 +322,7 @@ public sealed class UserController : BaseController
     {
         var externalClaims = await _authenticationService.GetAuthenticatedUser(this)
             .ConfigureAwait(false);
-        if (externalClaims?.Identity == null
-         || !externalClaims.Identity.IsAuthenticated
-         || externalClaims.Identity is not ClaimsIdentity identity)
+        if (externalClaims?.Identity is not ({ IsAuthenticated: true } and ClaimsIdentity identity))
         {
             return RedirectToAction("Index", "User");
         }
@@ -347,9 +342,7 @@ public sealed class UserController : BaseController
     {
         var externalClaims = await _authenticationService.GetAuthenticatedUser(this)
             .ConfigureAwait(false);
-        if (externalClaims?.Identity == null
-         || !externalClaims.Identity.IsAuthenticated
-         || externalClaims.Identity is not ClaimsIdentity)
+        if (externalClaims?.Identity is not ({ IsAuthenticated: true } and ClaimsIdentity))
         {
             return RedirectToAction("Profile", "User");
         }

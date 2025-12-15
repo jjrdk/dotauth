@@ -20,7 +20,7 @@ public partial class FeatureTest
     [Given(@"a data protector instance")]
     public void GivenADataProtectorInstance()
     {
-        _dataProtector = _fixture.Server.Host.Services
+        _dataProtector = _fixture.Server.Services
             .GetRequiredService<IDataProtectionProvider>()
             .CreateProtector("Request");
     }

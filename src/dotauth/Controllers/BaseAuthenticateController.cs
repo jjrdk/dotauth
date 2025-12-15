@@ -39,7 +39,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 
@@ -61,6 +60,7 @@ public abstract class BaseAuthenticateController : BaseController
     protected readonly IDataProtector DataProtector;
 
     private readonly IUrlHelper _urlHelper;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEventPublisher _eventPublisher;
     private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
     private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
@@ -77,7 +77,7 @@ public abstract class BaseAuthenticateController : BaseController
     /// </summary>
     /// <param name="dataProtectionProvider">The data protection provider.</param>
     /// <param name="urlHelperFactory">The URL helper factory.</param>
-    /// <param name="actionContextAccessor">The action context accessor.</param>
+    /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/> to use</param>
     /// <param name="eventPublisher">The event publisher.</param>
     /// <param name="authenticationService">The authentication service.</param>
     /// <param name="authenticationSchemeProvider">The authentication scheme provider.</param>
@@ -97,7 +97,7 @@ public abstract class BaseAuthenticateController : BaseController
     protected BaseAuthenticateController(
         IDataProtectionProvider dataProtectionProvider,
         IUrlHelperFactory urlHelperFactory,
-        IActionContextAccessor actionContextAccessor,
+        IHttpContextAccessor httpContextAccessor,
         IEventPublisher eventPublisher,
         IAuthenticationService authenticationService,
         IAuthenticationSchemeProvider authenticationSchemeProvider,
@@ -141,7 +141,8 @@ public abstract class BaseAuthenticateController : BaseController
             eventPublisher,
             logger);
         DataProtector = dataProtectionProvider.CreateProtector("Request");
-        _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
+        _urlHelper = urlHelperFactory.GetUrlHelper(httpContextAccessor.HttpContext!.GetActionContext());
+        _httpContextAccessor = httpContextAccessor;
         _eventPublisher = eventPublisher;
         _authenticationSchemeProvider = authenticationSchemeProvider;
         _addUser = new AddUserOperation(
@@ -166,12 +167,17 @@ public abstract class BaseAuthenticateController : BaseController
     [HttpGet]
     public async Task<IActionResult> Logout()
     {
-        HttpContext.Response.Cookies.Delete(CoreConstants.SessionId);
-        await _authenticationService.SignOutAsync(
-                HttpContext,
-                CookieNames.CookieName,
-                new AuthenticationProperties())
-            .ConfigureAwait(false);
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext != null)
+        {
+            httpContext.Response.Cookies.Delete(CoreConstants.SessionId);
+            await _authenticationService.SignOutAsync(
+                    httpContext,
+                    CookieNames.CookieName,
+                    new AuthenticationProperties())
+                .ConfigureAwait(false);
+        }
+
         return Redirect("/");
     }
 
@@ -208,8 +214,9 @@ public abstract class BaseAuthenticateController : BaseController
     {
         if (!string.IsNullOrWhiteSpace(error))
         {
-            _logger.LogError("{error}", string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
-            return SetRedirection(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error), Strings.InternalServerError, ErrorCodes.InternalError);
+            _logger.LogError("{Error}", string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+            return SetRedirection(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error),
+                Strings.InternalServerError, ErrorCodes.InternalError);
         }
 
         // 1. Get the authenticated user.
@@ -251,6 +258,7 @@ public abstract class BaseAuthenticateController : BaseController
             {
                 claims.Remove(nameIdentifier);
             }
+
             claims.Add(new Claim(ClaimTypes.NameIdentifier, subject));
             resourceOwner = await _resourceOwnerRepository.Get(subject, cancellationToken).ConfigureAwait(false);
         }
@@ -303,9 +311,9 @@ public abstract class BaseAuthenticateController : BaseController
         var authenticatedUser = await _authenticationService
             .GetAuthenticatedUser(this, CookieNames.TwoFactorCookieName)
             .ConfigureAwait(false);
-        if (authenticatedUser?.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
+        if (authenticatedUser?.Identity is not { IsAuthenticated: true })
         {
-            _logger.LogError("{error}", Strings.TwoFactorAuthenticationCannotBePerformed);
+            _logger.LogError("{Error}", Strings.TwoFactorAuthenticationCannotBePerformed);
             return SetRedirection(
                 Strings.TwoFactorAuthenticationCannotBePerformed,
                 Strings.InternalServerError,
@@ -370,7 +378,7 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
         if (authenticatedUser?.Identity?.IsAuthenticated != true)
         {
-            _logger.LogError("{error}", Strings.TwoFactorAuthenticationCannotBePerformed);
+            _logger.LogError("{Error}", Strings.TwoFactorAuthenticationCannotBePerformed);
             return BadRequest(
                 new ErrorDetails
                 {
@@ -408,10 +416,10 @@ public abstract class BaseAuthenticateController : BaseController
 
         // 3. Validate the confirmation code
         if (!await _validateConfirmationCode.Execute(codeViewModel.Code!, subject, cancellationToken)
-                .ConfigureAwait(false))
+            .ConfigureAwait(false))
         {
             _logger.LogError(
-                "Two factor authentication failed for subject: {subject}, auth request: {authRequestCode}, code: {code}",
+                "Two factor authentication failed for subject: {Subject}, auth request: {AuthRequestCode}, code: {Code}",
                 subject,
                 codeViewModel.AuthRequestCode,
                 codeViewModel.Code);
@@ -428,7 +436,7 @@ public abstract class BaseAuthenticateController : BaseController
 
         // 4. Remove the code
         if (string.IsNullOrWhiteSpace(codeViewModel.Code)
-            || !await _confirmationCodeStore.Remove(codeViewModel.Code, subject, cancellationToken)
+         || !await _confirmationCodeStore.Remove(codeViewModel.Code, subject, cancellationToken)
                 .ConfigureAwait(false))
         {
             ModelState.AddModelError("Code", "an error occurred while trying to remove the code");
@@ -581,7 +589,7 @@ public abstract class BaseAuthenticateController : BaseController
         var request = Request.Cookies[cookieName];
         if (request == null)
         {
-            _logger.LogError("{error}", Strings.TheRequestCannotBeExtractedFromTheCookie);
+            _logger.LogError("{Error}", Strings.TheRequestCannotBeExtractedFromTheCookie);
             return SetRedirection(
                 Strings.TheRequestCannotBeExtractedFromTheCookie,
                 Strings.InternalServerError,
@@ -603,7 +611,7 @@ public abstract class BaseAuthenticateController : BaseController
         // 3 : Raise an exception is there's an authentication error
         if (!string.IsNullOrWhiteSpace(error))
         {
-            _logger.LogError("{error}", string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+            _logger.LogError("{Error}", string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             return SetRedirection(
                 string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error),
                 Strings.InternalServerError,
@@ -616,8 +624,9 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
         if (authenticatedUser?.Identity?.IsAuthenticated != true || authenticatedUser.Identity is not ClaimsIdentity)
         {
-            _logger.LogError("{msg}", Strings.TheUserNeedsToBeAuthenticated);
-            return SetRedirection(Strings.TheUserNeedsToBeAuthenticated, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
+            _logger.LogError("{Msg}", Strings.TheUserNeedsToBeAuthenticated);
+            return SetRedirection(Strings.TheUserNeedsToBeAuthenticated, Strings.InternalServerError,
+                ErrorCodes.UnhandledExceptionCode);
         }
 
         // 5. Retrieve the claims & insert the resource owner if needed.
@@ -696,14 +705,13 @@ public abstract class BaseAuthenticateController : BaseController
     /// <returns></returns>
     protected async Task SetIdProviders(IdProviderAuthorizeViewModel authorizeViewModel)
     {
-        var schemes = (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(
-            p => !string.IsNullOrWhiteSpace(p.DisplayName) && !p.DisplayName.StartsWith('_'));
-        var idProviders = schemes.Select(
-                scheme => new IdProviderViewModel
-                {
-                    AuthenticationScheme = scheme.Name,
-                    DisplayName = scheme.DisplayName
-                })
+        var schemes = (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(p =>
+            !string.IsNullOrWhiteSpace(p.DisplayName) && !p.DisplayName.StartsWith('_'));
+        var idProviders = schemes.Select(scheme => new IdProviderViewModel
+            {
+                AuthenticationScheme = scheme.Name,
+                DisplayName = scheme.DisplayName
+            })
             .ToArray();
 
         authorizeViewModel.IdProviders = idProviders;
@@ -816,13 +824,13 @@ public abstract class BaseAuthenticateController : BaseController
             ExternalLogins =
             [
                 new ExternalAccountLink
-                    {
-                        Subject = authenticatedUser.GetSubject()!,
-                        Issuer = authenticatedUser.Identity!.AuthenticationType!,
-                        ExternalClaims = authenticatedUser.Claims
-                            .Select(x => new Claim(x.Type, x.Value, x.ValueType, x.Issuer))
-                            .ToArray()
-                    }
+                {
+                    Subject = authenticatedUser.GetSubject()!,
+                    Issuer = authenticatedUser.Identity!.AuthenticationType!,
+                    ExternalClaims = authenticatedUser.Claims
+                        .Select(x => new Claim(x.Type, x.Value, x.ValueType, x.Issuer))
+                        .ToArray()
+                }
             ],
             Password = Id.Create().ToSha256Hash(string.Empty),
             IsLocalAccount = false,

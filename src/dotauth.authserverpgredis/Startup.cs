@@ -263,6 +263,6 @@ internal sealed class Startup
                         x.KnownProxies.Add(proxy);
                     }
                 },
-                applicationTypes: typeof(IDefaultUi));
+                applicationTypes: [typeof(IDefaultUi)]);
     }
 }

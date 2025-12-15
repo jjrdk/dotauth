@@ -3,48 +3,72 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 
 internal static class HttpRequestsExtensions
 {
-    public static Uri GetAbsoluteUri(this HttpRequest requestMessage)
+    extension(HttpContext httpContext)
     {
-        var host = requestMessage.Host.Host;
-
-        var uri = new UriBuilder(requestMessage.Scheme, host);
-        if (requestMessage.Host.Port.HasValue)
+        public ActionContext GetActionContext()
         {
-            uri.Port = requestMessage.Host.Port.Value;
-        }
+            var endpoint = httpContext.GetEndpoint();
+            var actionDescriptor =
+                endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>() ??
+                new ActionDescriptor();
 
-        if (requestMessage.PathBase.HasValue)
-        {
-            uri.Path = requestMessage.PathBase.Value;
+            return new ActionContext(
+                httpContext,
+                httpContext.GetRouteData(),
+                actionDescriptor
+            );
         }
-
-        return uri.Uri;
     }
 
-    public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
+    extension(HttpRequest requestMessage)
     {
-        return requestMessage.GetAbsoluteUri().AbsoluteUri.TrimEnd('/');
-    }
-
-    public static X509Certificate2? GetCertificate(this HttpRequest request)
-    {
-        const string headerName = "X-ARR-ClientCert";
-        if (!request.Headers.TryGetValue(headerName, out var header))
+        public Uri GetAbsoluteUri()
         {
-            return null;
+            var host = requestMessage.Host.Host;
+
+            var uri = new UriBuilder(requestMessage.Scheme, host);
+            if (requestMessage.Host.Port.HasValue)
+            {
+                uri.Port = requestMessage.Host.Port.Value;
+            }
+
+            if (requestMessage.PathBase.HasValue)
+            {
+                uri.Path = requestMessage.PathBase.Value;
+            }
+
+            return uri.Uri;
         }
 
-        try
+        public string GetAbsoluteUriWithVirtualPath()
         {
-            var encoded = Convert.FromBase64String(header!);
-            return X509CertificateLoader.LoadCertificate(encoded);
+            return requestMessage.GetAbsoluteUri().AbsoluteUri.TrimEnd('/');
         }
-        catch
+
+        public X509Certificate2? GetCertificate()
         {
-            return null;
+            const string headerName = "X-ARR-ClientCert";
+            if (!requestMessage.Headers.TryGetValue(headerName, out var header))
+            {
+                return null;
+            }
+
+            try
+            {
+                var encoded = Convert.FromBase64String(header!);
+                return X509CertificateLoader.LoadCertificate(encoded);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

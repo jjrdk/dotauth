@@ -30,8 +30,8 @@ using DotAuth.WebSite.Authenticate;
 using DotAuth.WebSite.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 
@@ -58,7 +58,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     /// <param name="smsClient">The SMS client.</param>
     /// <param name="dataProtectionProvider">The data protection provider.</param>
     /// <param name="urlHelperFactory">The URL helper factory.</param>
-    /// <param name="actionContextAccessor">The action context accessor.</param>
+    /// <param name="httpContextAccessor">The HTTP Context accessor</param>
     /// <param name="eventPublisher">The event publisher.</param>
     /// <param name="authorizationCodeStore">The authorization code store.</param>
     /// <param name="authenticationService">The authentication service.</param>
@@ -79,7 +79,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         ISmsClient smsClient,
         IDataProtectionProvider dataProtectionProvider,
         IUrlHelperFactory urlHelperFactory,
-        IActionContextAccessor actionContextAccessor,
+        IHttpContextAccessor httpContextAccessor,
         IEventPublisher eventPublisher,
         IAuthorizationCodeStore authorizationCodeStore,
         IAuthenticationService authenticationService,
@@ -99,7 +99,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         : base(
             dataProtectionProvider,
             urlHelperFactory,
-            actionContextAccessor,
+            httpContextAccessor,
             eventPublisher,
             authenticationService,
             authenticationSchemeProvider,
@@ -113,6 +113,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
             clientStore,
             jwksStore,
             subjectBuilder,
+            // ReSharper disable once PossibleMultipleEnumeration
             accountFilters,
             logger,
             runtimeSettings)
@@ -267,7 +268,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         if (authenticatedUser?.Identity is not { IsAuthenticated: true })
         {
             var message = "SMS authentication cannot be performed";
-            _logger.LogError(message);
+            _logger.LogError("{Msg}", message);
             return SetRedirection(message, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
         }
 
@@ -304,7 +305,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         if (authenticatedUser?.Identity is not { IsAuthenticated: true })
         {
             var message = "SMS authentication cannot be performed";
-            _logger.LogError(message);
+            _logger.LogError("{Msg}", message);
             return SetRedirection(message, Strings.InternalServerError, ErrorCodes.UnhandledExceptionCode);
         }
 

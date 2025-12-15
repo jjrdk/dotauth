@@ -18,19 +18,22 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 public sealed class Program
 {
     public static async Task Main()
     {
-        using var webHost = new WebHostBuilder().UseKestrel(
-                o =>
-                {
-                    o.AddServerHeader = false;
-                    o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
-                })
-            .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
-            .UseStartup<Startup>()
+        using var webHost = new HostBuilder().ConfigureWebHost(builder =>
+            {
+                builder.UseKestrel(o =>
+                    {
+                        o.AddServerHeader = false;
+                        o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
+                    })
+                    .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
+                    .UseStartup<Startup>();
+            })
             .Build();
         await webHost.RunAsync()
             .ConfigureAwait(false);

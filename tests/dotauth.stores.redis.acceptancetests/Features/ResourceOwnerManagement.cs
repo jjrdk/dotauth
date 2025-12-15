@@ -229,7 +229,7 @@ public partial class FeatureTest
     [Then(@"when getting resource owner from store")]
     public async Task ThenWhenGettingResourceOwnerFromStore()
     {
-        var store = (IResourceOwnerStore)_fixture.Server.Host.Services.GetRequiredService(
+        var store = (IResourceOwnerStore)_fixture.Server.Services.GetRequiredService(
             typeof(IResourceOwnerStore));
         _resourceOwner = (await store.Get("administrator", CancellationToken.None).ConfigureAwait(false))!;
     }

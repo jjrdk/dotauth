@@ -29,7 +29,7 @@ public sealed class RedisTokenStore : ITokenStore
     {
         var token = await _database.StringGetAsync(clientId + scopes).ConfigureAwait(false);
         var options = token.HasValue
-            ? JsonSerializer.Deserialize<GrantedToken[]>(token!, SharedSerializerContext.Default.GrantedTokenArray)!
+            ? JsonSerializer.Deserialize<GrantedToken[]>(token.ToString(), SharedSerializerContext.Default.GrantedTokenArray)!
             : [];
         return options.FirstOrDefault(
             x =>
@@ -58,7 +58,7 @@ public sealed class RedisTokenStore : ITokenStore
         var value = await _database.StringGetAsync(token).ConfigureAwait(false);
         return value.IsNullOrEmpty
             ? null
-            : JsonSerializer.Deserialize<GrantedToken>(value!, SharedSerializerContext.Default.GrantedToken);
+            : JsonSerializer.Deserialize<GrantedToken>(value.ToString(), SharedSerializerContext.Default.GrantedToken);
     }
 
     public async Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
@@ -67,7 +67,7 @@ public sealed class RedisTokenStore : ITokenStore
         var existingScopeValue = await _database.StringGetAsync(grantedToken.ClientId + grantedToken.Scope)
             .ConfigureAwait(false);
         var existingScopeToken = existingScopeValue.HasValue
-            ? JsonSerializer.Deserialize<GrantedToken[]>(existingScopeValue!, SharedSerializerContext.Default.GrantedTokenArray)!
+            ? JsonSerializer.Deserialize<GrantedToken[]>(existingScopeValue.ToString(), SharedSerializerContext.Default.GrantedTokenArray)!
             : [];
         var scopeTokens = JsonSerializer.Serialize(existingScopeToken.Concat([grantedToken]).ToArray(),
             SharedSerializerContext.Default.GrantedTokenArray);

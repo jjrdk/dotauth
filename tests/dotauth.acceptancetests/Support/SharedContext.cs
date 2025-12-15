@@ -42,5 +42,5 @@ public sealed class SharedContext
     public JsonWebKey SignatureKey { get; }
     public JsonWebKey ModelSignatureKey { get; }
     public HttpClient? Client { get; set; }
-    public HttpMessageHandler? Handler { get; set; }
+//    public HttpMessageHandler? Handler { get; set; }
 }

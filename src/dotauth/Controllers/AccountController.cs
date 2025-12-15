@@ -15,11 +15,11 @@
 namespace DotAuth.Controllers;
 
 using System.Threading.Tasks;
+using DotAuth.Extensions;
 using DotAuth.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 
 /// <summary>
@@ -29,7 +29,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 public sealed class AccountController : BaseController
 {
     private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
-    private readonly IActionContextAccessor _actionContextAccessor;
     private readonly IUrlHelper _urlHelper;
 
     /// <summary>
@@ -37,18 +36,15 @@ public sealed class AccountController : BaseController
     /// </summary>
     /// <param name="authenticationService"></param>
     /// <param name="authenticationSchemeProvider"></param>
-    /// <param name="actionContextAccessor"></param>
     /// <param name="urlHelperFactory"></param>
     public AccountController(
         IAuthenticationService authenticationService,
         IAuthenticationSchemeProvider authenticationSchemeProvider,
-        IActionContextAccessor actionContextAccessor,
         IUrlHelperFactory urlHelperFactory)
         : base(authenticationService)
     {
         _authenticationSchemeProvider = authenticationSchemeProvider;
-        _actionContextAccessor = actionContextAccessor;
-        _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
+        _urlHelper = urlHelperFactory.GetUrlHelper(HttpContext.GetActionContext());
     }
 
     /// <summary>
@@ -106,12 +102,6 @@ public sealed class AccountController : BaseController
         {
             return RedirectToAction("Index", "User");
         }
-
-        //await _resourceOwnerRepository.AddResourceOwner(new AddUserParameter
-        //{
-        //    Login = updateResourceOwnerViewModel.Login,
-        //    Password = updateResourceOwnerViewModel.Password
-        //});
 
         return RedirectToAction("Index", "Authenticate");
     }

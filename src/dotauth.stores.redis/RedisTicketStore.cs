@@ -47,7 +47,7 @@ public sealed class RedisTicketStore : ITicketStore
             return (false, []);
         }
 
-        var ticket = JsonSerializer.Deserialize<Ticket>(value!, SharedSerializerContext.Default.Ticket)! with
+        var ticket = JsonSerializer.Deserialize<Ticket>(value.ToString(), SharedSerializerContext.Default.Ticket)! with
         {
             IsAuthorizedByRo = true
         };
@@ -69,7 +69,7 @@ public sealed class RedisTicketStore : ITicketStore
     {
         var ticket = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
         return ticket.HasValue
-            ? JsonSerializer.Deserialize<Ticket>(ticket!, SharedSerializerContext.Default.Ticket)
+            ? JsonSerializer.Deserialize<Ticket>(ticket.ToString(), SharedSerializerContext.Default.Ticket)
             : null;
     }
 
