@@ -1,0 +1,46 @@
+<Solution>
+  <Folder Name="/Build/">
+    <Project Path="cake/dotauth.build/dotauth.build.csproj" />
+  </Folder>
+  <Folder Name="/Servers/">
+    <Project Path="src/dotauth.authserver/dotauth.authserver.csproj" />
+    <Project Path="src/dotauth.authserverpg/dotauth.authserverpg.csproj" />
+    <Project Path="src/dotauth.authserverpgredis/dotauth.authserverpgredis.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".github/workflows/github.yml" />
+    <File Path="build.ps1" />
+    <File Path="build.sh" />
+    <File Path="DockerfileInMemory" />
+    <File Path="DockerfilePgRedis" />
+    <File Path="DockerfilePostgres" />
+    <File Path="NuGet.Config" />
+    <File Path="README.md" />
+    <File Path="shared.proj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="tests/dotauth.acceptancetests/dotauth.acceptancetests.csproj" />
+    <Project Path="tests/dotauth.server.tests/dotauth.server.tests.csproj" />
+    <Project Path="tests/dotauth.stores.marten.acceptancetests/dotauth.stores.marten.acceptancetests.csproj" />
+    <Project Path="tests/dotauth.stores.redis.acceptancetests/dotauth.stores.redis.acceptancetests.csproj" />
+    <Project Path="tests/dotauth.tests/dotauth.tests.csproj" />
+    <Project Path="tests/dotauth.uma.tests/dotauth.uma.tests.csproj" />
+  </Folder>
+  <Project Path="src/dotauth.authentication/dotauth.authentication.csproj" />
+  <Project Path="src/dotauth.client.maui/dotauth.client.maui.csproj" />
+  <Project Path="src/dotauth.client/dotauth.client.csproj" />
+  <Project Path="src/dotauth.shared/dotauth.shared.csproj" />
+  <Project Path="src/dotauth.sms.ui/dotauth.sms.ui.csproj" />
+  <Project Path="src/dotauth.sms/dotauth.sms.csproj" />
+  <Project Path="src/dotauth.stores.marten/dotauth.stores.marten.csproj" />
+  <Project Path="src/dotauth.stores.redis/dotauth.stores.redis.csproj" />
+  <Project Path="src/dotauth.tool/dotauth.tool.csproj" />
+  <Project Path="src/dotauth.ui/dotauth.ui.csproj" />
+  <Project Path="src/dotauth.uma.web/dotauth.uma.web.csproj" />
+  <Project Path="src/dotauth.uma/dotauth.uma.csproj" />
+  <Project Path="src/dotauth/dotauth.csproj" />
+  <Properties Name="ExtensibilityGlobals" Scope="PostLoad">
+    <Property Name="RESX_PrefixTranslations" Value="False" />
+  </Properties>
+</Solution>
