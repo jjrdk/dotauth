@@ -25,7 +25,6 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class PermissionFixture : IDisposable
 {
@@ -45,9 +44,10 @@ public sealed class PermissionFixture : IDisposable
     public async Task When_ResourceSetId_Is_Null_Then_Error_Is_Returned()
     {
         var ticket = Assert.IsType<Option<TicketResponse>.Error>(await _umaClient.RequestPermission(
-                "header",
-                requests: new PermissionRequest { ResourceSetId = string.Empty })
-            );
+            "header",
+            requests: new PermissionRequest { ResourceSetId = string.Empty },
+            cancellationToken: TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(ErrorCodes.InvalidRequest, ticket.Details.Title);
         Assert.Equal("The parameter resource_set_id needs to be specified", ticket.Details.Detail);
@@ -58,9 +58,10 @@ public sealed class PermissionFixture : IDisposable
     {
         var ticket = Assert.IsType<Option<TicketResponse>.Error>(
             await _umaClient.RequestPermission(
-                    "header",
-                    requests: new PermissionRequest { ResourceSetId = "resource" })
-                );
+                "header",
+                requests: new PermissionRequest { ResourceSetId = "resource" },
+                cancellationToken: TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(ErrorCodes.InvalidRequest, ticket.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "scopes"), ticket.Details.Detail);
@@ -71,9 +72,10 @@ public sealed class PermissionFixture : IDisposable
     {
         var ticket = Assert.IsType<Option<TicketResponse>.Error>(
             await _umaClient.RequestPermission(
-                    "header",
-                    requests: new PermissionRequest { ResourceSetId = "resource", Scopes = ["scope"] })
-                );
+                "header",
+                requests: new PermissionRequest { ResourceSetId = "resource", Scopes = ["scope"] },
+                cancellationToken: TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(ErrorCodes.InvalidResourceSetId, ticket.Details.Title);
         Assert.Equal(string.Format(Strings.TheResourceSetDoesntExist, "resource"), ticket.Details.Detail);
@@ -84,9 +86,10 @@ public sealed class PermissionFixture : IDisposable
     {
         var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(
             await _umaClient.AddResourceSet(
-                    new ResourceSet { Name = "picture", Scopes = ["read"] },
-                    "header")
-                );
+                new ResourceSet { Name = "picture", Scopes = ["read"] },
+                "header",
+                cancellationToken: TestContext.Current.CancellationToken)
+        );
 
         var ticket = Assert.IsType<Option<TicketResponse>.Error>(
             await _umaClient.RequestPermission(
@@ -94,10 +97,11 @@ public sealed class PermissionFixture : IDisposable
                 requests: new PermissionRequest
                 {
                     ResourceSetId = resource.Item.Id, Scopes = ["scopescopescope"]
-                })
-            );
+                },
+                cancellationToken: TestContext.Current.CancellationToken)
+        );
 
-        Assert.Equal(ErrorCodes.InvalidScope, ticket.Details!.Title);
+        Assert.Equal(ErrorCodes.InvalidScope, ticket.Details.Title);
         Assert.Equal("one or more scopes are not valid", ticket.Details.Detail);
     }
 
@@ -106,14 +110,16 @@ public sealed class PermissionFixture : IDisposable
     {
         var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(
             await _umaClient.AddResourceSet(
-                    new ResourceSet { Name = "picture", Scopes = ["read"] },
-                    "header")
-                );
+                new ResourceSet { Name = "picture", Scopes = ["read"] },
+                "header",
+                cancellationToken: TestContext.Current.CancellationToken)
+        );
 
         var ticket = Assert.IsType<Option<TicketResponse>.Result>(await _umaClient.RequestPermission(
-                "header",
-                requests: new PermissionRequest { ResourceSetId = resource.Item.Id, Scopes = ["read"] })
-            );
+            "header",
+            requests: new PermissionRequest { ResourceSetId = resource.Item.Id, Scopes = ["read"] },
+            cancellationToken: TestContext.Current.CancellationToken)
+        );
 
         Assert.NotEmpty(ticket.Item.TicketId);
     }
@@ -122,9 +128,10 @@ public sealed class PermissionFixture : IDisposable
     public async Task WhenRequestingPermissionsThenTicketIdsAreReturned()
     {
         var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(await _umaClient.AddResourceSet(
-                new ResourceSet { Name = "picture", Scopes = ["read"] },
-                "header")
-            );
+            new ResourceSet { Name = "picture", Scopes = ["read"] },
+            "header",
+            cancellationToken: TestContext.Current.CancellationToken)
+        );
         var permissions = new[]
         {
             new PermissionRequest { ResourceSetId = resource.Item.Id, Scopes = ["read"] },

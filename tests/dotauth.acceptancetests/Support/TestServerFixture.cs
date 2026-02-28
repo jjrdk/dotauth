@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
-using Xunit.Abstractions;
+using Xunit;
 
 public sealed class TestServerFixture : IDisposable
 {

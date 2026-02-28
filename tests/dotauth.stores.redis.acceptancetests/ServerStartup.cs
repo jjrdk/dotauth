@@ -18,7 +18,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using StackExchange.Redis;
-using Xunit.Abstractions;
+using Xunit;
 
 internal sealed class ServerStartup
 {
@@ -30,7 +30,11 @@ internal sealed class ServerStartup
     private readonly ITestOutputHelper _outputHelper;
     private readonly string _schemaName;
 
-    public ServerStartup(SharedContext context, string connectionString, string redisHost, ITestOutputHelper outputHelper)
+    public ServerStartup(
+        SharedContext context,
+        string connectionString,
+        string redisHost,
+        ITestOutputHelper outputHelper)
     {
         _martenConfiguration = new DotAuthConfiguration
         {
@@ -79,38 +83,35 @@ internal sealed class ServerStartup
         var db = new Random(DateTime.UtcNow.Millisecond).Next(16);
         services.AddSingleton(ConnectionMultiplexer.Connect(_redisConnectionString));
         services.AddTransient<IDatabaseAsync>(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase(db));
-        services.AddSingleton<IDocumentStore>(
-            provider => new DocumentStore(
-                new DotAuthMartenOptions(
-                    _connectionString,
-                    new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
-                    _schemaName)));
-        services.AddTransient<Func<IDocumentSession>>(
-            sp =>
-            {
-                var store = sp.GetRequiredService<IDocumentStore>();
-                return () => store.LightweightSession();
-            });
+        services.AddSingleton<IDocumentStore>(provider => new DocumentStore(
+            new DotAuthMartenOptions(
+                _connectionString,
+                new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
+                _schemaName)));
+        services.AddTransient<Func<IDocumentSession>>(sp =>
+        {
+            var store = sp.GetRequiredService<IDocumentStore>();
+            return () => store.LightweightSession();
+        });
         // 1. Add the dependencies needed to enable CORS
-        services.AddCors(
-            options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+        services.AddCors(options =>
+            options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         // 2. Configure server
         services.AddDotAuthServer(_martenConfiguration, [DefaultSchema, JwtBearerDefaults.AuthenticationScheme])
             .AddDotAuthUi(typeof(IDefaultUi));
         services
 #if DEBUG
-            .AddLogging(l => l.AddXunit(_outputHelper))
+            .AddLogging(l => l.AddXUnit(_outputHelper))
 #endif
             .AddAccountFilter()
             .AddSingleton(_ => _context.Client!);
-        services.AddAuthentication(
-                cfg =>
-                {
-                    cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+        services.AddAuthentication(cfg =>
+            {
+                cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddCookie(DefaultSchema)
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
@@ -128,12 +129,11 @@ internal sealed class ServerStartup
 #pragma warning restore CA1822 // Mark members as static
     {
         var lifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
-        lifetime.ApplicationStopping.Register(
-            () =>
-            {
-                var disposable = app.ApplicationServices.GetService<ConnectionMultiplexer>();
-                disposable?.Dispose();
-            });
+        lifetime.ApplicationStopping.Register(() =>
+        {
+            var disposable = app.ApplicationServices.GetService<ConnectionMultiplexer>();
+            disposable?.Dispose();
+        });
         app.UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
     }
 }

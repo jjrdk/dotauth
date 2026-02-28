@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 using DotAuth.AcceptanceTests.Support;
 using Microsoft.IdentityModel.Logging;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class EndpointFixture
 {
@@ -55,7 +54,7 @@ public sealed class EndpointFixture
             httpRequest.Headers.Accept.Add(new("text/html"));
         }
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
 
         Assert.Equal(statusCode, httpResult.StatusCode);
     }

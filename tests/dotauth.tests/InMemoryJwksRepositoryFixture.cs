@@ -12,7 +12,7 @@ public sealed class InMemoryJwksRepositoryFixture
     [Fact]
     public async Task WhenGettingPublicKeysThenHasTwoKeys()
     {
-        var publicKeys = await _repository.GetPublicKeys();
+        var publicKeys = await _repository.GetPublicKeys(TestContext.Current.CancellationToken);
 
         Assert.Equal(2, publicKeys!.Keys.Count);
     }
@@ -20,7 +20,7 @@ public sealed class InMemoryJwksRepositoryFixture
     [Fact]
     public async Task WhenGettingPublicKeysThenThereAreNoPrivateKeys()
     {
-        var publicKeys = await _repository.GetPublicKeys();
+        var publicKeys = await _repository.GetPublicKeys(TestContext.Current.CancellationToken);
 
         Assert.All(publicKeys!.Keys, jwk => Assert.False(jwk.HasPrivateKey));
     }
@@ -28,7 +28,8 @@ public sealed class InMemoryJwksRepositoryFixture
     [Fact]
     public async Task WhenGettingSigningKeyThenReturnsKey()
     {
-        var signingKey = await _repository.GetSigningKey(SecurityAlgorithms.RsaSha256);
+        var signingKey =
+            await _repository.GetSigningKey(SecurityAlgorithms.RsaSha256, TestContext.Current.CancellationToken);
 
         Assert.NotNull(signingKey);
     }

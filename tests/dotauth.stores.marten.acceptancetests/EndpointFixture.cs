@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Logging;
 using Testcontainers.PostgreSql;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class EndpointFixture : IAsyncDisposable
 {
@@ -32,7 +31,7 @@ public sealed class EndpointFixture : IAsyncDisposable
 
     public EndpointFixture(ITestOutputHelper outputHelper)
     {
-        _postgresContainer = new PostgreSqlBuilder().WithUsername("dotauth").WithPassword("dotauth")
+        _postgresContainer = new PostgreSqlBuilder("postgres:latest").WithUsername("dotauth").WithPassword("dotauth")
             .WithDatabase("dotauth").Build();
         _postgresContainer.StartAsync().GetAwaiter().GetResult();
         _connectionString = _postgresContainer.GetConnectionString();
@@ -64,7 +63,7 @@ public sealed class EndpointFixture : IAsyncDisposable
             Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/{path}")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
 
         Assert.Equal(statusCode, httpResult.StatusCode);
     }

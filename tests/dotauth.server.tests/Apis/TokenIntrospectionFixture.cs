@@ -25,9 +25,7 @@ using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Responses;
-
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class TokenIntrospectionFixture
 {
@@ -48,8 +46,8 @@ public sealed class TokenIntrospectionFixture
             Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/introspect")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
@@ -67,8 +65,8 @@ public sealed class TokenIntrospectionFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/introspect")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
         Assert.Equal(ErrorCodes.InvalidRequest, error.Title);
@@ -83,8 +81,9 @@ public sealed class TokenIntrospectionFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
-                IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken, "pat"))
-            );
+            IntrospectionRequest.Create("invalid_token", TokenTypes.AccessToken, "pat"),
+            TestContext.Current.CancellationToken)
+        );
 
         Assert.False(introspection.Item.Active);
     }
@@ -97,11 +96,13 @@ public sealed class TokenIntrospectionFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
-                );
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]),
+                TestContext.Current.CancellationToken)
+        );
         var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
-                IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"))
-            );
+            IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"),
+            TestContext.Current.CancellationToken)
+        );
 
         Assert.Single(introspection.Item.Scope);
         Assert.Equal("scim", introspection.Item.Scope.First());
@@ -115,12 +116,14 @@ public sealed class TokenIntrospectionFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", ["scim", "offline"]))
-            );
+            TokenRequest.FromPassword("administrator", "password", ["scim", "offline"]),
+            TestContext.Current.CancellationToken)
+        );
 
         var introspection = Assert.IsType<Option<OauthIntrospectionResponse>.Result>(await tokenClient.Introspect(
-                IntrospectionRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken, "pat"))
-            );
+            IntrospectionRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken, "pat"),
+            TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(2, introspection.Item.Scope.Length);
         Assert.Equal("scim", introspection.Item.Scope.First());

@@ -8,7 +8,6 @@ using DotAuth.Properties;
 using DotAuth.Shared;
 using DotAuth.Shared.Responses;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class UserInfoClientFixture
 {
@@ -29,7 +28,8 @@ public sealed class UserInfoClientFixture
     public async Task When_Pass_Invalid_Token_To_UserInfo_Then_Error_Is_Returned()
     {
         var getUserInfoResult = Assert.IsType<Option<JwtPayload>.Error>(
-            await _userInfoClient.GetUserInfo("invalid_access_token"));
+            await _userInfoClient.GetUserInfo("invalid_access_token",
+                cancellationToken: TestContext.Current.CancellationToken));
 
         Assert.Equal("invalid_token", getUserInfoResult.Details.Title);
         Assert.Equal(Strings.TheTokenIsNotValid, getUserInfoResult.Details.Detail);
@@ -44,8 +44,9 @@ public sealed class UserInfoClientFixture
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result =
             Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-                .GetToken(TokenRequest.FromScopes("openid")));
-        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
+                .GetToken(TokenRequest.FromScopes("openid"), TestContext.Current.CancellationToken));
+        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken,
+            cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
     }
@@ -58,10 +59,11 @@ public sealed class UserInfoClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient.GetToken(
-                TokenRequest.FromPassword("administrator", "password", ["scim"]))
-            );
+            TokenRequest.FromPassword("administrator", "password", ["scim"]), TestContext.Current.CancellationToken)
+        );
 
-        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
+        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken,
+            cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
     }
@@ -74,10 +76,12 @@ public sealed class UserInfoClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
-            );
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]),
+                TestContext.Current.CancellationToken)
+        );
 
-        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
+        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken,
+            cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
     }
@@ -90,10 +94,12 @@ public sealed class UserInfoClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
-            );
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]),
+                TestContext.Current.CancellationToken)
+        );
 
-        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken);
+        var getUserInfoResult = await _userInfoClient.GetUserInfo(result.Item.AccessToken,
+            cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.IsType<Option<JwtPayload>.Result>(getUserInfoResult);
     }

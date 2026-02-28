@@ -7,7 +7,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Xunit;
 
 public partial class FeatureTest

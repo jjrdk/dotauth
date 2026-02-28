@@ -11,7 +11,7 @@ using DotAuth.Stores.Marten.Containers;
 using global::Marten;
 using Microsoft.Extensions.Logging.Abstractions;
 using Npgsql;
-using Xunit.Abstractions;
+using Xunit;
 
 public static class DbInitializer
 {

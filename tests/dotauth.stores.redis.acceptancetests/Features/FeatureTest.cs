@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using DotAuth.Client;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 using Xunit;
-using Xunit.Abstractions;
 
 [Binding]
 public partial class FeatureTest : IAsyncDisposable
@@ -37,9 +36,9 @@ public partial class FeatureTest : IAsyncDisposable
     [BeforeScenario(Order = 5)]
     public async Task SetupConnectionString()
     {
-        _postgresContainer = new PostgreSqlBuilder().WithUsername("dotauth").WithPassword("dotauth")
+        _postgresContainer = new PostgreSqlBuilder("postgres:latest").WithUsername("dotauth").WithPassword("dotauth")
             .WithDatabase("dotauth").Build();
-        _redisContainer = new RedisBuilder().Build();
+        _redisContainer = new RedisBuilder("redis:latest").Build();
         await _postgresContainer.StartAsync();
         await _redisContainer.StartAsync();
         _connectionString = _postgresContainer.GetConnectionString();

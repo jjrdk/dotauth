@@ -33,7 +33,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class AuthorizationClientFixture : IDisposable
 {
@@ -56,8 +55,9 @@ public sealed class AuthorizationClientFixture : IDisposable
     [Fact]
     public async Task When_Scope_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
     {
-        var httpResult = await _server.Client().GetAsync(new Uri($"{BaseUrl}/authorization"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client()
+            .GetAsync(new Uri($"{BaseUrl}/authorization"), TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -69,8 +69,8 @@ public sealed class AuthorizationClientFixture : IDisposable
     public async Task When_ClientId_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
     {
         var httpResult = await _server.Client()
-            .GetAsync(new Uri($"{BaseUrl}/authorization?scope=scope"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+            .GetAsync(new Uri($"{BaseUrl}/authorization?scope=scope"), TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -82,8 +82,9 @@ public sealed class AuthorizationClientFixture : IDisposable
     public async Task When_RedirectUri_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
     {
         var httpResult = await _server.Client()
-            .GetAsync(new Uri($"{BaseUrl}/authorization?scope=scope&client_id=client"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+            .GetAsync(new Uri($"{BaseUrl}/authorization?scope=scope&client_id=client"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -96,8 +97,9 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         var redirect = Uri.EscapeDataString("https://redirect_uri");
         var httpResult = await _server.Client()
-            .GetAsync(new Uri($"{BaseUrl}/authorization?scope=scope&client_id=client&redirect_uri={redirect}"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+            .GetAsync(new Uri($"{BaseUrl}/authorization?scope=scope&client_id=client&redirect_uri={redirect}"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -112,8 +114,9 @@ public sealed class AuthorizationClientFixture : IDisposable
         var httpResult = await _server.Client()
             .GetAsync(
                 new Uri(
-                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=invalid"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=invalid"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -128,8 +131,9 @@ public sealed class AuthorizationClientFixture : IDisposable
         var httpResult = await _server.Client()
             .GetAsync(
                 new Uri(
-                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=invalid"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=invalid"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -144,8 +148,9 @@ public sealed class AuthorizationClientFixture : IDisposable
         var httpResult = await _server.Client()
             .GetAsync(
                 new Uri(
-                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=none"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=client&redirect_uri={redirect}&response_type=token&prompt=none"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -159,8 +164,9 @@ public sealed class AuthorizationClientFixture : IDisposable
         var httpResult = await _server.Client()
             .GetAsync(
                 new Uri(
-                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -174,8 +180,9 @@ public sealed class AuthorizationClientFixture : IDisposable
         var httpResult = await _server.Client()
             .GetAsync(
                 new Uri(
-                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -190,8 +197,9 @@ public sealed class AuthorizationClientFixture : IDisposable
         var httpResult = await _server.Client()
             .GetAsync(
                 new Uri(
-                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -205,8 +213,9 @@ public sealed class AuthorizationClientFixture : IDisposable
         var httpResult = await _server.Client()
             .GetAsync(
                 new Uri(
-                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -220,8 +229,9 @@ public sealed class AuthorizationClientFixture : IDisposable
         var httpResult = await _server.Client()
             .GetAsync(
                 new Uri(
-                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+                    $"{BaseUrl}/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -236,8 +246,9 @@ public sealed class AuthorizationClientFixture : IDisposable
         var httpResult = await _server.Client()
             .GetAsync(
                 new Uri(
-                    $"{BaseUrl}/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"));
-        var json = await httpResult.Content.ReadAsStringAsync();
+                    $"{BaseUrl}/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"),
+                TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.NotNull(error);
@@ -260,7 +271,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{baseUrl}/invalid_callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state")));
+                "state"), TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
     }
@@ -278,7 +289,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None }));
+                "state") { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
         UserStore.Instance().IsInactive = false;
 
         Assert.Equal("login_required", result.Details.Title);
@@ -299,7 +310,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None }));
+                "state") { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
         UserStore.Instance().Subject = "administrator";
 
         Assert.Equal("interaction_required", result.Details.Title);
@@ -318,7 +329,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { id_token_hint = "token", prompt = "none" }));
+                "state") { id_token_hint = "token", prompt = "none" }, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheIdTokenHintParameterIsNotAValidToken, result.Details.Detail);
@@ -346,7 +357,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { id_token_hint = jws, prompt = "none" }));
+                "state") { id_token_hint = jws, prompt = "none" }, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
     }
@@ -375,7 +386,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { id_token_hint = jws, prompt = "none" }));
+                "state") { id_token_hint = jws, prompt = "none" }, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken, result.Details.Detail);
@@ -395,7 +406,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{baseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None }));
+                "state") { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
         var location = result.Item;
         var queries = QueryHelpers.ParseQuery(location.Query);
         var tokenClient = new TokenClient(
@@ -403,7 +414,8 @@ public sealed class AuthorizationClientFixture : IDisposable
             _server.Client,
             new Uri(baseUrl + WellKnownOpenidConfiguration));
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromAuthorizationCode(queries["code"]!, "http://localhost:5000/callback")));
+            .GetToken(TokenRequest.FromAuthorizationCode(queries["code"]!, "http://localhost:5000/callback"),
+                TestContext.Current.CancellationToken));
 
         Assert.NotEmpty(token.Item.AccessToken);
         Assert.True(queries["state"] == "state");
@@ -422,7 +434,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None, max_age = 300 }));
+                "state") { prompt = PromptNames.None, max_age = 300 }, TestContext.Current.CancellationToken));
         var location = result.Item;
         UserStore.Instance().AuthenticationOffset = null;
 
@@ -441,7 +453,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.Login }));
+                "state") { prompt = PromptNames.Login }, TestContext.Current.CancellationToken));
 
         Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
     }
@@ -459,7 +471,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.Consent }));
+                "state") { prompt = PromptNames.Consent }, TestContext.Current.CancellationToken));
         UserStore.Instance().IsInactive = false;
 
         Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
@@ -477,7 +489,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.Consent }));
+                "state") { prompt = PromptNames.Consent }, TestContext.Current.CancellationToken));
 
         Assert.Equal("/Consent", result.Item.LocalPath);
     }
@@ -509,7 +521,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { id_token_hint = jwe, prompt = "none" });
+                "state") { id_token_hint = jwe, prompt = "none" }, TestContext.Current.CancellationToken);
 
         Assert.IsType<Option<Uri>.Result>(result);
     }
@@ -527,7 +539,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None }));
+                "state") { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
         var location = result.Item;
         var queries = QueryHelpers.ParseQuery(location.Query);
         var tokenClient = new TokenClient(
@@ -538,7 +550,7 @@ public sealed class AuthorizationClientFixture : IDisposable
             TokenRequest.FromAuthorizationCode(
                 queries["code"]!,
                 "http://localhost:5000/callback",
-                pkce.CodeVerifier)));
+                pkce.CodeVerifier), TestContext.Current.CancellationToken));
 
         Assert.NotNull(token.Item.AccessToken);
     }
@@ -558,7 +570,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{baseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None, nonce = "nonce" }));
+                "state") { prompt = PromptNames.None, nonce = "nonce" }, TestContext.Current.CancellationToken));
         var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
         Assert.NotNull(result.Item);
@@ -583,7 +595,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{baseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None, nonce = "nonce" }));
+                "state") { prompt = PromptNames.None, nonce = "nonce" }, TestContext.Current.CancellationToken));
         var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
         Assert.NotNull(result.Item);

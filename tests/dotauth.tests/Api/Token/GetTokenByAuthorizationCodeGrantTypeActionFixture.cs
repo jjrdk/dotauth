@@ -455,7 +455,7 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             null,
             null,
             DateTime.Now,
-            await _inMemoryJwksRepository.GetDefaultSigningKey());
+            await _inMemoryJwksRepository.GetDefaultSigningKey(TestContext.Current.CancellationToken));
         const string identityToken = "identityToken";
         const string clientId = "clientId";
         var clientSecret = "clientSecret";

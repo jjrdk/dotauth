@@ -16,7 +16,6 @@ using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class TokenFixture : IDisposable
 {
@@ -41,7 +40,8 @@ public sealed class TokenFixture : IDisposable
             new Uri(BaseUrl + WellKnownUma2Configuration));
         // Try to get the access token via "ticket_id" grant-type.
         var token = Assert.IsType<Option<GrantedTokenResponse>.Error>(
-            await tokenClient.GetToken(TokenRequest.FromTicketId("ticket_id", "")));
+            await tokenClient.GetToken(TokenRequest.FromTicketId("ticket_id", ""),
+                TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.InvalidGrant, token.Details.Title);
         Assert.Equal(string.Format(Strings.TheTicketDoesntExist, "ticket_id"), token.Details.Detail);
@@ -55,7 +55,8 @@ public sealed class TokenFixture : IDisposable
             _server.Client,
             new Uri(BaseUrl + WellKnownUma2Configuration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization")));
+            .GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"),
+                TestContext.Current.CancellationToken));
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -82,7 +83,8 @@ public sealed class TokenFixture : IDisposable
             new Uri(BaseUrl + WellKnownUma2Configuration));
         // Get PAT.
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tc
-            .GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization")));
+            .GetToken(TokenRequest.FromScopes("uma_protection", "uma_authorization"),
+                TestContext.Current.CancellationToken));
 
         var resourceSet = new ResourceSet
         {
@@ -98,16 +100,18 @@ public sealed class TokenFixture : IDisposable
             ]
         };
         var resource = Assert.IsType<Option<AddResourceSetResponse>.Result>(
-            await _umaClient.AddResourceSet(resourceSet, result.Item.AccessToken));
+            await _umaClient.AddResourceSet(resourceSet, result.Item.AccessToken,
+                TestContext.Current.CancellationToken));
         resourceSet = resourceSet with { Id = resource.Item.Id };
-        await _umaClient.UpdateResourceSet(resourceSet, result.Item.AccessToken);
+        await _umaClient.UpdateResourceSet(resourceSet, result.Item.AccessToken, TestContext.Current.CancellationToken);
         var ticket = Assert.IsType<Option<TicketResponse>.Result>(
             await _umaClient.RequestPermission(
                 "header",
                 requests: new PermissionRequest // Add permission & retrieve a ticket id.
                 {
                     ResourceSetId = resource.Item.Id, Scopes = ["read"]
-                }));
+                },
+                cancellationToken: TestContext.Current.CancellationToken));
 
         Assert.NotNull(ticket.Item);
 
@@ -116,7 +120,7 @@ public sealed class TokenFixture : IDisposable
             _server.Client,
             new Uri(BaseUrl + WellKnownUma2Configuration));
         var option = await tokenClient
-            .GetToken(TokenRequest.FromTicketId(ticket.Item.TicketId, jwt));
+            .GetToken(TokenRequest.FromTicketId(ticket.Item.TicketId, jwt), TestContext.Current.CancellationToken);
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
 
         var jwtToken = handler.ReadJwtToken(token.Item.AccessToken);

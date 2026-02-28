@@ -3,7 +3,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Divergic.Logging.Xunit;
 using DotAuth.Events;
 using DotAuth.Parameters;
 using DotAuth.Repositories;
@@ -12,9 +11,9 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.Authenticate;
+using MartinCostello.Logging.XUnit;
 using NSubstitute;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class AuthenticateHelperFixture
 {
@@ -37,7 +36,7 @@ public sealed class AuthenticateHelperFixture
             _clientRepositoryStub,
             new InMemoryJwksRepository(),
             new NoopEventPublisher(),
-            new TestOutputLogger("test", outputHelper));
+            new XUnitLogger("test", outputHelper, null));
     }
 
     [Fact]

@@ -7,7 +7,7 @@ using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Xunit;
 
 public partial class FeatureTest

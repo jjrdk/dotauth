@@ -17,16 +17,15 @@ namespace DotAuth.Tests.WebSite.User;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Divergic.Logging.Xunit;
 using DotAuth.Properties;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.User;
+using MartinCostello.Logging.XUnit;
 using NSubstitute;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class GetUserOperationFixture
 {
@@ -38,7 +37,7 @@ public sealed class GetUserOperationFixture
         _resourceOwnerRepositoryStub = Substitute.For<IResourceOwnerRepository>();
         _getUserOperation = new GetUserOperation(
             _resourceOwnerRepositoryStub,
-            new TestOutputLogger("test", outputHelper));
+            new XUnitLogger("test", outputHelper, null));
     }
 
     [Fact]
@@ -65,7 +64,7 @@ public sealed class GetUserOperationFixture
             await _getUserOperation.Execute(claimsPrincipal, CancellationToken.None)
                 );
 
-        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception!.Details.Title);
+        Assert.Equal(ErrorCodes.UnhandledExceptionCode, exception.Details.Title);
         Assert.Equal(Strings.TheSubjectCannotBeRetrieved, exception.Details.Detail);
     }
 

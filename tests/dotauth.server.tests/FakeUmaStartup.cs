@@ -31,7 +31,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Xunit.Abstractions;
+using Xunit;
 
 public sealed class FakeUmaStartup
 {
@@ -97,7 +97,7 @@ public sealed class FakeUmaStartup
             .AddDotAuthUi(typeof(IDefaultUi));
 
         // 3. Enable logging.
-        services.AddLogging(l => l.AddXunit(_outputHelper));
+        services.AddLogging(l => l.AddXUnit(_outputHelper));
         // 5. Register other classes.
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
     }

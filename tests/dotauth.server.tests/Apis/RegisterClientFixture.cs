@@ -29,7 +29,6 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Responses;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class RegisterClientFixture : IDisposable
 {
@@ -50,7 +49,7 @@ public sealed class RegisterClientFixture : IDisposable
             _server.Client,
             new Uri($"{BaseUrl}/.well-known/openid-configuration"));
         var grantedToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromScopes("register_client"))
+            .GetToken(TokenRequest.FromScopes("register_client"), TestContext.Current.CancellationToken)
         );
         var obj = new { fake = "fake" };
         var fakeJson = JsonSerializer.Serialize(
@@ -65,7 +64,7 @@ public sealed class RegisterClientFixture : IDisposable
         httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Item.AccessToken);
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
     }
@@ -78,7 +77,7 @@ public sealed class RegisterClientFixture : IDisposable
             _server.Client,
             new Uri($"{BaseUrl}/.well-known/openid-configuration"));
         var grantedToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("manager")));
+            await tokenClient.GetToken(TokenRequest.FromScopes("manager"), TestContext.Current.CancellationToken));
         var obj = new
         {
             allowed_scopes = new[] { "openid" },
@@ -98,10 +97,10 @@ public sealed class RegisterClientFixture : IDisposable
         httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Item.AccessToken);
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.Equal(ErrorCodes.InvalidRedirectUri, error!.Title);
@@ -115,7 +114,7 @@ public sealed class RegisterClientFixture : IDisposable
             _server.Client,
             new Uri($"{BaseUrl}/.well-known/openid-configuration"));
         var grantedToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromScopes("register_client")));
+            .GetToken(TokenRequest.FromScopes("register_client"), TestContext.Current.CancellationToken));
         var obj = new
         {
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
@@ -138,11 +137,11 @@ public sealed class RegisterClientFixture : IDisposable
             grantedToken.Item.TokenType,
             grantedToken.Item.AccessToken);
 
-        var httpResult = await _server.SharedCtx.Client().SendAsync(httpRequest);
+        var httpResult = await _server.SharedCtx.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
 
         //Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
 
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.Equal("invalid_redirect_uri", error!.Title);
@@ -159,7 +158,8 @@ public sealed class RegisterClientFixture : IDisposable
             _server.Client,
             new Uri($"{BaseUrl}/.well-known/openid-configuration"));
         var grantedToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("register_client")));
+            await tokenClient.GetToken(TokenRequest.FromScopes("register_client"),
+                TestContext.Current.CancellationToken));
         var obj = new
         {
             AllowedScopes = new[] { "openid" },
@@ -179,8 +179,8 @@ public sealed class RegisterClientFixture : IDisposable
 
         httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Item.AccessToken);
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.Equal("invalid_client_metadata", error!.Title);
@@ -195,7 +195,8 @@ public sealed class RegisterClientFixture : IDisposable
             _server.Client,
             new Uri($"{BaseUrl}/.well-known/openid-configuration"));
         var grantedToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("register_client")));
+            await tokenClient.GetToken(TokenRequest.FromScopes("register_client"),
+                TestContext.Current.CancellationToken));
         var obj = new
         {
             AllowedScopes = new[] { "openid" },
@@ -216,8 +217,8 @@ public sealed class RegisterClientFixture : IDisposable
         httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", grantedToken.Item.AccessToken);
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails);
 
         Assert.Equal("invalid_client_metadata", error!.Title);
@@ -232,7 +233,7 @@ public sealed class RegisterClientFixture : IDisposable
             _server.Client,
             new Uri($"{BaseUrl}/.well-known/openid-configuration"));
         var grantedToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("manager")));
+            await tokenClient.GetToken(TokenRequest.FromScopes("manager"), TestContext.Current.CancellationToken));
 
         var registrationClient = await ManagementClient.Create(
             _server.Client,
@@ -246,7 +247,7 @@ public sealed class RegisterClientFixture : IDisposable
                 ClientId = "id",
                 RedirectionUrls = [new Uri("https://localhost")],
             },
-            grantedToken.Item.AccessToken);
+            grantedToken.Item.AccessToken, TestContext.Current.CancellationToken);
         var client = Assert.IsType<Option<Client>.Result>(register);
 
         Assert.NotNull(client);

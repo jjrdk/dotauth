@@ -3,7 +3,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Divergic.Logging.Xunit;
 using DotAuth.Extensions;
 using DotAuth.Parameters;
 using DotAuth.Properties;
@@ -11,9 +10,9 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
+using MartinCostello.Logging.XUnit;
 using NSubstitute;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
 {
@@ -28,7 +27,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
         _authorizationCodeGrantTypeParameterAuthEdpValidator =
             new AuthorizationCodeGrantTypeParameterAuthEdpValidator(
                 _clientRepository,
-                new TestOutputLogger("test", outputHelper));
+                new XUnitLogger("test", outputHelper, null));
     }
 
     [Fact]
@@ -41,7 +40,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             .Validate(
                 authorizationParameter,
                 CancellationToken.None)
-            );
+        );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -64,9 +63,9 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
 
         var exception = Assert.IsType<Option<Client>.Error>(
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                    authorizationParameter,
-                    CancellationToken.None)
-                );
+                authorizationParameter,
+                CancellationToken.None)
+        );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -92,9 +91,9 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
 
         var exception = Assert.IsType<Option<Client>.Error>(
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                    authorizationParameter,
-                    CancellationToken.None)
-                );
+                authorizationParameter,
+                CancellationToken.None)
+        );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -120,9 +119,9 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
 
         var exception = Assert.IsType<Option<Client>.Error>(
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                    authorizationParameter,
-                    CancellationToken.None)
-                );
+                authorizationParameter,
+                CancellationToken.None)
+        );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -152,9 +151,9 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
 
         var exception = Assert.IsType<Option<Client>.Error>(
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                    authorizationParameter,
-                    CancellationToken.None)
-                );
+                authorizationParameter,
+                CancellationToken.None)
+        );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -182,9 +181,9 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
 
         var exception = Assert.IsType<Option<Client>.Error>(
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                    authorizationParameter,
-                    CancellationToken.None)
-                );
+                authorizationParameter,
+                CancellationToken.None)
+        );
 
         Assert.Equal(
             new Option<Client>.Error(
@@ -246,9 +245,9 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
 
         var exception = Assert.IsType<Option<Client>.Error>(
             await _authorizationCodeGrantTypeParameterAuthEdpValidator.Validate(
-                    authorizationParameter,
-                    CancellationToken.None)
-                );
+                authorizationParameter,
+                CancellationToken.None)
+        );
 
         Assert.Equal(
             new Option<Client>.Error(

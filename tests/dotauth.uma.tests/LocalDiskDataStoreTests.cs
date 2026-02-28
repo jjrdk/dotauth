@@ -25,7 +25,7 @@ public class LocalDiskDataStoreTests
         var location = await _store.Save(content, CancellationToken.None);
         var readBack = await _store.Get(location, CancellationToken.None);
         var buffer = new byte[12];
-        _ = await readBack!.ReadAsync(buffer, 0, 12);
+        _ = await readBack!.ReadAsync(buffer, 0, 12, TestContext.Current.CancellationToken);
 
         ms.Position = 0;
         Assert.Equal(ms.ToArray(), buffer);

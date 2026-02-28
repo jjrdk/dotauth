@@ -4,7 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Xunit;
 
 public partial class FeatureTest

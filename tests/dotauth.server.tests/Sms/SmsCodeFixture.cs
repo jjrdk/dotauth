@@ -12,7 +12,6 @@ using DotAuth.Shared.Requests;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class SmsCodeFixture : IDisposable
 {
@@ -29,8 +28,8 @@ public sealed class SmsCodeFixture : IDisposable
     {
         var client = CreateTokenClient();
         var noPhoneNumberResult = Assert.IsType<Option.Error>(await client
-            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = string.Empty })
-            );
+            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = string.Empty },
+                TestContext.Current.CancellationToken));
 
         // ASSERT : NO PHONE NUMBER
         Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.Details.Status);
@@ -60,8 +59,7 @@ public sealed class SmsCodeFixture : IDisposable
             .Returns((false, ""));
         var client = CreateTokenClient();
         var twilioNotConfigured = Assert.IsType<Option.Error>(await client
-            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            );
+            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" }, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, twilioNotConfigured.Details.Title);
         Assert.Equal("The SMS account is not properly configured", twilioNotConfigured.Details.Detail);
@@ -81,8 +79,7 @@ public sealed class SmsCodeFixture : IDisposable
             .Returns((true, null));
         var client = CreateTokenClient();
         var cannotInsertConfirmationCode = Assert.IsType<Option.Error>(await client
-            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            );
+            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" }, TestContext.Current.CancellationToken));
 
         // ASSERT : CANNOT INSERT CONFIRMATION CODE
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, cannotInsertConfirmationCode.Details.Title);
@@ -103,8 +100,7 @@ public sealed class SmsCodeFixture : IDisposable
             .Throws(new Exception());
         var client = CreateTokenClient();
         var unhandledException = Assert.IsType<Option.Error>(await client
-            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            );
+            .RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" }, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, unhandledException.Details.Title);
         Assert.Equal(
@@ -125,8 +121,8 @@ public sealed class SmsCodeFixture : IDisposable
         _server.SharedCtx.TwilioClient.SendMessage(Arg.Any<string>(), Arg.Any<string>())
             .Returns((true, null));
         var client = CreateTokenClient();
-        var happyPath = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
-            ;
+        var happyPath = await client.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" },
+            TestContext.Current.CancellationToken);
 
         Assert.IsType<Option.Success>(happyPath);
     }

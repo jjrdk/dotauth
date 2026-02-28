@@ -20,7 +20,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Divergic.Logging.Xunit;
 using DotAuth.Common;
 using DotAuth.Events;
 using DotAuth.Extensions;
@@ -32,11 +31,11 @@ using DotAuth.Shared.Events.OAuth;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Tests.Helpers;
+using MartinCostello.Logging.XUnit;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class GenerateAuthorizationResponseFixture
 {
@@ -71,7 +70,7 @@ public sealed class GenerateAuthorizationResponseFixture
             _consentRepository,
             _inMemoryJwksRepository,
             _eventPublisher,
-            new TestOutputLogger("test", outputHelper));
+            new XUnitLogger("test", outputHelper, null));
     }
 
     [Fact]
@@ -79,14 +78,13 @@ public sealed class GenerateAuthorizationResponseFixture
     {
         var redirectInstruction = new EndpointResult { RedirectInstruction = new RedirectInstruction() };
 
-        await Assert.ThrowsAsync<ArgumentNullException>(
-                () => _generateAuthorizationResponse.Generate(
-                    redirectInstruction,
-                    new AuthorizationParameter(),
-                    new ClaimsPrincipal(),
-                    new Client(),
-                    "",
-                    CancellationToken.None))
+        await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.Generate(
+                redirectInstruction,
+                new AuthorizationParameter(),
+                new ClaimsPrincipal(),
+                new Client(),
+                "",
+                CancellationToken.None))
             ;
     }
 
@@ -180,7 +178,8 @@ public sealed class GenerateAuthorizationResponseFixture
         var handler = new JwtSecurityTokenHandler();
         var issuedAt = DateTime.UtcNow;
         const int expiresIn = 20000;
-        var defaultSigningKey = await _inMemoryJwksRepository.GetDefaultSigningKey();
+        var defaultSigningKey =
+            await _inMemoryJwksRepository.GetDefaultSigningKey(TestContext.Current.CancellationToken);
         var accessToken = handler.CreateEncodedJwt(
             "test",
             clientId,
@@ -247,12 +246,12 @@ public sealed class GenerateAuthorizationResponseFixture
             .Returns([consent]);
 
         var actionResult = await _generateAuthorizationResponse.Generate(
-                new EndpointResult { RedirectInstruction = new RedirectInstruction() },
-                authorizationParameter,
-                claimsPrincipal,
-                new Client(),
-                "",
-                CancellationToken.None);
+            new EndpointResult { RedirectInstruction = new RedirectInstruction() },
+            authorizationParameter,
+            claimsPrincipal,
+            new Client(),
+            "",
+            CancellationToken.None);
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
@@ -280,16 +279,16 @@ public sealed class GenerateAuthorizationResponseFixture
         };
 
         var actionResult = await _generateAuthorizationResponse.Generate(
-                new EndpointResult
-                {
-                    RedirectInstruction = new RedirectInstruction(),
-                    Type = ActionResultType.RedirectToCallBackUrl
-                },
-                authorizationParameter,
-                claimsPrincipal,
-                new Client(),
-                "",
-                CancellationToken.None);
+            new EndpointResult
+            {
+                RedirectInstruction = new RedirectInstruction(),
+                Type = ActionResultType.RedirectToCallBackUrl
+            },
+            authorizationParameter,
+            claimsPrincipal,
+            new Client(),
+            "",
+            CancellationToken.None);
 
         Assert.Equal(DotAuth.ResponseModes.Fragment, actionResult.RedirectInstruction!.ResponseMode);
     }

@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Npgsql;
-using Xunit.Abstractions;
+using Xunit;
 
 public sealed class ServerStartup
 {
@@ -79,7 +79,7 @@ public sealed class ServerStartup
                 _martenConfiguration,
                 [DefaultSchema, JwtBearerDefaults.AuthenticationScheme])
             .AddDotAuthUi(typeof(IDefaultUi));
-        services.AddLogging(l => l.AddXunit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
+        services.AddLogging(l => l.AddXUnit(_outputHelper)).AddAccountFilter().AddSingleton(_ => _context.Client);
         services.AddAuthentication(
                 cfg =>
                 {

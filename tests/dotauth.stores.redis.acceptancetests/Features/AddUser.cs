@@ -9,7 +9,7 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.User;
 using NSubstitute;
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Xunit;
 
 public partial class FeatureTest

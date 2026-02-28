@@ -27,9 +27,7 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;
-
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class RevokeTokenClientFixture
 {
@@ -51,8 +49,8 @@ public sealed class RevokeTokenClientFixture
             Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/token/revoke")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
@@ -71,8 +69,8 @@ public sealed class RevokeTokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token/revoke")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
@@ -88,7 +86,8 @@ public sealed class RevokeTokenClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var ex = Assert.IsType<Option.Error>(
-            await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken)));
+            await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken),
+                TestContext.Current.CancellationToken));
 
         Assert.Equal("invalid_client", ex.Details.Title);
         Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Details.Detail);
@@ -102,7 +101,8 @@ public sealed class RevokeTokenClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var ex = Assert.IsType<Option.Error>(
-            await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken)));
+            await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken),
+                TestContext.Current.CancellationToken));
 
         Assert.Equal("invalid_token", ex.Details.Title);
         Assert.Equal(Strings.TheTokenDoesntExist, ex.Details.Detail);
@@ -116,14 +116,16 @@ public sealed class RevokeTokenClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]),
+                TestContext.Current.CancellationToken)
         );
         var revokeClient = new TokenClient(
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var ex = Assert.IsType<Option.Error>(await revokeClient
-            .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken)));
+            .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken),
+                TestContext.Current.CancellationToken));
 
         Assert.Equal("invalid_token", ex.Details.Title);
         Assert.Equal("The token has not been issued for the given client id 'client'", ex.Details.Detail);
@@ -137,14 +139,17 @@ public sealed class RevokeTokenClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]),
+                TestContext.Current.CancellationToken)
         );
         var revoke = await tokenClient
-                .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken))
+                .RevokeToken(RevokeTokenRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken),
+                    TestContext.Current.CancellationToken)
             as Option.Success;
         var introspectionClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var ex = await introspectionClient.Introspect(
-            IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"));
+            IntrospectionRequest.Create(result.Item.AccessToken, TokenTypes.AccessToken, "pat"),
+            TestContext.Current.CancellationToken);
 
         Assert.IsType<Option.Success>(revoke);
         Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);
@@ -158,13 +163,16 @@ public sealed class RevokeTokenClientFixture
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim", "offline"]))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim", "offline"]),
+                TestContext.Current.CancellationToken)
         );
         var revoke = await tokenClient
-            .RevokeToken(RevokeTokenRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken));
+            .RevokeToken(RevokeTokenRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken),
+                TestContext.Current.CancellationToken);
         var introspectClient = new UmaClient(_server.Client, new Uri(BaseUrl + WellKnownOpenidConfiguration));
         var ex = await introspectClient.Introspect(
-            IntrospectionRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken, "pat"));
+            IntrospectionRequest.Create(result.Item.RefreshToken!, TokenTypes.RefreshToken, "pat"),
+            TestContext.Current.CancellationToken);
 
         Assert.IsType<Option.Success>(revoke);
         Assert.IsType<Option<UmaIntrospectionResponse>.Error>(ex);

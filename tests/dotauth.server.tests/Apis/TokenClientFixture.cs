@@ -34,7 +34,6 @@ using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class TokenClientFixture
 {
@@ -59,8 +58,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -78,8 +77,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -100,8 +99,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -122,8 +121,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -148,8 +147,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -175,8 +174,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -203,8 +202,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -230,8 +229,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -249,8 +248,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -274,8 +273,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -302,8 +301,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -329,8 +328,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -348,8 +347,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -372,8 +371,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -397,8 +396,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -414,12 +413,13 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("openid", "offline")));
+            await tokenClient.GetToken(TokenRequest.FromScopes("openid", "offline"),
+                TestContext.Current.CancellationToken));
         var refreshToken = Assert.IsType<Option<GrantedTokenResponse>.Error>(await new TokenClient(
                 TokenCredentials.FromClientCredentials("client", "client"),
                 _server.Client,
                 new Uri(WellKnownOpenidConfigurationUrl))
-            .GetToken(TokenRequest.FromRefreshToken(result.Item.RefreshToken!))
+            .GetToken(TokenRequest.FromRefreshToken(result.Item.RefreshToken!), TestContext.Current.CancellationToken)
         );
 
         Assert.Equal(HttpStatusCode.BadRequest, refreshToken.Details.Status);
@@ -437,8 +437,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -459,8 +459,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -484,8 +484,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -511,8 +511,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -537,8 +537,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -565,8 +565,8 @@ public sealed class TokenClientFixture
             Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        var json = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        var json = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var error = JsonSerializer.Deserialize(json, SharedSerializerContext.Default.ErrorDetails)!;
 
         Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
@@ -584,7 +584,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("openid")));
+            await tokenClient.GetToken(TokenRequest.FromScopes("openid"), TestContext.Current.CancellationToken));
 
         Assert.NotEmpty(result.Item.AccessToken);
     }
@@ -597,7 +597,8 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]),
+                TestContext.Current.CancellationToken)
         );
 
         Assert.NotEmpty(result.Item.AccessToken);
@@ -611,7 +612,8 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("superuser", "password", ["role"]))
+            .GetToken(TokenRequest.FromPassword("superuser", "password", ["role"]),
+                TestContext.Current.CancellationToken)
         );
 
         var payload = new JwtSecurityToken(result.Item.IdToken);
@@ -631,7 +633,8 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", ["openid"]))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["openid"]),
+                TestContext.Current.CancellationToken)
         );
 
         Assert.NotEmpty(result.Item.AccessToken);
@@ -645,7 +648,8 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
+            await tokenClient.GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]),
+                TestContext.Current.CancellationToken)
         );
 
         Assert.NotEmpty(result.Item.AccessToken);
@@ -660,7 +664,8 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var result = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]))
+            .GetToken(TokenRequest.FromPassword("administrator", "password", ["scim"]),
+                TestContext.Current.CancellationToken)
         );
 
         Assert.NotEmpty(result.Item.AccessToken);
@@ -674,7 +679,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")));
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1"), TestContext.Current.CancellationToken));
 
         Assert.NotEmpty(token.Item.AccessToken);
     }
@@ -687,7 +692,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var firstToken = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")));
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1"), TestContext.Current.CancellationToken));
 
         Assert.NotEmpty(firstToken.Item.AccessToken);
     }
@@ -698,11 +703,11 @@ public sealed class TokenClientFixture
         var payload = new JwtPayload(
         [
             new Claim(StandardClaimNames.Issuer, "jwt_client"),
-                new Claim(OpenIdClaimTypes.Subject, "jwt_client"),
-                new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
-                new Claim(
-                    StandardClaimNames.ExpirationTime,
-                    DateTimeOffset.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
+            new Claim(OpenIdClaimTypes.Subject, "jwt_client"),
+            new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
+            new Claim(
+                StandardClaimNames.ExpirationTime,
+                DateTimeOffset.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
         ]);
         var handler = new JwtSecurityTokenHandler();
 
@@ -724,7 +729,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var token =
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")) as
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1"), TestContext.Current.CancellationToken) as
                 Option<GrantedTokenResponse>.Result;
 
         Assert.NotNull(token);
@@ -736,11 +741,11 @@ public sealed class TokenClientFixture
         var payload = new JwtPayload(
         [
             new Claim(StandardClaimNames.Issuer, "private_key_client"),
-                new Claim(OpenIdClaimTypes.Subject, "private_key_client"),
-                new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
-                new Claim(
-                    StandardClaimNames.ExpirationTime,
-                    DateTimeOffset.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
+            new Claim(OpenIdClaimTypes.Subject, "private_key_client"),
+            new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
+            new Claim(
+                StandardClaimNames.ExpirationTime,
+                DateTimeOffset.UtcNow.AddHours(1).ConvertToUnixTimestamp().ToString())
         ]);
         var handler = new JwtSecurityTokenHandler();
 
@@ -756,7 +761,7 @@ public sealed class TokenClientFixture
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(
-            await tokenClient.GetToken(TokenRequest.FromScopes("api1")));
+            await tokenClient.GetToken(TokenRequest.FromScopes("api1"), TestContext.Current.CancellationToken));
 
         Assert.NotEmpty(token.Item.AccessToken);
     }

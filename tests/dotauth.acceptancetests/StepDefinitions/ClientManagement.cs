@@ -8,7 +8,7 @@ using DotAuth.Extensions;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Responses;
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Xunit;
 
 public partial class FeatureTest

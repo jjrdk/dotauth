@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using NSubstitute;
-using Xunit.Abstractions;
+using Xunit;
 
 public sealed class ServerStartup
 {
@@ -94,7 +94,7 @@ public sealed class ServerStartup
             .AddSmsAuthentication(mockSmsClient);
         services
 #if DEBUG
-            .AddLogging(l => l.AddXunit(_outputHelper))
+            .AddLogging(l => l.AddXUnit(_outputHelper))
 #endif
             .AddAccountFilter()
             .AddAuthentication(

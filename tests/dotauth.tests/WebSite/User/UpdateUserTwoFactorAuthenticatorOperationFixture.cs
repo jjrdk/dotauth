@@ -2,16 +2,15 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Divergic.Logging.Xunit;
 using DotAuth.Properties;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.User;
+using MartinCostello.Logging.XUnit;
 using NSubstitute;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class UpdateUserTwoFactorAuthenticatorOperationFixture
 {
@@ -23,7 +22,7 @@ public sealed class UpdateUserTwoFactorAuthenticatorOperationFixture
         _resourceOwnerRepositoryStub = Substitute.For<IResourceOwnerRepository>();
         _updateUserTwoFactorAuthenticatorOperation = new UpdateUserTwoFactorAuthenticatorOperation(
             _resourceOwnerRepositoryStub,
-            new TestOutputLogger("test", outputHelper));
+            new XUnitLogger("test", outputHelper, null));
     }
 
     [Fact]

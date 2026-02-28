@@ -34,7 +34,8 @@ public sealed class ResourceOwnerFixture : IDisposable
     {
         var resourceOwnerId = "invalid_login";
         var result = Assert.IsType<Option<ResourceOwner>.Error>(
-            await _resourceOwnerClient.GetResourceOwner(resourceOwnerId, "token"));
+            await _resourceOwnerClient.GetResourceOwner(resourceOwnerId, "token",
+                TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, result.Details.Detail);
@@ -45,8 +46,9 @@ public sealed class ResourceOwnerFixture : IDisposable
     {
         var result = Assert.IsType<Option<AddResourceOwnerResponse>.Error>(
             await _resourceOwnerClient
-                .AddResourceOwner(new AddResourceOwnerRequest { Subject = "subject" }, "token")
-                );
+                .AddResourceOwner(new AddResourceOwnerRequest { Subject = "subject" }, "token",
+                    TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
     }
@@ -56,9 +58,9 @@ public sealed class ResourceOwnerFixture : IDisposable
     {
         var result = Assert.IsType<Option<AddResourceOwnerResponse>.Error>(
             await _resourceOwnerClient.AddResourceOwner(
-                    new AddResourceOwnerRequest { Subject = "administrator", Password = "password" },
-                    "token")
-                );
+                new AddResourceOwnerRequest { Subject = "administrator", Password = "password" },
+                "token", TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
         Assert.Equal("A resource owner with same credentials already exists", result.Details.Detail);
@@ -68,8 +70,9 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Update_Claims_And_No_Login_Is_Passed_Then_Error_Is_Returned()
     {
         var result = Assert.IsType<Option.Error>(await _resourceOwnerClient
-            .UpdateResourceOwnerClaims(new UpdateResourceOwnerClaimsRequest(), "token")
-            );
+            .UpdateResourceOwnerClaims(new UpdateResourceOwnerClaimsRequest(), "token",
+                TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "login"), result.Details.Detail);
@@ -79,9 +82,9 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Update_Claims_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
     {
         var result = Assert.IsType<Option.Error>(await _resourceOwnerClient.UpdateResourceOwnerClaims(
-                new UpdateResourceOwnerClaimsRequest { Subject = "invalid_login" },
-                "token")
-            );
+            new UpdateResourceOwnerClaimsRequest { Subject = "invalid_login" },
+            "token", TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
         Assert.Equal("The resource owner doesn't exist", result.Details.Detail);
@@ -91,8 +94,9 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Update_Password_And_No_Login_Is_Passed_Then_Error_Is_Returned()
     {
         var option = await _resourceOwnerClient
-            .UpdateResourceOwnerPassword(new UpdateResourceOwnerPasswordRequest(), "token")
-             as Option.Error;
+                .UpdateResourceOwnerPassword(new UpdateResourceOwnerPasswordRequest(), "token",
+                    TestContext.Current.CancellationToken)
+            as Option.Error;
 
         var result = Assert.IsType<Option.Error>(option);
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
@@ -103,9 +107,9 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Update_Password_And_No_Password_Is_Passed_Then_Error_Is_Returned()
     {
         var result = Assert.IsType<Option.Error>(await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                new UpdateResourceOwnerPasswordRequest { Subject = "login" },
-                "token")
-            );
+            new UpdateResourceOwnerPasswordRequest { Subject = "login" },
+            "token", TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
         Assert.Equal(string.Format(Strings.MissingParameter, "password"), result.Details.Detail);
@@ -115,9 +119,9 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Update_Password_And_Resource_Owner_Does_Not_Exist_Then_Error_Is_Returned()
     {
         var result = Assert.IsType<Option.Error>(await _resourceOwnerClient.UpdateResourceOwnerPassword(
-                new UpdateResourceOwnerPasswordRequest { Subject = "invalid_login", Password = "password" },
-                "token")
-            );
+            new UpdateResourceOwnerPasswordRequest { Subject = "invalid_login", Password = "password" },
+            "token", TestContext.Current.CancellationToken)
+        );
 
         Assert.Equal(ErrorCodes.InvalidParameterCode, result.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, result.Details.Detail);
@@ -127,7 +131,8 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Delete_Unknown_Resource_Owner_Then_Error_Is_Returned()
     {
         var result = Assert.IsType<Option.Error>(
-            await _resourceOwnerClient.DeleteResourceOwner("invalid_login", "token"));
+            await _resourceOwnerClient.DeleteResourceOwner("invalid_login", "token",
+                TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
         Assert.Equal(Strings.TheResourceOwnerCannotBeRemoved, result.Details.Detail);
@@ -146,10 +151,11 @@ public sealed class ResourceOwnerFixture : IDisposable
                         new ClaimData { Type = "not_valid", Value = "not_valid" }
                     ]
                 },
-                "token")
+                "token", TestContext.Current.CancellationToken)
             ;
         var resourceOwner = Assert.IsType<Option<ResourceOwner>.Result>(
-            await _resourceOwnerClient.GetResourceOwner("administrator", "token"));
+            await _resourceOwnerClient.GetResourceOwner("administrator", "token",
+                TestContext.Current.CancellationToken));
 
         Assert.Equal("role", resourceOwner.Item.Claims.First(c => c.Type == "role").Value);
     }
@@ -159,10 +165,11 @@ public sealed class ResourceOwnerFixture : IDisposable
     {
         _ = await _resourceOwnerClient.UpdateResourceOwnerPassword(
                 new UpdateResourceOwnerPasswordRequest { Subject = "administrator", Password = "pass" },
-                "token")
+                "token", TestContext.Current.CancellationToken)
             ;
         var resourceOwner = Assert.IsType<Option<ResourceOwner>.Result>(
-            await _resourceOwnerClient.GetResourceOwner("administrator", "token"));
+            await _resourceOwnerClient.GetResourceOwner("administrator", "token",
+                TestContext.Current.CancellationToken));
 
         Assert.Equal("pass".ToSha256Hash(string.Empty), resourceOwner.Item.Password);
     }
@@ -172,9 +179,9 @@ public sealed class ResourceOwnerFixture : IDisposable
     {
         var result = Assert.IsType<Option<PagedResult<ResourceOwner>>.Result>(
             await _resourceOwnerClient.SearchResourceOwners(
-                    new SearchResourceOwnersRequest { StartIndex = 0, NbResults = 1 },
-                    "token")
-                );
+                new SearchResourceOwnersRequest { StartIndex = 0, NbResults = 1 },
+                "token", TestContext.Current.CancellationToken)
+        );
 
         Assert.Single(result.Item.Content);
     }
@@ -183,8 +190,9 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Get_All_ResourceOwners_Then_All_Resource_Owners_Are_Returned()
     {
         var resourceOwners = Assert.IsType<Option<ResourceOwner[]>.Result>(
-            await _resourceOwnerClient.GetAllResourceOwners("token") // "administrator"
-                );
+            await _resourceOwnerClient.GetAllResourceOwners("token",
+                TestContext.Current.CancellationToken) // "administrator"
+        );
 
         Assert.NotEmpty(resourceOwners.Item);
     }
@@ -193,9 +201,8 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Add_Resource_Owner_Then_Ok_Is_Returned()
     {
         var result = await _resourceOwnerClient.AddResourceOwner(
-                new AddResourceOwnerRequest { Subject = "login", Password = "password" },
-                "token")
-            ;
+            new AddResourceOwnerRequest { Subject = "login", Password = "password" },
+            "token", TestContext.Current.CancellationToken);
 
         Assert.IsType<Option<AddResourceOwnerResponse>.Result>(result);
     }
@@ -204,11 +211,11 @@ public sealed class ResourceOwnerFixture : IDisposable
     public async Task When_Delete_ResourceOwner_Then_ResourceOwner_Does_Not_Exist()
     {
         var result = Assert.IsType<Option<AddResourceOwnerResponse>.Result>(await _resourceOwnerClient.AddResourceOwner(
-                new AddResourceOwnerRequest { Subject = "login1", Password = "password" },
-                "token")
-            );
-        var remove = await _resourceOwnerClient.DeleteResourceOwner(result.Item.Subject!, "token")
-            ;
+            new AddResourceOwnerRequest { Subject = "login1", Password = "password" },
+            "token", TestContext.Current.CancellationToken)
+        );
+        var remove = await _resourceOwnerClient.DeleteResourceOwner(result.Item.Subject!, "token",
+            TestContext.Current.CancellationToken);
 
         Assert.IsType<Option.Success>(remove);
     }
@@ -217,6 +224,6 @@ public sealed class ResourceOwnerFixture : IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        _server?.Dispose();
+        _server.Dispose();
     }
 }

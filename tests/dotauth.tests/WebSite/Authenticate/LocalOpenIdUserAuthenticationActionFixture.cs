@@ -3,7 +3,6 @@
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Divergic.Logging.Xunit;
 using DotAuth;
 using DotAuth.Parameters;
 using DotAuth.Repositories;
@@ -12,10 +11,10 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.Authenticate;
+using MartinCostello.Logging.XUnit;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class LocalOpenIdUserAuthenticationActionFixture
 {
@@ -42,7 +41,7 @@ public sealed class LocalOpenIdUserAuthenticationActionFixture
         var localAuthenticationParameter = new LocalAuthenticationParameter();
         var authorizationParameter = new AuthorizationParameter();
 
-        var result = await _localUserAuthenticationAction!.Execute(
+        var result = await _localUserAuthenticationAction.Execute(
                 localAuthenticationParameter,
                 authorizationParameter,
                 "",
@@ -57,19 +56,19 @@ public sealed class LocalOpenIdUserAuthenticationActionFixture
     public async Task When_Resource_Owner_Credentials_Are_Correct_Then_Event_Is_Logged_And_Claims_Are_Returned()
     {
         const string subject = "subject";
-        var localAuthenticationParameter = new LocalAuthenticationParameter {Password = "abc", UserName = subject};
-        var authorizationParameter = new AuthorizationParameter {ClientId = "client"};
-        var resourceOwner = new ResourceOwner {Subject = subject};
+        var localAuthenticationParameter = new LocalAuthenticationParameter { Password = "abc", UserName = subject };
+        var authorizationParameter = new AuthorizationParameter { ClientId = "client" };
+        var resourceOwner = new ResourceOwner { Subject = subject };
         var authenticateService = Substitute.For<IAuthenticateResourceOwnerService>();
         authenticateService.Amr.Returns("pwd");
         authenticateService.AuthenticateResourceOwner(
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<CancellationToken>())
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<CancellationToken>())
             .Returns(resourceOwner);
         InitializeFakeObjects(authenticateService);
 
-        var result = await _localUserAuthenticationAction!.Execute(
+        var result = await _localUserAuthenticationAction.Execute(
                 localAuthenticationParameter,
                 authorizationParameter,
                 "",
@@ -97,6 +96,6 @@ public sealed class LocalOpenIdUserAuthenticationActionFixture
             mock,
             new InMemoryJwksRepository(),
             new NoOpPublisher(),
-            new TestOutputLogger("test", _outputHelper));
+            new XUnitLogger("test", _outputHelper, null));
     }
 }

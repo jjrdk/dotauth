@@ -22,7 +22,6 @@ using Microsoft.IdentityModel.Logging;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class EndpointFixture : IDisposable
 {
@@ -34,9 +33,9 @@ public sealed class EndpointFixture : IDisposable
 
     public EndpointFixture(ITestOutputHelper output)
     {
-        _postgresContainer = new PostgreSqlBuilder().WithUsername("dotauth").WithPassword("dotauth")
+        _postgresContainer = new PostgreSqlBuilder("postgres:latest").WithUsername("dotauth").WithPassword("dotauth")
             .WithDatabase("dotauth").Build();
-        _redisContainer = new RedisBuilder().Build();
+        _redisContainer = new RedisBuilder("redis:latest").Build();
         _postgresContainer.StartAsync().GetAwaiter().GetResult();
         _redisContainer.StartAsync().GetAwaiter().GetResult();
         _connectionString = _postgresContainer.GetConnectionString();
@@ -70,7 +69,7 @@ public sealed class EndpointFixture : IDisposable
             Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/{path}")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
 
         Assert.Equal(statusCode, httpResult.StatusCode);
     }

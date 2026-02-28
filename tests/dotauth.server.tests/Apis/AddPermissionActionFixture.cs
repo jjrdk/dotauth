@@ -20,7 +20,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Divergic.Logging.Xunit;
 using DotAuth;
 using DotAuth.Api.PermissionController;
 using DotAuth.Properties;
@@ -30,9 +29,9 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
+using MartinCostello.Logging.XUnit;
 using NSubstitute;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class AddPermissionActionFixture
 {
@@ -152,6 +151,6 @@ public sealed class AddPermissionActionFixture
             new InMemoryTokenStore(),
             _resourceSetRepositoryStub,
             _configurationServiceStub,
-            new TestOutputLogger("test", _outputHelper));
+            new XUnitLogger("test", _outputHelper, null));
     }
 }

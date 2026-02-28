@@ -47,7 +47,7 @@ public sealed class GrantedTokenValidatorTests
             ExpiresIn = 10000,
             CreateDateTime = DateTimeOffset.UtcNow
         };
-        var result = await grantedToken.CheckGrantedToken(jwksStoreMock);
+        var result = await grantedToken.CheckGrantedToken(jwksStoreMock, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsValid);
     }
@@ -78,7 +78,7 @@ public sealed class GrantedTokenValidatorTests
             ExpiresIn = 10000,
             CreateDateTime = DateTimeOffset.UtcNow
         };
-        var result = await grantedToken.CheckGrantedToken(jwksStoreMock);
+        var result = await grantedToken.CheckGrantedToken(jwksStoreMock, TestContext.Current.CancellationToken);
 
         Assert.False(result.IsValid);
     }

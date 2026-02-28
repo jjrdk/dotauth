@@ -17,7 +17,6 @@ namespace DotAuth.Tests.Api.Token;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Divergic.Logging.Xunit;
 using DotAuth.Api.Token.Actions;
 using DotAuth.Events;
 using DotAuth.Extensions;
@@ -32,11 +31,11 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.Tests.Helpers;
+using MartinCostello.Logging.XUnit;
 using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
 {
@@ -336,6 +335,6 @@ public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
             new InMemoryJwksRepository(),
             services,
             _eventPublisher,
-            new TestOutputLogger("test", _outputHelper));
+            new XUnitLogger("test", _outputHelper, null));
     }
 }

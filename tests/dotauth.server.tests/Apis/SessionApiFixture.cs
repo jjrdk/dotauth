@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 public sealed class SessionApiFixture
 {
@@ -25,8 +24,8 @@ public sealed class SessionApiFixture
             RequestUri = new System.Uri($"{BaseUrl}/check_session")
         };
 
-        var httpResult = await _server.Client().SendAsync(httpRequest);
-        _ = await httpResult.Content.ReadAsStringAsync();
+        var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
+        _ = await httpResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, httpResult.StatusCode);
     }

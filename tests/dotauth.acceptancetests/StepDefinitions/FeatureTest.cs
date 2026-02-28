@@ -6,9 +6,8 @@ using DotAuth.AcceptanceTests.Support;
 using DotAuth.Client;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Xunit;
-using Xunit.Abstractions;
 
 [Binding]
 public partial class FeatureTest : IDisposable

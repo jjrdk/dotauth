@@ -34,7 +34,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using NSubstitute;
-using Xunit.Abstractions;
+using Xunit;
 
 public sealed class FakeStartup
 {
@@ -75,11 +75,11 @@ public sealed class FakeStartup
                         Substitute.For<ILogger<InMemoryClientRepository>>(),
                         DefaultStores.Clients(_context));
                     options.Consents = _ => new InMemoryConsentRepository(DefaultStores.Consents());
-                    options.Users = sp => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users());
+                    options.Users = _ => new InMemoryResourceOwnerRepository(string.Empty, DefaultStores.Users());
                 },
                 [JwtBearerDefaults.AuthenticationScheme])
             .AddSmsAuthentication(_context.TwilioClient)
-            .AddLogging(b => b.AddXunit(_testOutputHelper))
+            .AddLogging(b => b.AddXUnit(_testOutputHelper))
             .AddAccountFilter()
             .AddSingleton(_context.ConfirmationCodeStore)
             .AddSingleton(sp =>

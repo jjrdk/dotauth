@@ -10,7 +10,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Requests;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Xunit;
 
 public partial class FeatureTest
