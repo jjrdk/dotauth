@@ -50,6 +50,6 @@ public sealed class TestServerFixture : IDisposable
     {
         GC.SuppressFinalize(this);
         Server.Dispose();
-        Client?.Invoke()?.Dispose();
+        Client.Invoke().Dispose();
     }
 }
