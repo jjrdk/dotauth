@@ -726,7 +726,7 @@ public abstract class BaseAuthenticateController : BaseController
     internal async Task LogAuthenticateUser(string resourceOwner, string? amr)
     {
         await _eventPublisher
-            .Publish(new ResourceOwnerAuthenticated(Id.Create(), resourceOwner, amr, DateTimeOffset.UtcNow))
+            .Publish(new ResourceOwnerAmrAuthenticated(Id.Create(), resourceOwner, amr, DateTimeOffset.UtcNow))
             .ConfigureAwait(false);
     }
 

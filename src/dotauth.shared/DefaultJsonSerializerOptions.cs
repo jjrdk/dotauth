@@ -9,10 +9,15 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using DotAuth.Shared.Events.Logging;
+using DotAuth.Shared.Events.OAuth;
+using DotAuth.Shared.Events.Openid;
+using DotAuth.Shared.Events.Uma;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
+using ResourceOwnerAuthenticated = DotAuth.Shared.Events.Logging.ResourceOwnerAuthenticated;
 
 internal sealed class JsonWebKeySetConverter : JsonConverter<JsonWebKeySet>
 {
@@ -234,6 +239,30 @@ internal sealed class RegexConverter : JsonConverter<Regex>
 [JsonSerializable(typeof(UmaIntrospectionResponse))]
 [JsonSerializable(typeof(UpdateResourceSetResponse))]
 [JsonSerializable(typeof(UpdateScopeResponse))]
+[JsonSerializable(typeof(DotAuthError))]
+[JsonSerializable(typeof(FilterValidationFailure))]
+[JsonSerializable(typeof(ResourceOwnerAdded))]
+[JsonSerializable(typeof(ResourceOwnerAuthenticated))]
+[JsonSerializable(typeof(ResourceOwnerDeleted))]
+[JsonSerializable(typeof(AuthorizationGranted))]
+[JsonSerializable(typeof(ClaimsUpdated))]
+[JsonSerializable(typeof(TokenGranted))]
+[JsonSerializable(typeof(TokenRevoked))]
+[JsonSerializable(typeof(ConsentAccepted))]
+[JsonSerializable(typeof(ConsentRejected))]
+[JsonSerializable(typeof(ExternalUserCreated))]
+[JsonSerializable(typeof(ResourceOwnerAmrAuthenticated))]
+[JsonSerializable(typeof(TwoFactorAuthenticationFailed))]
+[JsonSerializable(typeof(AuthorizationPolicyNotAuthorized))]
+[JsonSerializable(typeof(AuthorizationRequestSubmitted))]
+[JsonSerializable(typeof(ResourceSetAdded))]
+[JsonSerializable(typeof(ResourceSetPolicyUpdated))]
+[JsonSerializable(typeof(RptIssued))]
+[JsonSerializable(typeof(UmaRequestApproved))]
+[JsonSerializable(typeof(UmaRequestNotAuthorized))]
+[JsonSerializable(typeof(UmaRequestSubmitted))]
+[JsonSerializable(typeof(UmaTicketCreated))]
+[JsonSerializable(typeof(UmaTicketEvent))]
 public partial class SharedSerializerContext : JsonSerializerContext
 {
 }

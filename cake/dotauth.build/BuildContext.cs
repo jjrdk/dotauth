@@ -10,7 +10,7 @@ public sealed class BuildContext : FrostingContext
     public string BuildVersion { get; set; } = null!;
     public string InformationalVersion { get; set; } = null!;
 
-    public string SolutionName = "dotauth.sln";
+    public string SolutionName = "dotauth.slnx";
 
     public BuildContext(ICakeContext context)
         : base(context)
