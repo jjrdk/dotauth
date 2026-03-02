@@ -19,7 +19,7 @@ public class DotAuthHandler<T> : RemoteAuthenticationHandler<T>
     where T : DotAuthOptions, new()
 {
     private readonly TokenClient _client;
-    private Pkce? _pkce;
+    private readonly Pkce? _pkce;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DotAuthHandler{T}"/> class.

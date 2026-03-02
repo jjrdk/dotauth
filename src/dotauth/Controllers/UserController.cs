@@ -20,7 +20,7 @@ using DotAuth.WebSite.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -35,9 +35,9 @@ public sealed class UserController : BaseController
     private readonly GetUserOperation _getUserOperation;
     private readonly UpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
     private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
+    private readonly LinkGenerator _linkGenerator;
     private readonly IConsentRepository _consentRepository;
     private readonly IScopeRepository _scopeRepository;
-    private readonly IUrlHelper _urlHelper;
     private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
     private readonly ILogger<UserController> _logger;
 
@@ -47,7 +47,7 @@ public sealed class UserController : BaseController
     /// <param name="resourceOwnerRepository">The resource owner repository.</param>
     /// <param name="authenticationService">The authentication service.</param>
     /// <param name="authenticationSchemeProvider">The authentication scheme provider.</param>
-    /// <param name="urlHelperFactory">The URL helper factory.</param>
+    /// <param name="linkGenerator">The URL helper factory.</param>
     /// <param name="consentRepository">The consent repository.</param>
     /// <param name="scopeRepository"></param>
     /// <param name="twoFactorAuthenticationHandler">The two factor authentication handler.</param>
@@ -56,7 +56,7 @@ public sealed class UserController : BaseController
         IResourceOwnerRepository resourceOwnerRepository,
         IAuthenticationService authenticationService,
         IAuthenticationSchemeProvider authenticationSchemeProvider,
-        IUrlHelperFactory urlHelperFactory,
+        LinkGenerator linkGenerator,
         IConsentRepository consentRepository,
         IScopeRepository scopeRepository,
         ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
@@ -68,9 +68,9 @@ public sealed class UserController : BaseController
         _updateUserTwoFactorAuthenticatorOperation =
             new UpdateUserTwoFactorAuthenticatorOperation(resourceOwnerRepository, logger);
         _authenticationSchemeProvider = authenticationSchemeProvider;
+        _linkGenerator = linkGenerator;
         _consentRepository = consentRepository;
         _scopeRepository = scopeRepository;
-        _urlHelper = urlHelperFactory.GetUrlHelper(HttpContext.GetActionContext());
         _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
         _logger = logger;
     }
@@ -102,8 +102,8 @@ public sealed class UserController : BaseController
         }
 
         var authenticationSchemes =
-            (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(
-                a => !string.IsNullOrWhiteSpace(a.DisplayName));
+            (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(a =>
+                !string.IsNullOrWhiteSpace(a.DisplayName));
         var viewModel = new ProfileViewModel(ro.Claims);
 
         foreach (var profile in ro.ExternalLogins)
@@ -115,10 +115,9 @@ public sealed class UserController : BaseController
         var actualScheme = authenticatedUser.Identity?.AuthenticationType;
 
         viewModel.UnlinkedIdentityProviders = authenticationSchemes
-            .Where(
-                a => a.DisplayName != null
-                 && !a.DisplayName.StartsWith('_')
-                 && !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
+            .Where(a => a.DisplayName != null
+             && !a.DisplayName.StartsWith('_')
+             && !ro.ExternalLogins.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
             .Select(p => new IdentityProviderViewModel(p.Name))
             .ToList();
         return Ok(viewModel);
@@ -253,7 +252,13 @@ public sealed class UserController : BaseController
             BadRequest();
         }
 
-        var redirectUrl = _urlHelper.Action("LinkCallback", "User", null, Request.Scheme);
+        var redirectUrl =
+            _linkGenerator.GetUriByAction(
+                HttpContext,
+                "LinkCallback",
+                "User",
+                null,
+                Request.Scheme);
         await _authenticationService.ChallengeAsync(
                 HttpContext,
                 provider,
@@ -527,8 +532,8 @@ public sealed class UserController : BaseController
                 });
         }
 
-        var unlink = resourceOwner.ExternalLogins.Where(
-                x => x.Subject == externalSubject && (x.Issuer == issuer || issuer == CookieNames.CookieName))
+        var unlink = resourceOwner.ExternalLogins.Where(x =>
+                x.Subject == externalSubject && (x.Issuer == issuer || issuer == CookieNames.CookieName))
             .ToArray();
         if (unlink.Length <= 0)
         {
@@ -580,11 +585,11 @@ public sealed class UserController : BaseController
         resourceOwner.ExternalLogins = resourceOwner.ExternalLogins.Concat(
             [
                 new ExternalAccountLink
-                    {
-                        Issuer = issuer!,
-                        Subject = externalSubject!,
-                        ExternalClaims = externalPrincipal.Claims.ToArray()
-                    }
+                {
+                    Issuer = issuer!,
+                    Subject = externalSubject!,
+                    ExternalClaims = externalPrincipal.Claims.ToArray()
+                }
             ])
             .ToArray();
         await _resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);

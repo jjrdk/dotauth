@@ -185,18 +185,18 @@ public static class ServiceCollectionExtensions
         /// <param name="configuration">The configuration.</param>
         /// <param name="mvcConfig">MVC configuration.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
-        /// <param name="authPolicies"></param>
+        /// <param name="authenticationSchemes"></param>
         /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
         public IMvcBuilder AddDotAuthServer(
             Action<DotAuthConfiguration> configuration,
-            string[] authPolicies,
+            string[] authenticationSchemes,
             Action<MvcOptions>? mvcConfig = null,
             IRequestThrottle? requestThrottle = null)
         {
             var options = new DotAuthConfiguration();
             configuration(options);
 
-            return AddDotAuthServer(services, options, authPolicies, mvcConfig, requestThrottle);
+            return AddDotAuthServer(services, options, authenticationSchemes, mvcConfig, requestThrottle);
         }
 
         /// <summary>
@@ -205,12 +205,12 @@ public static class ServiceCollectionExtensions
         /// <param name="configuration">The application configuration.</param>
         /// <param name="mvcConfig">MVC configuration.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
-        /// <param name="authPolicies"></param>
+        /// <param name="authenticationSchemes"></param>
         /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">options</exception>
         public IMvcBuilder AddDotAuthServer(
             DotAuthConfiguration configuration,
-            string[] authPolicies,
+            string[] authenticationSchemes,
             Action<MvcOptions>? mvcConfig = null,
             IRequestThrottle? requestThrottle = null)
         {
@@ -281,7 +281,7 @@ public static class ServiceCollectionExtensions
             services.AddAuthentication();
             services.AddAuthorization(opts =>
             {
-                opts.AddAuthPolicies(configuration.AdministratorRoleDefinition, authPolicies);
+                opts.AddAuthPolicies(configuration.AdministratorRoleDefinition, authenticationSchemes);
             });
 
             var s = services.AddTransient<IAuthenticateResourceOwnerService, UsernamePasswordAuthenticationService>()

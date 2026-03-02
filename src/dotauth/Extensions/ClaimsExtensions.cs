@@ -22,30 +22,39 @@ internal static class ClaimsExtensions
         { ClaimTypes.Webpage, OpenIdClaimTypes.WebSite },
     };
 
-    public static IEnumerable<string> ToOpenIdClaimType(this IEnumerable<string> claimTypes)
+    extension(IEnumerable<string> claimTypes)
     {
-        return claimTypes.SelectMany(claim =>
-            MappingToOpenidClaims.ContainsKey(claim)
-                ? [MappingToOpenidClaims[claim], claim]
-                : new[] {claim});
+        public IEnumerable<string> ToOpenIdClaimType()
+        {
+            return claimTypes.SelectMany(claim =>
+                MappingToOpenidClaims.TryGetValue(claim, out var openidClaim)
+                    ? [openidClaim, claim]
+                    : new[] {claim});
+        }
     }
 
-    public static Claim[] ToOpenidClaims(this IEnumerable<Claim> claims)
+    extension(IEnumerable<Claim> claims)
     {
-        return claims.Select(claim =>
-                MappingToOpenidClaims.ContainsKey(claim.Type)
-                    ? new Claim(MappingToOpenidClaims[claim.Type], claim.Value)
-                    : claim)
-            .ToArray();
+        public Claim[] ToOpenidClaims()
+        {
+            return claims.Select(claim =>
+                    MappingToOpenidClaims.TryGetValue(claim.Type, out var openidClaim)
+                        ? new Claim(openidClaim, claim.Value)
+                        : claim)
+                .ToArray();
+        }
     }
 
-    public static bool HasClaimValue(this Claim claim, string value, char separator = ' ')
+    extension(Claim claim)
     {
-        return HasClaimValue(claim, value, [separator]);
-    }
+        public bool HasClaimValue(string value, char separator = ' ')
+        {
+            return HasClaimValue(claim, value, [separator]);
+        }
 
-    public static bool HasClaimValue(this Claim claim, string value, params char[] separators)
-    {
-        return claim.Value.Split(separators).Any(v => v == value);
+        public bool HasClaimValue(string value, params char[] separators)
+        {
+            return claim.Value.Split(separators).Any(v => v == value);
+        }
     }
 }

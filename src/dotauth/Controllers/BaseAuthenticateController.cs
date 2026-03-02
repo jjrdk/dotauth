@@ -689,11 +689,6 @@ public abstract class BaseAuthenticateController : BaseController
 
         // 7. Store claims into new cookie
         await SetLocalCookie(claims.ToOpenidClaims(), authorizationRequest.session_id!).ConfigureAwait(false);
-        await _authenticationService.SignOutAsync(
-                HttpContext,
-                null,
-                new AuthenticationProperties())
-            .ConfigureAwait(false);
         await LogAuthenticateUser(subject, actionResult.Amr!).ConfigureAwait(false);
         return actionResult.CreateRedirectionFromActionResult(authorizationRequest, _logger)!;
     }

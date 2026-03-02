@@ -24,6 +24,7 @@ using Amazon;
 using Amazon.Runtime;
 using DotAuth;
 using DotAuth.Extensions;
+using DotAuth.Shared;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.Stores.Marten;
@@ -34,7 +35,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -129,38 +129,34 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
-        services.AddSingleton<IDocumentStore>(
-                provider =>
-                {
-                    var options = new DotAuthMartenOptions(
-                        _configuration[ConfigurationValues.ConnectionString]!,
-                        new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
-                        autoCreate: AutoCreate.CreateOrUpdate);
-                    return new DocumentStore(options);
-                })
+        services.AddSingleton<IDocumentStore>(provider =>
+            {
+                var options = new DotAuthMartenOptions(
+                    _configuration[ConfigurationValues.ConnectionString]!,
+                    new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()),
+                    autoCreate: AutoCreate.CreateOrUpdate);
+                return new DocumentStore(options);
+            })
             .AddTransient(sp =>
             {
-                var contextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                var context = contextAccessor.HttpContext;
-                var host = context?.Request.Host.Host ?? "localhost";
-                return sp.GetRequiredService<IDocumentStore>().LightweightSession(host);
+//                var contextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+//                var context = contextAccessor.HttpContext;
+//                var host = context?.Request.Host.Host ?? "localhost";
+                return sp.GetRequiredService<IDocumentStore>().LightweightSession();
             })
-            .AddLogging(
-                log =>
+            .AddLogging(log =>
+            {
+                log.AddJsonConsole(o =>
                 {
-                    log.AddJsonConsole(
-                        o =>
-                        {
-                            o.IncludeScopes = true;
-                            o.UseUtcTimestamp = true;
-                        });
-                })
-            .AddAuthentication(
-                options =>
-                {
-                    options.DefaultScheme = CookieNames.CookieName;
-                    options.DefaultChallengeScheme = DotAuthScheme;
-                })
+                    o.IncludeScopes = true;
+                    o.UseUtcTimestamp = true;
+                });
+            })
+            .AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieNames.CookieName;
+                options.DefaultChallengeScheme = CookieNames.CookieName; //DotAuthScheme;
+            })
             .AddCookie(CookieNames.CookieName, opts => { opts.LoginPath = "/Authenticate"; })
             .AddOAuth(DotAuthScheme, $"_{DotAuthScheme}", _ => { })
             .AddJwtBearer(
@@ -188,37 +184,35 @@ public sealed class Startup
         {
             services.AddAuthentication(CookieNames.ExternalCookieName)
                 .AddCookie(CookieNames.ExternalCookieName)
-                .AddGoogle(
-                    opts =>
-                    {
-                        opts.AccessType = "offline";
-                        opts.ClientId = _configuration[ConfigurationValues.GoogleClientId]!;
-                        opts.ClientSecret = _configuration[ConfigurationValues.GoogleClientSecret]!;
-                        var scopes = _configuration[ConfigurationValues.GoogleScopes] ?? DefaultScopes;
-                        foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => x.Trim()))
-                        {
-                            opts.Scope.Add(scope);
-                        }
-                    });
-        }
-
-        if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientId])
-         && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientSecret]))
-        {
-            services.AddAuthentication(CookieNames.ExternalCookieName).AddMicrosoftAccount(
-                opts =>
+                .AddGoogle(opts =>
                 {
-                    opts.ClientId = _configuration[ConfigurationValues.MsClientId]!;
-                    opts.ClientSecret = _configuration[ConfigurationValues.MsClientSecret]!;
-                    opts.UsePkce = true;
-                    var scopes = _configuration[ConfigurationValues.MsScopes] ?? DefaultScopes;
+                    opts.AccessType = "offline";
+                    opts.ClientId = _configuration[ConfigurationValues.GoogleClientId]!;
+                    opts.ClientSecret = _configuration[ConfigurationValues.GoogleClientSecret]!;
+                    var scopes = _configuration[ConfigurationValues.GoogleScopes] ?? DefaultScopes;
                     foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => x.Trim()))
                     {
                         opts.Scope.Add(scope);
                     }
                 });
+        }
+
+        if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientId])
+         && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.MsClientSecret]))
+        {
+            services.AddAuthentication(CookieNames.ExternalCookieName).AddMicrosoftAccount(opts =>
+            {
+                opts.ClientId = _configuration[ConfigurationValues.MsClientId]!;
+                opts.ClientSecret = _configuration[ConfigurationValues.MsClientSecret]!;
+                opts.UsePkce = true;
+                var scopes = _configuration[ConfigurationValues.MsScopes] ?? DefaultScopes;
+                foreach (var scope in scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => x.Trim()))
+                {
+                    opts.Scope.Add(scope);
+                }
+            });
         }
 
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonAccessKey])
@@ -267,17 +261,19 @@ public sealed class Startup
         }
 
         app.UseResponseCompression()
-            .Use(
-                async (ctx, next) =>
+            .Use(async (ctx, next) =>
+            {
+                var headers = JsonSerializer.Serialize(
+                    ctx.Request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
+                    SharedSerializerContext.Default.DictionaryStringString);
+                var logger = ctx.RequestServices.GetRequiredService<ILogger<HttpRequest>>();
+                if (logger.IsEnabled(LogLevel.Information))
                 {
-                    var logger = ctx.RequestServices.GetRequiredService<ILogger<HttpRequest>>();
-                    var jsonOptions = ctx.RequestServices.GetRequiredService<JsonOptions>();
-                    var headers = JsonSerializer.Serialize(
-                        ctx.Request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
-                        jsonOptions.SerializerOptions);
                     logger.LogInformation("Request headers: {Headers}", headers);
-                    await next(ctx).ConfigureAwait(false);
-                })
+                }
+
+                await next(ctx).ConfigureAwait(false);
+            })
             .UseDotAuthServer(x =>
             {
                 foreach (var proxy in knownProxies)

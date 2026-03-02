@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\dotauth.authentication\dotauth.authentication.csproj" />
         <ProjectReference Include="..\dotauth.sms.ui\dotauth.sms.ui.csproj" />
         <ProjectReference Include="..\dotauth.sms\dotauth.sms.csproj" />
         <ProjectReference Include="..\dotauth.stores.marten\dotauth.stores.marten.csproj" />
@@ -40,11 +41,5 @@
     <ItemGroup>
         <Folder Include="Properties\" />
     </ItemGroup>
-
-    <ProjectExtensions>
-        <VisualStudio>
-            <UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/phraseapp" />
-        </VisualStudio>
-    </ProjectExtensions>
 
 </Project>

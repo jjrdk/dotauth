@@ -46,7 +46,7 @@ internal static class ControllerExtensions
                 authorizationRequest.redirect_uri!,
                 parameters,
                 endpointResult.RedirectInstruction!.ResponseMode!).ToString();
-            logger.LogInformation("Redirection uri: {redirectUrl}", redirectUrl);
+            logger.LogInformation("Redirection uri: {RedirectUrl}", redirectUrl);
 
             return new RedirectResult(redirectUrl);
         }

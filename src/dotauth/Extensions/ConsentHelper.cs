@@ -31,8 +31,7 @@ internal static class ConsentHelper
     {
         var consents =
             (await consentRepository.GetConsentsForGivenUser(subject, cancellationToken).ConfigureAwait(false))
-            ?.ToArray()
-            ?? [];
+            .ToArray();
         Consent? confirmedConsent = null;
         if (consents.Length <= 0)
         {

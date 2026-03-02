@@ -174,6 +174,7 @@ internal sealed class RegexConverter : JsonConverter<Regex>
         typeof(RegexConverter)
     ])]
 [JsonSerializable(typeof(Dictionary<string, object>))]
+[JsonSerializable(typeof(Dictionary<string, string>))]
 [JsonSerializable(typeof(AuthorizationCode))]
 [JsonSerializable(typeof(Client))]
 [JsonSerializable(typeof(ClientSecret))]
