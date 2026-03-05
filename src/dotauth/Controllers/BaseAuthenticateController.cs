@@ -46,7 +46,7 @@ using Microsoft.Extensions.Logging;
 /// Defines the base authentication controller.
 /// </summary>
 /// <seealso cref="BaseController" />
-public abstract class BaseAuthenticateController : BaseController
+public abstract partial class BaseAuthenticateController : BaseController
 {
     private const string ExternalAuthenticateCookieName = "ExternalAuth-{0}";
     private readonly GenerateAndSendCodeAction _generateAndSendCode;
@@ -214,7 +214,7 @@ public abstract class BaseAuthenticateController : BaseController
     {
         if (!string.IsNullOrWhiteSpace(error))
         {
-            _logger.LogError("{Error}", string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+            LogError(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             return SetRedirection(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error),
                 Strings.InternalServerError, ErrorCodes.InternalError);
         }
@@ -313,7 +313,7 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
         if (authenticatedUser?.Identity is not { IsAuthenticated: true })
         {
-            _logger.LogError("{Error}", Strings.TwoFactorAuthenticationCannotBePerformed);
+            LogError(Strings.TwoFactorAuthenticationCannotBePerformed);
             return SetRedirection(
                 Strings.TwoFactorAuthenticationCannotBePerformed,
                 Strings.InternalServerError,
@@ -360,10 +360,7 @@ public abstract class BaseAuthenticateController : BaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendCode(CodeViewModel codeViewModel, CancellationToken cancellationToken)
     {
-        if (codeViewModel == null)
-        {
-            throw new ArgumentNullException(nameof(codeViewModel));
-        }
+        ArgumentNullException.ThrowIfNull(codeViewModel);
 
         ViewBag.IsAuthenticated = false;
         codeViewModel.Validate(ModelState);
@@ -378,7 +375,7 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
         if (authenticatedUser?.Identity?.IsAuthenticated != true)
         {
-            _logger.LogError("{Error}", Strings.TwoFactorAuthenticationCannotBePerformed);
+            LogError(Strings.TwoFactorAuthenticationCannotBePerformed);
             return BadRequest(
                 new ErrorDetails
                 {
@@ -418,11 +415,7 @@ public abstract class BaseAuthenticateController : BaseController
         if (!await _validateConfirmationCode.Execute(codeViewModel.Code!, subject, cancellationToken)
             .ConfigureAwait(false))
         {
-            _logger.LogError(
-                "Two factor authentication failed for subject: {Subject}, auth request: {AuthRequestCode}, code: {Code}",
-                subject,
-                codeViewModel.AuthRequestCode,
-                codeViewModel.Code);
+            LogTwoFactorAuthenticationFailedForSubjectSubjectAuthRequestAuthRequestCodeCode(subject, codeViewModel.AuthRequestCode, codeViewModel.Code);
             await _eventPublisher.Publish(
                 new TwoFactorAuthenticationFailed(
                     Id.Create(),
@@ -563,6 +556,7 @@ public abstract class BaseAuthenticateController : BaseController
                 provider,
                 new AuthenticationProperties { RedirectUri = redirectUrl })
             .ConfigureAwait(false);
+        LogRedirectingToExternalProviderProviderWithRedirectUrlRedirectUrl(provider, redirectUrl);
     }
 
     /// <summary>
@@ -575,8 +569,8 @@ public abstract class BaseAuthenticateController : BaseController
     /// <exception cref="ArgumentNullException">code</exception>
     [HttpGet]
     public async Task<IActionResult> LoginCallbackOpenId(
-        string code,
-        string error,
+        string? code,
+        string? error,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(code))
@@ -589,7 +583,7 @@ public abstract class BaseAuthenticateController : BaseController
         var request = Request.Cookies[cookieName];
         if (request == null)
         {
-            _logger.LogError("{Error}", Strings.TheRequestCannotBeExtractedFromTheCookie);
+            LogError(Strings.TheRequestCannotBeExtractedFromTheCookie);
             return SetRedirection(
                 Strings.TheRequestCannotBeExtractedFromTheCookie,
                 Strings.InternalServerError,
@@ -611,7 +605,7 @@ public abstract class BaseAuthenticateController : BaseController
         // 3 : Raise an exception is there's an authentication error
         if (!string.IsNullOrWhiteSpace(error))
         {
-            _logger.LogError("{Error}", string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+            LogError(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             return SetRedirection(
                 string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error),
                 Strings.InternalServerError,
@@ -624,7 +618,7 @@ public abstract class BaseAuthenticateController : BaseController
             .ConfigureAwait(false);
         if (authenticatedUser?.Identity?.IsAuthenticated != true || authenticatedUser.Identity is not ClaimsIdentity)
         {
-            _logger.LogError("{Msg}", Strings.TheUserNeedsToBeAuthenticated);
+            LogMsg(Strings.TheUserNeedsToBeAuthenticated);
             return SetRedirection(Strings.TheUserNeedsToBeAuthenticated, Strings.InternalServerError,
                 ErrorCodes.UnhandledExceptionCode);
         }
@@ -689,6 +683,12 @@ public abstract class BaseAuthenticateController : BaseController
 
         // 7. Store claims into new cookie
         await SetLocalCookie(claims.ToOpenidClaims(), authorizationRequest.session_id!).ConfigureAwait(false);
+        await _authenticationService.SignOutAsync(
+                HttpContext,
+                null,
+                new AuthenticationProperties())
+            .ConfigureAwait(false);
+
         await LogAuthenticateUser(subject, actionResult.Amr!).ConfigureAwait(false);
         return actionResult.CreateRedirectionFromActionResult(authorizationRequest, _logger)!;
     }
@@ -713,7 +713,7 @@ public abstract class BaseAuthenticateController : BaseController
     }
 
     /// <summary>
-    /// Logs the authenticate user.
+    /// Logs the authenticated user.
     /// </summary>
     /// <param name="resourceOwner">The resource owner.</param>
     /// <param name="amr">The amr.</param>
@@ -845,4 +845,16 @@ public abstract class BaseAuthenticateController : BaseController
 
         return (subject, null, null);
     }
+
+    [LoggerMessage(LogLevel.Error, "{Error}")]
+    partial void LogError(string error);
+
+    [LoggerMessage(LogLevel.Error, "Two factor authentication failed for subject: {Subject}, auth request: {AuthRequestCode}, code: {Code}")]
+    partial void LogTwoFactorAuthenticationFailedForSubjectSubjectAuthRequestAuthRequestCodeCode(string subject, string? authRequestCode, string? code);
+
+    [LoggerMessage(LogLevel.Debug, "Redirecting to external provider: {Provider}, with redirect url: {RedirectUrl}")]
+    partial void LogRedirectingToExternalProviderProviderWithRedirectUrlRedirectUrl(string provider, string? redirectUrl);
+
+    [LoggerMessage(LogLevel.Error, "{Msg}")]
+    partial void LogMsg(string msg);
 }

@@ -204,11 +204,7 @@ public sealed class TokenClient : ClientBase, ITokenClient
         request.Headers.Accept.Clear();
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
         var response = await _client().SendAsync(request, cancellationToken).ConfigureAwait(false);
-#if NETSTANDARD2_1
-        var keyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-#else
         var keyJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-#endif
         return JsonWebKeySet.Create(keyJson);
     }
 

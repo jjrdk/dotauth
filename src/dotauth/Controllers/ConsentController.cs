@@ -15,7 +15,6 @@
 namespace DotAuth.Controllers;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -137,11 +136,8 @@ public sealed class ConsentController : BaseController
         var viewModel = new ConsentViewModel
         {
             ClientDisplayName = client.ClientName,
-            AllowedScopeDescriptions =
-                actionResult?.Scopes == null
-                    ? []
-                    : actionResult.Scopes.Select(s => s.Description).ToList(),
-            AllowedIndividualClaims = actionResult?.AllowedClaims ?? new List<string>(),
+            AllowedScopeDescriptions = actionResult.Scopes.Select(s => s.Description).ToList(),
+            AllowedIndividualClaims = actionResult.AllowedClaims,
             LogoUri = client.LogoUri?.AbsoluteUri,
             PolicyUri = client.PolicyUri?.AbsoluteUri,
             TosUri = client.TosUri?.AbsoluteUri,
@@ -195,7 +191,7 @@ public sealed class ConsentController : BaseController
     public async Task<IActionResult> Cancel(string code)
     {
         var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-        if (request?.redirect_uri == null)
+        if (request.redirect_uri == null)
         {
             return BadRequest();
         }

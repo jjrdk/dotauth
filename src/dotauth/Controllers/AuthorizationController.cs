@@ -189,11 +189,7 @@ public sealed class AuthorizationController : ControllerBase
     private string GetSessionId()
     {
         return Request.Cookies.TryGetValue(CoreConstants.SessionId, out var sessionId)
-#if NET6_0
-            ? sessionId ?? Id.Create()
-#else
             ? sessionId
-#endif
             : Id.Create();
     }
 

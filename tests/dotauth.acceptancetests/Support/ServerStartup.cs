@@ -82,8 +82,8 @@ public sealed class ServerStartup
         var mockSmsClient = Substitute.For<ISmsClient>();
         mockSmsClient.SendMessage(Arg.Any<string>(), Arg.Any<string>()).Returns((true, null));
 
-        services.AddCors(
-            options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+        services.AddCors(options =>
+            options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         services.AddDotAuthServer(
                 _configuration,
                 [
@@ -93,18 +93,15 @@ public sealed class ServerStartup
             .AddDotAuthUi(typeof(IDefaultUi), typeof(IDefaultSmsUi))
             .AddSmsAuthentication(mockSmsClient);
         services
-#if DEBUG
             .AddLogging(l => l.AddXUnit(_outputHelper))
-#endif
             .AddAccountFilter()
-            .AddAuthentication(
-                cfg =>
-                {
-                    cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+            .AddAuthentication(cfg =>
+            {
+                cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,

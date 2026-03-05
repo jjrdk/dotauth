@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
-internal static class ControllerExtensions
+internal static partial class ControllerExtensions
 {
     public static string? GetOriginUrl(this ControllerBase controller)
     {
@@ -46,7 +46,7 @@ internal static class ControllerExtensions
                 authorizationRequest.redirect_uri!,
                 parameters,
                 endpointResult.RedirectInstruction!.ResponseMode!).ToString();
-            logger.LogInformation("Redirection uri: {RedirectUrl}", redirectUrl);
+            LogRedirectionUriRedirecturl(logger, redirectUrl);
 
             return new RedirectResult(redirectUrl);
         }
@@ -96,4 +96,7 @@ internal static class ControllerExtensions
             _ => uri.AddParametersInQuery(parameters)
         };
     }
+
+    [LoggerMessage(LogLevel.Information, "Redirection uri: {RedirectUrl}")]
+    static partial void LogRedirectionUriRedirecturl(this ILogger logger, string redirectUrl);
 }
