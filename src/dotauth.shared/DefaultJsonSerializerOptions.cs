@@ -19,6 +19,119 @@ using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
 using ResourceOwnerAuthenticated = DotAuth.Shared.Events.Logging.ResourceOwnerAuthenticated;
 
+internal sealed class JwkConverter : JsonConverter<JsonWebKey>
+{
+    public override JsonWebKey Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var obj = JsonNode.Parse(ref reader);
+        var json = obj?.ToJsonString();
+        return new JsonWebKey(json);
+    }
+
+    public override void Write(Utf8JsonWriter writer, JsonWebKey value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        writer.WriteString("kty", value.Kty);
+        writer.WriteString("use", value.Use);
+        writer.WriteString("kid", value.Kid);
+        writer.WriteString("alg", value.Alg);
+        writer.WriteStartArray("key_ops");
+        foreach (var op in value.KeyOps)
+        {
+            writer.WriteStringValue(op);
+        }
+
+        writer.WriteEndArray();
+        if (value.K != null)
+        {
+            writer.WriteString("k", value.K);
+        }
+
+        if (value.N != null)
+        {
+            writer.WriteString("n", value.N);
+        }
+
+        if (value.E != null)
+        {
+            writer.WriteString("e", value.E);
+        }
+
+        if (value.D != null)
+        {
+            writer.WriteString("d", value.D);
+        }
+
+        if (value.P != null)
+        {
+            writer.WriteString("p", value.P);
+        }
+
+        if (value.Q != null)
+        {
+            writer.WriteString("q", value.Q);
+        }
+
+        if (value.DP != null)
+        {
+            writer.WriteString("dp", value.DP);
+        }
+
+        if (value.DQ != null)
+        {
+            writer.WriteString("dq", value.DQ);
+        }
+
+        if (value.QI != null)
+        {
+            writer.WriteString("qi", value.QI);
+        }
+
+        if (value.X != null)
+        {
+            writer.WriteString("x", value.X);
+        }
+
+        if (value.Y != null)
+        {
+            writer.WriteString("y", value.Y);
+        }
+
+        if (value.Crv != null)
+        {
+            writer.WriteString("crv", value.Crv);
+        }
+
+        if (value.X5u != null)
+        {
+            writer.WriteString("x5u", value.X5u);
+        }
+
+        if (value.X5c != null)
+        {
+            writer.WriteStartArray("x5c");
+            foreach (var cert in value.X5c)
+            {
+                writer.WriteStringValue(cert);
+            }
+
+            writer.WriteEndArray();
+        }
+
+        if (value.X5t != null)
+        {
+            writer.WriteString("x5t", value.X5t);
+        }
+
+        if (value.X5tS256 != null)
+        {
+            writer.WriteString("x5t#S256", value.X5tS256);
+        }
+
+        writer.WriteEndObject();
+    }
+}
+
 internal sealed class JsonWebKeySetConverter : JsonConverter<JsonWebKeySet>
 {
     public override JsonWebKeySet Read(
@@ -171,6 +284,7 @@ internal sealed class RegexConverter : JsonConverter<Regex>
         typeof(ClaimConverter),
         typeof(JwtPayloadConverter),
         typeof(JsonWebKeySetConverter),
+        typeof(JwkConverter),
         typeof(RegexConverter)
     ])]
 [JsonSerializable(typeof(Dictionary<string, object>))]
@@ -264,6 +378,8 @@ internal sealed class RegexConverter : JsonConverter<Regex>
 [JsonSerializable(typeof(UmaRequestSubmitted))]
 [JsonSerializable(typeof(UmaTicketCreated))]
 [JsonSerializable(typeof(UmaTicketEvent))]
+[JsonSerializable(typeof(JsonWebKey))]
+[JsonSerializable(typeof(JsonWebKeySet))]
 public partial class SharedSerializerContext : JsonSerializerContext
 {
 }

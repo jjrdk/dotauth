@@ -228,4 +228,33 @@ public static class JsonWebKeyExtensions
 
         return jwk;
     }
+
+    /// <summary>
+    /// Creates the JWK.
+    /// </summary>
+    /// <param name="key">The ECDSA.</param>
+    /// <param name="keyId">The key identifier.</param>
+    /// <param name="use">The use.</param>
+    /// <param name="includePrivateParameters">if set to <c>true</c> [include private parameters].</param>
+    /// <param name="keyops">The keyops.</param>
+    /// <returns></returns>
+    public static JsonWebKey CreateJwk(
+        this ECDsa key,
+        string keyId,
+        string use,
+        bool includePrivateParameters = false,
+        params string[] keyops)
+    {
+        var jwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(new ECDsaSecurityKey(key));
+        jwk.Use = use;
+        jwk.Kid = keyId;
+        jwk.Alg = SecurityAlgorithms.RsaSha256;
+        jwk.CryptoProviderFactory = CryptoProviderFactory.Default;
+        foreach (var keyop in keyops)
+        {
+            jwk.KeyOps.Add(keyop);
+        }
+
+        return jwk;
+    }
 }

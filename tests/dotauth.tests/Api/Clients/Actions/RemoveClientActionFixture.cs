@@ -22,6 +22,7 @@ using DotAuth.Repositories;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
 using Xunit;
 

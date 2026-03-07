@@ -234,6 +234,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
         typeof(ClaimConverter),
         typeof(JwtPayloadConverter),
         typeof(JsonWebKeySetConverter),
+        typeof(JwkConverter),
         typeof(RegexConverter),
     ])]
 [JsonSerializable(typeof(AuthorizationCode))]

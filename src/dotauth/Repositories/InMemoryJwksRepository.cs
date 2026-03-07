@@ -38,7 +38,7 @@ internal sealed class InMemoryJwksRepository : IJwksRepository
         _publicKeySet = publicKeys.ToJwks();
     }
 
-    public Task<JsonWebKeySet?> GetPublicKeys(CancellationToken cancellationToken = default)
+    public Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default)
     {
         return Task.FromResult(_publicKeySet);
     }

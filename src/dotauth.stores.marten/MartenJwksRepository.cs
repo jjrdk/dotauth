@@ -29,7 +29,7 @@ public sealed class MartenJwksRepository : IJwksRepository
     }
 
     /// <inheritdoc />
-    public async Task<JsonWebKeySet?> GetPublicKeys(CancellationToken cancellationToken = default)
+    public async Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default)
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);

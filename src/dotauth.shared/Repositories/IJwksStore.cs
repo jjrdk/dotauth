@@ -14,7 +14,7 @@ public interface IJwksStore
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
-    Task<JsonWebKeySet?> GetPublicKeys(CancellationToken cancellationToken = default);
+    Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the signing key.
