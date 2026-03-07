@@ -573,12 +573,9 @@ public abstract partial class BaseAuthenticateController : BaseController
         string? error,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(code))
-        {
-            throw new ArgumentNullException(nameof(code));
-        }
+        ArgumentNullException.ThrowIfNull(code);
 
-        // 1 : retrieve the request from the cookie
+        // 1: retrieve the request from the cookie
         var cookieName = string.Format(ExternalAuthenticateCookieName, code);
         var request = Request.Cookies[cookieName];
         if (request == null)
@@ -590,7 +587,7 @@ public abstract partial class BaseAuthenticateController : BaseController
                 ErrorCodes.UnhandledExceptionCode);
         }
 
-        // 2 : remove the cookie
+        // 2: remove the cookie
         Response.Cookies.Append(
             cookieName,
             string.Empty,
@@ -602,7 +599,7 @@ public abstract partial class BaseAuthenticateController : BaseController
                 Expires = DateTimeOffset.UtcNow.AddDays(-1)
             });
 
-        // 3 : Raise an exception is there's an authentication error
+        // 3: Raise an exception is there's an authentication error
         if (!string.IsNullOrWhiteSpace(error))
         {
             LogError(string.Format(Strings.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
@@ -612,7 +609,7 @@ public abstract partial class BaseAuthenticateController : BaseController
                 ErrorCodes.UnhandledExceptionCode);
         }
 
-        // 4. Check if the user is authenticated
+        // 4: Check if the user is authenticated
         var authenticatedUser = await _authenticationService
             .GetAuthenticatedUser(this)
             .ConfigureAwait(false);

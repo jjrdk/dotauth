@@ -34,7 +34,7 @@ internal sealed class ExceptionHandlerMiddleware
         IEventPublisher publisher,
         ILogger<ExceptionHandlerMiddleware> logger)
     {
-        _next = next ?? throw new ArgumentNullException(nameof(next));
+        _next = next;
         _publisher = publisher;
         _logger = logger;
     }

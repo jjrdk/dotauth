@@ -28,10 +28,7 @@ internal sealed class InMemoryConsentRepository : IConsentRepository
     /// <inheritdoc />
     public Task<bool> Delete(Consent record, CancellationToken cancellationToken = default)
     {
-        if (record == null)
-        {
-            throw new ArgumentNullException(nameof(record));
-        }
+        ArgumentNullException.ThrowIfNull(record);
 
         var consent = _consents.FirstOrDefault(c => c.Id == record.Id);
         if (consent == null)
@@ -55,11 +52,6 @@ internal sealed class InMemoryConsentRepository : IConsentRepository
     /// <inheritdoc />
     public Task<bool> Insert(Consent record, CancellationToken cancellationToken = default)
     {
-        if (record == null)
-        {
-            throw new ArgumentNullException(nameof(record));
-        }
-
         _consents.Add(record);
         return Task.FromResult(true);
     }

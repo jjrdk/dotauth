@@ -88,11 +88,6 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
-        if (client == null)
-        {
-            throw new ArgumentNullException(nameof(client));
-        }
-
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var serializedJson = JsonSerializer.Serialize(client, SharedSerializerContext.Default.Client);
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
@@ -136,11 +131,6 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
-        if (client == null)
-        {
-            throw new ArgumentNullException(nameof(client));
-        }
-
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var json = JsonSerializer.Serialize(client, SharedSerializerContext.Default.Client);
         var request = new HttpRequestMessage
@@ -280,11 +270,6 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
-        if (resourceOwner == null)
-        {
-            throw new ArgumentNullException(nameof(resourceOwner));
-        }
-
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
@@ -362,11 +347,6 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         string authorizationHeaderValue,
         CancellationToken cancellationToken = default)
     {
-        if (updateResourceOwnerPasswordRequest == null)
-        {
-            throw new ArgumentNullException(nameof(updateResourceOwnerPasswordRequest));
-        }
-
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var serializedJson =
             JsonSerializer.Serialize(updateResourceOwnerPasswordRequest,

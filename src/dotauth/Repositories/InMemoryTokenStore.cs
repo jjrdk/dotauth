@@ -27,8 +27,9 @@ internal sealed class InMemoryTokenStore : ITokenStore, ICleanable
 
         var grantedTokens = _tokens
             .Where(g => g.Scope == scopes && g.ClientId == clientId)
-            .OrderByDescending(g => g.CreateDateTime);
-        if (!_tokens.Any())
+            .OrderByDescending(g => g.CreateDateTime)
+            .ToArray();
+        if (_tokens.Count == 0)
         {
             return Task.FromResult<GrantedToken?>(null);
         }

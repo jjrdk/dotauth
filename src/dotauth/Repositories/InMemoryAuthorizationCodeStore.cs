@@ -1,6 +1,5 @@
 ﻿namespace DotAuth.Repositories;
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,40 +17,18 @@ internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
 
     public Task<AuthorizationCode?> Get(string code, CancellationToken cancellationToken)
     {
-        return !MappingStringToAuthCodes.ContainsKey(code)
+        return !MappingStringToAuthCodes.TryGetValue(code, out var authCode)
             ? Task.FromResult<AuthorizationCode?>(null)
-            : Task.FromResult<AuthorizationCode?>(MappingStringToAuthCodes[code]);
+            : Task.FromResult<AuthorizationCode?>(authCode);
     }
 
     public Task<bool> Add(AuthorizationCode authorizationCode, CancellationToken cancellationToken)
     {
-        if (authorizationCode == null)
-        {
-            throw new ArgumentNullException(nameof(authorizationCode));
-        }
-
-        if (MappingStringToAuthCodes.ContainsKey(authorizationCode.Code))
-        {
-            return Task.FromResult(false);
-        }
-
-        MappingStringToAuthCodes.Add(authorizationCode.Code, authorizationCode);
-        return Task.FromResult(true);
+        return Task.FromResult(MappingStringToAuthCodes.TryAdd(authorizationCode.Code, authorizationCode));
     }
 
     public Task<bool> Remove(string authorizationCode, CancellationToken cancellationToken)
     {
-        if (authorizationCode == null)
-        {
-            throw new ArgumentNullException(nameof(authorizationCode));
-        }
-
-        if (!MappingStringToAuthCodes.ContainsKey(authorizationCode))
-        {
-            return Task.FromResult(false);
-        }
-
-        MappingStringToAuthCodes.Remove(authorizationCode);
-        return Task.FromResult(true);
+        return Task.FromResult(MappingStringToAuthCodes.Remove(authorizationCode));
     }
 }

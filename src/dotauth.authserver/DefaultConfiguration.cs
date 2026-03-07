@@ -25,14 +25,38 @@ public static class DefaultConfiguration
                 RedirectionUrls =
                 [
                     new Uri("http://localhost:4200/login"),
-                        new Uri("https://localhost:50001/signin-oidc"),
-                        new Uri("https://localhost:5001/signin-oidc"),
-                        new Uri("https://localhost:5001/callback"),
-                        new Uri("http://localhost:5000/callback"),
-                        new Uri("http://localhost/callback")
+                    new Uri("https://localhost:50001/signin-oidc"),
+                    new Uri("https://localhost:5001/signin-oidc"),
+                    new Uri("https://localhost:5001/callback"),
+                    new Uri("http://localhost:5000/callback"),
+                    new Uri("http://localhost/callback")
                 ],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
                 PostLogoutRedirectUris = [new Uri("http://localhost/login")],
+                ResponseTypes = ResponseTypeNames.All,
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }],
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                UserClaimsToIncludeInAuthToken =
+                [
+                    new Regex($"^{OpenIdClaimTypes.Subject}$", RegexOptions.Compiled),
+                    new Regex($"^{OpenIdClaimTypes.Role}$", RegexOptions.Compiled)
+                ],
+            },
+            new Client
+            {
+                ClientId = "gui",
+                ClientName = "gui",
+                AllowedScopes = ["openid", "role", "profile", "email", "manager", "uma_protection"],
+                ApplicationType = ApplicationTypes.Web,
+                GrantTypes = GrantTypes.All,
+                RequirePkce = true,
+                RedirectionUrls =
+                [
+                    new Uri("http://localhost:4200/login-callback"),
+                    new Uri("http://localhost:5182/login-callback")
+                ],
+                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,
+                PostLogoutRedirectUris = [new Uri("http://localhost:4200/")],
                 ResponseTypes = ResponseTypeNames.All,
                 Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }],
                 IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,

@@ -47,10 +47,7 @@ public sealed record IntrospectionRequest : IEnumerable<KeyValuePair<string?, st
     /// <exception cref="ArgumentNullException">rptToken</exception>
     public static IntrospectionRequest Create(string rptToken, string tokenType, string patToken)
     {
-        if (string.IsNullOrWhiteSpace(rptToken))
-        {
-            throw new ArgumentNullException(nameof(rptToken));
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(rptToken);
 
         var dict = new Dictionary<string, string> { { "token", rptToken }, { "token_type_hint", tokenType } };
 

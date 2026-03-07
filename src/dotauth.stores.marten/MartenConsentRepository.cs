@@ -10,7 +10,7 @@ using DotAuth.Shared.Repositories;
 using global::Marten;
 
 /// <summary>
-/// Defines the Marten based consent repository.
+/// Defines the Marten-based consent repository.
 /// </summary>
 /// <seealso cref="IConsentRepository" />
 public sealed class MartenConsentRepository : IConsentRepository
@@ -33,11 +33,10 @@ public sealed class MartenConsentRepository : IConsentRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var consents = await session.Query<Consent>()
+        return await session.Query<Consent>()
             .Where(x => x.Subject == subject)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
-        return consents;
     }
 
     /// <inheritdoc />
@@ -56,7 +55,7 @@ public sealed class MartenConsentRepository : IConsentRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        session.Delete(record.Id);
+        session.DeleteWhere<Consent>(r => r.Id == record.Id);
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return true;

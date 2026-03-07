@@ -181,11 +181,6 @@ public sealed class AuthenticateController : BaseAuthenticateController
             return RedirectToAction("Index", "User", new { Area = "pwd" });
         }
 
-        if (localAuthenticationViewModel == null)
-        {
-            throw new ArgumentNullException(nameof(localAuthenticationViewModel));
-        }
-
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(localAuthenticationViewModel.PhoneNumber))
         {
             ResourceOwner? resourceOwner = null;
