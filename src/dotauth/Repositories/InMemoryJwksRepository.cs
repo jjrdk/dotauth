@@ -34,10 +34,7 @@ internal sealed class InMemoryJwksRepository : IJwksRepository
             rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, false, KeyOperations.Encrypt, KeyOperations.Decrypt)
         };
         _privateKeySet = privateKeys.ToJwks();
-        if (_privateKeySet is not null)
-        {
-            _privateKeySet.SkipUnresolvedJsonWebKeys = false;
-        }
+        _privateKeySet?.SkipUnresolvedJsonWebKeys = false;
         _publicKeySet = publicKeys.ToJwks();
     }
 

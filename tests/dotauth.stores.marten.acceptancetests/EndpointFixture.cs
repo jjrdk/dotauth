@@ -40,6 +40,7 @@ public sealed class EndpointFixture : IAsyncDisposable
         _connectionString = DbInitializer.Init(
                 outputHelper,
                 _connectionString,
+                DefaultStores.Keys(),
                 DefaultStores.Consents(),
                 DefaultStores.Users(),
                 DefaultStores.Clients(SharedContext.Instance),

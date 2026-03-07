@@ -27,7 +27,7 @@ public sealed class JsonWebKeyContainer
     {
         return new JsonWebKeyContainer
         {
-            Id = Guid.NewGuid().ToString("N"),
+            Id = Guid.CreateVersion7().ToString("N"),
             Jwk = key
         };
     }

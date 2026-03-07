@@ -55,7 +55,7 @@ public sealed class MartenJwksRepository : IJwksRepository
             return null;
         }
 
-        var webKey = webKeys.First(x => x.Jwk.KeyOps.Contains(KeyOperations.Sign));
+        var webKey = webKeys.First(x => x.Jwk.Use == JsonWebKeyUseNames.Sig);
 
         if (webKey.Jwk.X5c != null)
         {
@@ -75,8 +75,7 @@ public sealed class MartenJwksRepository : IJwksRepository
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
         var webKeys = await session.Query<JsonWebKeyContainer>()
-            .Where(
-                x => x.Jwk.HasPrivateKey == true && x.Jwk.Alg == alg && x.Jwk.Use == JsonWebKeyUseNames.Enc)
+            .Where(x => x.Jwk.HasPrivateKey == true && x.Jwk.Alg == alg && x.Jwk.Use == JsonWebKeyUseNames.Enc)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
         if (webKeys.Count == 0)
@@ -113,7 +112,7 @@ public sealed class MartenJwksRepository : IJwksRepository
             return null;
         }
 
-        var webKey = webKeys.OrderBy(x => x.Jwk.KeyId).First(x => x.Jwk.KeyOps.Contains(KeyOperations.Sign));
+        var webKey = webKeys.OrderBy(x => x.Jwk.KeyId).First(x => x.Jwk.Use == JsonWebKeyUseNames.Sig);
 
         if (webKey.Jwk.X5c == null)
         {

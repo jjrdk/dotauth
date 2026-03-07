@@ -16,18 +16,36 @@ namespace DotAuth.Stores.Marten.AcceptanceTests;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using DotAuth.Extensions;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
+using DotAuth.Stores.Marten.Containers;
 using Microsoft.IdentityModel.Tokens;
 
 #pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
 
 public static class DefaultStores
 {
+    public static List<JsonWebKeyContainer> Keys()
+    {
+        var rsa = RSA.Create(2048);
+        var sigKeyId = Guid.NewGuid().ToString("N");
+        var encKeyId = Guid.NewGuid().ToString("N");
+        return
+            new JsonWebKey[]
+            {
+                rsa.CreateSignatureJwk(sigKeyId, true),
+                rsa.CreateEncryptionJwk(encKeyId, true),
+                rsa.CreateSignatureJwk(sigKeyId, false),
+                rsa.CreateEncryptionJwk(encKeyId, false)
+            }.Select(JsonWebKeyContainer.Create).ToList();
+    }
+
     public static List<Consent> Consents()
     {
         return

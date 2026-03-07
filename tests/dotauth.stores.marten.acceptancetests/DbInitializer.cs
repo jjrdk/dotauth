@@ -20,6 +20,7 @@ public static class DbInitializer
     public static async Task<string> Init(
         ITestOutputHelper output,
         string connectionString,
+        IEnumerable<JsonWebKeyContainer>? keys = null,
         IEnumerable<Consent>? consents = null,
         IEnumerable<ResourceOwner>? users = null,
         IEnumerable<Client>? clients = null,
@@ -52,7 +53,7 @@ public static class DbInitializer
             await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
             builder.SearchPath = schema;
 
-            await Seed(builder.ConnectionString, schema, consents, users, clients, scopes).ConfigureAwait(false);
+            await Seed(builder.ConnectionString, schema, keys, consents, users, clients, scopes).ConfigureAwait(false);
             return builder.ConnectionString;
         }
         finally
@@ -64,6 +65,7 @@ public static class DbInitializer
     private static async Task Seed(
         string connectionString,
         string searchPath,
+        IEnumerable<JsonWebKeyContainer>? keys,
         IEnumerable<Consent>? consents,
         IEnumerable<ResourceOwner>? users,
         IEnumerable<Client>? clients,
@@ -76,6 +78,7 @@ public static class DbInitializer
         await using var store = new DocumentStore(options);
         await using var session = store.LightweightSession();
         await using var _ = session.ConfigureAwait(false);
+        if (keys != null) session.Store(keys.ToArray());
         if (consents != null) session.Store(consents.ToArray());
         if (users != null) session.Store(users.ToArray());
         if (clients != null) session.Store(clients.ToArray());
