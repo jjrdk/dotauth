@@ -249,6 +249,8 @@ public sealed class DotAuthMartenOptions : StoreOptions
 [JsonSerializable(typeof(FilterContainer))]
 [JsonSerializable(typeof(GrantedToken))]
 [JsonSerializable(typeof(GrantedToken[]))]
+[JsonSerializable(typeof(JsonWebKeyContainer))]
+[JsonSerializable(typeof(JsonWebKeyContainer[]))]
 [JsonSerializable(typeof(Permission))]
 [JsonSerializable(typeof(Permission[]))]
 [JsonSerializable(typeof(PolicyRule))]
