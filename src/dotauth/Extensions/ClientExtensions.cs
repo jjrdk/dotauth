@@ -26,16 +26,23 @@ using Microsoft.IdentityModel.Tokens;
 
 internal static class ClientExtensions
 {
-    public static async Task<TokenValidationParameters> CreateValidationParameters(this Client client, IJwksStore jwksStore, string? audience = null, string? issuer = null, CancellationToken cancellationToken = default)
+    public static async Task<TokenValidationParameters> CreateValidationParameters(
+        this Client client,
+        IJwksStore jwksStore,
+        string? audience = null,
+        string? issuer = null,
+        CancellationToken cancellationToken = default)
     {
         var signingKeys = await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
-        var encryptionKeys = client.JsonWebKeys.GetEncryptionKeys().ToArray();
+        var encryptionKeys = client.JsonWebKeys == null ? [] : client.JsonWebKeys.GetEncryptionKeys().ToArray();
         if (encryptionKeys.Length == 0 && client.IdTokenEncryptedResponseAlg != null)
         {
-            var key = await jwksStore.GetEncryptionKey(client.IdTokenEncryptedResponseAlg, cancellationToken).ConfigureAwait(false);
+            var key = await jwksStore.GetEncryptionKey(client.IdTokenEncryptedResponseAlg, cancellationToken)
+                .ConfigureAwait(false);
 
             encryptionKeys = [key];
         }
+
         var parameters = new TokenValidationParameters
         {
             IssuerSigningKeys = signingKeys.Select(x => x!.Key).ToArray(),
@@ -49,6 +56,7 @@ internal static class ClientExtensions
         {
             parameters.ValidateAudience = false;
         }
+
         if (issuer != null)
         {
             parameters.ValidIssuer = issuer;
@@ -105,7 +113,7 @@ internal static class ClientExtensions
         var signingCredentials =
             await client.GetSigningCredentials(jwksStore, cancellationToken).ConfigureAwait(false);
         var claimsIdentity = new ClaimsIdentity(jwsPayload.Claims);
-            //.Where(c => !string.IsNullOrWhiteSpace(c.Value)).Where(c => OpenIdClaimTypes.All.Contains(c.Type)));
+        //.Where(c => !string.IsNullOrWhiteSpace(c.Value)).Where(c => OpenIdClaimTypes.All.Contains(c.Type)));
         var now = DateTime.UtcNow;
         var jwt = handler.CreateEncodedJwt(
             jwsPayload.Iss,

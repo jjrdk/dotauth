@@ -11,10 +11,10 @@ using Microsoft.IdentityModel.Tokens;
 
 internal sealed class InMemoryJwksRepository : IJwksRepository
 {
-    private readonly JsonWebKeySet? _privateKeySet;
-    private readonly JsonWebKeySet? _publicKeySet;
+    private readonly JsonWebKeySet _privateKeySet;
+    private readonly JsonWebKeySet _publicKeySet;
 
-    public InMemoryJwksRepository(JsonWebKeySet? publicKeySet, JsonWebKeySet? privateKeySet)
+    public InMemoryJwksRepository(JsonWebKeySet publicKeySet, JsonWebKeySet privateKeySet)
     {
         _publicKeySet = publicKeySet;
         _privateKeySet = privateKeySet;
@@ -34,7 +34,7 @@ internal sealed class InMemoryJwksRepository : IJwksRepository
             rsa.CreateJwk("2", JsonWebKeyUseNames.Enc, false, KeyOperations.Encrypt, KeyOperations.Decrypt)
         };
         _privateKeySet = privateKeys.ToJwks();
-        _privateKeySet?.SkipUnresolvedJsonWebKeys = false;
+        _privateKeySet.SkipUnresolvedJsonWebKeys = false;
         _publicKeySet = publicKeys.ToJwks();
     }
 

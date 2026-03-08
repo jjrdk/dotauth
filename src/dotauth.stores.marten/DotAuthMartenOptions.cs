@@ -17,6 +17,7 @@ using DotAuth.Stores.Marten.Containers;
 using global::Marten;
 using JasperFx;
 using JasperFx.Core.Reflection;
+using Microsoft.IdentityModel.Tokens;
 using Weasel.Core;
 
 /// <summary>
@@ -250,6 +251,8 @@ public sealed class DotAuthMartenOptions : StoreOptions
 [JsonSerializable(typeof(FilterContainer))]
 [JsonSerializable(typeof(GrantedToken))]
 [JsonSerializable(typeof(GrantedToken[]))]
+[JsonSerializable(typeof(JsonWebKey))]
+[JsonSerializable(typeof(JsonWebKey[]))]
 [JsonSerializable(typeof(JsonWebKeyContainer))]
 [JsonSerializable(typeof(JsonWebKeyContainer[]))]
 [JsonSerializable(typeof(Permission))]

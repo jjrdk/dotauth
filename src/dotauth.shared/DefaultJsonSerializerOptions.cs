@@ -148,7 +148,7 @@ internal sealed class JsonWebKeySetConverter : JsonConverter<JsonWebKeySet>
     {
         writer.WriteStartObject();
         writer.WritePropertyName("keys");
-        writer.WriteRawValue(JsonSerializer.Serialize(value.Keys, options.GetTypeInfo(typeof(IList<JsonWebKey>))));
+        writer.WriteRawValue(JsonSerializer.Serialize(value.Keys.ToArray(), SharedSerializerContext.Default.JsonWebKeyArray));
         writer.WriteEndObject();
     }
 }
@@ -379,6 +379,7 @@ internal sealed class RegexConverter : JsonConverter<Regex>
 [JsonSerializable(typeof(UmaTicketCreated))]
 [JsonSerializable(typeof(UmaTicketEvent))]
 [JsonSerializable(typeof(JsonWebKey))]
+[JsonSerializable(typeof(JsonWebKey[]))]
 [JsonSerializable(typeof(JsonWebKeySet))]
 public partial class SharedSerializerContext : JsonSerializerContext
 {

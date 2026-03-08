@@ -13,7 +13,6 @@
             const claimElm = document.getElementById(`claim${claim}`);
             claimElm.style.display = 'none';
             const inputElms = claimElm.getElementsByTagName('input');
-            console.log(inputElms);
             for (let i = 0; i < inputElms.length; i++) {
                 inputElms[i].value = '';
             }
