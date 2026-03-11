@@ -32,7 +32,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -57,7 +57,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     /// </summary>
     /// <param name="smsClient">The SMS client.</param>
     /// <param name="dataProtectionProvider">The data protection provider.</param>
-    /// <param name="urlHelperFactory">The URL helper factory.</param>
+    /// <param name="urlHelper">The URL helper factory.</param>
     /// <param name="httpContextAccessor">The HTTP Context accessor</param>
     /// <param name="eventPublisher">The event publisher.</param>
     /// <param name="authorizationCodeStore">The authorization code store.</param>
@@ -78,7 +78,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     public AuthenticateController(
         ISmsClient smsClient,
         IDataProtectionProvider dataProtectionProvider,
-        IUrlHelperFactory urlHelperFactory,
+        LinkGenerator urlHelper,
         IHttpContextAccessor httpContextAccessor,
         IEventPublisher eventPublisher,
         IAuthorizationCodeStore authorizationCodeStore,
@@ -93,12 +93,12 @@ public sealed class AuthenticateController : BaseAuthenticateController
         IConfirmationCodeStore confirmationCodeStore,
         IClientStore clientStore,
         IJwksStore jwksStore,
-        IEnumerable<IAccountFilter> accountFilters,
+        IList<IAccountFilter> accountFilters,
         ILogger<AuthenticateController> logger,
         RuntimeSettings runtimeSettings)
         : base(
             dataProtectionProvider,
-            urlHelperFactory,
+            urlHelper,
             httpContextAccessor,
             eventPublisher,
             authenticationService,

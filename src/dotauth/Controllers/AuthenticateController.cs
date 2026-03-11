@@ -25,7 +25,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -45,7 +45,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     /// Initializes a new instance of the <see cref="AuthenticateController"/> class.
     /// </summary>
     /// <param name="dataProtectionProvider">The data protection provider.</param>
-    /// <param name="urlHelperFactory">The URL helper factory.</param>
+    /// <param name="urlHelper">The URL helper factory.</param>
     /// <param name="httpContextAccessor">The HTTP Context accessor</param>
     /// <param name="eventPublisher">The event publisher.</param>
     /// <param name="authenticationService">The authentication service.</param>
@@ -66,7 +66,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
     /// <param name="runtimeSettings">The runtime settings.</param>
     public AuthenticateController(
         IDataProtectionProvider dataProtectionProvider,
-        IUrlHelperFactory urlHelperFactory,
+        LinkGenerator urlHelper,
         IHttpContextAccessor httpContextAccessor,
         IEventPublisher eventPublisher,
         IAuthenticationService authenticationService,
@@ -87,7 +87,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
         RuntimeSettings runtimeSettings)
         : base(
             dataProtectionProvider,
-            urlHelperFactory,
+            urlHelper,
             httpContextAccessor,
             eventPublisher,
             authenticationService,

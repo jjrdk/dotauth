@@ -15,12 +15,11 @@
 namespace DotAuth.Controllers;
 
 using System.Threading.Tasks;
-using DotAuth.Extensions;
 using DotAuth.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 
 /// <summary>
 /// Defines the account controller
@@ -29,22 +28,22 @@ using Microsoft.AspNetCore.Mvc.Routing;
 public sealed class AccountController : BaseController
 {
     private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
-    private readonly IUrlHelper _urlHelper;
+    private readonly LinkGenerator _urlHelper;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AccountController"/> class.
     /// </summary>
     /// <param name="authenticationService"></param>
     /// <param name="authenticationSchemeProvider"></param>
-    /// <param name="urlHelperFactory"></param>
+    /// <param name="urlHelper"></param>
     public AccountController(
         IAuthenticationService authenticationService,
         IAuthenticationSchemeProvider authenticationSchemeProvider,
-        IUrlHelperFactory urlHelperFactory)
+        LinkGenerator urlHelper)
         : base(authenticationService)
     {
         _authenticationSchemeProvider = authenticationSchemeProvider;
-        _urlHelper = urlHelperFactory.GetUrlHelper(HttpContext.GetActionContext());
+        _urlHelper = urlHelper;
     }
 
     /// <summary>
@@ -74,7 +73,8 @@ public sealed class AccountController : BaseController
 
         var scheme = await _authenticationSchemeProvider.GetDefaultChallengeSchemeAsync().ConfigureAwait(false);
         var values = string.IsNullOrWhiteSpace(returnUrl) ? null : new { ReturnUrl = returnUrl };
-        var redirectUrl = _urlHelper.Action("LoginCallback", "Authenticate", values, Request.Scheme);
+        var redirectUrl =
+            _urlHelper.GetUriByAction(HttpContext, "LoginCallback", "Authenticate", values, Request.Scheme);
 
         await _authenticationService.ChallengeAsync(
                 Request.HttpContext,

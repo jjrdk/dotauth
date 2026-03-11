@@ -39,7 +39,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -59,7 +59,7 @@ public abstract partial class BaseAuthenticateController : BaseController
     /// </summary>
     protected readonly IDataProtector DataProtector;
 
-    private readonly IUrlHelper _urlHelper;
+    private readonly LinkGenerator _urlHelper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEventPublisher _eventPublisher;
     private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
@@ -76,7 +76,7 @@ public abstract partial class BaseAuthenticateController : BaseController
     /// Initializes a new instance of the <see cref="BaseAuthenticateController"/> class.
     /// </summary>
     /// <param name="dataProtectionProvider">The data protection provider.</param>
-    /// <param name="urlHelperFactory">The URL helper factory.</param>
+    /// <param name="urlHelper">The URL helper factory.</param>
     /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/> to use</param>
     /// <param name="eventPublisher">The event publisher.</param>
     /// <param name="authenticationService">The authentication service.</param>
@@ -96,7 +96,7 @@ public abstract partial class BaseAuthenticateController : BaseController
     /// <param name="runtimeSettings">The runtime settings.</param>
     protected BaseAuthenticateController(
         IDataProtectionProvider dataProtectionProvider,
-        IUrlHelperFactory urlHelperFactory,
+        LinkGenerator urlHelper,
         IHttpContextAccessor httpContextAccessor,
         IEventPublisher eventPublisher,
         IAuthenticationService authenticationService,
@@ -141,7 +141,7 @@ public abstract partial class BaseAuthenticateController : BaseController
             eventPublisher,
             logger);
         DataProtector = dataProtectionProvider.CreateProtector("Request");
-        _urlHelper = urlHelperFactory.GetUrlHelper(httpContextAccessor.HttpContext!.GetActionContext());
+        _urlHelper = urlHelper;
         _httpContextAccessor = httpContextAccessor;
         _eventPublisher = eventPublisher;
         _authenticationSchemeProvider = authenticationSchemeProvider;
@@ -195,7 +195,7 @@ public abstract partial class BaseAuthenticateController : BaseController
             throw new ArgumentNullException(nameof(provider));
         }
 
-        var redirectUrl = _urlHelper.Action("LoginCallback", "Authenticate", null, Request.Scheme);
+        var redirectUrl = _urlHelper.GetUriByAction(HttpContext, "LoginCallback", "Authenticate", null, Request.Scheme);
         await _authenticationService.ChallengeAsync(
                 HttpContext,
                 provider,
@@ -415,7 +415,8 @@ public abstract partial class BaseAuthenticateController : BaseController
         if (!await _validateConfirmationCode.Execute(codeViewModel.Code!, subject, cancellationToken)
             .ConfigureAwait(false))
         {
-            LogTwoFactorAuthenticationFailedForSubjectSubjectAuthRequestAuthRequestCodeCode(subject, codeViewModel.AuthRequestCode, codeViewModel.Code);
+            LogTwoFactorAuthenticationFailedForSubjectSubjectAuthRequestAuthRequestCodeCode(subject,
+                codeViewModel.AuthRequestCode, codeViewModel.Code);
             await _eventPublisher.Publish(
                 new TwoFactorAuthenticationFailed(
                     Id.Create(),
@@ -546,7 +547,8 @@ public abstract partial class BaseAuthenticateController : BaseController
             });
 
         // 2. Redirect the User agent
-        var redirectUrl = _urlHelper.Action(
+        var redirectUrl = _urlHelper.GetUriByAction(
+            HttpContext,
             "LoginCallbackOpenId",
             "Authenticate",
             new { code = cookieValue },
@@ -846,11 +848,17 @@ public abstract partial class BaseAuthenticateController : BaseController
     [LoggerMessage(LogLevel.Error, "{Error}")]
     partial void LogError(string error);
 
-    [LoggerMessage(LogLevel.Error, "Two factor authentication failed for subject: {Subject}, auth request: {AuthRequestCode}, code: {Code}")]
-    partial void LogTwoFactorAuthenticationFailedForSubjectSubjectAuthRequestAuthRequestCodeCode(string subject, string? authRequestCode, string? code);
+    [LoggerMessage(LogLevel.Error,
+        "Two factor authentication failed for subject: {Subject}, auth request: {AuthRequestCode}, code: {Code}")]
+    partial void LogTwoFactorAuthenticationFailedForSubjectSubjectAuthRequestAuthRequestCodeCode(
+        string subject,
+        string? authRequestCode,
+        string? code);
 
     [LoggerMessage(LogLevel.Debug, "Redirecting to external provider: {Provider}, with redirect url: {RedirectUrl}")]
-    partial void LogRedirectingToExternalProviderProviderWithRedirectUrlRedirectUrl(string provider, string? redirectUrl);
+    partial void LogRedirectingToExternalProviderProviderWithRedirectUrlRedirectUrl(
+        string provider,
+        string? redirectUrl);
 
     [LoggerMessage(LogLevel.Error, "{Msg}")]
     partial void LogMsg(string msg);
