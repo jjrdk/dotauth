@@ -110,7 +110,9 @@ public sealed class AuthorizationController : ControllerBase
     /// <returns></returns>
     [HttpGet]
     // ReSharper disable once CognitiveComplexity
-    public async Task<IActionResult?> Get([FromQuery] AuthorizationRequest authorizationRequest, CancellationToken cancellationToken)
+    public async Task<IActionResult?> Get(
+        [FromQuery] AuthorizationRequest authorizationRequest,
+        CancellationToken cancellationToken)
     {
         var originUrl = this.GetOriginUrl();
         var sessionId = GetSessionId();
@@ -123,10 +125,10 @@ public sealed class AuthorizationController : ControllerBase
 
         authorizationRequest = (result as Option<AuthorizationRequest>.Result)!.Item
             with
-        {
-            origin_url = originUrl,
-            session_id = sessionId
-        };
+            {
+                origin_url = originUrl,
+                session_id = sessionId
+            };
 
         var authenticatedUser = await _authenticationService
             .GetAuthenticatedUser(this, CookieNames.CookieName)
@@ -134,49 +136,50 @@ public sealed class AuthorizationController : ControllerBase
 
         var parameter = authorizationRequest.ToParameter();
         var issuerName = Request.GetAbsoluteUriWithVirtualPath();
-        var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName, cancellationToken)
+        var actionResult = await _authorizationActions
+            .GetAuthorization(parameter, authenticatedUser, issuerName, cancellationToken)
             .ConfigureAwait(false);
 
         switch (actionResult.Type)
         {
             case ActionResultType.RedirectToCallBackUrl:
-                {
-                    return authorizationRequest.redirect_uri!.CreateRedirectHttpTokenResponse(
-                        actionResult.GetRedirectionParameters(),
-                        actionResult.RedirectInstruction!.ResponseMode!);
-                }
+            {
+                return authorizationRequest.redirect_uri!.CreateRedirectHttpTokenResponse(
+                    actionResult.GetRedirectionParameters(),
+                    actionResult.RedirectInstruction!.ResponseMode!);
+            }
             case ActionResultType.RedirectToAction:
+            {
+                if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
+                 || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
                 {
-                    if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
-                        || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
+                    // Force the resource owner to be re-authenticated
+                    if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
                     {
-                        // Force the resource owner to be re-authenticated
-                        if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
-                        {
-                            authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
-                        }
-
-                        // Set the process id into the request.
-                        if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
-                        {
-                            authorizationRequest = authorizationRequest with { aggregate_id = actionResult.ProcessId };
-                        }
-
-                        // Add the encoded request into the query string
-                        var encryptedRequest = _dataProtector.Protect(authorizationRequest);
-                        actionResult = actionResult with
-                        {
-                            RedirectInstruction = actionResult.RedirectInstruction.AddParameter(
-                                StandardAuthorizationResponseNames.AuthorizationCodeName,
-                                encryptedRequest)
-                        };
+                        authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
                     }
 
-                    var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
-                    var uri = new Uri(url);
-                    var redirectionUrl = uri.AddParametersInQuery(actionResult.GetRedirectionParameters());
-                    return new RedirectResult(redirectionUrl.AbsoluteUri);
+                    // Set the process id into the request.
+                    if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
+                    {
+                        authorizationRequest = authorizationRequest with { aggregate_id = actionResult.ProcessId };
+                    }
+
+                    // Add the encoded request into the query string
+                    var encryptedRequest = _dataProtector.Protect(authorizationRequest);
+                    actionResult = actionResult with
+                    {
+                        RedirectInstruction = actionResult.RedirectInstruction.AddParameter(
+                            StandardAuthorizationResponseNames.AuthorizationCodeName,
+                            encryptedRequest)
+                    };
                 }
+
+                var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
+                var uri = new Uri(url);
+                var redirectionUrl = uri.AddParametersInQuery(actionResult.GetRedirectionParameters());
+                return new RedirectResult(redirectionUrl.AbsoluteUri);
+            }
             case ActionResultType.BadRequest:
                 return BadRequest(actionResult.Error);
             case ActionResultType.None:
@@ -203,7 +206,9 @@ public sealed class AuthorizationController : ControllerBase
         {
             return null;
         }
-        var validationParameters = await client.CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        var validationParameters = await client
+            .CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
         _handler.ValidateToken(token, validationParameters, out var securityToken);
 
         return (securityToken as JwtSecurityToken)?.Payload?.ToAuthorizationRequest();
@@ -226,8 +231,8 @@ public sealed class AuthorizationController : ControllerBase
 
 
         if (!string.IsNullOrWhiteSpace(amr)
-            && dotAuthEndPoints != DotAuthEndPoints.ConsentIndex
-            && dotAuthEndPoints != DotAuthEndPoints.FormIndex)
+         && dotAuthEndPoints != DotAuthEndPoints.ConsentIndex
+         && dotAuthEndPoints != DotAuthEndPoints.FormIndex)
         {
             partialUri = $"/{amr}{partialUri}";
         }
@@ -273,7 +278,8 @@ public sealed class AuthorizationController : ControllerBase
             return new Option<AuthorizationRequest>.Result(authorizationRequest);
         }
 
-        if (authorizationRequest.request_uri.IsAbsoluteUri)
+        if (authorizationRequest.request_uri.IsAbsoluteUri
+         || authorizationRequest.request_uri.AbsoluteUri.StartsWith("//"))
         {
             return new Option<AuthorizationRequest>.Error(
                 new ErrorDetails

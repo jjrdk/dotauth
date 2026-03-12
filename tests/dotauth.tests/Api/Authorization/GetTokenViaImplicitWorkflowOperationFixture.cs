@@ -59,7 +59,7 @@ public sealed class GetTokenViaImplicitWorkflowOperationFixture
         Assert.Equal(
             string.Format(
                 Strings.MissingParameter,
-                DotAuth.CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
+                CoreConstants.StandardAuthorizationRequestParameterNames.NonceName),
             result.Error.Detail);
     }
 

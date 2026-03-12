@@ -264,9 +264,11 @@ public static class ServiceCollectionExtensions
                     o.HeaderName = "XSRF-TOKEN";
                     o.SuppressXFrameOptionsHeader = false;
                 })
-                .AddCors(o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()))
+                .AddCors(o => o.AddPolicy("CorsDefault",
+                    p => p.WithOrigins(configuration.AllowedOrigins)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials()))
                 .AddControllersWithViews(o =>
                 {
                     o.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
@@ -312,7 +314,8 @@ public static class ServiceCollectionExtensions
                     configuration.ResourceSets?.Invoke(sp) ??
                     new InMemoryResourceSetRepository(sp.GetRequiredService<IAuthorizationPolicy>()))
                 .AddSingleton(sp => configuration.Tickets?.Invoke(sp) ?? new InMemoryTicketStore())
-                .AddSingleton(sp => configuration.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
+                .AddSingleton(sp =>
+                    configuration.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
                 .AddSingleton(sp => configuration.Tokens?.Invoke(sp) ?? new InMemoryTokenStore())
                 .AddSingleton(sp => configuration.ConfirmationCodes?.Invoke(sp) ?? new InMemoryConfirmationCodeStore())
                 .AddSingleton(sp => configuration.AccountFilters?.Invoke(sp) ?? new InMemoryFilterStore())
@@ -362,9 +365,7 @@ public static class ServiceCollectionExtensions
         {
             var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
             var forwardedHeadersOptions = new ForwardedHeadersOptions
-                { ForwardedHeaders = ForwardedHeaders.All, ForwardLimit = null };
-            forwardedHeadersOptions.KnownIPNetworks.Clear();
-            forwardedHeadersOptions.KnownProxies.Clear();
+                { ForwardedHeaders = ForwardedHeaders.All, ForwardLimit = 1 };
             forwardedHeaderConfiguration?.Invoke(forwardedHeadersOptions);
             return app
                 .UseForwardedHeaders(forwardedHeadersOptions)
@@ -384,7 +385,7 @@ public static class ServiceCollectionExtensions
                 .UseRouting()
                 .UseAuthentication()
                 .UseAuthorization()
-                .UseCors("AllowAll")
+                .UseCors("CorsDefault")
                 .UseEndpoints(endpoint =>
                 {
                     endpoint.MapControllerRoute("areaexists", "{area:exists}/{controller=Home}/{action=Index}");

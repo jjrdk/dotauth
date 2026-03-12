@@ -24,44 +24,44 @@ using System.Text;
 /// </summary>
 public static class StringExtensions
 {
-    /// <summary>
-    /// Converts to sha256hash.
-    /// </summary>
     /// <param name="entry">The entry.</param>
-    /// <param name="salt">The hash salt.</param>
-    /// <returns>The salted hashed value as a hex string.</returns>
-    public static string ToSha256Hash(this string entry, string salt)
+    extension(string entry)
     {
-        using var sha256 = SHA256.Create();
-        var entryBytes = Encoding.UTF8.GetBytes(entry + salt);
-        var hash = sha256.ComputeHash(entryBytes);
-        return BitConverter.ToString(hash).Replace("-", string.Empty);
-    }
+        /// <summary>
+        /// Converts to sha256hash.
+        /// </summary>
+        /// <param name="salt">The hash salt.</param>
+        /// <returns>The salted hashed value as a hex string.</returns>
+        public string ToSha256Hash(string salt)
+        {
+            var entryBytes = Encoding.UTF8.GetBytes(entry + salt);
+            var hash = SHA256.HashData(entryBytes);
+            return Convert.ToHexString(hash).Replace("-", string.Empty);
+        }
 
-    /// <summary>
-    /// Converts to sha256 as simplified base64.
-    /// </summary>
-    /// <param name="entry">The entry.</param>
-    /// <param name="encoding">The encoding.</param>
-    /// <returns></returns>
-    public static string ToSha256SimplifiedBase64(this string entry, Encoding? encoding = null)
-    {
-        var enc = encoding ?? Encoding.UTF8;
-        using var sha256 = SHA256.Create();
-        var entryBytes = enc.GetBytes(entry);
-        var hash = sha256.ComputeHash(entryBytes);
-        return hash.ToBase64Simplified();
-    }
+        /// <summary>
+        /// Converts to sha256 as simplified base64.
+        /// </summary>
+        /// <param name="encoding">The encoding.</param>
+        /// <returns></returns>
+        public string ToSha256SimplifiedBase64(Encoding? encoding = null)
+        {
+            var enc = encoding ?? Encoding.UTF8;
+            using var sha256 = SHA256.Create();
+            var entryBytes = enc.GetBytes(entry);
+            var hash = sha256.ComputeHash(entryBytes);
+            return hash.ToBase64Simplified();
+        }
 
-    /// <summary>
-    /// Base64 encode the passed string.
-    /// </summary>
-    /// <param name="plainText"></param>
-    /// <returns></returns>
-    public static string Base64Encode(this string plainText)
-    {
-        var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-        return ToBase64Simplified(plainTextBytes);
+        /// <summary>
+        /// Base64 encode the passed string.
+        /// </summary>
+        /// <returns></returns>
+        public string Base64Encode()
+        {
+            var plainTextBytes = Encoding.UTF8.GetBytes(entry);
+            return ToBase64Simplified(plainTextBytes);
+        }
     }
 
     /// <summary>

@@ -197,7 +197,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
             {
                 await _eventPublisher.Publish(
                         new DotAuthError(
-                            DotAuth.Id.Create(),
+                            Id.Create(),
                             e.Details.Title,
                             e.Details.Detail,
                             string.Empty,
@@ -226,7 +226,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 {
                     await _eventPublisher.Publish(
                             new DotAuthError(
-                                DotAuth.Id.Create(),
+                                Id.Create(),
                                 ex.Message,
                                 ex.Message,
                                 string.Empty,
@@ -378,7 +378,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
             }
         }
 
-        await SetLocalCookie(authenticatedUserClaims, DotAuth.Id.Create())
+        await SetLocalCookie(authenticatedUserClaims, Id.Create())
             .ConfigureAwait(false); // Authenticate the resource owner
         var modelCode = string.IsNullOrWhiteSpace(confirmCodeViewModel.Code)
             ? confirmCodeViewModel.ConfirmationCode
@@ -443,7 +443,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 {
                     await _eventPublisher.Publish(
                             new DotAuthError(
-                                DotAuth.Id.Create(),
+                                Id.Create(),
                                 ex.Details.Title,
                                 ex.Details.Detail,
                                 string.Empty,
@@ -473,7 +473,7 @@ public sealed class AuthenticateController : BaseAuthenticateController
                 {
                     await _eventPublisher.Publish(
                             new DotAuthError(
-                                DotAuth.Id.Create(),
+                                Id.Create(),
                                 ex.Message,
                                 ex.Message,
                                 string.Empty,

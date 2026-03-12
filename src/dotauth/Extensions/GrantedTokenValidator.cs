@@ -27,7 +27,11 @@ using Microsoft.IdentityModel.Tokens;
 
 internal static class GrantedTokenValidator
 {
-    public static async Task<GrantedTokenValidationResult> CheckGrantedToken(this GrantedToken grantedToken, IJwksStore jwksStore, CancellationToken cancellationToken = default)
+    public static async Task<GrantedTokenValidationResult> CheckGrantedToken(
+        this GrantedToken grantedToken,
+        string issuer,
+        IJwksStore jwksStore,
+        CancellationToken cancellationToken = default)
     {
         var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
         var tokenIsExpired = DateTimeOffset.UtcNow > expirationDateTime;
@@ -45,10 +49,9 @@ internal static class GrantedTokenValidator
         var handler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
         {
-            ValidateActor = false,
+            ValidIssuer = issuer,
             ValidAudience = grantedToken.ClientId,
-            ValidateIssuer = false,
-            IssuerSigningKeys = publicKeys?.Keys
+            IssuerSigningKeys = publicKeys.Keys
         };
 
         try
@@ -73,18 +76,20 @@ internal static class GrantedTokenValidator
         IJwksStore jwksStore,
         string scopes,
         string clientId,
+        string issuer,
         JwtPayload? idTokenJwsPayload = null,
         JwtPayload? userInfoJwsPayload = null,
         CancellationToken cancellationToken = default)
     {
-        var token = await tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload, cancellationToken)
+        var token = await tokenStore
+            .GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload, cancellationToken)
             .ConfigureAwait(false);
         if (token == null)
         {
             return null;
         }
 
-        if ((await token.CheckGrantedToken(jwksStore, cancellationToken).ConfigureAwait(false)).IsValid)
+        if ((await token.CheckGrantedToken(issuer, jwksStore, cancellationToken).ConfigureAwait(false)).IsValid)
         {
             return token;
         }

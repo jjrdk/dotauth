@@ -141,7 +141,6 @@ internal sealed class Startup
                     cfg.Authority = _configuration["OAUTH:AUTHORITY"];
                     cfg.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateAudience = false,
                         ValidIssuers = (_configuration["OAUTH:VALIDISSUERS"] ?? "")
                             .Split(',', StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => x.Trim())

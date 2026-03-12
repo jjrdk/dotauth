@@ -59,7 +59,7 @@ internal sealed class SymmetricDataProtector : IDataProtector
                 return list.ToArray();
             }
 
-            list ??= new List<byte>();
+            list ??= [];
             list.AddRange(buffer.Take(read));
         }
     }

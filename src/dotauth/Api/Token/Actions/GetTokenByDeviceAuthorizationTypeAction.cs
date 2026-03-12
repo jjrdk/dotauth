@@ -111,6 +111,7 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
                 _jwksStore,
                 scopes,
                 authRequest.ClientId,
+                issuer: issuerName,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
         if (grantedToken != null)

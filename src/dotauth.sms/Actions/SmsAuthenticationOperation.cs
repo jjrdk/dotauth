@@ -66,7 +66,7 @@ internal sealed class SmsAuthenticationOperation
             new Claim(OpenIdClaimTypes.PhoneNumberVerified, "false")
         };
         var id = await _subjectBuilder.BuildSubject(claims, cancellationToken).ConfigureAwait(false);
-        var record = new ResourceOwner { Subject = id, Password = DotAuth.Id.Create().ToSha256Hash(_salt), Claims = claims };
+        var record = new ResourceOwner { Subject = id, Password = Id.Create().ToSha256Hash(_salt), Claims = claims };
 
         // 3.2 Add user.
         await _addUser.Execute(record, cancellationToken).ConfigureAwait(false);

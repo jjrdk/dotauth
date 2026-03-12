@@ -28,7 +28,7 @@ public static class DefaultConfiguration
                     new Uri("https://localhost:50001/signin-oidc"),
                     new Uri("https://localhost:5001/signin-oidc"),
                     new Uri("https://localhost:5001/callback"),
-                    new Uri("http://localhost:5000/callback"),
+                    new Uri("http://localhost:8001/callback"),
                     new Uri("http://localhost/callback")
                 ],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.None,

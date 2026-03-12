@@ -13,12 +13,12 @@ internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions
     {
 #if DEBUG
 
-        options.AuthorizationEndpoint = "https://localhost:5001/authorization";
-        options.TokenEndpoint = "https://localhost:5001/token";
-        options.UserInformationEndpoint = "https://localhost:5001/userinfo";
+        options.AuthorizationEndpoint = "http://localhost:8001/authorization";
+        options.TokenEndpoint = "http://localhost:8001/token";
+        options.UserInformationEndpoint = "http://localhost:8001/userinfo";
 
 #else
-        
+
         options.AuthorizationEndpoint = "http://localhost/authorization";
         options.TokenEndpoint = "http://localhost/token";
         options.UserInformationEndpoint = "http://localhost/userinfo";

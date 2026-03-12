@@ -32,8 +32,9 @@ public sealed class GrantedTokenValidatorTests
         jwksStoreMock.GetSigningKey(jwk.Alg, Arg.Any<CancellationToken>())
             .Returns(new SigningCredentials(jwk, jwk.Alg));
         jwksStoreMock.GetPublicKeys(Arg.Any<CancellationToken>()).Returns(keyset);
+        var issuer = "http://localhost";
         var token = handler.CreateEncodedJwt(
-            "http://localhost",
+            issuer,
             "test",
             new ClaimsIdentity([new Claim("sub", "tester")]),
             DateTime.UtcNow,
@@ -47,7 +48,7 @@ public sealed class GrantedTokenValidatorTests
             ExpiresIn = 10000,
             CreateDateTime = DateTimeOffset.UtcNow
         };
-        var result = await grantedToken.CheckGrantedToken(jwksStoreMock, TestContext.Current.CancellationToken);
+        var result = await grantedToken.CheckGrantedToken(issuer, jwksStoreMock, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsValid);
     }
@@ -63,8 +64,9 @@ public sealed class GrantedTokenValidatorTests
         jwksStoreMock.GetSigningKey(jwk.Alg, Arg.Any<CancellationToken>())
             .Returns(new SigningCredentials(jwk, jwk.Alg));
         jwksStoreMock.GetPublicKeys(Arg.Any<CancellationToken>()).Returns(keyset);
+        var issuer = "http://localhost";
         var token = handler.CreateEncodedJwt(
-            "http://localhost",
+            issuer,
             "test",
             new ClaimsIdentity([new Claim("sub", "tester")]),
             DateTime.UtcNow,
@@ -78,7 +80,7 @@ public sealed class GrantedTokenValidatorTests
             ExpiresIn = 10000,
             CreateDateTime = DateTimeOffset.UtcNow
         };
-        var result = await grantedToken.CheckGrantedToken(jwksStoreMock, TestContext.Current.CancellationToken);
+        var result = await grantedToken.CheckGrantedToken(issuer, jwksStoreMock, TestContext.Current.CancellationToken);
 
         Assert.False(result.IsValid);
     }

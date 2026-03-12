@@ -276,7 +276,12 @@ internal sealed class TokenActions
 
         // 4. Generate the JWT access token on the fly.
         var grantedToken = await _tokenStore
-            .GetValidGrantedToken(_jwksStore, allowedTokenScopes, client.ClientId, cancellationToken: cancellationToken)
+            .GetValidGrantedToken(
+                _jwksStore,
+                allowedTokenScopes,
+                client.ClientId,
+                issuer: issuerName,
+                cancellationToken: cancellationToken)
             .ConfigureAwait(false);
         if (grantedToken == null)
         {
@@ -285,8 +290,8 @@ internal sealed class TokenActions
                     allowedTokenScopes.Split(' '),
                     issuerName,
                     new JwtPayload(client.Claims),
-                    additionalClaims: client.Claims.Where(
-                            c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                    additionalClaims: client.Claims
+                        .Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
                         .ToArray(),
                     cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
@@ -305,7 +310,11 @@ internal sealed class TokenActions
         return new Option<GrantedToken>.Result(grantedToken);
     }
 
-    public async Task<Option<GrantedToken>> GetTokenByDeviceGrantType(string? clientId, string? deviceCode, string issuerName, CancellationToken cancellationToken)
+    public async Task<Option<GrantedToken>> GetTokenByDeviceGrantType(
+        string? clientId,
+        string? deviceCode,
+        string issuerName,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(deviceCode))
         {
@@ -316,12 +325,12 @@ internal sealed class TokenActions
                 Status = HttpStatusCode.BadRequest
             };
         }
+
         return await _getTokenByDeviceAuthorizationTypeAction.Execute(
             clientId,
             deviceCode,
             issuerName,
             cancellationToken).ConfigureAwait(false);
-
     }
 
     public async Task<Option> RevokeToken(

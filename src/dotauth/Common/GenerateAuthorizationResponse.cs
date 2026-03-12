@@ -100,25 +100,25 @@ internal sealed class GenerateAuthorizationResponse
                 var tokenScopes = authorizationParameter.Scope.ParseScopes();
                 allowedTokenScopes = string.Join(' ', tokenScopes);
                 grantedToken = await _tokenStore.GetValidGrantedToken(
-                                       _jwksStore,
-                                       allowedTokenScopes,
-                                       client.ClientId,
-                                       idTokenJwsPayload: userInformationPayload,
-                                       userInfoJwsPayload: idTokenPayload,
-                                       cancellationToken: cancellationToken)
-                                   .ConfigureAwait(false)
-                               ?? await client.GenerateToken(
-                                       _jwksStore,
-                                       tokenScopes,
-                                       issuerName,
-                                       userInformationPayload,
-                                       idTokenPayload,
-                                       cancellationToken: cancellationToken,
-                                       claimsPrincipal.Claims.Where(
-                                               c => client.UserClaimsToIncludeInAuthToken.Any(
-                                                   r => r.IsMatch(c.Type)))
-                                           .ToArray())
-                                   .ConfigureAwait(false);
+                            _jwksStore,
+                            allowedTokenScopes,
+                            client.ClientId,
+                            issuer: issuerName,
+                            idTokenJwsPayload: userInformationPayload,
+                            userInfoJwsPayload: idTokenPayload,
+                            cancellationToken: cancellationToken)
+                        .ConfigureAwait(false)
+                 ?? await client.GenerateToken(
+                            _jwksStore,
+                            tokenScopes,
+                            issuerName,
+                            userInformationPayload,
+                            idTokenPayload,
+                            cancellationToken: cancellationToken,
+                            claimsPrincipal.Claims.Where(c =>
+                                    client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                                .ToArray())
+                        .ConfigureAwait(false);
 
                 endpointResult = endpointResult with
                 {
@@ -139,8 +139,8 @@ internal sealed class GenerateAuthorizationResponse
                 if (assignedConsent != null)
                 {
                     if (authorizationParameterClientId == null
-                        || authorizationParameter.RedirectUrl == null
-                        || authorizationParameter.Scope == null)
+                     || authorizationParameter.RedirectUrl == null
+                     || authorizationParameter.Scope == null)
                     {
                         throw new ArgumentException(Strings.MissingValues, nameof(authorizationParameter));
                     }
@@ -294,6 +294,7 @@ internal sealed class GenerateAuthorizationResponse
 
             return endpointResult;
         }
+
         var e = generateIdToken as Option<JwtPayload>.Error;
         return EndpointResult.CreateBadRequestResult(e!.Details);
     }
@@ -301,8 +302,8 @@ internal sealed class GenerateAuthorizationResponse
     private static string? GetSessionState(string? clientId, string? originUrl, string? sessionId)
     {
         if (string.IsNullOrWhiteSpace(clientId)
-            || string.IsNullOrWhiteSpace(originUrl)
-            || string.IsNullOrWhiteSpace(sessionId))
+         || string.IsNullOrWhiteSpace(originUrl)
+         || string.IsNullOrWhiteSpace(sessionId))
         {
             return null;
         }
@@ -321,20 +322,20 @@ internal sealed class GenerateAuthorizationResponse
         CancellationToken cancellationToken)
     {
         return authorizationParameter.Claims != null
-               && authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter()
-            ? await _jwtGenerator.GenerateFilteredIdTokenPayload(
-                    claimsPrincipal,
-                    authorizationParameter,
-                    authorizationParameter.Claims.IdToken,
-                    issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false)
-            : await _jwtGenerator.GenerateIdTokenPayloadForScopes(
-                    claimsPrincipal,
-                    authorizationParameter,
-                    issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false);
+         && authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter()
+                ? await _jwtGenerator.GenerateFilteredIdTokenPayload(
+                        claimsPrincipal,
+                        authorizationParameter,
+                        authorizationParameter.Claims.IdToken,
+                        issuerName,
+                        cancellationToken)
+                    .ConfigureAwait(false)
+                : await _jwtGenerator.GenerateIdTokenPayloadForScopes(
+                        claimsPrincipal,
+                        authorizationParameter,
+                        issuerName,
+                        cancellationToken)
+                    .ConfigureAwait(false);
     }
 
     /// <summary>

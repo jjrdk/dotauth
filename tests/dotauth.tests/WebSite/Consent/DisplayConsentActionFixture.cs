@@ -86,7 +86,7 @@ public sealed class DisplayConsentActionFixture
         {
             ClientId = clientid,
             Scope = scope,
-            ResponseMode = DotAuth.ResponseModes.Fragment
+            ResponseMode = ResponseModes.Fragment
         };
 
         _clientRepositoryFake.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -96,7 +96,7 @@ public sealed class DisplayConsentActionFixture
         var result = await _displayConsentAction
                 .Execute(authorizationParameter, claimsPrincipal, "", CancellationToken.None);
 
-        Assert.Equal(DotAuth.ResponseModes.Fragment, result.EndpointResult.RedirectInstruction?.ResponseMode);
+        Assert.Equal(ResponseModes.Fragment, result.EndpointResult.RedirectInstruction?.ResponseMode);
     }
 
     [Fact]

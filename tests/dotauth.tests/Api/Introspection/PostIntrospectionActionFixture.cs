@@ -45,7 +45,7 @@ public sealed class PostIntrospectionActionFixture
         {
             ClientId = "test",
             ClientSecret = "test",
-            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.AccessToken,
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
             Token = "token"
         };
 
@@ -64,7 +64,7 @@ public sealed class PostIntrospectionActionFixture
     {
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
         };
         var grantedToken = new GrantedToken
         {
@@ -97,7 +97,7 @@ public sealed class PostIntrospectionActionFixture
         var audiences = new[] { audience };
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
         };
         var grantedToken = new GrantedToken
         {
@@ -129,7 +129,7 @@ public sealed class PostIntrospectionActionFixture
     {
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
         };
         var grantedToken = new GrantedToken
         {
@@ -162,7 +162,7 @@ public sealed class PostIntrospectionActionFixture
         var audiences = new[] { audience };
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = DotAuth.CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
         };
         var grantedToken = new GrantedToken
         {

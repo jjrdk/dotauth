@@ -595,7 +595,7 @@ public abstract partial class BaseAuthenticateController : BaseController
             string.Empty,
             new CookieOptions
             {
-                HttpOnly = _runtimeSettings.AllowHttp,
+                HttpOnly = true,
                 Secure = !_runtimeSettings.AllowHttp,
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTimeOffset.UtcNow.AddDays(-1)

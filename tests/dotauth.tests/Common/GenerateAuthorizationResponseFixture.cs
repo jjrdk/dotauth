@@ -156,7 +156,7 @@ public sealed class GenerateAuthorizationResponseFixture
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
-            p => p.Name == DotAuth.StandardAuthorizationResponseNames.AccessTokenName);
+            p => p.Name == StandardAuthorizationResponseNames.AccessTokenName);
         await _tokenStore.Received().AddToken(Arg.Any<GrantedToken>(), Arg.Any<CancellationToken>());
         await _eventPublisher.Received().Publish(Arg.Any<TokenGranted>());
     }
@@ -216,7 +216,7 @@ public sealed class GenerateAuthorizationResponseFixture
         Assert.Equal(
             grantedToken.AccessToken,
             actionResult.RedirectInstruction!.Parameters
-                .First(x => x.Name == DotAuth.StandardAuthorizationResponseNames.AccessTokenName)
+                .First(x => x.Name == StandardAuthorizationResponseNames.AccessTokenName)
                 .Value);
     }
 
@@ -255,7 +255,7 @@ public sealed class GenerateAuthorizationResponseFixture
 
         Assert.Contains(
             actionResult.RedirectInstruction!.Parameters,
-            p => p.Name == DotAuth.StandardAuthorizationResponseNames.AuthorizationCodeName);
+            p => p.Name == StandardAuthorizationResponseNames.AuthorizationCodeName);
         await _authorizationCodeRepositoryFake.Received()
             .Add(Arg.Any<AuthorizationCode>(), Arg.Any<CancellationToken>());
         await _eventPublisher.Received().Publish(Arg.Any<AuthorizationGranted>());
@@ -275,7 +275,7 @@ public sealed class GenerateAuthorizationResponseFixture
             ClientId = clientId,
             Scope = scope,
             ResponseType = responseType,
-            ResponseMode = DotAuth.ResponseModes.None
+            ResponseMode = ResponseModes.None
         };
 
         var actionResult = await _generateAuthorizationResponse.Generate(
@@ -290,6 +290,6 @@ public sealed class GenerateAuthorizationResponseFixture
             "",
             CancellationToken.None);
 
-        Assert.Equal(DotAuth.ResponseModes.Fragment, actionResult.RedirectInstruction!.ResponseMode);
+        Assert.Equal(ResponseModes.Fragment, actionResult.RedirectInstruction!.ResponseMode);
     }
 }

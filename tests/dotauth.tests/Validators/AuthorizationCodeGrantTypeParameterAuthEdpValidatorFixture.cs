@@ -49,7 +49,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
                     Title = ErrorCodes.InvalidRequest,
                     Detail = string.Format(
                         Strings.MissingParameter,
-                        DotAuth.CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName)
+                        CoreConstants.StandardAuthorizationRequestParameterNames.ScopeName)
                 },
                 state),
             exception);
@@ -74,7 +74,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
                     Title = ErrorCodes.InvalidRequest,
                     Detail = string.Format(
                         Strings.MissingParameter,
-                        DotAuth.CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName)
+                        CoreConstants.StandardAuthorizationRequestParameterNames.ClientIdName)
                 },
                 state),
             exception);
@@ -102,7 +102,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
                     Title = ErrorCodes.InvalidRequest,
                     Detail = string.Format(
                         Strings.MissingParameter,
-                        DotAuth.CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)
+                        CoreConstants.StandardAuthorizationRequestParameterNames.RedirectUriName)
                 },
                 state),
             exception);
@@ -130,7 +130,7 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
                     Title = ErrorCodes.InvalidRequest,
                     Detail = string.Format(
                         Strings.MissingParameter,
-                        DotAuth.CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName)
+                        CoreConstants.StandardAuthorizationRequestParameterNames.ResponseTypeName)
                 },
                 state),
             exception);

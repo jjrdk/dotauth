@@ -32,7 +32,7 @@ public abstract class Option<T>
     /// <summary>
     /// Defines the error result.
     /// </summary>
-    public sealed class Error : Option<T>, IEquatable<Option<T>.Error>
+    public sealed class Error : Option<T>, IEquatable<Error>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Option{T}.Error"/> class.

@@ -93,7 +93,7 @@ public sealed class AuthenticateHelperFixture
             Scope = "scope",
             Prompt = "none",
             RedirectUrl = new Uri("https://localhost"),
-            ResponseMode = DotAuth.ResponseModes.FormPost
+            ResponseMode = ResponseModes.FormPost
         };
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new Client());
@@ -115,7 +115,7 @@ public sealed class AuthenticateHelperFixture
                 "",
                 CancellationToken.None);
 
-        Assert.Equal(DotAuth.ResponseModes.FormPost, actionResult.RedirectInstruction!.ResponseMode);
+        Assert.Equal(ResponseModes.FormPost, actionResult.RedirectInstruction!.ResponseMode);
     }
 
     [Fact]

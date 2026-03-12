@@ -89,7 +89,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
             return e.Details;
         }
 
-        var result = ((Option<ValidationResult>.Result) option).Item;
+        var result = ((Option<ValidationResult>.Result)option).Item;
 
         // 1. Invalidate the authorization code by removing it !
         await _authorizationCodeStore.Remove(result.AuthCode.Code, cancellationToken).ConfigureAwait(false);
@@ -97,6 +97,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
                 _jwksStore,
                 result.AuthCode.Scopes,
                 result.AuthCode.ClientId,
+                issuer: issuerName,
                 idTokenJwsPayload: result.AuthCode.IdTokenPayload,
                 userInfoJwsPayload: result.AuthCode.UserInfoPayLoad,
                 cancellationToken: cancellationToken)
@@ -110,10 +111,10 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
                     result.AuthCode.UserInfoPayLoad,
                     result.AuthCode.IdTokenPayload,
                     cancellationToken,
-                    result.AuthCode.IdTokenPayload?.Claims.Where(
-                            c => result.Client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                    result.AuthCode.IdTokenPayload?.Claims.Where(c =>
+                            result.Client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
                         .ToArray()
-                    ?? [])
+                 ?? [])
                 .ConfigureAwait(false);
             await _eventPublisher.Publish(
                     new TokenGranted(

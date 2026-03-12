@@ -49,7 +49,7 @@ public sealed class SessionController : ControllerBase
     [HttpGet(CoreConstants.EndPoints.CheckSession)]
     public Task<IActionResult> CheckSession()
     {
-        return Task.FromResult<IActionResult>(Ok(new CheckSessionResponse{ CookieName = CoreConstants.SessionId }));
+        return Task.FromResult<IActionResult>(Ok(new CheckSessionResponse { CookieName = CoreConstants.SessionId }));
     }
 
     /// <summary>
@@ -59,48 +59,52 @@ public sealed class SessionController : ControllerBase
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
     [HttpGet(CoreConstants.EndPoints.EndSession)]
-    public async Task<IActionResult> RevokeSessionCallback([FromQuery] RevokeSessionRequest? request, CancellationToken cancellationToken)
+    public async Task<IActionResult> RevokeSessionCallback(
+        [FromQuery] RevokeSessionRequest? request,
+        CancellationToken cancellationToken)
     {
-        var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName).ConfigureAwait(false);
+        var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, CookieNames.CookieName)
+            .ConfigureAwait(false);
         if (authenticatedUser == null || authenticatedUser.Identity?.IsAuthenticated != true)
         {
             return Ok(new { Authenticated = false });
         }
 
         Response.Cookies.Delete(CoreConstants.SessionId);
-        await _authenticationService.SignOutAsync(HttpContext, CookieNames.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
-        if (request != null
-            && request.post_logout_redirect_uri != null
-            && !string.IsNullOrWhiteSpace(request.id_token_hint))
+        await _authenticationService.SignOutAsync(HttpContext, CookieNames.CookieName, new AuthenticationProperties())
+            .ConfigureAwait(false);
+        if (request == null
+         || request.post_logout_redirect_uri == null
+         || string.IsNullOrWhiteSpace(request.id_token_hint))
         {
-            var handler = new JwtSecurityTokenHandler();
-            var jsonWebKeySet = await _jwksStore.GetPublicKeys(cancellationToken).ConfigureAwait(false);
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateActor = false,
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                IssuerSigningKeys = jsonWebKeySet?.Keys
-            };
-            handler.ValidateToken(request.id_token_hint, tokenValidationParameters, out var token);
-            var jws = (token as JwtSecurityToken)?.Payload;
-            var claim = jws?.GetClaimValue(StandardClaimNames.Azp);
-            if (claim != null)
-            {
-                var client = await _clientRepository.GetById(claim, cancellationToken).ConfigureAwait(false);
-                if (client?.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Any(x => x == request.post_logout_redirect_uri))
-                {
-                    var redirectUrl = request.post_logout_redirect_uri;
-                    if (!string.IsNullOrWhiteSpace(request.state))
-                    {
-                        redirectUrl = new Uri($"{redirectUrl.AbsoluteUri}?state={request.state}");
-                    }
-
-                    return Redirect(redirectUrl.AbsoluteUri);
-                }
-            }
+            return Ok(new { Authenticated = true });
         }
 
-        return Ok(new { Authenticated = true });
+        var handler = new JwtSecurityTokenHandler();
+        var jsonWebKeySet = await _jwksStore.GetPublicKeys(cancellationToken).ConfigureAwait(false);
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKeys = jsonWebKeySet.Keys
+        };
+        handler.ValidateToken(request.id_token_hint, tokenValidationParameters, out var token);
+        var jws = (token as JwtSecurityToken)?.Payload;
+        var claim = jws?.GetClaimValue(StandardClaimNames.Azp);
+        if (claim == null)
+        {
+            return Ok(new { Authenticated = true });
+        }
+        var client = await _clientRepository.GetById(claim, cancellationToken).ConfigureAwait(false);
+        if (client?.PostLogoutRedirectUris == null || client.PostLogoutRedirectUris.All(x => x != request.post_logout_redirect_uri))
+        {
+            return Ok(new { Authenticated = true });
+        }
+
+        var redirectUrl = request.post_logout_redirect_uri;
+        if (!string.IsNullOrWhiteSpace(request.state))
+        {
+            redirectUrl = new Uri($"{redirectUrl.AbsoluteUri}?state={request.state}");
+        }
+
+        return Redirect(redirectUrl.AbsoluteUri);
     }
 }

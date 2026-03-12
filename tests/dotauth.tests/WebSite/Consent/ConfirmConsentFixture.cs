@@ -50,7 +50,7 @@ public sealed class ConfirmConsentFixture
             ClientId = "clientId",
             Claims = null,
             Scope = "profile",
-            ResponseMode = DotAuth.ResponseModes.None,
+            ResponseMode = ResponseModes.None,
             State = state
         };
         var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
@@ -129,7 +129,7 @@ public sealed class ConfirmConsentFixture
             ResponseType = "code",
             Claims = null,
             Scope = "profile",
-            ResponseMode = DotAuth.ResponseModes.None
+            ResponseMode = ResponseModes.None
         };
         var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
         var claimsIdentity = new ClaimsIdentity(claims, "DotAuthServer");
@@ -147,6 +147,6 @@ public sealed class ConfirmConsentFixture
             ;
 
         await _consentRepositoryFake.Received().Insert(Arg.Any<Consent>(), Arg.Any<CancellationToken>());
-        Assert.Equal(DotAuth.ResponseModes.Query, result.RedirectInstruction!.ResponseMode);
+        Assert.Equal(ResponseModes.Query, result.RedirectInstruction!.ResponseMode);
     }
 }

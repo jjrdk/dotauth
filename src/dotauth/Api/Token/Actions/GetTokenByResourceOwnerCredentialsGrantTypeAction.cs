@@ -103,7 +103,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
         }
 
         if (!client.ResponseTypes.Contains(ResponseTypeNames.Token)
-            || !client.ResponseTypes.Contains(ResponseTypeNames.IdToken))
+         || !client.ResponseTypes.Contains(ResponseTypeNames.IdToken))
         {
             return new ErrorDetails
             {
@@ -180,6 +180,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
                 _jwksStore,
                 allowedTokenScopes,
                 client.ClientId,
+                issuer: issuerName,
                 idTokenJwsPayload: idPayload,
                 userInfoJwsPayload: userInfo,
                 cancellationToken: cancellationToken)
@@ -193,15 +194,15 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
                     userInfo,
                     userInfo,
                     cancellationToken,
-                    claimsIdentity.Claims.Where(
-                            c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
+                    claimsIdentity.Claims.Where(c => client.UserClaimsToIncludeInAuthToken.Any(r => r.IsMatch(c.Type)))
                         .ToArray())
                 .ConfigureAwait(false);
             if (generatedToken.IdTokenPayLoad != null)
             {
                 generatedToken = generatedToken with
                 {
-                    IdTokenPayLoad = JwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client.TokenLifetime),
+                    IdTokenPayLoad =
+                    JwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad, client.TokenLifetime),
                     IdToken = await client.GenerateIdToken(
                             generatedToken.IdTokenPayLoad,
                             _jwksStore,

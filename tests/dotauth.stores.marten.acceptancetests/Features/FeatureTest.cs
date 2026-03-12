@@ -80,7 +80,7 @@ public partial class FeatureTest : IAsyncDisposable
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials(id, secret),
             _fixture.Client,
-            new Uri(FeatureTest.WellKnownOpenidConfiguration));
+            new Uri(WellKnownOpenidConfiguration));
     }
 
     /// <inheritdoc />

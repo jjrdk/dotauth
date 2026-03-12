@@ -43,7 +43,7 @@ public sealed class RuntimeSettings
         RedirectToLogin = redirectToLogin;
         OnResourceOwnerCreated = onResourceOwnerCreated ?? (r => { });
         AuthorizationCodeValidityPeriod = authorizationCodeValidityPeriod == TimeSpan.Zero
-            ? TimeSpan.FromHours(1)
+            ? TimeSpan.FromMinutes(10)
             : authorizationCodeValidityPeriod;
         RptLifeTime = rptLifeTime == TimeSpan.Zero ? TimeSpan.FromHours(1) : rptLifeTime;
         TicketLifeTime = ticketLifeTime == TimeSpan.Zero ? TimeSpan.FromHours(1) : ticketLifeTime;

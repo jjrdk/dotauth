@@ -35,12 +35,14 @@ public sealed class DotAuthConfiguration
     /// <param name="rptLifetime">The RPT lifetime.</param>
     /// <param name="ticketLifetime">The ticket lifetime.</param>
     /// <param name="claimsIncludedInUserCreation">The claims included in user creation.</param>
+    /// <param name="allowedOrigins">Allowed origins for CORS.</param>
     public DotAuthConfiguration(
         string? salt = null,
         TimeSpan authorizationCodeValidity = default,
         TimeSpan rptLifetime = default,
         TimeSpan ticketLifetime = default,
-        string[]? claimsIncludedInUserCreation = null)
+        string[]? claimsIncludedInUserCreation = null,
+        string[]? allowedOrigins = null)
     {
         Salt = salt ?? string.Empty;
         RptLifeTime = rptLifetime == TimeSpan.Zero ? TimeSpan.FromMinutes(30) : rptLifetime;
@@ -49,6 +51,7 @@ public sealed class DotAuthConfiguration
             ? TimeSpan.FromMinutes(30)
             : authorizationCodeValidity;
         ClaimsIncludedInUserCreation = claimsIncludedInUserCreation ?? [];
+        AllowedOrigins = allowedOrigins ?? [];
     }
 
     /// <summary>
@@ -250,4 +253,9 @@ public sealed class DotAuthConfiguration
     /// Gets or sets whether to allow insecure requests.
     /// </summary>
     public bool AllowHttp { get; set; }
+
+    /// <summary>
+    /// Gets or sets the allowed origins for CORS.
+    /// </summary>
+    public string[] AllowedOrigins { get; set; }
 }

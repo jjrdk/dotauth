@@ -21,6 +21,10 @@
             <div class="card-image">
                 <img alt="Manage UMA Resources" src="~/img/manage_resources.png" />
             </div>
+            <div class="card-content">
+                <span class="card-title">Manage UMA Resources</span>
+                <p>Create and organize protected resources, then define which scopes can be requested for each one.</p>
+            </div>
             <div class="card-action center">
                 @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
             </div>
@@ -31,6 +35,10 @@
             <div class="card-image">
                 <img alt="Manage Permission Requests" src="~/img/manage_permissions.png" />
             </div>
+            <div class="card-content">
+                <span class="card-title">Manage Permission Requests</span>
+                <p>Review incoming access requests and approve or deny permissions for shared resources.</p>
+            </div>
             <div class="card-action center">
                 <a href="@Url.Content("~/perm")" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
             </div>
@@ -40,6 +48,10 @@
         <div class="card">
             <div class="card-image">
                 <img alt="Manage Consents" src="~/img/manage_consent.png" />
+            </div>
+            <div class="card-content">
+                <span class="card-title">Manage Consents</span>
+                <p>See which applications can access your data and revoke consents you no longer trust.</p>
             </div>
             <div class="card-action center">
                 @Html.ActionLink("Manage Consents", "Consent", "User", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
@@ -56,6 +68,10 @@
                 <div class="card-image">
                     <img alt="Register Client" src="~/img/manage_resources.png" />
                 </div>
+                <div class="card-content">
+                    <span class="card-title">Register Client</span>
+                    <p>Add OAuth/OpenID client applications, configure redirect URIs, and choose allowed grant types.</p>
+                </div>
                 <div class="card-action center">
                     @Html.ActionLink("Register Client", "Add", "Clients", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
                 </div>
@@ -66,6 +82,10 @@
                 <div class="card-image">
                     <img alt="Manage Users" src="~/img/manage_users.png"/>
                 </div>
+                <div class="card-content">
+                    <span class="card-title">Manage Users</span>
+                    <p>View user accounts, update profile claims, and maintain access-related account settings.</p>
+                </div>
                 <div class="card-action center">
                     @Html.ActionLink("Manage Users", "GetAll", "ResourceOwners", null, new {@class = "btn blue darken-3 waves-effect waves-light"})
                 </div>
@@ -75,6 +95,10 @@
             <div class="card">
                 <div class="card-image">
                     <img alt="Manage Scopes" src="~/img/manage_scopes.png"/>
+                </div>
+                <div class="card-content">
+                    <span class="card-title">Manage Scopes</span>
+                    <p>Define API scopes and control which permissions are available to clients and users.</p>
                 </div>
                 <div class="card-action center">
                     @Html.ActionLink("Manage Scopes", "GetAll", "Scopes", null, new {@class = "btn blue darken-3 waves-effect waves-light"})

@@ -176,7 +176,7 @@ public sealed class JwtGeneratorFixture
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
-        this._scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
+        _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(
                 new[]
                 {
@@ -287,8 +287,8 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.Audiences,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValuesName, new[] { "audience" } }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { CoreConstants.StandardClaimParameterValueNames.ValuesName, new[] { "audience" } }
                 }
             }
         };
@@ -334,8 +334,8 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.Issuer,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, "issuer" }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { CoreConstants.StandardClaimParameterValueNames.ValueName, "issuer" }
                 }
             }
         };
@@ -385,8 +385,8 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.ExpirationTime,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, 12 }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { CoreConstants.StandardClaimParameterValueNames.ValueName, 12 }
                 }
             }
         };
@@ -432,8 +432,8 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, notValidSubject }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { CoreConstants.StandardClaimParameterValueNames.ValueName, notValidSubject }
                 }
             }
         };
@@ -486,7 +486,7 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.AuthenticationTime,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             },
             new ClaimParameter
@@ -495,7 +495,7 @@ public sealed class JwtGeneratorFixture
                 Parameters = new Dictionary<string, object>
                 {
                     {
-                        DotAuth.CoreConstants.StandardClaimParameterValueNames.ValuesName,
+                        CoreConstants.StandardClaimParameterValueNames.ValuesName,
                         new[] { FakeOpenIdAssets.GetClients().First().ClientId }
                     }
                 }
@@ -505,7 +505,7 @@ public sealed class JwtGeneratorFixture
                 Name = StandardClaimNames.Nonce,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, nonce }
+                    { CoreConstants.StandardClaimParameterValueNames.ValueName, nonce }
                 }
             },
             new ClaimParameter
@@ -513,7 +513,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Role,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             },
             new ClaimParameter
@@ -521,7 +521,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             }
         };
@@ -589,7 +589,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             }
         };
@@ -628,7 +628,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, "john.doe@email.com" }
+                    { CoreConstants.StandardClaimParameterValueNames.ValueName, "john.doe@email.com" }
                 }
             }
         };
@@ -672,7 +672,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Name,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             }
         };
@@ -719,7 +719,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, subject }
+                    { CoreConstants.StandardClaimParameterValueNames.ValueName, subject }
                 }
             },
             new ClaimParameter
@@ -727,7 +727,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Name,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, "name" }
+                    { CoreConstants.StandardClaimParameterValueNames.ValueName, "name" }
                 }
             }
         };
@@ -771,7 +771,7 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Name,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             },
             new ClaimParameter
@@ -779,8 +779,8 @@ public sealed class JwtGeneratorFixture
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
-                    { DotAuth.CoreConstants.StandardClaimParameterValueNames.ValueName, subject }
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true },
+                    { CoreConstants.StandardClaimParameterValueNames.ValueName, subject }
                 }
             }
         };
