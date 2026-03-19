@@ -4,26 +4,24 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions>
 {
+    private readonly string _authority;
+
+    public ConfigureOAuthOptions(IConfiguration configuration)
+    {
+        _authority = configuration["OAuth:Authority"]!;
+    }
+
     /// <inheritdoc />
     public void PostConfigure(string? name, OAuthOptions options)
     {
-#if DEBUG
-
-        options.AuthorizationEndpoint = "http://localhost:8001/authorization";
-        options.TokenEndpoint = "http://localhost:8001/token";
-        options.UserInformationEndpoint = "http://localhost:8001/userinfo";
-
-#else
-
-        options.AuthorizationEndpoint = "http://localhost/authorization";
-        options.TokenEndpoint = "http://localhost/token";
-        options.UserInformationEndpoint = "http://localhost/userinfo";
-
-#endif
+        options.AuthorizationEndpoint = $"{_authority}/authorization";
+        options.TokenEndpoint = $"{_authority}/token";
+        options.UserInformationEndpoint = $"{_authority}/userinfo";
 
         options.UsePkce = true;
         options.CallbackPath = "/callback";
@@ -36,8 +34,7 @@ internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions
                 ctx.Identity!.AddClaims(jwt.Claims.Where(c => !ctx.Identity.HasClaim(x => x.Type == c.Type)));
                 ctx.Success();
                 return Task.CompletedTask;
-            },
-            OnTicketReceived = _ => Task.CompletedTask
+            }
         };
         options.SaveTokens = true;
         options.ClientId = "web";
