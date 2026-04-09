@@ -15,6 +15,7 @@
 namespace DotAuth.Api.Token.Actions;
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
@@ -32,6 +33,7 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Events.OAuth;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
+using DotAuth.Telemetry;
 
 internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
 {
@@ -77,19 +79,28 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         string issuerName,
         CancellationToken cancellationToken)
     {
+        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.authorization_code");
+        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(authorizationCodeGrantTypeParameter.ClientId));
+        activity?.SetTag("dotauth.pkce.present", !string.IsNullOrWhiteSpace(authorizationCodeGrantTypeParameter.CodeVerifier));
         var option = await ValidateParameter(
                 authorizationCodeGrantTypeParameter,
                 authenticationHeaderValue,
                 certificate,
+                activity,
                 issuerName,
                 cancellationToken)
             .ConfigureAwait(false);
         if (option is Option<ValidationResult>.Error e)
         {
+            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Title);
             return e.Details;
         }
 
         var result = ((Option<ValidationResult>.Result)option).Item;
+        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(result.Client.ClientId));
+        activity?.SetTag("dotauth.auth_code.valid", true);
+        activity?.SetTag("dotauth.auth_code.expired", false);
+        activity?.SetTag("dotauth.pkce.valid", true);
 
         // 1. Invalidate the authorization code by removing it !
         await _authorizationCodeStore.Remove(result.AuthCode.Code, cancellationToken).ConfigureAwait(false);
@@ -102,6 +113,13 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
                 userInfoJwsPayload: result.AuthCode.UserInfoPayLoad,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
+        var tokenReused = grantedToken != null;
+        activity?.SetTag("dotauth.token.reused", tokenReused);
+        if (tokenReused)
+        {
+            DotAuthTelemetry.RecordTokenReused(GrantTypes.AuthorizationCode, result.Client.ClientId);
+        }
+
         if (grantedToken == null)
         {
             grantedToken = await result.Client.GenerateToken(
@@ -145,6 +163,8 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
             await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
         }
 
+        DotAuthTelemetry.RecordAuthorizationCodeRedeemed(result.Client.ClientId);
+        activity?.SetStatus(ActivityStatusCode.Ok);
         return grantedToken;
     }
 
@@ -154,6 +174,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
     /// <param name="authorizationCodeGrantTypeParameter"></param>
     /// <param name="authenticationHeaderValue"></param>
     /// <param name="certificate"></param>
+    /// <param name="activity">The active telemetry span for the authorization-code flow.</param>
     /// <param name="issuerName"></param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
@@ -161,11 +182,17 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
         AuthenticationHeaderValue? authenticationHeaderValue,
         X509Certificate2? certificate,
+        Activity? activity,
         string issuerName,
         CancellationToken cancellationToken)
     {
         if (authorizationCodeGrantTypeParameter.Code == null)
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
+            activity?.SetTag("dotauth.auth_code.expired", false);
+            DotAuthTelemetry.RecordAuthorizationCodeInvalid(
+                authorizationCodeGrantTypeParameter.ClientId,
+                ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -183,6 +210,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         var client = authResult.Client;
         if (client == null)
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -194,6 +222,8 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         // 2. Check the client
         if (!client.GrantTypes.Contains(GrantTypes.AuthorizationCode))
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
+            DotAuthTelemetry.RecordAuthorizationCodeInvalid(client.ClientId, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -207,6 +237,8 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
 
         if (!client.ResponseTypes.Contains(ResponseTypeNames.Code))
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
+            DotAuthTelemetry.RecordAuthorizationCodeInvalid(client.ClientId, ErrorCodes.InvalidResponse);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -224,6 +256,9 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         // 2. Check if the authorization code is valid
         if (authorizationCode == null)
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
+            activity?.SetTag("dotauth.auth_code.expired", false);
+            DotAuthTelemetry.RecordAuthorizationCodeInvalid(client.ClientId, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -235,6 +270,9 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         // 3. Check PKCE
         if (!client.CheckPkce(authorizationCodeGrantTypeParameter.CodeVerifier, authorizationCode))
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
+            activity?.SetTag("dotauth.pkce.valid", false);
+            DotAuthTelemetry.RecordAuthorizationCodeInvalid(client.ClientId, ErrorCodes.InvalidRequest);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -247,6 +285,8 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         var authorizationClientId = authorizationCode.ClientId;
         if (authorizationClientId != client.ClientId)
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
+            DotAuthTelemetry.RecordAuthorizationCodeInvalid(client.ClientId, ErrorCodes.InvalidRequest);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -259,6 +299,8 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
 
         if (authorizationCode.RedirectUri != authorizationCodeGrantTypeParameter.RedirectUri)
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
+            DotAuthTelemetry.RecordAuthorizationCodeInvalid(client.ClientId, ErrorCodes.InvalidRedirectUri);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -273,6 +315,9 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         var currentDateTime = DateTimeOffset.UtcNow;
         if (currentDateTime > expirationDateTime)
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
+            activity?.SetTag("dotauth.auth_code.expired", true);
+            DotAuthTelemetry.RecordAuthorizationCodeExpired(client.ClientId);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -285,6 +330,8 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         var redirectionUrl = client.GetRedirectionUrls(authorizationCodeGrantTypeParameter.RedirectUri);
         if (!redirectionUrl.Any())
         {
+            activity?.SetTag("dotauth.auth_code.valid", false);
+            DotAuthTelemetry.RecordAuthorizationCodeInvalid(client.ClientId, ErrorCodes.InvalidRedirectUri);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -296,6 +343,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         }
 
 
+        activity?.SetTag("dotauth.pkce.valid", true);
         return new ValidationResult(authorizationCode, client);
     }
 }

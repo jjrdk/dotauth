@@ -1,8 +1,10 @@
 ﻿namespace DotAuth.Filters;
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
+using DotAuth.Telemetry;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,12 +39,20 @@ public sealed class ThrottleFilter : Attribute, IFilterFactory
         /// <inheritdoc />
         public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
-            if (!await _requestThrottle.Allow(context.HttpContext.Request).ConfigureAwait(false))
+            var route = context.ActionDescriptor.AttributeRouteInfo?.Template ?? context.HttpContext.Request.Path.Value;
+            using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.throttle.check");
+            activity?.SetTag("http.route", DotAuthTelemetry.Normalize(route));
+            var allowed = await _requestThrottle.Allow(context.HttpContext.Request).ConfigureAwait(false);
+            activity?.SetTag("dotauth.throttle.allowed", allowed);
+            DotAuthTelemetry.RecordThrottleCheck(route, allowed);
+            if (!allowed)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, "rejected");
                 context.Result = new StatusCodeResult((int)HttpStatusCode.TooManyRequests);
                 return;
             }
 
+            activity?.SetStatus(ActivityStatusCode.Ok);
             await next().ConfigureAwait(false);
         }
     }

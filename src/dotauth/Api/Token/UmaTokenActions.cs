@@ -1,6 +1,7 @@
 ﻿namespace DotAuth.Api.Token;
 
 using System;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
@@ -22,6 +23,7 @@ using DotAuth.Shared.Events.Uma;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;
+using DotAuth.Telemetry;
 using Microsoft.Extensions.Logging;
 
 internal sealed class UmaTokenActions
@@ -63,9 +65,15 @@ internal sealed class UmaTokenActions
         string issuerName,
         CancellationToken cancellationToken)
     {
+        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.uma_ticket");
+        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(parameter.ClientId));
+        activity?.SetTag("dotauth.uma.ticket_id", DotAuthTelemetry.Normalize(parameter.Ticket));
         if (string.IsNullOrWhiteSpace(parameter.Ticket))
         {
             _logger.LogError("Ticket is null or empty");
+            activity?.SetTag("dotauth.uma.ticket_found", false);
+            activity?.SetTag("dotauth.uma.ticket_expired", false);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -81,6 +89,7 @@ internal sealed class UmaTokenActions
         if (client == null)
         {
             _logger.LogError("Client not found");
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -92,6 +101,7 @@ internal sealed class UmaTokenActions
         if (client.GrantTypes.All(x => x != GrantTypes.UmaTicket))
         {
             _logger.LogError("UMA Grant type not supported");
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -104,9 +114,12 @@ internal sealed class UmaTokenActions
         }
 
         var ticket = await _ticketStore.Get(parameter.Ticket, cancellationToken).ConfigureAwait(false);
+        activity?.SetTag("dotauth.uma.ticket_found", ticket is not null);
         if (ticket == null)
         {
             _logger.LogError("Ticket {Ticket} not found", parameter.Ticket);
+            activity?.SetTag("dotauth.uma.ticket_expired", false);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -119,6 +132,9 @@ internal sealed class UmaTokenActions
         if (ticket.Expires < DateTimeOffset.UtcNow)
         {
             _logger.LogError("Ticket expired");
+            activity?.SetTag("dotauth.uma.ticket_expired", true);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.ExpiredTicket);
+            DotAuthTelemetry.RecordUmaTicketExpired(client.ClientId);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -127,6 +143,8 @@ internal sealed class UmaTokenActions
             };
         }
 
+        activity?.SetTag("dotauth.uma.ticket_expired", false);
+
         // 4. Check the authorization.
         var authorizationResult = await _authorizationPolicyValidator
             .IsAuthorized(ticket, client, parameter.ClaimToken, cancellationToken)
@@ -134,6 +152,7 @@ internal sealed class UmaTokenActions
 
         if (authorizationResult.Result == AuthorizationPolicyResultKind.Authorized)
         {
+            activity?.SetTag("dotauth.uma.authorization_result", "authorized");
             var claimToken = parameter.ClaimToken.Token;
             var grantedToken = await GenerateToken(
                     client,
@@ -144,6 +163,8 @@ internal sealed class UmaTokenActions
                 .ConfigureAwait(false);
             if (await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false))
             {
+                DotAuthTelemetry.RecordUmaRptIssued(client.ClientId);
+                activity?.SetStatus(ActivityStatusCode.Ok);
                 await _ticketStore.Remove(ticket.Id, cancellationToken).ConfigureAwait(false);
                 return grantedToken;
             }
@@ -157,6 +178,7 @@ internal sealed class UmaTokenActions
                     authorizationResult.Principal.Select(claim => new ClaimData
                         { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow)).ConfigureAwait(false);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InternalError);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.InternalServerError,
@@ -167,6 +189,8 @@ internal sealed class UmaTokenActions
 
         if (authorizationResult.Result == AuthorizationPolicyResultKind.RequestSubmitted)
         {
+            activity?.SetTag("dotauth.uma.authorization_result", "request_submitted");
+            DotAuthTelemetry.RecordUmaRptRequestSubmitted(client.ClientId);
             await _eventPublisher.Publish(
                     new UmaRequestSubmitted(
                         Id.Create(),
@@ -176,6 +200,7 @@ internal sealed class UmaTokenActions
                             { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.RequestSubmitted);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.Forbidden,
@@ -184,6 +209,8 @@ internal sealed class UmaTokenActions
             };
         }
 
+        activity?.SetTag("dotauth.uma.authorization_result", "not_authorized");
+        DotAuthTelemetry.RecordUmaRptDenied(client.ClientId);
         await _eventPublisher.Publish(
                 new UmaRequestNotAuthorized(
                     Id.Create(),
@@ -193,6 +220,7 @@ internal sealed class UmaTokenActions
                         { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow))
             .ConfigureAwait(false);
+        activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.RequestDenied);
         return new ErrorDetails
         {
             Status = HttpStatusCode.BadRequest,

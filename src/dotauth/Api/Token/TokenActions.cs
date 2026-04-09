@@ -15,6 +15,7 @@
 namespace DotAuth.Api.Token;
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -35,6 +36,7 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Events.OAuth;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
+using DotAuth.Telemetry;
 using Microsoft.Extensions.Logging;
 
 internal sealed class TokenActions
@@ -200,8 +202,12 @@ internal sealed class TokenActions
         string issuerName,
         CancellationToken cancellationToken)
     {
+        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.client_credentials");
+        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(clientCredentialsGrantTypeParameter.ClientId));
+        activity?.SetTag("dotauth.scope.requested", DotAuthTelemetry.Normalize(clientCredentialsGrantTypeParameter.Scope));
         if (string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
         {
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -219,6 +225,7 @@ internal sealed class TokenActions
         var client = authResult.Client;
         if (client == null)
         {
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -230,6 +237,7 @@ internal sealed class TokenActions
         // 2. Check client
         if (client.GrantTypes.All(x => x != GrantTypes.ClientCredentials))
         {
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -243,6 +251,7 @@ internal sealed class TokenActions
 
         if (!client.ResponseTypes.Contains(ResponseTypeNames.Token))
         {
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -261,6 +270,7 @@ internal sealed class TokenActions
             var scopeValidation = clientCredentialsGrantTypeParameter.Scope.Check(client);
             if (!scopeValidation.IsValid)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidScope);
                 return new ErrorDetails
                 {
                     Status = HttpStatusCode.BadRequest,
@@ -274,6 +284,8 @@ internal sealed class TokenActions
             allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
         }
 
+        activity?.SetTag("dotauth.scope.granted", DotAuthTelemetry.Normalize(allowedTokenScopes));
+
         // 4. Generate the JWT access token on the fly.
         var grantedToken = await _tokenStore
             .GetValidGrantedToken(
@@ -283,6 +295,7 @@ internal sealed class TokenActions
                 issuer: issuerName,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
+        activity?.SetTag("dotauth.token.reused", grantedToken != null);
         if (grantedToken == null)
         {
             grantedToken = await client.GenerateToken(
@@ -306,6 +319,12 @@ internal sealed class TokenActions
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
         }
+        else
+        {
+            DotAuthTelemetry.RecordTokenReused(GrantTypes.ClientCredentials, client.ClientId);
+        }
+
+        activity?.SetStatus(ActivityStatusCode.Ok);
 
         return new Option<GrantedToken>.Result(grantedToken);
     }
@@ -316,8 +335,11 @@ internal sealed class TokenActions
         string issuerName,
         CancellationToken cancellationToken)
     {
+        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.device_code");
+        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(clientId));
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(deviceCode))
         {
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);
             return new ErrorDetails
             {
                 Title = ErrorCodes.InvalidClient,

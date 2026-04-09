@@ -1,6 +1,7 @@
 ﻿namespace DotAuth.Api.Token.Actions;
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using DotAuth.Shared.Events.OAuth;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
+using DotAuth.Telemetry;
 using Microsoft.Extensions.Logging;
 
 internal sealed class GetTokenByDeviceAuthorizationTypeAction
@@ -46,17 +48,24 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         string issuerName,
         CancellationToken cancellationToken)
     {
+        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.device_code");
+        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(clientId));
         var option = await _deviceAuthorizationStore.Get(clientId, deviceCode, cancellationToken).ConfigureAwait(false);
         if (option is Option<DeviceAuthorizationData>.Error e)
         {
+            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Title);
             return e.Details;
         }
 
         var authRequest = ((Option<DeviceAuthorizationData>.Result)option).Item;
+        activity?.SetTag("dotauth.device_code.poll_interval_seconds", authRequest.Interval);
         if (authRequest.Approved)
         {
+            activity?.SetTag("dotauth.device_code.status", "approved");
+            DotAuthTelemetry.RecordDeviceCodePoll(authRequest.ClientId, "approved");
             var token = await HandleApprovedRequest(issuerName, authRequest, cancellationToken).ConfigureAwait(false);
             await _deviceAuthorizationStore.Remove(authRequest, cancellationToken).ConfigureAwait(false);
+            activity?.SetStatus(ActivityStatusCode.Ok);
             return token;
         }
 
@@ -67,6 +76,9 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
             await _deviceAuthorizationStore.Remove(authRequest, cancellationToken).ConfigureAwait(false);
             const string format = "Device code {0} is expired at {1}";
             _logger.LogInformation(format, authRequest.DeviceCode, now);
+            activity?.SetTag("dotauth.device_code.status", "expired");
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.ExpiredToken);
+            DotAuthTelemetry.RecordDeviceCodePoll(authRequest.ClientId, "expired");
             return new ErrorDetails
             {
                 Title = ErrorCodes.ExpiredToken,
@@ -80,6 +92,8 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         await _deviceAuthorizationStore.Save(authRequest, cancellationToken).ConfigureAwait(false);
         if (lastPolled.AddSeconds(authRequest.Interval) <= now)
         {
+            activity?.SetTag("dotauth.device_code.status", "pending");
+            DotAuthTelemetry.RecordDeviceCodePoll(authRequest.ClientId, "pending");
             return new ErrorDetails
             {
                 Title = ErrorCodes.AuthorizationPending,
@@ -92,6 +106,9 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
 
         var totalSeconds = (now - lastPolled).TotalSeconds;
         _logger.LogInformation(detail, authRequest.ClientId, totalSeconds);
+        activity?.SetTag("dotauth.device_code.status", "slow_down");
+        activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.SlowDown);
+        DotAuthTelemetry.RecordDeviceCodePoll(authRequest.ClientId, "slow_down");
 
         return new ErrorDetails
         {
