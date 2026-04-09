@@ -1,0 +1,40 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        tls:
+          cert_file: /etc/otelcol-contrib/certs/server.crt
+          key_file: /etc/otelcol-contrib/certs/server.key
+          client_ca_file: /etc/otelcol-contrib/certs/ca.crt
+          require_client_cert: true
+      http:
+        endpoint: 0.0.0.0:4318
+        tls:
+          cert_file: /etc/otelcol-contrib/certs/server.crt
+          key_file: /etc/otelcol-contrib/certs/server.key
+          client_ca_file: /etc/otelcol-contrib/certs/ca.crt
+          require_client_cert: true
+
+processors:
+  batch: {}
+
+exporters:
+  otlp/jaeger:
+    endpoint: jaeger:4317
+  prometheus:
+    endpoint: 0.0.0.0:9464
+    resource_to_telemetry_conversion:
+      enabled: true
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/jaeger]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]
+
