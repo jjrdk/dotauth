@@ -53,6 +53,50 @@ When `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf`, DotAuth automatically appends 
 - traces → `/v1/traces`
 - metrics → `/v1/metrics`
 
+### Local collector and backend example
+
+For local development, a small OpenTelemetry Collector plus a trace backend is enough to inspect DotAuth telemetry end-to-end.
+The example below keeps traces in Jaeger and exposes metrics from the collector in Prometheus format on `:9464`.
+
+A checked-in collector example is available at [`otel-local/collector.yaml`](otel-local/collector.yaml).
+It accepts OTLP over gRPC and HTTP, forwards traces to Jaeger, and exposes metrics in Prometheus format for local scraping.
+
+If you want a simple local backend stack, the following `docker-compose.yml` snippet is enough for development. Use pinned image tags in your own environment as needed:
+
+```yaml
+services:
+  jaeger:
+    image: jaegertracing/all-in-one
+    ports:
+      - "16686:16686"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./otel-local/collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "9464:9464"
+    depends_on:
+      - jaeger
+```
+
+Point DotAuth to the collector with standard OTLP environment variables:
+
+```zsh
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318/"
+export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
+export OTEL_SERVICE_NAME="dotauth-local"
+```
+
+With that setup in place:
+
+- open Jaeger at `http://localhost:16686` to inspect traces
+- scrape `http://localhost:9464/metrics` from Prometheus or view it directly during development
+- use `otel_tracing.md` as the detailed reference for the span names, metric names, and recommended tags emitted by DotAuth
+
 ### DotAuth telemetry names
 
 |Type|Name|
