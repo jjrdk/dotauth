@@ -57,9 +57,6 @@ using OpenTelemetry.Trace;
 public static class ServiceCollectionExtensions
 {
     private const string ScopeType = "scope";
-    private const string OtlpHeadersEnvironmentVariable = "OTEL_EXPORTER_OTLP_HEADERS";
-    private const string OtlpClientCertificatePathEnvironmentVariable = "DOTAUTH_OTEL_CLIENT_CERTIFICATE_PATH";
-    private const string OtlpClientCertificatePasswordEnvironmentVariable = "DOTAUTH_OTEL_CLIENT_CERTIFICATE_PASSWORD";
 
     /// <summary>
     /// Extension methods for <see cref="AuthorizationOptions"/>
@@ -533,38 +530,5 @@ public static class ServiceCollectionExtensions
                             readerOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
                         });
             });
-    }
-
-    private static void ConfigureOtlpAuthentication(OtlpExporterOptions options)
-    {
-        var headers = Environment.GetEnvironmentVariable(OtlpHeadersEnvironmentVariable);
-        if (!string.IsNullOrWhiteSpace(headers))
-        {
-            options.Headers = headers;
-        }
-
-        var clientCertificatePath = Environment.GetEnvironmentVariable(OtlpClientCertificatePathEnvironmentVariable);
-        if (string.IsNullOrWhiteSpace(clientCertificatePath))
-        {
-            return;
-        }
-
-        var clientCertificatePassword = Environment.GetEnvironmentVariable(OtlpClientCertificatePasswordEnvironmentVariable);
-        options.HttpClientFactory = () => CreateOtlpHttpClient(clientCertificatePath, clientCertificatePassword);
-    }
-
-    private static HttpClient CreateOtlpHttpClient(string clientCertificatePath, string? clientCertificatePassword)
-    {
-        var handler = new HttpClientHandler
-        {
-            ClientCertificateOptions = ClientCertificateOption.Manual
-        };
-
-        var clientCertificate = string.IsNullOrWhiteSpace(clientCertificatePassword)
-            ? X509CertificateLoader.LoadPkcs12FromFile(clientCertificatePath, password: null)
-            : X509CertificateLoader.LoadPkcs12FromFile(clientCertificatePath, clientCertificatePassword);
-
-        handler.ClientCertificates.Add(clientCertificate);
-        return new HttpClient(handler, disposeHandler: true);
     }
 }

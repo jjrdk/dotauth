@@ -46,10 +46,7 @@ Telemetry export is enabled only when `OTEL_EXPORTER_OTLP_ENDPOINT` is set. When
 |---|---|---|
 |`OTEL_EXPORTER_OTLP_ENDPOINT`|url string|Required to enable OpenTelemetry export. Use the collector base URL, for example `http://localhost:4318/`.|
 |`OTEL_EXPORTER_OTLP_PROTOCOL`|string|Optional. Set to `http/protobuf` for OTLP/HTTP export. If omitted, DotAuth uses OTLP/gRPC.|
-|`OTEL_EXPORTER_OTLP_HEADERS`|string|Optional. Standard OTLP header list used when exporting through an authenticated proxy, for example `authorization=Basic <base64-value>`.|
 |`OTEL_SERVICE_NAME`|string|Optional standard OpenTelemetry resource attribute used by downstream collectors/backends.|
-|`DOTAUTH_OTEL_CLIENT_CERTIFICATE_PATH`|path string|Optional. Path to a client certificate in PKCS#12 (`.pfx`) format when the collector requires mTLS.|
-|`DOTAUTH_OTEL_CLIENT_CERTIFICATE_PASSWORD`|string|Optional password for `DOTAUTH_OTEL_CLIENT_CERTIFICATE_PATH`.|
 
 When `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf`, DotAuth automatically appends the signal-specific OTLP paths expected by the collector:
 
@@ -63,7 +60,6 @@ The example below keeps traces in Jaeger and exposes metrics from the collector 
 
 A checked-in collector example is available at [`otel-local/collector.yaml`](otel-local/collector.yaml).
 It accepts OTLP over gRPC and HTTP, forwards traces to Jaeger, and exposes metrics in Prometheus format for local scraping.
-This file is intentionally a local-only convenience example and should not be exposed on shared networks.
 
 If you want a simple local backend stack, the following `docker-compose.yml` snippet is enough for development. Use pinned image tags in your own environment as needed:
 
@@ -80,9 +76,9 @@ services:
     volumes:
       - ./otel-local/collector.yaml:/etc/otelcol-contrib/config.yaml:ro
     ports:
-      - "127.0.0.1:4317:4317"
-      - "127.0.0.1:4318:4318"
-      - "127.0.0.1:9464:9464"
+      - "4317:4317"
+      - "4318:4318"
+      - "9464:9464"
     depends_on:
       - jaeger
 ```
@@ -100,42 +96,6 @@ With that setup in place:
 - open Jaeger at `http://localhost:16686` to inspect traces
 - scrape `http://localhost:9464/metrics` from Prometheus or view it directly during development
 - use `otel_tracing.md` as the detailed reference for the span names, metric names, and recommended tags emitted by DotAuth
-
-### Protected collector ingestion for shared environments
-
-When the OTLP endpoint is reachable by anything beyond the local developer machine, require either mTLS or an authenticated proxy.
-
-Checked-in hardened examples:
-
-- direct collector mTLS: [`otel-secure/collector.mtls.yaml`](otel-secure/collector.mtls.yaml)
-- collector behind an authenticated proxy: [`otel-secure/collector.proxy-backend.yaml`](otel-secure/collector.proxy-backend.yaml) and [`otel-secure/nginx.conf`](otel-secure/nginx.conf)
-
-#### Option 1: Require mTLS at the collector
-
-`otel-secure/collector.mtls.yaml` configures both OTLP/gRPC and OTLP/HTTP receivers to require a client certificate signed by the configured CA.
-DotAuth can present a client certificate to that collector by setting these environment variables:
-
-```zsh
-export OTEL_EXPORTER_OTLP_ENDPOINT="https://otel-collector.internal:4318/"
-export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
-export DOTAUTH_OTEL_CLIENT_CERTIFICATE_PATH="/secure/path/dotauth-otel-client.pfx"
-export DOTAUTH_OTEL_CLIENT_CERTIFICATE_PASSWORD="change-me"
-```
-
-Use a server certificate chain trusted by the DotAuth host, or import your internal CA into the machine trust store before enabling export.
-
-#### Option 2: Put OTLP behind an authenticated proxy
-
-`otel-secure/nginx.conf` shows a simple TLS-terminating reverse proxy that requires authentication before forwarding `/v1/traces` and `/v1/metrics` to the collector.
-DotAuth can send proxy credentials with the standard OTLP headers environment variable:
-
-```zsh
-export OTEL_EXPORTER_OTLP_ENDPOINT="https://otel-proxy.internal:4318/"
-export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
-export OTEL_EXPORTER_OTLP_HEADERS="authorization=Basic <base64-user-colon-password>"
-```
-
-If your proxy expects a bearer token instead of basic authentication, use the same header mechanism with `authorization=Bearer <token>`.
 
 ### DotAuth telemetry names
 
