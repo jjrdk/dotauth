@@ -26,7 +26,7 @@ internal sealed class OpenTelemetryCollectorContainer : IAsyncDisposable
     {
         var configPath = ResolveConfigPath();
         _container = new ContainerBuilder()
-            .WithImage("otel/opentelemetry-collector-contrib:0.121.0")
+            .WithImage("otel/opentelemetry-collector-contrib:latest")
             .WithName($"dotauth-otel-{Guid.NewGuid():N}")
             .WithPortBinding(OtlpGrpcPort, true)
             .WithPortBinding(OtlpHttpPort, true)
