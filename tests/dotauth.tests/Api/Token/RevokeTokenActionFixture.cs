@@ -18,7 +18,6 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Api.Token.Actions;
-using DotAuth.Controllers;
 using DotAuth.Parameters;
 using DotAuth.Repositories;
 using DotAuth.Shared;
@@ -44,7 +43,7 @@ public sealed class RevokeTokenActionFixture
             _clientStore,
             _grantedTokenRepositoryStub,
             new InMemoryJwksRepository(),
-            Substitute.For<ILogger<TokenController>>());
+            Substitute.For<ILogger<RevokeTokenAction>>());
     }
 
     [Fact]

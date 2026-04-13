@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth;
 using DotAuth.Api.Token;
-using DotAuth.Controllers;
 using DotAuth.Events;
 using DotAuth.Extensions;
 using DotAuth.Parameters;
@@ -61,7 +60,7 @@ public sealed class TokenActionsFixture
             eventPublisher,
             Substitute.For<ITokenStore>(),
             Substitute.For<IDeviceAuthorizationStore>(),
-            Substitute.For<ILogger<TokenController>>());
+            Substitute.For<ILogger<TokenActions>>());
     }
 
     [Fact]

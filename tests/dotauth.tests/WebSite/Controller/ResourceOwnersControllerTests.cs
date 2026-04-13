@@ -1,58 +1,50 @@
 ﻿namespace DotAuth.Tests.WebSite.Controller;
 
-using System;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth;
-using DotAuth.Controllers;
+using DotAuth.Endpoints;
+using DotAuth.Filters;
 using DotAuth.Repositories;
-using DotAuth.Services;
-using DotAuth.Shared;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using NSubstitute;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 public static class ResourceOwnersControllerTests
 {
     public sealed class GivenAResourceOwnersController
     {
-        private readonly ResourceOwnersController _controller;
+        private readonly InMemoryResourceOwnerRepository _resourceOwnerRepository;
+        private readonly InMemoryTokenStore _tokenStore;
 
         public GivenAResourceOwnersController()
         {
-            var inMemoryScopeRepository = new InMemoryScopeRepository();
-            _controller = new ResourceOwnersController(
-                new RuntimeSettings(string.Empty),
-                new DefaultSubjectBuilder(),
-                new InMemoryResourceOwnerRepository(string.Empty),
-                new InMemoryTokenStore(),
-                new InMemoryJwksRepository(),
-                new InMemoryClientRepository(
-                    Substitute.For<IHttpClientFactory>(),
-                    inMemoryScopeRepository,
-                    Substitute.For<ILogger<InMemoryClientRepository>>()),
-                [],
-                new NoOpPublisher());
+            _resourceOwnerRepository = new InMemoryResourceOwnerRepository(string.Empty);
+            _tokenStore = new InMemoryTokenStore();
         }
 
         [Fact]
         public async Task WhenDeletingSelfAndUserCannotBeDeletedThenReturnsBadRequest()
         {
-            _controller.ControllerContext = new ControllerContext
+            var httpContext = new DefaultHttpContext
             {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", "me")]))
-                }
+                User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", "me")]))
             };
+            httpContext.RequestServices = new ServiceCollection()
+                .AddLogging()
+                .BuildServiceProvider();
+            var result = await ResourceOwnersEndpointHandlers.DeleteMe(
+                httpContext,
+                NoopThrottle.Instance,
+                _resourceOwnerRepository,
+                _tokenStore,
+                new NoOpPublisher(),
+                CancellationToken.None);
 
-            var response = await _controller.DeleteMe(CancellationToken.None);
+            await result.ExecuteAsync(httpContext);
 
-            Assert.IsType<BadRequestResult>(response);
+            Assert.Equal(StatusCodes.Status400BadRequest, httpContext.Response.StatusCode);
         }
     }
 }

@@ -20,7 +20,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using DotAuth.Controllers;
+using DotAuth.Endpoints;
 using DotAuth.Events;
 using DotAuth.Extensions;
 using DotAuth.Filters;
@@ -38,8 +38,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -216,11 +214,6 @@ public static class ServiceCollectionExtensions
         {
             ArgumentNullException.ThrowIfNull(configuration);
 
-            services.Replace(
-                new ServiceDescriptor(
-                    typeof(IActionResultExecutor<ObjectResult>),
-                    typeof(ConnegObjectResultExecutor),
-                    ServiceLifetime.Transient));
             var mvcBuilder = services.AddResponseCompression(o =>
                 {
                     o.EnableForHttps = true;
@@ -233,30 +226,7 @@ public static class ServiceCollectionExtensions
                 })
                 .ConfigureHttpJsonOptions(o =>
                 {
-                    var instance = SharedSerializerContext.Default.Options;
-                    var options = o.SerializerOptions;
-                    foreach (var converter in instance.Converters)
-                    {
-                        options.Converters.Add(converter);
-                    }
-
-                    foreach (var resolver in instance.TypeInfoResolverChain)
-                    {
-                        options.TypeInfoResolverChain.Add(resolver);
-                    }
-
-                    options.NumberHandling = instance.NumberHandling;
-                    options.WriteIndented = instance.WriteIndented;
-                    options.AllowTrailingCommas = instance.AllowTrailingCommas;
-                    options.DefaultIgnoreCondition = instance.DefaultIgnoreCondition;
-                    options.DictionaryKeyPolicy = instance.DictionaryKeyPolicy;
-                    options.PropertyNamingPolicy = instance.PropertyNamingPolicy;
-                    options.ReadCommentHandling = instance.ReadCommentHandling;
-                    options.TypeInfoResolver = instance.TypeInfoResolver;
-                    options.UnknownTypeHandling = instance.UnknownTypeHandling;
-                    options.IgnoreReadOnlyFields = instance.IgnoreReadOnlyFields;
-                    options.IgnoreReadOnlyProperties = instance.IgnoreReadOnlyProperties;
-                    options.PropertyNameCaseInsensitive = instance.PropertyNameCaseInsensitive;
+                    ApplySharedJsonOptions(o.SerializerOptions);
                 })
                 .AddAntiforgery(o =>
                 {
@@ -269,14 +239,11 @@ public static class ServiceCollectionExtensions
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials()))
-                .AddControllersWithViews(o =>
-                {
-                    o.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
-                    o.OutputFormatters.Insert(1, new RazorOutputFormatter());
-                    o.OutputFormatters.Insert(2,
-                        new SystemTextJsonOutputFormatter(SharedSerializerContext.Default.Options));
-                    mvcConfig?.Invoke(o);
-                });
+                // Enable controller+view support so UI endpoints continue to work.
+                // Invoke the optional MVC configuration so legacy consumers can
+                // customize MVC behavior (including formatters) when necessary.
+                .AddControllersWithViews(o => { mvcConfig?.Invoke(o); })
+                .AddJsonOptions(o => ApplySharedJsonOptions(o.JsonSerializerOptions));
 
             Globals.ApplicationName = configuration.ApplicationName;
             var runtimeConfig = GetRuntimeConfig(configuration);
@@ -323,13 +290,22 @@ public static class ServiceCollectionExtensions
                 .AddSingleton<IAuthorizationPolicy, DefaultAuthorizationPolicy>();
             if (configuration.DataProtector != null)
             {
-                s.AddSingleton(configuration.DataProtector);
-                s.AddTransient<IDataProtectionProvider>(sp => sp.GetRequiredService<IDataProtector>());
+                // Register the provided IDataProtector and expose it through an
+                // IDataProtectionProvider wrapper so controllers that depend on
+                // IDataProtectionProvider work as expected.
+                s.AddSingleton<IDataProtector>(sp => configuration.DataProtector(sp));
+                s.AddSingleton<IDataProtectionProvider>(
+                    sp => new DataProtectorProviderWrapper(sp.GetRequiredService<IDataProtector>()));
             }
             else
             {
                 s.AddDataProtection();
             }
+
+            // Simple adapter that exposes an IDataProtector as an
+            // IDataProtectionProvider. CreateProtector returns the underlying
+            // protector regardless of purpose because the configured
+            // IDataProtector is expected to already handle protection logic.
 
             return mvcBuilder;
         }
@@ -388,9 +364,8 @@ public static class ServiceCollectionExtensions
                 .UseCors("CorsDefault")
                 .UseEndpoints(endpoint =>
                 {
-                    endpoint.MapControllerRoute("areaexists", "{area:exists}/{controller=Home}/{action=Index}");
-                    endpoint.MapControllerRoute("pwdauth", "pwd/{controller=Home}/{action=Index}");
-                    endpoint.MapControllerRoute("default", "{controller=Home}/{action=Index}");
+                    endpoint.MapDotAuthUiEndpoints();
+                    endpoint.MapDotAuthApiEndpoints();
                 });
         }
     }
@@ -409,5 +384,50 @@ public static class ServiceCollectionExtensions
             deviceAuthorizationLifetime: configuration.DeviceAuthorizationLifetime,
             allowHttp: configuration.AllowHttp,
             redirectToLogin: configuration.RedirectToLogin);
+    }
+
+    // Simple adapter that exposes an IDataProtector as an
+    // IDataProtectionProvider. CreateProtector returns the underlying
+    // protector regardless of purpose because the configured
+    // IDataProtector is expected to already handle protection logic.
+    private sealed class DataProtectorProviderWrapper : IDataProtectionProvider
+    {
+        private readonly IDataProtector _protector;
+
+        public DataProtectorProviderWrapper(IDataProtector protector) => _protector = protector;
+
+        public IDataProtector CreateProtector(string purpose) => _protector;
+    }
+
+    private static void ApplySharedJsonOptions(System.Text.Json.JsonSerializerOptions options)
+    {
+        var instance = SharedSerializerContext.Default.Options;
+        foreach (var converter in instance.Converters)
+        {
+            options.Converters.Add(converter);
+        }
+
+        // NOTE: copying the generated TypeInfoResolver and its chain can lead to
+        // recursive resolver references and stack overflows during application
+        // startup (observed in test host). To be safe, only copy converter
+        // instances and simple serializer settings here. Avoid copying the
+        // TypeInfoResolverChain/TypeInfoResolver which may reference back into
+        // serializer options and create recursion.
+        options.NumberHandling = instance.NumberHandling;
+        options.WriteIndented = instance.WriteIndented;
+        options.AllowTrailingCommas = instance.AllowTrailingCommas;
+        options.DefaultIgnoreCondition = instance.DefaultIgnoreCondition;
+        options.DictionaryKeyPolicy = instance.DictionaryKeyPolicy;
+        options.PropertyNamingPolicy = instance.PropertyNamingPolicy;
+        options.ReadCommentHandling = instance.ReadCommentHandling;
+        // Do NOT set options.TypeInfoResolver = instance.TypeInfoResolver;
+        // Setting the TypeInfoResolver from the generated context has caused
+        // stack-overflow crashes in the test host on some platforms. Keep the
+        // existing resolver on 'options' so the runtime uses the configured
+        // behavior without introducing resolver cycles.
+        options.UnknownTypeHandling = instance.UnknownTypeHandling;
+        options.IgnoreReadOnlyFields = instance.IgnoreReadOnlyFields;
+        options.IgnoreReadOnlyProperties = instance.IgnoreReadOnlyProperties;
+        options.PropertyNameCaseInsensitive = instance.PropertyNameCaseInsensitive;
     }
 }

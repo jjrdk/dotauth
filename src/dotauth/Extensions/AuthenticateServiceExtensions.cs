@@ -4,6 +4,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
@@ -27,6 +28,15 @@ internal static class AuthenticateServiceExtensions
     public static async Task<ClaimsPrincipal?> GetAuthenticatedUser(this IAuthenticationService authenticateService, ControllerBase controller, string? scheme = null)
     {
         var authResult = await authenticateService.AuthenticateAsync(controller.HttpContext, scheme).ConfigureAwait(false);
+        return authResult.Principal;
+    }
+
+    public static async Task<ClaimsPrincipal?> GetAuthenticatedUser(this IAuthenticationService authenticateService, HttpContext httpContext, string? scheme = null)
+    {
+        ArgumentNullException.ThrowIfNull(authenticateService);
+        ArgumentNullException.ThrowIfNull(httpContext);
+
+        var authResult = await authenticateService.AuthenticateAsync(httpContext, scheme).ConfigureAwait(false);
         return authResult.Principal;
     }
 }
