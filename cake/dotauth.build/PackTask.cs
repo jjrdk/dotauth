@@ -18,6 +18,7 @@ public sealed class PackTask : FrostingTask<BuildContext>
         var packSettings = new DotNetPackSettings
         {
             Configuration = context.BuildConfiguration,
+            SymbolPackageFormat = "snupkg",
             NoBuild = false,
             NoRestore = true,
             OutputDirectory = "./artifacts/packages",
