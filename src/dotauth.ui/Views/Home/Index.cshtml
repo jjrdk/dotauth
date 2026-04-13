@@ -26,7 +26,7 @@
                 <p>Create and organize protected resources, then define which scopes can be requested for each one.</p>
             </div>
             <div class="card-action center">
-                @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                <a href="@Url.ResourceSetPath(includeUiQuery: true)" class="btn blue darken-3 waves-effect waves-light">Manage UMA Resources</a>
             </div>
         </div>
     </div>
@@ -40,7 +40,7 @@
                 <p>Review incoming access requests and approve or deny permissions for shared resources.</p>
             </div>
             <div class="card-action center">
-                <a href="@Url.Content("~/perm")" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
+                <a href="@Url.PermissionRequestsPath()" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
             </div>
         </div>
     </div>
@@ -54,7 +54,7 @@
                 <p>See which applications can access your data and revoke consents you no longer trust.</p>
             </div>
             <div class="card-action center">
-                @Html.ActionLink("Manage Consents", "Consent", "User", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                <a href="@Url.UserConsentPath()" class="btn blue darken-3 waves-effect waves-light">Manage Consents</a>
             </div>
         </div>
     </div>
@@ -73,7 +73,7 @@
                     <p>Add OAuth/OpenID client applications, configure redirect URIs, and choose allowed grant types.</p>
                 </div>
                 <div class="card-action center">
-                    @Html.ActionLink("Register Client", "Add", "Clients", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                    <a href="@Url.ClientCreatePath()" class="btn blue darken-3 waves-effect waves-light">Register Client</a>
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
                     <p>View user accounts, update profile claims, and maintain access-related account settings.</p>
                 </div>
                 <div class="card-action center">
-                    @Html.ActionLink("Manage Users", "GetAll", "ResourceOwners", null, new {@class = "btn blue darken-3 waves-effect waves-light"})
+                    <a href="@Url.ResourceOwnersPath()" class="btn blue darken-3 waves-effect waves-light">Manage Users</a>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
                     <p>Define API scopes and control which permissions are available to clients and users.</p>
                 </div>
                 <div class="card-action center">
-                    @Html.ActionLink("Manage Scopes", "GetAll", "Scopes", null, new {@class = "btn blue darken-3 waves-effect waves-light"})
+                    <a href="@Url.ScopesPath()" class="btn blue darken-3 waves-effect waves-light">Manage Scopes</a>
                 </div>
             </div>
         </div>

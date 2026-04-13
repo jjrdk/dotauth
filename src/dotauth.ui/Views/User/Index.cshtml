@@ -82,13 +82,13 @@
             <div class="card-action">
                 <div class="row col s12">
                     <span class="col m4 left-align">
-                        <a href="@Url.Content("~/perm")" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
+                        <a href="@Url.PermissionRequestsPath()" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
                     </span>
                     <span class="col m4 center-align">
-                        @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                        <a href="@Url.ResourceSetPath(includeUiQuery: true)" class="btn blue darken-3 waves-effect waves-light">Manage UMA Resources</a>
                     </span>
                     <span class="col m4 right-align">
-                        @Html.ActionLink("Manage Consents", "Consent", "User", null, new { @class = "btn blue darken-3 waves-effect waves-light right" })
+                        <a href="@Url.UserConsentPath()" class="btn blue darken-3 waves-effect waves-light right">Manage Consents</a>
                     </span>
                 </div>
             </div>
@@ -115,7 +115,7 @@
                         <tr>
                             <td>@linkedIdProvider.DisplayName</td>
                             <td class="right-align">
-                                <form method="post" action="@Url.Action("Unlink", new { id = linkedIdProvider.ExternalSubject })">
+                                <form method="post" action="@Url.UserUnlinkPath(linkedIdProvider.ExternalSubject!)">
                                     <button type="submit" class="btn red darken-3 waves-effect waves-light">Unlink</button>
                                 </form>
                             </td>
@@ -134,13 +134,12 @@
                 <div class="card-title">Link to an external identity provider</div>
             </div>
             <div class="card-action">
-                @using (Html.BeginForm("Link", "User"))
-                {
-                    foreach (var loginProvider in Model.UnlinkedIdentityProviders)
+                <form method="post" action="@Url.UserLinkPath()">
+                    @foreach (var loginProvider in Model.UnlinkedIdentityProviders)
                     {
                         <button type="submit" class="btn blue darken-3 waves-effect waves-light" id="@loginProvider.DisplayName" name="provider" value="@loginProvider.DisplayName" title="Log in using your @loginProvider.DisplayName account">@loginProvider.DisplayName</button>
                     }
-                }
+                </form>
             </div>
         </div>
     </div>

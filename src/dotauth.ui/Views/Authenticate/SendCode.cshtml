@@ -13,8 +13,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">Confirmation code</div>
             <div class="panel-body">
-                @using (Html.BeginForm("SendCode", "Authenticate", null, FormMethod.Post))
-                {
+                <form method="post" action="@Url.AuthenticateSendCodePath()">
                     @Html.AntiForgeryToken()
                     <!-- Authorization request code -->
                     @Html.TextBoxFor(i => i.AuthRequestCode, new { type = "hidden" })
@@ -36,7 +35,7 @@
                         <button type="submit" class="btn btn-primary" name="Action" value="submit">Validate confirmation code</button>
                         <button type="submit" class="btn btn-primary" name="Action" value="resend">Resend confirmation code</button>
                     </fieldset>
-                }
+                </form>
             </div>
         </div>
     </div>

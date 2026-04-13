@@ -16,7 +16,7 @@
     <!-- Top Navigation Bar -->
     <nav class="white">
         <div class="nav-wrapper">
-            <a href="@Url.Content("~/")" class="brand-logo"><img src="@Url.Content("~/img/icon.png")" alt="icon" class="hide-on-small-only" />@Globals.ApplicationName</a>
+            <a href="@Url.HomePath()" class="brand-logo"><img src="@Url.Content("~/img/icon.png")" alt="icon" class="hide-on-small-only" />@Globals.ApplicationName</a>
             @if (User.Identity.IsAuthenticated)
             {
                 <ul id="nav-mobile" class="right">
@@ -27,8 +27,8 @@
                     </li>
                 </ul>
                 <ul id='dropdown1' class='dropdown-content'>
-                    <li><a href="@Url.Content("~/User")">User Info</a></li>
-                    <li><a href="@Url.Content("~/Authenticate/Logout")">Log Out</a></li>
+                    <li><a href="@Url.UserPath()">User Info</a></li>
+                    <li><a href="@Url.AuthenticateLogoutPath()">Log Out</a></li>
                 </ul>
             }
         </div>

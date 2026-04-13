@@ -65,7 +65,7 @@
                                                     <h6 class="inline">@vm.Description</h6>
                                                 </td>
                                                 <td>
-                                                    <a href="@Url.Action("GetResourceSetPolicy", "ResourceSet", new {id = vm.Id})" class="inline">
+                                                    <a href="@Url.ResourceSetPolicyPath(vm.Id)" class="inline">
                                                         <i class="valign-wrapper material-icons prefix middle">edit</i>
                                                     </a>
                                                 </td>
@@ -77,7 +77,7 @@
                                         {
                                             <tr>
                                                 <td>
-                                                    <a href="@Url.Action("GetResourceSetPolicy", "ResourceSet", new {id = id})" class="inline">
+                                                    <a href="@Url.ResourceSetPolicyPath(id)" class="inline">
                                                         <i class="valign-wrapper material-icons prefix center">edit</i>
                                                     </a>
                                                 </td>

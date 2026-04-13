@@ -14,8 +14,8 @@
 <div class="row">
     <div class="col s12">
         <div class="card">
-            @using (Html.BeginForm("Create", "Clients", null, method: FormMethod.Post, antiforgery: true, new { }))
-            {
+            <form method="post" action="@Url.ClientCreatePath()">
+                @Html.AntiForgeryToken()
                 <div class="card-content">
                     <div class="row">
                         <div class="col s12">
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                 </div>
-            }
+            </form>
         </div>
     </div>
 </div>

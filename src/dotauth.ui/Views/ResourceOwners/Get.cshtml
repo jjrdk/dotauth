@@ -42,8 +42,8 @@
 <div class="row">
     <div class="col s12">
         <div class="card">
-            @using (Html.BeginForm("Update", "ResourceOwners", new { id = Model.Subject }, method: FormMethod.Post, antiforgery: true, new { }))
-            {
+            <form method="post" action="@Url.ResourceOwnerUpdatePath(Model.Subject)">
+                @Html.AntiForgeryToken()
                 @Html.HiddenFor(x => x.Subject)
                 <div class="card-content">
                     <div class="row">
@@ -84,7 +84,7 @@
                         </div>
                     </div>
                 </div>
-            }
+            </form>
         </div>
     </div>
 </div>

@@ -39,8 +39,7 @@
                                 @for (var i = 0; i < Model.Length; i++)
                                 {
                                     <tr>
-                                        @using (Html.BeginForm("ApprovePermissionRequest", "Permissions", new { id = Model[i].Id }, FormMethod.Post))
-                                        {
+                                        <form method="post" action="@Url.PermissionApprovePath(Model[i].Id)">
                                             <td>@Model[i].Id</td>
                                             if (Model[i].Requester == null)
                                             {
@@ -76,7 +75,7 @@
                                                     <span>Approved</span>
                                                 }
                                             </td>
-                                        }
+                                        </form>
                                     </tr>
                                 }
                             </tbody>

@@ -184,8 +184,8 @@ public static class ServiceCollectionExtensions
         /// <param name="mvcConfig">MVC configuration.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
         /// <param name="authenticationSchemes"></param>
-        /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
-        public IMvcBuilder AddDotAuthServer(
+        /// <returns>An <see cref="IMvcCoreBuilder"/> instance.</returns>
+        public IMvcCoreBuilder AddDotAuthServer(
             Action<DotAuthConfiguration> configuration,
             string[] authenticationSchemes,
             Action<MvcOptions>? mvcConfig = null,
@@ -204,9 +204,9 @@ public static class ServiceCollectionExtensions
         /// <param name="mvcConfig">MVC configuration.</param>
         /// <param name="requestThrottle">The rate limiter.</param>
         /// <param name="authenticationSchemes"></param>
-        /// <returns>An <see cref="IMvcBuilder"/> instance.</returns>
+        /// <returns>An <see cref="IMvcCoreBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">options</exception>
-        public IMvcBuilder AddDotAuthServer(
+        public IMvcCoreBuilder AddDotAuthServer(
             DotAuthConfiguration configuration,
             string[] authenticationSchemes,
             Action<MvcOptions>? mvcConfig = null,
@@ -214,7 +214,7 @@ public static class ServiceCollectionExtensions
         {
             ArgumentNullException.ThrowIfNull(configuration);
 
-            var mvcBuilder = services.AddResponseCompression(o =>
+            services.AddResponseCompression(o =>
                 {
                     o.EnableForHttps = true;
                     o.Providers.Add(
@@ -238,12 +238,11 @@ public static class ServiceCollectionExtensions
                     p => p.WithOrigins(configuration.AllowedOrigins)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowCredentials()))
-                // Enable controller+view support so UI endpoints continue to work.
-                // Invoke the optional MVC configuration so legacy consumers can
-                // customize MVC behavior (including formatters) when necessary.
-                .AddControllersWithViews(o => { mvcConfig?.Invoke(o); })
-                .AddJsonOptions(o => ApplySharedJsonOptions(o.JsonSerializerOptions));
+                        .AllowCredentials()));
+
+            var mvcBuilder = services.AddMvcCore(o => { mvcConfig?.Invoke(o); })
+                .AddViews()
+                .AddRazorViewEngine();
 
             Globals.ApplicationName = configuration.ApplicationName;
             var runtimeConfig = GetRuntimeConfig(configuration);

@@ -44,8 +44,7 @@
         </div>
     }
 
-    @using (Html.BeginForm("UpdateCredentials", "User", null, FormMethod.Post))
-    {
+    <form method="post" action="@Url.UserUpdateCredentialsPath()">
         @Html.AntiForgeryToken()
         <div class="card">
             <div class="card-content">
@@ -80,10 +79,9 @@
                 </div>
             </div>
         </div>
-    }
+    </form>
 
-    @using (Html.BeginForm("UpdateTwoFactor", "User", null, FormMethod.Post))
-    {
+    <form method="post" action="@Url.UserUpdateTwoFactorPath()">
         @Html.AntiForgeryToken()
         <div class="card">
             <div class="card-content">
@@ -128,5 +126,5 @@
                 </div>
             </div>
         </div>
-    }
+    </form>
 </div>
