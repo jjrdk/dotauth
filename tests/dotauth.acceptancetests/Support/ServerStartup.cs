@@ -1,17 +1,27 @@
 ﻿namespace DotAuth.AcceptanceTests.Support;
 
 using System;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading;
 using DotAuth;
+using DotAuth.Client;
 using DotAuth.Extensions;
 using DotAuth.Repositories;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
+using DotAuth.Shared.Requests;
+using DotAuth.Shared.Responses;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.UI;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -114,5 +124,36 @@ public sealed class ServerStartup
     public void Configure(IApplicationBuilder app)
     {
         app.UseDotAuthServer(applicationTypes: typeof(IDefaultUi));
+
+        // Register test support endpoints (Data endpoint) as minimal API handlers so
+        // acceptance tests can exercise UMA-protected resources without relying on MVC
+        // controller dispatch. This mirrors the behavior of the original
+        // `DataController.Index` action.
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapGet("Data/{id}", async (HttpContext httpContext, string id, UmaClient umaClient, CancellationToken cancellationToken) =>
+            {
+                var userIdentity = httpContext.User.Identity as ClaimsIdentity;
+                var umaTickets = userIdentity!.TryGetUmaTickets(out var permissions);
+                if (umaTickets && permissions.Any(x => x.ResourceSetId == id))
+                {
+                    return Results.Json("Hello");
+                }
+
+                var token = await httpContext.GetTokenAsync("access_token");
+                var request = new PermissionRequest { ResourceSetId = id, Scopes = new[] { "api1" } };
+                var option = await umaClient.RequestPermission(token!, cancellationToken, request);
+                if (option is Option<TicketResponse>.Result ticket)
+                {
+                    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    httpContext.Response.Headers[HeaderNames.WWWAuthenticate] =
+                        $"UMA as_uri=\"{umaClient.Authority.AbsoluteUri}\", ticket=\"{ticket.Item.TicketId}\"";
+
+                    return Results.StatusCode((int)HttpStatusCode.Unauthorized);
+                }
+
+                return Results.BadRequest(option as Option<TicketResponse>.Error);
+            }).RequireAuthorization();
+        });
     }
 }

@@ -2,9 +2,11 @@
 
 using System;
 using DotAuth;
+using DotAuth.Endpoints;
 using DotAuth.Services;
 using DotAuth.Sms.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 /// <summary>
 /// Defines the service collection extensions.
@@ -46,6 +48,7 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<Func<ISmsClient>>(sp => () => smsClientFactory(sp));
         services.AddTransient<ISmsClient>(smsClientFactory);
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDotAuthUiEndpointRegistration, SmsUiEndpointRegistration>());
 
         services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
         mvcBuilder.AddApplicationPart(assembly);
