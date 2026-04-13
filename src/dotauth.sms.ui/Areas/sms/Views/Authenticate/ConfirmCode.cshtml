@@ -27,8 +27,7 @@
                         @Html.ValidationMessage("message_error")
                     </div>
                     <div class="row">
-                        @using (Html.BeginForm("ConfirmCode", "Authenticate", null, FormMethod.Post))
-                        {
+                        <form method="post" action="@Url.SmsAuthenticateConfirmCodePath()">
                             <div class="row">
                                 @Html.AntiForgeryToken()
                                 @Html.HiddenFor(i => i.Code)
@@ -44,7 +43,7 @@
                                 <button type="submit" name="Action" value="submit" class="waves-effect waves-light btn blue darken-3 right">Validate code</button>
                                 <button type="submit" name="Action" value="resend" class="waves-effect waves-light btn red darken-3 left">Resend code</button>
                             </div>
-                        }
+                        </form>
                     </div>
                 </div>
             </div>

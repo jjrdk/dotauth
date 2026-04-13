@@ -8,15 +8,15 @@ using Microsoft.Extensions.FileProviders;
 
 public static class ServiceCollectionExtensions
 {
-    public static IMvcBuilder AddDotAuthUi(
-        this IMvcBuilder mvcBuilder,
+    public static IMvcCoreBuilder AddDotAuthUi(
+        this IMvcCoreBuilder mvcBuilder,
         params Type[] discoveryTypes)
     {
         return AddDotAuthUi(mvcBuilder, discoveryTypes.Select(t=>(t.Namespace, t.Assembly)).ToArray());
     }
 
-    public static IMvcBuilder AddDotAuthUi(
-        this IMvcBuilder mvcBuilder,
+    public static IMvcCoreBuilder AddDotAuthUi(
+        this IMvcCoreBuilder mvcBuilder,
         params (string? defaultNamespace, Assembly assembly)[] assemblies)
     {
         return assemblies.Distinct()

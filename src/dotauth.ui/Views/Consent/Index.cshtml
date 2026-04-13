@@ -70,14 +70,14 @@
                             </div>
                         }
                     <div class="col s12">
-                        @using (Html.BeginForm("Cancel", "Consent", new { code = Model.Code }, FormMethod.Post, true, new { style="display:inline;"}))
-                        {
+                        <form method="post" action="@Url.ConsentCancelPath(Model.Code)" style="display:inline;">
+                            @Html.AntiForgeryToken()
                             <button type="submit" class="waves-effect waves-light btn blue darken-3" id="cancel" name="cancel" title="Cancel consent">Cancel</button>
-                        }
-                        @using (Html.BeginForm("Confirm", "Consent", new { code = Model.Code }, FormMethod.Post, true, new { style="display:inline;"}))
-                        {
+                        </form>
+                        <form method="post" action="@Url.ConsentConfirmPath(Model.Code)" style="display:inline;">
+                            @Html.AntiForgeryToken()
                             <button type="submit" class="waves-effect waves-light btn blue darken-3" id="confirm" name="confirm" title="Confirm consent">Confirm</button>
-                        }
+                        </form>
                     </div>
                     </div>
                 </div>
@@ -142,8 +142,14 @@
                 </div>
             </div>
             <div class="card-action">
-                <a href="@Url.Action("Cancel", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">Cancel</a>
-                <a href="@Url.Action("Confirm", new { code = Model.Code })" class="waves-effect waves-light btn blue darken-3">Confirm</a>
+                <form method="post" action="@Url.ConsentCancelPath(Model.Code)" style="display:inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="waves-effect waves-light btn blue darken-3">Cancel</button>
+                </form>
+                <form method="post" action="@Url.ConsentConfirmPath(Model.Code)" style="display:inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="waves-effect waves-light btn blue darken-3">Confirm</button>
+                </form>
             </div>
         </div>
     </div>
