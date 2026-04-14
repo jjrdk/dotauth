@@ -237,8 +237,14 @@ body {
     align-items: center;
 }
 
-.page-actions > * {
-    margin-bottom: 0.75rem;
+.page-actions {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.page-actions .btn,
+.page-actions .btn-flat {
+    white-space: nowrap;
 }
 
 .consent-actions {

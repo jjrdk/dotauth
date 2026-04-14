@@ -86,16 +86,10 @@
                 <div class="card-title">Available actions</div>
             </div>
             <div class="card-action">
-                <div class="row page-actions">
-                    <div class="col s12 m4 left-align">
-                        <a href="@Url.PermissionRequestsPath()" class="btn waves-effect waves-light">Manage Permission Requests</a>
-                    </div>
-                    <div class="col s12 m4 center-align">
-                        <a href="@Url.ResourceSetPath(includeUiQuery: true)" class="btn waves-effect waves-light">Manage UMA Resources</a>
-                    </div>
-                    <div class="col s12 m4 right-align">
-                        <a href="@Url.UserConsentPath()" class="btn waves-effect waves-light">Manage Consents</a>
-                    </div>
+                <div class="page-actions">
+                    <a href="@Url.PermissionRequestsPath()" class="btn waves-effect waves-light">Manage Permission Requests</a>
+                    <a href="@Url.ResourceSetPath(includeUiQuery: true)" class="btn waves-effect waves-light">Manage UMA Resources</a>
+                    <a href="@Url.UserConsentPath()" class="btn waves-effect waves-light">Manage Consents</a>
                 </div>
             </div>
         </div>

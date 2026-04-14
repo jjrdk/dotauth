@@ -20,6 +20,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Claims;
 using DotAuth.Endpoints;
 using DotAuth.Events;
 using DotAuth.Extensions;
@@ -94,6 +95,11 @@ public static class ServiceCollectionExtensions
                             return false;
                         }
 
+                        if (HasLocalUiSession(p.User))
+                        {
+                            return true;
+                        }
+
                         if (p.User.Claims.Where(c => c.Type == ScopeType)
                             .Any(c => c.HasClaimValue("uma_protection")))
                         {
@@ -143,6 +149,11 @@ public static class ServiceCollectionExtensions
                             return false;
                         }
 
+                        if (HasLocalUiSession(p.User) && HasAdministratorRole(p.User, administratorRoleDefinition))
+                        {
+                            return true;
+                        }
+
                         var result =
                             p.User.Claims.Where(c => c.Type == ScopeType).Any(c => c.HasClaimValue("manager"));
                         if (administratorRoleDefinition == default)
@@ -158,6 +169,26 @@ public static class ServiceCollectionExtensions
                 });
 
             return options;
+        }
+
+        private static bool HasLocalUiSession(ClaimsPrincipal principal)
+        {
+            return principal.Identities.Any(identity =>
+                identity is { IsAuthenticated: true }
+                && string.Equals(identity.AuthenticationType, CookieNames.CookieName, StringComparison.Ordinal));
+        }
+
+        private static bool HasAdministratorRole(
+            ClaimsPrincipal principal,
+            (string roleName, string roleClaim) administratorRoleDefinition)
+        {
+            if (administratorRoleDefinition == default)
+            {
+                return false;
+            }
+
+            var (roleName, roleClaim) = administratorRoleDefinition;
+            return principal.Claims.Where(c => c.Type == roleName).Any(c => c.HasClaimValue(roleClaim));
         }
     }
 
