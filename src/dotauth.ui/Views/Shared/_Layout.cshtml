@@ -4,19 +4,21 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2563eb" />
     @*<title>@ViewBag.Title</title>*@
     <title>@DotAuth.Extensions.Globals.ApplicationName</title>
     <link rel="icon" type="image/png" href="@Url.Content("~/img/favicon/favicon.ico")">
     @*<link rel="stylesheet" href="@Url.Content("~/css/materialize.custom.css")" media="screen,projection" />
     <link rel="stylesheet" href="@Url.Content("~/css/style.css")" media="screen,projection" />*@
     <link rel="stylesheet" href="@Url.Content("~/css/site.css")" media="screen,projection" />
+    <link rel="stylesheet" href="@Url.Content("~/css/style.css")" media="screen,projection" />
     <script type="text/javascript" src="@Url.Content("~/js/materialize.min.js")"></script>
 </head>
-<body>
+<body class="app-shell">
     <!-- Top Navigation Bar -->
-    <nav class="white">
+    <nav class="white app-navbar">
         <div class="nav-wrapper">
-            <a href="@Url.HomePath()" class="brand-logo"><img src="@Url.Content("~/img/icon.png")" alt="icon" class="hide-on-small-only" />@Globals.ApplicationName</a>
+            <a href="@Url.HomePath()" class="brand-logo app-brand"><img src="@Url.Content("~/img/icon.png")" alt="icon" class="hide-on-small-only" />@Globals.ApplicationName</a>
             @if (User.Identity.IsAuthenticated)
             {
                 <ul id="nav-mobile" class="right">
@@ -34,28 +36,45 @@
         </div>
     </nav>
 
-    <div class="container">
-        <div class="section">
+    <main class="app-main">
+        <div class="container app-container">
+            <div class="section app-section">
             @RenderSection("PageTitle", false)
             @RenderBody()
+            </div>
         </div>
-    </div>
+    </main>
     @RenderSection("Scripts", required: false)
 
     <script type="text/javascript">
-        const fields = document.querySelectorAll(".input-field");
-        fields.forEach((field, index) => {
-            const input = field.querySelector("input");
-            const label = field.querySelector("label");
-            if (input.value) {
-                label.classList.add("active");
-            }
-            input.addEventListener("focus", () => { label.classList.add("active") });
-            input.addEventListener("blur", () => { if (!input.value) label.classList.remove("active") });
-        });
         document.addEventListener('DOMContentLoaded', function () {
-            var elems = document.querySelectorAll('.dropdown-trigger');
-            M.Dropdown.init(elems, {});
+            const syncFloatingLabels = () => {
+                document.querySelectorAll('.input-field').forEach(field => {
+                    const input = field.querySelector('input, textarea');
+                    const label = field.querySelector('label');
+                    if (!input || !label) {
+                        return;
+                    }
+
+                    const updateLabel = () => {
+                        label.classList.toggle('active', !!input.value || document.activeElement === input);
+                    };
+
+                    updateLabel();
+                    input.addEventListener('focus', updateLabel);
+                    input.addEventListener('blur', updateLabel);
+                    input.addEventListener('change', updateLabel);
+                });
+            };
+
+            M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'), {
+                alignment: 'right',
+                constrainWidth: false,
+                coverTrigger: false
+            });
+            M.FormSelect.init(document.querySelectorAll('select'));
+            M.Tabs.init(document.querySelectorAll('.tabs'));
+            syncFloatingLabels();
         });
     </script>
 </body>

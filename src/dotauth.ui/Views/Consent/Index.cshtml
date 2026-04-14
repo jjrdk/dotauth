@@ -11,14 +11,14 @@
 <div class="row">
     <div class="col s12 m8 offset-m2">
         <div class="card horizontal hide-on-small-only">
-            <div class="card-image valign-wrapper center" style="padding:20px">
+            <div class="card-image valign-wrapper center consent-logo-shell">
                 @if (string.IsNullOrWhiteSpace(Model.LogoUri))
                 {
-                    <img src="@Url.Content("~/img/oauth2.png")" alt="logo" width="250" height="250" />
+                    <img src="@Url.Content("~/img/oauth2.png")" alt="logo" class="consent-logo" />
                 }
                 else
                 {
-                    <img src="@Url.Content(Model.LogoUri)" alt="logo" width="250" height="250" />
+                    <img src="@Url.Content(Model.LogoUri)" alt="logo" class="consent-logo" />
                 }
             </div>
             <div class="card-stacked">
@@ -70,14 +70,16 @@
                             </div>
                         }
                     <div class="col s12">
-                        <form method="post" action="@Url.ConsentCancelPath(Model.Code)" style="display:inline;">
+                        <div class="consent-actions">
+                        <form method="post" action="@Url.ConsentCancelPath(Model.Code)" class="inline-action-form">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="waves-effect waves-light btn blue darken-3" id="cancel" name="cancel" title="Cancel consent">Cancel</button>
+                            <button type="submit" class="waves-effect waves-light btn-flat" id="cancel" name="cancel" title="Cancel consent">Cancel</button>
                         </form>
-                        <form method="post" action="@Url.ConsentConfirmPath(Model.Code)" style="display:inline;">
+                        <form method="post" action="@Url.ConsentConfirmPath(Model.Code)" class="inline-action-form">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="waves-effect waves-light btn blue darken-3" id="confirm" name="confirm" title="Confirm consent">Confirm</button>
+                            <button type="submit" class="waves-effect waves-light btn" id="confirm" name="confirm" title="Confirm consent">Confirm</button>
                         </form>
+                        </div>
                     </div>
                     </div>
                 </div>
@@ -87,11 +89,11 @@
             <div class="card-image valign-wrapper center-align">
                 @if (string.IsNullOrWhiteSpace(Model.LogoUri))
                 {
-                    <img src="@Url.Content("~/img/oauth2.png")" alt="logo" class="center-align" style="width:50%; margin: 24px auto 0;" />
+                    <img src="@Url.Content("~/img/oauth2.png")" alt="logo" class="center-align consent-logo consent-logo-mobile" />
                 }
                 else
                 {
-                    <img src="@Url.Content(Model.LogoUri)" alt="logo" class="center-align" style="width:30%; margin: 24px auto 0;" />
+                    <img src="@Url.Content(Model.LogoUri)" alt="logo" class="center-align consent-logo consent-logo-mobile" />
                 }
             </div>
             <div class="card-content">
@@ -142,14 +144,16 @@
                 </div>
             </div>
             <div class="card-action">
-                <form method="post" action="@Url.ConsentCancelPath(Model.Code)" style="display:inline;">
+                <div class="consent-actions">
+                <form method="post" action="@Url.ConsentCancelPath(Model.Code)" class="inline-action-form">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="waves-effect waves-light btn blue darken-3">Cancel</button>
+                    <button type="submit" class="waves-effect waves-light btn-flat">Cancel</button>
                 </form>
-                <form method="post" action="@Url.ConsentConfirmPath(Model.Code)" style="display:inline;">
+                <form method="post" action="@Url.ConsentConfirmPath(Model.Code)" class="inline-action-form">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="waves-effect waves-light btn blue darken-3">Confirm</button>
+                    <button type="submit" class="waves-effect waves-light btn">Confirm</button>
                 </form>
+                </div>
             </div>
         </div>
     </div>

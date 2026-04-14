@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Http;
 
 internal static class ScopesEndpointHandlers
 {
+    private const string GetAllScopesView = "/Views/Scopes/GetAll.cshtml";
+    private const string GetScopeView = "/Views/Scopes/Get.cshtml";
+
     internal static async Task<IResult> Search(
         HttpContext httpContext,
         SearchScopesRequest? request,
@@ -28,20 +31,22 @@ internal static class ScopesEndpointHandlers
     }
 
     internal static async Task<IResult> GetAll(
+        HttpContext httpContext,
         IScopeRepository scopeRepository,
         CancellationToken cancellationToken)
     {
         var result = await scopeRepository.GetAll(cancellationToken).ConfigureAwait(false);
-        return Results.Ok(result);
+        return UiEndpointHelpers.ViewOrJson(httpContext, GetAllScopesView, result);
     }
 
     internal static async Task<IResult> Get(
+        HttpContext httpContext,
         string id,
         IScopeRepository scopeRepository,
         CancellationToken cancellationToken)
     {
         var scope = await scopeRepository.Get(id, cancellationToken).ConfigureAwait(false);
-        return scope == null ? Results.BadRequest() : Results.Ok(scope);
+        return scope == null ? Results.BadRequest() : UiEndpointHelpers.ViewOrJson(httpContext, GetScopeView, scope);
     }
 
     internal static async Task<IResult> Delete(

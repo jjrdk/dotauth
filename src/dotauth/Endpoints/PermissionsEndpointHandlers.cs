@@ -23,6 +23,9 @@ using Microsoft.Extensions.Logging;
 
 internal static class PermissionsEndpointHandlers
 {
+    private const string GetPermissionRequestsView = "/Views/Permissions/GetPermissionRequests.cshtml";
+    private const string ApprovePermissionRequestView = "/Views/Permissions/ApprovePermissionRequest.cshtml";
+
     internal static async Task<IResult> GetPermissionRequests(
         HttpContext httpContext,
         IRequestThrottle requestThrottle,
@@ -37,7 +40,7 @@ internal static class PermissionsEndpointHandlers
 
         var owner = httpContext.User.GetSubject()!;
         var tickets = await ticketStore.GetAll(owner, cancellationToken).ConfigureAwait(false);
-        return Results.Ok(tickets);
+        return UiEndpointHelpers.ViewOrJson(httpContext, GetPermissionRequestsView, tickets);
     }
 
     internal static async Task<IResult> ApprovePermissionRequest(
@@ -70,7 +73,9 @@ internal static class PermissionsEndpointHandlers
 
         return success
             ? Results.Redirect($"/{UmaConstants.RouteValues.Permission}")
-            : Results.Json(
+            : UiEndpointHelpers.ViewOrJson(
+                httpContext,
+                ApprovePermissionRequestView,
                 new ErrorViewModel
                 {
                     Title = Strings.UpdateFailed,

@@ -26,6 +26,10 @@ using Microsoft.Extensions.Logging;
 
 internal static class ClientsEndpointHandlers
 {
+    private const string CreateClientView = "/Views/Clients/Create.cshtml";
+    private const string GetAllClientsView = "/Views/Clients/GetAll.cshtml";
+    private const string GetClientView = "/Views/Clients/Get.cshtml";
+
     internal static async Task<IResult> Register(
         HttpContext httpContext,
         DynamicClientRegistrationRequest request,
@@ -169,7 +173,7 @@ internal static class ClientsEndpointHandlers
         }
 
         var result = await clientRepository.GetAll(cancellationToken).ConfigureAwait(false);
-        return Results.Ok(result);
+        return UiEndpointHelpers.ViewOrJson(httpContext, GetAllClientsView, result);
     }
 
     internal static async Task<IResult> Search(
@@ -219,7 +223,7 @@ internal static class ClientsEndpointHandlers
             return BuildError(logger, ErrorCodes.InvalidRequest, SharedStrings.TheClientDoesntExist, HttpStatusCode.NotFound);
         }
 
-        return Results.Ok(result);
+        return UiEndpointHelpers.ViewOrJson(httpContext, GetClientView, result);
     }
 
     internal static async Task<IResult> Delete(
@@ -320,7 +324,7 @@ internal static class ClientsEndpointHandlers
             return throttled;
         }
 
-        return Results.Ok(new CreateClientViewModel());
+        return UiEndpointHelpers.ViewOrJson(httpContext, CreateClientView, new CreateClientViewModel());
     }
 
     internal static async Task<IResult> CreatePost(
