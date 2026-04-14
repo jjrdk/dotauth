@@ -22,6 +22,10 @@ using Microsoft.Extensions.Logging;
 
 internal static class ResourceSetEndpointHandlers
 {
+    private const string GetResourceSetsView = "/Views/ResourceSet/GetResourceSets.cshtml";
+    private const string GetResourceSetPolicyView = "/Views/ResourceSet/GetResourceSetPolicy.cshtml";
+    private const string SetResourceSetPolicyView = "/Views/ResourceSet/SetResourceSetPolicy.cshtml";
+
     internal static async Task<IResult> SearchResourceSets(
         HttpContext httpContext,
         SearchResourceSet? searchResourceSet,
@@ -70,6 +74,14 @@ internal static class ResourceSetEndpointHandlers
         }
 
         var resourceSets = await resourceSetRepository.GetAll(owner, cancellationToken).ConfigureAwait(false);
+        if (UiEndpointHelpers.WantsHtml(httpContext.Request))
+        {
+            return UiEndpointHelpers.ViewOrJson(
+                httpContext,
+                GetResourceSetsView,
+                resourceSets.Select(ResourceSetViewModel.FromResourceSet).ToArray());
+        }
+
         var value = ui == "1"
             ? (object)resourceSets.Select(ResourceSetViewModel.FromResourceSet).ToArray()
             : resourceSets.Select(x => x.Id).ToArray();
@@ -135,7 +147,8 @@ internal static class ResourceSetEndpointHandlers
             return Results.BadRequest();
         }
 
-        return Results.Ok(new EditPolicyResponse { Id = id, Rules = result.AuthorizationPolicies.Select(ToViewModel).ToArray() });
+        var response = new EditPolicyResponse { Id = id, Rules = result.AuthorizationPolicies.Select(ToViewModel).ToArray() };
+        return UiEndpointHelpers.ViewOrJson(httpContext, GetResourceSetPolicyView, response);
     }
 
     internal static async Task<IResult> SetResourceSetPolicyFromViewModel(
@@ -163,7 +176,7 @@ internal static class ResourceSetEndpointHandlers
         }
 
         var result = await SetResourceSetPolicy(httpContext, viewModel.Id, viewModel.Rules.Select(ToModel).ToArray(), resourceSetRepository, cancellationToken).ConfigureAwait(false);
-        return result is not null ? result : Results.Ok(new object());
+        return result is not null ? result : UiEndpointHelpers.ViewOrJson(httpContext, SetResourceSetPolicyView, new object());
     }
 
     internal static async Task<IResult> SetResourceSetPolicy(
@@ -186,7 +199,7 @@ internal static class ResourceSetEndpointHandlers
         }
 
         var result = await SetResourceSetPolicy(httpContext, id, rules, resourceSetRepository, cancellationToken).ConfigureAwait(false);
-        return result ?? Results.Ok();
+        return result ?? UiEndpointHelpers.ViewOrJson(httpContext, SetResourceSetPolicyView, new object());
     }
 
     internal static async Task<IResult> AddResourceSet(

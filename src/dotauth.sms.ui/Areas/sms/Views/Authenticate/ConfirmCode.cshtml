@@ -17,36 +17,35 @@
 }
 <div class="row">
     <div class="col s12 m6 offset-m3">
-        <div class="col s12">
-            <div class="card">
+        <div class="card">
+            <form method="post" action="@Url.SmsAuthenticateConfirmCodePath()">
                 <div class="card-content">
                     <h5>Confirmation code</h5>
+                    <div class="row">
+                        <div class="col s12">
+                            @Html.ValidationMessage("message_error")
+                        </div>
+                    </div>
+                    <div class="row">
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(i => i.Code)
+                        <div class="input-field col s12">
+                            <!-- Confirmation code -->
+                            <i class="material-icons prefix">perm_phone_msg</i>
+                            <input id="confcode" name="ConfirmationCode" type="text" />
+                            <label for="confcode">Confirmation Code</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-action">
                     <div class="row">
-                        @Html.ValidationMessage("message_error")
-                    </div>
-                    <div class="row">
-                        <form method="post" action="@Url.SmsAuthenticateConfirmCodePath()">
-                            <div class="row">
-                                @Html.AntiForgeryToken()
-                                @Html.HiddenFor(i => i.Code)
-                                <div class="input-field col s12">
-                                    <!-- Confirmation code -->
-                                    <i class="material-icons prefix">perm_phone_msg</i>
-                                    <input id="confcode" name="ConfirmationCode" type="text" />
-                                    <label for="confcode">Confirmation Code</label>
-                                </div>
-                            </div>
-                            <!-- Submit buttons code -->
-                            <div class="col s12">
-                                <button type="submit" name="Action" value="submit" class="waves-effect waves-light btn blue darken-3 right">Validate code</button>
-                                <button type="submit" name="Action" value="resend" class="waves-effect waves-light btn red darken-3 left">Resend code</button>
-                            </div>
-                        </form>
+                        <div class="col s12">
+                            <button type="submit" name="Action" value="submit" class="waves-effect waves-light btn blue darken-3 right">Validate code</button>
+                            <button type="submit" name="Action" value="resend" class="waves-effect waves-light btn red darken-3 left">Resend code</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>

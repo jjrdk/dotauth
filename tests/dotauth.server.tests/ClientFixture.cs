@@ -1,6 +1,9 @@
 ﻿namespace DotAuth.Server.Tests;
 
 using System;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Extensions;
@@ -34,6 +37,68 @@ public sealed class ClientFixture : IDisposable
             );
 
         Assert.Equal(ErrorCodes.InvalidRedirectUri, result.Details.Title);
+    }
+
+    [Fact]
+    public async Task When_Getting_Create_Client_Page_As_Html_Then_Razor_View_Is_Returned()
+    {
+        using var client = _server.Server.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5000/{CoreConstants.EndPoints.Clients}/create");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+        request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "token");
+
+        var response = await client.SendAsync(request, cancellationToken: TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("Create Client", content);
+    }
+
+    [Fact]
+    public async Task When_Getting_Clients_As_Html_Then_Razor_View_Is_Returned()
+    {
+        using var client = _server.Server.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5000/{CoreConstants.EndPoints.Clients}");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+        request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "token");
+
+        var response = await client.SendAsync(request, cancellationToken: TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("Registered Clients", content);
+    }
+
+    [Fact]
+    public async Task When_Getting_Client_Details_As_Html_Then_Razor_View_Is_Returned()
+    {
+        var addedClient = Assert.IsType<Option<Client>.Result>(await _openidClients.AddClient(
+            new Client
+            {
+                ClientId = Guid.NewGuid().ToString("N"),
+                JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet(),
+                AllowedScopes = ["openid"],
+                ApplicationType = ApplicationTypes.Web,
+                ClientName = "client_for_html_page",
+                RedirectionUrls = [new Uri("http://localhost")]
+            },
+            "token",
+            TestContext.Current.CancellationToken));
+
+        using var client = _server.Server.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5000/{CoreConstants.EndPoints.Clients}/{addedClient.Item.ClientId}");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+        request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "token");
+
+        var response = await client.SendAsync(request, cancellationToken: TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("Client Info", content);
+        Assert.Contains(addedClient.Item.ClientId, content);
     }
 
     [Fact]

@@ -27,6 +27,9 @@ using Microsoft.Net.Http.Headers;
 
 internal static class ResourceOwnersEndpointHandlers
 {
+    private const string GetAllResourceOwnersView = "/Views/ResourceOwners/GetAll.cshtml";
+    private const string GetResourceOwnerView = "/Views/ResourceOwners/Get.cshtml";
+
     internal static async Task<IResult> GetAll(
         HttpContext httpContext,
         IRequestThrottle requestThrottle,
@@ -40,7 +43,7 @@ internal static class ResourceOwnersEndpointHandlers
         }
 
         var resourceOwners = await resourceOwnerRepository.GetAll(cancellationToken).ConfigureAwait(false);
-        return Results.Ok(resourceOwners);
+        return UiEndpointHelpers.ViewOrJson(httpContext, GetAllResourceOwnersView, resourceOwners);
     }
 
     internal static async Task<IResult> Get(
@@ -64,7 +67,7 @@ internal static class ResourceOwnersEndpointHandlers
                 Detail = Strings.TheRoDoesntExist,
                 Title = ErrorCodes.InvalidRequest
             })
-            : Results.Ok(resourceOwner);
+            : UiEndpointHelpers.ViewOrJson(httpContext, GetResourceOwnerView, resourceOwner);
     }
 
     internal static async Task<IResult> Delete(
