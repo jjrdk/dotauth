@@ -21,7 +21,7 @@
                     <div class="card-action">
                         @foreach (var loginProvider in Model.IdProviders)
                         {
-                            <button type="submit" class="waves-effect waves-light btn blue darken-3" id="@loginProvider.DisplayName" name="provider" value="@loginProvider.DisplayName" title="Log in using your @loginProvider.DisplayName account">@loginProvider.DisplayName</button>
+                            <button type="submit" class="waves-effect waves-light btn blue darken-3" id="@loginProvider.DisplayName" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.DisplayName account">@loginProvider.DisplayName</button>
                         }
                     </div>
                 </form>

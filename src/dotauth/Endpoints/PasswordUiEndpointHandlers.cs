@@ -461,15 +461,22 @@ internal static class PasswordUiEndpointHandlers
         return Results.Redirect("/");
     }
 
-    internal static async Task ExternalLogin(HttpContext httpContext, string provider, IAuthenticationService authenticationService)
+    internal static async Task<IResult> ExternalLogin(HttpContext httpContext, IAuthenticationService authenticationService)
     {
+        var provider = await GetRequestValueAsync(httpContext.Request, "provider").ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(provider))
         {
-            throw new ArgumentNullException(nameof(provider));
+            return Results.BadRequest(new ErrorDetails
+            {
+                Title = ErrorCodes.InvalidRequest,
+                Detail = "The external authentication provider is required.",
+                Status = System.Net.HttpStatusCode.BadRequest
+            });
         }
 
         var redirectUrl = BuildAbsoluteUri(httpContext, "/authenticate/logincallback");
         await authenticationService.ChallengeAsync(httpContext, provider, new AuthenticationProperties { RedirectUri = redirectUrl }).ConfigureAwait(false);
+        return Results.Empty;
     }
 
     internal static async Task<IResult> LoginCallback(
@@ -580,12 +587,29 @@ internal static class PasswordUiEndpointHandlers
         return httpContext.Request.Query.TryGetValue("ReturnUrl", out var returnUrl) ? Results.Redirect(returnUrl!) : Results.Redirect("/User");
     }
 
-    internal static async Task ExternalLoginOpenId(HttpContext httpContext, string provider, string code, IAuthenticationService authenticationService, RuntimeSettings runtimeSettings, ILoggerFactory loggerFactory)
+    internal static async Task<IResult> ExternalLoginOpenId(HttpContext httpContext, IAuthenticationService authenticationService, RuntimeSettings runtimeSettings, ILoggerFactory loggerFactory)
     {
         var logger = CreateAuthenticateLogger(loggerFactory);
+        var provider = await GetRequestValueAsync(httpContext.Request, "provider").ConfigureAwait(false);
+        var code = await GetRequestValueAsync(httpContext.Request, "code").ConfigureAwait(false);
+        if (string.IsNullOrWhiteSpace(provider))
+        {
+            return Results.BadRequest(new ErrorDetails
+            {
+                Title = ErrorCodes.InvalidRequest,
+                Detail = "The external authentication provider is required.",
+                Status = System.Net.HttpStatusCode.BadRequest
+            });
+        }
+
         if (string.IsNullOrWhiteSpace(code))
         {
-            throw new ArgumentNullException(nameof(code));
+            return Results.BadRequest(new ErrorDetails
+            {
+                Title = ErrorCodes.InvalidRequest,
+                Detail = "The OpenID authorization code is required.",
+                Status = System.Net.HttpStatusCode.BadRequest
+            });
         }
 
         var cookieValue = Id.Create();
@@ -594,6 +618,7 @@ internal static class PasswordUiEndpointHandlers
         var redirectUrl = BuildAbsoluteUri(httpContext, $"/authenticate/logincallbackopenid?code={Uri.EscapeDataString(cookieValue)}");
         await authenticationService.ChallengeAsync(httpContext, provider, new AuthenticationProperties { RedirectUri = redirectUrl }).ConfigureAwait(false);
         logger.LogDebug("Redirecting to external provider: {Provider}, with redirect url: {RedirectUrl}", provider, redirectUrl);
+        return Results.Empty;
     }
 
     internal static async Task<IResult> LoginCallbackOpenId(
@@ -724,6 +749,22 @@ internal static class PasswordUiEndpointHandlers
     private static ILogger CreateAuthenticateLogger(ILoggerFactory loggerFactory)
     {
         return loggerFactory.CreateLogger("DotAuth.Controllers.AuthenticateController");
+    }
+
+    private static async Task<string?> GetRequestValueAsync(HttpRequest request, string key)
+    {
+        if (request.HasFormContentType)
+        {
+            var form = await request.ReadFormAsync().ConfigureAwait(false);
+            if (form.TryGetValue(key, out var formValue) && !string.IsNullOrWhiteSpace(formValue))
+            {
+                return formValue.ToString();
+            }
+        }
+
+        return request.Query.TryGetValue(key, out var queryValue) && !string.IsNullOrWhiteSpace(queryValue)
+            ? queryValue.ToString()
+            : null;
     }
 
     private static string BuildAbsoluteUri(HttpContext httpContext, string pathAndQuery)
