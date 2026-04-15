@@ -1,8 +1,6 @@
 namespace DotAuth.Endpoints;
 
-using DotAuth.Shared;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 /// <summary>
@@ -10,6 +8,11 @@ using Microsoft.AspNetCore.Routing;
 /// </summary>
 public static class DeviceAuthorizationEndpointRouteBuilderExtensions
 {
+    /// <summary>
+    /// Maps the device authorization endpoint.
+    /// </summary>
+    /// <param name="endpoints">The endpoint builder</param>
+    /// <returns></returns>
     public static IEndpointRouteBuilder MapDeviceAuthorizationEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost(CoreConstants.EndPoints.DeviceAuthorization, DeviceAuthorizationEndpointHandlers.RequestDeviceAuthorization);

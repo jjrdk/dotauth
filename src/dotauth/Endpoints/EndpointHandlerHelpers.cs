@@ -9,8 +9,6 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using DotAuth.Shared;
-using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

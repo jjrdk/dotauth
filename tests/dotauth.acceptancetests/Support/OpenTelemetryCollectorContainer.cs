@@ -25,8 +25,7 @@ internal sealed class OpenTelemetryCollectorContainer : IAsyncDisposable
     public OpenTelemetryCollectorContainer()
     {
         var configPath = ResolveConfigPath();
-        _container = new ContainerBuilder()
-            .WithImage("otel/opentelemetry-collector-contrib:latest")
+        _container = new ContainerBuilder("otel/opentelemetry-collector-contrib:latest")
             .WithName($"dotauth-otel-{Guid.NewGuid():N}")
             .WithPortBinding(OtlpGrpcPort, true)
             .WithPortBinding(OtlpHttpPort, true)
@@ -139,13 +138,3 @@ internal sealed class OpenTelemetryCollectorContainer : IAsyncDisposable
         throw new FileNotFoundException("The OpenTelemetry collector config file could not be found.", outputPath);
     }
 }
-
-
-
-
-
-
-
-
-
-

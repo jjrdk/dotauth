@@ -10,7 +10,6 @@ using DotAuth.Extensions;
 using DotAuth.Properties;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
-using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;

@@ -9,7 +9,6 @@ using DotAuth.Api.Device;
 using DotAuth.Common;
 using DotAuth.Extensions;
 using DotAuth.Shared;
-using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using DotAuth.Telemetry;

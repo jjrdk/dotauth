@@ -1,8 +1,6 @@
 namespace DotAuth.Endpoints;
 
-using DotAuth.Shared;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 /// <summary>
@@ -10,6 +8,11 @@ using Microsoft.AspNetCore.Routing;
 /// </summary>
 public static class JwksEndpointRouteBuilderExtensions
 {
+    /// <summary>
+    /// Maps the JWKS endpoint for retrieving the current set of JSON Web Keys, adding a new JWK, and rotating keys.
+    /// </summary>
+    /// <param name="endpoints">The endpoint builder</param>
+    /// <returns></returns>
     public static IEndpointRouteBuilder MapJwksEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet(CoreConstants.EndPoints.Jwks, JwksEndpointHandlers.GetJwks);
