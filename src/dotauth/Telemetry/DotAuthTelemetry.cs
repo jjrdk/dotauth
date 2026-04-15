@@ -10,6 +10,136 @@ using DotAuth.Shared.Models;
 internal static class DotAuthTelemetry
 {
     /// <summary>
+    /// Centralizes custom activity names so callers avoid typos.
+    /// </summary>
+    public static class ActivityNames
+    {
+        public const string AuthorizationRequest = "dotauth.authorization.request";
+        public const string ClientAuthenticate = "dotauth.client.authenticate";
+        public const string DeviceAuthorizationRequest = "dotauth.device_authorization.request";
+        public const string Exception = "dotauth.exception";
+        public const string IntrospectionRequest = "dotauth.introspection.request";
+        public const string JwksGetEncryptionKey = "dotauth.jwks.get_encryption_key";
+        public const string JwksGetPublicKeys = "dotauth.jwks.get_public_keys";
+        public const string JwksGetSigningKey = "dotauth.jwks.get_signing_key";
+        public const string ResourceOwnerAuthenticate = "dotauth.resource_owner.authenticate";
+        public const string ThrottleCheck = "dotauth.throttle.check";
+        public const string TokenAuthorizationCode = "dotauth.token.authorization_code";
+        public const string TokenClientCredentials = "dotauth.token.client_credentials";
+        public const string TokenDeviceCode = "dotauth.token.device_code";
+        public const string TokenPassword = "dotauth.token.password";
+        public const string TokenRefresh = "dotauth.token.refresh";
+        public const string TokenRequest = "dotauth.token.request";
+        public const string TokenRevoke = "dotauth.token.revoke";
+        public const string TokenStoreAdd = "dotauth.token_store.add";
+        public const string TokenStoreGet = "dotauth.token_store.get";
+        public const string TokenStoreRemove = "dotauth.token_store.remove";
+        public const string TokenUmaTicket = "dotauth.token.uma_ticket";
+        public const string UserInfoRequest = "dotauth.userinfo.request";
+    }
+
+    /// <summary>
+    /// Centralizes custom metric names so callers avoid typos.
+    /// </summary>
+    public static class MetricNames
+    {
+        public const string AuthorizationCodesExpired = "dotauth.authorization_codes.expired";
+        public const string AuthorizationCodesInvalid = "dotauth.authorization_codes.invalid";
+        public const string AuthorizationCodesIssued = "dotauth.authorization_codes.issued";
+        public const string AuthorizationCodesRedeemed = "dotauth.authorization_codes.redeemed";
+        public const string ClientAuthFailure = "dotauth.client.auth.failure";
+        public const string ClientAuthSuccess = "dotauth.client.auth.success";
+        public const string DeviceAuthorizationStarted = "dotauth.device_authorization.started";
+        public const string DeviceCodeApprovalDuration = "dotauth.device_code.approval.duration";
+        public const string DeviceCodePolls = "dotauth.device_code.polls";
+        public const string IntrospectionActive = "dotauth.introspection.active";
+        public const string IntrospectionInactive = "dotauth.introspection.inactive";
+        public const string IntrospectionRequests = "dotauth.introspection.requests";
+        public const string OAuthErrors = "dotauth.errors.oauth";
+        public const string RefreshTokensInvalid = "dotauth.refresh_tokens.invalid";
+        public const string RefreshTokensUsed = "dotauth.refresh_tokens.used";
+        public const string ResourceOwnerAuthFailure = "dotauth.resource_owner.auth.failure";
+        public const string ResourceOwnerAuthSuccess = "dotauth.resource_owner.auth.success";
+        public const string ThrottleAllowed = "dotauth.throttle.allowed";
+        public const string ThrottleRejected = "dotauth.throttle.rejected";
+        public const string TokenIssueFailures = "dotauth.tokens.issue.failures";
+        public const string TokenIssuanceDuration = "dotauth.token.issuance.duration";
+        public const string TokenRevokeFailures = "dotauth.tokens.revoke.failures";
+        public const string TokenStoreOperationDuration = "dotauth.token_store.operation.duration";
+        public const string TokensIssued = "dotauth.tokens.issued";
+        public const string TokensRevoked = "dotauth.tokens.revoked";
+        public const string TokensReused = "dotauth.tokens.reused";
+        public const string UmaRptDenied = "dotauth.uma.rpt.denied";
+        public const string UmaRptIssued = "dotauth.uma.rpt.issued";
+        public const string UmaRptRequestSubmitted = "dotauth.uma.rpt.request_submitted";
+        public const string UmaTicketExpired = "dotauth.uma.ticket.expired";
+        public const string UnhandledErrors = "dotauth.errors.unhandled";
+        public const string UserInfoRequests = "dotauth.userinfo.requests";
+    }
+
+    /// <summary>
+    /// Centralizes custom and standard telemetry tag keys so callers avoid typos.
+    /// </summary>
+    public static class TagKeys
+    {
+        public const string Amr = "dotauth.amr";
+        public const string ClientId = "dotauth.client_id";
+        public const string ErrorCode = "dotauth.error_code";
+        public const string ExceptionMessage = "exception.message";
+        public const string ExceptionType = "exception.type";
+        public const string GrantType = "dotauth.grant_type";
+        public const string HttpRoute = "http.route";
+        public const string ResponseType = "dotauth.response_type";
+        public const string ScopeGranted = "dotauth.scope.granted";
+        public const string ScopeRequested = "dotauth.scope.requested";
+        public const string Success = "success";
+        public const string Status = "status";
+        public const string TokenReused = "dotauth.token.reused";
+        public const string TokenTypeHint = "dotauth.token_type_hint";
+        public const string UserInfoTokenValid = "dotauth.userinfo.token_valid";
+
+        public const string AuthCodeExpired = "dotauth.auth_code.expired";
+        public const string AuthCodeValid = "dotauth.auth_code.valid";
+
+        public const string ClientAuthMethod = "dotauth.client.auth_method";
+        public const string ClientAuthSuccess = "dotauth.client.auth_success";
+
+        public const string DeviceCodePollIntervalSeconds = "dotauth.device_code.poll_interval_seconds";
+        public const string DeviceCodeStatus = "dotauth.device_code.status";
+
+        public const string IntrospectionTokenActive = "dotauth.introspection.token_active";
+        public const string IntrospectionTokenFound = "dotauth.introspection.token_found";
+
+        public const string JwksAlgorithm = "dotauth.jwks.algorithm";
+        public const string JwksKeyCount = "dotauth.jwks.key_count";
+        public const string JwksKeyFound = "dotauth.jwks.key_found";
+        public const string JwksKeyId = "dotauth.jwks.key_id";
+
+        public const string PkcePresent = "dotauth.pkce.present";
+        public const string PkceValid = "dotauth.pkce.valid";
+
+        public const string RefreshTokenClientMatch = "dotauth.refresh_token.client_match";
+        public const string RefreshTokenFound = "dotauth.refresh_token.found";
+
+        public const string ResourceOwner2FaRequired = "dotauth.resource_owner.2fa_required";
+        public const string ResourceOwnerAuthenticated = "dotauth.resource_owner.authenticated";
+        public const string ResourceOwnerFound = "dotauth.resource_owner.found";
+
+        public const string RevokeTokenType = "dotauth.revoke.token_type";
+
+        public const string ThrottleAllowed = "dotauth.throttle.allowed";
+
+        public const string TokenStoreHit = "dotauth.token_store.hit";
+        public const string TokenStoreOperation = "dotauth.token_store.operation";
+        public const string TokenStoreSuccess = "dotauth.token_store.success";
+
+        public const string UmaAuthorizationResult = "dotauth.uma.authorization_result";
+        public const string UmaTicketExpired = "dotauth.uma.ticket_expired";
+        public const string UmaTicketFound = "dotauth.uma.ticket_found";
+        public const string UmaTicketId = "dotauth.uma.ticket_id";
+    }
+
+    /// <summary>
     /// The activity source name used by DotAuth custom traces.
     /// </summary>
     public const string ActivitySourceName = "DotAuth.TokenServer";
@@ -22,131 +152,131 @@ internal static class DotAuthTelemetry
     private static readonly ActivitySource ActivitySourceInstance = new(ActivitySourceName);
     private static readonly Meter MeterInstance = new(MeterName);
     private static readonly Counter<long> TokensIssuedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.tokens.issued",
+        MetricNames.TokensIssued,
         unit: "{tokens}",
         description: "Counts successful token responses.");
     private static readonly Counter<long> TokensReusedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.tokens.reused",
+        MetricNames.TokensReused,
         unit: "{tokens}",
         description: "Counts token responses that reused an existing token.");
     private static readonly Histogram<double> TokenIssuanceDurationHistogram = MeterInstance.CreateHistogram<double>(
-        "dotauth.token.issuance.duration",
+        MetricNames.TokenIssuanceDuration,
         unit: "ms",
         description: "Measures token endpoint duration.");
     private static readonly Counter<long> TokenIssueFailuresCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.tokens.issue.failures",
+        MetricNames.TokenIssueFailures,
         unit: "{requests}",
         description: "Counts failed token responses.");
     private static readonly Counter<long> TokensRevokedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.tokens.revoked",
+        MetricNames.TokensRevoked,
         unit: "{tokens}",
         description: "Counts successful token revocations.");
     private static readonly Counter<long> TokenRevokeFailuresCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.tokens.revoke.failures",
+        MetricNames.TokenRevokeFailures,
         unit: "{requests}",
         description: "Counts failed token revocation attempts.");
     private static readonly Counter<long> RefreshTokensUsedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.refresh_tokens.used",
+        MetricNames.RefreshTokensUsed,
         unit: "{tokens}",
         description: "Counts successful refresh-token grants.");
     private static readonly Counter<long> RefreshTokensInvalidCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.refresh_tokens.invalid",
+        MetricNames.RefreshTokensInvalid,
         unit: "{tokens}",
         description: "Counts invalid refresh-token grant attempts.");
     private static readonly Counter<long> DeviceAuthorizationStartedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.device_authorization.started",
+        MetricNames.DeviceAuthorizationStarted,
         unit: "{requests}",
         description: "Counts started device authorization flows.");
     private static readonly Counter<long> DeviceCodePollsCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.device_code.polls",
+        MetricNames.DeviceCodePolls,
         unit: "{polls}",
         description: "Counts device code polling attempts.");
     private static readonly Counter<long> AuthorizationCodesIssuedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.authorization_codes.issued",
+        MetricNames.AuthorizationCodesIssued,
         unit: "{codes}",
         description: "Counts authorization code flow requests that advance authorization code issuance.");
     private static readonly Counter<long> AuthorizationCodesRedeemedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.authorization_codes.redeemed",
+        MetricNames.AuthorizationCodesRedeemed,
         unit: "{codes}",
         description: "Counts authorization codes successfully exchanged for tokens.");
     private static readonly Counter<long> AuthorizationCodesExpiredCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.authorization_codes.expired",
+        MetricNames.AuthorizationCodesExpired,
         unit: "{codes}",
         description: "Counts authorization codes rejected because they expired.");
     private static readonly Counter<long> AuthorizationCodesInvalidCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.authorization_codes.invalid",
+        MetricNames.AuthorizationCodesInvalid,
         unit: "{codes}",
         description: "Counts authorization codes rejected for non-expiry reasons.");
     private static readonly Counter<long> IntrospectionRequestsCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.introspection.requests",
+        MetricNames.IntrospectionRequests,
         unit: "{requests}",
         description: "Counts token introspection requests.");
     private static readonly Counter<long> IntrospectionActiveCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.introspection.active",
+        MetricNames.IntrospectionActive,
         unit: "{tokens}",
         description: "Counts introspection responses that returned active tokens.");
     private static readonly Counter<long> IntrospectionInactiveCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.introspection.inactive",
+        MetricNames.IntrospectionInactive,
         unit: "{tokens}",
         description: "Counts introspection responses that returned inactive or missing tokens.");
     private static readonly Counter<long> UserInfoRequestsCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.userinfo.requests",
+        MetricNames.UserInfoRequests,
         unit: "{requests}",
         description: "Counts user info requests.");
     private static readonly Counter<long> ClientAuthSuccessCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.client.auth.success",
+        MetricNames.ClientAuthSuccess,
         unit: "{attempts}",
         description: "Counts successful client authentication attempts.");
     private static readonly Counter<long> ClientAuthFailureCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.client.auth.failure",
+        MetricNames.ClientAuthFailure,
         unit: "{attempts}",
         description: "Counts failed client authentication attempts.");
     private static readonly Counter<long> ResourceOwnerAuthSuccessCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.resource_owner.auth.success",
+        MetricNames.ResourceOwnerAuthSuccess,
         unit: "{attempts}",
         description: "Counts successful resource-owner authentications.");
     private static readonly Counter<long> ResourceOwnerAuthFailureCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.resource_owner.auth.failure",
+        MetricNames.ResourceOwnerAuthFailure,
         unit: "{attempts}",
         description: "Counts failed resource-owner authentications.");
     private static readonly Counter<long> UmaRptIssuedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.uma.rpt.issued",
+        MetricNames.UmaRptIssued,
         unit: "{tokens}",
         description: "Counts issued UMA requesting-party tokens.");
     private static readonly Counter<long> UmaRptRequestSubmittedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.uma.rpt.request_submitted",
+        MetricNames.UmaRptRequestSubmitted,
         unit: "{requests}",
         description: "Counts UMA requests that require interactive authorization.");
     private static readonly Counter<long> UmaRptDeniedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.uma.rpt.denied",
+        MetricNames.UmaRptDenied,
         unit: "{requests}",
         description: "Counts UMA requests denied by policy.");
     private static readonly Counter<long> UmaTicketExpiredCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.uma.ticket.expired",
+        MetricNames.UmaTicketExpired,
         unit: "{tickets}",
         description: "Counts UMA ticket lookups that failed because the ticket expired.");
     private static readonly Counter<long> OAuthErrorsCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.errors.oauth",
+        MetricNames.OAuthErrors,
         unit: "{errors}",
         description: "Counts OAuth protocol errors returned to callers.");
     private static readonly Counter<long> UnhandledErrorsCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.errors.unhandled",
+        MetricNames.UnhandledErrors,
         unit: "{errors}",
         description: "Counts unhandled exceptions captured by middleware.");
     private static readonly Counter<long> ThrottleAllowedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.throttle.allowed",
+        MetricNames.ThrottleAllowed,
         unit: "{requests}",
         description: "Counts requests allowed by the throttle filter.");
     private static readonly Counter<long> ThrottleRejectedCounter = MeterInstance.CreateCounter<long>(
-        "dotauth.throttle.rejected",
+        MetricNames.ThrottleRejected,
         unit: "{requests}",
         description: "Counts requests rejected by the throttle filter.");
     private static readonly Histogram<double> DeviceCodeApprovalDurationHistogram = MeterInstance.CreateHistogram<double>(
-        "dotauth.device_code.approval.duration",
+        MetricNames.DeviceCodeApprovalDuration,
         unit: "s",
         description: "Measures time from device authorization issuance to approval.");
     private static readonly Histogram<double> TokenStoreOperationDurationHistogram = MeterInstance.CreateHistogram<double>(
-        "dotauth.token_store.operation.duration",
+        MetricNames.TokenStoreOperationDuration,
         unit: "ms",
         description: "Measures token-store operation latency.");
 
@@ -199,7 +329,7 @@ internal static class DotAuthTelemetry
     public static void RecordTokenIssueFailure(string? grantType, string? clientId, string? errorCode)
     {
         var tags = BuildCommonTags(grantType, clientId);
-        tags.Add("dotauth.error_code", Normalize(errorCode));
+        tags.Add(TagKeys.ErrorCode, Normalize(errorCode));
         TokenIssueFailuresCounter.Add(1, tags);
         RecordOAuthError(errorCode);
     }
@@ -214,7 +344,7 @@ internal static class DotAuthTelemetry
     public static void RecordTokenIssuanceDuration(double durationMs, string? grantType, string? clientId, bool success)
     {
         var tags = BuildCommonTags(grantType, clientId);
-        tags.Add("success", success);
+        tags.Add(TagKeys.Success, success);
         TokenIssuanceDurationHistogram.Record(durationMs, tags);
     }
 
@@ -227,8 +357,8 @@ internal static class DotAuthTelemetry
     {
         var tags = new TagList
         {
-            { "dotauth.revoke.token_type", Normalize(tokenType) },
-            { "dotauth.client_id", Normalize(clientId) }
+            { TagKeys.RevokeTokenType, Normalize(tokenType) },
+            { TagKeys.ClientId, Normalize(clientId) }
         };
         TokensRevokedCounter.Add(1, tags);
     }
@@ -243,9 +373,9 @@ internal static class DotAuthTelemetry
     {
         var tags = new TagList
         {
-            { "dotauth.revoke.token_type", Normalize(tokenType) },
-            { "dotauth.client_id", Normalize(clientId) },
-            { "dotauth.error_code", Normalize(errorCode) }
+            { TagKeys.RevokeTokenType, Normalize(tokenType) },
+            { TagKeys.ClientId, Normalize(clientId) },
+            { TagKeys.ErrorCode, Normalize(errorCode) }
         };
         TokenRevokeFailuresCounter.Add(1, tags);
         RecordOAuthError(errorCode);
@@ -257,7 +387,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordRefreshTokenUsed(string? clientId)
     {
-        RefreshTokensUsedCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        RefreshTokensUsedCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -266,7 +396,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordRefreshTokenInvalid(string? clientId)
     {
-        RefreshTokensInvalidCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        RefreshTokensInvalidCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -275,7 +405,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordDeviceAuthorizationStarted(string? clientId)
     {
-        DeviceAuthorizationStartedCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        DeviceAuthorizationStartedCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -289,8 +419,8 @@ internal static class DotAuthTelemetry
             1,
             new TagList
             {
-                { "dotauth.client_id", Normalize(clientId) },
-                { "status", Normalize(status) }
+                { TagKeys.ClientId, Normalize(clientId) },
+                { TagKeys.Status, Normalize(status) }
             });
     }
 
@@ -300,7 +430,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordAuthorizationCodeIssued(string? clientId)
     {
-        AuthorizationCodesIssuedCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        AuthorizationCodesIssuedCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -309,7 +439,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordAuthorizationCodeRedeemed(string? clientId)
     {
-        AuthorizationCodesRedeemedCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        AuthorizationCodesRedeemedCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -318,7 +448,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordAuthorizationCodeExpired(string? clientId)
     {
-        AuthorizationCodesExpiredCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        AuthorizationCodesExpiredCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -332,8 +462,8 @@ internal static class DotAuthTelemetry
             1,
             new TagList
             {
-                { "dotauth.client_id", Normalize(clientId) },
-                { "dotauth.error_code", Normalize(errorCode) }
+                { TagKeys.ClientId, Normalize(clientId) },
+                { TagKeys.ErrorCode, Normalize(errorCode) }
             });
     }
 
@@ -346,8 +476,8 @@ internal static class DotAuthTelemetry
     {
         var tags = new TagList
         {
-            { "dotauth.introspection.token_found", tokenFound },
-            { "dotauth.introspection.token_active", tokenActive }
+            { TagKeys.IntrospectionTokenFound, tokenFound },
+            { TagKeys.IntrospectionTokenActive, tokenActive }
         };
         IntrospectionRequestsCounter.Add(1, tags);
         if (tokenActive)
@@ -365,7 +495,7 @@ internal static class DotAuthTelemetry
     /// <param name="tokenValid">Whether the supplied access token was valid.</param>
     public static void RecordUserInfoRequest(bool tokenValid)
     {
-        UserInfoRequestsCounter.Add(1, new TagList { { "dotauth.userinfo.token_valid", tokenValid } });
+        UserInfoRequestsCounter.Add(1, new TagList { { TagKeys.UserInfoTokenValid, tokenValid } });
     }
 
     /// <summary>
@@ -394,7 +524,7 @@ internal static class DotAuthTelemetry
     /// <param name="amr">The authentication method reference.</param>
     public static void RecordResourceOwnerAuthenticationSuccess(string? amr)
     {
-        ResourceOwnerAuthSuccessCounter.Add(1, new TagList { { "dotauth.amr", Normalize(amr) } });
+        ResourceOwnerAuthSuccessCounter.Add(1, new TagList { { TagKeys.Amr, Normalize(amr) } });
     }
 
     /// <summary>
@@ -403,7 +533,7 @@ internal static class DotAuthTelemetry
     /// <param name="amr">The authentication method reference.</param>
     public static void RecordResourceOwnerAuthenticationFailure(string? amr)
     {
-        ResourceOwnerAuthFailureCounter.Add(1, new TagList { { "dotauth.amr", Normalize(amr) } });
+        ResourceOwnerAuthFailureCounter.Add(1, new TagList { { TagKeys.Amr, Normalize(amr) } });
     }
 
     /// <summary>
@@ -412,7 +542,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordUmaRptIssued(string? clientId)
     {
-        UmaRptIssuedCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        UmaRptIssuedCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -421,7 +551,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordUmaRptRequestSubmitted(string? clientId)
     {
-        UmaRptRequestSubmittedCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        UmaRptRequestSubmittedCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -430,7 +560,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordUmaRptDenied(string? clientId)
     {
-        UmaRptDeniedCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        UmaRptDeniedCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -439,7 +569,7 @@ internal static class DotAuthTelemetry
     /// <param name="clientId">The client identifier.</param>
     public static void RecordUmaTicketExpired(string? clientId)
     {
-        UmaTicketExpiredCounter.Add(1, new TagList { { "dotauth.client_id", Normalize(clientId) } });
+        UmaTicketExpiredCounter.Add(1, new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -448,7 +578,7 @@ internal static class DotAuthTelemetry
     /// <param name="errorCode">The OAuth error code.</param>
     public static void RecordOAuthError(string? errorCode)
     {
-        OAuthErrorsCounter.Add(1, new TagList { { "dotauth.error_code", Normalize(errorCode) } });
+        OAuthErrorsCounter.Add(1, new TagList { { TagKeys.ErrorCode, Normalize(errorCode) } });
     }
 
     /// <summary>
@@ -462,8 +592,8 @@ internal static class DotAuthTelemetry
             1,
             new TagList
             {
-                { "exception.type", Normalize(exceptionType) },
-                { "http.route", Normalize(route) }
+                { TagKeys.ExceptionType, Normalize(exceptionType) },
+                { TagKeys.HttpRoute, Normalize(route) }
             });
     }
 
@@ -474,7 +604,7 @@ internal static class DotAuthTelemetry
     /// <param name="allowed">Whether the request was allowed.</param>
     public static void RecordThrottleCheck(string? route, bool allowed)
     {
-        var tags = new TagList { { "http.route", Normalize(route) } };
+        var tags = new TagList { { TagKeys.HttpRoute, Normalize(route) } };
         if (allowed)
         {
             ThrottleAllowedCounter.Add(1, tags);
@@ -493,7 +623,7 @@ internal static class DotAuthTelemetry
     {
         DeviceCodeApprovalDurationHistogram.Record(
             durationSeconds,
-            new TagList { { "dotauth.client_id", Normalize(clientId) } });
+            new TagList { { TagKeys.ClientId, Normalize(clientId) } });
     }
 
     /// <summary>
@@ -504,10 +634,10 @@ internal static class DotAuthTelemetry
     /// <param name="hit">Whether a lookup operation found a stored token.</param>
     public static void RecordTokenStoreOperationDuration(string operation, double durationMs, bool? hit = null)
     {
-        var tags = new TagList { { "dotauth.token_store.operation", Normalize(operation) } };
+        var tags = new TagList { { TagKeys.TokenStoreOperation, Normalize(operation) } };
         if (hit is not null)
         {
-            tags.Add("dotauth.token_store.hit", hit.Value);
+            tags.Add(TagKeys.TokenStoreHit, hit.Value);
         }
 
         TokenStoreOperationDurationHistogram.Record(durationMs, tags);
@@ -551,8 +681,8 @@ internal static class DotAuthTelemetry
     {
         return new TagList
         {
-            { "dotauth.grant_type", Normalize(grantType) },
-            { "dotauth.client_id", Normalize(clientId) }
+            { TagKeys.GrantType, Normalize(grantType) },
+            { TagKeys.ClientId, Normalize(clientId) }
         };
     }
 
@@ -566,8 +696,8 @@ internal static class DotAuthTelemetry
     {
         return new TagList
         {
-            { "dotauth.client.auth_method", Normalize(authMethod) },
-            { "dotauth.client_id", Normalize(clientId) }
+            { TagKeys.ClientAuthMethod, Normalize(authMethod) },
+            { TagKeys.ClientId, Normalize(clientId) }
         };
     }
 }

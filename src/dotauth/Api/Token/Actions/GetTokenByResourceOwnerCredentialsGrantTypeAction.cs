@@ -73,15 +73,15 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
         string issuerName,
         CancellationToken cancellationToken)
     {
-        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.password");
-        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(resourceOwnerGrantTypeParameter.ClientId));
-        activity?.SetTag("dotauth.scope.requested", DotAuthTelemetry.Normalize(resourceOwnerGrantTypeParameter.Scope));
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.TokenPassword);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(resourceOwnerGrantTypeParameter.ClientId));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeRequested, DotAuthTelemetry.Normalize(resourceOwnerGrantTypeParameter.Scope));
         var resolvedAmr = _resourceOwnerServices
             .GetAmrs()
             .ToArray()
             .GetAmr(resourceOwnerGrantTypeParameter.AmrValues);
         activity?.SetTag(
-            "dotauth.amr",
+            DotAuthTelemetry.TagKeys.Amr,
             DotAuthTelemetry.Normalize(
                 resolvedAmr is Option<string>.Result amrResult ? amrResult.Item : resourceOwnerGrantTypeParameter.AmrValues.FirstOrDefault()));
 
@@ -140,7 +140,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
                 cancellationToken,
                 resourceOwnerGrantTypeParameter.AmrValues)
             .ConfigureAwait(false);
-        activity?.SetTag("dotauth.resource_owner.authenticated", resourceOwner is not null);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ResourceOwnerAuthenticated, resourceOwner is not null);
         if (resourceOwner == null)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidCredentials);
@@ -172,7 +172,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
             allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
         }
 
-        activity?.SetTag("dotauth.scope.granted", DotAuthTelemetry.Normalize(allowedTokenScopes));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeGranted, DotAuthTelemetry.Normalize(allowedTokenScopes));
 
         // 5. Generate the user information payload and store it.
         var claims = resourceOwner.Claims;
@@ -207,7 +207,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
                 userInfoJwsPayload: userInfo,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
-        activity?.SetTag("dotauth.token.reused", generatedToken is not null);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.TokenReused, generatedToken is not null);
         if (generatedToken == null)
         {
             generatedToken = await client.GenerateToken(

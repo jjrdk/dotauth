@@ -37,14 +37,14 @@ public sealed class ThrottleFilterTests
             });
         var context = new ResourceExecutingContext(actionContext, new List<IFilterMetadata>(), new List<IValueProviderFactory>());
         using var activityCollector = new ActivityCollector();
-        using var metricCollector = new MetricCollector("dotauth.throttle.rejected");
+        using var metricCollector = new MetricCollector(DotAuthTelemetry.MetricNames.ThrottleRejected);
 
         await filter.OnResourceExecutionAsync(context, () => throw new Xunit.Sdk.XunitException("next should not run"));
 
         var result = Assert.IsType<Microsoft.AspNetCore.Mvc.StatusCodeResult>(context.Result);
         Assert.Equal((int)HttpStatusCode.TooManyRequests, result.StatusCode);
-        Assert.Contains(activityCollector.Activities, activity => activity.DisplayName == "dotauth.throttle.check");
-        Assert.Contains(metricCollector.Measurements, measurement => measurement.Name == "dotauth.throttle.rejected" && measurement.Value == 1);
+        Assert.Contains(activityCollector.Activities, activity => activity.DisplayName == DotAuthTelemetry.ActivityNames.ThrottleCheck);
+        Assert.Contains(metricCollector.Measurements, measurement => measurement.Name == DotAuthTelemetry.MetricNames.ThrottleRejected && measurement.Value == 1);
     }
 }
 

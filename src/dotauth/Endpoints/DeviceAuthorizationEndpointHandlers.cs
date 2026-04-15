@@ -27,7 +27,7 @@ internal static class DeviceAuthorizationEndpointHandlers
 		ILoggerFactory loggerFactory,
 		CancellationToken cancellationToken)
 	{
-		using var activity = DotAuthTelemetry.StartServerActivity("dotauth.device_authorization.request");
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.DeviceAuthorizationRequest);
 		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
 		if (throttled != null)
 		{
@@ -36,8 +36,8 @@ internal static class DeviceAuthorizationEndpointHandlers
 
 		EndpointHandlerHelpers.SetCacheHeaders(httpContext.Response, 0, ResponseCacheLocation.None, true);
 		var request = await EndpointHandlerHelpers.BindFromFormAsync<TokenRequest>(httpContext.Request).ConfigureAwait(false);
-		activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(request.client_id));
-		activity?.SetTag("dotauth.scope.requested", DotAuthTelemetry.Normalize(request.scope));
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(request.client_id));
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeRequested, DotAuthTelemetry.Normalize(request.scope));
 		if (string.IsNullOrWhiteSpace(request.client_id))
 		{
 			activity?.SetStatus(ActivityStatusCode.Error);

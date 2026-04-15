@@ -141,7 +141,7 @@ public sealed class ServerStartup
                 }
 
                 var token = await httpContext.GetTokenAsync("access_token");
-                var request = new PermissionRequest { ResourceSetId = id, Scopes = new[] { "api1" } };
+                var request = new PermissionRequest { ResourceSetId = id, Scopes = ["api1"] };
                 var option = await umaClient.RequestPermission(token!, cancellationToken, request);
                 if (option is Option<TicketResponse>.Result ticket)
                 {

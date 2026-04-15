@@ -89,10 +89,10 @@ internal sealed class ExceptionHandlerMiddleware
     private async Task PublishError(Exception exception, HttpContext context)
     {
         var route = context.Request.Path.HasValue ? context.Request.Path.Value : string.Empty;
-        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.exception");
-        activity?.SetTag("exception.type", exception.GetType().Name);
-        activity?.SetTag("exception.message", exception.Message);
-        activity?.SetTag("http.route", DotAuthTelemetry.Normalize(route));
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.Exception);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionType, exception.GetType().Name);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionMessage, exception.Message);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.HttpRoute, DotAuthTelemetry.Normalize(route));
         activity?.AddEvent(new ActivityEvent("exception"));
         activity?.SetStatus(ActivityStatusCode.Error, exception.Message);
         DotAuthTelemetry.RecordUnhandledException(exception.GetType().Name, route);

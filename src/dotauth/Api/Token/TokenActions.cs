@@ -202,9 +202,9 @@ internal sealed class TokenActions
         string issuerName,
         CancellationToken cancellationToken)
     {
-        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.client_credentials");
-        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(clientCredentialsGrantTypeParameter.ClientId));
-        activity?.SetTag("dotauth.scope.requested", DotAuthTelemetry.Normalize(clientCredentialsGrantTypeParameter.Scope));
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.TokenClientCredentials);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(clientCredentialsGrantTypeParameter.ClientId));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeRequested, DotAuthTelemetry.Normalize(clientCredentialsGrantTypeParameter.Scope));
         if (string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
         {
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
@@ -284,7 +284,7 @@ internal sealed class TokenActions
             allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
         }
 
-        activity?.SetTag("dotauth.scope.granted", DotAuthTelemetry.Normalize(allowedTokenScopes));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeGranted, DotAuthTelemetry.Normalize(allowedTokenScopes));
 
         // 4. Generate the JWT access token on the fly.
         var grantedToken = await _tokenStore
@@ -295,7 +295,7 @@ internal sealed class TokenActions
                 issuer: issuerName,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
-        activity?.SetTag("dotauth.token.reused", grantedToken != null);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.TokenReused, grantedToken != null);
         if (grantedToken == null)
         {
             grantedToken = await client.GenerateToken(
@@ -335,8 +335,8 @@ internal sealed class TokenActions
         string issuerName,
         CancellationToken cancellationToken)
     {
-        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.device_code");
-        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(clientId));
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.TokenDeviceCode);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(clientId));
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(deviceCode))
         {
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);

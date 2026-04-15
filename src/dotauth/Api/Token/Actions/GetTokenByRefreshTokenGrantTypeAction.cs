@@ -67,7 +67,7 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
         string issuerName,
         CancellationToken cancellationToken)
     {
-        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.refresh");
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.TokenRefresh);
         // 1. Try to authenticate the client
         var instruction = authenticationHeaderValue.GetAuthenticateInstruction(
             refreshTokenGrantTypeParameter,
@@ -75,7 +75,7 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
         var authResult = await _authenticateClient.Authenticate(instruction, issuerName, cancellationToken)
             .ConfigureAwait(false);
         var client = authResult.Client;
-        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(client?.ClientId));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(client?.ClientId));
         if (client == null)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);
@@ -105,10 +105,10 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
         // 3. Validate parameters
         var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter, cancellationToken)
             .ConfigureAwait(false);
-        activity?.SetTag("dotauth.refresh_token.found", grantedToken != null);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.RefreshTokenFound, grantedToken != null);
         if (grantedToken?.ClientId != client.ClientId)
         {
-            activity?.SetTag("dotauth.refresh_token.client_match", false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.RefreshTokenClientMatch, false);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
@@ -118,7 +118,7 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
             };
         }
 
-        activity?.SetTag("dotauth.refresh_token.client_match", true);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.RefreshTokenClientMatch, true);
 
         var sub = grantedToken.UserInfoPayLoad?.Sub;
         var additionalClaims = Array.Empty<Claim>();
@@ -177,7 +177,7 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
                     GrantTypes.RefreshToken,
                     DateTimeOffset.UtcNow))
             .ConfigureAwait(false);
-        activity?.SetTag("dotauth.scope.granted", DotAuthTelemetry.Normalize(generatedToken.Scope));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeGranted, DotAuthTelemetry.Normalize(generatedToken.Scope));
         activity?.SetStatus(ActivityStatusCode.Ok);
         DotAuthTelemetry.RecordRefreshTokenUsed(generatedToken.ClientId);
         return generatedToken;

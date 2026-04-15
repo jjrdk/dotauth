@@ -61,8 +61,8 @@ internal sealed class AuthenticateClient
         // First we try to fetch the client_id
         // The different client authentication mechanisms are described here : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
         var clientId = TryGettingClientId(instruction);
-        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.client.authenticate");
-        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(clientId));
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.ClientAuthenticate);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(clientId));
         if (!string.IsNullOrWhiteSpace(clientId))
         {
             client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
@@ -70,8 +70,8 @@ internal sealed class AuthenticateClient
 
         if (client == null)
         {
-            activity?.SetTag("dotauth.client.auth_method", "unknown");
-            activity?.SetTag("dotauth.client.auth_success", false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthMethod, "unknown");
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthSuccess, false);
             activity?.SetStatus(ActivityStatusCode.Error, SharedStrings.TheClientDoesntExist);
             DotAuthTelemetry.RecordClientAuthenticationFailure("unknown", clientId);
             return new AuthenticationResult(null, SharedStrings.TheClientDoesntExist);
@@ -79,7 +79,7 @@ internal sealed class AuthenticateClient
 
         var errorMessage = string.Empty;
         var authMethod = DotAuthTelemetry.MapClientAuthenticationMethod(client.TokenEndPointAuthMethod);
-        activity?.SetTag("dotauth.client.auth_method", authMethod);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthMethod, authMethod);
         switch (client.TokenEndPointAuthMethod)
         {
             case TokenEndPointAuthenticationMethods.ClientSecretBasic:
@@ -149,7 +149,7 @@ internal sealed class AuthenticateClient
         bool success,
         string? errorMessage)
     {
-        activity?.SetTag("dotauth.client.auth_success", success);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthSuccess, success);
         if (!success)
         {
             activity?.SetStatus(ActivityStatusCode.Error, errorMessage);

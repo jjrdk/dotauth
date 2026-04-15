@@ -33,7 +33,7 @@ internal sealed class TelemetryTokenStore : ITokenStore
         CancellationToken cancellationToken = default)
     {
         return TrackLookupAsync(
-            activityName: "dotauth.token_store.get",
+            activityName: DotAuthTelemetry.ActivityNames.TokenStoreGet,
             operation: "get_valid_token",
             () => _inner.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload, cancellationToken));
     }
@@ -42,7 +42,7 @@ internal sealed class TelemetryTokenStore : ITokenStore
     public Task<GrantedToken?> GetRefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
         return TrackLookupAsync(
-            activityName: "dotauth.token_store.get",
+            activityName: DotAuthTelemetry.ActivityNames.TokenStoreGet,
             operation: "get_refresh_token",
             () => _inner.GetRefreshToken(refreshToken, cancellationToken));
     }
@@ -51,7 +51,7 @@ internal sealed class TelemetryTokenStore : ITokenStore
     public Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken)
     {
         return TrackLookupAsync(
-            activityName: "dotauth.token_store.get",
+            activityName: DotAuthTelemetry.ActivityNames.TokenStoreGet,
             operation: "get_access_token",
             () => _inner.GetAccessToken(accessToken, cancellationToken));
     }
@@ -60,7 +60,7 @@ internal sealed class TelemetryTokenStore : ITokenStore
     public Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
     {
         return TrackBooleanAsync(
-            activityName: "dotauth.token_store.add",
+            activityName: DotAuthTelemetry.ActivityNames.TokenStoreAdd,
             operation: "add",
             () => _inner.AddToken(grantedToken, cancellationToken));
     }
@@ -69,7 +69,7 @@ internal sealed class TelemetryTokenStore : ITokenStore
     public Task<bool> RemoveRefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
         return TrackBooleanAsync(
-            activityName: "dotauth.token_store.remove",
+            activityName: DotAuthTelemetry.ActivityNames.TokenStoreRemove,
             operation: "remove_refresh",
             () => _inner.RemoveRefreshToken(refreshToken, cancellationToken));
     }
@@ -78,7 +78,7 @@ internal sealed class TelemetryTokenStore : ITokenStore
     public Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)
     {
         return TrackBooleanAsync(
-            activityName: "dotauth.token_store.remove",
+            activityName: DotAuthTelemetry.ActivityNames.TokenStoreRemove,
             operation: "remove_access",
             () => _inner.RemoveAccessToken(accessToken, cancellationToken));
     }
@@ -96,13 +96,13 @@ internal sealed class TelemetryTokenStore : ITokenStore
         Func<Task<GrantedToken?>> executeAsync)
     {
         using var activity = DotAuthTelemetry.StartInternalActivity(activityName);
-        activity?.SetTag("dotauth.token_store.operation", operation);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.TokenStoreOperation, operation);
         var stopwatch = Stopwatch.StartNew();
         try
         {
             var token = await executeAsync().ConfigureAwait(false);
             var hit = token is not null;
-            activity?.SetTag("dotauth.token_store.hit", hit);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.TokenStoreHit, hit);
             activity?.SetStatus(ActivityStatusCode.Ok);
             DotAuthTelemetry.RecordTokenStoreOperationDuration(operation, stopwatch.Elapsed.TotalMilliseconds, hit);
             return token;
@@ -129,12 +129,12 @@ internal sealed class TelemetryTokenStore : ITokenStore
         Func<Task<bool>> executeAsync)
     {
         using var activity = DotAuthTelemetry.StartInternalActivity(activityName);
-        activity?.SetTag("dotauth.token_store.operation", operation);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.TokenStoreOperation, operation);
         var stopwatch = Stopwatch.StartNew();
         try
         {
             var success = await executeAsync().ConfigureAwait(false);
-            activity?.SetTag("dotauth.token_store.success", success);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.TokenStoreSuccess, success);
             activity?.SetStatus(success ? ActivityStatusCode.Ok : ActivityStatusCode.Error);
             DotAuthTelemetry.RecordTokenStoreOperationDuration(operation, stopwatch.Elapsed.TotalMilliseconds);
             return success;

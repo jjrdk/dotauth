@@ -18,7 +18,7 @@ public static class UserInfoEndpointRouteBuilderExtensions
     {
         endpoints.MapMethods(
             CoreConstants.EndPoints.UserInfo,
-            new[] { HttpMethods.Get, HttpMethods.Post },
+            [HttpMethods.Get, HttpMethods.Post],
             UserInfoEndpointHandlers.GetUserInfo);
         return endpoints;
     }

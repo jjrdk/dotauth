@@ -53,9 +53,9 @@ internal static class TokenEndpointHandlers
 
 		EndpointHandlerHelpers.SetCacheHeaders(httpContext.Response, 0, ResponseCacheLocation.None, true);
 		var tokenRequest = await EndpointHandlerHelpers.BindFromFormAsync<TokenRequest>(httpContext.Request).ConfigureAwait(false);
-		using var activity = DotAuthTelemetry.StartServerActivity("dotauth.token.request");
-		activity?.SetTag("dotauth.grant_type", DotAuthTelemetry.Normalize(tokenRequest.grant_type));
-		activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(tokenRequest.client_id));
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.TokenRequest);
+		activity?.SetTag(DotAuthTelemetry.TagKeys.GrantType, DotAuthTelemetry.Normalize(tokenRequest.grant_type));
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(tokenRequest.client_id));
 		if (tokenRequest.grant_type == null)
 		{
 			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
@@ -153,7 +153,7 @@ internal static class TokenEndpointHandlers
 		ILoggerFactory loggerFactory,
 		CancellationToken cancellationToken)
 	{
-		using var activity = DotAuthTelemetry.StartServerActivity("dotauth.token.revoke");
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.TokenRevoke);
 		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
 		if (throttled != null)
 		{

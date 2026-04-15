@@ -24,7 +24,7 @@ internal static class IntrospectionEndpointHandlers
 		ITokenStore tokenStore,
 		CancellationToken cancellationToken)
 	{
-		using var activity = DotAuthTelemetry.StartServerActivity("dotauth.introspection.request");
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.IntrospectionRequest);
 		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
 		if (throttled != null)
 		{
@@ -33,7 +33,7 @@ internal static class IntrospectionEndpointHandlers
 
 		var introspectionRequest = await EndpointHandlerHelpers.BindFromFormAsync<IntrospectionRequest>(httpContext.Request)
 			.ConfigureAwait(false);
-		activity?.SetTag("dotauth.token_type_hint", DotAuthTelemetry.Normalize(introspectionRequest.token_type_hint));
+		activity?.SetTag(DotAuthTelemetry.TagKeys.TokenTypeHint, DotAuthTelemetry.Normalize(introspectionRequest.token_type_hint));
 		if (introspectionRequest.token == null)
 		{
 			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
@@ -59,7 +59,7 @@ internal static class IntrospectionEndpointHandlers
 		ITokenStore tokenStore,
 		CancellationToken cancellationToken)
 	{
-		using var activity = DotAuthTelemetry.StartServerActivity("dotauth.introspection.request");
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.IntrospectionRequest);
 		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
 		if (throttled != null)
 		{
@@ -68,7 +68,7 @@ internal static class IntrospectionEndpointHandlers
 
 		var introspectionRequest = await EndpointHandlerHelpers.BindFromFormAsync<IntrospectionRequest>(httpContext.Request)
 			.ConfigureAwait(false);
-		activity?.SetTag("dotauth.token_type_hint", DotAuthTelemetry.Normalize(introspectionRequest.token_type_hint));
+		activity?.SetTag(DotAuthTelemetry.TagKeys.TokenTypeHint, DotAuthTelemetry.Normalize(introspectionRequest.token_type_hint));
 		if (introspectionRequest.token == null)
 		{
 			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);

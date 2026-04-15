@@ -22,12 +22,12 @@ internal static class ResourceOwnerAuthenticateHelper
         var currentAmrs = services.Select(s => s.Amr).ToArray();
         var amr = currentAmrs.GetAmr(exceptedAmrValues);
         var resolvedAmr = amr is Option<string>.Result amrResult ? amrResult.Item : null;
-        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.resource_owner.authenticate");
-        activity?.SetTag("dotauth.amr", DotAuthTelemetry.Normalize(resolvedAmr));
-        activity?.SetTag("dotauth.resource_owner.2fa_required", false);
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.ResourceOwnerAuthenticate);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.Amr, DotAuthTelemetry.Normalize(resolvedAmr));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ResourceOwner2FaRequired, false);
         if (amr is not Option<string>.Result result)
         {
-            activity?.SetTag("dotauth.resource_owner.found", false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ResourceOwnerFound, false);
             activity?.SetStatus(ActivityStatusCode.Error);
             DotAuthTelemetry.RecordResourceOwnerAuthenticationFailure(resolvedAmr);
             return Task.FromResult<ResourceOwner?>(null);
@@ -60,7 +60,7 @@ internal static class ResourceOwnerAuthenticateHelper
     {
         var resourceOwner = await service.AuthenticateResourceOwner(login, password, cancellationToken).ConfigureAwait(false);
         var found = resourceOwner is not null;
-        activity?.SetTag("dotauth.resource_owner.found", found);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ResourceOwnerFound, found);
         if (!found)
         {
             activity?.SetStatus(ActivityStatusCode.Error);

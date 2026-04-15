@@ -19,7 +19,7 @@ internal static class UserInfoEndpointHandlers
 		ITokenStore tokenStore,
 		CancellationToken cancellationToken)
 	{
-		using var activity = DotAuthTelemetry.StartServerActivity("dotauth.userinfo.request");
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.UserInfoRequest);
 		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
 		if (throttled != null)
 		{

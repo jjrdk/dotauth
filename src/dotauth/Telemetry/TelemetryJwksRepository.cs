@@ -28,13 +28,13 @@ internal sealed class TelemetryJwksRepository : IJwksRepository
     public Task<JsonWebKeySet> GetPublicKeys(CancellationToken cancellationToken = default)
     {
         return TrackAsync(
-            "dotauth.jwks.get_public_keys",
+            DotAuthTelemetry.ActivityNames.JwksGetPublicKeys,
             algorithm: null,
             executeAsync: () => _inner.GetPublicKeys(cancellationToken),
             configure: keySet =>
             {
                 var keyCount = keySet.Keys?.Count ?? 0;
-                return new[] { new KeyValuePair<string, object?>("dotauth.jwks.key_count", keyCount) };
+                return [new KeyValuePair<string, object?>(DotAuthTelemetry.TagKeys.JwksKeyCount, keyCount)];
             });
     }
 
@@ -42,7 +42,7 @@ internal sealed class TelemetryJwksRepository : IJwksRepository
     public Task<SigningCredentials?> GetSigningKey(string alg, CancellationToken cancellationToken = default)
     {
         return TrackAsync(
-            "dotauth.jwks.get_signing_key",
+            DotAuthTelemetry.ActivityNames.JwksGetSigningKey,
             alg,
             () => _inner.GetSigningKey(alg, cancellationToken),
             credentials => BuildKeyTags(credentials?.Key));
@@ -52,7 +52,7 @@ internal sealed class TelemetryJwksRepository : IJwksRepository
     public Task<SecurityKey?> GetEncryptionKey(string alg, CancellationToken cancellationToken = default)
     {
         return TrackAsync(
-            "dotauth.jwks.get_encryption_key",
+            DotAuthTelemetry.ActivityNames.JwksGetEncryptionKey,
             alg,
             () => _inner.GetEncryptionKey(alg, cancellationToken),
             BuildKeyTags);
@@ -62,7 +62,7 @@ internal sealed class TelemetryJwksRepository : IJwksRepository
     public Task<SigningCredentials?> GetDefaultSigningKey(CancellationToken cancellationToken = default)
     {
         return TrackAsync(
-            "dotauth.jwks.get_signing_key",
+            DotAuthTelemetry.ActivityNames.JwksGetSigningKey,
             "default",
             () => _inner.GetDefaultSigningKey(cancellationToken),
             credentials => BuildKeyTags(credentials?.Key));
@@ -96,7 +96,7 @@ internal sealed class TelemetryJwksRepository : IJwksRepository
         Func<TResult, KeyValuePair<string, object?>[]> configure)
     {
         using var activity = DotAuthTelemetry.StartInternalActivity(activityName);
-        activity?.SetTag("dotauth.jwks.algorithm", DotAuthTelemetry.Normalize(algorithm));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.JwksAlgorithm, DotAuthTelemetry.Normalize(algorithm));
         try
         {
             var result = await executeAsync().ConfigureAwait(false);
@@ -125,8 +125,8 @@ internal sealed class TelemetryJwksRepository : IJwksRepository
     {
         return
         [
-            new KeyValuePair<string, object?>("dotauth.jwks.key_id", DotAuthTelemetry.Normalize(key?.KeyId)),
-            new KeyValuePair<string, object?>("dotauth.jwks.key_found", key is not null)
+            new KeyValuePair<string, object?>(DotAuthTelemetry.TagKeys.JwksKeyId, DotAuthTelemetry.Normalize(key?.KeyId)),
+            new KeyValuePair<string, object?>(DotAuthTelemetry.TagKeys.JwksKeyFound, key is not null)
         ];
     }
 }

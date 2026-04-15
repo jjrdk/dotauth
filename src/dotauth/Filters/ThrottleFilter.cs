@@ -40,10 +40,10 @@ public sealed class ThrottleFilter : Attribute, IFilterFactory
         public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
             var route = context.ActionDescriptor.AttributeRouteInfo?.Template ?? context.HttpContext.Request.Path.Value;
-            using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.throttle.check");
-            activity?.SetTag("http.route", DotAuthTelemetry.Normalize(route));
+            using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.ThrottleCheck);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.HttpRoute, DotAuthTelemetry.Normalize(route));
             var allowed = await _requestThrottle.Allow(context.HttpContext.Request).ConfigureAwait(false);
-            activity?.SetTag("dotauth.throttle.allowed", allowed);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ThrottleAllowed, allowed);
             DotAuthTelemetry.RecordThrottleCheck(route, allowed);
             if (!allowed)
             {

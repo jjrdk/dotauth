@@ -46,7 +46,7 @@ internal static class AuthorizationEndpointHandlers
         ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
-        using var activity = DotAuthTelemetry.StartServerActivity("dotauth.authorization.request");
+        using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.AuthorizationRequest);
         var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
         if (throttled != null)
         {
@@ -54,9 +54,9 @@ internal static class AuthorizationEndpointHandlers
         }
 
         var authorizationRequest = EndpointHandlerHelpers.BindFromQuery<AuthorizationRequest>(httpContext.Request);
-        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(authorizationRequest.client_id));
-        activity?.SetTag("dotauth.response_type", DotAuthTelemetry.Normalize(authorizationRequest.response_type));
-        activity?.SetTag("dotauth.scope.requested", DotAuthTelemetry.Normalize(authorizationRequest.scope));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(authorizationRequest.client_id));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ResponseType, DotAuthTelemetry.Normalize(authorizationRequest.response_type));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeRequested, DotAuthTelemetry.Normalize(authorizationRequest.scope));
 
         var logger = loggerFactory.CreateLogger("DotAuth.Controllers.AuthorizationController");
         var originUrl = GetOriginUrl(httpContext);

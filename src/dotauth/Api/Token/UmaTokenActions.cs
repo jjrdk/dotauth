@@ -65,14 +65,14 @@ internal sealed class UmaTokenActions
         string issuerName,
         CancellationToken cancellationToken)
     {
-        using var activity = DotAuthTelemetry.StartInternalActivity("dotauth.token.uma_ticket");
-        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(parameter.ClientId));
-        activity?.SetTag("dotauth.uma.ticket_id", DotAuthTelemetry.Normalize(parameter.Ticket));
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.TokenUmaTicket);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(parameter.ClientId));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketId, DotAuthTelemetry.Normalize(parameter.Ticket));
         if (string.IsNullOrWhiteSpace(parameter.Ticket))
         {
             _logger.LogError("Ticket is null or empty");
-            activity?.SetTag("dotauth.uma.ticket_found", false);
-            activity?.SetTag("dotauth.uma.ticket_expired", false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketFound, false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketExpired, false);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
             return new ErrorDetails
             {
@@ -114,11 +114,11 @@ internal sealed class UmaTokenActions
         }
 
         var ticket = await _ticketStore.Get(parameter.Ticket, cancellationToken).ConfigureAwait(false);
-        activity?.SetTag("dotauth.uma.ticket_found", ticket is not null);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketFound, ticket is not null);
         if (ticket == null)
         {
             _logger.LogError("Ticket {Ticket} not found", parameter.Ticket);
-            activity?.SetTag("dotauth.uma.ticket_expired", false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketExpired, false);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
@@ -132,7 +132,7 @@ internal sealed class UmaTokenActions
         if (ticket.Expires < DateTimeOffset.UtcNow)
         {
             _logger.LogError("Ticket expired");
-            activity?.SetTag("dotauth.uma.ticket_expired", true);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketExpired, true);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.ExpiredTicket);
             DotAuthTelemetry.RecordUmaTicketExpired(client.ClientId);
             return new ErrorDetails
@@ -143,7 +143,7 @@ internal sealed class UmaTokenActions
             };
         }
 
-        activity?.SetTag("dotauth.uma.ticket_expired", false);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketExpired, false);
 
         // 4. Check the authorization.
         var authorizationResult = await _authorizationPolicyValidator
@@ -152,7 +152,7 @@ internal sealed class UmaTokenActions
 
         if (authorizationResult.Result == AuthorizationPolicyResultKind.Authorized)
         {
-            activity?.SetTag("dotauth.uma.authorization_result", "authorized");
+            activity?.SetTag(DotAuthTelemetry.TagKeys.UmaAuthorizationResult, "authorized");
             var claimToken = parameter.ClaimToken.Token;
             var grantedToken = await GenerateToken(
                     client,
@@ -189,7 +189,7 @@ internal sealed class UmaTokenActions
 
         if (authorizationResult.Result == AuthorizationPolicyResultKind.RequestSubmitted)
         {
-            activity?.SetTag("dotauth.uma.authorization_result", "request_submitted");
+            activity?.SetTag(DotAuthTelemetry.TagKeys.UmaAuthorizationResult, "request_submitted");
             DotAuthTelemetry.RecordUmaRptRequestSubmitted(client.ClientId);
             await _eventPublisher.Publish(
                     new UmaRequestSubmitted(
@@ -209,7 +209,7 @@ internal sealed class UmaTokenActions
             };
         }
 
-        activity?.SetTag("dotauth.uma.authorization_result", "not_authorized");
+        activity?.SetTag(DotAuthTelemetry.TagKeys.UmaAuthorizationResult, "not_authorized");
         DotAuthTelemetry.RecordUmaRptDenied(client.ClientId);
         await _eventPublisher.Publish(
                 new UmaRequestNotAuthorized(
