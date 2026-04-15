@@ -2,6 +2,7 @@ namespace DotAuth.Endpoints;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
@@ -19,6 +20,7 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
+using DotAuth.Telemetry;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +46,7 @@ internal static class AuthorizationEndpointHandlers
         ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
+        using var activity = DotAuthTelemetry.StartServerActivity("dotauth.authorization.request");
         var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
         if (throttled != null)
         {
@@ -51,6 +54,9 @@ internal static class AuthorizationEndpointHandlers
         }
 
         var authorizationRequest = EndpointHandlerHelpers.BindFromQuery<AuthorizationRequest>(httpContext.Request);
+        activity?.SetTag("dotauth.client_id", DotAuthTelemetry.Normalize(authorizationRequest.client_id));
+        activity?.SetTag("dotauth.response_type", DotAuthTelemetry.Normalize(authorizationRequest.response_type));
+        activity?.SetTag("dotauth.scope.requested", DotAuthTelemetry.Normalize(authorizationRequest.scope));
 
         var logger = loggerFactory.CreateLogger("DotAuth.Controllers.AuthorizationController");
         var originUrl = GetOriginUrl(httpContext);
@@ -58,6 +64,7 @@ internal static class AuthorizationEndpointHandlers
         var result = await ResolveAuthorizationRequest(httpClientFactory, clientStore, jwksStore, authorizationRequest, cancellationToken).ConfigureAwait(false);
         if (result is Option<AuthorizationRequest>.Error e)
         {
+            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Title);
             return Results.Json(e.Details, statusCode: (int)e.Details.Status);
         }
 
@@ -87,6 +94,8 @@ internal static class AuthorizationEndpointHandlers
         switch (actionResult.Type)
         {
             case ActionResultType.RedirectToCallBackUrl:
+                activity?.SetStatus(ActivityStatusCode.Ok);
+                DotAuthTelemetry.RecordAuthorizationCodeIssued(authorizationRequest.client_id);
                 return UiEndpointHelpers.ToRedirectResult(
                     httpContext,
                     authorizationRequest.redirect_uri!.CreateRedirectHttpTokenResponse(
@@ -94,6 +103,8 @@ internal static class AuthorizationEndpointHandlers
                         actionResult.RedirectInstruction!.ResponseMode!));
             case ActionResultType.RedirectToAction:
             {
+                activity?.SetStatus(ActivityStatusCode.Ok);
+                DotAuthTelemetry.RecordAuthorizationCodeIssued(authorizationRequest.client_id);
                 if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
                     || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
                 {
@@ -122,8 +133,10 @@ internal static class AuthorizationEndpointHandlers
                 return Results.Redirect(redirectionUrl.AbsoluteUri);
             }
             case ActionResultType.BadRequest:
+                activity?.SetStatus(ActivityStatusCode.Error, actionResult.Error?.Title);
                 return Results.BadRequest(actionResult.Error);
             default:
+                activity?.SetStatus(ActivityStatusCode.Error);
                 return Results.BadRequest();
         }
     }

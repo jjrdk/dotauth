@@ -33,6 +33,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Policies;
 using DotAuth.Shared.Repositories;
+using DotAuth.Telemetry;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -45,6 +46,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 /// <summary>
 /// Defines the service collection extensions.
@@ -290,7 +295,13 @@ public static class ServiceCollectionExtensions
                 .AddSingleton(requestThrottle ?? NoopThrottle.Instance)
                 .AddSingleton(sp => configuration.EventPublisher?.Invoke(sp) ?? new NoopEventPublisher())
                 .AddSingleton(sp => configuration.SubjectBuilder?.Invoke(sp) ?? new DefaultSubjectBuilder())
-                .AddSingleton(sp => configuration.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository())
+                .AddSingleton<IJwksRepository>(sp =>
+                {
+                    var repository = configuration.JsonWebKeys?.Invoke(sp) ?? new InMemoryJwksRepository();
+                    return repository is TelemetryJwksRepository
+                        ? repository
+                        : new TelemetryJwksRepository(repository);
+                })
                 .AddSingleton<IJwksStore>(sp => sp.GetRequiredService<IJwksRepository>())
                 .AddSingleton(sp => configuration.Clients?.Invoke(sp)
                  ?? new InMemoryClientRepository(
@@ -313,11 +324,20 @@ public static class ServiceCollectionExtensions
                 .AddSingleton(sp => configuration.Tickets?.Invoke(sp) ?? new InMemoryTicketStore())
                 .AddSingleton(sp =>
                     configuration.AuthorizationCodes?.Invoke(sp) ?? new InMemoryAuthorizationCodeStore())
-                .AddSingleton(sp => configuration.Tokens?.Invoke(sp) ?? new InMemoryTokenStore())
+                .AddSingleton<ITokenStore>(sp =>
+                {
+                    var tokenStore = configuration.Tokens?.Invoke(sp) ?? new InMemoryTokenStore();
+                    return tokenStore is TelemetryTokenStore
+                        ? tokenStore
+                        : new TelemetryTokenStore(tokenStore);
+                })
                 .AddSingleton(sp => configuration.ConfirmationCodes?.Invoke(sp) ?? new InMemoryConfirmationCodeStore())
                 .AddSingleton(sp => configuration.AccountFilters?.Invoke(sp) ?? new InMemoryFilterStore())
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IAuthorizationPolicy, DefaultAuthorizationPolicy>();
+
+            AddOpenTelemetryIfConfigured(services, configuration.ApplicationName);
+
             if (configuration.DataProtector != null)
             {
                 // Register the provided IDataProtector and expose it through an
@@ -459,5 +479,56 @@ public static class ServiceCollectionExtensions
         options.IgnoreReadOnlyFields = instance.IgnoreReadOnlyFields;
         options.IgnoreReadOnlyProperties = instance.IgnoreReadOnlyProperties;
         options.PropertyNameCaseInsensitive = instance.PropertyNameCaseInsensitive;
+    }
+
+    private static void AddOpenTelemetryIfConfigured(IServiceCollection services, string? applicationName)
+    {
+        var otlpEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT");
+        if (string.IsNullOrWhiteSpace(otlpEndpoint))
+        {
+            return;
+        }
+
+        var otlpProtocol = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL");
+        var endpointUri = new Uri(otlpEndpoint, UriKind.Absolute);
+        var exportProtocol = string.Equals(otlpProtocol, "http/protobuf", StringComparison.OrdinalIgnoreCase)
+            ? OtlpExportProtocol.HttpProtobuf
+            : OtlpExportProtocol.Grpc;
+        var tracesEndpoint = exportProtocol == OtlpExportProtocol.HttpProtobuf
+            ? new Uri(endpointUri.AbsoluteUri.TrimEnd('/') + "/v1/traces", UriKind.Absolute)
+            : endpointUri;
+        var metricsEndpoint = exportProtocol == OtlpExportProtocol.HttpProtobuf
+            ? new Uri(endpointUri.AbsoluteUri.TrimEnd('/') + "/v1/metrics", UriKind.Absolute)
+            : endpointUri;
+
+        services.AddOpenTelemetry()
+            .ConfigureResource(resource =>
+            {
+                resource.AddService(string.IsNullOrWhiteSpace(applicationName) ? "dotauth" : applicationName);
+            })
+            .WithTracing(tracing =>
+            {
+                tracing
+                    .SetSampler(new AlwaysOnSampler())
+                    .AddSource(DotAuthTelemetry.ActivitySourceName)
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = tracesEndpoint;
+                        options.Protocol = exportProtocol;
+                    });
+            })
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .AddMeter(DotAuthTelemetry.MeterName)
+                    .AddOtlpExporter(
+                        null,
+                        (options, readerOptions) =>
+                        {
+                            options.Endpoint = metricsEndpoint;
+                            options.Protocol = exportProtocol;
+                            readerOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
+                        });
+            });
     }
 }
