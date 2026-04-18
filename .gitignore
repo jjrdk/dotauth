@@ -231,3 +231,7 @@ kubernetes_*.yml
 .idea
 open-id-testing
 *.feature.cs
+.ollamassist/
+memory.md
+lessons_learned.md
+owasp.md
