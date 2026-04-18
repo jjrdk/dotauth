@@ -9,7 +9,7 @@
    <div class="card-image">
 	<img alt="Device Authorization" src="~/img/authorize_device.png" />
    </div>
-   <form name="form" enctype="application/x-www-form-urlencoded" method="POST" action="@Url.Action("Approve", "Device")">
+   <form name="form" enctype="application/x-www-form-urlencoded" method="POST" action="@Url.DeviceApprovePath()">
 	<div class="card-content">
 	 <span class="card-title">@ViewBag.Title</span>
 	 <div>By entering and submitting the code shown on your device, you are confirming that you are authorizing the device to access the approved content on your behalf.</div>

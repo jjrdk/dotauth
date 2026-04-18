@@ -13,4 +13,8 @@
     <EmbeddedResource Include="Areas\**\*.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Areas\sms\Views\_ViewImports.cshtml" />
+  </ItemGroup>
+
 </Project>

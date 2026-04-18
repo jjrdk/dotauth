@@ -14,9 +14,7 @@
 
 namespace DotAuth.Server.Tests;
 
-using System.Reflection;
 using DotAuth;
-using DotAuth.Controllers;
 using DotAuth.Repositories;
 using DotAuth.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,7 +28,6 @@ public sealed class FakeManagerStartup
     public void ConfigureServices(IServiceCollection services)
     {
         RegisterServices(services);
-        services.AddControllers().AddApplicationPart(typeof(ClientsController).GetTypeInfo().Assembly);
     }
 
     public void Configure(IApplicationBuilder app)

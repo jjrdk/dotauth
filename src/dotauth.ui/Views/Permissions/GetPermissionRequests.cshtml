@@ -16,7 +16,7 @@
                         </div>
                     </div>
                     <div class="row col s12">
-                        <table class="bordered">
+                        <table class="bordered highlight responsive-table modern-table">
                             <colgroup>
                                 <col style="width: 14%">
                                 <col style="width: 20%">
@@ -39,8 +39,7 @@
                                 @for (var i = 0; i < Model.Length; i++)
                                 {
                                     <tr>
-                                        @using (Html.BeginForm("ApprovePermissionRequest", "Permissions", new { id = Model[i].Id }, FormMethod.Post))
-                                        {
+                                        <form method="post" action="@Url.PermissionApprovePath(Model[i].Id)">
                                             <td>@Model[i].Id</td>
                                             if (Model[i].Requester == null)
                                             {
@@ -76,7 +75,7 @@
                                                     <span>Approved</span>
                                                 }
                                             </td>
-                                        }
+                                        </form>
                                     </tr>
                                 }
                             </tbody>

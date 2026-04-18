@@ -10,7 +10,7 @@
                 <h5>@ViewBag.Title</h5>
                 <div class="row">
                     <div class="col l12 s12">
-                        <table class="bordered">
+                        <table class="bordered highlight responsive-table modern-table">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -24,7 +24,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            <a href="@Url.Action("Get", "Scopes", new {id = scope.Name})" class="inline">
+                                            <a href="@Url.ScopePath(scope.Name)" class="inline">
                                                 <i class="valign-wrapper material-icons prefix center">edit</i>
                                             </a>
                                         </td>

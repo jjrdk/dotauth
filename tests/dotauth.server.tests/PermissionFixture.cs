@@ -15,6 +15,9 @@
 namespace DotAuth.Server.Tests;
 
 using System;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Client;
@@ -142,6 +145,22 @@ public sealed class PermissionFixture : IDisposable
             ;
 
         Assert.NotNull(ticket);
+    }
+
+    [Fact]
+    public async Task When_Getting_Permission_Page_As_Html_Then_Razor_View_Is_Returned()
+    {
+        using var client = _server.Server.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/{UmaConstants.RouteValues.Permission}");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+        request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
+
+        var response = await client.SendAsync(request, cancellationToken: TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("No Open Permissions", content);
     }
 
     /// <inheritdoc />

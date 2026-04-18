@@ -14,6 +14,7 @@
 
 namespace DotAuth.AuthServerPgRedis;
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -31,7 +32,14 @@ public sealed class Program
                         o.AddServerHeader = false;
                         o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2AndHttp3);
                     })
-                    .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
+                    .ConfigureAppConfiguration(
+                        (context, c) =>
+                        {
+                            c.SetBasePath(AppContext.BaseDirectory)
+                                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                                .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                                .AddEnvironmentVariables();
+                        })
                     .UseStartup<Startup>();
             })
             .Build();

@@ -1,43 +1,42 @@
-﻿@{
+﻿@using DotAuth.Extensions
+@model DotAuth.ViewModels.CodeViewModel
+@{
     ViewBag.Title = "Send code";
-}
-@model  DotAuth.ViewModels.CodeViewModel
-
-@section PageTitle
-{
-    <h1>Send code</h1>
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">Confirmation code</div>
-            <div class="panel-body">
-                @using (Html.BeginForm("SendCode", "Authenticate", null, FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken()
-                    <!-- Authorization request code -->
-                    @Html.TextBoxFor(i => i.AuthRequestCode, new { type = "hidden" })
-                    <!-- Claim -->
-                    @Html.TextBoxFor(i => i.ClaimName, new { type = "hidden" })
-                    <fieldset class="form-group">
-                        <label class="control-label">@Model.ClaimName</label>
-                        @Html.TextBoxFor(i => i.ClaimValue, new { type = "text", @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.ClaimValue, "", new { @class = "text-danger" })
-                    </fieldset>
-                    <!-- Confirmation code -->
-                    <fieldset class="form-group">
-                        <label class="control-label">Code</label>
-                        @Html.TextBoxFor(i => i.Code, new { type = "number", @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
-                    </fieldset>
-                    <!-- Submit buttons code -->
-                    <fieldset class="form-group">
-                        <button type="submit" class="btn btn-primary" name="Action" value="submit">Validate confirmation code</button>
-                        <button type="submit" class="btn btn-primary" name="Action" value="resend">Resend confirmation code</button>
-                    </fieldset>
-                }
-            </div>
+    <div class="col s12 m6 offset-m3">
+        <div class="card">
+            <form method="post" action="@Url.AuthenticateSendCodePath()">
+                @Html.AntiForgeryToken()
+                @Html.TextBoxFor(i => i.AuthRequestCode, new { type = "hidden" })
+                @Html.TextBoxFor(i => i.ClaimName, new { type = "hidden" })
+                <div class="card-content">
+                    <span class="card-title">Confirmation code</span>
+                    <p class="grey-text text-darken-1">Confirm the contact method and enter the verification code to continue signing in.</p>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">phone_iphone</i>
+                            @Html.TextBoxFor(i => i.ClaimValue, new { id = "claimvalue" })
+                            <label for="claimvalue">@Model.ClaimName</label>
+                            @Html.ValidationMessageFor(m => m.ClaimValue, "", new { @class = "helper-text" })
+                        </div>
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">verified_user</i>
+                            @Html.TextBoxFor(i => i.Code, new { id = "code", type = "number" })
+                            <label for="code">Confirmation Code</label>
+                            @Html.ValidationMessageFor(m => m.Code, "", new { @class = "helper-text" })
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="consent-actions">
+                        <button type="submit" class="btn-flat waves-effect" name="Action" value="resend">Resend confirmation code</button>
+                        <button type="submit" class="btn waves-effect waves-light" name="Action" value="submit">Validate confirmation code</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

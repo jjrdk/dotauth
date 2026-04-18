@@ -262,6 +262,43 @@ public sealed class ResourceFixture : IDisposable
         Assert.Equal("scope2", information.Item.Scopes.Single());
     }
 
+    [Fact]
+    public async Task When_Getting_Resource_Set_List_As_Html_Then_Razor_View_Is_Returned()
+    {
+        using var client = _server.Server.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/{UmaConstants.RouteValues.ResourceSet}?ui=1");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+        request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
+
+        var response = await client.SendAsync(request, cancellationToken: TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("Registered Resource Sets", content);
+    }
+
+    [Fact]
+    public async Task When_Getting_Resource_Set_Policy_As_Html_Then_Razor_View_Is_Returned()
+    {
+        var resources = Assert.IsType<Option<string[]>.Result>(
+            await _umaClient.GetAllOwnResourceSets("header", cancellationToken: TestContext.Current.CancellationToken));
+
+        using var client = _server.Server.CreateClient();
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"{BaseUrl}/{UmaConstants.RouteValues.ResourceSet}/{resources.Item.First()}/policy");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+        request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "header");
+
+        var response = await client.SendAsync(request, cancellationToken: TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("Set Access Policy", content);
+    }
+
     /// <inheritdoc />
     public void Dispose()
     {

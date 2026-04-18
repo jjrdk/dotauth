@@ -14,6 +14,7 @@
 
 namespace DotAuth.AuthServer;
 
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -40,7 +41,14 @@ public sealed class Program
                         o.AddServerHeader = false;
                         o.ConfigureEndpointDefaults(l => l.Protocols = HttpProtocols.Http1AndHttp2);
                     })
-                    .ConfigureAppConfiguration(c => c.AddEnvironmentVariables())
+                    .ConfigureAppConfiguration(
+                        (context, c) =>
+                        {
+                            c.SetBasePath(AppContext.BaseDirectory)
+                                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                                .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                                .AddEnvironmentVariables();
+                        })
                     .UseStartup<Startup>();
             })
             .Build();

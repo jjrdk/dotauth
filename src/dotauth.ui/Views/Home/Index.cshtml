@@ -6,18 +6,21 @@
     <div class="col s12">
         <div class="card">
             <div class="card-content">
-                <h1>@DotAuth.Extensions.Globals.ApplicationName</h1>
+                <div class="center-align">
+                    <h1>@DotAuth.Extensions.Globals.ApplicationName</h1>
+                    <div class="flow-text grey-text text-darken-1">modern identity for connected applications</div>
+                </div>
                 <div class="m12">
-                    @DotAuth.Extensions.Globals.ApplicationName is an all-in-one open-source server for secure and seamless identity and access management with OpenID, OAuth2 and UMA2 protocols.
+                    @DotAuth.Extensions.Globals.ApplicationName is an open-source, cloud-friendly authorization server for teams building secure apps and APIs with OpenID Connect, OAuth2, and UMA. Manage clients, users, scopes, permissions, and consent from one streamlined control plane.
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col s6 m4">
-        <div class="card">
+<div class="row dashboard-card-row">
+    <div class="col s6 m4 dashboard-card-col">
+        <div class="card dashboard-card">
             <div class="card-image">
                 <img alt="Manage UMA Resources" src="~/img/manage_resources.png" />
             </div>
@@ -26,12 +29,12 @@
                 <p>Create and organize protected resources, then define which scopes can be requested for each one.</p>
             </div>
             <div class="card-action center">
-                @Html.ActionLink("Manage UMA Resources", "GetResourceSets", "ResourceSet", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                <a href="@Url.ResourceSetPath(includeUiQuery: true)" class="btn blue darken-3 waves-effect waves-light">Manage UMA Resources</a>
             </div>
         </div>
     </div>
-    <div class="col s6 m4">
-        <div class="card">
+    <div class="col s6 m4 dashboard-card-col">
+        <div class="card dashboard-card">
             <div class="card-image">
                 <img alt="Manage Permission Requests" src="~/img/manage_permissions.png" />
             </div>
@@ -40,12 +43,12 @@
                 <p>Review incoming access requests and approve or deny permissions for shared resources.</p>
             </div>
             <div class="card-action center">
-                <a href="@Url.Content("~/perm")" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
+                <a href="@Url.PermissionRequestsPath()" class="btn blue darken-3 waves-effect waves-light">Manage Permission Requests</a>
             </div>
         </div>
     </div>
-    <div class="col s6 m4">
-        <div class="card">
+    <div class="col s6 m4 dashboard-card-col">
+        <div class="card dashboard-card">
             <div class="card-image">
                 <img alt="Manage Consents" src="~/img/manage_consent.png" />
             </div>
@@ -54,7 +57,7 @@
                 <p>See which applications can access your data and revoke consents you no longer trust.</p>
             </div>
             <div class="card-action center">
-                @Html.ActionLink("Manage Consents", "Consent", "User", null, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                <a href="@Url.UserConsentPath()" class="btn blue darken-3 waves-effect waves-light">Manage Consents</a>
             </div>
         </div>
     </div>
@@ -62,9 +65,9 @@
 
 @if (User.Claims.Any(c => c.Type == "role" && c.Value.Contains("administrator")))
 {
-    <div class="row">
-        <div class="col s6 m4">
-            <div class="card">
+    <div class="row dashboard-card-row">
+        <div class="col s6 m4 dashboard-card-col">
+            <div class="card dashboard-card">
                 <div class="card-image">
                     <img alt="Register Client" src="~/img/manage_resources.png" />
                 </div>
@@ -73,12 +76,12 @@
                     <p>Add OAuth/OpenID client applications, configure redirect URIs, and choose allowed grant types.</p>
                 </div>
                 <div class="card-action center">
-                    @Html.ActionLink("Register Client", "Add", "Clients", new { ui = "1" }, new { @class = "btn blue darken-3 waves-effect waves-light" })
+                    <a href="@Url.ClientCreatePath()" class="btn blue darken-3 waves-effect waves-light">Register Client</a>
                 </div>
             </div>
         </div>
-        <div class="col s6 m4">
-            <div class="card">
+        <div class="col s6 m4 dashboard-card-col">
+            <div class="card dashboard-card">
                 <div class="card-image">
                     <img alt="Manage Users" src="~/img/manage_users.png"/>
                 </div>
@@ -87,12 +90,12 @@
                     <p>View user accounts, update profile claims, and maintain access-related account settings.</p>
                 </div>
                 <div class="card-action center">
-                    @Html.ActionLink("Manage Users", "GetAll", "ResourceOwners", null, new {@class = "btn blue darken-3 waves-effect waves-light"})
+                    <a href="@Url.ResourceOwnersPath()" class="btn blue darken-3 waves-effect waves-light">Manage Users</a>
                 </div>
             </div>
         </div>
-        <div class="col s6 m4">
-            <div class="card">
+        <div class="col s6 m4 dashboard-card-col">
+            <div class="card dashboard-card">
                 <div class="card-image">
                     <img alt="Manage Scopes" src="~/img/manage_scopes.png"/>
                 </div>
@@ -101,7 +104,7 @@
                     <p>Define API scopes and control which permissions are available to clients and users.</p>
                 </div>
                 <div class="card-action center">
-                    @Html.ActionLink("Manage Scopes", "GetAll", "Scopes", null, new {@class = "btn blue darken-3 waves-effect waves-light"})
+                    <a href="@Url.ScopesPath()" class="btn blue darken-3 waves-effect waves-light">Manage Scopes</a>
                 </div>
             </div>
         </div>

@@ -2,6 +2,9 @@
 
 using System;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Properties;
@@ -39,6 +42,39 @@ public sealed class ResourceOwnerFixture : IDisposable
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheRoDoesntExist, result.Details.Detail);
+    }
+
+    [Fact]
+    public async Task When_Getting_Resource_Owners_As_Html_Then_Razor_View_Is_Returned()
+    {
+        using var client = _server.Server.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5000/{CoreConstants.EndPoints.ResourceOwners}");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+        request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "token");
+
+        var response = await client.SendAsync(request, cancellationToken: TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("Manage Users", content);
+    }
+
+    [Fact]
+    public async Task When_Getting_Resource_Owner_As_Html_Then_Razor_View_Is_Returned()
+    {
+        using var client = _server.Server.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5000/{CoreConstants.EndPoints.ResourceOwners}/administrator");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+        request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerConstants.BearerScheme, "token");
+
+        var response = await client.SendAsync(request, cancellationToken: TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("administrator", content);
+        Assert.Contains("Claims", content);
     }
 
     [Fact]

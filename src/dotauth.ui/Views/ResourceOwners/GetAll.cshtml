@@ -13,7 +13,7 @@
                 <h5>@ViewBag.Title</h5>
                 <div class="row">
                     <div class="col l12 s12">
-                        <table class="bordered">
+                        <table class="bordered highlight responsive-table modern-table">
                             @*<colgroup>
                                     <col style="width: 16.6%;" />
                                     <col style="width: 25%;" />
@@ -37,7 +37,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            <a href="@Url.Action("Get", "ResourceOwners", new {id = ro.Subject})" class="inline">
+                                            <a href="@Url.ResourceOwnerPath(ro.Subject)" class="inline">
                                                 <i class="valign-wrapper material-icons prefix center">edit</i>
                                             </a>
                                         </td>
@@ -61,7 +61,7 @@
                                             }
                                         </td>
                                         <td>
-                                            <span>@string.Join(", ", ro.ExternalLogins?.Select(e => e.Issuer) ?? [])</span>
+                                            <span>@string.Join(", ", ro.ExternalLogins?.Select(e => e.Issuer) ?? Enumerable.Empty<string>())</span>
                                         </td>
                                         <td>
                                             <span>@ro.CreateDateTime</span>

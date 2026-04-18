@@ -42,8 +42,8 @@
 <div class="row">
     <div class="col s12">
         <div class="card">
-            @using (Html.BeginForm("Update", "Scopes", new { name = Model.Name }, method: FormMethod.Post, antiforgery: true, new { }))
-            {
+            <form method="post" action="@Url.ScopeUpdatePath(Model.Name)">
+                @Html.AntiForgeryToken()
                 <div class="card-content">
                     <div class="row">
                         <div class="col s12">
@@ -96,7 +96,7 @@
                         </div>
                     </div>
                 </div>
-            }
+            </form>
         </div>
     </div>
 </div>
