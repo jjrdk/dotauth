@@ -90,10 +90,10 @@ internal sealed class ExceptionHandlerMiddleware
     {
         var route = context.Request.Path.HasValue ? context.Request.Path.Value : string.Empty;
         using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.Exception);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.HttpRoute, DotAuthTelemetry.Normalize(route));
         activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionType, exception.GetType().Name);
         activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionMessage, exception.Message);
-        activity?.SetTag(DotAuthTelemetry.TagKeys.HttpRoute, DotAuthTelemetry.Normalize(route));
-        activity?.AddEvent(new ActivityEvent("exception"));
+        activity?.AddEvent(new ActivityEvent(DotAuthTelemetry.ActivityNames.Exception));
         activity?.SetStatus(ActivityStatusCode.Error, exception.Message);
         DotAuthTelemetry.RecordUnhandledException(exception.GetType().Name, route);
         await _publisher

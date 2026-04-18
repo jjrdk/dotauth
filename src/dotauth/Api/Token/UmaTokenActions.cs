@@ -73,6 +73,7 @@ internal sealed class UmaTokenActions
             _logger.LogError("Ticket is null or empty");
             activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketFound, false);
             activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketExpired, false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidRequest);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
             return new ErrorDetails
             {
@@ -89,7 +90,8 @@ internal sealed class UmaTokenActions
         if (client == null)
         {
             _logger.LogError("Client not found");
-            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
+            activity?.SetStatus(ActivityStatusCode.Error, authResult.ErrorMessage);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -101,6 +103,7 @@ internal sealed class UmaTokenActions
         if (client.GrantTypes.All(x => x != GrantTypes.UmaTicket))
         {
             _logger.LogError("UMA Grant type not supported");
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidGrant);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
@@ -119,6 +122,7 @@ internal sealed class UmaTokenActions
         {
             _logger.LogError("Ticket {Ticket} not found", parameter.Ticket);
             activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketExpired, false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidGrant);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
@@ -133,6 +137,7 @@ internal sealed class UmaTokenActions
         {
             _logger.LogError("Ticket expired");
             activity?.SetTag(DotAuthTelemetry.TagKeys.UmaTicketExpired, true);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.ExpiredTicket);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.ExpiredTicket);
             DotAuthTelemetry.RecordUmaTicketExpired(client.ClientId);
             return new ErrorDetails
@@ -178,7 +183,8 @@ internal sealed class UmaTokenActions
                     authorizationResult.Principal.Select(claim => new ClaimData
                         { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow)).ConfigureAwait(false);
-            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InternalError);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InternalError);
+            activity?.SetStatus(ActivityStatusCode.Error, Strings.InternalError);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.InternalServerError,
@@ -200,7 +206,8 @@ internal sealed class UmaTokenActions
                             { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
-            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.RequestSubmitted);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.RequestSubmitted);
+            activity?.SetStatus(ActivityStatusCode.Error, Strings.PermissionRequested);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.Forbidden,
@@ -220,7 +227,8 @@ internal sealed class UmaTokenActions
                         { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow))
             .ConfigureAwait(false);
-        activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.RequestDenied);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.RequestDenied);
+        activity?.SetStatus(ActivityStatusCode.Error, Strings.TheAuthorizationPolicyIsNotSatisfied);
         return new ErrorDetails
         {
             Status = HttpStatusCode.BadRequest,

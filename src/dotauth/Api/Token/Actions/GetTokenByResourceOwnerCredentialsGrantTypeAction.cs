@@ -94,7 +94,8 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
         var client = authResult.Client;
         if (client == null)
         {
-            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
+            activity?.SetStatus(ActivityStatusCode.Error, authResult.ErrorMessage);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -106,6 +107,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
         // 2. Check the client.
         if (!client.GrantTypes.Contains(GrantTypes.Password))
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidGrant);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
@@ -121,6 +123,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
         if (!client.ResponseTypes.Contains(ResponseTypeNames.Token)
          || !client.ResponseTypes.Contains(ResponseTypeNames.IdToken))
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidResponse);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidResponse);
             return new ErrorDetails
             {
@@ -143,6 +146,7 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
         activity?.SetTag(DotAuthTelemetry.TagKeys.ResourceOwnerAuthenticated, resourceOwner is not null);
         if (resourceOwner == null)
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidCredentials);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidCredentials);
             return new ErrorDetails
             {
@@ -160,7 +164,8 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
             var scopeValidation = resourceOwnerGrantTypeParameter.Scope.Check(client);
             if (!scopeValidation.IsValid)
             {
-                activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidScope);
+                activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidScope);
+                activity?.SetStatus(ActivityStatusCode.Error, scopeValidation.ErrorMessage);
                 return new ErrorDetails
                 {
                     Status = HttpStatusCode.BadRequest,
@@ -194,6 +199,8 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
             cancellationToken).ConfigureAwait(false);
         if (generatedIdTokenPayload is Option<JwtPayload>.Error error)
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(error.Details.Title));
+            activity?.SetStatus(ActivityStatusCode.Error, error.Details.Detail);
             return error.Details;
         }
 

@@ -20,6 +20,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Properties;
+using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
@@ -72,6 +73,7 @@ internal sealed class AuthenticateClient
         {
             activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthMethod, "unknown");
             activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthSuccess, false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
             activity?.SetStatus(ActivityStatusCode.Error, SharedStrings.TheClientDoesntExist);
             DotAuthTelemetry.RecordClientAuthenticationFailure("unknown", clientId);
             return new AuthenticationResult(null, SharedStrings.TheClientDoesntExist);
@@ -152,6 +154,7 @@ internal sealed class AuthenticateClient
         activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthSuccess, success);
         if (!success)
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
             activity?.SetStatus(ActivityStatusCode.Error, errorMessage);
             DotAuthTelemetry.RecordClientAuthenticationFailure(authMethod, clientId);
             return;

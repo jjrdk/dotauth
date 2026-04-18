@@ -109,8 +109,10 @@ internal sealed class TelemetryTokenStore : ITokenStore
         }
         catch (Exception exception)
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionType, exception.GetType().Name);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionMessage, exception.Message);
+            activity?.AddEvent(new ActivityEvent(DotAuthTelemetry.ActivityNames.Exception));
             activity?.SetStatus(ActivityStatusCode.Error, exception.Message);
-            activity?.AddEvent(new ActivityEvent("exception"));
             DotAuthTelemetry.RecordTokenStoreOperationDuration(operation, stopwatch.Elapsed.TotalMilliseconds);
             throw;
         }
@@ -141,8 +143,10 @@ internal sealed class TelemetryTokenStore : ITokenStore
         }
         catch (Exception exception)
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionType, exception.GetType().Name);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionMessage, exception.Message);
+            activity?.AddEvent(new ActivityEvent(DotAuthTelemetry.ActivityNames.Exception));
             activity?.SetStatus(ActivityStatusCode.Error, exception.Message);
-            activity?.AddEvent(new ActivityEvent("exception"));
             DotAuthTelemetry.RecordTokenStoreOperationDuration(operation, stopwatch.Elapsed.TotalMilliseconds);
             throw;
         }

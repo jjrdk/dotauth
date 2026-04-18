@@ -47,6 +47,7 @@ public sealed class ThrottleFilter : Attribute, IFilterFactory
             DotAuthTelemetry.RecordThrottleCheck(route, allowed);
             if (!allowed)
             {
+                activity?.SetTag(DotAuthTelemetry.TagKeys.Status, "rejected");
                 activity?.SetStatus(ActivityStatusCode.Error, "rejected");
                 context.Result = new StatusCodeResult((int)HttpStatusCode.TooManyRequests);
                 return;

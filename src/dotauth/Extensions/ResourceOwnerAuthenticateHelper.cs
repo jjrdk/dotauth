@@ -28,6 +28,7 @@ internal static class ResourceOwnerAuthenticateHelper
         if (amr is not Option<string>.Result result)
         {
             activity?.SetTag(DotAuthTelemetry.TagKeys.ResourceOwnerFound, false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.Status, "no_matching_amr");
             activity?.SetStatus(ActivityStatusCode.Error);
             DotAuthTelemetry.RecordResourceOwnerAuthenticationFailure(resolvedAmr);
             return Task.FromResult<ResourceOwner?>(null);
@@ -63,6 +64,7 @@ internal static class ResourceOwnerAuthenticateHelper
         activity?.SetTag(DotAuthTelemetry.TagKeys.ResourceOwnerFound, found);
         if (!found)
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.Status, "authentication_failed");
             activity?.SetStatus(ActivityStatusCode.Error);
             DotAuthTelemetry.RecordResourceOwnerAuthenticationFailure(service.Amr);
             return null;

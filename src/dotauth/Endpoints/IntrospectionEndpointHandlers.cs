@@ -36,7 +36,9 @@ internal static class IntrospectionEndpointHandlers
 		activity?.SetTag(DotAuthTelemetry.TagKeys.TokenTypeHint, DotAuthTelemetry.Normalize(introspectionRequest.token_type_hint));
 		if (introspectionRequest.token == null)
 		{
+			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidRequest);
 			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
+			DotAuthTelemetry.RecordIntrospectionRequest(false, false);
 			return EndpointHandlerHelpers.BuildJsonError(
 				ErrorCodes.InvalidRequest,
 				"no parameter in body request",
@@ -71,7 +73,9 @@ internal static class IntrospectionEndpointHandlers
 		activity?.SetTag(DotAuthTelemetry.TagKeys.TokenTypeHint, DotAuthTelemetry.Normalize(introspectionRequest.token_type_hint));
 		if (introspectionRequest.token == null)
 		{
+			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidRequest);
 			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
+			DotAuthTelemetry.RecordIntrospectionRequest(false, false);
 			return EndpointHandlerHelpers.BuildJsonError(
 				ErrorCodes.InvalidRequest,
 				Strings.NoParameterInBodyRequest,
@@ -104,7 +108,8 @@ internal static class IntrospectionEndpointHandlers
 
 	private static IResult CompleteIntrospectionError(Activity? activity, DotAuth.Shared.Models.ErrorDetails errorDetails)
 	{
-		activity?.SetStatus(ActivityStatusCode.Error, errorDetails.Title);
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(errorDetails.Title));
+		activity?.SetStatus(ActivityStatusCode.Error, errorDetails.Detail);
 		DotAuthTelemetry.RecordIntrospectionRequest(false, false);
 		return Results.BadRequest(errorDetails);
 	}

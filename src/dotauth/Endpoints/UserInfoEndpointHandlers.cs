@@ -29,6 +29,7 @@ internal static class UserInfoEndpointHandlers
 		var accessToken = await EndpointHandlerHelpers.TryGetAccessTokenAsync(httpContext.Request).ConfigureAwait(false);
 		if (string.IsNullOrWhiteSpace(accessToken))
 		{
+			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidToken);
 			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidToken);
 			DotAuthTelemetry.RecordUserInfoRequest(false);
 			return Results.BadRequest(new ErrorDetails { Title = ErrorCodes.InvalidToken, Detail = ErrorCodes.InvalidToken });
@@ -37,7 +38,8 @@ internal static class UserInfoEndpointHandlers
 		var grantedToken = await tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
 		if (grantedToken == null)
 		{
-			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidToken);
+			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidToken);
+			activity?.SetStatus(ActivityStatusCode.Error, Strings.TheTokenIsNotValid);
 			DotAuthTelemetry.RecordUserInfoRequest(false);
 			return Results.BadRequest(new ErrorDetails { Detail = Strings.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken });
 		}

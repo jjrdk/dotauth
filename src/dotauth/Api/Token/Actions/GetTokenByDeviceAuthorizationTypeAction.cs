@@ -53,7 +53,8 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         var option = await _deviceAuthorizationStore.Get(clientId, deviceCode, cancellationToken).ConfigureAwait(false);
         if (option is Option<DeviceAuthorizationData>.Error e)
         {
-            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Title);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(e.Details.Title));
+            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Detail);
             return e.Details;
         }
 
@@ -77,6 +78,7 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
             const string format = "Device code {0} is expired at {1}";
             _logger.LogInformation(format, authRequest.DeviceCode, now);
             activity?.SetTag(DotAuthTelemetry.TagKeys.DeviceCodeStatus, "expired");
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.ExpiredToken);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.ExpiredToken);
             DotAuthTelemetry.RecordDeviceCodePoll(authRequest.ClientId, "expired");
             return new ErrorDetails
@@ -93,6 +95,8 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         if (lastPolled.AddSeconds(authRequest.Interval) <= now)
         {
             activity?.SetTag(DotAuthTelemetry.TagKeys.DeviceCodeStatus, "pending");
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.AuthorizationPending);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.AuthorizationPending);
             DotAuthTelemetry.RecordDeviceCodePoll(authRequest.ClientId, "pending");
             return new ErrorDetails
             {
@@ -107,6 +111,7 @@ internal sealed class GetTokenByDeviceAuthorizationTypeAction
         var totalSeconds = (now - lastPolled).TotalSeconds;
         _logger.LogInformation(detail, authRequest.ClientId, totalSeconds);
         activity?.SetTag(DotAuthTelemetry.TagKeys.DeviceCodeStatus, "slow_down");
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.SlowDown);
         activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.SlowDown);
         DotAuthTelemetry.RecordDeviceCodePoll(authRequest.ClientId, "slow_down");
 

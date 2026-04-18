@@ -92,7 +92,8 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
             .ConfigureAwait(false);
         if (option is Option<ValidationResult>.Error e)
         {
-            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Title);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(e.Details.Title));
+            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Detail);
             return e.Details;
         }
 

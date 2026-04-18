@@ -9,6 +9,7 @@ using DotAuth.Api.Device;
 using DotAuth.Common;
 using DotAuth.Extensions;
 using DotAuth.Shared;
+using DotAuth.Shared.Errors;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using DotAuth.Telemetry;
@@ -40,7 +41,8 @@ internal static class DeviceAuthorizationEndpointHandlers
 		activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeRequested, DotAuthTelemetry.Normalize(request.scope));
 		if (string.IsNullOrWhiteSpace(request.client_id))
 		{
-			activity?.SetStatus(ActivityStatusCode.Error);
+			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidRequest);
+			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
 			return Results.BadRequest();
 		}
 
@@ -74,7 +76,8 @@ internal static class DeviceAuthorizationEndpointHandlers
 		Activity? activity,
 		DotAuth.Shared.Models.ErrorDetails errorDetails)
 	{
-		activity?.SetStatus(ActivityStatusCode.Error, errorDetails.Title);
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(errorDetails.Title));
+		activity?.SetStatus(ActivityStatusCode.Error, errorDetails.Detail);
 		return Results.Json(errorDetails, statusCode: (int)errorDetails.Status);
 	}
 }

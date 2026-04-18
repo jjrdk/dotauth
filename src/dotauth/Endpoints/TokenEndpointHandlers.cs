@@ -58,6 +58,7 @@ internal static class TokenEndpointHandlers
 		activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(tokenRequest.client_id));
 		if (tokenRequest.grant_type == null)
 		{
+			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidRequest);
 			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
 			DotAuthTelemetry.RecordTokenIssueFailure(tokenRequest.grant_type, tokenRequest.client_id, ErrorCodes.InvalidRequest);
 			DotAuthTelemetry.RecordTokenIssuanceDuration(
@@ -122,7 +123,8 @@ internal static class TokenEndpointHandlers
 		}
 
 		var error = (Option<GrantedToken>.Error)result;
-		activity?.SetStatus(ActivityStatusCode.Error, error.Details.Title);
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(error.Details.Title));
+		activity?.SetStatus(ActivityStatusCode.Error, error.Details.Detail);
 		DotAuthTelemetry.RecordTokenIssueFailure(tokenRequest.grant_type, tokenRequest.client_id, error.Details.Title);
 		DotAuthTelemetry.RecordTokenIssuanceDuration(
 			requestStopwatch.Elapsed.TotalMilliseconds,
@@ -204,7 +206,8 @@ internal static class TokenEndpointHandlers
 		string? errorCode,
 		ErrorDetails errorDetails)
 	{
-		activity?.SetStatus(ActivityStatusCode.Error, errorCode);
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(errorCode));
+		activity?.SetStatus(ActivityStatusCode.Error, errorDetails.Detail);
 		DotAuthTelemetry.RecordTokenRevokeFailure(request.token_type_hint, request.client_id, errorCode);
 		return Results.BadRequest(errorDetails);
 	}

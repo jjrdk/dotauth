@@ -78,7 +78,8 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
         activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(client?.ClientId));
         if (client == null)
         {
-            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
+            activity?.SetStatus(ActivityStatusCode.Error, authResult.ErrorMessage);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -90,6 +91,7 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
         // 2. Check client
         if (client.GrantTypes.All(x => x != GrantTypes.RefreshToken))
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidGrant);
             activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
@@ -109,7 +111,9 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
         if (grantedToken?.ClientId != client.ClientId)
         {
             activity?.SetTag(DotAuthTelemetry.TagKeys.RefreshTokenClientMatch, false);
-            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidGrant);
+            activity?.SetStatus(ActivityStatusCode.Error, Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer);
+            DotAuthTelemetry.RecordRefreshTokenInvalid(client.ClientId);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -144,6 +148,8 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
             .ConfigureAwait(false);
         if (option is Option<GrantedToken>.Error e)
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(e.Details.Title));
+            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Detail);
             return e;
         }
         var generatedToken = ((Option<GrantedToken>.Result)option).Item with

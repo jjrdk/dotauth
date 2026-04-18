@@ -64,7 +64,8 @@ internal static class AuthorizationEndpointHandlers
         var result = await ResolveAuthorizationRequest(httpClientFactory, clientStore, jwksStore, authorizationRequest, cancellationToken).ConfigureAwait(false);
         if (result is Option<AuthorizationRequest>.Error e)
         {
-            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Title);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(e.Details.Title));
+            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Detail);
             return Results.Json(e.Details, statusCode: (int)e.Details.Status);
         }
 
@@ -133,7 +134,8 @@ internal static class AuthorizationEndpointHandlers
                 return Results.Redirect(redirectionUrl.AbsoluteUri);
             }
             case ActionResultType.BadRequest:
-                activity?.SetStatus(ActivityStatusCode.Error, actionResult.Error?.Title);
+                activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(actionResult.Error?.Title));
+                activity?.SetStatus(ActivityStatusCode.Error, actionResult.Error?.Detail);
                 return Results.BadRequest(actionResult.Error);
             default:
                 activity?.SetStatus(ActivityStatusCode.Error);
