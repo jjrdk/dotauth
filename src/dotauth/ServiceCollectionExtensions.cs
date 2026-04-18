@@ -494,10 +494,10 @@ public static class ServiceCollectionExtensions
             ? OtlpExportProtocol.HttpProtobuf
             : OtlpExportProtocol.Grpc;
         var tracesEndpoint = exportProtocol == OtlpExportProtocol.HttpProtobuf
-            ? new Uri(endpointUri.AbsoluteUri.TrimEnd('/') + "/v1/traces", UriKind.Absolute)
+            ? new Uri($"{endpointUri.AbsoluteUri.TrimEnd('/')}/v1/traces", UriKind.Absolute)
             : endpointUri;
         var metricsEndpoint = exportProtocol == OtlpExportProtocol.HttpProtobuf
-            ? new Uri(endpointUri.AbsoluteUri.TrimEnd('/') + "/v1/metrics", UriKind.Absolute)
+            ? new Uri($"{endpointUri.AbsoluteUri.TrimEnd('/')}/v1/metrics", UriKind.Absolute)
             : endpointUri;
 
         services.AddOpenTelemetry()
