@@ -319,7 +319,7 @@ internal static class UserUiEndpointHandlers
             var option = await UnlinkProfile(
                     authenticatedUser!.GetSubject()!,
                     id,
-                    authenticatedUser.Identity?.AuthenticationType ?? CookieNames.CookieName,
+                    authenticatedUser?.Identity?.AuthenticationType ?? CookieNames.CookieName,
                     resourceOwnerRepository,
                     cancellationToken)
                 .ConfigureAwait(false);

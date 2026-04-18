@@ -2,7 +2,6 @@ namespace DotAuth.Endpoints;
 
 using System.Threading;
 using System.Threading.Tasks;
-using DotAuth.Services;
 using DotAuth.Shared.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

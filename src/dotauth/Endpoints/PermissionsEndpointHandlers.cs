@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Api.PermissionController;
 using DotAuth.Events;
-using DotAuth.Extensions;
 using DotAuth.Properties;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
@@ -17,7 +16,6 @@ using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using DotAuth.ViewModels;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

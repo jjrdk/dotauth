@@ -15,15 +15,25 @@
 namespace DotAuth.Tests.Api.Introspection.Actions;
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Api.Introspection;
+using DotAuth.Endpoints;
 using DotAuth.Parameters;
 using DotAuth.Shared;
+using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;
+using DotAuth.Telemetry;
+using DotAuth.Tests.Telemetry;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Primitives;
 using NSubstitute;
 using Xunit;
 
@@ -189,3 +199,58 @@ public sealed class PostIntrospectionActionFixture
         Assert.Equal(subject, result.Subject);
     }
 }
+
+public sealed class IntrospectionEndpointTelemetryFixture
+{
+    [Fact]
+    public async Task When_Posting_Introspection_Without_Token_Then_Error_Telemetry_Is_Recorded()
+    {
+        var requestThrottle = Substitute.For<IRequestThrottle>();
+        requestThrottle.Allow(Arg.Any<HttpRequest>()).Returns(true);
+        var tokenStore = Substitute.For<ITokenStore>();
+        var httpContext = CreateFormHttpContext(
+            "/introspect",
+            new Dictionary<string, string> { ["token_type_hint"] = "access_token" });
+        using var activityCollector = new ActivityCollector();
+        using var metricCollector = new MetricCollector(
+            DotAuthTelemetry.MetricNames.IntrospectionRequests,
+            DotAuthTelemetry.MetricNames.IntrospectionInactive);
+
+        var result = await IntrospectionEndpointHandlers.PostIntrospection(
+            httpContext,
+            requestThrottle,
+            tokenStore,
+            CancellationToken.None);
+
+        Assert.NotNull(result);
+        var activity = Assert.Single(activityCollector.Activities, candidate =>
+            candidate.DisplayName == DotAuthTelemetry.ActivityNames.IntrospectionRequest);
+        Assert.Equal(ActivityStatusCode.Error, activity.Status);
+        Assert.Contains(activity.Tags, tag =>
+            tag.Key == DotAuthTelemetry.TagKeys.ErrorCode && Equals(tag.Value, ErrorCodes.InvalidRequest));
+        Assert.Contains(metricCollector.Measurements, measurement =>
+            measurement.Name == DotAuthTelemetry.MetricNames.IntrospectionRequests && measurement.Value == 1);
+        Assert.Contains(metricCollector.Measurements, measurement =>
+            measurement.Name == DotAuthTelemetry.MetricNames.IntrospectionInactive && measurement.Value == 1);
+    }
+
+    private static DefaultHttpContext CreateFormHttpContext(
+        string path,
+        IReadOnlyDictionary<string, string> formValues)
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Scheme = "http";
+        httpContext.Request.Host = new HostString("localhost", 8001);
+        httpContext.Request.Path = path;
+        httpContext.Request.Method = HttpMethods.Post;
+        httpContext.Request.ContentType = "application/x-www-form-urlencoded";
+        httpContext.Features.Set<IFormFeature>(
+            new FormFeature(
+                new FormCollection(
+                    formValues.ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => new StringValues(kvp.Value)))));
+        return httpContext;
+    }
+}
+

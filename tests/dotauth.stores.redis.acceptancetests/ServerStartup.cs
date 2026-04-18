@@ -158,7 +158,7 @@ internal sealed class ServerStartup
                 }
 
                 var token = await httpContext.GetTokenAsync("access_token").ConfigureAwait(false);
-                var request = new PermissionRequest { ResourceSetId = id, Scopes = new[] { "api1" } };
+                var request = new PermissionRequest { ResourceSetId = id, Scopes = ["api1"] };
                 var option = await umaClient.RequestPermission(token!, cancellationToken, request).ConfigureAwait(false);
                 var ticket = option as Option<TicketResponse>.Result;
                 httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;

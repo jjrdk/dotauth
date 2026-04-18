@@ -15,6 +15,7 @@
 namespace DotAuth.Api.Token;
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -35,6 +36,7 @@ using DotAuth.Shared.Errors;
 using DotAuth.Shared.Events.OAuth;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
+using DotAuth.Telemetry;
 using Microsoft.Extensions.Logging;
 
 internal sealed class TokenActions
@@ -200,8 +202,13 @@ internal sealed class TokenActions
         string issuerName,
         CancellationToken cancellationToken)
     {
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.TokenClientCredentials);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(clientCredentialsGrantTypeParameter.ClientId));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeRequested, DotAuthTelemetry.Normalize(clientCredentialsGrantTypeParameter.Scope));
         if (string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidRequest);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -219,6 +226,8 @@ internal sealed class TokenActions
         var client = authResult.Client;
         if (client == null)
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
+            activity?.SetStatus(ActivityStatusCode.Error, authResult.ErrorMessage);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -230,6 +239,8 @@ internal sealed class TokenActions
         // 2. Check client
         if (client.GrantTypes.All(x => x != GrantTypes.ClientCredentials))
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidGrant);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidGrant);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -243,6 +254,8 @@ internal sealed class TokenActions
 
         if (!client.ResponseTypes.Contains(ResponseTypeNames.Token))
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidClient);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
@@ -261,6 +274,8 @@ internal sealed class TokenActions
             var scopeValidation = clientCredentialsGrantTypeParameter.Scope.Check(client);
             if (!scopeValidation.IsValid)
             {
+                activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidScope);
+                activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidScope);
                 return new ErrorDetails
                 {
                     Status = HttpStatusCode.BadRequest,
@@ -274,6 +289,8 @@ internal sealed class TokenActions
             allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
         }
 
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeGranted, DotAuthTelemetry.Normalize(allowedTokenScopes));
+
         // 4. Generate the JWT access token on the fly.
         var grantedToken = await _tokenStore
             .GetValidGrantedToken(
@@ -283,6 +300,7 @@ internal sealed class TokenActions
                 issuer: issuerName,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.TokenReused, grantedToken != null);
         if (grantedToken == null)
         {
             grantedToken = await client.GenerateToken(
@@ -306,6 +324,12 @@ internal sealed class TokenActions
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
         }
+        else
+        {
+            DotAuthTelemetry.RecordTokenReused(GrantTypes.ClientCredentials, client.ClientId);
+        }
+
+        activity?.SetStatus(ActivityStatusCode.Ok);
 
         return new Option<GrantedToken>.Result(grantedToken);
     }
@@ -316,8 +340,12 @@ internal sealed class TokenActions
         string issuerName,
         CancellationToken cancellationToken)
     {
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.TokenDeviceCode);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(clientId));
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(deviceCode))
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
+            activity?.SetStatus(ActivityStatusCode.Error, Strings.ClientIsNotValid);
             return new ErrorDetails
             {
                 Title = ErrorCodes.InvalidClient,

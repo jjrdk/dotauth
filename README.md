@@ -34,6 +34,112 @@ To build the project, run the build script (build.ps1 on Windows, build.sh on Li
 
 See the example [Auth Server project](https://github.com/jjrdk/DotAuth/tree/master/src/dotauth.authserver) for an example of how to use DotAuth as an auth server.
 
+## OpenTelemetry traces and metrics
+
+DotAuth can emit custom OpenTelemetry traces and metrics for the main OAuth2, OpenID Connect, and UMA server flows.
+
+Telemetry export is enabled only when `OTEL_EXPORTER_OTLP_ENDPOINT` is set. When that environment variable is missing, DotAuth runs without registering the custom OpenTelemetry pipeline.
+
+### Environment variables
+
+|Environment Variable|Type|Description|
+|---|---|---|
+|`OTEL_EXPORTER_OTLP_ENDPOINT`|url string|Required to enable OpenTelemetry export. Use the collector base URL, for example `http://localhost:4318/`.|
+|`OTEL_EXPORTER_OTLP_PROTOCOL`|string|Optional. Set to `http/protobuf` for OTLP/HTTP export. If omitted, DotAuth uses OTLP/gRPC.|
+|`OTEL_SERVICE_NAME`|string|Optional standard OpenTelemetry resource attribute used by downstream collectors/backends.|
+
+When `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf`, DotAuth automatically appends the signal-specific OTLP paths expected by the collector:
+
+- traces → `/v1/traces`
+- metrics → `/v1/metrics`
+
+### Local collector and backend example
+
+For local development, a small OpenTelemetry Collector plus a trace backend is enough to inspect DotAuth telemetry end-to-end.
+The example below keeps traces in Jaeger and exposes metrics from the collector in Prometheus format on `:9464`.
+
+A checked-in collector example is available at [`otel-local/collector.yaml`](otel-local/collector.yaml).
+It accepts OTLP over gRPC and HTTP, forwards traces to Jaeger, and exposes metrics in Prometheus format for local scraping.
+
+If you want a simple local backend stack, the following `docker-compose.yml` snippet is enough for development. Use pinned image tags in your own environment as needed:
+
+```yaml
+services:
+  jaeger:
+    image: jaegertracing/all-in-one
+    ports:
+      - "16686:16686"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./otel-local/collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "9464:9464"
+    depends_on:
+      - jaeger
+```
+
+Point DotAuth to the collector with standard OTLP environment variables:
+
+```zsh
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318/"
+export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
+export OTEL_SERVICE_NAME="dotauth-local"
+```
+
+With that setup in place:
+
+- open Jaeger at `http://localhost:16686` to inspect traces
+- scrape `http://localhost:9464/metrics` from Prometheus or view it directly during development
+- use `otel_tracing.md` as the detailed reference for the span names, metric names, and recommended tags emitted by DotAuth
+
+### DotAuth telemetry names
+
+|Type|Name|
+|---|---|
+|Activity source|`DotAuth.TokenServer`|
+|Meter|`DotAuth.TokenServer.Metrics`|
+
+### Emitted trace spans
+
+DotAuth emits custom spans for the main request and sub-operation boundaries, including:
+
+- token endpoint requests: `dotauth.token.request`
+- grant-specific token flows: `dotauth.token.client_credentials`, `dotauth.token.password`, `dotauth.token.authorization_code`, `dotauth.token.refresh`, `dotauth.token.device_code`, `dotauth.token.uma_ticket`
+- token revocation: `dotauth.token.revoke`
+- client and resource-owner authentication: `dotauth.client.authenticate`, `dotauth.resource_owner.authenticate`
+- authorization, introspection, and user info endpoints: `dotauth.authorization.request`, `dotauth.introspection.request`, `dotauth.userinfo.request`
+- device authorization: `dotauth.device_authorization.request`
+- throttling and exception handling: `dotauth.throttle.check`, `dotauth.exception`
+- supporting store operations: `dotauth.token_store.get`, `dotauth.token_store.add`, `dotauth.token_store.remove`, `dotauth.jwks.get_signing_key`, `dotauth.jwks.get_encryption_key`, `dotauth.jwks.get_public_keys`
+
+These spans are tagged with stable attributes such as grant type, client id, response status, OAuth error code, token reuse, UMA authorization result, route, and cache/store hit indicators.
+
+### Emitted metrics
+
+DotAuth also emits counters and histograms for the most important server outcomes, including:
+
+- token lifecycle: `dotauth.tokens.issued`, `dotauth.tokens.reused`, `dotauth.tokens.issue.failures`, `dotauth.token.issuance.duration`
+- revocation and refresh: `dotauth.tokens.revoked`, `dotauth.tokens.revoke.failures`, `dotauth.refresh_tokens.used`, `dotauth.refresh_tokens.invalid`
+- authorization code and device flows: `dotauth.authorization_codes.issued`, `dotauth.authorization_codes.redeemed`, `dotauth.authorization_codes.expired`, `dotauth.authorization_codes.invalid`, `dotauth.device_authorization.started`, `dotauth.device_code.polls`, `dotauth.device_code.approval.duration`
+- client and user authentication: `dotauth.client.auth.success`, `dotauth.client.auth.failure`, `dotauth.resource_owner.auth.success`, `dotauth.resource_owner.auth.failure`
+- UMA, introspection, and user info: `dotauth.uma.rpt.issued`, `dotauth.uma.rpt.request_submitted`, `dotauth.uma.rpt.denied`, `dotauth.uma.ticket.expired`, `dotauth.introspection.requests`, `dotauth.introspection.active`, `dotauth.introspection.inactive`, `dotauth.userinfo.requests`
+- operational signals: `dotauth.throttle.allowed`, `dotauth.throttle.rejected`, `dotauth.errors.oauth`, `dotauth.errors.unhandled`, `dotauth.token_store.operation.duration`
+
+### Verifying the telemetry
+
+The acceptance test suite includes OpenTelemetry scenarios that boot a real OpenTelemetry Collector container and assert the exported span and metric names end-to-end.
+
+To run the telemetry acceptance scenarios locally:
+
+```zsh
+dotnet test "/Users/jacobreimers/code/dotauth/tests/dotauth.acceptancetests/dotauth.acceptancetests.csproj" --filter FullyQualifiedName~OpenTelemetryInstrumentation --logger "console;verbosity=minimal"
+```
+
 ## Configuration Values for Demo Servers
 
 The demo servers can be customized by setting the environment variables defined below. In addition to the application specific variables below, the standard ASP.NET environments can also be passed.

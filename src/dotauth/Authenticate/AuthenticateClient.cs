@@ -15,13 +15,16 @@
 namespace DotAuth.Authenticate;
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Properties;
+using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
+using DotAuth.Telemetry;
 
 /// <summary>
 /// Defines the authenticate client.
@@ -59,6 +62,8 @@ internal sealed class AuthenticateClient
         // First we try to fetch the client_id
         // The different client authentication mechanisms are described here : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
         var clientId = TryGettingClientId(instruction);
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.ClientAuthenticate);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(clientId));
         if (!string.IsNullOrWhiteSpace(clientId))
         {
             client = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
@@ -66,10 +71,17 @@ internal sealed class AuthenticateClient
 
         if (client == null)
         {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthMethod, "unknown");
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthSuccess, false);
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
+            activity?.SetStatus(ActivityStatusCode.Error, SharedStrings.TheClientDoesntExist);
+            DotAuthTelemetry.RecordClientAuthenticationFailure("unknown", clientId);
             return new AuthenticationResult(null, SharedStrings.TheClientDoesntExist);
         }
 
         var errorMessage = string.Empty;
+        var authMethod = DotAuthTelemetry.MapClientAuthenticationMethod(client.TokenEndPointAuthMethod);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthMethod, authMethod);
         switch (client.TokenEndPointAuthMethod)
         {
             case TokenEndPointAuthenticationMethods.ClientSecretBasic:
@@ -91,9 +103,11 @@ internal sealed class AuthenticateClient
             case TokenEndPointAuthenticationMethods.ClientSecretJwt:
                 if (client.Secrets.Any(s => s.Type == ClientSecretTypes.SharedSecret))
                 {
-                    return await _clientAssertionAuthentication
+                    var jwtResult = await _clientAssertionAuthentication
                         .AuthenticateClientWithClientSecretJwt(instruction, cancellationToken)
                         .ConfigureAwait(false);
+                    RecordClientAuthenticationResult(activity, authMethod, clientId, jwtResult.Client != null, jwtResult.ErrorMessage);
+                    return jwtResult;
                 }
 
                 errorMessage = string.Format(
@@ -102,9 +116,11 @@ internal sealed class AuthenticateClient
                 break;
 
             case TokenEndPointAuthenticationMethods.PrivateKeyJwt:
-                return await _clientAssertionAuthentication
+                var privateKeyResult = await _clientAssertionAuthentication
                     .AuthenticateClientWithPrivateKeyJwt(instruction, issuerName, cancellationToken)
                     .ConfigureAwait(false);
+                RecordClientAuthenticationResult(activity, authMethod, clientId, privateKeyResult.Client != null, privateKeyResult.ErrorMessage);
+                return privateKeyResult;
             case TokenEndPointAuthenticationMethods.TlsClientAuth:
                 client = AuthenticateTlsClient(instruction, client);
                 if (client == null)
@@ -115,7 +131,36 @@ internal sealed class AuthenticateClient
                 break;
         }
 
+        RecordClientAuthenticationResult(activity, authMethod, clientId, client != null, errorMessage);
+
         return new AuthenticationResult(client, errorMessage);
+    }
+
+    /// <summary>
+    /// Records the client authentication result on both traces and metrics.
+    /// </summary>
+    /// <param name="activity">The active client authentication span.</param>
+    /// <param name="authMethod">The normalized authentication method.</param>
+    /// <param name="clientId">The client identifier.</param>
+    /// <param name="success">Whether client authentication succeeded.</param>
+    /// <param name="errorMessage">The error message when authentication failed.</param>
+    private static void RecordClientAuthenticationResult(
+        Activity? activity,
+        string authMethod,
+        string? clientId,
+        bool success,
+        string? errorMessage)
+    {
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientAuthSuccess, success);
+        if (!success)
+        {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
+            activity?.SetStatus(ActivityStatusCode.Error, errorMessage);
+            DotAuthTelemetry.RecordClientAuthenticationFailure(authMethod, clientId);
+            return;
+        }
+
+        DotAuthTelemetry.RecordClientAuthenticationSuccess(authMethod, clientId);
     }
 
     private static Client? AuthenticateTlsClient(AuthenticateInstruction instruction, Client client)

@@ -16,23 +16,23 @@ public static class ResourceSetEndpointRouteBuilderExtensions
     /// <returns>The route builder.</returns>
     public static IEndpointRouteBuilder MapResourceSetEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost(UmaConstants.RouteValues.ResourceSet + "/.search", ResourceSetEndpointHandlers.SearchResourceSets)
+        endpoints.MapPost($"{UmaConstants.RouteValues.ResourceSet}/.search", ResourceSetEndpointHandlers.SearchResourceSets)
             .RequireAuthorization("UmaProtection");
         endpoints.MapGet(UmaConstants.RouteValues.ResourceSet, ResourceSetEndpointHandlers.GetResourceSets)
             .RequireAuthorization("UmaProtection");
-        endpoints.MapGet(UmaConstants.RouteValues.ResourceSet + "/{id}", ResourceSetEndpointHandlers.GetResourceSet)
+        endpoints.MapGet($"{UmaConstants.RouteValues.ResourceSet}/{{id}}", ResourceSetEndpointHandlers.GetResourceSet)
             .RequireAuthorization("UmaProtection");
-        endpoints.MapGet(UmaConstants.RouteValues.ResourceSet + "/{id}/policy", ResourceSetEndpointHandlers.GetResourceSetPolicy)
+        endpoints.MapGet($"{UmaConstants.RouteValues.ResourceSet}/{{id}}/policy", ResourceSetEndpointHandlers.GetResourceSetPolicy)
             .RequireAuthorization("UmaProtection");
-        endpoints.MapPost(UmaConstants.RouteValues.ResourceSet + "/{id}/policy", ResourceSetEndpointHandlers.SetResourceSetPolicyFromViewModel)
+        endpoints.MapPost($"{UmaConstants.RouteValues.ResourceSet}/{{id}}/policy", ResourceSetEndpointHandlers.SetResourceSetPolicyFromViewModel)
             .RequireAuthorization("UmaProtection");
-        endpoints.MapPut(UmaConstants.RouteValues.ResourceSet + "/{id}/policy", ResourceSetEndpointHandlers.SetResourceSetPolicy)
+        endpoints.MapPut($"{UmaConstants.RouteValues.ResourceSet}/{{id}}/policy", ResourceSetEndpointHandlers.SetResourceSetPolicy)
             .RequireAuthorization("UmaProtection");
         endpoints.MapPost(UmaConstants.RouteValues.ResourceSet, ResourceSetEndpointHandlers.AddResourceSet)
             .RequireAuthorization("UmaProtection");
         endpoints.MapPut(UmaConstants.RouteValues.ResourceSet, ResourceSetEndpointHandlers.UpdateResourceSet)
             .RequireAuthorization("UmaProtection");
-        endpoints.MapDelete(UmaConstants.RouteValues.ResourceSet + "/{id}", ResourceSetEndpointHandlers.DeleteResourceSet)
+        endpoints.MapDelete($"{UmaConstants.RouteValues.ResourceSet}/{{id}}", ResourceSetEndpointHandlers.DeleteResourceSet)
             .RequireAuthorization("UmaProtection");
         return endpoints;
     }

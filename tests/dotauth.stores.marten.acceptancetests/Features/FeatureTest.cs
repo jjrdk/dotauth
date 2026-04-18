@@ -60,7 +60,7 @@ public partial class FeatureTest : IAsyncDisposable
     }
 
     [Given(@"a running auth server")]
-    public async Task GivenARunningAuthServer()
+    public void GivenARunningAuthServer()
     {
         _fixture = new TestServerFixture(_outputHelper, _connectionString, BaseUrl);
     }

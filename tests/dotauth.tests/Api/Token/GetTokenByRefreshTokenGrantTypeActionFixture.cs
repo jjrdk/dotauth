@@ -14,6 +14,7 @@
 
 namespace DotAuth.Tests.Api.Token;
 
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -30,6 +31,8 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using DotAuth.Tests.Helpers;
+using DotAuth.Tests.Telemetry;
+using DotAuth.Telemetry;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
@@ -126,6 +129,41 @@ public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
         );
         Assert.Equal(ErrorCodes.InvalidGrant, response.Details.Title);
         Assert.Equal(Strings.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer, response.Details.Detail);
+    }
+
+    [Fact]
+    public async Task When_Passing_Invalid_Refresh_Token_Then_Error_Telemetry_Is_Recorded()
+    {
+        var parameter = new RefreshTokenGrantTypeParameter { ClientId = "id", RefreshToken = "missing" };
+        var client = new Client
+        {
+            ClientId = "id",
+            Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "secret" }],
+            GrantTypes = [GrantTypes.RefreshToken],
+            TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretBasic
+        };
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(client);
+        _tokenStoreStub.GetRefreshToken(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((GrantedToken?)null);
+        using var activityCollector = new ActivityCollector();
+        using var metricCollector = new MetricCollector(DotAuthTelemetry.MetricNames.RefreshTokensInvalid);
+
+        var authenticationHeader = new AuthenticationHeaderValue("Basic", "id:secret".Base64Encode());
+        var response = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByRefreshTokenGrantTypeAction.Execute(
+            parameter,
+            authenticationHeader,
+            null,
+            "issuer",
+            CancellationToken.None));
+
+        Assert.Equal(ErrorCodes.InvalidGrant, response.Details.Title);
+        var activity = Assert.Single(activityCollector.Activities, candidate =>
+            candidate.DisplayName == DotAuthTelemetry.ActivityNames.TokenRefresh);
+        Assert.Equal(ActivityStatusCode.Error, activity.Status);
+        Assert.Contains(activity.Tags, tag =>
+            tag.Key == DotAuthTelemetry.TagKeys.ErrorCode && Equals(tag.Value, ErrorCodes.InvalidGrant));
+        Assert.Contains(metricCollector.Measurements, measurement =>
+            measurement.Name == DotAuthTelemetry.MetricNames.RefreshTokensInvalid && measurement.Value == 1);
     }
 
     [Fact]

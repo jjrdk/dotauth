@@ -17,27 +17,27 @@ public static class ResourceOwnersEndpointRouteBuilderExtensions
     {
         endpoints.MapGet(CoreConstants.EndPoints.ResourceOwners, ResourceOwnersEndpointHandlers.GetAll)
             .RequireAuthorization("manager");
-        endpoints.MapGet(CoreConstants.EndPoints.ResourceOwners + "/{id}", ResourceOwnersEndpointHandlers.Get)
+        endpoints.MapGet($"{CoreConstants.EndPoints.ResourceOwners}/{{id}}", ResourceOwnersEndpointHandlers.Get)
             .RequireAuthorization("manager");
-        endpoints.MapDelete(CoreConstants.EndPoints.ResourceOwners + "/{id}", ResourceOwnersEndpointHandlers.Delete)
+        endpoints.MapDelete($"{CoreConstants.EndPoints.ResourceOwners}/{{id}}", ResourceOwnersEndpointHandlers.Delete)
             .RequireAuthorization("manager");
-        endpoints.MapPost(CoreConstants.EndPoints.ResourceOwners + "/{id}/delete", ResourceOwnersEndpointHandlers.Delete)
+        endpoints.MapPost($"{CoreConstants.EndPoints.ResourceOwners}/{{id}}/delete", ResourceOwnersEndpointHandlers.Delete)
             .RequireAuthorization("manager");
         endpoints.MapDelete(CoreConstants.EndPoints.ResourceOwners, ResourceOwnersEndpointHandlers.DeleteMe)
             .RequireAuthorization();
-        endpoints.MapPost(CoreConstants.EndPoints.ResourceOwners + "/{id}/update", ResourceOwnersEndpointHandlers.Update)
+        endpoints.MapPost($"{CoreConstants.EndPoints.ResourceOwners}/{{id}}/update", ResourceOwnersEndpointHandlers.Update)
             .RequireAuthorization("manager");
-        endpoints.MapPut(CoreConstants.EndPoints.ResourceOwners + "/claims", ResourceOwnersEndpointHandlers.UpdateClaims)
+        endpoints.MapPut($"{CoreConstants.EndPoints.ResourceOwners}/claims", ResourceOwnersEndpointHandlers.UpdateClaims)
             .RequireAuthorization("manager");
-        endpoints.MapPost(CoreConstants.EndPoints.ResourceOwners + "/claims", ResourceOwnersEndpointHandlers.UpdateMyClaims)
+        endpoints.MapPost($"{CoreConstants.EndPoints.ResourceOwners}/claims", ResourceOwnersEndpointHandlers.UpdateMyClaims)
             .RequireAuthorization();
-        endpoints.MapDelete(CoreConstants.EndPoints.ResourceOwners + "/claims", ResourceOwnersEndpointHandlers.DeleteMyClaims)
+        endpoints.MapDelete($"{CoreConstants.EndPoints.ResourceOwners}/claims", ResourceOwnersEndpointHandlers.DeleteMyClaims)
             .RequireAuthorization();
-        endpoints.MapPut(CoreConstants.EndPoints.ResourceOwners + "/password", ResourceOwnersEndpointHandlers.UpdatePassword)
+        endpoints.MapPut($"{CoreConstants.EndPoints.ResourceOwners}/password", ResourceOwnersEndpointHandlers.UpdatePassword)
             .RequireAuthorization("manager");
         endpoints.MapPost(CoreConstants.EndPoints.ResourceOwners, ResourceOwnersEndpointHandlers.Add)
             .RequireAuthorization("manager");
-        endpoints.MapPost(CoreConstants.EndPoints.ResourceOwners + "/.search", ResourceOwnersEndpointHandlers.Search)
+        endpoints.MapPost($"{CoreConstants.EndPoints.ResourceOwners}/.search", ResourceOwnersEndpointHandlers.Search)
             .RequireAuthorization("manager");
         return endpoints;
     }

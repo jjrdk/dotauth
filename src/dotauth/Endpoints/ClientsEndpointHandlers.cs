@@ -8,7 +8,6 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using DotAuth.Extensions;
 using DotAuth.Properties;
 using DotAuth.Repositories;
 using DotAuth.Shared;

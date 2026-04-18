@@ -18,11 +18,11 @@ public static class PermissionsEndpointRouteBuilderExtensions
     {
         endpoints.MapGet(UmaConstants.RouteValues.Permission, PermissionsEndpointHandlers.GetPermissionRequests)
             .RequireAuthorization("UmaProtection");
-        endpoints.MapPost(UmaConstants.RouteValues.Permission + "/{id}/approve", PermissionsEndpointHandlers.ApprovePermissionRequest)
+        endpoints.MapPost($"{UmaConstants.RouteValues.Permission}/{{id}}/approve", PermissionsEndpointHandlers.ApprovePermissionRequest)
             .RequireAuthorization("UmaProtection");
         endpoints.MapPost(UmaConstants.RouteValues.Permission, PermissionsEndpointHandlers.RequestPermission)
             .RequireAuthorization("UmaProtection");
-        endpoints.MapPost(UmaConstants.RouteValues.Permission + "/bulk", PermissionsEndpointHandlers.BulkRequestPermissions)
+        endpoints.MapPost($"{UmaConstants.RouteValues.Permission}/bulk", PermissionsEndpointHandlers.BulkRequestPermissions)
             .RequireAuthorization("UmaProtection");
         return endpoints;
     }

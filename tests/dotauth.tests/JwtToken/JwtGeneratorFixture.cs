@@ -178,11 +178,10 @@ public sealed class JwtGeneratorFixture
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
         _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(
-                new[]
-                {
-                    new Scope { Type = "role", Claims = [OpenIdClaimTypes.Role] },
+            [
+                new Scope { Type = "role", Claims = [OpenIdClaimTypes.Role] },
                     new Scope { Type = "manager", Claims = [OpenIdClaimTypes.Role] }
-                });
+            ]);
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                 claimsPrincipal,
@@ -217,11 +216,10 @@ public sealed class JwtGeneratorFixture
         var authorizationParameter = new AuthorizationParameter { ClientId = clientId, Scope = scope };
         _scopeRepositoryStub.SearchByNames(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(
-                new[]
-                {
-                    new Scope { Type = "role", Claims = [OpenIdClaimTypes.Role] },
+            [
+                new Scope { Type = "role", Claims = [OpenIdClaimTypes.Role] },
                     new Scope { Type = "manager", Claims = [OpenIdClaimTypes.Role] }
-                });
+            ]);
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
                 claimsPrincipal,

@@ -15,10 +15,12 @@
 namespace DotAuth.MiddleWare;
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using DotAuth.Events;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Events.Logging;
+using DotAuth.Telemetry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
@@ -55,7 +57,7 @@ internal sealed class ExceptionHandlerMiddleware
                 {
                     foreach (var ex in aggregateException.InnerExceptions)
                     {
-                        await PublishError(ex).ConfigureAwait(false);
+                        await PublishError(ex, context).ConfigureAwait(false);
                         _logger.LogError("{Error}", ex.StackTrace);
                     }
 
@@ -64,7 +66,7 @@ internal sealed class ExceptionHandlerMiddleware
                 }
                 default:
                 {
-                    await PublishError(exception).ConfigureAwait(false);
+                    await PublishError(exception, context).ConfigureAwait(false);
                     _logger.LogError("{Error}", exception.StackTrace);
 
                     SetRedirection(context, exception);
@@ -84,8 +86,16 @@ internal sealed class ExceptionHandlerMiddleware
         }
     }
 
-    private async Task PublishError(Exception exception)
+    private async Task PublishError(Exception exception, HttpContext context)
     {
+        var route = context.Request.Path.HasValue ? context.Request.Path.Value : string.Empty;
+        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.Exception);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.HttpRoute, DotAuthTelemetry.Normalize(route));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionType, exception.GetType().Name);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ExceptionMessage, exception.Message);
+        activity?.AddEvent(new ActivityEvent(DotAuthTelemetry.ActivityNames.Exception));
+        activity?.SetStatus(ActivityStatusCode.Error, exception.Message);
+        DotAuthTelemetry.RecordUnhandledException(exception.GetType().Name, route);
         await _publisher
             .Publish(
                 new DotAuthError(

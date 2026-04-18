@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Api.Discovery;
 using DotAuth.Extensions;
-using DotAuth.Services;
 using DotAuth.Shared;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Responses;

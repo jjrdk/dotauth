@@ -1,18 +1,19 @@
 namespace DotAuth.Endpoints;
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Api.Introspection;
 using DotAuth.Extensions;
 using DotAuth.Properties;
-using DotAuth.Services;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Repositories;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
+using DotAuth.Telemetry;
 using Microsoft.AspNetCore.Http;
 
 internal static class IntrospectionEndpointHandlers
@@ -23,6 +24,7 @@ internal static class IntrospectionEndpointHandlers
 		ITokenStore tokenStore,
 		CancellationToken cancellationToken)
 	{
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.IntrospectionRequest);
 		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
 		if (throttled != null)
 		{
@@ -31,8 +33,12 @@ internal static class IntrospectionEndpointHandlers
 
 		var introspectionRequest = await EndpointHandlerHelpers.BindFromFormAsync<IntrospectionRequest>(httpContext.Request)
 			.ConfigureAwait(false);
+		activity?.SetTag(DotAuthTelemetry.TagKeys.TokenTypeHint, DotAuthTelemetry.Normalize(introspectionRequest.token_type_hint));
 		if (introspectionRequest.token == null)
 		{
+			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidRequest);
+			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
+			DotAuthTelemetry.RecordIntrospectionRequest(false, false);
 			return EndpointHandlerHelpers.BuildJsonError(
 				ErrorCodes.InvalidRequest,
 				"no parameter in body request",
@@ -43,8 +49,8 @@ internal static class IntrospectionEndpointHandlers
 		var result = await introspectionAction.Execute(introspectionRequest.ToParameter(), cancellationToken).ConfigureAwait(false);
 		return result switch
 		{
-			Option<OauthIntrospectionResponse>.Result r => Results.Ok(r.Item),
-			Option<OauthIntrospectionResponse>.Error e => Results.BadRequest(e.Details),
+			Option<OauthIntrospectionResponse>.Result r => CompleteOauthIntrospection(activity, r.Item),
+			Option<OauthIntrospectionResponse>.Error e => CompleteIntrospectionError(activity, e.Details),
 			_ => throw new ArgumentOutOfRangeException()
 		};
 	}
@@ -55,6 +61,7 @@ internal static class IntrospectionEndpointHandlers
 		ITokenStore tokenStore,
 		CancellationToken cancellationToken)
 	{
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.IntrospectionRequest);
 		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
 		if (throttled != null)
 		{
@@ -63,8 +70,12 @@ internal static class IntrospectionEndpointHandlers
 
 		var introspectionRequest = await EndpointHandlerHelpers.BindFromFormAsync<IntrospectionRequest>(httpContext.Request)
 			.ConfigureAwait(false);
+		activity?.SetTag(DotAuthTelemetry.TagKeys.TokenTypeHint, DotAuthTelemetry.Normalize(introspectionRequest.token_type_hint));
 		if (introspectionRequest.token == null)
 		{
+			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidRequest);
+			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
+			DotAuthTelemetry.RecordIntrospectionRequest(false, false);
 			return EndpointHandlerHelpers.BuildJsonError(
 				ErrorCodes.InvalidRequest,
 				Strings.NoParameterInBodyRequest,
@@ -75,10 +86,32 @@ internal static class IntrospectionEndpointHandlers
 		var result = await introspectionAction.Execute(introspectionRequest.ToParameter(), cancellationToken).ConfigureAwait(false);
 		return result switch
 		{
-			Option<UmaIntrospectionResponse>.Result r => Results.Ok(r.Item),
-			Option<UmaIntrospectionResponse>.Error e => Results.BadRequest(e.Details),
+			Option<UmaIntrospectionResponse>.Result r => CompleteUmaIntrospection(activity, r.Item),
+			Option<UmaIntrospectionResponse>.Error e => CompleteIntrospectionError(activity, e.Details),
 			_ => throw new ArgumentOutOfRangeException()
 		};
+	}
+
+	private static IResult CompleteOauthIntrospection(Activity? activity, OauthIntrospectionResponse response)
+	{
+		activity?.SetStatus(ActivityStatusCode.Ok);
+		DotAuthTelemetry.RecordIntrospectionRequest(response.Active, response.Active);
+		return Results.Ok(response);
+	}
+
+	private static IResult CompleteUmaIntrospection(Activity? activity, UmaIntrospectionResponse response)
+	{
+		activity?.SetStatus(ActivityStatusCode.Ok);
+		DotAuthTelemetry.RecordIntrospectionRequest(response.Active, response.Active);
+		return Results.Ok(response);
+	}
+
+	private static IResult CompleteIntrospectionError(Activity? activity, DotAuth.Shared.Models.ErrorDetails errorDetails)
+	{
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(errorDetails.Title));
+		activity?.SetStatus(ActivityStatusCode.Error, errorDetails.Detail);
+		DotAuthTelemetry.RecordIntrospectionRequest(false, false);
+		return Results.BadRequest(errorDetails);
 	}
 }
 

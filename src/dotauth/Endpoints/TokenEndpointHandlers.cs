@@ -1,6 +1,7 @@
 namespace DotAuth.Endpoints;
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Headers;
@@ -18,6 +19,7 @@ using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
+using DotAuth.Telemetry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -42,6 +44,7 @@ internal static class TokenEndpointHandlers
 		ILoggerFactory loggerFactory,
 		CancellationToken cancellationToken)
 	{
+		var requestStopwatch = Stopwatch.StartNew();
 		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
 		if (throttled != null)
 		{
@@ -50,8 +53,19 @@ internal static class TokenEndpointHandlers
 
 		EndpointHandlerHelpers.SetCacheHeaders(httpContext.Response, 0, ResponseCacheLocation.None, true);
 		var tokenRequest = await EndpointHandlerHelpers.BindFromFormAsync<TokenRequest>(httpContext.Request).ConfigureAwait(false);
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.TokenRequest);
+		activity?.SetTag(DotAuthTelemetry.TagKeys.GrantType, DotAuthTelemetry.Normalize(tokenRequest.grant_type));
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(tokenRequest.client_id));
 		if (tokenRequest.grant_type == null)
 		{
+			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidRequest);
+			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidRequest);
+			DotAuthTelemetry.RecordTokenIssueFailure(tokenRequest.grant_type, tokenRequest.client_id, ErrorCodes.InvalidRequest);
+			DotAuthTelemetry.RecordTokenIssuanceDuration(
+				requestStopwatch.Elapsed.TotalMilliseconds,
+				tokenRequest.grant_type,
+				tokenRequest.client_id,
+				false);
 			return Results.BadRequest(
 				new ErrorDetails
 				{
@@ -98,10 +112,25 @@ internal static class TokenEndpointHandlers
 			.ConfigureAwait(false);
 		if (result is Option<GrantedToken>.Result r)
 		{
+			activity?.SetStatus(ActivityStatusCode.Ok);
+			DotAuthTelemetry.RecordTokenIssued(tokenRequest.grant_type, r.Item.ClientId);
+			DotAuthTelemetry.RecordTokenIssuanceDuration(
+				requestStopwatch.Elapsed.TotalMilliseconds,
+				tokenRequest.grant_type,
+				r.Item.ClientId,
+				true);
 			return Results.Ok(r.Item.ToDto());
 		}
 
 		var error = (Option<GrantedToken>.Error)result;
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(error.Details.Title));
+		activity?.SetStatus(ActivityStatusCode.Error, error.Details.Detail);
+		DotAuthTelemetry.RecordTokenIssueFailure(tokenRequest.grant_type, tokenRequest.client_id, error.Details.Title);
+		DotAuthTelemetry.RecordTokenIssuanceDuration(
+			requestStopwatch.Elapsed.TotalMilliseconds,
+			tokenRequest.grant_type,
+			tokenRequest.client_id,
+			false);
 		logger.LogError(
 			"Could not issue token. {Title} - {Detail} - {Status}",
 			error.Details.Title,
@@ -126,6 +155,7 @@ internal static class TokenEndpointHandlers
 		ILoggerFactory loggerFactory,
 		CancellationToken cancellationToken)
 	{
+		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.TokenRevoke);
 		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
 		if (throttled != null)
 		{
@@ -157,10 +187,29 @@ internal static class TokenEndpointHandlers
 			.ConfigureAwait(false);
 		return option switch
 		{
-			Option.Success => Results.Ok(),
-			Option.Error e => Results.BadRequest(e.Details),
+			Option.Success => CompleteSuccessfulRevocation(activity, revocationRequest),
+			Option.Error e => CompleteFailedRevocation(activity, revocationRequest, e.Details.Title, e.Details),
 			_ => throw new ArgumentOutOfRangeException()
 		};
+	}
+
+	private static IResult CompleteSuccessfulRevocation(Activity? activity, RevocationRequest request)
+	{
+		activity?.SetStatus(ActivityStatusCode.Ok);
+		DotAuthTelemetry.RecordTokenRevoked(request.token_type_hint, request.client_id);
+		return Results.Ok();
+	}
+
+	private static IResult CompleteFailedRevocation(
+		Activity? activity,
+		RevocationRequest request,
+		string? errorCode,
+		ErrorDetails errorDetails)
+	{
+		activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(errorCode));
+		activity?.SetStatus(ActivityStatusCode.Error, errorDetails.Detail);
+		DotAuthTelemetry.RecordTokenRevokeFailure(request.token_type_hint, request.client_id, errorCode);
+		return Results.BadRequest(errorDetails);
 	}
 
 	private static async Task<Option<GrantedToken>> GetGrantedTokenAsync(

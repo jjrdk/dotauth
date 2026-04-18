@@ -53,6 +53,15 @@ public partial class FeatureTest : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        if (_openTelemetryCollector is not null)
+        {
+            _openTelemetryCollector.DisposeAsync().AsTask().GetAwaiter().GetResult();
+            _openTelemetryCollector = null;
+        }
+
+        Environment.SetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT", null);
+        Environment.SetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL", null);
+        Environment.SetEnvironmentVariable("OTEL_SERVICE_NAME", null);
         _fixture?.Dispose();
         _responseMessage?.Dispose();
         _pollingTask?.Dispose();
