@@ -46,6 +46,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -179,7 +180,7 @@ public static class ServiceCollectionExtensions
         {
             return principal.Identities.Any(identity =>
                 identity is { IsAuthenticated: true }
-                && string.Equals(identity.AuthenticationType, CookieNames.CookieName, StringComparison.Ordinal));
+             && string.Equals(identity.AuthenticationType, CookieNames.CookieName, StringComparison.Ordinal));
         }
 
         private static bool HasAdministratorRole(
@@ -259,10 +260,7 @@ public static class ServiceCollectionExtensions
                         new BrotliCompressionProvider(
                             new BrotliCompressionProviderOptions { Level = CompressionLevel.Optimal }));
                 })
-                .ConfigureHttpJsonOptions(o =>
-                {
-                    ApplySharedJsonOptions(o.SerializerOptions);
-                })
+                .ConfigureHttpJsonOptions(o => { ApplySharedJsonOptions(o.SerializerOptions); })
                 .AddAntiforgery(o =>
                 {
                     o.FormFieldName = "XrsfField";
@@ -343,8 +341,8 @@ public static class ServiceCollectionExtensions
                 // IDataProtectionProvider wrapper so controllers that depend on
                 // IDataProtectionProvider work as expected.
                 s.AddSingleton<IDataProtector>(sp => configuration.DataProtector(sp));
-                s.AddSingleton<IDataProtectionProvider>(
-                    sp => new DataProtectorProviderWrapper(sp.GetRequiredService<IDataProtector>()));
+                s.AddSingleton<IDataProtectionProvider>(sp =>
+                    new DataProtectorProviderWrapper(sp.GetRequiredService<IDataProtector>()));
             }
             else
             {
@@ -499,6 +497,9 @@ public static class ServiceCollectionExtensions
         var metricsEndpoint = exportProtocol == OtlpExportProtocol.HttpProtobuf
             ? new Uri($"{endpointUri.AbsoluteUri.TrimEnd('/')}/v1/metrics", UriKind.Absolute)
             : endpointUri;
+        var logsEndpoint = exportProtocol == OtlpExportProtocol.HttpProtobuf
+            ? new Uri($"{endpointUri.AbsoluteUri.TrimEnd('/')}/v1/logs", UriKind.Absolute)
+            : endpointUri;
 
         services.AddOpenTelemetry()
             .ConfigureResource(resource =>
@@ -528,6 +529,14 @@ public static class ServiceCollectionExtensions
                             options.Protocol = exportProtocol;
                             readerOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
                         });
+            })
+            .WithLogging(logging =>
+            {
+                logging.AddOtlpExporter(options =>
+                {
+                    options.Endpoint = logsEndpoint;
+                    options.Protocol = exportProtocol;
+                });
             });
     }
 }
