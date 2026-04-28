@@ -13,7 +13,7 @@
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="marten" Version="8.32.0" />
+        <PackageReference Include="marten" Version="8.33.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
     </ItemGroup>
