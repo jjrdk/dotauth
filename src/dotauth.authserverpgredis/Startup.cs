@@ -24,6 +24,8 @@ using Amazon;
 using Amazon.Runtime;
 using DotAuth;
 using DotAuth.Extensions;
+using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.Stores.Marten;
@@ -80,19 +82,27 @@ internal sealed class Startup
             AuthorizationCodes =
                 sp => new RedisAuthorizationCodeStore(
                     sp.GetRequiredService<IDatabaseAsync>(),
+                    sp.GetRequiredService<ITenantContext>(),
                     TimeSpan.FromMinutes(30)),
             ConfirmationCodes =
                 sp => new RedisConfirmationCodeStore(
                     sp.GetRequiredService<IDatabaseAsync>(),
+                    sp.GetRequiredService<ITenantContext>(),
                     TimeSpan.FromMinutes(30)),
-            Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
+            Consents = sp => new RedisConsentStore(
+                sp.GetRequiredService<IDatabaseAsync>(),
+                sp.GetRequiredService<ITenantContext>()),
             DeviceAuthorizations = sp => new MartenDeviceAuthorizationStore(sp.GetRequiredService<IDocumentSession>),
             JsonWebKeys = sp => new MartenJwksRepository(sp.GetRequiredService<IDocumentSession>),
             Tickets = sp =>
-                new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(), _dotAuthConfiguration!.TicketLifeTime),
+                new RedisTicketStore(
+                    sp.GetRequiredService<IDatabaseAsync>(),
+                    sp.GetRequiredService<ITenantContext>(),
+                    _dotAuthConfiguration!.TicketLifeTime),
             Tokens =
                 sp => new RedisTokenStore(
-                    sp.GetRequiredService<IDatabaseAsync>()),
+                    sp.GetRequiredService<IDatabaseAsync>(),
+                    sp.GetRequiredService<ITenantContext>()),
             ResourceSets = sp => new MartenResourceSetRepository(sp.GetRequiredService<IDocumentSession>,
                 sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
             EventPublisher = sp => new LogEventPublisher(sp.GetRequiredService<ILogger<LogEventPublisher>>()),
@@ -126,7 +136,12 @@ internal sealed class Startup
                     new MartenLoggerFacade(provider.GetRequiredService<ILogger<MartenLoggerFacade>>()));
                 return new DocumentStore(options);
             });
-        services.AddTransient(sp => sp.GetRequiredService<IDocumentStore>().LightweightSession());
+        services.AddTransient(sp =>
+        {
+            // Open a tenant-scoped session for data isolation per tenant.
+            var tenantContext = sp.GetRequiredService<ITenantContext>();
+            return sp.GetRequiredService<IDocumentStore>().LightweightSession(tenantContext.TenantId);
+        });
 
         services.AddSingleton(ConnectionMultiplexer.Connect(_configuration["DB:REDISCONFIG"] ?? ""));
         services.AddTransient(sp => sp.GetRequiredService<ConnectionMultiplexer>().GetDatabase());
@@ -215,6 +230,10 @@ internal sealed class Startup
         if (!string.IsNullOrWhiteSpace(_configuration["AMAZON:ACCESSKEY"])
          && !string.IsNullOrWhiteSpace(_configuration["AMAZON:SECRETKEY"]))
         {
+            services.AddSingleton<ITenantProvisioningService>(sp =>
+                new MartenTenantProvisioningService(
+                    sp.GetRequiredService<IDocumentStore>(),
+                    sp.GetRequiredService<ILogger<MartenTenantProvisioningService>>()));
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
                     [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])
@@ -229,6 +248,10 @@ internal sealed class Startup
         }
         else
         {
+            services.AddSingleton<ITenantProvisioningService>(sp =>
+                new MartenTenantProvisioningService(
+                    sp.GetRequiredService<IDocumentStore>(),
+                    sp.GetRequiredService<ILogger<MartenTenantProvisioningService>>()));
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
                     [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])

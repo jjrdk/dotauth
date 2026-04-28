@@ -97,6 +97,14 @@ public sealed class DotAuthRegistry : MartenRegistry
                 });
         For<Client>()
             .Identity(x => x.ClientId)
+            // Duplicate ClientId as a searchable column scoped per tenant so that
+            // unique-constraint enforcement is isolated between tenants.
+            .Duplicate(x => x.ClientId, configure: idx =>
+            {
+                idx.TenancyScope = TenancyScope.PerTenant;
+                idx.IsUnique = true;
+                idx.IsConcurrent = false;
+            })
             .GinIndexJsonData();
         For<OwnedResourceSet>()
             .Identity(x => x.Id)
@@ -131,7 +139,14 @@ public sealed class DotAuthRegistry : MartenRegistry
             .Duplicate(x => x.IsAuthorizedByRo, dbType: NpgsqlDbType.Boolean);
         For<AuthorizationCode>()
             .Identity(x => x.Code)
-            .Duplicate(x => x.ClientId);
+            .Duplicate(x => x.ClientId, configure: idx =>
+            {
+                // Scope the ClientId index per tenant so codes cannot be resolved
+                // across tenant boundaries.
+                idx.TenancyScope = TenancyScope.PerTenant;
+                idx.IsUnique = false;
+                idx.IsConcurrent = false;
+            });
         For<ConfirmationCode>()
             .Identity(x => x.Value)
             .Index(

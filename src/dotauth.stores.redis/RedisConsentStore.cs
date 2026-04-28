@@ -14,13 +14,18 @@ using StackExchange.Redis;
 public sealed class RedisConsentStore : IConsentRepository
 {
     private readonly IDatabaseAsync _database;
+    private readonly ITenantContext _tenantContext;
     private readonly TimeSpan _expiry;
 
-    public RedisConsentStore(IDatabaseAsync database, TimeSpan expiry = default)
+    public RedisConsentStore(IDatabaseAsync database, ITenantContext tenantContext, TimeSpan expiry = default)
     {
         _database = database;
+        _tenantContext = tenantContext;
         _expiry = expiry == TimeSpan.Zero ? TimeSpan.FromDays(365 * 5) : expiry;
     }
+
+    /// <summary>Returns a key namespaced to the current tenant to prevent cross-tenant access.</summary>
+    private string Key(string value) => $"{_tenantContext.TenantId}:{value}";
 
     public async Task<IReadOnlyCollection<Consent>> GetConsentsForGivenUser(
         string subject,
@@ -55,13 +60,13 @@ public sealed class RedisConsentStore : IConsentRepository
         }
 
         return consents.Count == 0
-            ? await _database.KeyDeleteAsync(record.Subject).ConfigureAwait(false)
+            ? await _database.KeyDeleteAsync(Key(record.Subject)).ConfigureAwait(false)
             : await PersistConsents(record.Subject, consents).ConfigureAwait(false);
     }
 
     private async Task<IReadOnlyCollection<Consent>> GetStoredConsents(string subject)
     {
-        var storedConsents = await _database.StringGetAsync(subject).ConfigureAwait(false);
+        var storedConsents = await _database.StringGetAsync(Key(subject)).ConfigureAwait(false);
         if (!storedConsents.HasValue)
         {
             return [];
@@ -88,6 +93,6 @@ public sealed class RedisConsentStore : IConsentRepository
     private Task<bool> PersistConsents(string subject, IReadOnlyCollection<Consent> consents)
     {
         var json = JsonSerializer.Serialize(consents.ToArray(), SharedSerializerContext.Default.ConsentArray);
-        return _database.StringSetAsync(subject, json, _expiry);
+        return _database.StringSetAsync(Key(subject), json, _expiry);
     }
 }

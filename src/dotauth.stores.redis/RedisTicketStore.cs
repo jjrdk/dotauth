@@ -16,24 +16,30 @@ using StackExchange.Redis;
 public sealed class RedisTicketStore : ITicketStore
 {
     private readonly IDatabaseAsync _database;
+    private readonly ITenantContext _tenantContext;
     private readonly TimeSpan _expiry;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisTicketStore"/> class.
     /// </summary>
     /// <param name="database">The underlying Redis store.</param>
+    /// <param name="tenantContext">The current tenant context used to namespace keys.</param>
     /// <param name="expiry">The default cache expiration.</param>
-    public RedisTicketStore(IDatabaseAsync database, TimeSpan expiry = default)
+    public RedisTicketStore(IDatabaseAsync database, ITenantContext tenantContext, TimeSpan expiry = default)
     {
         _database = database;
+        _tenantContext = tenantContext;
         _expiry = expiry == TimeSpan.Zero ? TimeSpan.FromDays(30) : expiry;
     }
+
+    /// <summary>Returns a key namespaced to the current tenant to prevent cross-tenant access.</summary>
+    private string Key(string value) => $"{_tenantContext.TenantId}:{value}";
 
     /// <inheritdoc />
     public Task<bool> Add(Ticket ticket, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(ticket, SharedSerializerContext.Default.Ticket);
-        return _database.StringSetAsync(ticket.Id, json, _expiry);
+        return _database.StringSetAsync(Key(ticket.Id), json, _expiry);
     }
 
     /// <inheritdoc />
@@ -41,7 +47,7 @@ public sealed class RedisTicketStore : ITicketStore
         string ticketId,
         CancellationToken cancellationToken = default)
     {
-        var value = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
+        var value = await _database.StringGetAsync(Key(ticketId)).ConfigureAwait(false);
         if (!value.HasValue)
         {
             return (false, []);
@@ -51,8 +57,10 @@ public sealed class RedisTicketStore : ITicketStore
         {
             IsAuthorizedByRo = true
         };
-        var result = await _database.StringSetAsync(ticket.Id,
-                JsonSerializer.Serialize(ticket, SharedSerializerContext.Default.Ticket), _expiry)
+        var result = await _database.StringSetAsync(
+                Key(ticket.Id),
+                JsonSerializer.Serialize(ticket, SharedSerializerContext.Default.Ticket),
+                _expiry)
             .ConfigureAwait(false);
 
         return (result, result ? ticket.Requester : []);
@@ -61,13 +69,13 @@ public sealed class RedisTicketStore : ITicketStore
     /// <inheritdoc />
     public Task<bool> Remove(string ticketId, CancellationToken cancellationToken)
     {
-        return _database.KeyDeleteAsync(ticketId);
+        return _database.KeyDeleteAsync(Key(ticketId));
     }
 
     /// <inheritdoc />
     public async Task<Ticket?> Get(string ticketId, CancellationToken cancellationToken)
     {
-        var ticket = await _database.StringGetAsync(ticketId).ConfigureAwait(false);
+        var ticket = await _database.StringGetAsync(Key(ticketId)).ConfigureAwait(false);
         return ticket.HasValue
             ? JsonSerializer.Deserialize<Ticket>(ticket.ToString(), SharedSerializerContext.Default.Ticket)
             : null;

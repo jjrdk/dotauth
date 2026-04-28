@@ -258,4 +258,30 @@ public sealed class DotAuthConfiguration
     /// Gets or sets the allowed origins for CORS.
     /// </summary>
     public string[] AllowedOrigins { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tenant identifier used when no tenant can be resolved
+    /// from the request URL (e.g., a direct domain hit without a subdomain).
+    /// Defaults to <c>"default"</c>.
+    /// </summary>
+    public string DefaultTenantId { get; set; } = "default";
+
+    /// <summary>
+    /// Gets or sets the base domain used to extract the tenant identifier from
+    /// the request host via subdomain parsing.
+    /// </summary>
+    /// <remarks>
+    /// When set to <c>"auth.example.com"</c>, a request to
+    /// <c>acme.auth.example.com</c> resolves the tenant as <c>"acme"</c>,
+    /// while a request directly to <c>auth.example.com</c> falls back to
+    /// <see cref="DefaultTenantId"/>. When <c>null</c> all requests use
+    /// <see cref="DefaultTenantId"/>.
+    /// </remarks>
+    public string? BaseDomain { get; set; }
+
+    /// <summary>
+    /// Gets or sets the scopes that are seeded for every new tenant during
+    /// provisioning in addition to the built-in OIDC standard scopes.
+    /// </summary>
+    public Scope[] DefaultScopes { get; set; } = [];
 }

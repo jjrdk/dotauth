@@ -91,7 +91,7 @@ public sealed class MartenTokenStore : ITokenStore
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{error}", ex.Message);
+            _logger.LogError(ex, "{Error}", ex.Message);
             return false;
         }
     }
@@ -109,7 +109,7 @@ public sealed class MartenTokenStore : ITokenStore
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{error}", ex.Message);
+            _logger.LogError(ex, "{Error}", ex.Message);
             return false;
         }
     }
@@ -127,7 +127,7 @@ public sealed class MartenTokenStore : ITokenStore
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{error}", ex.Message);
+            _logger.LogError(ex, "{Error}", ex.Message);
             return false;
         }
     }
