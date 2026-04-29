@@ -65,4 +65,16 @@ public interface ITokenStore
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
     Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Atomically consumes (gets + removes) a refresh token.
+    /// Implementations should return the consumed <see cref="GrantedToken"/> when the
+    /// refresh token existed and was removed; otherwise return null.
+    /// This is intended to avoid race conditions where concurrent refresh exchanges
+    /// could both observe and remove the same refresh token.
+    /// </summary>
+    /// <param name="refreshToken">The refresh token value.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The consumed granted token, or null if it did not exist.</returns>
+    Task<GrantedToken?> ConsumeRefreshToken(string refreshToken, CancellationToken cancellationToken);
 }

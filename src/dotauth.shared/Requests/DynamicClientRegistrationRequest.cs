@@ -14,6 +14,7 @@
 
 namespace DotAuth.Shared.Requests;
 
+using System;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -31,7 +32,7 @@ public record DynamicClientRegistrationRequest
     /// Gets or sets the redirect uris.
     /// </summary>
     [JsonPropertyName("redirect_uris")]
-    public string[] RedirectUris { get; set; } = [];
+    public string[] RedirectUris { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// Gets or sets teh client name.
@@ -44,7 +45,7 @@ public record DynamicClientRegistrationRequest
     /// </summary>
     [JsonPropertyName("logo_uri")]
     public string? LogoUri { get; set; }
-    
+
     /// <summary>
     /// Get or sets the token endpoint auth method.
     /// </summary>
@@ -55,5 +56,5 @@ public record DynamicClientRegistrationRequest
     /// Gets or sets the contacts.
     /// </summary>
     [JsonPropertyName("contacts")]
-    public string[] Contacts { get; set; } = [];
+    public string[] Contacts { get; set; } = Array.Empty<string>();
 }

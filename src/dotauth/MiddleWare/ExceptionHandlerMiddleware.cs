@@ -41,6 +41,11 @@ internal sealed class ExceptionHandlerMiddleware
         _logger = logger;
     }
 
+    // Key used to detect re-entrant error handling and break the infinite-recursion
+    // cycle that can occur when the /error endpoint itself throws an exception
+    // (e.g. during test-server tear-down).
+    private const string ErrorHandlingKey = "dotauth:error_handling";
+
     public async Task Invoke(HttpContext context)
     {
         try
@@ -81,6 +86,16 @@ internal sealed class ExceptionHandlerMiddleware
                 return;
             }
 
+            // Guard against infinite recursion: if we are already in error-handling
+            // mode (i.e. the /error endpoint pipeline threw another exception),
+            // return a bare 500 rather than looping forever.
+            if (context.Items.ContainsKey(ErrorHandlingKey))
+            {
+                context.Response.StatusCode = 500;
+                return;
+            }
+
+            context.Items[ErrorHandlingKey] = true;
             endpointFeature.Endpoint = null;
             await Invoke(context).ConfigureAwait(false);
         }

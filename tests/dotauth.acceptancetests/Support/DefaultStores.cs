@@ -35,8 +35,9 @@ public static class DefaultStores
                 Id = "1",
                 ClientId = "authcode_client",
                 Subject = "administrator",
-                GrantedScopes = ["api1", "openid"]
+                GrantedScopes = ["api1", "openid", "offline"]
             },
+
 
             new Consent
             {
@@ -46,6 +47,7 @@ public static class DefaultStores
                 GrantedScopes = ["api1", "openid"]
             },
 
+
             new Consent
             {
                 Id = "3",
@@ -53,6 +55,7 @@ public static class DefaultStores
                 Subject = "administrator",
                 GrantedScopes = ["api1", "openid"]
             },
+
 
             new Consent
             {
@@ -82,6 +85,7 @@ public static class DefaultStores
                 IsLocalAccount = true
             },
 
+
             new ResourceOwner
             {
                 Subject = "user",
@@ -94,6 +98,7 @@ public static class DefaultStores
                 ],
                 IsLocalAccount = true
             },
+
 
             new ResourceOwner
             {
@@ -137,6 +142,7 @@ public static class DefaultStores
                 UserClaimsToIncludeInAuthToken = []
             },
 
+
             new Client
             {
                 RequirePkce = false,
@@ -163,6 +169,7 @@ public static class DefaultStores
                 ]
             },
 
+
             new Client
             {
                 ClientId = "client_userinfo_sig_rs256",
@@ -187,6 +194,7 @@ public static class DefaultStores
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")]
             },
+
 
             new Client
             {
@@ -217,6 +225,7 @@ public static class DefaultStores
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")]
             },
 
+
             new Client
             {
                 ClientId = "clientWithWrongResponseType",
@@ -240,14 +249,12 @@ public static class DefaultStores
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")]
             },
 
+
             new Client
             {
                 ClientId = "dcr",
                 ClientName = "dcr",
-                Secrets =
-                [
-                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "dcr" }
-                ],
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "dcr" }],
                 Claims = [new Claim("email", "test@test.com"), new Claim("sub", "dcr")],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                 UserClaimsToIncludeInAuthToken = [new Regex("^sub$", RegexOptions.Compiled)],
@@ -261,14 +268,12 @@ public static class DefaultStores
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")]
             },
 
+
             new Client
             {
                 ClientId = "clientCredentials",
                 ClientName = "clientCredentials",
-                Secrets =
-                [
-                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "clientCredentials" }
-                ],
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "clientCredentials" }],
                 Claims = [new Claim("test", "test"), new Claim("sub", "ClientCredentials")],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
                 UserClaimsToIncludeInAuthToken = [new Regex("^sub$", RegexOptions.Compiled)],
@@ -281,6 +286,7 @@ public static class DefaultStores
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")]
             },
+
 
             new Client
             {
@@ -298,6 +304,7 @@ public static class DefaultStores
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")]
             },
+
 
             new Client
             {
@@ -317,6 +324,7 @@ public static class DefaultStores
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")]
             },
 
+
             new Client
             {
                 ClientId = "jwt_client",
@@ -334,14 +342,12 @@ public static class DefaultStores
                 JsonWebKeys = new[] { sharedCtx.ModelSignatureKey, sharedCtx.ModelEncryptionKey }.ToJwks()
             },
 
+
             new Client
             {
                 ClientId = "private_key_client",
                 ClientName = "private_key_client",
-                Secrets =
-                [
-                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "private_key_client" }
-                ],
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "private_key_client" }],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.PrivateKeyJwt,
 
                 PolicyUri = new Uri("http://openid.net"),
@@ -356,20 +362,18 @@ public static class DefaultStores
                 //JwksUri = new Uri("http://localhost:5000/jwks_client")
             },
 
+
             new Client
             {
                 ClientId = "authcode_client",
                 ClientName = "authcode_client",
-                Secrets =
-                [
-                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "authcode_client" }
-                ],
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "authcode_client" }],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
 
                 PolicyUri = new Uri("http://openid.net"),
                 TosUri = new Uri("http://openid.net"),
-                AllowedScopes = ["api1", "openid"],
-                GrantTypes = [GrantTypes.AuthorizationCode],
+                AllowedScopes = ["api1", "openid", "offline"],
+                GrantTypes = [GrantTypes.AuthorizationCode, GrantTypes.RefreshToken],
                 ResponseTypes = [ResponseTypeNames.Code, ResponseTypeNames.Token, ResponseTypeNames.IdToken],
                 JsonWebKeys =
                     TestKeys.SecretKey.CreateSignatureJwk()
@@ -379,6 +383,7 @@ public static class DefaultStores
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = [new Uri("http://localhost:5000/callback")]
             },
+
 
             new Client
             {
@@ -402,14 +407,12 @@ public static class DefaultStores
                 RedirectionUrls = [new Uri("http://localhost:5000/callback")]
             },
 
+
             new Client
             {
                 ClientId = "implicit_client",
                 ClientName = "implicit_client",
-                Secrets =
-                [
-                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "implicit_client" }
-                ],
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "implicit_client" }],
                 JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
 
@@ -422,6 +425,7 @@ public static class DefaultStores
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = [new Uri("http://localhost:5000/callback")]
             },
+
 
             new Client
             {
@@ -442,6 +446,7 @@ public static class DefaultStores
                 RequirePkce = true
             },
 
+
             new Client
             {
                 ClientId = "hybrid_client",
@@ -460,6 +465,7 @@ public static class DefaultStores
                 RedirectionUrls = [new Uri("http://localhost:5000/callback")],
             },
             // Certificate test client.
+
 
             new Client
             {
@@ -497,14 +503,12 @@ public static class DefaultStores
             },
             // Client credentials + stateless access token.
 
+
             new Client
             {
                 ClientId = "stateless_client",
                 ClientName = "Stateless client",
-                Secrets =
-                [
-                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "stateless_client" }
-                ],
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "stateless_client" }],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
 
                 AllowedScopes = ["openid", "register_client", "manage_account_filtering"],
@@ -519,6 +523,7 @@ public static class DefaultStores
                 IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, // SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Native
             },
+
 
             new Client
             {
@@ -550,12 +555,12 @@ public static class DefaultStores
                 ]
             },
 
+
             new Client
             {
                 ClientId = "admin_client",
                 ClientName = "Admin client",
-                Secrets =
-                    [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "admin_client" }],
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "admin_client" }],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
 
                 AllowedScopes = ["admin"],
@@ -571,12 +576,12 @@ public static class DefaultStores
                 ApplicationType = ApplicationTypes.Native
             },
 
+
             new Client
             {
                 ClientId = "no_key",
                 ClientName = "No Key client",
-                Secrets =
-                    [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "no_key" }],
+                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "no_key" }],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.ClientSecretPost,
 
                 AllowedScopes = ["api"],
@@ -590,9 +595,9 @@ public static class DefaultStores
 
     public static IReadOnlyCollection<Scope> Scopes()
     {
-        return
-        [
-            new Scope
+        return new List<Scope>
+        {
+            new()
             {
                 Claims = [],
                 Description = "test scope",
@@ -601,7 +606,7 @@ public static class DefaultStores
                 Name = "test",
                 Type = ScopeTypes.ProtectedApi,
             },
-            new Scope
+            new()
             {
                 Claims = [OpenIdClaimTypes.Subject],
                 Description = "Manage user managed resources and policies.",
@@ -610,6 +615,25 @@ public static class DefaultStores
                 Name = "uma_protection",
                 Type = ScopeTypes.ProtectedApi
             }
-        ];
+            ,
+            new()
+            {
+                Claims = [],
+                Description = "API scope (legacy)",
+                IsDisplayedInConsent = false,
+                IsExposed = true,
+                Name = "api",
+                Type = ScopeTypes.ProtectedApi
+            },
+            new()
+            {
+                Claims = [],
+                Description = "API 1 scope",
+                IsDisplayedInConsent = false,
+                IsExposed = true,
+                Name = "api1",
+                Type = ScopeTypes.ProtectedApi
+            }
+        };
     }
 }

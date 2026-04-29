@@ -74,19 +74,29 @@ internal sealed class JwtGenerator
             throw new ArgumentNullException(nameof(jwsPayload));
         }
 
+        // Make mutation of the JwtPayload instance thread-safe. In some concurrent
+        // refresh scenarios the same JwtPayload instance may be accessed from
+        // multiple threads which can corrupt internal collections used by
+        // System.IdentityModel.Tokens.Jwt. Locking on the payload instance here
+        // ensures updates to iat/exp are atomic and prevents IndexOutOfRange
+        // exceptions observed during concurrent refresh handling.
         var (expirationInSeconds, issuedAtTime) = GetExpirationAndIssuedTime(duration);
-        jwsPayload.Remove(StandardClaimNames.Iat);
-        jwsPayload.Remove(StandardClaimNames.ExpirationTime);
-        jwsPayload.AddClaim(
-            new Claim(
-                StandardClaimNames.Iat,
-                issuedAtTime.ToString(CultureInfo.InvariantCulture),
-                ClaimValueTypes.Double));
-        jwsPayload.AddClaim(
-            new Claim(
-                StandardClaimNames.ExpirationTime,
-                expirationInSeconds.ToString(CultureInfo.InvariantCulture),
-                ClaimValueTypes.Double));
+        lock (jwsPayload)
+        {
+            jwsPayload.Remove(StandardClaimNames.Iat);
+            jwsPayload.Remove(StandardClaimNames.ExpirationTime);
+            jwsPayload.AddClaim(
+                new Claim(
+                    StandardClaimNames.Iat,
+                    issuedAtTime.ToString(CultureInfo.InvariantCulture),
+                    ClaimValueTypes.Double));
+            jwsPayload.AddClaim(
+                new Claim(
+                    StandardClaimNames.ExpirationTime,
+                    expirationInSeconds.ToString(CultureInfo.InvariantCulture),
+                    ClaimValueTypes.Double));
+        }
+
         return jwsPayload;
     }
 

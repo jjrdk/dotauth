@@ -15,7 +15,7 @@ public partial class FeatureTest
     private Option<AddResourceOwnerResponse> _addResourceOwnerResponseOption = null!;
     private Option<ResourceOwner[]> _listResourceOwnerResponseOption = null!;
     private Option _option = null!;
-    
+
     [Given(@"an admin token")]
     public async Task GivenAnAdminToken()
     {
@@ -29,6 +29,7 @@ public partial class FeatureTest
     [When(@"adding resource owner")]
     public async Task WhenAddingResourceOwner()
     {
+        Assert.NotNull(_token);
         _addResourceOwnerResponseOption = await _managerClient.AddResourceOwner(
                 new AddResourceOwnerRequest { Password = "test", Subject = "test" },
                 _token.AccessToken)
@@ -45,6 +46,7 @@ public partial class FeatureTest
     [When(@"updating resource owner password")]
     public async Task WhenUpdatingResourceOwnerPassword()
     {
+        Assert.NotNull(_token);
         _option = await _managerClient.UpdateResourceOwnerPassword(
                 new UpdateResourceOwnerPasswordRequest { Password = "blah", Subject = "administrator" },
                 _token.AccessToken)
@@ -61,6 +63,7 @@ public partial class FeatureTest
     [When(@"deleting resource owner")]
     public async Task WhenDeletingResourceOwner()
     {
+        Assert.NotNull(_token);
         _option = await _managerClient.DeleteResourceOwner(
                 "administrator",
                 _token.AccessToken)
@@ -77,8 +80,8 @@ public partial class FeatureTest
     [When(@"listing resource owners")]
     public async Task WhenListingResourceOwners()
     {
-        _listResourceOwnerResponseOption = await _managerClient.GetAllResourceOwners(_token.AccessToken)
-            ;
+        Assert.NotNull(_token);
+        _listResourceOwnerResponseOption = await _managerClient.GetAllResourceOwners(_token.AccessToken);
     }
 
     [Then(@"list response has error")]

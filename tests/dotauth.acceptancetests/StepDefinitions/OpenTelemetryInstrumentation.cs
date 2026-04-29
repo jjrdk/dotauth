@@ -38,6 +38,7 @@ public partial class FeatureTest
     [When(@"refreshing the token for telemetry verification")]
     public async Task WhenRefreshingTheTokenForTelemetryVerification()
     {
+        Assert.NotNull(_token);
         _refreshedToken = await _tokenClient.GetToken(TokenRequest.FromRefreshToken(_token.RefreshToken!)).ConfigureAwait(false);
         Assert.IsType<Option<GrantedTokenResponse>.Result>(_refreshedToken);
     }
@@ -48,6 +49,7 @@ public partial class FeatureTest
     [When(@"revoking the token for telemetry verification")]
     public async Task WhenRevokingTheTokenForTelemetryVerification()
     {
+        Assert.NotNull(_token);
         var revokeResponse = await _tokenClient.RevokeToken(RevokeTokenRequest.Create(_token)).ConfigureAwait(false);
         Assert.IsType<Option.Success>(revokeResponse);
     }
@@ -58,6 +60,7 @@ public partial class FeatureTest
     [When(@"introspecting the RPT token for telemetry verification")]
     public async Task WhenIntrospectingTheRptTokenForTelemetryVerification()
     {
+        Assert.NotNull(_token);
         _introspectionResponse = await _umaClient
             .Introspect(DotAuth.Client.IntrospectionRequest.Create(_rptToken!, "access_token", _token.AccessToken))
             .ConfigureAwait(false);
@@ -71,6 +74,7 @@ public partial class FeatureTest
     [When(@"getting user information for telemetry verification")]
     public async Task WhenGettingUserInformationForTelemetryVerification()
     {
+        Assert.NotNull(_token);
         _userInfoResponse = await _tokenClient.GetUserInfo(_token.AccessToken).ConfigureAwait(false);
         Assert.IsType<Option<JwtPayload>.Result>(_userInfoResponse);
     }

@@ -73,22 +73,22 @@ internal sealed class AuthenticateResourceOwnerOpenIdAction
         var promptParameters = authorizationParameter.Prompt.ParsePrompts();
 
         // 1).
-        if (resourceOwnerIsAuthenticated
-            && !promptParameters.Contains(PromptParameters.Login))
+        if (!resourceOwnerIsAuthenticated
+         || promptParameters.Contains(PromptParameters.Login))
         {
-            var subject = resourceOwnerPrincipal.GetSubject()!;
-            var claims = resourceOwnerPrincipal!.Claims.ToArray();
-            return await _authenticateHelper.ProcessRedirection(
-                    authorizationParameter,
-                    code,
-                    subject,
-                    claims,
-                    issuerName,
-                    cancellationToken)
-                .ConfigureAwait(false);
+            // 2).
+            return EndpointResult.CreateAnEmptyActionResultWithNoEffect();
         }
 
-        // 2).
-        return EndpointResult.CreateAnEmptyActionResultWithNoEffect();
+        var subject = resourceOwnerPrincipal.GetSubject()!;
+        var claims = resourceOwnerPrincipal!.Claims.ToArray();
+        return await _authenticateHelper.ProcessRedirection(
+                authorizationParameter,
+                code,
+                subject,
+                claims,
+                issuerName,
+                cancellationToken)
+            .ConfigureAwait(false);
     }
 }

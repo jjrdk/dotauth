@@ -15,6 +15,7 @@
 namespace DotAuth.Api.Token.Actions;
 
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -48,6 +49,13 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         public AuthorizationCode AuthCode { get; }
         public Client Client { get; }
     }
+
+    /// <summary>
+    /// Tracks auth-code → issued access-token/refresh-token for RFC 6749 §10.5 double-exchange revocation.
+    /// When a code is reused the server MUST revoke all tokens previously issued for that code.
+    /// </summary>
+    private static readonly ConcurrentDictionary<string, (string AccessToken, string? RefreshToken)> _codeToIssuedToken =
+        new(StringComparer.Ordinal);
 
     private readonly IAuthorizationCodeStore _authorizationCodeStore;
     private readonly RuntimeSettings _configurationService;
@@ -164,6 +172,10 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
             await _tokenStore.AddToken(grantedToken, cancellationToken).ConfigureAwait(false);
         }
 
+        // Track issued tokens for double-exchange revocation (RFC 6749 §10.5).
+        // If the same code is presented again the server will revoke these tokens.
+        _codeToIssuedToken[result.AuthCode.Code] = (grantedToken.AccessToken, grantedToken.RefreshToken);
+
         DotAuthTelemetry.RecordAuthorizationCodeRedeemed(result.Client.ClientId);
         activity?.SetStatus(ActivityStatusCode.Ok);
         return grantedToken;
@@ -257,6 +269,17 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         // 2. Check if the authorization code is valid
         if (authorizationCode == null)
         {
+            // Double-exchange detected: revoke all tokens previously issued for this code (RFC 6749 §10.5).
+            // A server MUST deny the request and SHOULD revoke any tokens already issued for the same code.
+            if (_codeToIssuedToken.TryRemove(authorizationCodeGrantTypeParameter.Code, out var prev))
+            {
+                await _tokenStore.RemoveAccessToken(prev.AccessToken, cancellationToken).ConfigureAwait(false);
+                if (prev.RefreshToken is not null)
+                {
+                    await _tokenStore.RemoveRefreshToken(prev.RefreshToken, cancellationToken).ConfigureAwait(false);
+                }
+            }
+
             activity?.SetTag(DotAuthTelemetry.TagKeys.AuthCodeValid, false);
             activity?.SetTag(DotAuthTelemetry.TagKeys.AuthCodeExpired, false);
             DotAuthTelemetry.RecordAuthorizationCodeInvalid(client.ClientId, ErrorCodes.InvalidGrant);

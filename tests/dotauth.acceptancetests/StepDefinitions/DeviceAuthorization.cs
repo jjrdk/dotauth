@@ -100,6 +100,7 @@ public partial class FeatureTest
             Content = new FormUrlEncodedContent(
                 [new KeyValuePair<string, string>("code", _deviceResponse.UserCode)])
         };
+        Assert.NotNull(_token);
         msg.Headers.Authorization = new AuthenticationHeaderValue(_token.TokenType, _token.AccessToken);
 
         var approval = await client.SendAsync(msg);

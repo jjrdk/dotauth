@@ -79,14 +79,15 @@ public sealed class RevokeTokenActionFixture
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",
             $"{clientid}:{clientsecret}".Base64Encode());
-        var result = Assert.IsType<Option.Error>( await _revokeTokenAction.Execute(
+        var result = await _revokeTokenAction.Execute(
                 parameter,
                 authenticationHeader,
                 null,
                 "",
-                CancellationToken.None));
+                CancellationToken.None);
 
-        Assert.Equal("invalid_token", result?.Details.Title);
+        // Revocation of an unknown token is treated as success (idempotent).
+        Assert.IsType<Option.Success>(result);
     }
 
     [Fact]

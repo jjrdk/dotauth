@@ -126,6 +126,12 @@ public sealed record DiscoveryInformation
     public string[] ResponseModesSupported { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets the PKCE code challenge methods supported by the server (e.g., S256, plain).
+    /// </summary>
+    [JsonPropertyName("code_challenge_methods_supported")]
+    public string[] CodeChallengeMethodsSupported { get; set; } = ["S256"];
+
+    /// <summary>
     /// Gets or sets the response types supported : code, id_token &amp; token id_token
     /// </summary>
     [JsonPropertyName("response_types_supported")]

@@ -13,6 +13,7 @@ public partial class FeatureTest
     [When(@"requesting existing scope")]
     public async Task WhenRequestingExistingScope()
     {
+        Assert.NotNull(_token);
         _scope = await _managerClient.GetScope("test", _token.AccessToken);
     }
 

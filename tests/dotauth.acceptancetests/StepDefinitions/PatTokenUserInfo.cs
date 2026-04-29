@@ -17,7 +17,7 @@ public partial class FeatureTest
                 TokenRequest.FromPassword("administrator", "password", ["uma_protection"]))
             ;
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
-        
+
         _token = response.Item;
 
         Assert.NotNull(_token);
@@ -26,6 +26,7 @@ public partial class FeatureTest
     [Then(@"can get user information")]
     public async Task ThenCanGetUserInformation()
     {
+        Assert.NotNull(_token);
         var userInfo = Assert.IsType<Option<JwtPayload>.Result>(
             await _tokenClient.GetUserInfo(_token.AccessToken));
 

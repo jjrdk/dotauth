@@ -102,6 +102,45 @@ public sealed class RedisTokenStore : ITokenStore
         return token != null && await RemoveToken(token).ConfigureAwait(false);
     }
 
+    public async Task<GrantedToken?> ConsumeRefreshToken(string refreshToken, CancellationToken cancellationToken)
+    {
+        // Use a small Lua script to atomically GET and DEL the refresh token key.
+        var key = Key(refreshToken);
+        const string script = "local v = redis.call('GET', KEYS[1]); if not v then return nil; end; redis.call('DEL', KEYS[1]); return v;";
+        try
+        {
+            var result = await _database.ScriptEvaluateAsync(script, [key]).ConfigureAwait(false);
+            if (result.IsNull)
+            {
+                return null;
+            }
+
+            var value = (string)result!;
+            var grantedToken = JsonSerializer.Deserialize<GrantedToken>(value, SharedSerializerContext.Default.GrantedToken);
+
+            // Attempt to remove the other associated keys (id, scope, access token). We don't fail
+            // the consume operation if cleanup doesn't fully succeed here; best-effort cleanup is OK.
+            if (grantedToken != null)
+            {
+                // Fire-and-forget cleanup, but await to keep ordering predictable.
+                try
+                {
+                    await RemoveToken(grantedToken).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Ignore cleanup errors - consume has succeeded.
+                }
+            }
+
+            return grantedToken;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private async Task<bool> RemoveToken(GrantedToken grantedToken)
     {
         var idTask = _database.KeyDeleteAsync(Key(grantedToken.Id));

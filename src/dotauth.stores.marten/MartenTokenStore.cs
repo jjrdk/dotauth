@@ -131,4 +131,32 @@ public sealed class MartenTokenStore : ITokenStore
             return false;
         }
     }
+
+    /// <inheritdoc />
+    public async Task<GrantedToken?> ConsumeRefreshToken(string refreshToken, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var session = _sessionFactory();
+            await using var _ = session.ConfigureAwait(false);
+            var grantedToken = await session.Query<GrantedToken>()
+                .FirstOrDefaultAsync(x => x.RefreshToken == refreshToken, token: cancellationToken)
+                .ConfigureAwait(false);
+
+            if (grantedToken == null)
+            {
+                return null;
+            }
+
+            // Delete by id to avoid ambiguity and then persist the change.
+            session.DeleteWhere<GrantedToken>(x => x.Id == grantedToken.Id);
+            await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return grantedToken;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "{Error}", ex.Message);
+            return null;
+        }
+    }
 }

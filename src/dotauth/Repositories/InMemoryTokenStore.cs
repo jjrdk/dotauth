@@ -10,7 +10,7 @@ using DotAuth.Shared.Repositories;
 
 internal sealed class InMemoryTokenStore : ITokenStore, ICleanable
 {
-    private readonly List<GrantedToken> _tokens = new();
+    private readonly List<GrantedToken> _tokens = [];
 
     public Task<GrantedToken?> GetToken(
         string scopes,
@@ -92,6 +92,23 @@ internal sealed class InMemoryTokenStore : ITokenStore, ICleanable
     {
         var removed = _tokens.RemoveAll(x => x.RefreshToken == refreshToken);
         return Task.FromResult(removed > 0);
+    }
+
+    public Task<GrantedToken?> ConsumeRefreshToken(string refreshToken, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_tokens)
+        {
+            var index = _tokens.FindIndex(x => x.RefreshToken == refreshToken);
+            if (index < 0)
+            {
+                return Task.FromResult<GrantedToken?>(null);
+            }
+
+            var token = _tokens[index];
+            _tokens.RemoveAt(index);
+            return Task.FromResult<GrantedToken?>(token);
+        }
     }
 
     public Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)

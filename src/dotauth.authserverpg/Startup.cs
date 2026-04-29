@@ -25,7 +25,6 @@ using Amazon.Runtime;
 using DotAuth;
 using DotAuth.Extensions;
 using DotAuth.Shared;
-using DotAuth.Shared;
 using DotAuth.Shared.Repositories;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;

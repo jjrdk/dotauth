@@ -195,7 +195,10 @@ internal sealed class GenerateAuthorizationResponse
 
             if (authorizationCode != null) // 4. Insert the authorization code into the caching.
             {
-                if (client.RequirePkce)
+                // RFC 7636 §4.3: if a code_challenge was provided in the authorization request,
+                // it MUST be stored with the authorization code so the server can validate the
+                // verifier at token exchange time, regardless of whether the client requires PKCE.
+                if (client.RequirePkce || !string.IsNullOrWhiteSpace(authorizationParameter.CodeChallenge))
                 {
                     authorizationCode = authorizationCode with
                     {

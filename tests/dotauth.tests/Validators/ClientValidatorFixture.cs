@@ -113,11 +113,15 @@ public sealed class ClientValidatorFixture
     [Fact]
     public void When_RS256_CodeChallenge_Is_Correct_Then_True_Is_Returned()
     {
-        var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes("code"));
+        // RFC 7636 §4.1: code_verifier MUST be 43-128 unreserved characters.
+        // The new CheckPkce implementation rejects verifiers outside this range,
+        // so we use a 43-character verifier to satisfy the length requirement.
+        const string codeVerifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"; // exactly 43 chars
+        var hashed = SHA256.HashData(Encoding.ASCII.GetBytes(codeVerifier));
         var codeChallenge = hashed.ToBase64Simplified();
 
         var result = new Client { RequirePkce = true }.CheckPkce(
-            "code",
+            codeVerifier,
             new AuthorizationCode
             {
                 CodeChallenge = codeChallenge,

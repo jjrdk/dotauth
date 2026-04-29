@@ -55,6 +55,7 @@ public partial class FeatureTest
             Scopes = ["read"],
             Type = "test"
         };
+        Assert.NotNull(_token);
         var option = await _umaClient.AddResourceSet(resource, _token.AccessToken);
 
         var response = Assert.IsType<Option<AddResourceSetResponse>.Result>(option);
@@ -67,6 +68,7 @@ public partial class FeatureTest
     [Then(@"can view resource policies")]
     public async Task ThenCanViewResourcePolicies()
     {
+        Assert.NotNull(_token);
         var msg = new HttpRequestMessage
         {
             Method = HttpMethod.Get, RequestUri = new Uri(_resourceSetResponse.UserAccessPolicyUri)
@@ -98,6 +100,7 @@ public partial class FeatureTest
             Content = new StringContent(JsonSerializer.Serialize(_policyRules,
                 SharedSerializerContext.Default.EditPolicyResponse))
         };
+        Assert.NotNull(_token);
         msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
 
         var policyResponse = await _fixture!.Client().SendAsync(msg);

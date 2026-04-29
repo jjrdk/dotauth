@@ -100,12 +100,12 @@ public sealed class RevokeTokenClientFixture
             TokenCredentials.FromClientCredentials("client", "client"),
             _server.Client,
             new Uri(BaseUrl + WellKnownOpenidConfiguration));
-        var ex = Assert.IsType<Option.Error>(
-            await tokenClient.RevokeToken(RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken),
-                TestContext.Current.CancellationToken));
+        var result = await tokenClient.RevokeToken(
+            RevokeTokenRequest.Create("access_token", TokenTypes.AccessToken),
+            TestContext.Current.CancellationToken);
 
-        Assert.Equal("invalid_token", ex.Details.Title);
-        Assert.Equal(Strings.TheTokenDoesntExist, ex.Details.Detail);
+        // Revocation of an unknown token is treated as success (idempotent) per RFC 7009.
+        Assert.IsType<Option.Success>(result);
     }
 
     [Fact]

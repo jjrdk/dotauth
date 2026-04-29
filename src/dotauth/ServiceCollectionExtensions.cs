@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Claims;
@@ -414,6 +415,27 @@ public static class ServiceCollectionExtensions
                 .UseForwardedHeaders(forwardedHeadersOptions)
                 .UseMiddleware<ExceptionHandlerMiddleware>(publisher)
                 .UseResponseCompression()
+                // Add security headers to all responses to improve OWASP compliance.
+                // CSP prevents XSS attacks; Referrer-Policy prevents sensitive data leakage in referrer.
+                .Use(async (context, next) =>
+                {
+                    context.Response.OnStarting(() =>
+                    {
+                        if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
+                        {
+                            context.Response.Headers["Content-Security-Policy"] =
+                                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'";
+                        }
+
+                        if (!context.Response.Headers.ContainsKey("Referrer-Policy"))
+                        {
+                            context.Response.Headers["Referrer-Policy"] = "no-referrer";
+                        }
+
+                        return Task.CompletedTask;
+                    });
+                    await next(context).ConfigureAwait(false);
+                })
                 .UseStaticFiles(
                     new StaticFileOptions
                     {

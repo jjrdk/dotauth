@@ -42,78 +42,81 @@ internal static class MappingExtensions
         };
     }
 
-    public static ResourceOwnerGrantTypeParameter ToResourceOwnerGrantTypeParameter(this TokenRequest request)
+    extension(TokenRequest request)
     {
-        return new()
+        public ResourceOwnerGrantTypeParameter ToResourceOwnerGrantTypeParameter()
         {
-            UserName = request.username,
-            Password = request.password,
-            Scope = request.scope,
-            ClientId = request.client_id,
-            ClientAssertion = request.client_assertion,
-            ClientAssertionType = request.client_assertion_type,
-            ClientSecret = request.client_secret,
-            AmrValues = string.IsNullOrWhiteSpace(request.amr_values)
-                ? []
-                : request.amr_values.Split(' ')
-        };
-    }
-
-    public static AuthorizationCodeGrantTypeParameter ToAuthorizationCodeGrantTypeParameter(this TokenRequest request)
-    {
-        return new()
-        {
-            ClientId = request.client_id,
-            ClientSecret = request.client_secret,
-            Code = request.code,
-            RedirectUri = request.redirect_uri,
-            ClientAssertion = request.client_assertion,
-            ClientAssertionType = request.client_assertion_type,
-            CodeVerifier = request.code_verifier
-        };
-    }
-
-    public static RefreshTokenGrantTypeParameter ToRefreshTokenGrantTypeParameter(this TokenRequest request)
-    {
-        return new()
-        {
-            RefreshToken = request.refresh_token,
-            ClientAssertion = request.client_assertion,
-            ClientAssertionType = request.client_assertion_type,
-            ClientId = request.client_id,
-            ClientSecret = request.client_secret
-        };
-    }
-
-    public static ClientCredentialsGrantTypeParameter ToClientCredentialsGrantTypeParameter(this TokenRequest request)
-    {
-        return new()
-        {
-            ClientAssertion = request.client_assertion,
-            ClientAssertionType = request.client_assertion_type,
-            ClientId = request.client_id,
-            ClientSecret = request.client_secret,
-            Scope = request.scope
-        };
-    }
-
-    public static GetTokenViaTicketIdParameter ToTokenIdGrantTypeParameter(this TokenRequest request)
-    {
-        return new()
-        {
-            ClaimToken = new ClaimTokenParameter
+            return new()
             {
-                Token = request.claim_token,
-                Format = request.claim_token_format
-            },
-            ClientId = request.client_id,
-            ClientAssertion = request.client_assertion,
-            ClientAssertionType = request.client_assertion_type,
-            ClientSecret = request.client_secret,
-            Pct = request.pct,
-            Rpt = request.rpt,
-            Ticket = request.ticket
-        };
+                UserName = request.username,
+                Password = request.password,
+                Scope = request.scope,
+                ClientId = request.client_id,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientSecret = request.client_secret,
+                AmrValues = string.IsNullOrWhiteSpace(request.amr_values)
+                    ? []
+                    : request.amr_values.Split(' ')
+            };
+        }
+
+        public AuthorizationCodeGrantTypeParameter ToAuthorizationCodeGrantTypeParameter()
+        {
+            return new()
+            {
+                ClientId = request.client_id,
+                ClientSecret = request.client_secret,
+                Code = request.code,
+                RedirectUri = request.redirect_uri,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                CodeVerifier = request.code_verifier
+            };
+        }
+
+        public RefreshTokenGrantTypeParameter ToRefreshTokenGrantTypeParameter()
+        {
+            return new()
+            {
+                RefreshToken = request.refresh_token,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientId = request.client_id,
+                ClientSecret = request.client_secret
+            };
+        }
+
+        public ClientCredentialsGrantTypeParameter ToClientCredentialsGrantTypeParameter()
+        {
+            return new()
+            {
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientId = request.client_id,
+                ClientSecret = request.client_secret,
+                Scope = request.scope
+            };
+        }
+
+        public GetTokenViaTicketIdParameter ToTokenIdGrantTypeParameter()
+        {
+            return new()
+            {
+                ClaimToken = new ClaimTokenParameter
+                {
+                    Token = request.claim_token,
+                    Format = request.claim_token_format
+                },
+                ClientId = request.client_id,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientSecret = request.client_secret,
+                Pct = request.pct,
+                Rpt = request.rpt,
+                Ticket = request.ticket
+            };
+        }
     }
 
     public static IntrospectionParameter ToParameter(this IntrospectionRequest viewModel)

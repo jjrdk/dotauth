@@ -48,6 +48,7 @@ public partial class FeatureTest
     [When(@"registering resource")]
     public async Task WhenRegisteringResource(Table table)
     {
+        Assert.NotNull(_token);
         foreach (var row in table.Rows)
         {
             var scopes = row["Scopes"]
@@ -73,6 +74,7 @@ public partial class FeatureTest
     [When(@"updating policy")]
     public async Task WhenUpdatingPolicy()
     {
+        Assert.NotNull(_token);
         var option = await _umaClient.UpdateResourceSet(
             new ResourceSet
             {
@@ -97,6 +99,7 @@ public partial class FeatureTest
     [When(@"requesting permission for (.+)")]
     public async Task WhenRequestingPermissionFor(string scope)
     {
+        Assert.NotNull(_token);
         var scopes = scope.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         var response = Assert.IsType<Option<TicketResponse>.Result>(await _umaClient.RequestPermission(
                 _token.AccessToken,
@@ -112,6 +115,7 @@ public partial class FeatureTest
     [When(@"requesting permissions")]
     public async Task WhenRequestingPermissions()
     {
+        Assert.NotNull(_token);
         var response = await _umaClient.RequestPermission(
                 _token.AccessToken,
                 CancellationToken.None,

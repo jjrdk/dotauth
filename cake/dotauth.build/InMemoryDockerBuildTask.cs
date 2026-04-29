@@ -12,6 +12,19 @@ public sealed class InMemoryDockerBuildTask : FrostingTask<BuildContext>
     /// <inheritdoc />
     public override void Run(BuildContext context)
     {
+//        DockerImageSettings[] configs = [
+//            new
+//            {
+//                DockerfilePath = "./DockerfileInMemory",
+//                OutputDirectory = "./artifacts/publish/inmemory/",
+//                ProjectPath = "./src/dotauth.authserver/dotauth.authserver.csproj",
+//                Runtime = "linux-musl-x64",
+//                Tags = [
+//                    "jjrdk/dotauth:inmemory-canary",
+//                    $"jjrdk/dotauth:{context.BuildVersion}-inmemory"
+//                ]
+//            }
+//        ];
         var publishSettings = new DotNetPublishSettings
         {
             PublishTrimmed = false,
@@ -38,4 +51,13 @@ public sealed class InMemoryDockerBuildTask : FrostingTask<BuildContext>
         };
         context.DockerBuild(settings, "./");
     }
+}
+
+internal sealed class DockerImageSettings
+{
+    public string Runtime { get; set; }
+    public string OutputDirectory { get; set; }
+    public string ProjectPath { get; set; }
+    public string DockerfilePath { get; set; }
+    public string[] Tags { get; set; }
 }

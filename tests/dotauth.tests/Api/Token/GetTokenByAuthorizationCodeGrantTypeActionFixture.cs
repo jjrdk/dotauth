@@ -555,6 +555,10 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         };
         var authorizationCode = new AuthorizationCode
         {
+            // Code must be non-null: the double-exchange revocation tracking introduced
+            // in GetTokenByAuthorizationCodeGrantTypeAction stores issued tokens keyed by
+            // this value in a ConcurrentDictionary, which throws on a null key.
+            Code = "test-authorization-code",
             Scopes = "scope",
             ClientId = clientId,
             RedirectUri = new Uri("https://redirectUri"),

@@ -29,6 +29,9 @@ using Microsoft.Extensions.Logging;
 
 internal static class AuthorizationEndpointHandlers
 {
+    /// <summary>
+    /// Handles GET authorization requests (parameters in query string).
+    /// </summary>
     internal static async Task<IResult> Get(
         HttpContext httpContext,
         IRequestThrottle requestThrottle,
@@ -54,6 +57,126 @@ internal static class AuthorizationEndpointHandlers
         }
 
         var authorizationRequest = EndpointHandlerHelpers.BindFromQuery<AuthorizationRequest>(httpContext.Request);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(authorizationRequest.client_id));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ResponseType, DotAuthTelemetry.Normalize(authorizationRequest.response_type));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeRequested, DotAuthTelemetry.Normalize(authorizationRequest.scope));
+
+        var logger = loggerFactory.CreateLogger("DotAuth.Controllers.AuthorizationController");
+        var originUrl = GetOriginUrl(httpContext);
+        var sessionId = GetSessionId(httpContext.Request);
+        var result = await ResolveAuthorizationRequest(httpClientFactory, clientStore, jwksStore, authorizationRequest, cancellationToken).ConfigureAwait(false);
+        if (result is Option<AuthorizationRequest>.Error e)
+        {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(e.Details.Title));
+            activity?.SetStatus(ActivityStatusCode.Error, e.Details.Detail);
+            return Results.Json(e.Details, statusCode: (int)e.Details.Status);
+        }
+
+        authorizationRequest = ((Option<AuthorizationRequest>.Result)result).Item with
+        {
+            origin_url = originUrl,
+            session_id = sessionId
+        };
+
+        var authenticatedUser = await authenticationService.GetAuthenticatedUser(httpContext, CookieNames.CookieName).ConfigureAwait(false)
+            ?? new ClaimsPrincipal();
+
+        var parameter = authorizationRequest.ToParameter();
+        var issuerName = httpContext.Request.GetAbsoluteUriWithVirtualPath();
+        var authorizationActions = new AuthorizationActions(
+            authorizationCodeStore,
+            clientStore,
+            tokenStore,
+            scopeRepository,
+            consentRepository,
+            jwksStore,
+            eventPublisher,
+            resourceOwnerServices,
+            logger);
+        var actionResult = await authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName, cancellationToken).ConfigureAwait(false);
+
+        switch (actionResult.Type)
+        {
+            case ActionResultType.RedirectToCallBackUrl:
+                activity?.SetStatus(ActivityStatusCode.Ok);
+                DotAuthTelemetry.RecordAuthorizationCodeIssued(authorizationRequest.client_id);
+                return UiEndpointHelpers.ToRedirectResult(
+                    httpContext,
+                    authorizationRequest.redirect_uri!.CreateRedirectHttpTokenResponse(
+                        actionResult.GetRedirectionParameters(),
+                        actionResult.RedirectInstruction!.ResponseMode!));
+            case ActionResultType.RedirectToAction:
+            {
+                activity?.SetStatus(ActivityStatusCode.Ok);
+                DotAuthTelemetry.RecordAuthorizationCodeIssued(authorizationRequest.client_id);
+                if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
+                    || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
+                {
+                    if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
+                    {
+                        authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
+                    {
+                        authorizationRequest = authorizationRequest with { aggregate_id = actionResult.ProcessId };
+                    }
+
+                    var encryptedRequest = dataProtectionProvider.CreateProtector("Request").Protect(authorizationRequest);
+                    actionResult = actionResult with
+                    {
+                        RedirectInstruction = actionResult.RedirectInstruction.AddParameter(
+                            StandardAuthorizationResponseNames.AuthorizationCodeName,
+                            encryptedRequest)
+                    };
+                }
+
+                var redirectionPath = UiEndpointHelpers.GetRedirectPathForEndpoint(actionResult.RedirectInstruction.Action, actionResult.Amr);
+                var redirectionUrl = new Uri($"{httpContext.Request.GetAbsoluteUriWithVirtualPath()}{redirectionPath}")
+                    .AddParametersInQuery(actionResult.GetRedirectionParameters());
+                return Results.Redirect(redirectionUrl.AbsoluteUri);
+            }
+            case ActionResultType.BadRequest:
+                activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(actionResult.Error?.Title));
+                activity?.SetStatus(ActivityStatusCode.Error, actionResult.Error?.Detail);
+                return Results.BadRequest(actionResult.Error);
+            default:
+                activity?.SetStatus(ActivityStatusCode.Error);
+                return Results.BadRequest();
+        }
+    }
+
+    /// <summary>
+    /// Handles POST authorization requests (parameters in form-encoded body).
+    /// RFC 6749 section 3.1 allows POST for the authorization endpoint; this enables
+    /// clients to avoid long query strings and protects parameters from server logs.
+    /// </summary>
+    internal static async Task<IResult> Post(
+        HttpContext httpContext,
+        IRequestThrottle requestThrottle,
+        [FromServices] IHttpClientFactory httpClientFactory,
+        IEventPublisher eventPublisher,
+        IEnumerable<IAuthenticateResourceOwnerService> resourceOwnerServices,
+        IClientStore clientStore,
+        ITokenStore tokenStore,
+        IScopeRepository scopeRepository,
+        IAuthorizationCodeStore authorizationCodeStore,
+        IConsentRepository consentRepository,
+        IJwksStore jwksStore,
+        IDataProtectionProvider dataProtectionProvider,
+        IAuthenticationService authenticationService,
+        ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken)
+    {
+        using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.AuthorizationRequest);
+        var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
+        if (throttled != null)
+        {
+            return throttled;
+        }
+
+        // Read parameters from form body instead of query string
+        var authorizationRequest = await EndpointHandlerHelpers.BindFromFormAsync<AuthorizationRequest>(httpContext.Request).ConfigureAwait(false);
         activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(authorizationRequest.client_id));
         activity?.SetTag(DotAuthTelemetry.TagKeys.ResponseType, DotAuthTelemetry.Normalize(authorizationRequest.response_type));
         activity?.SetTag(DotAuthTelemetry.TagKeys.ScopeRequested, DotAuthTelemetry.Normalize(authorizationRequest.scope));

@@ -15,6 +15,7 @@ public partial class FeatureTest
     [When(@"manager creates user")]
     public async Task WhenManagerCreatesUser()
     {
+        Assert.NotNull(_token);
         var option = await _managerClient.AddResourceOwner(
                 new AddResourceOwnerRequest {Subject = "tester", Password = "tester"},
                 _token.AccessToken)
@@ -38,6 +39,7 @@ public partial class FeatureTest
     public void ThenUserHasCustomUserClaim()
     {
         var handler = new JwtSecurityTokenHandler();
+        Assert.NotNull(_token);
         handler.ValidateToken(
             _token.AccessToken,
             new NoOpTokenValidationParameters(SharedContext.Instance),
