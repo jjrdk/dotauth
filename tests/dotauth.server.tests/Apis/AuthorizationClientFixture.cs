@@ -414,7 +414,10 @@ public sealed class AuthorizationClientFixture : IDisposable
             _server.Client,
             new Uri(baseUrl + WellKnownOpenidConfiguration));
         var token = Assert.IsType<Option<GrantedTokenResponse>.Result>(await tokenClient
-            .GetToken(TokenRequest.FromAuthorizationCode(queries["code"]!, "http://localhost:5000/callback"),
+            // The code_verifier must be supplied: CheckPkce now enforces verifier validation
+            // whenever a code_challenge was stored during authorization (RFC 7636 §4.6),
+            // regardless of whether the client has RequirePkce = true.
+            .GetToken(TokenRequest.FromAuthorizationCode(queries["code"]!, "http://localhost:5000/callback", pkce.CodeVerifier),
                 TestContext.Current.CancellationToken));
 
         Assert.NotEmpty(token.Item.AccessToken);

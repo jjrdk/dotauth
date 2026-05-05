@@ -16,6 +16,7 @@ namespace DotAuth.Shared.Errors;
 
 internal static class ErrorCodes
 {
+    public const string UnsupportedResponseType = "unsupported_response_type";
     public const string ExpiredToken = "expired_token";
     public const string AccessDenied = "access_denied";
     public const string AuthorizationPending = "authorization_pending";

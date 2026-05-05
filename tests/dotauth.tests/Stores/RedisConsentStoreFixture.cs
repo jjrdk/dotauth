@@ -34,7 +34,9 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
     {
         await context.ResetAsync();
         var consent = new Consent { Id = "legacy", Subject = "alice", ClientId = "client-a", GrantedScopes = ["openid"] };
-        await context.Database.StringSetAsync("alice", JsonSerializer.Serialize(consent, SharedSerializerContext.Default.Consent), TimeSpan.FromMinutes(5));
+        // Seed using the tenant-prefixed key to simulate legacy data stored under the
+        // current tenant namespace (the "test" tenant context used by this fixture).
+        await context.Database.StringSetAsync("test:alice", JsonSerializer.Serialize(consent, SharedSerializerContext.Default.Consent), TimeSpan.FromMinutes(5));
         var store = context.Store;
 
         var consents = await store.GetConsentsForGivenUser("alice", CancellationToken.None);
@@ -76,7 +78,8 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
         {
             await _redisContainer.StartAsync();
             _connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(_redisContainer.GetConnectionString());
-            Store = new RedisConsentStore(_connectionMultiplexer.GetDatabase());
+            // Use a fixed tenant context so tests are isolated to the "test" namespace.
+            Store = new RedisConsentStore(_connectionMultiplexer.GetDatabase(), new StaticTenantContext("test"));
         }
 
         public Task ResetAsync()

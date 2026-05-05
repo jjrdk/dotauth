@@ -2,6 +2,7 @@
 
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
@@ -24,7 +25,11 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
         options.Authority = _server.CreateClient().BaseAddress!.AbsoluteUri;
         options.BackchannelHttpHandler = _server.CreateHandler();
         options.RequireHttpsMetadata = false;
-        options.Events = new JwtBearerEvents { OnAuthenticationFailed = ctx => throw ctx.Exception };
+        // Use default graceful failure handling: let the JWT Bearer middleware set
+        // the authentication result to "failed" so the pipeline can continue.
+        // Throwing the exception here would propagate through ExceptionHandlerMiddleware
+        // and return HTTP 500 instead of the expected 401 Unauthorized.
+        options.Events = new JwtBearerEvents { OnAuthenticationFailed = ctx => Task.CompletedTask };
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false,

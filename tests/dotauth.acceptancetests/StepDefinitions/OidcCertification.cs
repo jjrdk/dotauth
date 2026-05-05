@@ -26,7 +26,7 @@ public partial class FeatureTest
     private JsonWebKeySet? _oidcJwks;
     private HttpResponseMessage? _oidcHttpResponse;
     private Uri? _oidcAuthorizationRedirect;
-    private Dictionary<string, string> _oidcAuthorizationParameters = [];
+    private Dictionary<string, string> _oidcAuthorizationParameters = new(StringComparer.Ordinal);
     private JwtSecurityToken? _oidcIdToken;
     private ErrorDetails? _oidcAuthorizationError;
     private string? _expectedNonce;
@@ -558,7 +558,7 @@ public partial class FeatureTest
             case Option<Uri>.Error redirectError:
                 _oidcAuthorizationError = redirectError.Details;
                 _oidcAuthorizationRedirect = null;
-                _oidcAuthorizationParameters = [];
+                _oidcAuthorizationParameters = new Dictionary<string, string>(StringComparer.Ordinal);
                 _oidcIdToken = null;
                 break;
         }

@@ -19,7 +19,7 @@ public sealed class TestsTask : FrostingTask<BuildContext>
         context.EnsureDirectoryExists(context.Environment.WorkingDirectory.Combine("artifacts").Combine("testreports"));
 
         var projects = context.GetFiles("./tests/**/*.tests.csproj");
-        projects.Add(new FilePath("./tests/dotauth.acceptancetests/dotauth.acceptancetests.csproj"));
+        projects.Add(context.GetFiles("./tests/**/*.acceptancetests.csproj"));
 
         foreach (var project in projects)
         {

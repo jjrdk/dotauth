@@ -1,6 +1,7 @@
 namespace DotAuth.AcceptanceTests.StepDefinitions;
 
 using System;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
@@ -53,6 +54,7 @@ public partial class FeatureTest
             ValidAudience = "client",
             ValidIssuer = "https://localhost"
         };
+        Assert.NotNull(_token);
         tokenHandler.ValidateToken(_token.AccessToken, validationParameters, out var token);
 
         Assert.NotEmpty(((JwtSecurityToken)token).Claims);
@@ -71,6 +73,7 @@ public partial class FeatureTest
             ValidAudience = client,
             ValidIssuer = "https://localhost"
         };
+        Assert.NotNull(_token);
         tokenHandler.ValidateToken(_token.IdToken, validationParameters, out _);
     }
 
@@ -84,6 +87,7 @@ public partial class FeatureTest
             ValidAudience = client,
             ValidIssuer = "https://localhost"
         };
+        Assert.NotNull(_token);
         tokenHandler.ValidateToken(_token.AccessToken, validationParameters, out _);
     }
 
@@ -94,6 +98,7 @@ public partial class FeatureTest
         {
             Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/userinfo")
         };
+        Assert.NotNull(_token);
         userinfoRequest.Headers.Authorization =
             new AuthenticationHeaderValue(_token.TokenType, _token.AccessToken);
         var userinfo = await _fixture!.Client().SendAsync(userinfoRequest);
@@ -118,6 +123,7 @@ public partial class FeatureTest
             Method = HttpMethod.Post,
             RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners/claims")
         };
+        Assert.NotNull(_token);
         request.Headers.Authorization = new AuthenticationHeaderValue(
             JwtBearerDefaults.AuthenticationScheme,
             _token.AccessToken);
@@ -133,6 +139,7 @@ public partial class FeatureTest
     [Then(@"token has custom custom claims")]
     public void ThenTokenHasCustomCustomClaims()
     {
+        Assert.NotNull(_token);
         var handler = new JwtSecurityTokenHandler();
         var refreshedClaims = handler.ReadJwtToken(_token.AccessToken).Claims;
 

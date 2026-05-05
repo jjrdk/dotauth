@@ -57,7 +57,7 @@ internal sealed class DiscoveryActions
             ScopesSupported = scopeSupportedNames,
             ResponseTypesSupported = responseTypesSupported,
             ResponseModesSupported = CoreConstants.Supported.SupportedResponseModes,
-            GrantTypesSupported = GrantTypes.All,
+            GrantTypesSupported = GrantTypes.All.Where(g => g != GrantTypes.Password).ToArray(),
             SubjectTypesSupported = CoreConstants.Supported.SupportedSubjectTypes,
             TokenEndpointAuthMethodSupported = CoreConstants.Supported.SupportedTokenEndPointAuthenticationMethods,
             IdTokenSigningAlgValuesSupported = [SecurityAlgorithms.RsaSha256, SecurityAlgorithms.EcdsaSha256],
@@ -86,6 +86,7 @@ internal sealed class DiscoveryActions
             Manage = new Uri($"{issuer}/{CoreConstants.EndPoints.Manage}"),
             Claims = new Uri($"{issuer}/{CoreConstants.EndPoints.Claims}"),
             CheckSessionEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.CheckSession}"),
+            CodeChallengeMethodsSupported = ["S256", "plain"],
             EndSessionEndPoint = new Uri($"{issuer}/{CoreConstants.EndPoints.EndSession}"),
         };
         return result;

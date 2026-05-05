@@ -29,6 +29,7 @@ public partial class FeatureTest
     [When(@"adding resource owner with (.+), (.+)")]
     public async Task WhenAddingResourceOwnerWith(string subject, string password)
     {
+        Assert.NotNull(_token);
         var response = Assert.IsType<Option<AddResourceOwnerResponse>.Result>(
             await _managerClient.AddResourceOwner(
                 new AddResourceOwnerRequest { Password = password, Subject = subject },
@@ -41,6 +42,7 @@ public partial class FeatureTest
     [Then(@"resource owner (.+) is local account")]
     public async Task ThenResourceOwnerIsLocalAccount(string subject)
     {
+        Assert.NotNull(_token);
         var response = Assert.IsType<Option<ResourceOwner>.Result>(
             await _managerClient.GetResourceOwner(subject, _token.AccessToken)
         );
@@ -51,6 +53,7 @@ public partial class FeatureTest
     [Then(@"can update resource owner (.+) with password (.+)")]
     public async Task ThenCanUpdateResourceOwnerWithPassword(string subject, string password)
     {
+        Assert.NotNull(_token);
         var response = await _managerClient.UpdateResourceOwnerPassword(
                 new UpdateResourceOwnerPasswordRequest { Subject = subject, Password = password },
                 _token.AccessToken)
@@ -88,6 +91,7 @@ public partial class FeatureTest
             Method = HttpMethod.Post,
             RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners/claims")
         };
+        Assert.NotNull(_token);
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             _token.AccessToken);
@@ -126,6 +130,7 @@ public partial class FeatureTest
     [When(@"refreshing token, then has updated claims")]
     public async Task WhenRefreshingTokenThenHasUpdatedClaims()
     {
+        Assert.NotNull(_token);
         var option = await _tokenClient
                 .GetToken(TokenRequest.FromRefreshToken(_token.RefreshToken!))
             ;
@@ -193,6 +198,7 @@ public partial class FeatureTest
             RequestUri = new Uri(
                 $"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners/claims?type=acceptance_test")
         };
+        Assert.NotNull(_token);
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             _token.AccessToken);
@@ -217,6 +223,7 @@ public partial class FeatureTest
     [When(@"deleting user claims not in scope")]
     public async Task WhenDeletingUserClaimsNotInScope()
     {
+        Assert.NotNull(_token);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Delete,
@@ -252,6 +259,7 @@ public partial class FeatureTest
     [When(@"deleting own account")]
     public async Task WhenDeletingOwnAccount()
     {
+        Assert.NotNull(_token);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Delete, RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners")
@@ -284,6 +292,7 @@ public partial class FeatureTest
             Method = HttpMethod.Put,
             RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners/claims")
         };
+        Assert.NotNull(_token);
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             _token.AccessToken);

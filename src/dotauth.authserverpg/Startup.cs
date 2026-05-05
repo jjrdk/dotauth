@@ -25,6 +25,7 @@ using Amazon.Runtime;
 using DotAuth;
 using DotAuth.Extensions;
 using DotAuth.Shared;
+using DotAuth.Shared.Repositories;
 using DotAuth.Sms;
 using DotAuth.Sms.Ui;
 using DotAuth.Stores.Marten;
@@ -139,10 +140,10 @@ public sealed class Startup
             })
             .AddTransient(sp =>
             {
-//                var contextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-//                var context = contextAccessor.HttpContext;
-//                var host = context?.Request.Host.Host ?? "localhost";
-                return sp.GetRequiredService<IDocumentStore>().LightweightSession();
+                // Open a tenant-scoped session so all Marten queries and writes are
+                // automatically filtered to the current tenant's data partition.
+                var tenantContext = sp.GetRequiredService<ITenantContext>();
+                return sp.GetRequiredService<IDocumentStore>().LightweightSession(tenantContext.TenantId);
             })
             .AddLogging(log =>
             {
@@ -218,6 +219,12 @@ public sealed class Startup
         if (!string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonAccessKey])
          && !string.IsNullOrWhiteSpace(_configuration[ConfigurationValues.AmazonSecretKey]))
         {
+            // Register the Marten-backed provisioning service before calling AddDotAuthServer
+            // so the TryAddSingleton fallback (NullTenantProvisioningService) is not used.
+            services.AddSingleton<ITenantProvisioningService>(sp =>
+                new MartenTenantProvisioningService(
+                    sp.GetRequiredService<IDocumentStore>(),
+                    sp.GetRequiredService<ILogger<MartenTenantProvisioningService>>()));
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
                     [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])
@@ -232,6 +239,11 @@ public sealed class Startup
         }
         else
         {
+            // Register the Marten-backed provisioning service before calling AddDotAuthServer.
+            services.AddSingleton<ITenantProvisioningService>(sp =>
+                new MartenTenantProvisioningService(
+                    sp.GetRequiredService<IDocumentStore>(),
+                    sp.GetRequiredService<ILogger<MartenTenantProvisioningService>>()));
             services.AddDotAuthServer(
                     _dotAuthConfiguration,
                     [CookieNames.CookieName, JwtBearerDefaults.AuthenticationScheme, DotAuthScheme])

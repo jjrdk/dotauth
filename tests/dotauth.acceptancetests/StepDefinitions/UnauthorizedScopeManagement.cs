@@ -20,9 +20,9 @@ public partial class FeatureTest
     [When(@"adding new scope")]
     public async Task WhenAddingNewScope()
     {
+        Assert.NotNull(_token);
         _scope = await _managerClient.AddScope(
-                new Scope { Name = "test", Claims = ["openid"] },
-                _token.AccessToken)
-            ;
+            new Scope { Name = "test", Claims = ["openid"] },
+            _token.AccessToken);
     }
 }

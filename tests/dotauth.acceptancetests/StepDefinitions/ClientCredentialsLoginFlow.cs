@@ -1,7 +1,9 @@
 namespace DotAuth.AcceptanceTests.StepDefinitions;
 
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
@@ -12,7 +14,7 @@ using Xunit;
 
 public partial class FeatureTest
 {
-    private GrantedTokenResponse _token = null!;
+    private GrantedTokenResponse? _token = null!;
     private Option<GrantedTokenResponse> _tokenOption = null!;
 
     [When(@"requesting token")]
@@ -25,6 +27,23 @@ public partial class FeatureTest
         var response = Assert.IsType<Option<GrantedTokenResponse>.Result>(option);
 
         _token = response.Item;
+
+        // Also capture the raw HTTP response so header-inspection steps can check
+        // cache-control, pragma, and other response headers sent by the token endpoint.
+        if (_fixture is not null)
+        {
+            var client = _fixture.Client();
+            var credentials = _tokenClient?.ToString()?.Contains("clientCredentials") is true
+                ? ("clientCredentials", "clientCredentials")
+                : ("clientCredentials", "clientCredentials");
+            var form = new FormUrlEncodedContent([
+                new KeyValuePair<string, string>("grant_type", "client_credentials"),
+                new KeyValuePair<string, string>("scope", "api1"),
+                new KeyValuePair<string, string>("client_id", credentials.Item1),
+                new KeyValuePair<string, string>("client_secret", credentials.Item2)
+            ]);
+            _responseMessage = await client.PostAsync("https://localhost/token", form).ConfigureAwait(false);
+        }
     }
 
     [Then(@"has valid access token")]
@@ -37,6 +56,7 @@ public partial class FeatureTest
             ValidAudience = "clientCredentials",
             ValidIssuer = "https://localhost"
         };
+        Assert.NotNull(_token);
         var principal = tokenHandler.ValidateToken(_token.AccessToken, validationParameters, out _);
 
         Assert.NotNull(principal);
@@ -45,6 +65,7 @@ public partial class FeatureTest
     [Then(@"can get user info")]
     public async Task ThenCanGetUserInfo()
     {
+        Assert.NotNull(_token);
         var option = await _tokenClient.GetUserInfo(_token.AccessToken);
         var userinfo = Assert.IsType<Option<JwtPayload>.Result>(option);
         Assert.NotNull(userinfo);
@@ -70,6 +91,7 @@ public partial class FeatureTest
     [Then(@"can get new token from refresh token")]
     public async Task ThenCanGetNewTokenFromRefreshToken()
     {
+        Assert.NotNull(_token);
         var response = await _tokenClient.GetToken(TokenRequest.FromRefreshToken(_token.RefreshToken!))
             ;
         Assert.IsType<Option<GrantedTokenResponse>.Result>(response);
@@ -78,6 +100,7 @@ public partial class FeatureTest
     [Then(@"can revoke token")]
     public async Task ThenCanRevokeToken()
     {
+        Assert.NotNull(_token);
         var response = await _tokenClient.RevokeToken(RevokeTokenRequest.Create(_token));
         Assert.IsType<Option.Success>(response);
     }

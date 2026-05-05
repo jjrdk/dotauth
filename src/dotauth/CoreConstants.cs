@@ -226,6 +226,12 @@ internal static class CoreConstants
             },
             {
                 [
+                    ResponseTypeNames.Token
+                ],
+                AuthorizationFlow.ImplicitFlow
+            },
+            {
+                [
                     ResponseTypeNames.IdToken
                 ],
                 AuthorizationFlow.ImplicitFlow
@@ -292,7 +298,7 @@ internal static class CoreConstants
             AuthorizationFlow.HybridFlow
         ];
 
-        public static readonly string[] SupportedResponseModes = ["query"];
+        public static readonly string[] SupportedResponseModes = ["query", "form_post"];
 
         public static readonly string[] SupportedSubjectTypes =
         [

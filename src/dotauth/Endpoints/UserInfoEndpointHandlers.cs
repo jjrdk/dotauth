@@ -46,6 +46,13 @@ internal static class UserInfoEndpointHandlers
 
 		activity?.SetStatus(ActivityStatusCode.Ok);
 		DotAuthTelemetry.RecordUserInfoRequest(true);
+
+		// RFC 6750 §5.3: Responses that bear access tokens in the URI MUST include a
+		// Cache-Control response-header field with no-store to prevent inadvertent caching.
+		// Always set no-store on userinfo since it contains sensitive PII.
+		httpContext.Response.Headers["Cache-Control"] = "no-store";
+		httpContext.Response.Headers["Pragma"] = "no-cache";
+
 		return Results.Json(grantedToken.UserInfoPayLoad ?? grantedToken.IdTokenPayLoad ?? new JwtPayload());
 	}
 }

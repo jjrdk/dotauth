@@ -55,8 +55,22 @@ public partial class FeatureTest : IDisposable
     {
         if (_openTelemetryCollector is not null)
         {
-            _openTelemetryCollector.DisposeAsync().AsTask().GetAwaiter().GetResult();
-            _openTelemetryCollector = null;
+            // Run the async dispose on a dedicated thread-pool thread to avoid
+            // SynchronizationContext deadlocks that occur when calling
+            // GetAwaiter().GetResult() directly in xUnit's test context.
+            try
+            {
+                Task.Run(() => _openTelemetryCollector.DisposeAsync().AsTask()).GetAwaiter().GetResult();
+            }
+            catch
+            {
+                // Best-effort cleanup; do not crash the test process if the
+                // OpenTelemetry collector container fails to stop cleanly.
+            }
+            finally
+            {
+                _openTelemetryCollector = null;
+            }
         }
 
         Environment.SetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT", null);

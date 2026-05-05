@@ -37,33 +37,49 @@ internal static class UiEndpointHelpers
 
     internal static IResult ViewOrJson(HttpContext httpContext, string viewPath, object? model, int statusCode = StatusCodes.Status200OK, IReadOnlyDictionary<string, object?>? viewData = null, ModelStateDictionary? modelState = null)
     {
-        return WantsHtml(httpContext.Request)
-            ? new RazorViewResult(viewPath, model, statusCode, viewData, modelState)
-            : Results.Json(model, statusCode: statusCode);
-    }
-
-    internal static IResult RedirectToError(string message, string? code = null, string? title = null)
-    {
-        var query = new Dictionary<string, string?>
+        if (WantsHtml(httpContext.Request))
         {
-            ["code"] = code,
-            ["title"] = title,
-            ["message"] = message
-        };
+            return new RazorViewResult(viewPath, model, statusCode, viewData, modelState);
+        }
 
-        return Results.Redirect(QueryHelpers.AddQueryString("/error", query!));
+        // Ensure UI responses include an X-Frame-Options header even when the
+        // endpoint returns JSON (content negotiation resulted in JSON). Some
+        // clients/tests assert this header is present for UI endpoints; adding
+        // it here keeps behavior consistent regardless of Accept headers.
+        if (!httpContext.Response.Headers.ContainsKey("X-Frame-Options"))
+        {
+            httpContext.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+        }
+
+        return Results.Json(model, statusCode: statusCode);
     }
+
+        internal static IResult RedirectToError(string message, string? code = null, string? title = null)
+        {
+            var query = new Dictionary<string, string?>
+            {
+                ["code"] = code,
+                ["title"] = title,
+                ["message"] = message
+            };
+
+            // query is never null here so no null-forgiving operator is needed
+            return Results.Redirect(QueryHelpers.AddQueryString("/error", query));
+        }
 
     internal static IResult ToRedirectResult(HttpContext httpContext, ActionResult actionResult)
     {
-        return actionResult switch
-        {
-            RedirectResult redirectResult => Results.Redirect(redirectResult.Url!),
-            RedirectToRouteResult redirectToRouteResult => Results.Redirect(
-                httpContext.RequestServices.GetRequiredService<LinkGenerator>().GetPathByRouteValues(
-                    httpContext,
-                    routeName: null,
-                    values: redirectToRouteResult.RouteValues) ?? "/"),
+            return actionResult switch
+            {
+                // Url is annotated as non-null; no null-forgiving operator required
+                RedirectResult redirectResult => Results.Redirect(redirectResult.Url),
+            RedirectToRouteResult redirectToRouteResult =>
+                Results.Redirect(
+                    httpContext.RequestServices.GetRequiredService<LinkGenerator>().GetPathByRouteValues(
+                        httpContext,
+                        routeName: null,
+                        values: redirectToRouteResult.RouteValues)
+                    ?? BuildPathFromRouteValues(redirectToRouteResult.RouteValues)),
             _ => Results.BadRequest()
         };
     }
@@ -102,6 +118,50 @@ internal static class UiEndpointHelpers
         }
 
         return linkGenerator.GetPathByRouteValues(httpContext, routeName: null, values: routeValues) ?? "/";
+    }
+
+        private static string BuildPathFromRouteValues(RouteValueDictionary? values)
+    {
+        if (values == null)
+        {
+            return "/";
+        }
+
+        var area = values.TryGetValue("area", out var a) ? a?.ToString() : null;
+        var controller = values.TryGetValue("controller", out var c) ? c?.ToString() : null;
+        var action = values.TryGetValue("action", out var ac) ? ac?.ToString() : null;
+
+        if (string.IsNullOrWhiteSpace(controller))
+        {
+            return "/";
+        }
+
+        var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(area)) parts.Add(area.Trim('/'));
+        parts.Add(controller.Trim('/'));
+        if (!string.IsNullOrWhiteSpace(action)) parts.Add(action.Trim('/'));
+
+        var path = "/" + string.Join('/', parts);
+
+        // Build query string from remaining route values (exclude controller/action/area)
+        var queryParams = new Dictionary<string, string?>();
+        foreach (var kv in values)
+        {
+            var key = kv.Key;
+            if (string.Equals(key, "controller", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(key, "action", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(key, "area", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (kv.Value != null)
+            {
+                queryParams[key] = kv.Value.ToString();
+            }
+        }
+
+        return queryParams.Count == 0 ? path : QueryHelpers.AddQueryString(path, queryParams);
     }
 
     internal static async Task SetLocalCookieAsync(HttpContext httpContext, IAuthenticationService authenticationService, RuntimeSettings runtimeSettings, Claim[] claims, string sessionId)

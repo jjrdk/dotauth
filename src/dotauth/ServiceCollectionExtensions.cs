@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Claims;
@@ -42,6 +43,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -331,7 +333,26 @@ public static class ServiceCollectionExtensions
                 .AddSingleton(sp => configuration.ConfirmationCodes?.Invoke(sp) ?? new InMemoryConfirmationCodeStore())
                 .AddSingleton(sp => configuration.AccountFilters?.Invoke(sp) ?? new InMemoryFilterStore())
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                // Tenant context resolved from HTTP host header; safe as Singleton because
+                // IHttpContextAccessor uses AsyncLocal and always reflects current request.
+                .AddSingleton<ITenantContext>(sp => new HttpTenantContext(
+                    sp.GetRequiredService<IHttpContextAccessor>(),
+                    configuration.DefaultTenantId,
+                    configuration.BaseDomain))
                 .AddSingleton<IAuthorizationPolicy, DefaultAuthorizationPolicy>();
+
+            // No-op fallback; callers should override with a real implementation
+            // (e.g., MartenTenantProvisioningService) BEFORE calling AddDotAuthServer.
+            // TryAddSingleton returns void so it cannot be chained on the builder above.
+            s.TryAddSingleton<ITenantProvisioningService, NullTenantProvisioningService>();
+
+            // Provision the default tenant at startup so the server is ready
+            // to handle requests immediately after boot.
+            s.AddHostedService(sp => new TenantProvisioningHostedService(
+                sp.GetRequiredService<ITenantProvisioningService>(),
+                configuration.DefaultTenantId,
+                configuration.DefaultScopes,
+                sp.GetRequiredService<ILogger<TenantProvisioningHostedService>>()));
 
             AddOpenTelemetryIfConfigured(services, configuration.ApplicationName);
 
@@ -394,6 +415,27 @@ public static class ServiceCollectionExtensions
                 .UseForwardedHeaders(forwardedHeadersOptions)
                 .UseMiddleware<ExceptionHandlerMiddleware>(publisher)
                 .UseResponseCompression()
+                // Add security headers to all responses to improve OWASP compliance.
+                // CSP prevents XSS attacks; Referrer-Policy prevents sensitive data leakage in referrer.
+                .Use(async (context, next) =>
+                {
+                    context.Response.OnStarting(() =>
+                    {
+                        if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
+                        {
+                            context.Response.Headers["Content-Security-Policy"] =
+                                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'";
+                        }
+
+                        if (!context.Response.Headers.ContainsKey("Referrer-Policy"))
+                        {
+                            context.Response.Headers["Referrer-Policy"] = "no-referrer";
+                        }
+
+                        return Task.CompletedTask;
+                    });
+                    await next(context).ConfigureAwait(false);
+                })
                 .UseStaticFiles(
                     new StaticFileOptions
                     {

@@ -193,11 +193,28 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
         RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
         CancellationToken cancellationToken)
     {
-        var grantedToken = refreshTokenGrantTypeParameter.RefreshToken == null
-            ? null
-            : await _tokenStore.GetRefreshToken(refreshTokenGrantTypeParameter.RefreshToken, cancellationToken)
-                .ConfigureAwait(false);
+        if (refreshTokenGrantTypeParameter.RefreshToken == null)
+        {
+            return null;
+        }
 
-        return grantedToken;
+        // Atomically consume the refresh token from the store. Implementations
+        // should return the consumed token if it existed and was removed; other
+        // concurrent callers will receive null. For stores that do not implement
+        // an atomic consume (or for tests that stub GetRefreshToken instead of
+        // ConsumeRefreshToken) fall back to a plain read so the caller can still
+        // proceed. This preserves compatibility while favoring atomic consume
+        // when available.
+        var consumed = await _tokenStore.ConsumeRefreshToken(refreshTokenGrantTypeParameter.RefreshToken, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (consumed != null)
+        {
+            return consumed;
+        }
+
+        // Fallback: try a non-destructive read if consume didn't return anything.
+        return await _tokenStore.GetRefreshToken(refreshTokenGrantTypeParameter.RefreshToken, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

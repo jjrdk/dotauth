@@ -83,6 +83,14 @@ internal sealed class TelemetryTokenStore : ITokenStore
             () => _inner.RemoveAccessToken(accessToken, cancellationToken));
     }
 
+    public Task<GrantedToken?> ConsumeRefreshToken(string refreshToken, CancellationToken cancellationToken)
+    {
+        return TrackLookupAsync(
+            activityName: DotAuthTelemetry.ActivityNames.TokenStoreGet,
+            operation: "consume_refresh_token",
+            () => _inner.ConsumeRefreshToken(refreshToken, cancellationToken));
+    }
+
     /// <summary>
     /// Tracks a token lookup and annotates whether it was a cache hit.
     /// </summary>

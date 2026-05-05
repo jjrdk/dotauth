@@ -46,7 +46,8 @@ public class DotAuthHandler<T> : RemoteAuthenticationHandler<T>
     {
         var query = Request.Query;
         var code = query["code"];
-        if (!string.IsNullOrEmpty(code.ToString()))
+        // If no authorization code is present in the callback request, fail.
+        if (string.IsNullOrEmpty(code.ToString()))
         {
             return HandleRequestResult.Fail("No code received.");
         }

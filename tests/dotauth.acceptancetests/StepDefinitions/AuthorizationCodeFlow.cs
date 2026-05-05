@@ -13,6 +13,8 @@ using Xunit;
 public partial class FeatureTest
 {
     private Option<Uri>? _response;
+    // Stores the last PKCE code verifier generated during an authorization request
+    private string? _lastPkceCodeVerifier;
 
     [Given(@"a properly configured auth client")]
     public void GivenAProperlyConfiguredAuthClient()
@@ -27,6 +29,8 @@ public partial class FeatureTest
     public async Task WhenRequestingAuthorizationForScope(string scope)
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
+        // keep the code verifier so that subsequent steps can perform the token exchange
+        _lastPkceCodeVerifier = pkce.CodeVerifier;
         var authorizationRequest = new AuthorizationRequest(
             [scope],
             [ResponseTypeNames.Code],
@@ -37,7 +41,7 @@ public partial class FeatureTest
             "abc")
         {
             code_challenge_method = CodeChallengeMethods.S256,
-            code_challenge = CodeChallengeMethods.S256.BuildPkce().CodeChallenge,
+            code_challenge = pkce.CodeChallenge,
             prompt = PromptNames.Login
         };
         _response = await _tokenClient.GetAuthorization(
@@ -63,6 +67,7 @@ public partial class FeatureTest
     public async Task WhenRequestingAuthorizationForWrongCallback()
     {
         var pkce = CodeChallengeMethods.S256.BuildPkce();
+        _lastPkceCodeVerifier = pkce.CodeVerifier;
         _response = await _tokenClient.GetAuthorization(
                 new AuthorizationRequest(
                     ["api1"],
@@ -72,7 +77,7 @@ public partial class FeatureTest
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
                     "abc"))
-            ;
+            .ConfigureAwait(false);
     }
 
     [Then(@"has invalid request error message")]

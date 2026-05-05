@@ -53,14 +53,18 @@ internal sealed class ServerStartup
             AuthorizationCodes =
                 sp => new RedisAuthorizationCodeStore(
                     sp.GetRequiredService<IDatabaseAsync>(),
+                    sp.GetRequiredService<ITenantContext>(),
                     _martenConfiguration!.AuthorizationCodeValidityPeriod),
             Clients = sp => new MartenClientStore(sp.GetRequiredService<Func<IDocumentSession>>(),
                 sp.GetRequiredService<ILogger<MartenClientStore>>()),
             ConfirmationCodes =
                 sp => new RedisConfirmationCodeStore(
                     sp.GetRequiredService<IDatabaseAsync>(),
+                    sp.GetRequiredService<ITenantContext>(),
                     _martenConfiguration!.RptLifeTime),
-            Consents = sp => new RedisConsentStore(sp.GetRequiredService<IDatabaseAsync>()),
+            Consents = sp => new RedisConsentStore(
+                sp.GetRequiredService<IDatabaseAsync>(),
+                sp.GetRequiredService<ITenantContext>()),
             JsonWebKeys = _ =>
             {
                 var keyset = new[] { context.SignatureKey, context.EncryptionKey }.ToJwks();
@@ -73,9 +77,13 @@ internal sealed class ServerStartup
                     sp.GetRequiredService<Func<IDocumentSession>>(),
                     sp.GetRequiredService<ILogger<MartenResourceSetRepository>>()),
             Tickets =
-                sp => new RedisTicketStore(sp.GetRequiredService<IDatabaseAsync>(),
+                sp => new RedisTicketStore(
+                    sp.GetRequiredService<IDatabaseAsync>(),
+                    sp.GetRequiredService<ITenantContext>(),
                     _martenConfiguration!.TicketLifeTime),
-            Tokens = sp => new RedisTokenStore(sp.GetRequiredService<IDatabaseAsync>()),
+            Tokens = sp => new RedisTokenStore(
+                sp.GetRequiredService<IDatabaseAsync>(),
+                sp.GetRequiredService<ITenantContext>()),
             DevicePollingInterval = TimeSpan.FromSeconds(3),
             DeviceAuthorizationLifetime = TimeSpan.FromSeconds(5)
         };

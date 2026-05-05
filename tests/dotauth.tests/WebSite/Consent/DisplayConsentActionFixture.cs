@@ -109,7 +109,10 @@ public sealed class DisplayConsentActionFixture
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var authorizationParameter = new AuthorizationParameter
         {
-            ResponseType = ResponseTypeNames.Token,
+            // Use a response type that is not in MappingResponseTypesToAuthorizationFlows so that
+            // GetAuthorizationFlow returns an error — "token" alone is now mapped to ImplicitFlow
+            // following the OAuth compliance update that added it as a supported flow.
+            ResponseType = "unsupported_type",
             Scope = "scope",
             ClientId = clientId,
             State = state,

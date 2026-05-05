@@ -37,6 +37,7 @@ public partial class FeatureTest
     [When(@"getting all clients")]
     public async Task WhenGettingAllClients()
     {
+        Assert.NotNull(_token);
         var option = await _managerClient.GetAllClients(_token.AccessToken);
 
         var response = Assert.IsType<Option<Client[]>.Result>(option);
@@ -64,6 +65,7 @@ public partial class FeatureTest
             GrantTypes = [GrantTypes.ClientCredentials],
             JsonWebKeys = TestKeys.SecretKey.CreateSignatureJwk().ToSet()
         };
+        Assert.NotNull(_token);
         _addClientResponse = await _managerClient.AddClient(client, _token.AccessToken)
             ;
     }

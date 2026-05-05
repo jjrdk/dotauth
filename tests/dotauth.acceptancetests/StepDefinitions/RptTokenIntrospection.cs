@@ -34,6 +34,7 @@ public partial class FeatureTest
         {
             Description = "Test resource", Name = "Test resource", Scopes = ["read"], Type = "Test resource"
         };
+        Assert.NotNull(_token);
         var response =
             await _umaClient.AddResourceSet(resourceSet, _token.AccessToken) as
                 Option<AddResourceSetResponse>.Result;
@@ -61,6 +62,7 @@ public partial class FeatureTest
             Scopes = ["read"],
             Type = "Test resource"
         };
+        Assert.NotNull(_token);
         var response =
             await _umaClient.UpdateResourceSet(resourceSet, _token.AccessToken) as
                 Option<UpdateResourceSetResponse>.Result;
@@ -73,10 +75,11 @@ public partial class FeatureTest
     [When(@"getting a ticket")]
     public async Task WhenGettingATicket()
     {
+        Assert.NotNull(_token);
         var ticketResponse = Assert.IsType<Option<TicketResponse>.Result>(
             await _umaClient.RequestPermission(
                     _token.AccessToken,
-                    requests: new PermissionRequest { ResourceSetId = _resourceId, Scopes = ["read"] })
+                            requests: new PermissionRequest { ResourceSetId = _resourceId, Scopes = ["read"] })
                 );
 
         Assert.NotNull(ticketResponse);
@@ -87,6 +90,7 @@ public partial class FeatureTest
     [When(@"getting an RPT token")]
     public async Task WhenGettingAnRptToken()
     {
+        Assert.NotNull(_token);
         var rptResponse = Assert.IsType<Option<GrantedTokenResponse>.Result>(
             await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _token.IdToken!))
                 );
@@ -99,6 +103,7 @@ public partial class FeatureTest
     [Then(@"can introspect RPT token using PAT token as authentication")]
     public async Task ThenCanIntrospectRptTokenUsingPatTokenAsAuthentication()
     {
+        Assert.NotNull(_token);
         var introspectResult = await _umaClient
             .Introspect(DotAuth.Client.IntrospectionRequest.Create(_rptToken!, "access_token", _token.AccessToken))
             ;

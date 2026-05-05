@@ -7,7 +7,7 @@ using Cake.Core.Diagnostics;
 using Cake.Frosting;
 
 [TaskName("Pack")]
-[IsDependentOn(typeof(RedisTestsTask))]
+[IsDependentOn(typeof(TestsTask))]
 public sealed class PackTask : FrostingTask<BuildContext>
 {
     /// <inheritdoc />

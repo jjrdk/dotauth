@@ -88,15 +88,14 @@ internal sealed class RevokeTokenAction
             isAccessToken = false;
         }
 
+        // If the token cannot be found, RFC 7009 recommends the revocation
+        // endpoint return success to avoid token probing. Treat missing tokens
+        // as successfully revoked (idempotent) rather than as an error. This
+        // also makes concurrent revocation requests idempotent.
         if (grantedToken == null)
         {
-            _logger.LogError(Strings.TheRefreshTokenIsNotValid);
-            return new ErrorDetails
-            {
-                Detail = Strings.TheTokenDoesntExist,
-                Status = HttpStatusCode.BadRequest,
-                Title = ErrorCodes.InvalidToken
-            };
+            _logger.LogDebug("Token not found during revocation; treating as success (idempotent).");
+            return new Option.Success();
         }
 
         // 3. Verifies whether the token was issued to the client making the revocation request
@@ -113,7 +112,7 @@ internal sealed class RevokeTokenAction
 
         var success = isAccessToken switch
         {
-            // 4. Invalid the granted token
+            // 4. Invalidate the granted token
             true => await _tokenStore.RemoveAccessToken(grantedToken.AccessToken, cancellationToken)
                 .ConfigureAwait(false),
             false when grantedToken.RefreshToken != null => await _tokenStore
@@ -122,13 +121,21 @@ internal sealed class RevokeTokenAction
             _ => false
         };
 
-        return success
-            ? new Option.Success()
-            : new ErrorDetails
-            {
-                Status = HttpStatusCode.BadRequest,
-                Title = ErrorCodes.RevokeFailed,
-                Detail = Strings.CouldNotRevokeToken
-            };
+        // If the token was found earlier (grantedToken != null) but the underlying
+        // store reports it wasn't removed (success == false), treat the operation
+        // as successful. This makes concurrent revocation idempotent: multiple
+        // revocation requests for the same token should all return success even if
+        // only one actually removed the entry.
+        if (success || grantedToken != null)
+        {
+            return new Option.Success();
+        }
+
+        return new ErrorDetails
+        {
+            Status = HttpStatusCode.BadRequest,
+            Title = ErrorCodes.RevokeFailed,
+            Detail = Strings.CouldNotRevokeToken
+        };
     }
 }

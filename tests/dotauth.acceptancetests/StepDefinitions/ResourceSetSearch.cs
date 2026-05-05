@@ -15,6 +15,7 @@ public partial class FeatureTest
     [When(@"searching by term (.+)")]
     public async Task WhenSearchingByTerm(string term)
     {
+        Assert.NotNull(_token);
         var searchOption = await _umaClient.SearchResources(
             new SearchResourceSet { Terms = [term] },
             token: _token.AccessToken);
@@ -30,6 +31,7 @@ public partial class FeatureTest
     [When(@"searching by type (.+) and term (.+)")]
     public async Task WhenSearchingByTypeAndTerm(string type, string term)
     {
+        Assert.NotNull(_token);
         var searchOption = await _umaClient.SearchResources(
             new SearchResourceSet
             {

@@ -58,9 +58,26 @@ internal static class ClientValidator
 
     public static bool CheckPkce(this Client client, string? codeVerifier, AuthorizationCode code)
     {
-        if (!client.RequirePkce)
+        // If no challenge was stored during authorization, PKCE was not used.
+        // Accept when RequirePkce is false; reject when RequirePkce is true (challenge is missing).
+        if (string.IsNullOrWhiteSpace(code.CodeChallenge))
         {
-            return true;
+            return !client.RequirePkce;
+        }
+
+        // A code_challenge WAS stored during authorization, so the verifier must always be validated
+        // per RFC 7636 §4.6 — this is true even when the client does not require PKCE.
+        if (codeVerifier == null)
+        {
+            return false;
+        }
+
+        // RFC 7636 §4.1: code_verifier MUST be 43-128 unreserved characters.
+        // Reject verifiers outside this range to prevent insecure short values from
+        // satisfying the challenge even when the hash accidentally matches.
+        if (codeVerifier.Length < 43 || codeVerifier.Length > 128)
+        {
+            return false;
         }
 
         if (code.CodeChallengeMethod == CodeChallengeMethods.Plain)
@@ -68,10 +85,6 @@ internal static class ClientValidator
             return codeVerifier == code.CodeChallenge;
         }
 
-        if (codeVerifier == null)
-        {
-            return false;
-        }
 
         var codeChallenge = codeVerifier.ToSha256SimplifiedBase64(Encoding.ASCII);
 
