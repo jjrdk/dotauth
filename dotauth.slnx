@@ -13,8 +13,11 @@
     <File Path="build.ps1" />
     <File Path="build.sh" />
     <File Path="DockerfileInMemory" />
+    <File Path="DockerfileInMemoryChiseled" />
     <File Path="DockerfilePgRedis" />
+    <File Path="DockerfilePgRedisChiseled" />
     <File Path="DockerfilePostgres" />
+    <File Path="DockerfilePostgresChiseled" />
     <File Path="NuGet.Config" />
     <File Path="README.md" />
     <File Path="shared.proj" />
