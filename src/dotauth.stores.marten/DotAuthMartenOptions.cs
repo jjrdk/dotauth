@@ -1,6 +1,7 @@
 ﻿namespace DotAuth.Stores.Marten;
 
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -18,6 +19,8 @@ using global::Marten;
 using JasperFx;
 using JasperFx.Core.Reflection;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
+using NpgsqlTypes;
 using Weasel.Core;
 
 /// <summary>
@@ -105,10 +108,36 @@ public sealed class DotAuthMartenOptions : StoreOptions
                         jsonObj[key] = serializedValue;
                     }
                 }
+
                 return jsonObj.ToJsonString(MartenSerializerContext.Default.Options);
             }
 
             return JsonSerializer.Serialize(document, document.GetType(), MartenSerializerContext.Default);
+        }
+
+        public void WriteTo(IBufferWriter<byte> writer, object? value)
+        {
+            writer.Write(JsonSerializer.SerializeToUtf8Bytes(
+                value,
+                MartenSerializerContext.Default.GetTypeInfo(value?.GetType() ?? typeof(object)) ??
+                throw new NullReferenceException(
+                    $"Could not get JsonTypeInfo for type {value?.GetType().FullName ?? "object"}")));
+        }
+
+        public void WriteToParameter(NpgsqlParameter parameter, object? value)
+        {
+            ArgumentNullException.ThrowIfNull(parameter);
+
+            parameter.NpgsqlDbType = NpgsqlDbType.Jsonb;
+            if (value is null)
+            {
+                parameter.Value = DBNull.Value;
+                return;
+            }
+
+            var typeInfo = MartenSerializerContext.Default.GetTypeInfo(value.GetType())
+             ?? throw new NullReferenceException($"Could not get JsonTypeInfo for type {value.GetType().FullName}");
+            parameter.Value = JsonSerializer.SerializeToUtf8Bytes(value, typeInfo);
         }
 
         /// <inheritdoc />
@@ -195,10 +224,20 @@ public sealed class DotAuthMartenOptions : StoreOptions
             return document == null ? "null" : ToJson(document);
         }
 
+        public void WriteToCleanJson(IBufferWriter<byte> writer, object? value)
+        {
+            WriteTo(writer, value);
+        }
+
         /// <inheritdoc />
         public string ToJsonWithTypes(object document)
         {
             return ToJson(document);
+        }
+
+        public void WriteToJsonWithTypes(IBufferWriter<byte> writer, object value)
+        {
+            WriteTo(writer, value);
         }
 
         public EnumStorage EnumStorage

@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using Shared.Models;
 using Shared.Requests;
 using Shared.Responses;
@@ -36,31 +36,28 @@ public class UmaFilterAttributeTests
     public UmaFilterAttributeTests()
     {
         _serviceCollection = [];
-        _serviceCollection.AddTransient(
-            _ =>
-            {
-                var mock = new Mock<ITokenClient>();
-                mock.Setup(x => x.GetToken(It.IsAny<TokenRequest>(), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(new GrantedTokenResponse { AccessToken = "abc", IdToken = "def" });
-                return mock.Object;
-            });
-        _serviceCollection.AddTransient(
-            _ =>
-            {
-                var mock = new Mock<IUmaPermissionClient>();
-                mock.SetupGet(x => x.Authority).Returns(new Uri("http://localhost"));
-                mock.Setup(
-                        x => x.RequestPermission(
-                            It.IsAny<string>(),
-                            It.IsAny<CancellationToken>(),
-                            It.IsAny<PermissionRequest[]>()))
-                    .ReturnsAsync(new TicketResponse { TicketId = "abc" });
-                return mock.Object;
-            });
-        _serviceCollection.AddSingleton(new Mock<IAuthenticationService>().Object);
+        _serviceCollection.AddTransient(_ =>
+        {
+            var mock = Substitute.For<ITokenClient>();
+            mock.GetToken(Arg.Any<TokenRequest>(), Arg.Any<CancellationToken>())
+                .Returns(new GrantedTokenResponse { AccessToken = "abc", IdToken = "def" });
+            return mock;
+        });
+        _serviceCollection.AddTransient(_ =>
+        {
+            var mock = Substitute.For<IUmaPermissionClient>();
+            mock.Authority.Returns(new Uri("http://localhost"));
+            mock.RequestPermission(
+                    Arg.Any<string>(),
+                    Arg.Any<CancellationToken>(),
+                    Arg.Any<PermissionRequest[]>())
+                .Returns(new TicketResponse { TicketId = "abc" });
+            return mock;
+        });
+        _serviceCollection.AddSingleton(Substitute.For<IAuthenticationService>());
         _serviceCollection.AddTransient<ILogger<UmaFilterAttribute>>(_ => NullLogger<UmaFilterAttribute>.Instance);
-        _serviceCollection.AddSingleton<IResourceMap>(
-            sp => new StaticResourceMap(new HashSet<KeyValuePair<string, string>>([KeyValuePair.Create("a", "a")])));
+        _serviceCollection.AddSingleton<IResourceMap>(_ =>
+            new StaticResourceMap(new HashSet<KeyValuePair<string, string>>([KeyValuePair.Create("a", "a")])));
     }
 
     [Fact]

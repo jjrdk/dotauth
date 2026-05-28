@@ -1,40 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="../../shared.proj" />
-	<PropertyGroup>
-		<Description>DotAuth Shared Library</Description>
-		<Title>DotAuth Shared</Title>
-		<AssemblyName>dotauth.shared</AssemblyName>
-		<PackageId>dotauth.shared</PackageId>
-		<RootNamespace>DotAuth.Shared</RootNamespace>
-		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
-	</PropertyGroup>
+    <Import Project="../../shared.proj"/>
+    <PropertyGroup>
+        <Description>DotAuth Shared Library</Description>
+        <Title>DotAuth Shared</Title>
+        <AssemblyName>dotauth.shared</AssemblyName>
+        <PackageId>dotauth.shared</PackageId>
+        <RootNamespace>DotAuth.Shared</RootNamespace>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<Compile Update="Errors\ErrorMessages.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>ErrorMessages.resx</DependentUpon>
-		</Compile>
-		<Compile Update="Properties\SharedStrings.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>SharedStrings.resx</DependentUpon>
-		</Compile>
-	</ItemGroup>
+    <ItemGroup>
+        <Compile Update="Errors\ErrorMessages.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ErrorMessages.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Properties\SharedStrings.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>SharedStrings.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
 
-	<ItemGroup>
-		<EmbeddedResource Update="Errors\ErrorMessages.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-		<EmbeddedResource Update="Properties\SharedStrings.resx">
-		  <Generator>ResXFileCodeGenerator</Generator>
-		  <LastGenOutput>SharedStrings.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-	</ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Errors\ErrorMessages.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Properties\SharedStrings.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>SharedStrings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
 </Project>

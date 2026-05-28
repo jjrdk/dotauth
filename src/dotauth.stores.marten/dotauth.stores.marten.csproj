@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="../../shared.proj" />
+    <Import Project="../../shared.proj"/>
 
     <PropertyGroup>
         <Description>DotAuth Marten Stores</Description>
@@ -13,11 +13,11 @@
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="marten" Version="9.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.8" />
+        <PackageReference Include="marten"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />
+        <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj"/>
     </ItemGroup>
 </Project>

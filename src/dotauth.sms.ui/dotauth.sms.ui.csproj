@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>DotAuth.Sms.Ui</RootNamespace>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <RootNamespace>DotAuth.Sms.Ui</RootNamespace>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Areas\**\*.*" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="Areas\**\*.*" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Areas\**\*.*" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Areas\**\*.*" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Areas\sms\Views\_ViewImports.cshtml" />
-  </ItemGroup>
+    <ItemGroup>
+        <Content Include="Areas\sms\Views\_ViewImports.cshtml" />
+    </ItemGroup>
 
 </Project>
