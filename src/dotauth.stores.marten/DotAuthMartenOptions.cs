@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Shared;
@@ -117,11 +118,12 @@ public sealed class DotAuthMartenOptions : StoreOptions
 
         public void WriteTo(IBufferWriter<byte> writer, object? value)
         {
+            var type = value?.GetType() ?? typeof(object) ??
+                throw new NullReferenceException(
+                    $"Could not get JsonTypeInfo for type {value?.GetType().FullName ?? "object"}");
             writer.Write(JsonSerializer.SerializeToUtf8Bytes(
                 value,
-                MartenSerializerContext.Default.GetTypeInfo(value?.GetType() ?? typeof(object)) ??
-                throw new NullReferenceException(
-                    $"Could not get JsonTypeInfo for type {value?.GetType().FullName ?? "object"}")));
+                JsonTypeInfo.CreateJsonTypeInfo(type, MartenSerializerContext.Default.Options)));
         }
 
         public void WriteToParameter(NpgsqlParameter parameter, object? value)
@@ -135,8 +137,9 @@ public sealed class DotAuthMartenOptions : StoreOptions
                 return;
             }
 
-            var typeInfo = MartenSerializerContext.Default.GetTypeInfo(value.GetType())
-             ?? throw new NullReferenceException($"Could not get JsonTypeInfo for type {value.GetType().FullName}");
+            var typeInfo = JsonTypeInfo.CreateJsonTypeInfo(value.GetType()
+             ?? throw new NullReferenceException($"Could not get JsonTypeInfo for type {value.GetType().FullName}"),
+                MartenSerializerContext.Default.Options);
             parameter.Value = JsonSerializer.SerializeToUtf8Bytes(value, typeInfo);
         }
 
