@@ -423,7 +423,7 @@ public static class ServiceCollectionExtensions
                     {
                         if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
                         {
-                            context.Response.Headers["Content-Security-Policy"] =
+                            context.Response.Headers.ContentSecurityPolicy =
                                 "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'";
                         }
 

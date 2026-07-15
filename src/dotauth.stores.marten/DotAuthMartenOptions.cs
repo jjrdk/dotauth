@@ -61,7 +61,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
         Advanced.DuplicatedFieldUseTimestampWithoutTimeZoneForDateTime = true;
     }
 
-    private sealed class CustomJsonSerializer : ISerializer
+    private sealed class CustomJsonSerializer : global::Marten.ISerializer
     {
         public string ToJson(object? document)
         {
@@ -121,9 +121,10 @@ public sealed class DotAuthMartenOptions : StoreOptions
             var type = value?.GetType() ?? typeof(object) ??
                 throw new NullReferenceException(
                     $"Could not get JsonTypeInfo for type {value?.GetType().FullName ?? "object"}");
+            var jsonTypeInfo = MartenSerializerContext.Default.Options.GetTypeInfo(type);
             writer.Write(JsonSerializer.SerializeToUtf8Bytes(
                 value,
-                JsonTypeInfo.CreateJsonTypeInfo(type, MartenSerializerContext.Default.Options)));
+                jsonTypeInfo));
         }
 
         public void WriteToParameter(NpgsqlParameter parameter, object? value)
@@ -137,9 +138,9 @@ public sealed class DotAuthMartenOptions : StoreOptions
                 return;
             }
 
-            var typeInfo = JsonTypeInfo.CreateJsonTypeInfo(value.GetType()
-             ?? throw new NullReferenceException($"Could not get JsonTypeInfo for type {value.GetType().FullName}"),
-                MartenSerializerContext.Default.Options);
+            var type = value.GetType();
+            var typeInfo = MartenSerializerContext.Default.Options.GetTypeInfo(type);
+//             ?? throw new NullReferenceException($"Could not get JsonTypeInfo for type {value.GetType().FullName}"));
             parameter.Value = JsonSerializer.SerializeToUtf8Bytes(value, typeInfo);
         }
 

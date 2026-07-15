@@ -41,9 +41,7 @@ public sealed class MartenClientStore : IClientRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var client = await session.Query<Client>()
-            .Where(x => x.ClientId == clientId)
-            .FirstOrDefaultAsync(cancellationToken)
+        var client = await session.LoadAsync<Client>(clientId, cancellationToken)
             .ConfigureAwait(false);
         if (client != null)
         {
