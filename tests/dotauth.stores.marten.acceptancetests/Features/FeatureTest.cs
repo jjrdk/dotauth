@@ -32,7 +32,7 @@ public partial class FeatureTest : IAsyncDisposable
     [BeforeScenario(Order = 1)]
     public async Task SetupConnectionString()
     {
-        _postgresContainer = new PostgreSqlBuilder("postgres:latest").WithUsername("dotauth").WithPassword("dotauth")
+        _postgresContainer = new PostgreSqlBuilder("postgres:alpine").WithUsername("dotauth").WithPassword("dotauth")
             .WithDatabase("dotauth").Build();
         await _postgresContainer.StartAsync();
         _connectionString = _postgresContainer.GetConnectionString();

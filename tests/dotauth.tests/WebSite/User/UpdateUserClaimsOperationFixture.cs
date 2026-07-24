@@ -56,7 +56,7 @@ public sealed class UpdateUserClaimsOperationFixture
             ;
 
         await _resourceOwnerRepositoryStub.Received().Update(
-            Arg.Is<ResourceOwner>(r => r.Claims.Any(c => c.Type == "type" && c.Value == "value1")),
+            Arg.Is<ResourceOwner>(r => r!.Claims.Any(c => c.Type == "type" && c.Value == "value1")),
             Arg.Any<CancellationToken>());
     }
 }

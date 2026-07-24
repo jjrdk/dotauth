@@ -1,7 +1,6 @@
 namespace DotAuth.AcceptanceTests.StepDefinitions;
 
 using System;
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;

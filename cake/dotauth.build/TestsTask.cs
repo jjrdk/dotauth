@@ -5,7 +5,6 @@ using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.Test;
 using Cake.Core;
 using Cake.Core.Diagnostics;
-using Cake.Core.IO;
 using Cake.Frosting;
 
 [TaskName("Tests")]

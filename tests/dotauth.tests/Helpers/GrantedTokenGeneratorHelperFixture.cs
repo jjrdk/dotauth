@@ -26,7 +26,6 @@ using DotAuth.Shared.Properties;
 using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 public sealed class GrantedTokenGeneratorHelperFixture
@@ -57,16 +56,16 @@ public sealed class GrantedTokenGeneratorHelperFixture
     public async Task WhenClientDoesNotExistThenErrorIsReturned()
     {
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .ReturnsNull();
+            .Returns(Task.FromResult<Client?>(null));
 
         var ex = Assert.IsType<Option<GrantedToken>.Error>(await _clientRepositoryStub.GenerateToken(
-                new InMemoryJwksRepository(),
-                "invalid_client",
-                [],
-                "",
-                CancellationToken.None,
-                userInformationPayload: null)
-            );
+            new InMemoryJwksRepository(),
+            "invalid_client",
+            [],
+            "",
+            CancellationToken.None,
+            userInformationPayload: null)
+        );
         Assert.Equal(ErrorCodes.InvalidClient, ex.Details.Title);
         Assert.Equal(SharedStrings.TheClientDoesntExist, ex.Details.Detail);
     }
@@ -88,13 +87,13 @@ public sealed class GrantedTokenGeneratorHelperFixture
             .Returns(client);
 
         var result = Assert.IsType<Option<GrantedToken>.Result>(await _clientRepositoryStub.GenerateToken(
-                new InMemoryJwksRepository(),
-                "client_id",
-                ["scope"],
-                "issuer",
-                CancellationToken.None,
-                userInformationPayload: null)
-            );
+            new InMemoryJwksRepository(),
+            "client_id",
+            ["scope"],
+            "issuer",
+            CancellationToken.None,
+            userInformationPayload: null)
+        );
 
         Assert.Equal(3700, result.Item.ExpiresIn);
     }

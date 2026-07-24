@@ -12,7 +12,6 @@ using DotAuth.Events;
 using DotAuth.Extensions;
 using DotAuth.Parameters;
 using DotAuth.Repositories;
-using DotAuth.Services;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
