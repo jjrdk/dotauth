@@ -2,7 +2,7 @@
 
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 
 /// <summary>
@@ -20,9 +20,9 @@ public class UmaServerUnreachableResult : UmaResult<string>
     }
 
     /// <inheritdoc />
-    protected override Task ExecuteResult(ActionContext context)
+    public override Task ExecuteAsync(HttpContext context)
     {
-        var response = context.HttpContext.Response;
+        var response = context.Response;
         response.StatusCode = (int)HttpStatusCode.Forbidden;
         response.Headers[HeaderNames.CacheControl] = CacheControlHeaderValue.NoCacheString;
         response.Headers[HeaderNames.Warning] = UmaAuthorizationServerUnreachable;

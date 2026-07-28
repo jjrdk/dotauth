@@ -203,7 +203,7 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
                 return;
             }
 
-            var idToken = await GetIdToken(context);
+            var idToken = await GetIdToken(context).ConfigureAwait(false);
             if (idToken == null)
             {
                 LogNoValidIdTokenToRequestPermissionForResourceId(resourceId);
@@ -234,7 +234,7 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
         private async Task<string?> GetIdToken(AuthorizationFilterContext context)
         {
             var request = context.HttpContext.Request;
-            var idToken = await request.HttpContext.GetTokenAsync("id_token");
+            var idToken = await request.HttpContext.GetTokenAsync("id_token").ConfigureAwait(false);
             if (!string.IsNullOrEmpty(idToken))
             {
                 return idToken;

@@ -12,4 +12,9 @@
 		<ProjectReference Include="..\dotauth.uma\dotauth.uma.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.IdentityModel.Protocols" />
+	  <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
+	</ItemGroup>
+
 </Project>

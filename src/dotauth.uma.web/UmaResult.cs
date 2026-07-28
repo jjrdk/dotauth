@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 /// Defines the UMA result base class.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class UmaResult<T> : IActionResult
+public abstract class UmaResult<T> : IResult
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="UmaResult{T}"/> class.
@@ -30,25 +30,17 @@ public abstract class UmaResult<T> : IActionResult
     [AllowNull]
     protected T Value { get; }
 
-    /// <summary>
-    /// Executes the result processing.
-    /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
-    protected abstract Task ExecuteResult(ActionContext context);
-
     /// <inheritdoc />
-    public async Task ExecuteResultAsync(ActionContext context)
+    public virtual async Task ExecuteAsync(HttpContext context)
     {
-        await ExecuteResult(context).ConfigureAwait(false);
         if (Value?.Equals(default(T)) != true)
         {
-            var formatters = context.HttpContext.RequestServices.GetServices<IOutputFormatter>();
-            var formatterSelector = context.HttpContext.RequestServices.GetRequiredService<OutputFormatterSelector>();
+            var formatters = context.RequestServices.GetServices<IOutputFormatter>();
+            var formatterSelector = context.RequestServices.GetRequiredService<OutputFormatterSelector>();
             var writerFactory =
-                context.HttpContext.RequestServices.GetRequiredService<IHttpResponseStreamWriterFactory>();
+                context.RequestServices.GetRequiredService<IHttpResponseStreamWriterFactory>();
             var formatterContext = new OutputFormatterWriteContext(
-                context.HttpContext,
+                context,
                 writerFactory.CreateWriter,
                 typeof(T),
                 Value!);
@@ -59,7 +51,7 @@ public abstract class UmaResult<T> : IActionResult
                 new MediaTypeCollection());
             if (selectedFormatter == null)
             {
-                context.HttpContext.Response.StatusCode = StatusCodes.Status406NotAcceptable;
+                context.Response.StatusCode = StatusCodes.Status406NotAcceptable;
                 return;
             }
 
