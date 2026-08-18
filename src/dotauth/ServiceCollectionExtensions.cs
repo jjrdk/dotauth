@@ -77,10 +77,7 @@ public static class ServiceCollectionExtensions
             (string roleName, string roleClaim) administratorRoleDefinition,
             params string[] authenticationSchemes)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(options);
 
             options.AddPolicy(
                 "authenticated",

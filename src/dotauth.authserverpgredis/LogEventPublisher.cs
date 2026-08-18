@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 /// <summary>
 /// Defines the trace event publisher.
 /// </summary>
-public sealed class LogEventPublisher : IEventPublisher
+public sealed partial class LogEventPublisher : IEventPublisher
 {
     private readonly ILogger<LogEventPublisher> _logger;
 
@@ -24,15 +24,13 @@ public sealed class LogEventPublisher : IEventPublisher
         where T : Event
     {
         var json = JsonSerializer.Serialize(evt, SharedSerializerContext.Default.Options);
-        if (typeof(DotAuthError).IsAssignableFrom(typeof(T)))
-        {
-            _logger.LogError("{Json}", json);
-        }
-        else
-        {
-            _logger.LogInformation("{Json}", json);
-        }
+        LogJson(typeof(DotAuthError).IsAssignableFrom(typeof(T))
+            ? LogLevel.Error
+            : LogLevel.Information, json);
 
         return Task.CompletedTask;
     }
+
+    [LoggerMessage("{Json}")]
+    partial void LogJson(LogLevel logLevel, string json);
 }

@@ -45,7 +45,7 @@ using Microsoft.IdentityModel.Tokens;
 /// <summary>
 /// Configuration class.
 /// </summary>
-public sealed class Startup
+public sealed partial class Startup
 {
     private const string DotAuthScheme = "dotauth";
     private const string DefaultScopes = "openid,profile,email";
@@ -281,7 +281,7 @@ public sealed class Startup
                 var logger = ctx.RequestServices.GetRequiredService<ILogger<HttpRequest>>();
                 if (logger.IsEnabled(LogLevel.Information))
                 {
-                    logger.LogInformation("Request headers: {Headers}", headers);
+                    LogRequestHeadersHeaders(logger, headers);
                 }
 
                 await next(ctx).ConfigureAwait(false);
@@ -295,4 +295,7 @@ public sealed class Startup
             }, applicationTypes: [typeof(IDefaultUi)])
             .UseEndpoints(endpoint => { endpoint.MapHealthChecks("/health"); });
     }
+
+    [LoggerMessage(LogLevel.Information, "Request headers: {Headers}")]
+    static partial void LogRequestHeadersHeaders(ILogger<HttpRequest> logger, string headers);
 }

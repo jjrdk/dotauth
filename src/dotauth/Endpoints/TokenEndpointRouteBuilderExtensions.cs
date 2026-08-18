@@ -21,5 +21,3 @@ public static class TokenEndpointRouteBuilderExtensions
         return endpoints;
     }
 }
-
-

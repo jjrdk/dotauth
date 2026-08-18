@@ -31,7 +31,7 @@ using Microsoft.Extensions.Logging;
 /// Failures are logged and do not crash the application, allowing operators
 /// to handle provisioning manually if needed.
 /// </remarks>
-internal sealed class TenantProvisioningHostedService : IHostedService
+internal sealed partial class TenantProvisioningHostedService : IHostedService
 {
     private readonly ITenantProvisioningService _provisioningService;
     private readonly string _defaultTenantId;
@@ -60,9 +60,7 @@ internal sealed class TenantProvisioningHostedService : IHostedService
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation(
-            "Provisioning default tenant '{TenantId}'...",
-            _defaultTenantId);
+        LogProvisioningDefaultTenantTenantid(_defaultTenantId);
 
         try
         {
@@ -72,25 +70,18 @@ internal sealed class TenantProvisioningHostedService : IHostedService
 
             if (success)
             {
-                _logger.LogInformation(
-                    "Default tenant '{TenantId}' provisioned successfully.",
-                    _defaultTenantId);
+                LogDefaultTenantTenantidProvisionedSuccessfully(_defaultTenantId);
             }
             else
             {
-                _logger.LogWarning(
-                    "Default tenant '{TenantId}' provisioning returned false.",
-                    _defaultTenantId);
+                LogDefaultTenantTenantidProvisioningReturnedFalse(_defaultTenantId);
             }
         }
         catch (Exception ex)
         {
             // Log and continue — provisioning failures must not prevent the server
             // from starting so operators can diagnose and re-trigger provisioning.
-            _logger.LogError(
-                ex,
-                "Failed to provision default tenant '{TenantId}'.",
-                _defaultTenantId);
+            LogFailedToProvisionDefaultTenantTenantid(_defaultTenantId, ex);
         }
     }
 
@@ -99,6 +90,18 @@ internal sealed class TenantProvisioningHostedService : IHostedService
     {
         return Task.CompletedTask;
     }
+
+    [LoggerMessage(LogLevel.Information, "Provisioning default tenant '{TenantId}'...")]
+    partial void LogProvisioningDefaultTenantTenantid(string tenantId);
+
+    [LoggerMessage(LogLevel.Information, "Default tenant '{TenantId}' provisioned successfully.")]
+    partial void LogDefaultTenantTenantidProvisionedSuccessfully(string tenantId);
+
+    [LoggerMessage(LogLevel.Warning, "Default tenant '{TenantId}' provisioning returned false.")]
+    partial void LogDefaultTenantTenantidProvisioningReturnedFalse(string tenantId);
+
+    [LoggerMessage(LogLevel.Error, "Failed to provision default tenant '{TenantId}'.")]
+    partial void LogFailedToProvisionDefaultTenantTenantid(string tenantId, Exception exception);
 }
 
 

@@ -10,7 +10,7 @@ using Npgsql;
 /// <summary>
 /// Defines the logger facade for marten.
 /// </summary>
-public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
+public sealed partial class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
 {
     private readonly ILogger<MartenLoggerFacade> _logger;
 
@@ -32,7 +32,7 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
     /// <inheritdoc />
     public void SchemaChange(string sql)
     {
-        _logger.LogInformation("Executing DDL change: {Sql}", sql);
+        LogExecutingDdlChangeSql(sql);
     }
 
     /// <inheritdoc />
@@ -49,19 +49,19 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
                         : npgsqlParameter.ParameterName;
                     return current.Replace(usedName, $"({usedName} -> {npgsqlParameter.Value})");
                 });
-        _logger.LogInformation("{Entry}", entry);
+        LogEntry(entry);
     }
 
     /// <inheritdoc />
     public void LogFailure(NpgsqlCommand command, Exception ex)
     {
-        _logger.LogError("PostgreSql command failed!");
-        var entry = command.Parameters.Aggregate(
+        LogPostgresqlCommandFailed();
+        var failureEntry = command.Parameters.Aggregate(
             command.CommandText,
             (current, npgsqlParameter) => current.Replace(
                 npgsqlParameter.ParameterName,
                 $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}"));
-        _logger.LogError(ex, "{Entry}", entry);
+        LogFailureentry(failureEntry, ex);
     }
 
     /// <inheritdoc />
@@ -73,7 +73,7 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
                 (current, npgsqlParameter) => current.Replace(
                     npgsqlParameter.ParameterName,
                     $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}")));
-        _logger.LogInformation("{BatchEntry}", entry);
+        LogBatchentry(entry);
     }
 
     /// <inheritdoc />
@@ -85,33 +85,56 @@ public sealed class MartenLoggerFacade : IMartenLogger, IMartenSessionLogger
                 (current, npgsqlParameter) => current.Replace(
                     npgsqlParameter.ParameterName,
                     $"  {npgsqlParameter.ParameterName} -> {npgsqlParameter.Value}")));
-        _logger.LogError(ex, "{BatchError}", entry);
+        LogBatcherror(entry, ex);
     }
 
     /// <inheritdoc />
     public void LogFailure(Exception ex, string message)
     {
-        _logger.LogError(ex, "{Error}", message);
+        LogError(message, ex);
     }
 
     /// <inheritdoc />
     public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
     {
-        _logger.LogInformation(
-            "Persisted {UpdateAmount} updates, {InsertAmount} inserts, and {DeleteAmount} deletions",
-            commit.Updated.Count(),
-            commit.Inserted.Count(),
-            commit.Deleted.Count());
+        LogPersistedUpdateamountUpdatesInsertamountInsertsAndDeleteamountDeletions(commit.Updated.Count(), commit.Inserted.Count(), commit.Deleted.Count());
     }
 
     /// <inheritdoc />
     public void OnBeforeExecute(NpgsqlCommand command)
     {
-        _logger.LogError("Before PostgreSql command: {CommandText}", command.CommandText);
+        LogBeforePostgresqlCommandCommandtext(command.CommandText);
     }
 
     /// <inheritdoc />
     public void OnBeforeExecute(NpgsqlBatch batch)
     {
     }
+
+    [LoggerMessage(LogLevel.Information, "Executing DDL change: {Sql}")]
+    partial void LogExecutingDdlChangeSql(string sql);
+
+    [LoggerMessage(LogLevel.Information, "{Entry}")]
+    partial void LogEntry(string entry);
+
+    [LoggerMessage(LogLevel.Error, "{FailureEntry}")]
+    partial void LogFailureentry(string failureEntry, Exception exception);
+
+    [LoggerMessage(LogLevel.Error, "PostgreSql command failed!")]
+    partial void LogPostgresqlCommandFailed();
+
+    [LoggerMessage(LogLevel.Information, "{BatchEntry}")]
+    partial void LogBatchentry(string batchEntry);
+
+    [LoggerMessage(LogLevel.Error, "{BatchError}")]
+    partial void LogBatcherror(string batchError, Exception exception);
+
+    [LoggerMessage(LogLevel.Error, "{Error}")]
+    partial void LogError(string error, Exception exception);
+
+    [LoggerMessage(LogLevel.Information, "Persisted {UpdateAmount} updates, {InsertAmount} inserts, and {DeleteAmount} deletions")]
+    partial void LogPersistedUpdateamountUpdatesInsertamountInsertsAndDeleteamountDeletions(int updateAmount, int insertAmount, int deleteAmount);
+
+    [LoggerMessage(LogLevel.Error, "Before PostgreSql command: {CommandText}")]
+    partial void LogBeforePostgresqlCommandCommandtext(string commandText);
 }

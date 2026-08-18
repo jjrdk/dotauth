@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-internal static class UserUiEndpointHandlers
+internal static partial class UserUiEndpointHandlers
 {
     private const string IndexView = "/Views/User/Index.cshtml";
     private const string ConsentView = "/Views/User/Consent.cshtml";
@@ -159,7 +159,7 @@ internal static class UserUiEndpointHandlers
 
         var subject = authenticatedUser!.GetSubject();
         var updated = subject != null && await resourceOwnerRepository.SetPassword(subject, viewModel.Password!, cancellationToken).ConfigureAwait(false);
-        logger.LogDebug("User credentials updated: {Updated}", updated);
+        logger.LogUserCredentialsUpdatedUpdated(updated);
         return await GetEditView(
                 httpContext,
                 authenticatedUser!,
@@ -502,6 +502,9 @@ internal static class UserUiEndpointHandlers
         await resourceOwnerRepository.Update(resourceOwner, cancellationToken).ConfigureAwait(false);
         return new Option.Success();
     }
+
+    [LoggerMessage(LogLevel.Debug, "User credentials updated: {Updated}")]
+    static partial void LogUserCredentialsUpdatedUpdated(this ILogger logger, bool updated);
 }
 
 

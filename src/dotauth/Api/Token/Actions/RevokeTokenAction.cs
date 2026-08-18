@@ -29,7 +29,7 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
 
-internal sealed class RevokeTokenAction
+internal sealed partial class RevokeTokenAction
 {
     private readonly AuthenticateClient _authenticateClient;
     private readonly ITokenStore _tokenStore;
@@ -94,7 +94,7 @@ internal sealed class RevokeTokenAction
         // also makes concurrent revocation requests idempotent.
         if (grantedToken == null)
         {
-            _logger.LogDebug("Token not found during revocation; treating as success (idempotent).");
+            LogTokenNotFoundDuringRevocationTreatingAsSuccessIdempotent();
             return new Option.Success();
         }
 
@@ -138,4 +138,7 @@ internal sealed class RevokeTokenAction
             Detail = Strings.CouldNotRevokeToken
         };
     }
+
+    [LoggerMessage(LogLevel.Debug, "Token not found during revocation; treating as success (idempotent)")]
+    partial void LogTokenNotFoundDuringRevocationTreatingAsSuccessIdempotent();
 }

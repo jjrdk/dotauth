@@ -25,7 +25,7 @@ using Microsoft.Extensions.Logging;
 [AttributeUsage(
     AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Interface,
     AllowMultiple = true)]
-public class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
+public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
 {
     private const string IdTokenParameter = "id_token";
     private readonly string? _allowedOauthScope;
@@ -109,7 +109,7 @@ public class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
     public string? Roles { get; set; }
     public string? AuthenticationSchemes { get; set; }
 
-    private class UmaAuthorizationFilter : IAsyncAuthorizationFilter
+    private partial class UmaAuthorizationFilter : IAsyncAuthorizationFilter
     {
         private readonly ITokenClient _tokenClient;
         private readonly IUmaPermissionClient _permissionClient;
@@ -152,7 +152,7 @@ public class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
             var user = context.HttpContext.User;
             if (user.Identities.All(x => !x.IsAuthenticated))
             {
-                _logger.LogInformation("User is not authenticated");
+                LogUserIsNotAuthenticated();
                 context.Result = new UnauthorizedResult();
                 return;
             }
@@ -167,11 +167,11 @@ public class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
             var resourceId = _resourceSetIdFormat == null
                 ? string.Join("", values.Select(v => (v ?? "").ToString()).ToArray())
                 : string.Format(_resourceSetIdFormat, values);
-            _logger.LogDebug("Attempting to map {ResourceId}", resourceId);
+            LogAttemptingToMapResourceId(resourceId);
             var resourceSetId = await _resourceMap.GetResourceSetId(resourceId).ConfigureAwait(false);
             if (resourceSetId == null)
             {
-                _logger.LogError("Failed to map {ResourceId} to resource set", resourceId);
+                LogFailedToMapResourceIdToResourceSet(resourceId);
                 context.Result = new UnauthorizedResult();
                 return;
             }
@@ -180,18 +180,14 @@ public class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
             {
                 var subject = user.GetSubject();
                 var scopes = string.Join(",", _requiredResourceSetScopes);
-                _logger.LogDebug(
-                    "Received valid token for {ResourceId}, scopes {Scopes} from {Subject}",
-                    resourceId,
-                    scopes,
-                    subject);
+                LogReceivedValidTokenForResourceIdScopesScopesFromSubject(resourceId, scopes, subject);
                 return;
             }
 
             var serverToken = await HasServerAccessToken().ConfigureAwait(false);
             if (serverToken == null)
             {
-                _logger.LogError("Could not retrieve access token for server");
+                LogCouldNotRetrieveAccessTokenForServer();
                 context.Result = new UmaServerUnreachableResult();
                 return;
             }
@@ -199,7 +195,7 @@ public class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
             var idToken = await GetIdToken(context);
             if (idToken == null)
             {
-                _logger.LogError("No valid id token to request permission for {ResourceId}", resourceId);
+                LogNoValidIdTokenToRequestPermissionForResourceId(resourceId);
                 context.Result = new UmaServerUnreachableResult();
                 return;
             }
@@ -213,14 +209,11 @@ public class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
             switch (permission)
             {
                 case Option<TicketResponse>.Error error:
-                    _logger.LogError("Title: {Title}, Details: {Detail}", error.Details.Title, error.Details.Detail);
+                    LogTitleTitleDetailsDetail(error.Details.Title, error.Details.Detail);
                     context.Result = new UmaServerUnreachableResult();
                     break;
                 case Option<TicketResponse>.Result result:
-                    _logger.LogDebug(
-                        "Ticket {TicketId} received from {Uri}",
-                        result.Item.TicketId,
-                        _permissionClient.Authority.AbsoluteUri);
+                    LogTicketTicketIdReceivedFromUri(result.Item.TicketId, _permissionClient.Authority.AbsoluteUri);
                     context.Result = new UmaTicketResult(
                         new UmaTicketInfo(result.Item.TicketId, _permissionClient.Authority.AbsoluteUri, _realm));
                     break;
@@ -265,11 +258,35 @@ public class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeData
                 return false;
             }
 
-            _logger.LogDebug(
-                "Allowing access for user {Subject} in role {AllowedScope}",
-                user.GetSubject(),
-                allowedOauthScope);
+            LogAllowingAccessForUserSubjectInRoleAllowedScope(user.GetSubject(), allowedOauthScope);
             return true;
         }
+
+        [LoggerMessage(LogLevel.Information, "User is not authenticated")]
+        partial void LogUserIsNotAuthenticated();
+
+        [LoggerMessage(LogLevel.Debug, "Attempting to map {ResourceId}")]
+        partial void LogAttemptingToMapResourceId(string resourceId);
+
+        [LoggerMessage(LogLevel.Error, "Failed to map {ResourceId} to resource set")]
+        partial void LogFailedToMapResourceIdToResourceSet(string resourceId);
+
+        [LoggerMessage(LogLevel.Debug, "Received valid token for {ResourceId}, scopes {Scopes} from {Subject}")]
+        partial void LogReceivedValidTokenForResourceIdScopesScopesFromSubject(string resourceId, string scopes, string? subject);
+
+        [LoggerMessage(LogLevel.Error, "Could not retrieve access token for server")]
+        partial void LogCouldNotRetrieveAccessTokenForServer();
+
+        [LoggerMessage(LogLevel.Error, "No valid id token to request permission for {ResourceId}")]
+        partial void LogNoValidIdTokenToRequestPermissionForResourceId(string resourceId);
+
+        [LoggerMessage(LogLevel.Error, "Title: {Title}, Details: {Detail}")]
+        partial void LogTitleTitleDetailsDetail(string title, string detail);
+
+        [LoggerMessage(LogLevel.Debug, "Ticket {TicketId} received from {Uri}")]
+        partial void LogTicketTicketIdReceivedFromUri(string ticketId, string uri);
+
+        [LoggerMessage(LogLevel.Debug, "Allowing access for user {Subject} in role {AllowedScope}")]
+        partial void LogAllowingAccessForUserSubjectInRoleAllowedScope(string? subject, string allowedScope);
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions>
+internal sealed partial class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions>
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<ConfigureOAuthOptions> _logger;
@@ -34,20 +34,20 @@ internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions
         options.CallbackPath = "/callback";
         if (bool.TryParse(_configuration["SERVER:ALLOWSELFSIGNEDCERT"], out var allowSelfSignedCert) && allowSelfSignedCert)
         {
-            _logger.LogWarning("Self signed certs allowed");
+            LogSelfSignedCertsAllowed();
             options.Backchannel = new HttpClient(
                 new HttpClientHandler
                 {
                     ServerCertificateCustomValidationCallback = (msg, cert, _, _) =>
                     {
                         var altNames = cert!.GetSubjectAlternativeNames();
-                        _logger.LogInformation("Subject alt names: {alternativeNames}", string.Join(", ", altNames));
-                        _logger.LogInformation("Request host: {requestHost}", msg.RequestUri?.Host);
+                        LogSubjectAltNamesAlternativeNames(string.Join(", ", altNames));
+                        LogRequestHostRequestHost(msg.RequestUri?.Host);
                         var allowed = altNames.Count == 0
                                       || (msg.RequestUri?.Host != null && altNames.Contains(msg.RequestUri!.Host));
                         if (!allowed)
                         {
-                            _logger.LogWarning("Certificate with thumbprint {thumbprint} not allowed", cert?.Thumbprint);
+                            LogCertificateWithThumbprintThumbprintNotAllowed(cert?.Thumbprint);
                         }
                         return allowed;
                     },
@@ -58,7 +58,7 @@ internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions
         }
         else
         {
-            _logger.LogInformation("Default certificate validation");
+            LogDefaultCertificateValidation();
         }
 
         options.Events = new OAuthEvents
@@ -118,4 +118,19 @@ internal sealed class ConfigureOAuthOptions : IPostConfigureOptions<OAuthOptions
         authority = string.Empty;
         return false;
     }
+
+    [LoggerMessage(LogLevel.Warning, "Self signed certs allowed")]
+    partial void LogSelfSignedCertsAllowed();
+
+    [LoggerMessage(LogLevel.Information, "Subject alt names: {AlternativeNames}")]
+    partial void LogSubjectAltNamesAlternativeNames(string alternativeNames);
+
+    [LoggerMessage(LogLevel.Information, "Request host: {RequestHost}")]
+    partial void LogRequestHostRequestHost(string? requestHost);
+
+    [LoggerMessage(LogLevel.Warning, "Certificate with thumbprint {Thumbprint} not allowed")]
+    partial void LogCertificateWithThumbprintThumbprintNotAllowed(string? thumbprint);
+
+    [LoggerMessage(LogLevel.Information, "Default certificate validation")]
+    partial void LogDefaultCertificateValidation();
 }

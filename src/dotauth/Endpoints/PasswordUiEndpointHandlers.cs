@@ -31,7 +31,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-internal static class PasswordUiEndpointHandlers
+internal static partial class PasswordUiEndpointHandlers
 {
     private const string AuthenticateIndexView = "/Views/Authenticate/Index.cshtml";
     private const string AuthenticateOpenIdView = "/Views/Authenticate/OpenId.cshtml";
@@ -617,7 +617,7 @@ internal static class PasswordUiEndpointHandlers
         httpContext.Response.Cookies.Append(cookieName, code, new CookieOptions { Secure = !runtimeSettings.AllowHttp, HttpOnly = runtimeSettings.AllowHttp, Expires = DateTimeOffset.UtcNow.AddMinutes(5) });
         var redirectUrl = BuildAbsoluteUri(httpContext, $"/authenticate/logincallbackopenid?code={Uri.EscapeDataString(cookieValue)}");
         await authenticationService.ChallengeAsync(httpContext, provider, new AuthenticationProperties { RedirectUri = redirectUrl }).ConfigureAwait(false);
-        logger.LogDebug("Redirecting to external provider: {Provider}, with redirect url: {RedirectUrl}", provider, redirectUrl);
+        logger.LogRedirectingToExternalProviderProviderWithRedirectUrlRedirecturl(provider, redirectUrl);
         return Results.Empty;
     }
 
@@ -771,6 +771,9 @@ internal static class PasswordUiEndpointHandlers
     {
         return $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{httpContext.Request.PathBase}{pathAndQuery}";
     }
+
+    [LoggerMessage(LogLevel.Debug, "Redirecting to external provider: {Provider}, with redirect url: {RedirectUrl}")]
+    static partial void LogRedirectingToExternalProviderProviderWithRedirectUrlRedirecturl(this ILogger logger, string provider, string redirectUrl);
 }
 
 

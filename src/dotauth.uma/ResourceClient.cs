@@ -12,7 +12,7 @@ using DotAuth.Shared.Responses;
 using Microsoft.Extensions.Logging;
 using Shared.Models;
 
-public class ResourceClient : IResourceClient
+public partial class ResourceClient : IResourceClient
 {
     //private const string RequestSubmitted = "request_submitted";
     private readonly IUmaResourceServer _resourceServer;
@@ -65,7 +65,7 @@ public class ResourceClient : IResourceClient
                     switch (tokenOption)
                     {
                         case Option<GrantedTokenResponse>.Result umaToken:
-                            _logger.LogInformation("Permission token received");
+                            LogPermissionTokenReceived();
                             _ = principal.ResourceRequests.RemoveAll(r => r.TicketId == ticketInfo.TicketId);
                             principal.PermissionRegistrations.Add(new PermissionRegistration(resourceId, umaToken.Item));
                             var result = await _resourceServer
@@ -79,7 +79,7 @@ public class ResourceClient : IResourceClient
 
                             return result;
                         case Option<GrantedTokenResponse>.Error tokenError:
-                            _logger.LogError("{Error}", tokenError.Details.Title);
+                            LogError(tokenError.Details.Title);
                             return tokenError.Details;
                         default: throw new Exception();
                     }
@@ -127,4 +127,10 @@ public class ResourceClient : IResourceClient
             true => JsonSerializer.Deserialize<PagedResult<ResourceDescription>>(await response.Content.ReadAsStringAsync(cancellationToken), _serializerOptions)!
         };
     }
+
+    [LoggerMessage(LogLevel.Information, "Permission token received")]
+    partial void LogPermissionTokenReceived();
+
+    [LoggerMessage(LogLevel.Error, "{Error}")]
+    partial void LogError(string error);
 }
