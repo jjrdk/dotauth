@@ -1,4 +1,6 @@
-﻿namespace DotAuth.Stores.Marten;
+﻿using System.Text.Json.Serialization.Metadata;
+
+namespace DotAuth.Stores.Marten;
 
 using System;
 using System.Buffers;
@@ -91,49 +93,49 @@ public sealed class DotAuthMartenOptions : StoreOptions
                 return "null";
             }
 
-            if (document is Dictionary<string, object> dict)
+            if (document is not Dictionary<string, object> dict)
             {
-                var jsonObj = new JsonObject();
-                foreach (var (key, value) in dict)
-                {
-                    if (value is IList list)
-                    {
-                        var jsonArray = new JsonArray();
-                        foreach (var item in list)
-                        {
-                            if (item is null)
-                            {
-                                jsonArray.Add(null);
-                            }
-                            else if (item.GetType().IsSimple())
-                            {
-                                jsonArray.Add(JsonValue.Create(item));
-                            }
-                            else
-                            {
-                                var serializedItem = JsonSerializer.SerializeToElement(item, _options);
-                                jsonArray.Add(serializedItem);
-                            }
-                        }
-
-                        jsonObj[key] = jsonArray;
-                    }
-                    else if (value.GetType().IsSimple())
-                    {
-                        jsonObj[key] = JsonValue.Create(value);
-                    }
-                    else
-                    {
-                        var serializedValue =
-                            JsonSerializer.SerializeToNode(value, _options);
-                        jsonObj[key] = serializedValue;
-                    }
-                }
-
-                return jsonObj.ToJsonString(_options);
+                return JsonSerializer.Serialize(document, document.GetType(), _options);
             }
 
-            return JsonSerializer.Serialize(document, document.GetType(), _options);
+            var jsonObj = new JsonObject();
+            foreach (var (key, value) in dict)
+            {
+                if (value is IList list)
+                {
+                    var jsonArray = new JsonArray();
+                    foreach (var item in list)
+                    {
+                        if (item is null)
+                        {
+                            jsonArray.Add(null);
+                        }
+                        else if (item.GetType().IsSimple())
+                        {
+                            jsonArray.Add(JsonValue.Create(item));
+                        }
+                        else
+                        {
+                            var serializedItem = JsonSerializer.SerializeToElement(item, _options);
+                            jsonArray.Add(serializedItem);
+                        }
+                    }
+
+                    jsonObj[key] = jsonArray;
+                }
+                else if (value.GetType().IsSimple())
+                {
+                    jsonObj[key] = JsonValue.Create(value);
+                }
+                else
+                {
+                    var serializedValue =
+                        JsonSerializer.SerializeToNode(value, _options);
+                    jsonObj[key] = serializedValue;
+                }
+            }
+
+            return jsonObj.ToJsonString(_options);
         }
 
         public void WriteTo(IBufferWriter<byte> writer, object? value)
@@ -160,7 +162,6 @@ public sealed class DotAuthMartenOptions : StoreOptions
 
             var type = value.GetType();
             var typeInfo = _options.GetTypeInfo(type);
-//             ?? throw new NullReferenceException($"Could not get JsonTypeInfo for type {value.GetType().FullName}"));
             parameter.Value = JsonSerializer.SerializeToUtf8Bytes(value, typeInfo);
         }
 
@@ -193,11 +194,10 @@ public sealed class DotAuthMartenOptions : StoreOptions
             CancellationToken cancellationToken = new())
         {
             await using var stream = reader.GetStream(index);
-            using var sr = new StreamReader(stream, Encoding.UTF8);
-            var json = await sr.ReadToEndAsync(cancellationToken);
-            var result = JsonSerializer.Deserialize<T>(
-                    json.Trim((char)1),
-                    _options)
+            stream.ReadByte();
+            var typeInfo = (JsonTypeInfo<T>)_options.GetTypeInfo(typeof(T));
+            var result = JsonSerializer.Deserialize<T>(stream, typeInfo)
+                //json.Trim((char)1), _options)
              ?? throw new NullReferenceException("Could not deserialize from stream");
             return result;
         }
