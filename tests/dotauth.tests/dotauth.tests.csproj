@@ -5,6 +5,7 @@
         <AssemblyName>dotauth.tests</AssemblyName>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         <RootNamespace>DotAuth.Tests</RootNamespace>
+        <OutputType>exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
         <None Include="..\..\.editorconfig" Link=".editorconfig"/>
@@ -19,13 +20,8 @@
     <ItemGroup>
         <PackageReference Include="NSubstitute"/>
         <PackageReference Include="MartinCostello.Logging.XUnit.v3"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="Testcontainers.Redis"/>
-        <PackageReference Include="xunit.v3"/>
-        <PackageReference Include="xunit.runner.visualstudio">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="xunit.v3.mtp-v2"/>
     </ItemGroup>
 
     <ItemGroup>
