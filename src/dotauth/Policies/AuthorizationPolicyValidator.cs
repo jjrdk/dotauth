@@ -30,6 +30,7 @@ using DotAuth.Shared.Responses;
 
 internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
 {
+    private static readonly JwtSecurityTokenHandler Handler = new();
     private readonly IAuthorizationPolicy _authorizationPolicy;
     private readonly IJwksStore _jwksStore;
     private readonly IResourceSetRepository _resourceSetRepository;
@@ -56,9 +57,8 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
         {
             throw new ArgumentException(nameof(validTicket.Lines));
         }
-        var handler = new JwtSecurityTokenHandler();
         var validationParameters = await client.CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
-        var requester = handler.ValidateToken(claimTokenParameter.Token, validationParameters, out _);
+        var requester = Handler.ValidateToken(claimTokenParameter.Token, validationParameters, out _);
 
         var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId).ToArray();
         var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);

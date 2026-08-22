@@ -505,7 +505,10 @@ public partial class FeatureTest
                 }
             }
 
-            if (parameters.TryGetValue("code", out var c)) code = c;
+            if (parameters.TryGetValue("code", out var c))
+            {
+                code = c;
+            }
         }
 
         Assert.False(string.IsNullOrWhiteSpace(code), "No authorization code available to inspect.");
@@ -2016,7 +2019,10 @@ public partial class FeatureTest
         try
         {
             var parts = token.Split('.');
-            if (parts.Length != 3) return token;
+            if (parts.Length != 3)
+            {
+                return token;
+            }
 
             var payloadJson = Base64UrlDecodeToString(parts[1]);
             var payloadDict = JsonSerializer.Deserialize<Dictionary<string, object>>(payloadJson) ??
@@ -2053,7 +2059,11 @@ public partial class FeatureTest
     // Helper: compute the bit length of a base64url-encoded unsigned integer (e.g., RSA modulus 'n')
     private static int GetBase64UrlDecodedBitLength(string base64Url)
     {
-        if (string.IsNullOrEmpty(base64Url)) return 0;
+        if (string.IsNullOrEmpty(base64Url))
+        {
+            return 0;
+        }
+
         var s = base64Url.Replace('-', '+').Replace('_', '/');
         switch (s.Length % 4)
         {
@@ -2071,7 +2081,10 @@ public partial class FeatureTest
             return 0;
         }
 
-        if (bytes.Length == 0) return 0;
+        if (bytes.Length == 0)
+        {
+            return 0;
+        }
 
         // Count leading zero bits
         int leadingZeroBits = 0;
@@ -2086,8 +2099,14 @@ public partial class FeatureTest
             // found first non-zero byte; count leading zero bits in that byte
             for (int i = 7; i >= 0; i--)
             {
-                if ((b & (1 << i)) == 0) leadingZeroBits++;
-                else break;
+                if ((b & (1 << i)) == 0)
+                {
+                    leadingZeroBits++;
+                }
+                else
+                {
+                    break;
+                }
             }
             break;
         }
@@ -2609,8 +2628,10 @@ public partial class FeatureTest
             var parameters = new Dictionary<string, string>(StringComparer.Ordinal);
             var callbackUri = r.Item;
             if (!string.IsNullOrWhiteSpace(callbackUri.Query))
+            {
                 foreach (var (key, value) in QueryHelpers.ParseQuery(callbackUri.Query))
                     parameters[key] = value.ToString();
+            }
 
             if (parameters.TryGetValue("code", out var code) && !string.IsNullOrWhiteSpace(code))
             {
@@ -2916,7 +2937,9 @@ public partial class FeatureTest
         var redirect = r.Item;
         var parameters = new Dictionary<string, string>(StringComparer.Ordinal);
         if (!string.IsNullOrWhiteSpace(redirect.Query))
+        {
             foreach (var (key, value) in QueryHelpers.ParseQuery(redirect.Query)) parameters[key] = value.ToString();
+        }
 
         var fragment = redirect.Fragment;
         if (!string.IsNullOrWhiteSpace(fragment))
@@ -2962,7 +2985,9 @@ public partial class FeatureTest
         var redirect = r.Item;
         var parameters = new Dictionary<string, string>(StringComparer.Ordinal);
         if (!string.IsNullOrWhiteSpace(redirect.Query))
+        {
             foreach (var (key, value) in QueryHelpers.ParseQuery(redirect.Query)) parameters[key] = value.ToString();
+        }
 
         var fragment = redirect.Fragment;
         if (!string.IsNullOrWhiteSpace(fragment))
@@ -2994,7 +3019,9 @@ public partial class FeatureTest
         var redirect = r.Item;
         var parameters = new Dictionary<string, string>(StringComparer.Ordinal);
         if (!string.IsNullOrWhiteSpace(redirect.Query))
+        {
             foreach (var (key, value) in QueryHelpers.ParseQuery(redirect.Query)) parameters[key] = value.ToString();
+        }
 
         var fragment = redirect.Fragment;
         if (!string.IsNullOrWhiteSpace(fragment))
@@ -3041,8 +3068,14 @@ public partial class FeatureTest
     {
         // Attempt to exchange the original refresh token (before rotation)
         string? original = null;
-        if (_token is not null && !string.IsNullOrWhiteSpace(_token.RefreshToken)) original = _token.RefreshToken;
-        else if (_refreshResult1 is not null && _refreshResult1 is Option<GrantedTokenResponse>.Result r1) original = r1.Item.RefreshToken;
+        if (_token is not null && !string.IsNullOrWhiteSpace(_token.RefreshToken))
+        {
+            original = _token.RefreshToken;
+        }
+        else if (_refreshResult1 is not null && _refreshResult1 is Option<GrantedTokenResponse>.Result r1)
+        {
+            original = r1.Item.RefreshToken;
+        }
 
         if (string.IsNullOrWhiteSpace(original))
         {
@@ -3274,7 +3307,10 @@ public partial class FeatureTest
             if (cookiePairs.Count > 0)
             {
                 if (http.DefaultRequestHeaders.Contains("Cookie"))
+                {
                     http.DefaultRequestHeaders.Remove("Cookie");
+                }
+
                 http.DefaultRequestHeaders.Add("Cookie", string.Join("; ", cookiePairs));
             }
         }

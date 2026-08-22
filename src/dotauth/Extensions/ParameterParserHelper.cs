@@ -22,54 +22,55 @@ using DotAuth.Shared;
 
 internal static class ParameterParserHelper
 {
-    /// <summary>
-    /// Parse the parameter and returns a list of prompt parameter.
-    /// </summary>
     /// <param name="parameter">List of prompts separated by whitespace</param>
-    /// <returns>List of prompts.</returns>
-    public static ICollection<string> ParsePrompts(this string? parameter)
+    extension(string? parameter)
     {
-        if (string.IsNullOrWhiteSpace(parameter))
+        /// <summary>
+        /// Parse the parameter and returns a list of prompt parameter.
+        /// </summary>
+        /// <returns>List of prompts.</returns>
+        public ICollection<string> ParsePrompts()
         {
-            return new List<string>();
+            if (string.IsNullOrWhiteSpace(parameter))
+            {
+                return new List<string>();
+            }
+
+            var promptNames = PromptParameters.All(); //Enum.GetNames(typeof(PromptParameter));
+
+            var prompts = parameter.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Where(c => promptNames.Contains(c))
+                .ToList();
+            return prompts;
         }
 
-        var promptNames = PromptParameters.All(); //Enum.GetNames(typeof(PromptParameter));
-
-        var prompts = parameter.Split(' ', StringSplitOptions.TrimEntries| StringSplitOptions.RemoveEmptyEntries)
-            .Where(c => !string.IsNullOrWhiteSpace(c) && promptNames.Contains(c))
-            .ToList();
-        return prompts;
-    }
-
-    /// <summary>
-    /// Parse the parameter and returns a list of response types
-    /// </summary>
-    /// <param name="parameter">List of response types separated by whitespace</param>
-    /// <returns>List of response types</returns>
-    public static string[] ParseResponseTypes(this string? parameter)
-    {
-        //var responseTypeNames = Enum.GetNames(typeof (string));
-        if (string.IsNullOrWhiteSpace(parameter))
+        /// <summary>
+        /// Parse the parameter and returns a list of response types
+        /// </summary>
+        /// <returns>List of response types</returns>
+        public string[] ParseResponseTypes()
         {
-            return [];
+            //var responseTypeNames = Enum.GetNames(typeof (string));
+            if (string.IsNullOrWhiteSpace(parameter))
+            {
+                return [];
+            }
+
+            var responses = parameter.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Where(r => !string.IsNullOrWhiteSpace(r) && ResponseTypeNames.All.Contains(r))
+                .ToArray();
+            return responses;
         }
 
-        var responses = parameter.Split(' ')
-            .Where(r => !string.IsNullOrWhiteSpace(r) && ResponseTypeNames.All.Contains(r))
-            .ToArray();
-        return responses;
-    }
-
-    /// <summary>
-    /// Parse the parameter and returns a list of scopes.
-    /// </summary>
-    /// <param name="parameter">Parameter to parse.</param>
-    /// <returns>list of scopes or null</returns>
-    public static string[] ParseScopes(this string? parameter)
-    {
-        return string.IsNullOrWhiteSpace(parameter)
-            ? []
-            : parameter.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+        /// <summary>
+        /// Parse the parameter and returns a list of scopes.
+        /// </summary>
+        /// <returns>list of scopes or null</returns>
+        public string[] ParseScopes()
+        {
+            return string.IsNullOrWhiteSpace(parameter)
+                ? []
+                : parameter.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        }
     }
 }

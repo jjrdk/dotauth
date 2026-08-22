@@ -533,10 +533,10 @@ public sealed class JwtGeneratorFixture
                 authorizationParameter,
                 claimsParameter,
                 null,
-                CancellationToken.None)
-            ;
+                CancellationToken.None);
 
-        var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
+        var returned = Assert.IsType<Option<JwtPayload>.Result>(generateIdTokenPayload);
+        var result = returned.Item;
         Assert.Equal(subject, result.Claims.First(c => c.Type == OpenIdClaimTypes.Subject).Value);
         Assert.Equal(
             currentDateTimeOffset,

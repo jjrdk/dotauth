@@ -69,44 +69,46 @@ public static class StringExtensions
     /// </summary>
     /// <param name="bytes">The bytes to encode.</param>
     /// <returns></returns>
-    public static string ToBase64Simplified(this byte[]? bytes)
+    public static string ToBase64Simplified(this Span<byte> bytes)
     {
-        return bytes == null
+        return bytes.Length == 0
             ? string.Empty
             : Convert.ToBase64String(bytes).Split('=')[0].Replace('+', '-').Replace('/', '_');
     }
 
-    /// <summary>
-    /// Base64 decode.
-    /// </summary>
     /// <param name="base64EncodedData">The base64 encoded data.</param>
-    /// <returns></returns>
-    public static string Base64Decode(this string base64EncodedData)
+    extension(string base64EncodedData)
     {
-        var decodeBytes = base64EncodedData.Base64DecodeBytes();
-        return Encoding.UTF8.GetString(decodeBytes);
-    }
-
-    /// <summary>
-    /// Base64 decode.
-    /// </summary>
-    /// <param name="base64EncodedData">The base64 encoded data.</param>
-    /// <returns></returns>
-    public static byte[] Base64DecodeBytes(this string base64EncodedData)
-    {
-        var s = base64EncodedData.Trim().Replace(" ", "+").Replace('-', '+').Replace('_', '/');
-        switch (s.Length % 4)
+        /// <summary>
+        /// Base64 decode.
+        /// </summary>
+        /// <returns></returns>
+        public string Base64Decode()
         {
-            case 0:
-                return Convert.FromBase64String(s);
-            case 2:
-                s += "==";
-                goto case 0;
-            case 3:
-                s += "=";
-                goto case 0;
-            default:
-                throw new InvalidOperationException("Illegal base64url string!");
+            var decodeBytes = base64EncodedData.Base64DecodeBytes();
+            return Encoding.UTF8.GetString(decodeBytes);
+        }
+
+        /// <summary>
+        /// Base64 decode.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] Base64DecodeBytes()
+        {
+            var s = base64EncodedData.Trim().Replace(" ", "+").Replace('-', '+').Replace('_', '/');
+            switch (s.Length % 4)
+            {
+                case 0:
+                    return Convert.FromBase64String(s);
+                case 2:
+                    s += "==";
+                    goto case 0;
+                case 3:
+                    s += "=";
+                    goto case 0;
+                default:
+                    throw new InvalidOperationException("Illegal base64url string!");
+            }
         }
     }
 }

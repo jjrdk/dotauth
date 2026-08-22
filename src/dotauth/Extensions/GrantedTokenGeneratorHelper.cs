@@ -29,6 +29,8 @@ using DotAuth.Shared.Repositories;
 
 internal static class GrantedTokenGeneratorHelper
 {
+    private static readonly JwtSecurityTokenHandler Handler = new();
+
     public static async Task<Option<GrantedToken>> GenerateToken(
         this IClientStore clientStore,
         IJwksStore jwksStore,
@@ -84,7 +86,6 @@ internal static class GrantedTokenGeneratorHelper
         CancellationToken cancellationToken = default,
         params Claim[] additionalClaims)
     {
-        var handler = new JwtSecurityTokenHandler();
         var scopeString = string.Join(' ', scopes);
         var enumerable =
             new[]
@@ -96,15 +97,15 @@ internal static class GrantedTokenGeneratorHelper
                 .GroupBy(x => x.Type)
                 .Select(x => new Claim(x.Key, string.Join(" ", x.Select(y => y.Value))));
 
-        if (idTokenPayload is {Iss: null})
+        if (idTokenPayload is { Iss: null })
         {
             idTokenPayload.AddClaim(new Claim(StandardClaimNames.Issuer, issuerName));
         }
 
-        var signingCredentials = await jwksStore.GetSigningKey(client.TokenEndPointAuthSigningAlg, cancellationToken).ConfigureAwait(false);
+        var signingCredentials = await jwksStore.GetSigningKey(client.TokenEndPointAuthSigningAlg, cancellationToken)
+            .ConfigureAwait(false);
 
-        //var tokenLifetime = scope.Contains("uma_protection", StringComparison.Ordinal) ? client.TokenLifetime
-        var accessToken = handler.CreateEncodedJwt(
+        var accessToken = Handler.CreateEncodedJwt(
             issuerName,
             client.ClientId,
             new ClaimsIdentity(enumerable),

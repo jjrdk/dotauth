@@ -4,7 +4,6 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.DataProtection;
 
@@ -39,28 +38,25 @@ internal sealed class SymmetricDataProtector : IDataProtector
     {
         using var ms = new MemoryStream(protectedData);
         using var cs = new CryptoStream(ms, _algorithm.CreateDecryptor(), CryptoStreamMode.Read);
-        List<byte>? list = null;
-        const int bufferLength = 4096;
-        var buffer = ArrayPool<byte>.Shared.Rent(bufferLength);
-        while (true)
+        var result = new List<byte>();
+        var buffer = ArrayPool<byte>.Shared.Rent(4096);
+        try
         {
-            var read = cs.Read(buffer);
-            if (read == 0)
+            while (true)
             {
-                var result = new byte[read];
-                Array.Copy(buffer, 0, result, 0, read);
-                ArrayPool<byte>.Shared.Return(buffer);
-                if (list == null)
+                var read = cs.Read(buffer, 0, 4096);
+                if (read == 0)
                 {
-                    return result;
+                    break;
                 }
 
-                list.AddRange(result);
-                return list.ToArray();
+                result.AddRange(buffer.AsSpan(0, read));
             }
-
-            list ??= [];
-            list.AddRange(buffer.Take(read));
         }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
+        return [.. result];
     }
 }

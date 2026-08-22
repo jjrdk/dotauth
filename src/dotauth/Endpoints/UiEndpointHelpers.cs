@@ -137,9 +137,16 @@ internal static class UiEndpointHelpers
         }
 
         var parts = new List<string>();
-        if (!string.IsNullOrWhiteSpace(area)) parts.Add(area.Trim('/'));
+        if (!string.IsNullOrWhiteSpace(area))
+        {
+            parts.Add(area.Trim('/'));
+        }
+
         parts.Add(controller.Trim('/'));
-        if (!string.IsNullOrWhiteSpace(action)) parts.Add(action.Trim('/'));
+        if (!string.IsNullOrWhiteSpace(action))
+        {
+            parts.Add(action.Trim('/'));
+        }
 
         var path = "/" + string.Join('/', parts);
 
