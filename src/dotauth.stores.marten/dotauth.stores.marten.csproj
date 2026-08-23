@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.proj"/>
-
     <PropertyGroup>
         <Description>DotAuth Marten Stores</Description>
         <Title>DotAuth Marten Stores</Title>

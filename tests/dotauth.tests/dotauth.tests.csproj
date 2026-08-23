@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.proj"/>
     <PropertyGroup>
         <AssemblyName>dotauth.tests</AssemblyName>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         <RootNamespace>DotAuth.Tests</RootNamespace>
         <OutputType>exe</OutputType>
+        <NoWarn>CS1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <None Include="..\..\.editorconfig" Link=".editorconfig"/>

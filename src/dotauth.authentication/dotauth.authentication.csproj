@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.proj"/>
     <PropertyGroup>
         <RootNamespace>DotAuth.Authentication</RootNamespace>
 
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
         <Description>DotAuth authentication handler for ASP.NET Core.</Description>
     </PropertyGroup>

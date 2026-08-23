@@ -11,12 +11,21 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using StackExchange.Redis;
 
+/// <summary>
+/// Redis backed implementation of the <see cref="IConsentRepository"/>.
+/// </summary>
 public sealed class RedisConsentStore : IConsentRepository
 {
     private readonly IDatabaseAsync _database;
     private readonly ITenantContext _tenantContext;
     private readonly TimeSpan _expiry;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedisConsentStore"/> class.
+    /// </summary>
+    /// <param name="database">The Redis database.</param>
+    /// <param name="tenantContext">The <see cref="ITenantContext"/>.</param>
+    /// <param name="expiry">The cache expiry. Defaults to 5 years.</param>
     public RedisConsentStore(IDatabaseAsync database, ITenantContext tenantContext, TimeSpan expiry = default)
     {
         _database = database;
@@ -27,6 +36,7 @@ public sealed class RedisConsentStore : IConsentRepository
     /// <summary>Returns a key namespaced to the current tenant to prevent cross-tenant access.</summary>
     private string Key(string value) => $"{_tenantContext.TenantId}:{value}";
 
+    /// <inheritdoc/>
     public async Task<IReadOnlyCollection<Consent>> GetConsentsForGivenUser(
         string subject,
         CancellationToken cancellationToken)
@@ -34,6 +44,7 @@ public sealed class RedisConsentStore : IConsentRepository
         return await GetStoredConsents(subject).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public async Task<bool> Insert(Consent record, CancellationToken cancellationToken)
     {
         var consents = (await GetStoredConsents(record.Subject).ConfigureAwait(false)).ToList();
@@ -50,6 +61,7 @@ public sealed class RedisConsentStore : IConsentRepository
         return await PersistConsents(record.Subject, consents).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public async Task<bool> Delete(Consent record, CancellationToken cancellationToken)
     {
         var consents = (await GetStoredConsents(record.Subject).ConfigureAwait(false)).ToList();

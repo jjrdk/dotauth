@@ -11,11 +11,19 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using StackExchange.Redis;
 
+/// <summary>
+/// The Redis backed implementation of the <see cref="ITokenStore"/> interface.
+/// </summary>
 public sealed class RedisTokenStore : ITokenStore
 {
     private readonly IDatabaseAsync _database;
     private readonly ITenantContext _tenantContext;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RedisTokenStore"/> class.
+    /// </summary>
+    /// <param name="database">The Redis database</param>
+    /// <param name="tenantContext">The <see cref="ITenantContext"/></param>
     public RedisTokenStore(IDatabaseAsync database, ITenantContext tenantContext)
     {
         _database = database;
@@ -25,6 +33,7 @@ public sealed class RedisTokenStore : ITokenStore
     /// <summary>Returns a key namespaced to the current tenant to prevent cross-tenant access.</summary>
     private string Key(string value) => $"{_tenantContext.TenantId}:{value}";
 
+    /// <inheritdoc/>
     public async Task<GrantedToken?> GetToken(
         string scopes,
         string clientId,
@@ -48,11 +57,13 @@ public sealed class RedisTokenStore : ITokenStore
             });
     }
 
+    /// <inheritdoc/>
     public Task<GrantedToken?> GetRefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
         return GetSingleToken(refreshToken, cancellationToken);
     }
 
+    /// <inheritdoc/>
     public Task<GrantedToken?> GetAccessToken(string accessToken, CancellationToken cancellationToken)
     {
         return GetSingleToken(accessToken, cancellationToken);
@@ -66,6 +77,7 @@ public sealed class RedisTokenStore : ITokenStore
             : JsonSerializer.Deserialize<GrantedToken>(value.ToString(), SharedSerializerContext.Default.GrantedToken);
     }
 
+    /// <inheritdoc/>
     public async Task<bool> AddToken(GrantedToken grantedToken, CancellationToken cancellationToken)
     {
         var value = JsonSerializer.Serialize(grantedToken, SharedSerializerContext.Default.GrantedToken);
@@ -90,18 +102,21 @@ public sealed class RedisTokenStore : ITokenStore
         return result;
     }
 
+    /// <inheritdoc/>
     public async Task<bool> RemoveRefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
         var token = await GetRefreshToken(refreshToken, cancellationToken).ConfigureAwait(false);
         return token != null && await RemoveToken(token).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public async Task<bool> RemoveAccessToken(string accessToken, CancellationToken cancellationToken)
     {
         var token = await GetSingleToken(accessToken, cancellationToken).ConfigureAwait(false);
         return token != null && await RemoveToken(token).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public async Task<GrantedToken?> ConsumeRefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
         // Use a small Lua script to atomically GET and DEL the refresh token key.

@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-    <Import Project="../../shared.proj"/>
-
     <PropertyGroup>
         <Description>DotAuth SMS Authentication Library</Description>
         <Title>DotAuth SMS Authentication</Title>

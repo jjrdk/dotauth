@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.proj"/>
-
     <PropertyGroup>
         <Description>DotAuth MAUI authentication client</Description>
         <Title>DotAuth MAUI Client</Title>
