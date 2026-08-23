@@ -234,17 +234,17 @@ internal sealed class ProcessAuthorizationRequest
         handler.ValidateToken(token, validationParameters, out var securityToken);
         var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 
-        if (jwsPayload?.Aud == null || !jwsPayload.Aud.Contains(issuerName))
-        {
+        if (jwsPayload?.GetClaimValue(StandardClaimNames.Issuer) != issuerName)
+          {
             _logger.LogError(Strings.TheIdentityTokenDoesntContainDotAuthAsAudience);
             return new Option.Error(
                 new ErrorDetails
-                {
+                 {
                     Title = ErrorCodes.InvalidRequest,
                     Detail = Strings.TheIdentityTokenDoesntContainDotAuthAsAudience,
                     Status = HttpStatusCode.BadRequest
-                });
-        }
+                 });
+          }
 
         var currentSubject = string.Empty;
         var expectedSubject = jwsPayload.GetClaimValue(OpenIdClaimTypes.Subject);

@@ -369,13 +369,18 @@ public sealed class AuthorizationClientFixture : IDisposable
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var jws = _jwsGenerator.CreateEncodedJwt(
             new SecurityTokenDescriptor
-            {
+             {
+                // The new issuer-based id_token_hint check (see ProcessAuthorizationRequest.ProcessIdTokenHint)
+                // requires the incoming token's `iss` claim to equal the OP issuer. The server's issuer
+                // is the configured base URL; add it explicitly so the check passes and the test's
+                // original intent (mismatched subject → error) is preserved.
+                Issuer = "http://localhost:5000",
                 Audience = "http://localhost:5000",
                 Subject = new ClaimsIdentity([new Claim("sub", "adm")]),
                 SigningCredentials = new SigningCredentials(
                     TestKeys.SecretKey.CreateSignatureJwk(),
                     SecurityAlgorithms.HmacSha256)
-            });
+             });
         //var jws = _jwsGenerator.Generate(payload, SecurityAlgorithms.RsaSha256, _server.SharedCtx.SignatureKey);
 
         var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
@@ -502,7 +507,10 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         var jwe = _jwsGenerator.CreateEncodedJwt(
             new SecurityTokenDescriptor
-            {
+             {
+                // Required by the new issuer-based id_token_hint check: the incoming token must carry
+                // `iss == http://localhost:5000` to be treated as issued by this OP.
+                Issuer = "http://localhost:5000",
                 Audience = "http://localhost:5000",
                 Subject = new ClaimsIdentity([new Claim("sub", "administrator")]),
                 SigningCredentials =
@@ -513,7 +521,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     TestKeys.SecretKey.CreateEncryptionJwk(),
                     SecurityAlgorithms.Aes256KW,
                     SecurityAlgorithms.Aes128CbcHmacSha256)
-            });
+             });
 
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var result = await _authorizationClient.GetAuthorization(

@@ -57,15 +57,19 @@ internal sealed class JwtGenerator
             { SecurityAlgorithms.RsaSha256, HashWithSha256 },
             { SecurityAlgorithms.RsaSha384, HashWithSha384 },
             { SecurityAlgorithms.RsaSha512, HashWithSha512 }
-        };
+            };
 
-    public JwtGenerator(IClientStore clientRepository, IScopeStore scopeRepository, IJwksStore jwksStore, ILogger logger)
-    {
-        _clientRepository = clientRepository;
-        _scopeRepository = scopeRepository;
-        _jwksStore = jwksStore;
-        _logger = logger;
-    }
+            // The authentication methods reference (amr) value used on every identity token.
+            // Hoisted out of FillInIdentityTokenClaims so it is not re-allocated on a hot path.
+            private static readonly string[] AmrValues = ["password"];
+
+            public JwtGenerator(IClientStore clientRepository, IScopeStore scopeRepository, IJwksStore jwksStore, ILogger logger)
+            {
+            _clientRepository = clientRepository;
+            _scopeRepository = scopeRepository;
+            _jwksStore = jwksStore;
+            _logger = logger;
+            }
 
     public static JwtPayload UpdatePayloadDate(JwtPayload jwsPayload, TimeSpan? duration)
     {
@@ -369,43 +373,56 @@ internal sealed class JwtGenerator
         var maxAge = authorizationParameter.MaxAge;
         //var amrValues = authorizationParameter.AmrValues;
         var cl = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
-        var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Issuer);
-        var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Audiences);
+        // Resolve the identity-token claim parameters from a single lookup table instead of
+        // nine independent FirstOrDefault scans over the (usually tiny) claimParameters array.
+        var parameterLookup = claimParameters
+            .GroupBy(parameter => parameter.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+
+        static ClaimParameter? ResolveParameter(
+            IReadOnlyDictionary<string, ClaimParameter> lookup,
+            string name)
+            => lookup.TryGetValue(name, out var parameter) ? parameter : null;
+
+        var issuerClaimParameter = ResolveParameter(parameterLookup, StandardClaimNames.Issuer);
+        var audiencesClaimParameter =
+            ResolveParameter(parameterLookup, StandardClaimNames.Audiences);
         var expirationTimeClaimParameter =
-            claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.ExpirationTime);
-        var issuedAtTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Iat);
+            ResolveParameter(parameterLookup, StandardClaimNames.ExpirationTime);
+        var issuedAtTimeClaimParameter =
+            ResolveParameter(parameterLookup, StandardClaimNames.Iat);
         var authenticationTimeParameter =
-            claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.AuthenticationTime);
-        var nonceParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Nonce);
-        var acrParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Acr);
-        var amrParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Amr);
-        var azpParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Azp);
+            ResolveParameter(parameterLookup, StandardClaimNames.AuthenticationTime);
+        var nonceParameter = ResolveParameter(parameterLookup, StandardClaimNames.Nonce);
+        var acrParameter = ResolveParameter(parameterLookup, StandardClaimNames.Acr);
+        var amrParameter = ResolveParameter(parameterLookup, StandardClaimNames.Amr);
+        var azpParameter = ResolveParameter(parameterLookup, StandardClaimNames.Azp);
 
         var (expirationInSeconds, issuedAtTime) = GetExpirationAndIssuedTime(cl?.TokenLifetime);
         const string acrValues = $"{CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel}.password=1";
-        var amr = new[] { "password" };
-
         var azp = string.Empty;
 
-        var clients = await _clientRepository.GetAll(cancellationToken).ConfigureAwait(false);
-        var stringComparer = StringComparer.OrdinalIgnoreCase;
-        var audiences = clients
-            .Select(client => (client.ClientId, client.CheckResponseTypes(ResponseTypeNames.IdToken)))
-            .Where(
-                t => t.Item2
-                     || t.ClientId == authorizationParameter.ClientId)
-            .Select(t => t.ClientId)
-            .Where(c => !string.IsNullOrWhiteSpace(c))
-            .Distinct(stringComparer).ToArray();
+        // Standard-correct audiences (OIDC Core 1.0, section 2 and section 3.1.3.7): the ID
+        // Token's `aud` is the OAuth 2.0 client_id of the requesting Relying Party. It MUST
+        // contain that client_id and MAY contain other explicitly-declared audiences - it is
+        // NOT the whole client registry and it is NOT the OP issuer. Folding either into `aud`
+        // broke the intended-recipient binding, allowed cross-client/cross-tenant token
+        // replay, bloated/forced azp on every token, and forced a full client-table scan on
+        // every id_token issuance. Additional audiences, when a use case genuinely requires
+        // them (token substitution, federation), should be supplied as explicit, validated
+        // inputs rather than derived from the entire client store.
+        //
+        // Guard against null/empty clientId: a null aud entry would NPE inside
+        // JwtPayload.AddListofObjects when the payload materialises its claims.
+        var audiences = string.IsNullOrWhiteSpace(clientId)
+             ? Array.Empty<string>()
+             : new[] { clientId };
 
-        // The identity token can be reused by the identity server.
-        if (!string.IsNullOrWhiteSpace(issuerName) && !audiences.Contains(issuerName, stringComparer))
-        {
-            audiences = audiences.Add(issuerName);
-        }
-
-        var authenticationInstant = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.AuthenticationInstant).MaxBy(x => x.Value);
-        var authenticationInstantValue = authenticationInstant == null ? string.Empty : authenticationInstant.Value;
+        // Single-pass replacement for the previous Where(...).MaxBy(...) on claimsPrincipal,
+        // which scanned the claim collection twice. Preserves the original "max by string
+        // value of the AuthenticationInstant claim" semantics.
+        var authenticationInstantValue =
+            GetLatestAuthenticationInstantValue(claimsPrincipal.Claims);
 
         if (issuerClaimParameter != null)
         {
@@ -481,7 +498,7 @@ internal sealed class JwtGenerator
 
         if (amrParameter != null)
         {
-            var isAmrParameterValid = ValidateClaimValues(amr, amrParameter);
+            var isAmrParameterValid = ValidateClaimValues(AmrValues, amrParameter);
             if (!isAmrParameterValid)
             {
                 return CreateClaimError(StandardClaimNames.Amr, state);
@@ -499,7 +516,7 @@ internal sealed class JwtGenerator
         }
 
         jwsPayload.Add(StandardClaimNames.Issuer, issuerName);
-        jwsPayload.Add(StandardClaimNames.Audiences, audiences.ToArray());
+        jwsPayload.Add(StandardClaimNames.Audiences, audiences);
         jwsPayload.Add(StandardClaimNames.ExpirationTime, expirationInSeconds);
         jwsPayload.Add(StandardClaimNames.Iat, issuedAtTime);
 
@@ -517,7 +534,7 @@ internal sealed class JwtGenerator
         }
 
         jwsPayload.Add(StandardClaimNames.Acr, acrValues);
-        jwsPayload.Add(StandardClaimNames.Amr, amr);
+        jwsPayload.Add(StandardClaimNames.Amr, AmrValues);
         if (!string.IsNullOrWhiteSpace(azp))
         {
             jwsPayload.Add(StandardClaimNames.Azp, azp);
@@ -607,7 +624,27 @@ internal sealed class JwtGenerator
         var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
         var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
         return new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds);
-    }
+      }
+
+    // Returns the most recent AuthenticationInstant claim value (a single pass over
+    // claimsPrincipal), or an empty string when no such claim is present. Mirrors the
+    // previous Where(...).MaxBy(x => x.Value) semantics (ordinal max, empty default).
+    private static string GetLatestAuthenticationInstantValue(IEnumerable<Claim> claims)
+     {
+        var authenticationInstantValue = string.Empty;
+        var comparer = StringComparer.Ordinal;
+        foreach (var claim in claims)
+         {
+            var value = claim.Value;
+            if (value != null
+              && claim.Type == ClaimTypes.AuthenticationInstant
+              && comparer.Compare(value, authenticationInstantValue) > 0)
+             {
+                authenticationInstantValue = value;
+             }
+         }
+        return authenticationInstantValue;
+     }
 
     private static string HashWithSha256(string parameter)
     {

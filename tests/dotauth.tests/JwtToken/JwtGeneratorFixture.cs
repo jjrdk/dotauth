@@ -109,62 +109,6 @@ public sealed class JwtGeneratorFixture
 
     [Fact]
     public async Task
-        When_Requesting_IdentityToken_JwsPayload_And_NumberOfAudiencesIsMoreThanOne_Then_Azp_Should_Be_Returned()
-    {
-        const string issuerName = "IssuerName";
-        var clientId = FakeOpenIdAssets.GetClients().First().ClientId;
-        const string subject = "john.doe@email.com";
-        var claims = new Claim[] { new(OpenIdClaimTypes.Subject, subject) };
-        var claimIdentity = new ClaimsIdentity(claims, "fake");
-        var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-        var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
-        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(FakeOpenIdAssets.GetClients().First());
-        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
-            .Returns(FakeOpenIdAssets.GetClients());
-
-        var result = (await _jwtGenerator.GenerateIdTokenPayloadForScopes(
-                claimsPrincipal,
-                authorizationParameter,
-                issuerName,
-                CancellationToken.None)
-            as Option<JwtPayload>.Result)!.Item;
-
-        Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
-        Assert.True(result.Aud.Count > 1);
-        Assert.Equal(clientId, result.Azp);
-    }
-
-    [Fact]
-    public async Task When_Requesting_IdentityToken_JwsPayload_And_ThereNoClient_Then_Azp_Should_Be_Returned()
-    {
-        const string issuerName = "IssuerName";
-        const string clientId = "clientId";
-        const string subject = "john.doe@email.com";
-        var claims = new Claim[] { new(OpenIdClaimTypes.Subject, subject) };
-        var claimIdentity = new ClaimsIdentity(claims, "fake");
-        var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-        var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
-        _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((Client?)null);
-        _clientRepositoryStub.GetAll(Arg.Any<CancellationToken>())
-            .Returns([]);
-
-        var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
-                claimsPrincipal,
-                authorizationParameter,
-                issuerName,
-                CancellationToken.None)
-            ;
-
-        var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
-        Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
-        Assert.Single(result.Aud);
-        Assert.Equal(clientId, result.Azp);
-    }
-
-    [Fact]
-    public async Task
         When_Requesting_IdentityToken_JwsPayload_And_Multiple_Scopes_With_Same_Claim_Defined_Then_Role_Should_Be_Returned_Without_Duplicates()
     {
         const string issuerName = "IssuerName";
@@ -180,7 +124,7 @@ public sealed class JwtGeneratorFixture
             .Returns(
             [
                 new Scope { Type = "role", Claims = [OpenIdClaimTypes.Role] },
-                    new Scope { Type = "manager", Claims = [OpenIdClaimTypes.Role] }
+                new Scope { Type = "manager", Claims = [OpenIdClaimTypes.Role] }
             ]);
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
@@ -218,7 +162,7 @@ public sealed class JwtGeneratorFixture
             .Returns(
             [
                 new Scope { Type = "role", Claims = [OpenIdClaimTypes.Role] },
-                    new Scope { Type = "manager", Claims = [OpenIdClaimTypes.Role] }
+                new Scope { Type = "manager", Claims = [OpenIdClaimTypes.Role] }
             ]);
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
@@ -240,7 +184,11 @@ public sealed class JwtGeneratorFixture
         When_Requesting_IdentityToken_JwsPayload_With_No_Authorization_Request_Then_MandatoriesClaims_Are_Returned()
     {
         const string subject = "john.doe@email.com";
-        var authorizationParameter = new AuthorizationParameter();
+        // A `clientId` is required so that the standard-mandatory `aud` claim has a value.
+        // Per OIDC Core 1.0 §2 every id_token MUST carry `aud`, and the only legitimate source
+        // for `aud` is the requesting client's `client_id` — see id-token-audience-review.md §2.
+        const string clientId = "mandatories-client";
+        var authorizationParameter = new AuthorizationParameter { ClientId = clientId };
         var claims = new List<Claim> { new(OpenIdClaimTypes.Subject, subject) };
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -250,11 +198,10 @@ public sealed class JwtGeneratorFixture
             .Returns(FakeOpenIdAssets.GetClients());
 
         var generateIdTokenPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopes(
-                claimsPrincipal,
-                authorizationParameter,
-                "",
-                CancellationToken.None)
-            ;
+            claimsPrincipal,
+            authorizationParameter,
+            "",
+            CancellationToken.None);
 
         var result = (generateIdTokenPayload as Option<JwtPayload>.Result)!.Item;
         Assert.Contains(result.Claims, c => c.Type == OpenIdClaimTypes.Subject);
@@ -262,6 +209,9 @@ public sealed class JwtGeneratorFixture
         Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.ExpirationTime);
         Assert.Contains(result.Claims, c => c.Type == StandardClaimNames.Iat);
         Assert.Equal(subject, result.Sub);
+        // With a `ClientId` provided, the standard behavior is `aud = [clientId]` (single element),
+        // which is what JWTGenerator now emits per id-token-audience-review.md §2 / §2.4.
+        Assert.Single(result.Aud, c => c == clientId);
     }
 
     [Fact]
@@ -474,7 +424,8 @@ public sealed class JwtGeneratorFixture
             new Claim(OpenIdClaimTypes.Subject, subject),
             new Claim(OpenIdClaimTypes.Role, "['role1', 'role2']", ClaimValueTypes.String)
         };
-        var authorizationParameter = new AuthorizationParameter { Nonce = nonce };
+        var authorizationParameter = new AuthorizationParameter
+            { Nonce = nonce, ClientId = FakeOpenIdAssets.GetClients().First().ClientId };
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var claimsParameter = new[]

@@ -23,8 +23,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.Extensions.Hosting;
 
-public sealed class Program
+/// <summary>
+/// Class for application entry point
+/// </summary>
+public static class Program
 {
+    /// <summary>
+    /// Application entry point
+    /// </summary>
     public static async Task Main()
     {
 #if DEBUG
