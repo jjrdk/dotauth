@@ -12,6 +12,7 @@
 		<PackAsTool>true</PackAsTool>
 		<ToolCommandName>token</ToolCommandName>
 		<PackageOutputPath>../../artifacts/packages</PackageOutputPath>
+        <NoWarn>CS1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -1,6 +1,5 @@
-﻿using System.Text.Json.Serialization.Metadata;
-
-namespace DotAuth.Stores.Marten;
+﻿namespace DotAuth.Stores.Marten;
+using System.Text.Json.Serialization.Metadata;
 
 using System;
 using System.Buffers;
@@ -332,3 +331,4 @@ public sealed class DotAuthMartenOptions : StoreOptions
 public partial class MartenSerializerContext : JsonSerializerContext
 {
 }
+

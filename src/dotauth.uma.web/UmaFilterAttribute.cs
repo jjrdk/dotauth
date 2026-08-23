@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿namespace DotAuth.Uma.Web;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-
-namespace DotAuth.Uma.Web;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -301,3 +300,4 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
         partial void LogAllowingAccessForUserSubjectInRoleAllowedScope(string? subject, string allowedScope);
     }
 }
+

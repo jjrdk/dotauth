@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Authentication;
-
 namespace DotAuth.Uma.Tests;
+using Microsoft.AspNetCore.Authentication;
 
 using System;
 using System.Collections.Generic;
@@ -126,3 +125,4 @@ public class UmaFilterAttributeTests
         return filterContext.Result;
     }
 }
+

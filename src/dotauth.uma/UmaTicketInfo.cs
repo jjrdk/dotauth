@@ -1,6 +1,5 @@
-﻿using System.Text.RegularExpressions;
-
-namespace DotAuth.Uma;
+﻿namespace DotAuth.Uma;
+using System.Text.RegularExpressions;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
@@ -67,3 +66,4 @@ public partial record UmaTicketInfo : ResourceResult
     [GeneratedRegex("as_uri=\"(?<umaAuthority>.+)\", ticket=\"(?<ticketId>.+)\"( realm=\"(?<realm>.+)\")?", RegexOptions.Compiled)]
     private static partial Regex ParseRegex();
 }
+
