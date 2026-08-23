@@ -1,4 +1,5 @@
 ﻿namespace DotAuth.Uma.Web;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 
@@ -214,7 +215,7 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
                     serverToken.AccessToken,
                     CancellationToken.None,
                     new PermissionRequest
-                        { IdToken = idToken, ResourceSetId = resourceSetId, Scopes = _requiredResourceSetScopes })
+                    { IdToken = idToken, ResourceSetId = resourceSetId, Scopes = _requiredResourceSetScopes })
                 .ConfigureAwait(false);
             switch (permission)
             {

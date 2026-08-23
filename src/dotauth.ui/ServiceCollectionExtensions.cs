@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
         this IMvcCoreBuilder mvcBuilder,
         params Type[] discoveryTypes)
     {
-        return AddDotAuthUi(mvcBuilder, discoveryTypes.Select(t=>(t.Namespace, t.Assembly)).ToArray());
+        return AddDotAuthUi(mvcBuilder, discoveryTypes.Select(t => (t.Namespace, t.Assembly)).ToArray());
     }
 
     public static IMvcCoreBuilder AddDotAuthUi(

@@ -447,7 +447,7 @@ internal static partial class PasswordUiEndpointHandlers
             var actionResult = await authenticateHelper.ProcessRedirection(request.ToParameter(), codeViewModel.AuthRequestCode, subject, authenticatedUserClaims, issuerName, cancellationToken).ConfigureAwait(false);
             await LogAuthenticateUser(eventPublisher, subject, actionResult.Amr).ConfigureAwait(false);
             var result = actionResult.CreateRedirectionFromActionResult(request, logger)!;
-                    return UiEndpointHelpers.ToRedirectResult(httpContext, result);
+            return UiEndpointHelpers.ToRedirectResult(httpContext, result);
         }
 
         await UiEndpointHelpers.SetLocalCookieAsync(httpContext, authenticationService, runtimeSettings, authenticatedUserClaims, Id.Create()).ConfigureAwait(false);

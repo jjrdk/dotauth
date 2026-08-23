@@ -74,7 +74,8 @@ public sealed class PostIntrospectionActionFixture
     {
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken,
+            Token = "token"
         };
         var grantedToken = new GrantedToken
         {
@@ -107,7 +108,8 @@ public sealed class PostIntrospectionActionFixture
         var audiences = new[] { audience };
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken, Token = "token"
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.RefreshToken,
+            Token = "token"
         };
         var grantedToken = new GrantedToken
         {
@@ -139,7 +141,8 @@ public sealed class PostIntrospectionActionFixture
     {
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
+            Token = "token"
         };
         var grantedToken = new GrantedToken
         {
@@ -172,7 +175,8 @@ public sealed class PostIntrospectionActionFixture
         var audiences = new[] { audience };
         var parameter = new IntrospectionParameter
         {
-            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken, Token = "token"
+            TokenTypeHint = CoreConstants.StandardTokenTypeHintNames.AccessToken,
+            Token = "token"
         };
         var grantedToken = new GrantedToken
         {

@@ -32,7 +32,7 @@ public abstract class ResourceRegistration
     /// <value>The scopes.</value>
     [JsonPropertyName("resource_scopes")]
     public string[] Scopes { get; set; } = [];
-        
+
     /// <summary>
     /// Gets or sets the access policy <see cref="Uri"/>.
     /// </summary>

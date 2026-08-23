@@ -174,7 +174,7 @@ internal sealed class GenerateAuthorizationResponse
                 client);
 
             if (grantedToken != null)
-                // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
+            // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
             {
                 if (authorizationParameterClientId == null || authorizationParameter.ResponseType == null)
                 {
@@ -265,9 +265,9 @@ internal sealed class GenerateAuthorizationResponse
                     RedirectInstruction = endpointResult.RedirectInstruction!.AddParameter(
                             "redirect_uri",
                             authorizationParameter.RedirectUrl?.AbsoluteUri) with
-                        {
-                            Action = DotAuthEndPoints.FormIndex
-                        }
+                    {
+                        Action = DotAuthEndPoints.FormIndex
+                    }
                 };
             }
 

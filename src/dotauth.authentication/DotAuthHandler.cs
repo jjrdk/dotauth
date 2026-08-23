@@ -98,15 +98,15 @@ public class DotAuthHandler<T> : RemoteAuthenticationHandler<T>
                 ));
                 break;
             case Option<Uri>.Error error:
-            {
-                var context = new RemoteFailureContext(Context,
-                    authenticationScheme,
-                    Options,
-                    new Exception(error.Details.Title));
-                await Options.Events.OnRemoteFailure(
-                    context);
-                break;
-            }
+                {
+                    var context = new RemoteFailureContext(Context,
+                        authenticationScheme,
+                        Options,
+                        new Exception(error.Details.Title));
+                    await Options.Events.OnRemoteFailure(
+                        context);
+                    break;
+                }
         }
     }
 }

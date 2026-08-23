@@ -86,7 +86,9 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
         const string state = "state";
         var authorizationParameter = new AuthorizationParameter
         {
-            State = state, Scope = "scope", ClientId = "clientId"
+            State = state,
+            Scope = "scope",
+            ClientId = "clientId"
         };
 
         var exception = Assert.IsType<Option<Client>.Error>(
@@ -114,7 +116,10 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
         const string state = "state";
         var authorizationParameter = new AuthorizationParameter
         {
-            State = state, Scope = "scope", ClientId = "clientId", RedirectUrl = new Uri("https://redirectUrl")
+            State = state,
+            Scope = "scope",
+            ClientId = "clientId",
+            RedirectUrl = new Uri("https://redirectUrl")
         };
 
         var exception = Assert.IsType<Option<Client>.Error>(
@@ -159,7 +164,8 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = Strings.AtLeastOneResponseTypeIsNotSupported
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = Strings.AtLeastOneResponseTypeIsNotSupported
                 },
                 state),
             exception);
@@ -189,7 +195,8 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = Strings.AtLeastOnePromptIsNotSupported
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = Strings.AtLeastOnePromptIsNotSupported
                 },
                 state),
             exception);
@@ -219,7 +226,8 @@ public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
             new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = Strings.PromptParameterShouldHaveOnlyNoneValue
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = Strings.PromptParameterShouldHaveOnlyNoneValue
                 },
                 state),
             exception);

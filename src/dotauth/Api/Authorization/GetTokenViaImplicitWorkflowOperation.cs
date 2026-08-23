@@ -107,7 +107,7 @@ internal sealed class GetTokenViaImplicitWorkflowOperation
                 });
         }
 
-        var claimsPrincipal = (ClaimsPrincipal) principal;
+        var claimsPrincipal = (ClaimsPrincipal)principal;
         var result = await _processAuthorizationRequest.Process(
                 authorizationParameter,
                 claimsPrincipal,

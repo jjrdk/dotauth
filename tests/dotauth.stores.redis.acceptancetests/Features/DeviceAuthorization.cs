@@ -40,7 +40,7 @@ public partial class FeatureTest
     {
         var request =
             new HttpRequestMessage
-                { Method = HttpMethod.Get, RequestUri = new Uri(WellKnownOpenidConfiguration) };
+            { Method = HttpMethod.Get, RequestUri = new Uri(WellKnownOpenidConfiguration) };
         request.Headers.Accept.Clear();
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         var response = await _fixture.Client().SendAsync(request).ConfigureAwait(false);

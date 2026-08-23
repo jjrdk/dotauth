@@ -26,7 +26,7 @@ public partial class FeatureTest
     [Then(@"can get user information")]
     public async Task ThenCanGetUserInformation()
     {
-        var userInfo =Assert.IsType<Option<JwtPayload>.Result>( await _tokenClient.GetUserInfo(_token.AccessToken).ConfigureAwait(false));
+        var userInfo = Assert.IsType<Option<JwtPayload>.Result>(await _tokenClient.GetUserInfo(_token.AccessToken).ConfigureAwait(false));
 
         Assert.NotNull(userInfo);
         Assert.NotNull(userInfo.Item.Sub);

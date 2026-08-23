@@ -43,7 +43,7 @@ public partial class FeatureTest
     {
         _umaClient = new UmaClient(_fixture.Client, new Uri(WellKnownUmaConfiguration));
     }
-    
+
     [When(@"registering resources")]
     public async Task WhenRegisteringResources(Table table)
     {

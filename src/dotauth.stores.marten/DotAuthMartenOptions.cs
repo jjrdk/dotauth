@@ -1,4 +1,5 @@
 ﻿namespace DotAuth.Stores.Marten;
+
 using System.Text.Json.Serialization.Metadata;
 
 using System;
@@ -196,7 +197,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
             stream.ReadByte();
             var typeInfo = (JsonTypeInfo<T>)_options.GetTypeInfo(typeof(T));
             var result = JsonSerializer.Deserialize<T>(stream, typeInfo)
-                //json.Trim((char)1), _options)
+             //json.Trim((char)1), _options)
              ?? throw new NullReferenceException("Could not deserialize from stream");
             return result;
         }

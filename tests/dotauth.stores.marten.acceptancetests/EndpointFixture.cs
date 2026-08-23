@@ -61,7 +61,8 @@ public sealed class EndpointFixture : IAsyncDisposable
     {
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/{path}")
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"{BaseUrl}/{path}")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);

@@ -13,7 +13,7 @@ public sealed record OwnedResourceSet : ResourceSet
     /// </summary>
     [JsonPropertyName("owner")]
     public string Owner { get; init; } = null!;
-    
+
     /// <summary>
     /// Returns the resource set base.
     /// </summary>

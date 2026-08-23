@@ -13,5 +13,5 @@ public interface ISmsClient
     /// <param name="toPhoneNumber">To phone number.</param>
     /// <param name="message">The message.</param>
     /// <returns></returns>
-    Task<(bool,string?)> SendMessage(string toPhoneNumber, string message);
+    Task<(bool, string?)> SendMessage(string toPhoneNumber, string message);
 }

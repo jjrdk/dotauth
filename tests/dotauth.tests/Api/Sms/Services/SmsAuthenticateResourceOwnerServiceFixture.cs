@@ -58,7 +58,9 @@ public sealed class SmsAuthenticateResourceOwnerServiceFixture
         _confirmationCodeStoreStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ConfirmationCode
             {
-                Subject = login, IssueAt = DateTimeOffset.UtcNow.AddDays(-1), ExpiresIn = 100
+                Subject = login,
+                IssueAt = DateTimeOffset.UtcNow.AddDays(-1),
+                ExpiresIn = 100
             });
 
         var result = await _authenticateResourceOwnerService

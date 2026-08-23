@@ -71,7 +71,8 @@ public partial class FeatureTest
         Assert.NotNull(_token);
         var msg = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = new Uri(_resourceSetResponse.UserAccessPolicyUri)
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(_resourceSetResponse.UserAccessPolicyUri)
         };
         msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         msg.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);

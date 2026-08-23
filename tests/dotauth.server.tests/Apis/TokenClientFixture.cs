@@ -55,7 +55,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -74,7 +76,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -96,7 +100,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -118,7 +124,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -144,7 +152,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -171,7 +181,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -199,7 +211,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -226,7 +240,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -245,7 +261,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -270,7 +288,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -298,7 +318,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -325,7 +347,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -344,7 +368,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -368,7 +394,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -393,7 +421,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -434,7 +464,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -456,7 +488,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -481,7 +515,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -508,7 +544,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -534,7 +572,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -562,7 +602,9 @@ public sealed class TokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);

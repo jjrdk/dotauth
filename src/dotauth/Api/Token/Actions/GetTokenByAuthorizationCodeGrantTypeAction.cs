@@ -55,7 +55,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
     /// When a code is reused the server MUST revoke all tokens previously issued for that code.
     /// </summary>
     private static readonly MemoryCache CodeToIssuedToken = new(new MemoryCacheOptions
-        { ExpirationScanFrequency = TimeSpan.FromHours(1) });
+    { ExpirationScanFrequency = TimeSpan.FromHours(1) });
 
     private readonly IAuthorizationCodeStore _authorizationCodeStore;
     private readonly RuntimeSettings _configurationService;

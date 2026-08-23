@@ -136,11 +136,11 @@ internal sealed class AuthorizationActions
         {
             Option<AuthorizationFlow>.Error e => EndpointResult.CreateBadRequestResult(e.Details),
             Option<AuthorizationFlow>.Result
-                { Item: AuthorizationFlow.AuthorizationCodeFlow } => await _getAuthorizationCodeOperation
+            { Item: AuthorizationFlow.AuthorizationCodeFlow } => await _getAuthorizationCodeOperation
                 .Execute(parameter, claimsPrincipal, client, issuerName, cancellationToken)
                 .ConfigureAwait(false),
             Option<AuthorizationFlow>.Result
-                { Item: AuthorizationFlow.ImplicitFlow } => await _getTokenViaImplicitWorkflowOperation.Execute(
+            { Item: AuthorizationFlow.ImplicitFlow } => await _getTokenViaImplicitWorkflowOperation.Execute(
                     parameter,
                     claimsPrincipal,
                     client,
@@ -148,7 +148,7 @@ internal sealed class AuthorizationActions
                     CancellationToken.None)
                 .ConfigureAwait(false),
             Option<AuthorizationFlow>.Result
-                { Item: AuthorizationFlow.HybridFlow } => await
+            { Item: AuthorizationFlow.HybridFlow } => await
                 _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
                         parameter,
                         claimsPrincipal,

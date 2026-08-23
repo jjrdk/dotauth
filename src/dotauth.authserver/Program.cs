@@ -38,7 +38,7 @@ public static class Program
 #endif
         Trace.Listeners.Clear();
         Trace.Listeners.Add(new ConsoleTraceListener
-            { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
+        { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
         using var webHost = new HostBuilder().ConfigureWebHost(builder =>
             {
                 builder

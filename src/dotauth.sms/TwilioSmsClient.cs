@@ -41,7 +41,7 @@ public sealed class TwilioSmsClient : ISmsClient
     /// </exception>
     public async Task<(bool, string?)> SendMessage(string toPhoneNumber, string message)
     {
-        var keyValues = new []
+        var keyValues = new[]
         {
             new KeyValuePair<string?, string?>("To", toPhoneNumber),
             new KeyValuePair<string?, string?>("From", _credentials.FromNumber),
@@ -51,7 +51,9 @@ public sealed class TwilioSmsClient : ISmsClient
         var postUrl = string.Format(CultureInfo.InvariantCulture, TwilioSmsEndpointFormat, _credentials.AccountSid);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = content, RequestUri = new Uri(postUrl)
+            Method = HttpMethod.Post,
+            Content = content,
+            RequestUri = new Uri(postUrl)
         };
         httpRequest.Headers.UserAgent.Add(
             new ProductInfoHeaderValue("twilio-csharp/5.13.4 (.NET Framework 4.5.1+)"));

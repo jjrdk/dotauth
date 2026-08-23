@@ -289,7 +289,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
         UserStore.Instance().IsInactive = false;
 
         Assert.Equal("login_required", result.Details.Title);
@@ -310,7 +311,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
         UserStore.Instance().Subject = "administrator";
 
         Assert.Equal("interaction_required", result.Details.Title);
@@ -329,7 +331,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { id_token_hint = "token", prompt = "none" }, TestContext.Current.CancellationToken));
+                "state")
+            { id_token_hint = "token", prompt = "none" }, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheIdTokenHintParameterIsNotAValidToken, result.Details.Detail);
@@ -357,7 +360,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { id_token_hint = jws, prompt = "none" }, TestContext.Current.CancellationToken));
+                "state")
+            { id_token_hint = jws, prompt = "none" }, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.UnhandledExceptionCode, result.Details.Title);
     }
@@ -369,7 +373,7 @@ public sealed class AuthorizationClientFixture : IDisposable
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var jws = _jwsGenerator.CreateEncodedJwt(
             new SecurityTokenDescriptor
-             {
+            {
                 // The new issuer-based id_token_hint check (see ProcessAuthorizationRequest.ProcessIdTokenHint)
                 // requires the incoming token's `iss` claim to equal the OP issuer. The server's issuer
                 // is the configured base URL; add it explicitly so the check passes and the test's
@@ -380,7 +384,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                 SigningCredentials = new SigningCredentials(
                     TestKeys.SecretKey.CreateSignatureJwk(),
                     SecurityAlgorithms.HmacSha256)
-             });
+            });
         //var jws = _jwsGenerator.Generate(payload, SecurityAlgorithms.RsaSha256, _server.SharedCtx.SignatureKey);
 
         var result = Assert.IsType<Option<Uri>.Error>(await _authorizationClient.GetAuthorization(
@@ -391,7 +395,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { id_token_hint = jws, prompt = "none" }, TestContext.Current.CancellationToken));
+                "state")
+            { id_token_hint = jws, prompt = "none" }, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.InvalidRequest, result.Details.Title);
         Assert.Equal(Strings.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken, result.Details.Detail);
@@ -411,7 +416,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{baseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
         var location = result.Item;
         var queries = QueryHelpers.ParseQuery(location.Query);
         var tokenClient = new TokenClient(
@@ -442,7 +448,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None, max_age = 300 }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.None, max_age = 300 }, TestContext.Current.CancellationToken));
         var location = result.Item;
         UserStore.Instance().AuthenticationOffset = null;
 
@@ -461,7 +468,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.Login }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.Login }, TestContext.Current.CancellationToken));
 
         Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
     }
@@ -479,7 +487,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.Consent }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.Consent }, TestContext.Current.CancellationToken));
         UserStore.Instance().IsInactive = false;
 
         Assert.Equal("/pwd/Authenticate/OpenId", result.Item.LocalPath);
@@ -497,7 +506,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.Consent }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.Consent }, TestContext.Current.CancellationToken));
 
         Assert.Equal("/Consent", result.Item.LocalPath);
     }
@@ -507,7 +517,7 @@ public sealed class AuthorizationClientFixture : IDisposable
     {
         var jwe = _jwsGenerator.CreateEncodedJwt(
             new SecurityTokenDescriptor
-             {
+            {
                 // Required by the new issuer-based id_token_hint check: the incoming token must carry
                 // `iss == http://localhost:5000` to be treated as issued by this OP.
                 Issuer = "http://localhost:5000",
@@ -521,7 +531,7 @@ public sealed class AuthorizationClientFixture : IDisposable
                     TestKeys.SecretKey.CreateEncryptionJwk(),
                     SecurityAlgorithms.Aes256KW,
                     SecurityAlgorithms.Aes128CbcHmacSha256)
-             });
+            });
 
         var pkce = CodeChallengeMethods.S256.BuildPkce();
         var result = await _authorizationClient.GetAuthorization(
@@ -532,7 +542,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { id_token_hint = jwe, prompt = "none" }, TestContext.Current.CancellationToken);
+                "state")
+            { id_token_hint = jwe, prompt = "none" }, TestContext.Current.CancellationToken);
 
         Assert.IsType<Option<Uri>.Result>(result);
     }
@@ -550,7 +561,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{BaseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.None }, TestContext.Current.CancellationToken));
         var location = result.Item;
         var queries = QueryHelpers.ParseQuery(location.Query);
         var tokenClient = new TokenClient(
@@ -581,7 +593,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{baseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None, nonce = "nonce" }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.None, nonce = "nonce" }, TestContext.Current.CancellationToken));
         var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
         Assert.NotNull(result.Item);
@@ -606,7 +619,8 @@ public sealed class AuthorizationClientFixture : IDisposable
                 new Uri($"{baseUrl}/callback"),
                 pkce.CodeChallenge,
                 CodeChallengeMethods.S256,
-                "state") { prompt = PromptNames.None, nonce = "nonce" }, TestContext.Current.CancellationToken));
+                "state")
+            { prompt = PromptNames.None, nonce = "nonce" }, TestContext.Current.CancellationToken));
         var queries = QueryHelpers.ParseQuery(result.Item.Fragment.TrimStart('#'));
 
         Assert.NotNull(result.Item);

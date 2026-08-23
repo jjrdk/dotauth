@@ -2195,7 +2195,7 @@ public partial class FeatureTest
         _response = _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["new_scope_xyz"], [ResponseTypeNames.Code], "authcode_client",
                 new Uri("http://localhost:5000/callback"), pkce.CodeChallenge, CodeChallengeMethods.S256, "state")
-            { prompt = PromptNames.Login }).GetAwaiter().GetResult();
+        { prompt = PromptNames.Login }).GetAwaiter().GetResult();
     }
 
     [When("an authorization request is sent with an unknown parameter")]
@@ -2469,7 +2469,7 @@ public partial class FeatureTest
                 if (!queries.TryGetValue("code", out var consentCode))
                 {
                     _pkceTokenResult = new Option<GrantedTokenResponse>.Error(new ErrorDetails
-                        { Title = ErrorCodes.InvalidGrant, Detail = "invalid" });
+                    { Title = ErrorCodes.InvalidGrant, Detail = "invalid" });
                     return;
                 }
 
@@ -2503,7 +2503,7 @@ public partial class FeatureTest
             {
                 _pkceTokenResult = await Task
                     .FromResult(new Option<GrantedTokenResponse>.Error(new ErrorDetails
-                        { Title = ErrorCodes.InvalidGrant, Detail = "invalid" })).ConfigureAwait(false);
+                    { Title = ErrorCodes.InvalidGrant, Detail = "invalid" })).ConfigureAwait(false);
                 return;
             }
 
@@ -2523,7 +2523,7 @@ public partial class FeatureTest
 
         _pkceTokenResult = await Task
             .FromResult(new Option<GrantedTokenResponse>.Error(new ErrorDetails
-                { Title = ErrorCodes.InvalidGrant, Detail = "invalid" })).ConfigureAwait(false);
+            { Title = ErrorCodes.InvalidGrant, Detail = "invalid" })).ConfigureAwait(false);
     }
 
     [When("posting an authorization request to the authorization endpoint")]
@@ -2614,7 +2614,8 @@ public partial class FeatureTest
 
         var initialResponse = await _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["api1"], [ResponseTypeNames.Code], "authcode_client", new Uri("http://localhost:5000/callback"),
-                codeChallenge, CodeChallengeMethods.S256, "state") { prompt = PromptNames.Login })
+                codeChallenge, CodeChallengeMethods.S256, "state")
+        { prompt = PromptNames.Login })
             .ConfigureAwait(false);
 
         // Complete login + consent to obtain the real authorization code, then attempt
@@ -2799,7 +2800,8 @@ public partial class FeatureTest
                     new Uri("http://localhost:5000/callback/../other"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.None })
+                    "state")
+                { prompt = PromptNames.None })
             .ConfigureAwait(false);
     }
 
@@ -2825,7 +2827,8 @@ public partial class FeatureTest
     {
         _response = _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["api1"], ["invalid_response_type"], "authcode_client", new Uri("http://localhost:5000/callback"),
-                null, null, "state") { prompt = PromptNames.None }).GetAwaiter().GetResult();
+                null, null, "state")
+        { prompt = PromptNames.None }).GetAwaiter().GetResult();
     }
 
     [When("requesting authorization with an unsupported response type")]
@@ -2833,7 +2836,8 @@ public partial class FeatureTest
     {
         _response = _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["api1"], ["unsupported"], "authcode_client", new Uri("http://localhost:5000/callback"), null, null,
-                "state") { prompt = PromptNames.None }).GetAwaiter().GetResult();
+                "state")
+        { prompt = PromptNames.None }).GetAwaiter().GetResult();
     }
 
     [When("requesting authorization without a redirect URI")]
@@ -2842,7 +2846,8 @@ public partial class FeatureTest
         // Use an unregistered or missing redirect URI scenario by supplying a redirect URI not registered
         _response = _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["api1"], [ResponseTypeNames.Code], "authcode_client", new Uri("http://localhost:5000/not-registered"),
-                null, null, "state") { prompt = PromptNames.None }).GetAwaiter().GetResult();
+                null, null, "state")
+        { prompt = PromptNames.None }).GetAwaiter().GetResult();
     }
 
     [When("requesting implicit flow with response_type id_token without nonce")]
@@ -2859,7 +2864,7 @@ public partial class FeatureTest
         _response = await _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["openid"], [ResponseTypeNames.IdToken], "implicit_client",
                 new Uri("http://localhost:5000/callback"), null, null, "state")
-            { prompt = PromptNames.None }).ConfigureAwait(false);
+        { prompt = PromptNames.None }).ConfigureAwait(false);
     }
 
     [When("requesting implicit flow with response_type token")]

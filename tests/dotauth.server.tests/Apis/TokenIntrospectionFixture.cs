@@ -43,7 +43,8 @@ public sealed class TokenIntrospectionFixture
     {
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/introspect")
+            Method = HttpMethod.Post,
+            RequestUri = new Uri($"{BaseUrl}/introspect")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -62,7 +63,9 @@ public sealed class TokenIntrospectionFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/introspect")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/introspect")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);

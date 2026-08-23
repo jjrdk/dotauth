@@ -129,11 +129,11 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
         }
 
         var unmatchedPolicyClaim = (from policyClaim in authorizationPolicy.Claims
-            let tokenClaims =
-                requester.Where(j => j.Type == policyClaim.Type && j.ValueType != JsonClaimValueTypes.JsonArray)
-                    .ToArray()
-            where tokenClaims.Length == 0 || tokenClaims.All(tc => tc.Value != policyClaim.Value)
-            select policyClaim).Any();
+                                    let tokenClaims =
+                                        requester.Where(j => j.Type == policyClaim.Type && j.ValueType != JsonClaimValueTypes.JsonArray)
+                                            .ToArray()
+                                    where tokenClaims.Length == 0 || tokenClaims.All(tc => tc.Value != policyClaim.Value)
+                                    select policyClaim).Any();
 
         return unmatchedPolicyClaim
             ? new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester)

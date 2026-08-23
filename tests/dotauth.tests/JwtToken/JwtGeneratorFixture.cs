@@ -425,7 +425,7 @@ public sealed class JwtGeneratorFixture
             new Claim(OpenIdClaimTypes.Role, "['role1', 'role2']", ClaimValueTypes.String)
         };
         var authorizationParameter = new AuthorizationParameter
-            { Nonce = nonce, ClientId = FakeOpenIdAssets.GetClients().First().ClientId };
+        { Nonce = nonce, ClientId = FakeOpenIdAssets.GetClients().First().ClientId };
         var claimIdentity = new ClaimsIdentity(claims, "fake");
         var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
         var claimsParameter = new[]

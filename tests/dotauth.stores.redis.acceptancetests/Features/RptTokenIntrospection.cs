@@ -32,7 +32,10 @@ public partial class FeatureTest
     {
         var resourceSet = new ResourceSet
         {
-            Description = "Test resource", Name = "Test resource", Scopes = ["read"], Type = "Test resource"
+            Description = "Test resource",
+            Name = "Test resource",
+            Scopes = ["read"],
+            Type = "Test resource"
         };
         var response =
             await _umaClient.AddResourceSet(resourceSet, _token.AccessToken).ConfigureAwait(false) as
@@ -73,10 +76,10 @@ public partial class FeatureTest
     [When(@"getting a ticket")]
     public async Task WhenGettingATicket()
     {
-        var ticketResponse = Assert.IsType<Option<TicketResponse>.Result>( await _umaClient.RequestPermission(
+        var ticketResponse = Assert.IsType<Option<TicketResponse>.Result>(await _umaClient.RequestPermission(
                 _token.AccessToken,
                 requests: new PermissionRequest { ResourceSetId = _resourceId, Scopes = ["read"] })
-            .ConfigureAwait(false) );
+            .ConfigureAwait(false));
 
         _ticketId = ticketResponse.Item.TicketId;
     }
@@ -86,7 +89,7 @@ public partial class FeatureTest
     {
         var rptResponse = Assert.IsType<Option<GrantedTokenResponse>.Result>(
             await _tokenClient.GetToken(TokenRequest.FromTicketId(_ticketId, _token.IdToken!))
-            .ConfigureAwait(false) );
+            .ConfigureAwait(false));
 
         _rptToken = rptResponse.Item.AccessToken;
     }

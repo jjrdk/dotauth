@@ -78,7 +78,9 @@ public class UmaTokenActionsTests
         var option = await _tokenActions.GetTokenByTicketId(
             new GetTokenViaTicketIdParameter
             {
-                Ticket = "ticket_id", ClientId = "client", ClientSecret = "secret",
+                Ticket = "ticket_id",
+                ClientId = "client",
+                ClientSecret = "secret",
                 ClaimToken = new ClaimTokenParameter { Format = "", Token = "token" }
             },
             new AuthenticationHeaderValue("Bearer", "rtttdvdtgdtg"),

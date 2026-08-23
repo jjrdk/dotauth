@@ -1,4 +1,5 @@
 namespace DotAuth.Uma.Tests;
+
 using Microsoft.AspNetCore.Authentication;
 
 using System;

@@ -69,7 +69,7 @@ public sealed class ClientAssertionAuthenticationFixture
     [Fact]
     public async Task When_A_Not_Jws_Token_Is_Passed_To_AuthenticateClientWithPrivateKeyJwt_Then_Null_Is_Returned()
     {
-        var instruction = new AuthenticateInstruction {ClientAssertion = "invalid_header.invalid_payload"};
+        var instruction = new AuthenticateInstruction { ClientAssertion = "invalid_header.invalid_payload" };
         var result = await _clientAssertionAuthentication
             .AuthenticateClientWithPrivateKeyJwt(instruction, "", CancellationToken.None);
 
@@ -86,7 +86,7 @@ public sealed class ClientAssertionAuthenticationFixture
         {
             ClientAssertion = jwt // "invalid_header.invalid_payload"
         };
-        var client = new Client {JsonWebKeys = jwks};
+        var client = new Client { JsonWebKeys = jwks };
 
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(client);
@@ -126,7 +126,7 @@ public sealed class ClientAssertionAuthenticationFixture
         {
             ClientAssertion = jwt //"invalid_header.invalid_payload"
         };
-        var client = new Client {JsonWebKeys = jwks};
+        var client = new Client { JsonWebKeys = jwks };
 
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(client);
@@ -154,7 +154,7 @@ public sealed class ClientAssertionAuthenticationFixture
         {
             ClientAssertion = jwt // "valid_header.valid.valid.valid.valid"
         };
-        var client = new Client {JsonWebKeys = jwks};
+        var client = new Client { JsonWebKeys = jwks };
 
         _clientRepositoryStub.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(client);

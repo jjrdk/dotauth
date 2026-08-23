@@ -406,7 +406,7 @@ public static class ServiceCollectionExtensions
         {
             var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
             var forwardedHeadersOptions = new ForwardedHeadersOptions
-                { ForwardedHeaders = ForwardedHeaders.All, ForwardLimit = 1 };
+            { ForwardedHeaders = ForwardedHeaders.All, ForwardLimit = 1 };
             forwardedHeaderConfiguration?.Invoke(forwardedHeadersOptions);
             return app
                 .UseForwardedHeaders(forwardedHeadersOptions)

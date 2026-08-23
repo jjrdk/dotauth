@@ -90,7 +90,8 @@ public partial class FeatureTest
     {
         var userinfoRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/userinfo")
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"{BaseUrl}/userinfo")
         };
         userinfoRequest.Headers.Authorization =
             new AuthenticationHeaderValue(_token.TokenType, _token.AccessToken);
@@ -104,7 +105,8 @@ public partial class FeatureTest
     {
         var updateRequest = new UpdateResourceOwnerClaimsRequest
         {
-            Subject = "user", Claims = [new ClaimData { Type = "test", Value = "something" }]
+            Subject = "user",
+            Claims = [new ClaimData { Type = "test", Value = "something" }]
         };
 
         var json = JsonSerializer.Serialize(updateRequest,

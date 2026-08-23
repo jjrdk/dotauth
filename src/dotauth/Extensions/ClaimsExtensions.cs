@@ -29,7 +29,7 @@ internal static class ClaimsExtensions
             return claimTypes.SelectMany(claim =>
                 MappingToOpenidClaims.TryGetValue(claim, out var openidClaim)
                     ? [openidClaim, claim]
-                    : new[] {claim});
+                    : new[] { claim });
         }
     }
 

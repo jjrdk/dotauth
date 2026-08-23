@@ -16,7 +16,7 @@ public interface IResourceStore
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
     Task<ResourceRegistration?> GetById(string resourceId, CancellationToken cancellationToken = default);
-    
+
     /// <summary>
     /// Checks whether a particular resource is registered for the given owner.
     /// </summary>

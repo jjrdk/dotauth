@@ -81,7 +81,7 @@ public sealed class ResourceOwner
         {
             var unix = value.ConvertToUnixTimestamp();
             var claim = new Claim(OpenIdClaimTypes.UpdatedAt, unix.ToString());
-            
+
             Claims = Claims.Where(x => x.Type != OpenIdClaimTypes.UpdatedAt).Concat(Enumerable.Repeat(claim, 1)).ToArray();
         }
     }

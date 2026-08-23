@@ -157,7 +157,7 @@ internal sealed class ClientFactory
             ],
             > 0 => newClient.Secrets.Select(
                     secret => secret.Type == ClientSecretTypes.SharedSecret
-                        ? new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = Id.Create()}
+                        ? new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Id.Create() }
                         : secret)
                 .ToArray(),
             _ => client.Secrets

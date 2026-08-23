@@ -97,7 +97,7 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
                                 validTicket.Id,
                                 client.ClientId,
                                 requester.Claims.Select(claim => new ClaimData
-                                    { Type = claim.Type, Value = claim.Value }),
+                                { Type = claim.Type, Value = claim.Value }),
                                 DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
 
@@ -107,16 +107,16 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
                 case AuthorizationPolicyResultKind.NotAuthorized:
                 case AuthorizationPolicyResultKind.NeedInfo:
                 default:
-                {
-                    await _eventPublisher.Publish(
-                            new AuthorizationPolicyNotAuthorized(
-                                Id.Create(),
-                                validTicket.Id,
-                                DateTimeOffset.UtcNow))
-                        .ConfigureAwait(false);
+                    {
+                        await _eventPublisher.Publish(
+                                new AuthorizationPolicyNotAuthorized(
+                                    Id.Create(),
+                                    validTicket.Id,
+                                    DateTimeOffset.UtcNow))
+                            .ConfigureAwait(false);
 
-                    return validationResult;
-                }
+                        return validationResult;
+                    }
             }
         }
 

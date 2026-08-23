@@ -39,7 +39,7 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
     {
         await context.ResetAsync();
         var consent = new Consent
-            { Id = "legacy", Subject = "alice", ClientId = "client-a", GrantedScopes = ["openid"] };
+        { Id = "legacy", Subject = "alice", ClientId = "client-a", GrantedScopes = ["openid"] };
         // Seed using the tenant-prefixed key to simulate legacy data stored under the
         // current tenant namespace (the "test" tenant context used by this fixture).
         await context.Database.StringSetAsync("test:alice",
@@ -60,7 +60,7 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
         var store = context.Store;
         var first = new Consent { Id = "1", Subject = "alice", ClientId = "client-a", GrantedScopes = ["manager"] };
         var second = new Consent
-            { Id = "2", Subject = "alice", ClientId = "client-b", GrantedScopes = ["uma_protection"] };
+        { Id = "2", Subject = "alice", ClientId = "client-b", GrantedScopes = ["uma_protection"] };
 
         await store.Insert(first, CancellationToken.None);
         await store.Insert(second, CancellationToken.None);

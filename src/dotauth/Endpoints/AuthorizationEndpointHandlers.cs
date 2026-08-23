@@ -106,36 +106,36 @@ internal static class AuthorizationEndpointHandlers
                         actionResult.GetRedirectionParameters(),
                         actionResult.RedirectInstruction!.ResponseMode!));
             case ActionResultType.RedirectToAction:
-            {
-                activity?.SetStatus(ActivityStatusCode.Ok);
-                DotAuthTelemetry.RecordAuthorizationCodeIssued(authorizationRequest.client_id);
-                if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
-                    || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
                 {
-                    if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
+                    activity?.SetStatus(ActivityStatusCode.Ok);
+                    DotAuthTelemetry.RecordAuthorizationCodeIssued(authorizationRequest.client_id);
+                    if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
+                        || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
                     {
-                        authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
+                        if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
+                        {
+                            authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
+                        {
+                            authorizationRequest = authorizationRequest with { aggregate_id = actionResult.ProcessId };
+                        }
+
+                        var encryptedRequest = dataProtectionProvider.CreateProtector("Request").Protect(authorizationRequest);
+                        actionResult = actionResult with
+                        {
+                            RedirectInstruction = actionResult.RedirectInstruction.AddParameter(
+                                StandardAuthorizationResponseNames.AuthorizationCodeName,
+                                encryptedRequest)
+                        };
                     }
 
-                    if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
-                    {
-                        authorizationRequest = authorizationRequest with { aggregate_id = actionResult.ProcessId };
-                    }
-
-                    var encryptedRequest = dataProtectionProvider.CreateProtector("Request").Protect(authorizationRequest);
-                    actionResult = actionResult with
-                    {
-                        RedirectInstruction = actionResult.RedirectInstruction.AddParameter(
-                            StandardAuthorizationResponseNames.AuthorizationCodeName,
-                            encryptedRequest)
-                    };
+                    var redirectionPath = UiEndpointHelpers.GetRedirectPathForEndpoint(actionResult.RedirectInstruction.Action, actionResult.Amr);
+                    var redirectionUrl = new Uri($"{httpContext.Request.GetAbsoluteUriWithVirtualPath()}{redirectionPath}")
+                        .AddParametersInQuery(actionResult.GetRedirectionParameters());
+                    return Results.Redirect(redirectionUrl.AbsoluteUri);
                 }
-
-                var redirectionPath = UiEndpointHelpers.GetRedirectPathForEndpoint(actionResult.RedirectInstruction.Action, actionResult.Amr);
-                var redirectionUrl = new Uri($"{httpContext.Request.GetAbsoluteUriWithVirtualPath()}{redirectionPath}")
-                    .AddParametersInQuery(actionResult.GetRedirectionParameters());
-                return Results.Redirect(redirectionUrl.AbsoluteUri);
-            }
             case ActionResultType.BadRequest:
                 activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(actionResult.Error?.Title));
                 activity?.SetStatus(ActivityStatusCode.Error, actionResult.Error?.Detail);
@@ -226,36 +226,36 @@ internal static class AuthorizationEndpointHandlers
                         actionResult.GetRedirectionParameters(),
                         actionResult.RedirectInstruction!.ResponseMode!));
             case ActionResultType.RedirectToAction:
-            {
-                activity?.SetStatus(ActivityStatusCode.Ok);
-                DotAuthTelemetry.RecordAuthorizationCodeIssued(authorizationRequest.client_id);
-                if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
-                    || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
                 {
-                    if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
+                    activity?.SetStatus(ActivityStatusCode.Ok);
+                    DotAuthTelemetry.RecordAuthorizationCodeIssued(authorizationRequest.client_id);
+                    if (actionResult.RedirectInstruction!.Action == DotAuthEndPoints.AuthenticateIndex
+                        || actionResult.RedirectInstruction.Action == DotAuthEndPoints.ConsentIndex)
                     {
-                        authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
+                        if (actionResult.RedirectInstruction.Action == DotAuthEndPoints.AuthenticateIndex)
+                        {
+                            authorizationRequest = authorizationRequest with { prompt = PromptParameters.Login };
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
+                        {
+                            authorizationRequest = authorizationRequest with { aggregate_id = actionResult.ProcessId };
+                        }
+
+                        var encryptedRequest = dataProtectionProvider.CreateProtector("Request").Protect(authorizationRequest);
+                        actionResult = actionResult with
+                        {
+                            RedirectInstruction = actionResult.RedirectInstruction.AddParameter(
+                                StandardAuthorizationResponseNames.AuthorizationCodeName,
+                                encryptedRequest)
+                        };
                     }
 
-                    if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
-                    {
-                        authorizationRequest = authorizationRequest with { aggregate_id = actionResult.ProcessId };
-                    }
-
-                    var encryptedRequest = dataProtectionProvider.CreateProtector("Request").Protect(authorizationRequest);
-                    actionResult = actionResult with
-                    {
-                        RedirectInstruction = actionResult.RedirectInstruction.AddParameter(
-                            StandardAuthorizationResponseNames.AuthorizationCodeName,
-                            encryptedRequest)
-                    };
+                    var redirectionPath = UiEndpointHelpers.GetRedirectPathForEndpoint(actionResult.RedirectInstruction.Action, actionResult.Amr);
+                    var redirectionUrl = new Uri($"{httpContext.Request.GetAbsoluteUriWithVirtualPath()}{redirectionPath}")
+                        .AddParametersInQuery(actionResult.GetRedirectionParameters());
+                    return Results.Redirect(redirectionUrl.AbsoluteUri);
                 }
-
-                var redirectionPath = UiEndpointHelpers.GetRedirectPathForEndpoint(actionResult.RedirectInstruction.Action, actionResult.Amr);
-                var redirectionUrl = new Uri($"{httpContext.Request.GetAbsoluteUriWithVirtualPath()}{redirectionPath}")
-                    .AddParametersInQuery(actionResult.GetRedirectionParameters());
-                return Results.Redirect(redirectionUrl.AbsoluteUri);
-            }
             case ActionResultType.BadRequest:
                 activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, DotAuthTelemetry.Normalize(actionResult.Error?.Title));
                 activity?.SetStatus(ActivityStatusCode.Error, actionResult.Error?.Detail);

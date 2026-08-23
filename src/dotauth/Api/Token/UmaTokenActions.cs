@@ -181,7 +181,7 @@ internal sealed class UmaTokenActions
                     client.ClientId,
                     ticket.ResourceOwner,
                     authorizationResult.Principal.Select(claim => new ClaimData
-                        { Type = claim.Type, Value = claim.Value }),
+                    { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow)).ConfigureAwait(false);
             activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InternalError);
             activity?.SetStatus(ActivityStatusCode.Error, Strings.InternalError);
@@ -203,7 +203,7 @@ internal sealed class UmaTokenActions
                         parameter.Ticket,
                         parameter.ClientId ?? string.Empty,
                         authorizationResult.Principal.Select(claim => new ClaimData
-                            { Type = claim.Type, Value = claim.Value }),
+                        { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.RequestSubmitted);
@@ -224,7 +224,7 @@ internal sealed class UmaTokenActions
                     parameter.Ticket,
                     parameter.ClientId ?? string.Empty,
                     authorizationResult.Principal.Select(claim => new ClaimData
-                        { Type = claim.Type, Value = claim.Value }),
+                    { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow))
             .ConfigureAwait(false);
         activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.RequestDenied);

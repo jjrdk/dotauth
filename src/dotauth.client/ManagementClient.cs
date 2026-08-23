@@ -71,7 +71,8 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = new Uri($"{discoveryInformation.Clients}/{clientId}")
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"{discoveryInformation.Clients}/{clientId}")
         };
         return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
@@ -93,7 +94,9 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, RequestUri = discoveryInformation.Clients, Content = body
+            Method = HttpMethod.Post,
+            RequestUri = discoveryInformation.Clients,
+            Content = body
         };
 
         return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
@@ -114,7 +117,8 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Delete, RequestUri = new Uri($"{discoveryInformation.Clients}/{clientId}")
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri($"{discoveryInformation.Clients}/{clientId}")
         };
         return await GetResult<Client>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
@@ -206,7 +210,8 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = new Uri($"{discoveryInformation.Scopes}/{id}")
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"{discoveryInformation.Scopes}/{id}")
         };
         return await GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
@@ -228,7 +233,9 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, RequestUri = discoveryInformation.Scopes, Content = body
+            Method = HttpMethod.Post,
+            RequestUri = discoveryInformation.Scopes,
+            Content = body
         };
         return await GetResult<Scope>(request, authorizationHeaderValue, cancellationToken: cancellationToken);
     }
@@ -417,7 +424,8 @@ public sealed class ManagementClient : ClientBase, IManagementClient
         var discoveryInformation = await GetDiscoveryInformation(cancellationToken).ConfigureAwait(false);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = discoveryInformation.ResourceOwners
+            Method = HttpMethod.Get,
+            RequestUri = discoveryInformation.ResourceOwners
         };
         return await GetResult<ResourceOwner[]>(
             request,

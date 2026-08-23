@@ -59,24 +59,24 @@ internal sealed class ExceptionHandlerMiddleware
             switch (exception)
             {
                 case AggregateException aggregateException:
-                {
-                    foreach (var ex in aggregateException.InnerExceptions)
                     {
-                        await PublishError(ex, context).ConfigureAwait(false);
-                        _logger.LogError("{Error}", ex.StackTrace);
+                        foreach (var ex in aggregateException.InnerExceptions)
+                        {
+                            await PublishError(ex, context).ConfigureAwait(false);
+                            _logger.LogError("{Error}", ex.StackTrace);
+                        }
+
+                        SetRedirection(context, exception);
+                        break;
                     }
-
-                    SetRedirection(context, exception);
-                    break;
-                }
                 default:
-                {
-                    await PublishError(exception, context).ConfigureAwait(false);
-                    _logger.LogError("{Error}", exception.StackTrace);
+                    {
+                        await PublishError(exception, context).ConfigureAwait(false);
+                        _logger.LogError("{Error}", exception.StackTrace);
 
-                    SetRedirection(context, exception);
-                    break;
-                }
+                        SetRedirection(context, exception);
+                        break;
+                    }
             }
 
             if (context.Features[typeof(IEndpointFeature)] is not IEndpointFeature endpointFeature)

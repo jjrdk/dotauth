@@ -86,7 +86,7 @@ public sealed class MartenResourceOwnerStore : IResourceOwnerRepository
         var ro = await session.Query<ResourceOwner>()
             .FirstOrDefaultAsync(x => x.Subject == id && x.Password == hashed, cancellationToken)
             .ConfigureAwait(false);
-            
+
         return ro;
     }
 

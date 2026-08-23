@@ -1,4 +1,5 @@
 ﻿namespace DotAuth.Uma;
+
 using System.Text.RegularExpressions;
 
 using System.Diagnostics.CodeAnalysis;

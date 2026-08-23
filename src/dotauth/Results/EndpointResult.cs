@@ -70,7 +70,7 @@ internal sealed record EndpointResult
 
     public static EndpointResult CreateBadRequestResult(ErrorDetails error)
     {
-        return new() {Type = ActionResultType.BadRequest, Error = error};
+        return new() { Type = ActionResultType.BadRequest, Error = error };
     }
 
     /// <summary>
