@@ -47,10 +47,11 @@ public static class StringExtensions
         public string ToSha256SimplifiedBase64(Encoding? encoding = null)
         {
             var enc = encoding ?? Encoding.UTF8;
-            using var sha256 = SHA256.Create();
-            var entryBytes = enc.GetBytes(entry);
-            var hash = sha256.ComputeHash(entryBytes);
-            return hash.ToBase64Simplified();
+            Span<byte> entryBytes = stackalloc byte[enc.GetByteCount(entry)];
+            _ = Encoding.UTF8.GetBytes(entry, entryBytes);
+            Span<byte> destination = stackalloc byte[32];
+            _ = SHA256.HashData(entryBytes, destination);
+            return destination.ToBase64Simplified();
         }
 
         /// <summary>
@@ -95,8 +96,12 @@ public static class StringExtensions
         /// <returns></returns>
         public byte[] Base64DecodeBytes()
         {
-            var s = base64EncodedData.Trim().Replace(" ", "+").Replace('-', '+').Replace('_', '/');
-            switch (s.Length % 4)
+            var start = base64EncodedData.ToCharArray().AsSpan().Trim();
+            start.Replace(' ', '+');
+            start.Replace('-', '+');
+            start.Replace('_', '/');
+            var s = new string(start);
+            switch (start.Length % 4)
             {
                 case 0:
                     return Convert.FromBase64String(s);

@@ -123,7 +123,7 @@ internal sealed class DefaultAuthorizationPolicy : IAuthorizationPolicy
 
     private static AuthorizationPolicyResult CheckClaims(PolicyRule authorizationPolicy, IReadOnlyList<Claim> requester)
     {
-        if (!authorizationPolicy.Claims.Any())
+        if (authorizationPolicy.Claims.Length == 0)
         {
             return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.Authorized, requester);
         }

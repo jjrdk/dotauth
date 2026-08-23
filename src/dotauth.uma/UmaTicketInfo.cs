@@ -44,6 +44,12 @@ public partial record UmaTicketInfo : ResourceResult
     [JsonPropertyName("realm")]
     public string? Realm { get; }
 
+    /// <summary>
+    /// Tries to parse the incoming header
+    /// </summary>
+    /// <param name="header">The header to parse.</param>
+    /// <param name="info">The resulting <see cref="UmaTicketInfo"/> if successful</param>
+    /// <returns><c>True</c> if parse is successful, otherwise <c>False</c>.</returns>
     public static bool TryParse(string header, out UmaTicketInfo? info)
     {
         var regex = ParseRegex();

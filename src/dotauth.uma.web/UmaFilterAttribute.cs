@@ -105,8 +105,19 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
         get { return true; }
     }
 
+    /// <summary>
+    /// Gets or sets the policy
+    /// </summary>
     public string? Policy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the roles
+    /// </summary>
     public string? Roles { get; set; }
+
+    /// <summary>
+    /// Gets or sets the authentication schemes
+    /// </summary>
     public string? AuthenticationSchemes { get; set; }
 
     private partial class UmaAuthorizationFilter : IAsyncAuthorizationFilter

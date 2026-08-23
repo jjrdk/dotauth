@@ -16,6 +16,7 @@ namespace DotAuth.Client;
 
 using System;
 using System.Text;
+using DotAuth.Shared;
 using DotAuth.Shared.Models;
 
 /// <summary>

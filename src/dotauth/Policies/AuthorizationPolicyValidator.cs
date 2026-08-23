@@ -57,14 +57,18 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
         {
             throw new ArgumentException(nameof(validTicket.Lines));
         }
-        var validationParameters = await client.CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        var validationParameters = await client
+            .CreateValidationParameters(_jwksStore, cancellationToken: cancellationToken).ConfigureAwait(false);
         var requester = Handler.ValidateToken(claimTokenParameter.Token, validationParameters, out _);
 
         var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId).ToArray();
-        var resources = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
-        if (resources.Length == 0 || resources.Length != resourceIds.Length)
+        var loaded = await _resourceSetRepository.Get(cancellationToken, resourceIds).ConfigureAwait(false);
+        var resources = loaded.ToDictionary(x => x.Id, x => x);
+        if (resources.Count == 0 || resources.Count != resourceIds.Length)
         {
-            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized, requester.Claims.ToArray());
+            return new AuthorizationPolicyResult(AuthorizationPolicyResultKind.NotAuthorized,
+                [.. requester.Claims]);
         }
 
         AuthorizationPolicyResult? validationResult = null;
@@ -75,7 +79,7 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
                 client.ClientId,
                 ticketLine.Scopes,
                 validTicket.IsAuthorizedByRo);
-            var resource = resources.First(r => r.Id == ticketLine.ResourceSetId);
+            var resource = resources[ticketLine.ResourceSetId];
             validationResult = await _authorizationPolicy.Execute(
                     ticketLineParameter,
                     claimTokenParameter.Format,
@@ -92,7 +96,8 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
                                 Id.Create(),
                                 validTicket.Id,
                                 client.ClientId,
-                                requester.Claims.Select(claim => new ClaimData { Type = claim.Type, Value = claim.Value }),
+                                requester.Claims.Select(claim => new ClaimData
+                                    { Type = claim.Type, Value = claim.Value }),
                                 DateTimeOffset.UtcNow))
                         .ConfigureAwait(false);
 
@@ -102,16 +107,16 @@ internal sealed class AuthorizationPolicyValidator : IAuthorizationPolicyValidat
                 case AuthorizationPolicyResultKind.NotAuthorized:
                 case AuthorizationPolicyResultKind.NeedInfo:
                 default:
-                    {
-                        await _eventPublisher.Publish(
-                                new AuthorizationPolicyNotAuthorized(
-                                    Id.Create(),
-                                    validTicket.Id,
-                                    DateTimeOffset.UtcNow))
-                            .ConfigureAwait(false);
+                {
+                    await _eventPublisher.Publish(
+                            new AuthorizationPolicyNotAuthorized(
+                                Id.Create(),
+                                validTicket.Id,
+                                DateTimeOffset.UtcNow))
+                        .ConfigureAwait(false);
 
-                        return validationResult;
-                    }
+                    return validationResult;
+                }
             }
         }
 

@@ -115,7 +115,7 @@ internal sealed class ConfirmConsentAction
                     ClientId = client.ClientId,
                     ClientName = client.ClientName,
                     Subject = subject,
-                    Claims = claimsParameter.GetClaimNames()
+                    Claims = [.. claimsParameter.GetClaimNames()]
                 };
             }
             else

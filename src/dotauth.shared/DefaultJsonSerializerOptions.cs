@@ -169,7 +169,7 @@ internal sealed class JwtPayloadConverter : JsonConverter<JwtPayload>
         string[] audience = [];
         if (aud is JsonArray arr)
         {
-            audience = arr.Where(a => a != null).Select(a => a!.GetValue<string>()).ToArray();
+            audience = [.. arr.Where(a => a != null).Select(a => a!.GetValue<string>())];
         }
 
         var claims = obj["claims"]?.Deserialize<Claim[]>(options);

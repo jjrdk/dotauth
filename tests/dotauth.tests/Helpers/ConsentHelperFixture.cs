@@ -31,8 +31,7 @@ public sealed class ConsentHelperFixture
             .Returns([]);
 
         var result = await _consentRepositoryFake
-                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
-            ;
+            .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None);
 
         Assert.Null(result);
     }
@@ -60,8 +59,7 @@ public sealed class ConsentHelperFixture
             .Returns(consents);
 
         var result = await _consentRepositoryFake
-                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
-            ;
+            .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None);
 
         Assert.NotNull(result);
         Assert.Single(result.Claims);
@@ -84,12 +82,11 @@ public sealed class ConsentHelperFixture
             .Returns(consents);
 
         var result = await _consentRepositoryFake
-                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
-            ;
+            .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None);
 
         Assert.NotNull(result);
-        Assert.Single(result.GrantedScopes);
-        Assert.Equal(scope, result.GrantedScopes.First());
+        var item = Assert.Single(result.GrantedScopes);
+        Assert.Equal(scope, item);
     }
 
     [Fact]
@@ -118,8 +115,7 @@ public sealed class ConsentHelperFixture
             .Returns(consents);
 
         var result = await _consentRepositoryFake
-                .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None)
-            ;
+            .GetConfirmedConsents(subject, authorizationParameter, CancellationToken.None);
 
         Assert.Null(result);
     }
