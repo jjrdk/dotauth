@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -42,8 +43,10 @@ internal static class TokenEndpointHandlers
         IDeviceAuthorizationStore deviceAuthorizationStore,
         IEventPublisher eventPublisher,
         ILoggerFactory loggerFactory,
+        IClientAssertionJtiStore jtiStore,
         CancellationToken cancellationToken)
     {
+        var endpointLogger = loggerFactory.CreateLogger("DotAuth.Endpoints.TokenEndpointHandlers");
         try
         {
             var requestStopwatch = Stopwatch.StartNew();
@@ -92,6 +95,7 @@ internal static class TokenEndpointHandlers
                 eventPublisher,
                 tokenStore,
                 deviceAuthorizationStore,
+                jtiStore,
                 logger);
             var umaTokenActions = new UmaTokenActions(
                 ticketStore,
@@ -102,6 +106,7 @@ internal static class TokenEndpointHandlers
                 jwksStore,
                 authorizationPolicyValidator,
                 eventPublisher,
+                jtiStore,
                 logger);
             var certificate = httpContext.Request.GetCertificate();
             var authenticationHeaderValue = EndpointHandlerHelpers.TryGetAuthorizationHeader(httpContext.Request);
@@ -146,6 +151,7 @@ internal static class TokenEndpointHandlers
         }
         catch (Exception ex)
         {
+            endpointLogger.LogError(ex, "Unhandled token endpoint exception.");
             var errorDetails = new ErrorDetails
             {
                 Status = HttpStatusCode.InternalServerError,
@@ -175,6 +181,7 @@ internal static class TokenEndpointHandlers
         IJwksStore jwksStore,
         IDeviceAuthorizationStore deviceAuthorizationStore,
         IEventPublisher eventPublisher,
+        IClientAssertionJtiStore jtiStore,
         ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
@@ -201,6 +208,7 @@ internal static class TokenEndpointHandlers
             eventPublisher,
             tokenStore,
             deviceAuthorizationStore,
+            jtiStore,
             logger);
         var option = await tokenActions.RevokeToken(
                 revocationRequest.ToParameter(),

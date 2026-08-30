@@ -67,6 +67,7 @@ public sealed class TokenActionsFixture
             eventPublisher,
             Substitute.For<ITokenStore>(),
             Substitute.For<IDeviceAuthorizationStore>(),
+            new InMemoryClientAssertionJtiStore(),
             Substitute.For<ILogger<TokenActions>>());
     }
 

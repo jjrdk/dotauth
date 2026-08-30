@@ -55,6 +55,17 @@ public class ConfigureArgs
     public string? CodeChallengeMethod { get; set; }
 
     [Option(
+         'm',
+        "token-endpoint-auth-method",
+        Default = TokenEndPointAuthenticationMethods.ClientSecretBasic,
+        Hidden = false,
+        Required = false,
+        HelpText =
+              "Sets the token endpoint authentication method (optional). " +
+             "Default value is client_secret_basic. Use private_key_jwt to authenticate with a client assertion.")]
+    public string? TokenEndPointAuthMethod { get; set; }
+
+    [Option(
         'o',
         "output-resulting",
         Default = true,

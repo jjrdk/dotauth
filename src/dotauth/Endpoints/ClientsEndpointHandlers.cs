@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 internal static class ClientsEndpointHandlers
 {
@@ -348,16 +349,43 @@ internal static class ClientsEndpointHandlers
         }
 
         var client = new Client
-        {
+         {
             ClientName = viewModel.Name,
             LogoUri = viewModel.LogoUri,
             ApplicationType = viewModel.ApplicationType ?? ApplicationTypes.Web,
             RedirectionUrls = viewModel.RedirectionUrls.Split([',', ';'], StringSplitOptions.RemoveEmptyEntries).Select(x => new Uri(x)).ToArray(),
-            GrantTypes = viewModel.GrantTypes.ToArray()
-        };
+            GrantTypes = viewModel.GrantTypes.ToArray(),
+            TokenEndPointAuthMethod = string.IsNullOrWhiteSpace(viewModel.TokenEndPointAuthMethod)
+                ? TokenEndPointAuthenticationMethods.ClientSecretBasic
+                : viewModel.TokenEndPointAuthMethod
+         };
 
-        var logger = CreateLogger(loggerFactory);
-        var factory = new ClientFactory(httpClientFactory, scopeStore, DeserializeUris, logger);
+              var logger = CreateLogger(loggerFactory);
+
+              // G9 (T3.1): let the admin UI publish a client's JWKS / jwks_uri so it can be
+              // authenticated with private_key_jwt. Parse a JWKS JSON blob when supplied.
+              if (!string.IsNullOrWhiteSpace(viewModel.JwksUri))
+              {
+               client.JwksUri = new Uri(viewModel.JwksUri);
+              }
+
+              if (!string.IsNullOrWhiteSpace(viewModel.Jwks))
+              {
+              try
+              {
+               // Parse the JWKS JSON document (the same constructor the server uses when
+               // fetching a jwks_uri, G5).
+               client.JsonWebKeys = new JsonWebKeySet(viewModel.Jwks);
+              }
+              catch (Exception exception)
+               {
+                   // Invalid JWKS metadata is surfaced by ClientFactory validation below.
+               logger.LogError(exception, "Failed to parse JWKS for client {Client}", viewModel.Name);
+               client.JsonWebKeys = new JsonWebKeySet();
+              }
+              }
+
+              var factory = new ClientFactory(httpClientFactory, scopeStore, DeserializeUris, logger);
         var toInsert = await factory.Build(client, cancellationToken: cancellationToken).ConfigureAwait(false);
         switch (toInsert)
         {

@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using DotAuth.Authenticate;
 using DotAuth.Events;
 using DotAuth.Extensions;
+using DotAuth.Repositories;
 using DotAuth.JwtToken;
 using DotAuth.Parameters;
 using DotAuth.Properties;
@@ -58,7 +59,10 @@ internal sealed class GetTokenByResourceOwnerCredentialsGrantTypeAction
         IEventPublisher eventPublisher,
         ILogger logger)
     {
-        _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
+        _authenticateClient = new AuthenticateClient(
+            clientStore,
+            jwksStore,
+            new InMemoryClientAssertionJtiStore());
         _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore, logger);
         _tokenStore = tokenStore;
         _jwksStore = jwksStore;

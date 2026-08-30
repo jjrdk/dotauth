@@ -6,6 +6,7 @@ using DotAuth.Client;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Reqnroll;
+using Reqnroll.UnitTestProvider;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -21,6 +22,7 @@ public partial class FeatureTest : IAsyncDisposable
     private ManagementClient _managerClient = null!;
     private PostgreSqlContainer _postgresContainer = null!;
     private string _connectionString = null!;
+
     public FeatureTest(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper;

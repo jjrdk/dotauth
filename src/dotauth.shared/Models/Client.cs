@@ -145,11 +145,11 @@ public class Client
     [JsonPropertyName("application_type")]
     public string ApplicationType { get; set; } = ApplicationTypes.Web;
 
-    ///// <summary>
-    ///// Url for the Client's JSON Web Key Set document
-    ///// </summary>
-    //[JsonPropertyName("jwks_uri")]
-    //public Uri JwksUri { get; set; }
+    /// <summary>
+    /// Gets or sets the URL for the client's JSON Web Key Set document.
+    /// </summary>
+    [JsonPropertyName("jwks_uri")]
+    public Uri? JwksUri { get; set; }
 
     /// <summary>
     /// Gets or sets the list of json web keys

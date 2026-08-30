@@ -742,10 +742,11 @@ public sealed class TokenClientFixture
     [Fact]
     public async Task When_Using_ClientSecretJwtAuthentication_Then_AccessToken_Is_Returned()
     {
+        const string clientId = "jwt_client";
         var payload = new JwtPayload(
         [
-            new Claim(StandardClaimNames.Issuer, "jwt_client"),
-            new Claim(OpenIdClaimTypes.Subject, "jwt_client"),
+            new Claim(StandardClaimNames.Issuer, clientId),
+            new Claim(OpenIdClaimTypes.Subject, clientId),
             new Claim(StandardClaimNames.Audiences, "http://localhost:5000"),
             new Claim(
                 StandardClaimNames.ExpirationTime,
@@ -753,21 +754,16 @@ public sealed class TokenClientFixture
         ]);
         var handler = new JwtSecurityTokenHandler();
 
-        var jwe = handler.CreateEncodedJwt(
-            payload.Iss,
-            payload.Aud[0],
-            null,
-            DateTime.UtcNow,
-            DateTime.UtcNow.AddHours(1),
-            DateTime.UtcNow,
-            new SigningCredentials(_server.SharedCtx.ModelSignatureKey, SecurityAlgorithms.HmacSha256Signature),
-            new EncryptingCredentials(
-                _server.SharedCtx.ModelEncryptionKey,
-                SecurityAlgorithms.Aes256KW,
-                SecurityAlgorithms.Aes128CbcHmacSha256));
+        // client_secret_jwt requires a JWS signed with the client's shared key (G4 fix).
+        var header = new JwtHeader(
+            new SigningCredentials(
+                _server.SharedCtx.ModelSignatureKey,
+                SecurityAlgorithms.HmacSha256));
+        var jwtToken = new JwtSecurityToken(header, payload);
+        var jws = handler.WriteToken(jwtToken);
 
         var tokenClient = new TokenClient(
-            TokenCredentials.FromClientSecret(jwe, "jwt_client"),
+            TokenCredentials.FromClientSecret(jws, clientId),
             _server.Client,
             new Uri(WellKnownOpenidConfigurationUrl));
         var token =
@@ -791,10 +787,11 @@ public sealed class TokenClientFixture
         ]);
         var handler = new JwtSecurityTokenHandler();
 
+        // Sign with the RS256 key registered for private_key_client (G8: asymmetric auth).
         var header = new JwtHeader(
             new SigningCredentials(
-                TestKeys.SecretKey.CreateSignatureJwk(),
-                SecurityAlgorithms.HmacSha256Signature));
+                _server.SharedCtx.PrivateKeyClientSigningKey,
+                SecurityAlgorithms.RsaSha256));
         var jwtToken = new JwtSecurityToken(header, payload);
         var jws = handler.WriteToken(jwtToken);
 

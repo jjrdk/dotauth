@@ -300,10 +300,6 @@ public static class DefaultStores
             {
                 ClientId = "private_key_client",
                 ClientName = "private_key_client",
-                Secrets =
-                [
-                    new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "private_key_client" }
-                ],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.PrivateKeyJwt,
                 //LogoUri = null,
                 PolicyUri = new Uri("http://openid.net"),
@@ -311,11 +307,12 @@ public static class DefaultStores
                 AllowedScopes = ["api1"],
                 GrantTypes = [GrantTypes.ClientCredentials],
                 ResponseTypes = [ResponseTypeNames.Token],
-                JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256Signature, //SecurityAlgorithms.RsaSha256,
+                // Use RSA key so private_key_jwt actually exercises asymmetric auth (G8).
+                JsonWebKeys = new JsonWebKeySet().AddKey(sharedCtx.PrivateKeyClientSigningKey),
+                TokenEndPointAuthSigningAlg = SecurityAlgorithms.RsaSha256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")],
-                //JwksUri = new Uri("http://localhost:5000/jwks_client")
             },
 
             new Client

@@ -42,6 +42,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
@@ -299,6 +300,13 @@ public static class ServiceCollectionExtensions
                         : new TelemetryJwksRepository(repository);
                 })
                 .AddSingleton<IJwksStore>(sp => sp.GetRequiredService<IJwksRepository>())
+                .AddSingleton<IClientAssertionJtiStore>(sp =>
+                {
+                    var distributedCache = sp.GetService<IDistributedCache>();
+                    return distributedCache is null
+                        ? new InMemoryClientAssertionJtiStore()
+                        : new DistributedClientAssertionJtiStore(distributedCache);
+                })
                 .AddSingleton(sp => configuration.Clients?.Invoke(sp)
                  ?? new InMemoryClientRepository(
                         sp.GetRequiredService<IHttpClientFactory>(),

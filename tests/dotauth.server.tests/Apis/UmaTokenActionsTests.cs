@@ -8,6 +8,7 @@ using DotAuth.Api.Token;
 using DotAuth.Events;
 using DotAuth.Parameters;
 using DotAuth.Policies;
+using DotAuth.Repositories;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Policies;
@@ -69,6 +70,7 @@ public class UmaTokenActionsTests
             jwksStore,
             authorizationPolicyValidator,
             eventPublisher,
+            new InMemoryClientAssertionJtiStore(),
             NullLogger.Instance);
     }
 

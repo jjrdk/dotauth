@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using DotAuth.Authenticate;
 using DotAuth.Events;
 using DotAuth.Extensions;
+using DotAuth.Repositories;
 using DotAuth.JwtToken;
 using DotAuth.Parameters;
 using DotAuth.Properties;
@@ -74,7 +75,10 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
     {
         _authorizationCodeStore = authorizationCodeStore;
         _configurationService = configurationService;
-        _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
+        _authenticateClient = new AuthenticateClient(
+            clientStore,
+            jwksStore,
+            new InMemoryClientAssertionJtiStore());
         _eventPublisher = eventPublisher;
         _tokenStore = tokenStore;
         _jwksStore = jwksStore;

@@ -52,7 +52,25 @@
                                 </select>
                                 <label asp-for="@Model.GrantTypes"></label>
                             </div>
-                        </div>
+                            <div class="input-field col s12">
+                                <select asp-for="@Model.TokenEndPointAuthMethod">
+                                    <option value="" disabled selected>Token endpoint auth method</option>
+                                    <option value="client_secret_basic">Client Secret Basic</option>
+                                    <option value="client_secret_post">Client Secret Post</option>
+                                    <option value="client_secret_jwt">Client Secret JWT</option>
+                                    <option value="private_key_jwt">Private Key JWT</option>
+                                    <option value="tls_client_auth">TLS Client Auth</option>
+                                </select>
+                                <label>Token End Point Auth Method</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <label asp-for="@Model.JwksUri"></label>
+                                <input asp-for="@Model.JwksUri" />
+                            </div>
+                            <div class="input-field col s12">
+                                <label asp-for="@Model.Jwks">JWKS (JSON)</label>
+                                <textarea asp-for="@Model.Jwks" rows="4"></textarea>
+                            </div>
                     </div>
                 </div>
                 <div class="card-action">

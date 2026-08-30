@@ -21,6 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Authenticate;
 using DotAuth.Extensions;
+using DotAuth.Repositories;
 using DotAuth.Parameters;
 using DotAuth.Properties;
 using DotAuth.Shared;
@@ -37,7 +38,10 @@ internal sealed partial class RevokeTokenAction
 
     public RevokeTokenAction(IClientStore clientStore, ITokenStore tokenStore, IJwksStore jwksStore, ILogger logger)
     {
-        _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
+        _authenticateClient = new AuthenticateClient(
+            clientStore,
+            jwksStore,
+            new InMemoryClientAssertionJtiStore());
         _tokenStore = tokenStore;
         _logger = logger;
     }

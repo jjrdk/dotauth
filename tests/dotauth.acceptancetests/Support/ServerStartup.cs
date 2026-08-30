@@ -1,6 +1,7 @@
 ﻿namespace DotAuth.AcceptanceTests.Support;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -28,6 +29,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
 using Xunit;
 
@@ -40,6 +42,10 @@ public sealed class ServerStartup
     public ServerStartup(SharedContext context, ITestOutputHelper outputHelper)
     {
         IdentityModelEventSource.ShowPII = true;
+        ClientExtensions.ResetJwksCache();
+        context.ClientJwksUri = new Uri("https://localhost/test-support/client-jwks");
+        context.ClientJwksFetchCount = 0;
+        context.BlockClientJwksUriFetch = false;
         var mockConfirmationCodeStore = Substitute.For<IConfirmationCodeStore>();
         mockConfirmationCodeStore.Add(Arg.Any<ConfirmationCode>(), Arg.Any<CancellationToken>())
             .Returns(true);
@@ -87,6 +93,7 @@ public sealed class ServerStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient<HttpClient>(_ => { });
+        ClientExtensions.ConfigureJwksHttpClientFactory(() => _context.Client!);
         //            .AddHttpMessageHandler(_ => new TestDelegatingHandler(_context.Handler!));
         services.AddTransient(_ => _context.Client!);
         var mockSmsClient = Substitute.For<ISmsClient>();
@@ -131,6 +138,23 @@ public sealed class ServerStartup
         // `DataController.Index` action.
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapGet("test-support/client-jwks", () =>
+            {
+                if (_context.BlockClientJwksUriFetch)
+                {
+                    return Results.StatusCode((int)HttpStatusCode.Forbidden);
+                }
+
+                _context.ClientJwksFetchCount++;
+                var keys = new List<JsonWebKey> { _context.PrivateKeyClientSigningKey };
+                if (_context.RotatedPrivateKeyClientSigningKey is not null)
+                {
+                    keys.Add(_context.RotatedPrivateKeyClientSigningKey);
+                }
+
+                return Results.Json(keys.ToJwks());
+            });
+
             endpoints.MapGet("Data/{id}", async (HttpContext httpContext, string id, UmaClient umaClient, CancellationToken cancellationToken) =>
             {
                 var userIdentity = httpContext.User.Identity as ClaimsIdentity;

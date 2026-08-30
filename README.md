@@ -26,6 +26,9 @@ This project has been tested to run in Docker, AWS Lambda and as a simple proces
 
 Supports OpenID Connect (OIDC), OAuth2 and UMA standards.
 
+Supports `private_key_jwt` and `client_secret_jwt` client authentication. See
+[documentation/private_key_jwt.md](documentation/private_key_jwt.md).
+
 The support for SCIM has been removed.
 
 ## Building the Project

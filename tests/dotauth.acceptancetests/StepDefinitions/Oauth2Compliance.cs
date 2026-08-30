@@ -2556,20 +2556,18 @@ public partial class FeatureTest
     public async Task WhenRequestingATokenUsingPrivate_Key_JwtClientAuthentication()
     {
         // Use private_key_client which is registered with TokenEndPointAuthMethod = PrivateKeyJwt
-        // and JsonWebKeys containing an HMAC key derived from TestKeys.SecretKey.
-        // The server validates the assertion's signature using that key.
-        // The JWT audience must match what GetAbsoluteUriWithVirtualPath() returns for the
-        // token endpoint request — this is the server base URL (scheme+host), NOT the full token path.
+        // and an RS256 key pair from SharedContext. Sign the assertion with the private key
+        // so the server can verify it with the stored public key. (G8 fix: real asymmetric auth)
         const string clientId = "private_key_client";
         // The audience in the JWT assertion must be the server's base URI (per GetAbsoluteUriWithVirtualPath).
         const string jwtAudience = "https://localhost";
         // The actual token endpoint to POST to.
         const string tokenEndpoint = "https://localhost/token";
 
-        // Sign the JWT with HS256 using the same key registered for private_key_client
-        var signingKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(TestKeys.SecretKey));
-        var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+        // Sign the JWT with RS256 using the private key registered for private_key_client
+        var signingCredentials = new SigningCredentials(
+            SharedContext.Instance.PrivateKeyClientSigningKey,
+            SecurityAlgorithms.RsaSha256);
 
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = new JwtSecurityToken(

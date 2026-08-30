@@ -28,6 +28,7 @@ using DotAuth.Api.Token.Actions;
 using DotAuth.Authenticate;
 using DotAuth.Events;
 using DotAuth.Extensions;
+using DotAuth.Repositories;
 using DotAuth.Parameters;
 using DotAuth.Properties;
 using DotAuth.Services;
@@ -62,6 +63,7 @@ internal sealed class TokenActions
         IEventPublisher eventPublisher,
         ITokenStore tokenStore,
         IDeviceAuthorizationStore deviceAuthorizationStore,
+        IClientAssertionJtiStore jtiStore,
         ILogger logger)
     {
         _getTokenByDeviceAuthorizationTypeAction = new GetTokenByDeviceAuthorizationTypeAction(
@@ -92,7 +94,7 @@ internal sealed class TokenActions
             jwksStore,
             resourceOwnerRepository,
             clientStore);
-        _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
+        _authenticateClient = new AuthenticateClient(clientStore, jwksStore, jtiStore);
         _revokeTokenAction = new RevokeTokenAction(clientStore, tokenStore, jwksStore, logger);
         _jwksStore = jwksStore;
         _eventPublisher = eventPublisher;
@@ -226,12 +228,13 @@ internal sealed class TokenActions
         var client = authResult.Client;
         if (client == null)
         {
-            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidClient);
+            var errorCode = authResult.IsInvalidRequest ? ErrorCodes.InvalidRequest : ErrorCodes.InvalidClient;
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, errorCode);
             activity?.SetStatus(ActivityStatusCode.Error, authResult.ErrorMessage);
             return new ErrorDetails
             {
                 Status = HttpStatusCode.BadRequest,
-                Title = ErrorCodes.InvalidClient,
+                Title = errorCode,
                 Detail = authResult.ErrorMessage!
             };
         }

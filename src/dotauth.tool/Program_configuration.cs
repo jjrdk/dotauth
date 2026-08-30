@@ -39,9 +39,14 @@ internal partial class Program
         }
 
         if (!string.IsNullOrWhiteSpace(args.CodeChallengeMethod))
-        {
+         {
             config.CodeChallengeMethod = args.CodeChallengeMethod;
-        }
+         }
+
+          if (!string.IsNullOrWhiteSpace(args.TokenEndPointAuthMethod))
+           {
+             config.TokenEndPointAuthMethod = args.TokenEndPointAuthMethod;
+           }
 
         var configFile = GetConfigFilePath();
         var directoryName = Path.GetDirectoryName(configFile);

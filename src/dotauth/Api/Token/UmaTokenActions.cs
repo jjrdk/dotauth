@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using DotAuth.Authenticate;
 using DotAuth.Events;
 using DotAuth.Extensions;
+using DotAuth.Repositories;
 using DotAuth.JwtToken;
 using DotAuth.Parameters;
 using DotAuth.Policies;
@@ -46,12 +47,13 @@ internal sealed class UmaTokenActions
         IJwksStore jwksStore,
         IAuthorizationPolicyValidator authorizationPolicyValidator,
         IEventPublisher eventPublisher,
+        IClientAssertionJtiStore jtiStore,
         ILogger logger)
     {
         _ticketStore = ticketStore;
         _configurationService = configurationService;
         _authorizationPolicyValidator = authorizationPolicyValidator;
-        _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
+        _authenticateClient = new AuthenticateClient(clientStore, jwksStore, jtiStore);
         _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore, logger);
         _tokenStore = tokenStore;
         _eventPublisher = eventPublisher;

@@ -18,13 +18,20 @@ using DotAuth.Shared.Models;
 
 internal sealed class AuthenticationResult
 {
-    public AuthenticationResult(Client? client, string? errorMessage)
+    public AuthenticationResult(Client? client, string? errorMessage, bool isInvalidRequest = false)
     {
         Client = client;
         ErrorMessage = errorMessage;
+        IsInvalidRequest = isInvalidRequest;
     }
 
     public Client? Client { get; }
 
     public string? ErrorMessage { get; }
+
+    /// <summary>
+    /// When <see langword="true"/> the failure should be surfaced as <c>invalid_request</c>
+    /// rather than the default <c>invalid_client</c>.
+    /// </summary>
+    public bool IsInvalidRequest { get; }
 }

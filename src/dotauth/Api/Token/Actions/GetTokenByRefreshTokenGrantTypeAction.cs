@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using DotAuth.Authenticate;
 using DotAuth.Events;
 using DotAuth.Extensions;
+using DotAuth.Repositories;
 using DotAuth.JwtToken;
 using DotAuth.Parameters;
 using DotAuth.Properties;
@@ -57,7 +58,10 @@ internal sealed class GetTokenByRefreshTokenGrantTypeAction
         _jwksRepository = jwksRepository;
         _resourceOwnerRepository = resourceOwnerRepository;
         _clientStore = clientStore;
-        _authenticateClient = new AuthenticateClient(clientStore, jwksRepository);
+        _authenticateClient = new AuthenticateClient(
+            clientStore,
+            jwksRepository,
+            new InMemoryClientAssertionJtiStore());
     }
 
     public async Task<Option<GrantedToken>> Execute(

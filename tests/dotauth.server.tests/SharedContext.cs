@@ -16,6 +16,7 @@ namespace DotAuth.Server.Tests;
 
 using System;
 using System.Net.Http;
+using System.Security.Cryptography;
 using DotAuth.Extensions;
 using DotAuth.Shared;
 using DotAuth.Shared.Repositories;
@@ -25,6 +26,12 @@ using NSubstitute;
 
 public sealed class SharedContext
 {
+    public SharedContext()
+    {
+        using var rsa = new RSACryptoServiceProvider(2048);
+        PrivateKeyClientSigningKey = rsa.CreateSignatureJwk("pkc", includePrivateParameters: true);
+    }
+
     public JsonWebKey EncryptionKey { get; } = TestKeys.SecretKey.CreateEncryptionJwk();
 
     public JsonWebKey ModelEncryptionKey { get; } = TestKeys.SecretKey.CreateJwk(
@@ -35,6 +42,9 @@ public sealed class SharedContext
     public JsonWebKey SignatureKey { get; } = TestKeys.SecretKey.CreateSignatureJwk();
 
     public JsonWebKey ModelSignatureKey { get; } = TestKeys.SecretKey.CreateSignatureJwk();
+
+    /// <summary>RS256 key pair (includes private) for private_key_client tests.</summary>
+    public JsonWebKey PrivateKeyClientSigningKey { get; }
 
     public IConfirmationCodeStore ConfirmationCodeStore { get; } = Substitute.For<IConfirmationCodeStore>();
 
