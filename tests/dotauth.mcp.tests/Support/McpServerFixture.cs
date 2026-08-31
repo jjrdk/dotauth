@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace DotAuth.Mcp.Tests;
+namespace DotAuth.Mcp.Tests.Support;
 
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using DotAuth.Mcp.Tools;
 using DotAuth.Shared.Repositories;
@@ -31,21 +32,22 @@ using NSubstitute;
 /// <summary>
 /// Builds an in-process <see cref="TestServer"/> hosting the MCP server with stub repositories.
 /// JWT signature validation is disabled so tests can manufacture tokens freely.
+/// One fixture instance is created per Reqnroll scenario.
 /// </summary>
-public sealed class McpHostFixture : IDisposable
+public sealed class McpServerFixture : IDisposable
 {
     public TestServer Server { get; }
 
-    /// <summary>Stub client store — configure per-test via NSubstitute.</summary>
+    /// <summary>Stub client store — configure per-scenario via NSubstitute.</summary>
     public IClientStore ClientStore { get; } = Substitute.For<IClientStore>();
 
-    /// <summary>Stub scope store — configure per-test via NSubstitute.</summary>
+    /// <summary>Stub scope store — configure per-scenario via NSubstitute.</summary>
     public IScopeStore ScopeStore { get; } = Substitute.For<IScopeStore>();
 
-    /// <summary>Stub user store — configure per-test via NSubstitute.</summary>
+    /// <summary>Stub user store — configure per-scenario via NSubstitute.</summary>
     public IResourceOwnerStore UserStore { get; } = Substitute.For<IResourceOwnerStore>();
 
-    public McpHostFixture()
+    public McpServerFixture()
     {
         // Capture stub references for closure below.
         var clientStore = ClientStore;

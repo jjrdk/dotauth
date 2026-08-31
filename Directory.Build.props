@@ -19,6 +19,7 @@
         <WarningsAsErrors/>
         <WarningsNotAsErrors>618;1701;CS8600;CS8602;CS8603;CS8604;CS8625</WarningsNotAsErrors>
         <GenerateSpecFlowCodeBehindFiles>true</GenerateSpecFlowCodeBehindFiles>
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
     </PropertyGroup>
     <ItemGroup Condition="'$(IsPackable)' == 'true'">
