@@ -22,8 +22,12 @@
     <File Path="README.md" />
     <File Path="shared.proj" />
   </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/dotauth.mcp/dotauth.mcp.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="tests/dotauth.acceptancetests/dotauth.acceptancetests.csproj" />
+    <Project Path="tests/dotauth.mcp.tests/dotauth.mcp.tests.csproj" />
     <Project Path="tests/dotauth.server.tests/dotauth.server.tests.csproj" />
     <Project Path="tests/dotauth.stores.marten.acceptancetests/dotauth.stores.marten.acceptancetests.csproj" />
     <Project Path="tests/dotauth.stores.redis.acceptancetests/dotauth.stores.redis.acceptancetests.csproj" />

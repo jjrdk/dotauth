@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>DotAuth.Mcp.Tests</RootNamespace>
+        <AssemblyName>dotauth.mcp.tests</AssemblyName>
+        <IsPackable>false</IsPackable>
+        <NoWarn>CS1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\dotauth.mcp\dotauth.mcp.csproj" />
+        <ProjectReference Include="..\..\src\dotauth.shared\dotauth.shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.TestHost" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="xunit.v3.mtp-v2" />
+        <PackageReference Include="MartinCostello.Logging.XUnit.v3" />
+    </ItemGroup>
+
+</Project>

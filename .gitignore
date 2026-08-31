@@ -24,6 +24,9 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Tt]ools/
+# Allow source code Tools/ subdirectories in src projects.
+!src/**/Tools/
+!src/**/Tools/**
 [Aa]rtifacts/
 [Ss]amples/
 
