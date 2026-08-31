@@ -66,6 +66,32 @@ public class UmaBearerOptions : AuthenticationSchemeOptions
     public string Challenge { get; set; } = UmaBearerDefaults.AuthenticationScheme;
 
     /// <summary>
+    /// Gets or sets the UMA realm value included in the <c>WWW-Authenticate: UMA</c> challenge header.
+    /// </summary>
+    public string? Realm { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the request header or query parameter from which the ID token is read.
+    /// Defaults to <c>"id_token"</c>.
+    /// </summary>
+    public string IdTokenHeader { get; set; } = "id_token";
+
+    /// <summary>
+    /// Gets or sets the ordered list of route-value parameter names whose values are combined (using
+    /// <see cref="ResourceSetIdFormat"/> when provided, or simple concatenation) to produce the local
+    /// resource identifier that is mapped to a UMA resource-set ID via <c>IResourceMap</c>.
+    /// </summary>
+    public string[] ResourceIdParameters { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets an optional composite format string (e.g. <c>"{0}/{1}"</c>) applied to the route
+    /// values named by <see cref="ResourceIdParameters"/> to build the local resource identifier.
+    /// When <c>null</c>, the values are concatenated in order without a separator.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.StringSyntax(System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.CompositeFormat)]
+    public string? ResourceSetIdFormat { get; set; }
+
+    /// <summary>
     /// The object provided by the application to process events raised by the bearer authentication handler.
     /// The application may implement the interface fully, or it may create an instance of UmaBearerEvents
     /// and assign delegates only to the events it wants to process.

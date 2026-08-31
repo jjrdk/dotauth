@@ -1,26 +1,23 @@
-﻿namespace DotAuth.Uma.Web;
+namespace DotAuth.Uma.Web;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
-using DotAuth.Client;
 using DotAuth.Shared;
-using DotAuth.Shared.Requests;
-using DotAuth.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
-/// Defines the UMA filter attribute
+/// An MVC authorization filter that enforces UMA 2.0 resource-level access control.
+/// When the requesting party lacks sufficient permissions the filter delegates the UMA ticket-issuance
+/// flow to <see cref="UmaBearerHandler"/> by calling
+/// <see cref="IAuthenticationService.ChallengeAsync"/> with the resource context encoded in
+/// <see cref="AuthenticationProperties"/>, rather than issuing tickets inline.
 /// </summary>
 [AttributeUsage(
     AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Interface,
@@ -38,15 +35,11 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
     /// <summary>
     /// Initializes a new instance of the <see cref="UmaFilterAttribute"/> class.
     /// </summary>
-    /// <param name="resourceIdParameter">The parameter name identifying the resource id.</param>
-    /// <param name="allowedOauthScope">OAuth scope in token allowed to access resource.</param>
-    /// <param name="idTokenHeader">The request header or query parameter where an id token will be looked for.</param>
-    /// <param name="realm">The resource realm</param>
-    /// <param name="resourceSetAccessScope">The resource set access scopes needed to access the web resource.</param>
-    /// <summary>
-    /// <para>Filters the incoming request to check permission using the UMA2 standard.</para>
-    /// <para>If required, the id token if retrieved from either a query parameter or a request header (in that order) with the given <paramref name="idTokenHeader"/> name.</para>
-    /// </summary>
+    /// <param name="resourceIdParameter">The route-value parameter name identifying the resource.</param>
+    /// <param name="idTokenHeader">Header/query-parameter name where the ID token is read from.</param>
+    /// <param name="allowedOauthScope">OAuth scope that bypasses UMA checks entirely.</param>
+    /// <param name="realm">UMA realm for the challenge.</param>
+    /// <param name="resourceSetAccessScope">Required UMA resource-set scopes.</param>
     public UmaFilterAttribute(
         string resourceIdParameter,
         string idTokenHeader = IdTokenParameter,
@@ -59,16 +52,10 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UmaFilterAttribute"/> class.
+    /// Initializes a new instance of the <see cref="UmaFilterAttribute"/> class with a composite resource-ID format.
     /// </summary>
-    /// <param name="resourceIdFormat">The format string setting how the parameters build the identifier.</param>
-    /// <param name="resourceIdParameters">The names of the parameters identifying the resource id.</param>
-    /// <param name="allowedOauthScope">OAuth scope in token allowed to access resource.</param>
-    /// <param name="idTokenHeader">The request header or query parameter where an id token will be looked for.</param>
-    /// <param name="realm">The resource realm</param>
-    /// <param name="resourceSetAccessScope">The resource set access scopes needed to access the web resource.</param>
     public UmaFilterAttribute(
-        [StringSyntax(StringSyntaxAttribute.CompositeFormat)] string? resourceIdFormat,
+        string? resourceIdFormat,
         string[] resourceIdParameters,
         string idTokenHeader = IdTokenParameter,
         string? allowedOauthScope = null,
@@ -87,8 +74,6 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
     public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
     {
         return new UmaAuthorizationFilter(
-            serviceProvider.GetRequiredService<ITokenClient>(),
-            serviceProvider.GetRequiredService<IUmaPermissionClient>(),
             serviceProvider.GetRequiredService<IResourceMap>(),
             serviceProvider.GetRequiredService<ILogger<UmaFilterAttribute>>(),
             _resourceIdParameters,
@@ -100,30 +85,19 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
     }
 
     /// <inheritdoc />
-    public bool IsReusable
-    {
-        get { return true; }
-    }
+    public bool IsReusable => true;
 
-    /// <summary>
-    /// Gets or sets the policy
-    /// </summary>
+    /// <inheritdoc />
     public string? Policy { get; set; }
 
-    /// <summary>
-    /// Gets or sets the roles
-    /// </summary>
+    /// <inheritdoc />
     public string? Roles { get; set; }
 
-    /// <summary>
-    /// Gets or sets the authentication schemes
-    /// </summary>
+    /// <inheritdoc />
     public string? AuthenticationSchemes { get; set; }
 
     private partial class UmaAuthorizationFilter : IAsyncAuthorizationFilter
     {
-        private readonly ITokenClient _tokenClient;
-        private readonly IUmaPermissionClient _permissionClient;
         private readonly IResourceMap _resourceMap;
         private readonly ILogger _logger;
         private readonly string? _realm;
@@ -134,8 +108,6 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
         private readonly string[] _requiredResourceSetScopes;
 
         public UmaAuthorizationFilter(
-            ITokenClient tokenClient,
-            IUmaPermissionClient permissionClient,
             IResourceMap resourceMap,
             ILogger logger,
             string[] resourceIdParameters,
@@ -145,8 +117,6 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
             string? resourceSetIdFormat = null,
             params string[] requiredResourceSetScopes)
         {
-            _tokenClient = tokenClient;
-            _permissionClient = permissionClient;
             _resourceMap = resourceMap;
             _logger = logger;
             _realm = realm;
@@ -164,13 +134,15 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
             if (user.Identities.All(x => !x.IsAuthenticated))
             {
                 LogUserIsNotAuthenticated();
-                context.Result = new UnauthorizedResult();
+                // Not authenticated — delegate the full UMA ticket flow to the handler.
+                await IssueChallengeAsync(context, resourceId: string.Empty, resourceSetId: null)
+                    .ConfigureAwait(false);
                 return;
             }
 
             if (CheckHasScopeAccess(user, _allowedOauthScope))
             {
-                // User has OAuth token with scope which allows access to resource.
+                // User's OAuth token carries a scope that short-circuits UMA checks.
                 return;
             }
 
@@ -179,11 +151,12 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
                 ? string.Join("", values.Select(v => (v ?? "").ToString()).ToArray())
                 : string.Format(_resourceSetIdFormat, values);
             LogAttemptingToMapResourceId(resourceId);
+
             var resourceSetId = await _resourceMap.GetResourceSetId(resourceId).ConfigureAwait(false);
             if (resourceSetId == null)
             {
                 LogFailedToMapResourceIdToResourceSet(resourceId);
-                context.Result = new UnauthorizedResult();
+                await IssueChallengeAsync(context, resourceId, resourceSetId: null).ConfigureAwait(false);
                 return;
             }
 
@@ -195,76 +168,44 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
                 return;
             }
 
-            var serverToken = await HasServerAccessToken().ConfigureAwait(false);
-            if (serverToken == null)
-            {
-                LogCouldNotRetrieveAccessTokenForServer();
-                context.Result = new UmaServerUnreachableResult();
-                return;
-            }
-
-            var idToken = await GetIdToken(context).ConfigureAwait(false);
-            if (idToken == null)
-            {
-                LogNoValidIdTokenToRequestPermissionForResourceId(resourceId);
-                context.Result = new UmaServerUnreachableResult();
-                return;
-            }
-
-            var permission = await _permissionClient.RequestPermission(
-                    serverToken.AccessToken,
-                    CancellationToken.None,
-                    new PermissionRequest
-                    { IdToken = idToken, ResourceSetId = resourceSetId, Scopes = _requiredResourceSetScopes })
-                .ConfigureAwait(false);
-            switch (permission)
-            {
-                case Option<TicketResponse>.Error error:
-                    LogTitleTitleDetailsDetail(error.Details.Title, error.Details.Detail);
-                    context.Result = new UmaServerUnreachableResult();
-                    break;
-                case Option<TicketResponse>.Result result:
-                    LogTicketTicketIdReceivedFromUri(result.Item.TicketId, _permissionClient.Authority.AbsoluteUri);
-                    context.Result = new UmaTicketResult(
-                        new UmaTicketInfo(result.Item.TicketId, _permissionClient.Authority.AbsoluteUri, _realm));
-                    break;
-            }
+            // RPT is valid but does not include the required permissions — delegate to the handler.
+            LogInsufficientPermissionsForResourceId(resourceId, resourceSetId);
+            await IssueChallengeAsync(context, resourceId, resourceSetId).ConfigureAwait(false);
         }
 
-        private async Task<string?> GetIdToken(AuthorizationFilterContext context)
+        /// <summary>
+        /// Calls <c>ChallengeAsync</c> on the <see cref="UmaBearerDefaults.AuthenticationScheme"/> scheme,
+        /// passing the resolved <paramref name="resourceSetId"/> and required scopes via
+        /// <see cref="AuthenticationProperties"/> so that
+        /// <see cref="UmaBearerHandler.HandleChallengeAsync"/> can register the exact permission with the AS.
+        /// </summary>
+        private async Task IssueChallengeAsync(
+            AuthorizationFilterContext context,
+            string resourceId,
+            string? resourceSetId)
         {
-            var request = context.HttpContext.Request;
-            var idToken = await request.HttpContext.GetTokenAsync("id_token").ConfigureAwait(false);
-            if (!string.IsNullOrEmpty(idToken))
+            var props = new AuthenticationProperties();
+            if (!string.IsNullOrEmpty(resourceSetId))
             {
-                return idToken;
+                props.Items["uma:resource_set_id"] = resourceSetId;
+                props.Items["uma:scopes"] = string.Join(" ", _requiredResourceSetScopes);
             }
 
-            if (request.Query.TryGetValue(_idTokenHeader, out var token))
-            {
-                return token;
-            }
-
-            return AuthenticationHeaderValue.TryParse(request.Headers[_idTokenHeader], out var idTokenHeader)
-                ? idTokenHeader.Parameter
-                : null;
-        }
-
-        private async Task<GrantedTokenResponse?> HasServerAccessToken()
-        {
-            var option = await _tokenClient.GetToken(TokenRequest.FromScopes(UmaConstants.UmaProtectionScope))
+            LogDelegatingChallengeToHandler(resourceId, resourceSetId ?? "(unknown)");
+            await context.HttpContext.ChallengeAsync(UmaBearerDefaults.AuthenticationScheme, props)
                 .ConfigureAwait(false);
-            return option is Option<GrantedTokenResponse>.Result accessToken ? accessToken.Item : null;
+
+            // EmptyResult prevents MVC from writing a second response body after the handler responds.
+            context.Result = new EmptyResult();
         }
 
         private bool CheckHasScopeAccess(ClaimsPrincipal user, string? allowedOauthScope)
         {
-            // If OAuth scope is allowed, then access is granted.
             if (allowedOauthScope == null
              || !user.HasClaim(
-                    c => c.Type == StandardClaimNames.Scopes
-                     && c.Value.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                            .Contains(allowedOauthScope)))
+                     c => c.Type == StandardClaimNames.Scopes
+                      && c.Value.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                             .Contains(allowedOauthScope)))
             {
                 return false;
             }
@@ -285,20 +226,13 @@ public partial class UmaFilterAttribute : Attribute, IFilterFactory, IAuthorizeD
         [LoggerMessage(LogLevel.Debug, "Received valid token for {ResourceId}, scopes {Scopes} from {Subject}")]
         partial void LogReceivedValidTokenForResourceIdScopesScopesFromSubject(string resourceId, string scopes, string? subject);
 
-        [LoggerMessage(LogLevel.Error, "Could not retrieve access token for server")]
-        partial void LogCouldNotRetrieveAccessTokenForServer();
+        [LoggerMessage(LogLevel.Information, "Insufficient permissions for {ResourceId} (resource set {ResourceSetId}), delegating to UMA handler")]
+        partial void LogInsufficientPermissionsForResourceId(string resourceId, string resourceSetId);
 
-        [LoggerMessage(LogLevel.Error, "No valid id token to request permission for {ResourceId}")]
-        partial void LogNoValidIdTokenToRequestPermissionForResourceId(string resourceId);
-
-        [LoggerMessage(LogLevel.Error, "Title: {Title}, Details: {Detail}")]
-        partial void LogTitleTitleDetailsDetail(string title, string detail);
-
-        [LoggerMessage(LogLevel.Debug, "Ticket {TicketId} received from {Uri}")]
-        partial void LogTicketTicketIdReceivedFromUri(string ticketId, string uri);
+        [LoggerMessage(LogLevel.Debug, "Delegating UMA challenge for {ResourceId} / {ResourceSetId} to authentication handler")]
+        partial void LogDelegatingChallengeToHandler(string resourceId, string resourceSetId);
 
         [LoggerMessage(LogLevel.Debug, "Allowing access for user {Subject} in role {AllowedScope}")]
         partial void LogAllowingAccessForUserSubjectInRoleAllowedScope(string? subject, string allowedScope);
     }
 }
-

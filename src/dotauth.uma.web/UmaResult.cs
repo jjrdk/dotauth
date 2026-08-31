@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 /// Defines the UMA result base class.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class UmaResult<T> : IResult
+public abstract class UmaResult<T> : IActionResult
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="UmaResult{T}"/> class.
@@ -31,16 +31,17 @@ public abstract class UmaResult<T> : IResult
     protected T Value { get; }
 
     /// <inheritdoc />
-    public virtual async Task ExecuteAsync(HttpContext context)
+    public virtual async Task ExecuteResultAsync(ActionContext context)
     {
         if (Value?.Equals(default(T)) != true)
         {
-            var formatters = context.RequestServices.GetServices<IOutputFormatter>();
-            var formatterSelector = context.RequestServices.GetRequiredService<OutputFormatterSelector>();
+            var httpContext = context.HttpContext;
+            var formatters = httpContext.RequestServices.GetServices<IOutputFormatter>();
+            var formatterSelector = httpContext.RequestServices.GetRequiredService<OutputFormatterSelector>();
             var writerFactory =
-                context.RequestServices.GetRequiredService<IHttpResponseStreamWriterFactory>();
+                httpContext.RequestServices.GetRequiredService<IHttpResponseStreamWriterFactory>();
             var formatterContext = new OutputFormatterWriteContext(
-                context,
+                httpContext,
                 writerFactory.CreateWriter,
                 typeof(T),
                 Value!);
@@ -51,7 +52,7 @@ public abstract class UmaResult<T> : IResult
                 new MediaTypeCollection());
             if (selectedFormatter == null)
             {
-                context.Response.StatusCode = StatusCodes.Status406NotAcceptable;
+                httpContext.Response.StatusCode = StatusCodes.Status406NotAcceptable;
                 return;
             }
 

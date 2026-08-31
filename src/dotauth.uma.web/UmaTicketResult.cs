@@ -3,6 +3,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using DotAuth.Uma;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
@@ -20,7 +21,7 @@ public class UmaTicketResult : UmaResult<UmaTicketInfo>
     }
 
     /// <inheritdoc />
-    protected override Task ExecuteResult(ActionContext context)
+    public override Task ExecuteResultAsync(ActionContext context)
     {
         var response = context.HttpContext.Response;
         response.StatusCode = (int)HttpStatusCode.Unauthorized;

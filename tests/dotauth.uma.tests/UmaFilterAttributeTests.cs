@@ -101,19 +101,25 @@ public class UmaFilterAttributeTests
     [Fact]
     public async Task RequestsTicketWhenNoPermissionsInToken()
     {
+        var sp = _serviceCollection.BuildServiceProvider(
+            new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
+        var authService = sp.GetRequiredService<IAuthenticationService>();
         var httpContext = new DefaultHttpContext
         {
-            RequestServices = _serviceCollection.BuildServiceProvider(
-                new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true }),
-            Request = { Headers = { ["id_token"] = "Bearer bcnercwregxxwn" } },
+            RequestServices = sp,
+            Request = { Headers = { ["id_token"] = "******" } },
             User = new ClaimsPrincipal(
                 new ClaimsIdentity([new Claim("sub", "tester")], JwtBearerConstants.BearerScheme)),
         };
-        var filterContext = await GetFilterResult(httpContext);
+        var filterResult = await GetFilterResult(httpContext);
 
-        Assert.IsType<UmaTicketResult>(filterContext);
+        // The filter now delegates ticket issuance to UmaBearerHandler via ChallengeAsync.
+        Assert.IsType<EmptyResult>(filterResult);
+        await authService.Received(1).ChallengeAsync(
+            httpContext,
+            UmaBearerDefaults.AuthenticationScheme,
+            Arg.Any<AuthenticationProperties>());
     }
-
     private async Task<IActionResult?> GetFilterResult(DefaultHttpContext httpContext)
     {
         var authFilter =

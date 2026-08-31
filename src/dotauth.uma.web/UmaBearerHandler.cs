@@ -2,7 +2,6 @@ namespace DotAuth.Uma.Web;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -23,44 +22,33 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 
 /// <summary>
-/// An <see cref="AuthenticationHandler{TOptions}"/> that can perform JWT-bearer based authentication.
+/// An <see cref="AuthenticationHandler{TOptions}"/> that validates UMA Requesting Party Tokens (RPTs)
+/// and issues UMA permission tickets when access is denied or the token is absent.
 /// </summary>
 public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
 {
-    private const string IdTokenParameter = "id_token";
-    private readonly string _idTokenHeader;
-    private readonly string[] _resourceIdParameters;
     private readonly ITokenClient _tokenClient;
     private readonly IResourceMap _resourceMap;
     private readonly IUmaPermissionClient _permissionClient;
-    private readonly string? _resourceSetIdFormat;
-    private readonly string? _realm;
 
     /// <summary>
     /// Initializes a new instance of <see cref="UmaBearerHandler"/>.
+    /// All UMA-specific configuration (realm, resource ID parameters, etc.) is read from
+    /// <see cref="UmaBearerOptions"/> at request time so that the handler is fully injectable
+    /// via the standard ASP.NET Core <c>AddScheme&lt;TOptions,THandler&gt;</c> mechanism.
     /// </summary>
-    /// <inheritdoc />
     public UmaBearerHandler(
         IOptionsMonitor<UmaBearerOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
         IResourceMap resourceMap,
         IUmaPermissionClient permissionClient,
-        ITokenClient tokenClient,
-        [StringSyntax(StringSyntaxAttribute.CompositeFormat)]
-        string? resourceSetIdFormat,
-        string idTokenHeader = IdTokenParameter,
-        string[]? resourceIdParameters = null,
-        string? realm = null)
+        ITokenClient tokenClient)
         : base(options, logger, encoder)
     {
         _resourceMap = resourceMap;
         _permissionClient = permissionClient;
         _tokenClient = tokenClient;
-        _resourceSetIdFormat = resourceSetIdFormat;
-        _idTokenHeader = idTokenHeader;
-        _realm = realm;
-        _resourceIdParameters = resourceIdParameters ?? [];
     }
 
     /// <summary>
@@ -77,31 +65,29 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
     protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(new UmaBearerEvents());
 
     /// <summary>
-    /// Searches the 'Authorization' header for a 'Bearer' token. If the 'Bearer' token is found, it is validated using <see cref="TokenValidationParameters"/> set in the options.
+    /// Validates the RPT (Requesting Party Token) carried in the <c>Authorization: Bearer</c> header.
+    /// On success the resulting <see cref="ClaimsPrincipal"/> preserves the <c>permissions</c> claim
+    /// so that <see cref="DotAuth.Uma.ClaimsPrincipalExtensions.CheckResourceAccess"/> works in the
+    /// downstream authorization layer.
     /// </summary>
-    /// <returns></returns>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         try
         {
-            // Give application opportunity to find from a different location, adjust, or reject token
             var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
 
-            // event can set the token
             await Events.OnMessageReceived(messageReceivedContext).ConfigureAwait(false);
             if (messageReceivedContext.Result != null)
             {
                 return messageReceivedContext.Result;
             }
 
-            // If application retrieved token from somewhere else, use that.
             var token = messageReceivedContext.Token;
 
             if (string.IsNullOrEmpty(token))
             {
                 var authorization = Request.Headers.Authorization.ToString();
 
-                // If no authorization header found, nothing to process further
                 if (string.IsNullOrEmpty(authorization))
                 {
                     return AuthenticateResult.NoResult();
@@ -112,7 +98,6 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
                     token = authorization["Bearer ".Length..].Trim();
                 }
 
-                // If no token found, no further work possible
                 if (string.IsNullOrEmpty(token))
                 {
                     return AuthenticateResult.NoResult();
@@ -120,6 +105,10 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
             }
 
             var tvp = await SetupTokenValidationParametersAsync().ConfigureAwait(false);
+
+            // Ensure the non-standard UMA 'permissions' claim is never remapped to a different
+            // claim URI by the inbound-claim-type mapping.  We preserve it by keeping the original
+            // claim type after validation via explicit pass-through (see below).
             List<Exception>? validationFailures = null;
             SecurityToken? validatedToken = null;
             ClaimsPrincipal? principal = null;
@@ -135,6 +124,10 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
                         {
                             principal = new ClaimsPrincipal(tokenValidationResult.ClaimsIdentity);
                             validatedToken = tokenValidationResult.SecurityToken;
+
+                            // Preserve the 'permissions' claim under its original name so
+                            // CheckResourceAccess can deserialise it correctly.
+                            EnsurePermissionsClaimPreserved(principal, tokenValidationResult.ClaimsIdentity);
                             break;
                         }
 
@@ -247,6 +240,178 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
         }
     }
 
+    /// <summary>
+    /// Implements the UMA 2.0 challenge flow: obtains a protection API token, registers a permission
+    /// with the Authorization Server's Permission Endpoint, and returns
+    /// <c>HTTP 401 WWW-Authenticate: UMA realm="…", as_uri="…", ticket="…"</c>.
+    /// Returns HTTP 503 when the protection token or the Permission Endpoint is unavailable.
+    /// </summary>
+    protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
+    {
+        var authResult = await HandleAuthenticateOnceSafeAsync().ConfigureAwait(false);
+        var eventContext = new UmaBearerChallengeContext(Context, Scheme, Options, properties)
+        {
+            AuthenticateFailure = authResult.Failure
+        };
+
+        await IssuePermissionTicketAsync(eventContext, properties).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Implements the UMA 2.0 insufficient-permissions response.
+    /// Per UMA 2.0 §3.3.1 the RS must return HTTP 401 + a new permission ticket even when the
+    /// client presented a valid RPT that lacked sufficient permissions — not HTTP 403.
+    /// HTTP 403 is reserved for cases where the AS has definitively denied the request.
+    /// </summary>
+    protected override async Task HandleForbiddenAsync(AuthenticationProperties properties)
+    {
+        var eventContext = new UmaBearerChallengeContext(Context, Scheme, Options, properties);
+
+        // Raise OnForbidden before any headers are written so the application can override.
+        var forbiddenContext = new ForbiddenContext(Context, Scheme, Options);
+        await Events.OnForbidden(forbiddenContext).ConfigureAwait(false);
+
+        await IssuePermissionTicketAsync(eventContext, properties).ConfigureAwait(false);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Shared UMA ticket-issuance logic
+    // ---------------------------------------------------------------------------
+
+    /// <summary>
+    /// Core UMA ticket-issuance routine shared by <see cref="HandleChallengeAsync"/> and
+    /// <see cref="HandleForbiddenAsync"/>:
+    /// <list type="number">
+    ///   <item>Resolves the resource-set ID from <paramref name="properties"/> or route values.</item>
+    ///   <item>Obtains a protection API token from <see cref="ITokenClient"/>.</item>
+    ///   <item>Calls the Permission Endpoint via <see cref="IUmaPermissionClient"/>.</item>
+    ///   <item>Writes <c>HTTP 401 WWW-Authenticate: UMA …</c>; on failure writes HTTP 503.</item>
+    /// </list>
+    /// </summary>
+    private async Task IssuePermissionTicketAsync(
+        UmaBearerChallengeContext eventContext,
+        AuthenticationProperties properties)
+    {
+        // 1. Resolve the resource-set ID — from properties (set by UmaFilterAttribute) or route values.
+        var resourceSetId = properties.Items.TryGetValue("uma:resource_set_id", out var rsid) ? rsid : null;
+        if (string.IsNullOrEmpty(resourceSetId))
+        {
+            resourceSetId = await ResolveResourceSetIdFromRouteAsync().ConfigureAwait(false);
+        }
+
+        if (string.IsNullOrEmpty(resourceSetId))
+        {
+            LogFailedToResolveResourceSetId(Logger);
+            Response.StatusCode = 503;
+            return;
+        }
+
+        // 2. Obtain the required scopes — from properties or from the permission client.
+        string[] scopes;
+        if (properties.Items.TryGetValue("uma:scopes", out var scopeStr) && !string.IsNullOrEmpty(scopeStr))
+        {
+            scopes = scopeStr.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        }
+        else
+        {
+            scopes = await _permissionClient.GetResourceSetScopes(resourceSetId, Context.RequestAborted)
+                .ConfigureAwait(false);
+        }
+
+        // 3. Obtain a protection API token (PAT) with scope uma_protection.
+        var patOption = await _tokenClient
+            .GetToken(TokenRequest.FromScopes(DotAuth.Uma.UmaConstants.UmaProtectionScope), Context.RequestAborted)
+            .ConfigureAwait(false);
+
+        if (patOption is not Option<GrantedTokenResponse>.Result patResult)
+        {
+            LogCouldNotRetrieveProtectionToken(Logger);
+            Response.StatusCode = 503;
+            return;
+        }
+
+        // 4. Register permissions at the AS Permission Endpoint.
+        Option<TicketResponse> permissionOption;
+        try
+        {
+            permissionOption = await _permissionClient.RequestPermission(
+                patResult.Item.AccessToken,
+                Context.RequestAborted,
+                new PermissionRequest { ResourceSetId = resourceSetId, Scopes = scopes })
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Permission endpoint call failed");
+            Response.StatusCode = 503;
+            return;
+        }
+
+        if (permissionOption is not Option<TicketResponse>.Result ticketResult)
+        {
+            Logger.LogError("Permission endpoint returned an error");
+            Response.StatusCode = 503;
+            return;
+        }
+
+        // 5. Populate the challenge context and raise the OnChallenge event.
+        eventContext.TicketId = ticketResult.Item.TicketId;
+        eventContext.AsUri = _permissionClient.Authority.AbsoluteUri;
+
+        await Events.OnChallenge(eventContext).ConfigureAwait(false);
+        if (eventContext.Handled)
+        {
+            return;
+        }
+
+        // 6. Write the UMA-compliant 401 challenge.
+        LogTicketIssuedForResourceSet(Logger, resourceSetId, ticketResult.Item.TicketId);
+
+        Response.StatusCode = 401;
+
+        var sb = new StringBuilder("UMA");
+        if (!string.IsNullOrEmpty(Options.Realm))
+        {
+            sb.Append($" realm=\"{Options.Realm}\",");
+        }
+
+        sb.Append($" as_uri=\"{eventContext.AsUri}\", ticket=\"{eventContext.TicketId}\"");
+        Response.Headers.Append(HeaderNames.WWWAuthenticate, sb.ToString());
+    }
+
+    private async Task<string?> ResolveResourceSetIdFromRouteAsync()
+    {
+        if (Options.ResourceIdParameters.Length == 0)
+        {
+            return null;
+        }
+
+        var values = Options.ResourceIdParameters.Select(p => Request.RouteValues[p]).ToArray();
+        var resourceId = Options.ResourceSetIdFormat is null
+            ? string.Join("", values.Select(v => (v ?? "").ToString()))
+            : string.Format(Options.ResourceSetIdFormat, values);
+
+        return await _resourceMap.GetResourceSetId(resourceId, Context.RequestAborted).ConfigureAwait(false);
+    }
+
+    private async Task<string?> GetIdToken(HttpRequest request)
+    {
+        var idToken = await request.HttpContext.GetTokenAsync("id_token").ConfigureAwait(false);
+        if (!string.IsNullOrEmpty(idToken))
+        {
+            return idToken;
+        }
+
+        if (request.Query.TryGetValue(Options.IdTokenHeader, out var token))
+        {
+            return token;
+        }
+
+        return AuthenticationHeaderValue.TryParse(request.Headers[Options.IdTokenHeader], out var idTokenHeader)
+            ? idTokenHeader.Parameter
+            : null;
+    }
+
     private void RecordTokenValidationError(Exception? exception, List<Exception> exceptions)
     {
         if (exception != null)
@@ -255,8 +420,6 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
             exceptions.Add(exception);
         }
 
-        // Refresh the configuration for exceptions that may be caused by key rollovers. The user can also request a refresh in the event.
-        // Refreshing on SecurityTokenSignatureKeyNotFound may be redundant if Last-Known-Good is enabled, it won't do much harm, most likely will be a nop.
         if (Options is { RefreshOnIssuerKeyNotFound: true, ConfigurationManager: not null }
          && exception is SecurityTokenSignatureKeyNotFoundException)
         {
@@ -266,7 +429,6 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
 
     private async Task<TokenValidationParameters> SetupTokenValidationParametersAsync()
     {
-        // Clone to avoid cross request race conditions for updated configurations.
         var tokenValidationParameters = Options.TokenValidationParameters.Clone();
 
         if (Options.ConfigurationManager is BaseConfigurationManager baseConfigurationManager)
@@ -280,7 +442,6 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
                 return tokenValidationParameters;
             }
 
-            // GetConfigurationAsync has a time interval that must pass before new http request will be issued.
             var configuration = await Options.ConfigurationManager.GetConfigurationAsync(Context.RequestAborted).ConfigureAwait(false);
             var issuers = new[] { configuration.Issuer };
             tokenValidationParameters.ValidIssuers = (tokenValidationParameters.ValidIssuers == null
@@ -296,8 +457,6 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
 
     private static DateTime? GetSafeDateTime(DateTime dateTime)
     {
-        // Assigning DateTime.MinValue or default(DateTime) to a DateTimeOffset when in a UTC+X timezone will throw
-        // Since we don't really care about DateTime.MinValue in this case let's just set the field to null
         if (dateTime == DateTime.MinValue)
         {
             return null;
@@ -306,188 +465,38 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
         return dateTime;
     }
 
-    /// <inheritdoc />
-    protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
+    /// <summary>
+    /// Ensures the UMA <c>permissions</c> claim survives inbound claim-type mapping.
+    /// The <see cref="Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler"/> with
+    /// <c>MapInboundClaims = true</c> renames well-known OIDC claim types to XML URIs.
+    /// <c>permissions</c> is not a standard OIDC claim and should pass through unchanged,
+    /// but this method explicitly re-adds it under its original name if mapping has removed it.
+    /// </summary>
+    private static void EnsurePermissionsClaimPreserved(ClaimsPrincipal principal, ClaimsIdentity identity)
     {
-        var authResult = await HandleAuthenticateOnceSafeAsync().ConfigureAwait(false);
-        var eventContext = new UmaBearerChallengeContext(Context, Scheme, Options, properties)
-        {
-            AuthenticateFailure = authResult.Failure
-        };
+        // "permissions" is the UMA RPT claim name (DotAuth.Shared.UmaConstants.RptClaims.Permissions).
+        // DotAuth.Shared.UmaConstants is internal; use the string literal directly.
+        const string permissionsClaimType = "permissions";
 
-        // Avoid returning error=invalid_token if the error is not caused by an authentication failure (e.g missing token).
-        if (Options.IncludeErrorDetails && eventContext.AuthenticateFailure != null)
-        {
-            eventContext.Error = "invalid_token";
-            eventContext.ErrorDescription = CreateErrorDescription(eventContext.AuthenticateFailure);
-        }
-
-        await Events.OnChallenge(eventContext).ConfigureAwait(false);
-        if (eventContext.Handled)
+        // If the claim is already present under its original name, nothing to do.
+        if (identity.HasClaim(c => c.Type == permissionsClaimType))
         {
             return;
         }
 
-        Response.StatusCode = 401;
+        // Look for a renamed version (mapped to a different claim URI) and re-add under the
+        // canonical name so CheckResourceAccess can find it.
+        var renamed = principal.FindAll(
+            c => c.Type.EndsWith("/permissions", StringComparison.OrdinalIgnoreCase) ||
+                 c.Type.Equals(permissionsClaimType, StringComparison.OrdinalIgnoreCase));
 
-        if (string.IsNullOrEmpty(eventContext.Error) &&
-            string.IsNullOrEmpty(eventContext.ErrorDescription) &&
-            string.IsNullOrEmpty(eventContext.ErrorUri))
+        foreach (var claim in renamed)
         {
-            Response.Headers.Append(HeaderNames.WWWAuthenticate, Options.Challenge);
-        }
-        else
-        {
-            // https://tools.ietf.org/html/rfc6750#section-3.1
-            // WWW-Authenticate: Bearer realm="example", error="invalid_token", error_description="The access token expired"
-            var builder = new StringBuilder(Options.Challenge);
-            if (Options.Challenge.IndexOf(' ') > 0)
+            if (!identity.HasClaim(permissionsClaimType, claim.Value))
             {
-                // Only add a comma after the first param, if any
-                builder.Append(',');
+                identity.AddClaim(new Claim(permissionsClaimType, claim.Value, claim.ValueType, claim.Issuer));
             }
-
-            if (!string.IsNullOrEmpty(eventContext.Error))
-            {
-                builder.Append(" error=\"");
-                builder.Append(eventContext.Error);
-                builder.Append('\"');
-            }
-
-            if (!string.IsNullOrEmpty(eventContext.ErrorDescription))
-            {
-                if (!string.IsNullOrEmpty(eventContext.Error))
-                {
-                    builder.Append(',');
-                }
-
-                builder.Append(" error_description=\"");
-                builder.Append(eventContext.ErrorDescription);
-                builder.Append('\"');
-            }
-
-            if (!string.IsNullOrEmpty(eventContext.ErrorUri))
-            {
-                if (!string.IsNullOrEmpty(eventContext.Error) ||
-                    !string.IsNullOrEmpty(eventContext.ErrorDescription))
-                {
-                    builder.Append(',');
-                }
-
-                builder.Append(" error_uri=\"");
-                builder.Append(eventContext.ErrorUri);
-                builder.Append('\"');
-            }
-
-            Response.Headers.Append(HeaderNames.WWWAuthenticate, builder.ToString());
         }
-    }
-
-    private async Task VerifyUmaAccess()
-    {
-        var values = _resourceIdParameters.Select(x => Context.Request.RouteValues[x]).ToArray();
-        var resourceId = _resourceSetIdFormat == null
-            ? string.Join("", values.Select(v => (v ?? "").ToString()).ToArray())
-            : string.Format(_resourceSetIdFormat, values);
-        LogAttemptingToMapResourceid(Logger, resourceId);
-        var resourceSetId = await _resourceMap.GetResourceSetId(resourceId).ConfigureAwait(false);
-        if (resourceSetId == null)
-        {
-            LogFailedToMapResourceidToResourceSet(Logger, resourceId);
-            await Results.Unauthorized().ExecuteAsync(Context).ConfigureAwait(false);
-            return;
-        }
-
-        var requiredResourceSetScopes = await _permissionClient.GetResourceSetScopes(resourceSetId).ConfigureAwait(false);
-        if (Context.User.CheckResourceAccess(resourceSetId, requiredResourceSetScopes))
-        {
-            var subject = Context.User.GetSubject();
-            var scopes = string.Join(",", requiredResourceSetScopes);
-            LogReceivedValidTokenForResourceIdScopesScopesFromSubject(Logger, resourceId, scopes, subject);
-            return;
-        }
-
-        var serverToken = await HasServerAccessToken().ConfigureAwait(false);
-        if (serverToken == null)
-        {
-            LogCouldNotRetrieveAccessTokenForServer(Logger);
-            await new UmaServerUnreachableResult().ExecuteAsync(Context).ConfigureAwait(false);
-            return;
-        }
-
-        var idToken = await GetIdToken(Context.Request).ConfigureAwait(false);
-        if (idToken == null)
-        {
-            LogNoValidIdTokenToRequestPermissionForResourceid(Logger, resourceId);
-            await new UmaServerUnreachableResult().ExecuteAsync(Context).ConfigureAwait(false);
-            return;
-        }
-
-        var permission = await _permissionClient.RequestPermission(
-                serverToken.AccessToken,
-                CancellationToken.None,
-                new PermissionRequest
-                    { IdToken = idToken, ResourceSetId = resourceSetId, Scopes = requiredResourceSetScopes })
-            .ConfigureAwait(false);
-        switch (permission)
-        {
-            case Option<TicketResponse>.Error error:
-                LogTitleTitleDetailsDetail(Logger, error.Details.Title, error.Details.Detail);
-                await new UmaServerUnreachableResult().ExecuteAsync(Context).ConfigureAwait(false);
-                break;
-            case Option<TicketResponse>.Result result:
-                LogTicketTicketidReceivedFromUri(Logger, result.Item.TicketId, _permissionClient.Authority.AbsoluteUri);
-                await new UmaTicketResult(
-                    new UmaTicketInfo(result.Item.TicketId, _permissionClient.Authority.AbsoluteUri, _realm))
-                    .ExecuteAsync(Context).ConfigureAwait(false);
-                break;
-        }
-    }
-
-    private async Task<GrantedTokenResponse?> HasServerAccessToken()
-    {
-        var option = await _tokenClient.GetToken(TokenRequest.FromScopes(UmaConstants.UmaProtectionScope))
-            .ConfigureAwait(false);
-        return option is Option<GrantedTokenResponse>.Result accessToken ? accessToken.Item : null;
-    }
-
-    private async Task<string?> GetIdToken(HttpRequest request)
-    {
-        var idToken = await request.HttpContext.GetTokenAsync("id_token").ConfigureAwait(false);
-        if (!string.IsNullOrEmpty(idToken))
-        {
-            return idToken;
-        }
-
-        if (request.Query.TryGetValue(_idTokenHeader, out var token))
-        {
-            return token;
-        }
-
-        return AuthenticationHeaderValue.TryParse(request.Headers[_idTokenHeader], out var idTokenHeader)
-            ? idTokenHeader.Parameter
-            : null;
-    }
-
-    /// <inheritdoc />
-    protected override Task HandleForbiddenAsync(AuthenticationProperties properties)
-    {
-        var forbiddenContext = new ForbiddenContext(Context, Scheme, Options);
-
-        if (Response.StatusCode == 403)
-        {
-            // No-op
-        }
-        else if (Response.HasStarted)
-        {
-            Logger.LogDebug("Unable to reject the response as forbidden, it has already started");
-        }
-        else
-        {
-            Response.StatusCode = 403;
-        }
-
-        return Events.OnForbidden(forbiddenContext);
     }
 
     private static string CreateErrorDescription(Exception authFailure)
@@ -506,8 +515,6 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
 
         foreach (var ex in exceptions)
         {
-            // Order sensitive, some of these exceptions derive from others
-            // and we want to display the most specific message possible.
             var message = ex switch
             {
                 SecurityTokenInvalidAudienceException stia =>
@@ -535,24 +542,12 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
         return string.Join("; ", messages);
     }
 
-    [LoggerMessage(LogLevel.Debug, "Attempting to map {ResourceId}")]
-    static partial void LogAttemptingToMapResourceid(ILogger logger, string resourceId);
+    [LoggerMessage(LogLevel.Error, "Could not retrieve protection API token (uma_protection scope)")]
+    static partial void LogCouldNotRetrieveProtectionToken(ILogger logger);
 
-    [LoggerMessage(LogLevel.Error, "Failed to map {ResourceId} to resource set")]
-    static partial void LogFailedToMapResourceidToResourceSet(ILogger logger, string resourceId);
+    [LoggerMessage(LogLevel.Error, "Could not resolve a resource-set ID from route values")]
+    static partial void LogFailedToResolveResourceSetId(ILogger logger);
 
-    [LoggerMessage(LogLevel.Debug, "Received valid token for {ResourceId}, scopes {Scopes} from {Subject}")]
-    static partial void LogReceivedValidTokenForResourceIdScopesScopesFromSubject(ILogger logger, string resourceId, string scopes, string? subject = "");
-
-    [LoggerMessage(LogLevel.Error, "Could not retrieve access token for server")]
-    static partial void LogCouldNotRetrieveAccessTokenForServer(ILogger logger);
-
-    [LoggerMessage(LogLevel.Error, "No valid id token to request permission for {ResourceId}")]
-    static partial void LogNoValidIdTokenToRequestPermissionForResourceid(ILogger logger, string resourceId);
-
-    [LoggerMessage(LogLevel.Error, "Title: {Title}, Details: {Detail}")]
-    static partial void LogTitleTitleDetailsDetail(ILogger logger, string title, string detail);
-
-    [LoggerMessage(LogLevel.Debug, "Ticket {TicketId} received from {Uri}")]
-    static partial void LogTicketTicketidReceivedFromUri(ILogger logger, string ticketId, string uri);
+    [LoggerMessage(LogLevel.Debug, "Permission ticket {TicketId} issued for resource set {ResourceSetId}")]
+    static partial void LogTicketIssuedForResourceSet(ILogger logger, string resourceSetId, string ticketId);
 }

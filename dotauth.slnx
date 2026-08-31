@@ -22,6 +22,7 @@
     <File Path="README.md" />
     <File Path="shared.proj" />
   </Folder>
+  <Folder Name="/src/" />
   <Folder Name="/Tests/">
     <Project Path="tests/dotauth.acceptancetests/dotauth.acceptancetests.csproj" />
     <Project Path="tests/dotauth.server.tests/dotauth.server.tests.csproj" />
@@ -29,6 +30,7 @@
     <Project Path="tests/dotauth.stores.redis.acceptancetests/dotauth.stores.redis.acceptancetests.csproj" />
     <Project Path="tests/dotauth.tests/dotauth.tests.csproj" />
     <Project Path="tests/dotauth.uma.tests/dotauth.uma.tests.csproj" />
+    <Project Path="tests/dotauth.uma.web.tests/dotauth.uma.web.tests.csproj" />
   </Folder>
   <Project Path="src/dotauth.authentication/dotauth.authentication.csproj" />
   <Project Path="src/dotauth.client.maui/dotauth.client.maui.csproj" />
