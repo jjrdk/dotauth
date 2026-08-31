@@ -30,25 +30,18 @@ public abstract class UmaResult<T> : IActionResult
     [AllowNull]
     protected T Value { get; }
 
-    /// <summary>
-    /// Executes the result processing.
-    /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
-    protected abstract Task ExecuteResult(ActionContext context);
-
     /// <inheritdoc />
-    public async Task ExecuteResultAsync(ActionContext context)
+    public virtual async Task ExecuteResultAsync(ActionContext context)
     {
-        await ExecuteResult(context).ConfigureAwait(false);
         if (Value?.Equals(default(T)) != true)
         {
-            var formatters = context.HttpContext.RequestServices.GetServices<IOutputFormatter>();
-            var formatterSelector = context.HttpContext.RequestServices.GetRequiredService<OutputFormatterSelector>();
+            var httpContext = context.HttpContext;
+            var formatters = httpContext.RequestServices.GetServices<IOutputFormatter>();
+            var formatterSelector = httpContext.RequestServices.GetRequiredService<OutputFormatterSelector>();
             var writerFactory =
-                context.HttpContext.RequestServices.GetRequiredService<IHttpResponseStreamWriterFactory>();
+                httpContext.RequestServices.GetRequiredService<IHttpResponseStreamWriterFactory>();
             var formatterContext = new OutputFormatterWriteContext(
-                context.HttpContext,
+                httpContext,
                 writerFactory.CreateWriter,
                 typeof(T),
                 Value!);
@@ -59,7 +52,7 @@ public abstract class UmaResult<T> : IActionResult
                 new MediaTypeCollection());
             if (selectedFormatter == null)
             {
-                context.HttpContext.Response.StatusCode = StatusCodes.Status406NotAcceptable;
+                httpContext.Response.StatusCode = StatusCodes.Status406NotAcceptable;
                 return;
             }
 

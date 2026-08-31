@@ -1,0 +1,5 @@
+using Xunit;
+using Xunit.v3;
+
+[assembly: CollectionBehavior(CollectionBehavior.CollectionPerClass)]
+[assembly: Parallelization(Mode = ParallelMode.None)]

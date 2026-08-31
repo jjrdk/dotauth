@@ -51,4 +51,12 @@ public interface IUmaPermissionClient
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
     /// <returns></returns>
     Task<UmaConfiguration> GetUmaDocument(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the scopes of a resource set.
+    /// </summary>
+    /// <param name="resourceSetId">The ID of the resource set.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the async operation.</param>
+    /// <returns>An array of scopes associated with the resource set.</returns>
+    Task<string[]> GetResourceSetScopes(string resourceSetId, CancellationToken cancellationToken = default);
 }
