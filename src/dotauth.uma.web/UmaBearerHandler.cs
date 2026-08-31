@@ -172,6 +172,26 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
             {
                 Logger.LogDebug("Successfully validated the token");
 
+                // Check whether this RPT covers the current resource.
+                // This makes the authentication scheme self-sufficient: an RPT that does not
+                // include any permission for the resolved resource set is treated the same as
+                // a missing token — authentication fails and HandleChallengeAsync issues a new
+                // permission ticket.  The check is skipped when no ResourceIdParameters are
+                // configured so that the handler can still be used purely for JWT validation.
+                if (Options.ResourceIdParameters.Length > 0)
+                {
+                    var resourceSetId = await ResolveResourceSetIdFromRouteAsync().ConfigureAwait(false);
+                    if (!string.IsNullOrEmpty(resourceSetId)
+                        && !DotAuth.Uma.ClaimsPrincipalExtensions.CheckResourceAccess(principal, resourceSetId))
+                    {
+                        // Store the resolved ID so HandleChallengeAsync can issue the right ticket.
+                        Context.Items["uma:resource_set_id"] = resourceSetId;
+                        LogRptDoesNotCoverResourceSet(Logger, resourceSetId);
+                        return AuthenticateResult.Fail(
+                            $"The RPT does not include permission for resource set '{resourceSetId}'.");
+                    }
+                }
+
                 var tokenValidatedContext = new TokenValidatedContext(Context, Scheme, Options)
                 {
                     Principal = principal,
@@ -282,7 +302,7 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
     /// Core UMA ticket-issuance routine shared by <see cref="HandleChallengeAsync"/> and
     /// <see cref="HandleForbiddenAsync"/>:
     /// <list type="number">
-    ///   <item>Resolves the resource-set ID from <paramref name="properties"/> or route values.</item>
+    ///   <item>Resolves the resource-set ID from <c>HttpContext.Items</c>, <paramref name="properties"/>, or route values.</item>
     ///   <item>Obtains a protection API token from <see cref="ITokenClient"/>.</item>
     ///   <item>Calls the Permission Endpoint via <see cref="IUmaPermissionClient"/>.</item>
     ///   <item>Writes <c>HTTP 401 WWW-Authenticate: UMA …</c>; on failure writes HTTP 503.</item>
@@ -292,8 +312,12 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
         UmaBearerChallengeContext eventContext,
         AuthenticationProperties properties)
     {
-        // 1. Resolve the resource-set ID — from properties (set by UmaFilterAttribute) or route values.
-        var resourceSetId = properties.Items.TryGetValue("uma:resource_set_id", out var rsid) ? rsid : null;
+        // 1. Resolve the resource-set ID — from HttpContext.Items (set during HandleAuthenticateAsync
+        //    when the RPT was valid but lacked permissions), then from properties, then from route values.
+        var resourceSetId =
+            (Context.Items.TryGetValue("uma:resource_set_id", out var ctxRsid) ? ctxRsid as string : null)
+            ?? (properties.Items.TryGetValue("uma:resource_set_id", out var rsid) ? rsid : null);
+
         if (string.IsNullOrEmpty(resourceSetId))
         {
             resourceSetId = await ResolveResourceSetIdFromRouteAsync().ConfigureAwait(false);
@@ -550,4 +574,7 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
 
     [LoggerMessage(LogLevel.Debug, "Permission ticket {TicketId} issued for resource set {ResourceSetId}")]
     static partial void LogTicketIssuedForResourceSet(ILogger logger, string resourceSetId, string ticketId);
+
+    [LoggerMessage(LogLevel.Information, "RPT does not include any permission for resource set {ResourceSetId}")]
+    static partial void LogRptDoesNotCoverResourceSet(ILogger logger, string resourceSetId);
 }

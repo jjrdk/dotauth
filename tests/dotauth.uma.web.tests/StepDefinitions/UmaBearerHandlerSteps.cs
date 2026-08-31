@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
-using DotAuth.Shared.Models;
 using DotAuth.Shared.Requests;
 using DotAuth.Shared.Responses;
 using DotAuth.Uma.Web.Tests.Support;
@@ -51,7 +50,7 @@ public class UmaBearerHandlerSteps : IAsyncDisposable
     }
 
     // -----------------------------------------------------------------------
-    // Background — shared with UmaFilterAttribute and UmaBearerForbidden features
+    // Background — shared by Challenge, Forbidden, and Authenticate features
     // -----------------------------------------------------------------------
 
     [Given("the permission client returns ticket {string} and AS URI {string}")]
@@ -184,6 +183,17 @@ public class UmaBearerHandlerSteps : IAsyncDisposable
         _lastResponse = await _client!.SendAsync(req);
     }
 
+    [When("HandleAuthenticateAsync is called against a resource-aware endpoint")]
+    public async Task WhenHandleAuthenticateAsyncResourceAware()
+    {
+        // Build a server with ResourceIdParameters configured so the access check fires.
+        await EnsureResourceAwareAuthServerAsync();
+        var token = (string)_scenarioCtx["token"];
+        var req = new HttpRequestMessage(HttpMethod.Get, "/authenticate/resource-a");
+        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        _lastResponse = await _client!.SendAsync(req);
+    }
+
     // -----------------------------------------------------------------------
     // Assertions
     // -----------------------------------------------------------------------
@@ -278,6 +288,11 @@ public class UmaBearerHandlerSteps : IAsyncDisposable
     private async Task EnsureAuthServerAsync()
     {
         if (_host is null) await BuildAuthServerAsync();
+    }
+
+    private async Task EnsureResourceAwareAuthServerAsync()
+    {
+        if (_host is null) await BuildResourceAwareAuthServerAsync();
     }
 
     private Task BuildServerAsync(string resourceId, string[] scopes)
@@ -399,6 +414,65 @@ public class UmaBearerHandlerSteps : IAsyncDisposable
 
                         ctx.Response.StatusCode = 200;
                         await ctx.Response.WriteAsync(sb.ToString());
+                    });
+                });
+            });
+        }).Build();
+
+        _host.Start();
+        _client = _host.GetTestServer().CreateClient();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Builds a server where the UMA handler is configured with <c>ResourceIdParameters</c>, so
+    /// the access check in <c>HandleAuthenticateAsync</c> actually fires against the resolved resource set.
+    /// </summary>
+    private Task BuildResourceAwareAuthServerAsync()
+    {
+        var signingKey = _signingKey;
+        var issuer = _issuer;
+
+        _host = new HostBuilder().ConfigureWebHost(webHost =>
+        {
+            webHost.UseTestServer();
+            webHost.ConfigureServices(services =>
+            {
+                services.AddSingleton(_mocks.ResourceMap);
+                services.AddSingleton(_mocks.PermissionClient);
+                services.AddSingleton(_mocks.TokenClient);
+                services.AddAuthentication(UmaBearerDefaults.AuthenticationScheme)
+                    .AddUmaBearer(opts =>
+                    {
+                        opts.MapInboundClaims = false;
+                        opts.ResourceIdParameters = ["rid"]; // enables per-request access check
+                        opts.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true, ValidIssuer = issuer,
+                            ValidateAudience = false, IssuerSigningKey = signingKey
+                        };
+                    });
+                services.AddRouting();
+            });
+            webHost.Configure(app =>
+            {
+                app.UseRouting();
+                app.UseAuthentication();
+                app.UseEndpoints(ep =>
+                {
+                    // Route exposes "rid" — the handler reads this to resolve the resource set ID.
+                    ep.MapGet("/authenticate/{rid}", async ctx =>
+                    {
+                        var result = await ctx.AuthenticateAsync(UmaBearerDefaults.AuthenticationScheme);
+                        if (!result.Succeeded)
+                        {
+                            // Trigger challenge so the handler can issue a ticket.
+                            await ctx.ChallengeAsync(UmaBearerDefaults.AuthenticationScheme);
+                            return;
+                        }
+
+                        ctx.Response.StatusCode = 200;
+                        await ctx.Response.WriteAsync("ok");
                     });
                 });
             });
