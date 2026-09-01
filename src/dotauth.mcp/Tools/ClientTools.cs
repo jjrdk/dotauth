@@ -62,7 +62,7 @@ public sealed class ClientTools(IClientStore clients)
         var client = await clients.GetById(clientId, cancellationToken);
         if (client is null)
         {
-            return $"{{\"error\":\"Client '{clientId}' not found\"}}";
+            return JsonSerializer.Serialize(new { error = $"Client '{clientId}' not found" });
         }
 
         // Return the client without secret material.
