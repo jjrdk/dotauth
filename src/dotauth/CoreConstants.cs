@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using DotAuth.Api.Authorization;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
+using Microsoft.IdentityModel.Tokens;
 
 internal static class CoreConstants
 {
@@ -313,7 +314,33 @@ internal static class CoreConstants
             TokenEndPointAuthenticationMethods.ClientSecretJwt,
             TokenEndPointAuthenticationMethods.PrivateKeyJwt,
             TokenEndPointAuthenticationMethods.TlsClientAuth
-        ];
+         ];
+
+        /// <summary>
+        /// Asymmetric signing algorithms accepted for <c>private_key_jwt</c> client assertions.
+        /// Symmetric (HS*) algorithms are intentionally excluded so an RSA public key cannot be
+        /// replayed as an HMAC secret (RFC 7523 s3 algorithm-confusion defense).
+        /// </summary>
+        public static readonly string[] PrivateKeyJwtSigningAlgorithms =
+         [
+            SecurityAlgorithms.RsaSha256,
+            SecurityAlgorithms.RsaSha384,
+            SecurityAlgorithms.RsaSha512,
+            SecurityAlgorithms.EcdsaSha256,
+            SecurityAlgorithms.EcdsaSha384,
+            SecurityAlgorithms.EcdsaSha512
+          ];
+
+        /// <summary>
+        /// Symmetric signing algorithms accepted for <c>client_secret_jwt</c> assertions, whose
+        /// MAC key is the client's shared secret.
+        /// </summary>
+        public static readonly string[] ClientSecretJwtSigningAlgorithms =
+         [
+            SecurityAlgorithms.HmacSha256,
+            SecurityAlgorithms.HmacSha384,
+            SecurityAlgorithms.HmacSha512
+          ];
     }
 
     public static class EndPoints

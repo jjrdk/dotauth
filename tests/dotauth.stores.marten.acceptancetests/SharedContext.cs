@@ -22,7 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 
 public sealed class SharedContext
 {
-    public static SharedContext Instance { get; } = new ();
+    public static SharedContext Instance { get; } = new();
 
     private SharedContext()
     {

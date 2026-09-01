@@ -336,10 +336,11 @@ public static class DefaultStores
                 AllowedScopes = ["api1"],
                 GrantTypes = [GrantTypes.ClientCredentials],
                 ResponseTypes = [ResponseTypeNames.Token],
-                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256,
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")],
-                JsonWebKeys = new[] { sharedCtx.ModelSignatureKey, sharedCtx.ModelEncryptionKey }.ToJwks()
+                // client_secret_jwt uses an HMAC key derived from the shared secret.
+                JsonWebKeys = new JsonWebKeySet().AddKey(sharedCtx.JwtClientHmacKey)
             },
 
 
@@ -347,7 +348,6 @@ public static class DefaultStores
             {
                 ClientId = "private_key_client",
                 ClientName = "private_key_client",
-                Secrets = [new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = "private_key_client" }],
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.PrivateKeyJwt,
 
                 PolicyUri = new Uri("http://openid.net"),
@@ -355,11 +355,14 @@ public static class DefaultStores
                 AllowedScopes = ["api1"],
                 GrantTypes = [GrantTypes.ClientCredentials],
                 ResponseTypes = [ResponseTypeNames.Token],
-                JsonWebKeys = new JsonWebKeySet().AddKey(TestKeys.SecretKey.CreateSignatureJwk()),
-                IdTokenSignedResponseAlg = SecurityAlgorithms.HmacSha256, //SecurityAlgorithms.RsaSha256,
+                // Keep the registered public key material embedded for the broader acceptance suite.
+                // Live jwks_uri behavior is exercised by dedicated unit-level coverage until the
+                // acceptance harness publishes it through a real external host.
+                JsonWebKeys = new JsonWebKeySet().AddKey(sharedCtx.PrivateKeyClientSigningKey),
+                TokenEndPointAuthSigningAlg = SecurityAlgorithms.RsaSha256,
+                IdTokenSignedResponseAlg = SecurityAlgorithms.RsaSha256,
                 ApplicationType = ApplicationTypes.Web,
                 RedirectionUrls = [new Uri("https://localhost:4200/callback")],
-                //JwksUri = new Uri("http://localhost:5000/jwks_client")
             },
 
 

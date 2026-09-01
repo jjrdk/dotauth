@@ -131,7 +131,7 @@ public sealed class AddPermissionActionFixture
         InitializeFakeObjects(resources);
         _ticketStoreStub.Add(Arg.Any<Ticket>(), Arg.Any<CancellationToken>()).Returns(true);
 
-        var ticket = Assert.IsType<Option<Ticket>.Result>( await _requestPermissionHandler
+        var ticket = Assert.IsType<Option<Ticket>.Result>(await _requestPermissionHandler
             .Execute("tester", CancellationToken.None, addPermissionParameter));
 
         Assert.NotEmpty(ticket.Item.Requester);
@@ -142,7 +142,7 @@ public sealed class AddPermissionActionFixture
         _resourceSetRepositoryStub = Substitute.For<IResourceSetRepository>();
         _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(
-                c => Task.FromResult(resourceSets.FirstOrDefault(x => x.Id == c[1].ToString())));
+                c => Task.FromResult(resourceSets.FirstOrDefault(x => x.Id == c[1]!.ToString())));
         _resourceSetRepositoryStub.Get(Arg.Any<CancellationToken>(), Arg.Any<string[]>())
             .Returns(resourceSets);
         _ticketStoreStub = Substitute.For<ITicketStore>();

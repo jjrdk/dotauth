@@ -33,7 +33,7 @@ public sealed class ExceptionHandlerMiddlewareTests
         Assert.Contains(activityCollector.Activities, activity => activity.DisplayName == DotAuthTelemetry.ActivityNames.Exception);
         Assert.Contains(metricCollector.Measurements, measurement => measurement.Name == DotAuthTelemetry.MetricNames.UnhandledErrors && measurement.Value == 1);
         await publisher.Received(1).Publish(Arg.Is<DotAuthError>(error =>
-            error.Code == nameof(InvalidOperationException) && error.Description == "boom"));
+            error!.Code == nameof(InvalidOperationException) && error.Description == "boom"));
     }
 }
 

@@ -23,7 +23,6 @@ using DotAuth.Events;
 using DotAuth.Parameters;
 using DotAuth.Repositories;
 using DotAuth.Results;
-using DotAuth.Services;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;

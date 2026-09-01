@@ -251,7 +251,8 @@ public partial class FeatureTest
     {
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Delete, RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners")
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri($"{_fixture.Server.BaseAddress}resource_owners")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
         _responseMessage = await _fixture.Client().SendAsync(request).ConfigureAwait(false);

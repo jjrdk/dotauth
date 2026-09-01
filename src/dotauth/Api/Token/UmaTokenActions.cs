@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using DotAuth.Authenticate;
 using DotAuth.Events;
 using DotAuth.Extensions;
+using DotAuth.Repositories;
 using DotAuth.JwtToken;
 using DotAuth.Parameters;
 using DotAuth.Policies;
@@ -46,12 +47,13 @@ internal sealed class UmaTokenActions
         IJwksStore jwksStore,
         IAuthorizationPolicyValidator authorizationPolicyValidator,
         IEventPublisher eventPublisher,
+        IClientAssertionJtiStore jtiStore,
         ILogger logger)
     {
         _ticketStore = ticketStore;
         _configurationService = configurationService;
         _authorizationPolicyValidator = authorizationPolicyValidator;
-        _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
+        _authenticateClient = new AuthenticateClient(clientStore, jwksStore, jtiStore);
         _jwtGenerator = new JwtGenerator(clientStore, scopeRepository, jwksStore, logger);
         _tokenStore = tokenStore;
         _eventPublisher = eventPublisher;
@@ -181,7 +183,7 @@ internal sealed class UmaTokenActions
                     client.ClientId,
                     ticket.ResourceOwner,
                     authorizationResult.Principal.Select(claim => new ClaimData
-                        { Type = claim.Type, Value = claim.Value }),
+                    { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow)).ConfigureAwait(false);
             activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InternalError);
             activity?.SetStatus(ActivityStatusCode.Error, Strings.InternalError);
@@ -203,7 +205,7 @@ internal sealed class UmaTokenActions
                         parameter.Ticket,
                         parameter.ClientId ?? string.Empty,
                         authorizationResult.Principal.Select(claim => new ClaimData
-                            { Type = claim.Type, Value = claim.Value }),
+                        { Type = claim.Type, Value = claim.Value }),
                         DateTimeOffset.UtcNow))
                 .ConfigureAwait(false);
             activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.RequestSubmitted);
@@ -224,7 +226,7 @@ internal sealed class UmaTokenActions
                     parameter.Ticket,
                     parameter.ClientId ?? string.Empty,
                     authorizationResult.Principal.Select(claim => new ClaimData
-                        { Type = claim.Type, Value = claim.Value }),
+                    { Type = claim.Type, Value = claim.Value }),
                     DateTimeOffset.UtcNow))
             .ConfigureAwait(false);
         activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.RequestDenied);

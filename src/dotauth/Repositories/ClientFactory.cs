@@ -157,7 +157,7 @@ internal sealed class ClientFactory
             ],
             > 0 => newClient.Secrets.Select(
                     secret => secret.Type == ClientSecretTypes.SharedSecret
-                        ? new ClientSecret {Type = ClientSecretTypes.SharedSecret, Value = Id.Create()}
+                        ? new ClientSecret { Type = ClientSecretTypes.SharedSecret, Value = Id.Create() }
                         : secret)
                 .ToArray(),
             _ => client.Secrets
@@ -197,8 +197,16 @@ internal sealed class ClientFactory
         client.InitiateLoginUri = newClient.InitiateLoginUri;
 
         client.JsonWebKeys = newClient.JsonWebKeys;
+        client.JwksUri = newClient.JwksUri;
         client.PolicyUri = newClient.PolicyUri;
         client.PostLogoutRedirectUris = newClient.PostLogoutRedirectUris;
+
+        // G6: Validate client key material for the JWT-based client authentication methods.
+        var authMethodError = ValidateKeyMaterialForClientAuthMethod(client);
+        if (authMethodError is not null)
+         {
+             return new Option<Client>.Error(authMethodError.Details);
+         }
 
         //newClient.AllowedScopes ??= Array.Empty<string>();
 
@@ -370,5 +378,159 @@ internal sealed class ClientFactory
         }
 
         return new Option.Success();
-    }
-}
+        }
+
+        /// <summary>
+        /// G6: Validates that a <c>private_key_jwt</c> or <c>client_secret_jwt</c> client is
+        /// registered with usable, well-formed key material.
+        /// </summary>
+         private Option<Client>.Error? ValidateKeyMaterialForClientAuthMethod(Client client)
+        {
+        var method = client.TokenEndPointAuthMethod;
+        if (method != TokenEndPointAuthenticationMethods.PrivateKeyJwt
+            && method != TokenEndPointAuthenticationMethods.ClientSecretJwt)
+        {
+          return null;
+        }
+
+        if (method == TokenEndPointAuthenticationMethods.ClientSecretJwt)
+        {
+           // client_secret_jwt signs the assertion with the client's shared secret.
+          if (client.Secrets.All(s => s.Type != ClientSecretTypes.SharedSecret
+                          || string.IsNullOrWhiteSpace(s.Value)))
+            {
+               _logger.LogError("{Error}", "client_secret_jwt requires a shared secret.");
+              return new Option<Client>.Error(new ErrorDetails
+                 {
+                   Title = ErrorCodes.InvalidClientMetaData,
+                   Detail = "client_secret_jwt requires a non-empty shared secret.",
+                   Status = HttpStatusCode.BadRequest
+                 });
+            }
+
+           if (!string.IsNullOrWhiteSpace(client.TokenEndPointAuthSigningAlg)
+               && !CoreConstants.Supported.ClientSecretJwtSigningAlgorithms.Any(x =>
+                   string.Equals(x, client.TokenEndPointAuthSigningAlg, StringComparison.OrdinalIgnoreCase)))
+           {
+               _logger.LogError("{Error}", "client_secret_jwt requires an HS256/384/512 token_endpoint_auth_signing_alg.");
+               return new Option<Client>.Error(new ErrorDetails
+               {
+                   Title = ErrorCodes.InvalidClientMetaData,
+                   Detail = "client_secret_jwt requires token_endpoint_auth_signing_alg to be one of HS256, HS384, or HS512.",
+                   Status = HttpStatusCode.BadRequest
+               });
+           }
+
+          return null;
+        }
+
+        // private_key_jwt: at least one of 'jwks' or 'jwks_uri' must be present.
+        var hasEmbeddedKeys = client.JsonWebKeys != null && client.JsonWebKeys.Keys.Count > 0;
+        var hasJwksUri = client.JwksUri != null;
+        if (!hasEmbeddedKeys && !hasJwksUri)
+        {
+           _logger.LogError("{Error}", "private_key_jwt requires at least one of 'jwks' or 'jwks_uri'.");
+          return new Option<Client>.Error(new ErrorDetails
+             {
+              Title = ErrorCodes.InvalidClientMetaData,
+              Detail = "private_key_jwt requires at least one of 'jwks' or 'jwks_uri' with key material.",
+              Status = HttpStatusCode.BadRequest
+             });
+        }
+
+        if (string.IsNullOrWhiteSpace(client.TokenEndPointAuthSigningAlg)
+            || !CoreConstants.Supported.PrivateKeyJwtSigningAlgorithms.Any(x =>
+                string.Equals(x, client.TokenEndPointAuthSigningAlg, StringComparison.OrdinalIgnoreCase)))
+        {
+            _logger.LogError("{Error}", "private_key_jwt requires an explicit supported token_endpoint_auth_signing_alg.");
+            return new Option<Client>.Error(new ErrorDetails
+            {
+                Title = ErrorCodes.InvalidClientMetaData,
+                Detail = "private_key_jwt requires a supported token_endpoint_auth_signing_alg at registration time.",
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+
+        // Validate embedded key material (type, kid, alg) when present.
+        if (client.JsonWebKeys != null)
+         {
+          var validationError = ValidateSignatureKeys(client.JsonWebKeys, method);
+          if (validationError != null)
+            {
+               return new Option<Client>.Error(new ErrorDetails
+                {
+                  Title = ErrorCodes.InvalidClientMetaData,
+                  Detail = validationError,
+                  Status = HttpStatusCode.BadRequest
+                });
+            }
+        }
+
+        return null;
+        }
+
+        // Validates that at least one signature key is usable: has a non-empty kid and an
+        // algorithm in the OP-supported set for the given method. Symmetric keys are rejected
+        // for private_key_jwt.
+        private static string? ValidateSignatureKeys(JsonWebKeySet jwks, string method)
+        {
+        var signatureKeys = jwks.Keys.Where(k => k.Use != JsonWebKeyUseNames.Enc).ToList();
+        if (signatureKeys.Count == 0)
+         {
+           return "no signature key found in the supplied 'jwks'.";
+         }
+
+        // At least one key must carry a usable key identifier.
+        var hasKid = signatureKeys.Any(k => !string.IsNullOrWhiteSpace(k.Kid));
+        if (!hasKid)
+         {
+           return "at least one signature key must include a 'kid'.";
+        }
+
+        var asymmetricMethod = method == TokenEndPointAuthenticationMethods.PrivateKeyJwt;
+        if (asymmetricMethod)
+         {
+           // private_key_jwt MUST be asymmetric — reject a symmetric (oct) key.
+           var hasAsymmetric = signatureKeys.Any(k =>
+               string.IsNullOrWhiteSpace(k.Kty)
+               || (k.Kty != "oct" && !IsSymmetricAlg(k.Alg)));
+          if (!hasAsymmetric)
+            {
+              return "private_key_jwt requires an asymmetric (RSA/EC) signature key, not a symmetric key.";
+            }
+        }
+
+        // At least one key must declare an OP-supported algorithm.
+        var hasSupportedAlg = signatureKeys.Any(k =>
+           IsAlgSupportedForMethod(k.Alg, method));
+        if (!hasSupportedAlg)
+        {
+         return "no signature key uses an OP-supported algorithm.";
+        }
+
+        return null;
+        }
+
+        private static bool IsSymmetricAlg(string? alg)
+        {
+        return !string.IsNullOrWhiteSpace(alg)
+           && alg.StartsWith("HS", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsAlgSupportedForMethod(string? alg, string method)
+        {
+         if (string.IsNullOrWhiteSpace(alg))
+          {
+           // If alg is omitted, fall back to the method's default supported algorithm.
+            return method == TokenEndPointAuthenticationMethods.ClientSecretJwt
+               ? CoreConstants.Supported.ClientSecretJwtSigningAlgorithms.Length > 0
+               : CoreConstants.Supported.PrivateKeyJwtSigningAlgorithms.Length > 0;
+          }
+
+        var supported = method == TokenEndPointAuthenticationMethods.ClientSecretJwt
+          ? CoreConstants.Supported.ClientSecretJwtSigningAlgorithms
+          : CoreConstants.Supported.PrivateKeyJwtSigningAlgorithms;
+
+        return supported.Any(a => string.Equals(a, alg, StringComparison.OrdinalIgnoreCase));
+        }
+        }

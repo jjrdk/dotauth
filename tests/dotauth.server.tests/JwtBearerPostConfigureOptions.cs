@@ -1,7 +1,6 @@
 ﻿namespace DotAuth.Server.Tests;
 
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;

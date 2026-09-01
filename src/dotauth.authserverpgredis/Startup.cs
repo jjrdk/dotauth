@@ -66,7 +66,7 @@ internal sealed class Startup
                     symmetricAlgorithm.Padding = PaddingMode.ISO10126;
                     return new SymmetricDataProtector(symmetricAlgorithm);
                 }
-                : null;
+        : null;
         _dotAuthConfiguration = new DotAuthConfiguration(salt)
         {
             AllowHttp = allowHttp,

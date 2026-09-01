@@ -19,7 +19,7 @@ public sealed class UpdateResourceOwnerPasswordActionFixture
         const string subject = "invalid_subject";
 
         var result = await _resourceOwnerRepositoryStub
-            .Update(new ResourceOwner {Subject = subject}, CancellationToken.None)
+            .Update(new ResourceOwner { Subject = subject }, CancellationToken.None)
             ;
 
         Assert.IsType<Option.Error>(result);

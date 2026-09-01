@@ -1,16 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.proj" />
     <PropertyGroup>
         <RootNamespace>DotAuth.Stores.Redis</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="StackExchange.Redis" Version="2.12.14" />
+        <PackageReference Include="StackExchange.Redis"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj" />
+        <ProjectReference Include="..\dotauth.shared\dotauth.shared.csproj"/>
     </ItemGroup>
 
 </Project>

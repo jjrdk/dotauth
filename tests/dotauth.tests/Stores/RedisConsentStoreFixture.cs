@@ -11,7 +11,8 @@ using StackExchange.Redis;
 using Testcontainers.Redis;
 using Xunit;
 
-public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context context) : IClassFixture<RedisConsentStoreFixture.Context>
+public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context context)
+    : IClassFixture<RedisConsentStoreFixture.Context>
 {
     [Fact]
     public async Task When_Inserting_Multiple_Consents_For_The_Same_User_Then_All_Consents_Are_Returned()
@@ -19,8 +20,12 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
         await context.ResetAsync();
         var store = context.Store;
 
-        await store.Insert(new Consent { Id = "1", Subject = "alice", ClientId = "client-a", GrantedScopes = ["manager"] }, CancellationToken.None);
-        await store.Insert(new Consent { Id = "2", Subject = "alice", ClientId = "client-b", GrantedScopes = ["uma_protection"] }, CancellationToken.None);
+        await store.Insert(
+            new Consent { Id = "1", Subject = "alice", ClientId = "client-a", GrantedScopes = ["manager"] },
+            CancellationToken.None);
+        await store.Insert(
+            new Consent { Id = "2", Subject = "alice", ClientId = "client-b", GrantedScopes = ["uma_protection"] },
+            CancellationToken.None);
 
         var consents = await store.GetConsentsForGivenUser("alice", CancellationToken.None);
 
@@ -33,10 +38,12 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
     public async Task When_Reading_A_Legacy_Single_Consent_Payload_Then_It_Is_Returned()
     {
         await context.ResetAsync();
-        var consent = new Consent { Id = "legacy", Subject = "alice", ClientId = "client-a", GrantedScopes = ["openid"] };
+        var consent = new Consent
+        { Id = "legacy", Subject = "alice", ClientId = "client-a", GrantedScopes = ["openid"] };
         // Seed using the tenant-prefixed key to simulate legacy data stored under the
         // current tenant namespace (the "test" tenant context used by this fixture).
-        await context.Database.StringSetAsync("test:alice", JsonSerializer.Serialize(consent, SharedSerializerContext.Default.Consent), TimeSpan.FromMinutes(5));
+        await context.Database.StringSetAsync("test:alice",
+            JsonSerializer.Serialize(consent, SharedSerializerContext.Default.Consent), TimeSpan.FromMinutes(5));
         var store = context.Store;
 
         var consents = await store.GetConsentsForGivenUser("alice", CancellationToken.None);
@@ -52,7 +59,8 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
         await context.ResetAsync();
         var store = context.Store;
         var first = new Consent { Id = "1", Subject = "alice", ClientId = "client-a", GrantedScopes = ["manager"] };
-        var second = new Consent { Id = "2", Subject = "alice", ClientId = "client-b", GrantedScopes = ["uma_protection"] };
+        var second = new Consent
+        { Id = "2", Subject = "alice", ClientId = "client-b", GrantedScopes = ["uma_protection"] };
 
         await store.Insert(first, CancellationToken.None);
         await store.Insert(second, CancellationToken.None);
@@ -65,7 +73,7 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
         Assert.Equal("client-b", consent.ClientId);
     }
 
-    public sealed class Context : IAsyncLifetime, IAsyncDisposable
+    public sealed class Context : IAsyncLifetime
     {
         private readonly RedisContainer _redisContainer = new RedisBuilder("redis:latest").Build();
         private ConnectionMultiplexer _connectionMultiplexer = null!;
@@ -77,7 +85,9 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
         public async ValueTask InitializeAsync()
         {
             await _redisContainer.StartAsync();
-            _connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(_redisContainer.GetConnectionString());
+            _connectionMultiplexer =
+                await ConnectionMultiplexer.ConnectAsync(_redisContainer.GetConnectionString(),
+                    x => x.AllowAdmin = true);
             // Use a fixed tenant context so tests are isolated to the "test" namespace.
             Store = new RedisConsentStore(_connectionMultiplexer.GetDatabase(), new StaticTenantContext("test"));
         }
@@ -89,20 +99,10 @@ public sealed class RedisConsentStoreFixture(RedisConsentStoreFixture.Context co
 
         public async ValueTask DisposeAsync()
         {
-            if (_connectionMultiplexer != null)
-            {
-                await _connectionMultiplexer.CloseAsync();
-                _connectionMultiplexer.Dispose();
-            }
+            await _connectionMultiplexer.CloseAsync();
+            await _connectionMultiplexer.DisposeAsync();
 
             await _redisContainer.DisposeAsync();
         }
-
     }
 }
-
-
-
-
-
-

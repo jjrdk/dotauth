@@ -101,15 +101,9 @@ public abstract class ClientBase
                     cancellationToken))!;
         }
 
-        if (content is MemoryStream ms)
-        {
-            var j = Encoding.UTF8.GetString(ms.ToArray());
-            ms.Position = 0;
-        }
-
         var genericResult = content.Length == 0
             ? new ErrorDetails
-                { Status = result.StatusCode, Title = result.ReasonPhrase!, Detail = result.ReasonPhrase! }
+            { Status = result.StatusCode, Title = result.ReasonPhrase!, Detail = result.ReasonPhrase! }
             : await JsonSerializer.DeserializeAsync<ErrorDetails>(content, SharedSerializerContext.Default.ErrorDetails,
                 cancellationToken);
 

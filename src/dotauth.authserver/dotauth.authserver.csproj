@@ -1,43 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-	<Import Project="../../shared.proj" />
-	<PropertyGroup>
-		<PreserveCompilationContext>true</PreserveCompilationContext>
-		<AssemblyName>dotauth.authserver</AssemblyName>
-		<OutputType>Exe</OutputType>
-		<PackageId>dotauth.authserver</PackageId>
-		<StartupObject>DotAuth.AuthServer.Program</StartupObject>
-		<RootNamespace>DotAuth.AuthServer</RootNamespace>
-		<UserSecretsId>dotauth-authserver</UserSecretsId>
-	</PropertyGroup>
+    <PropertyGroup>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+        <AssemblyName>dotauth.authserver</AssemblyName>
+        <OutputType>Exe</OutputType>
+        <PackageId>dotauth.authserver</PackageId>
+        <StartupObject>DotAuth.AuthServer.Program</StartupObject>
+        <RootNamespace>DotAuth.AuthServer</RootNamespace>
+        <UserSecretsId>dotauth-authserver</UserSecretsId>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.7" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.7" />
-		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.7" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount"/>
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\dotauth.sms.ui\dotauth.sms.ui.csproj" />
-		<ProjectReference Include="..\dotauth.sms\dotauth.sms.csproj" />
-		<ProjectReference Include="..\dotauth.ui\dotauth.ui.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\dotauth.sms.ui\dotauth.sms.ui.csproj"/>
+        <ProjectReference Include="..\dotauth.sms\dotauth.sms.csproj"/>
+        <ProjectReference Include="..\dotauth.ui\dotauth.ui.csproj"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<TrimmerRootAssembly Include="System.Runtime" />
-		<TrimmerRootAssembly Include="System.Private.CoreLib" />
-		<TrimmerRootAssembly Include="dotauth" />
-		<TrimmerRootAssembly Include="dotauth.ui" />
-	</ItemGroup>
+    <ItemGroup>
+        <TrimmerRootAssembly Include="System.Runtime"/>
+        <TrimmerRootAssembly Include="System.Private.CoreLib"/>
+        <TrimmerRootAssembly Include="dotauth"/>
+        <TrimmerRootAssembly Include="dotauth.ui"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<TrimmerRootAssembly Include="System.Runtime" />
-		<TrimmerRootAssembly Include="System.Private.CoreLib" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Properties\" />
-	</ItemGroup>
+    <ItemGroup>
+        <Folder Include="Properties\"/>
+    </ItemGroup>
 
 </Project>

@@ -37,7 +37,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public  Task<bool> Remove(string id, CancellationToken cancellationToken = default)
+    public Task<bool> Remove(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -55,7 +55,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public  Task<ResourceSet?> Get(string owner, string id, CancellationToken cancellationToken = default)
+    public Task<ResourceSet?> Get(string owner, string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -68,7 +68,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public  Task<ResourceSet[]> Get(CancellationToken cancellationToken = default, params string[] ids)
+    public Task<ResourceSet[]> Get(CancellationToken cancellationToken = default, params string[] ids)
     {
         if (ids == null)
         {
@@ -81,7 +81,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public  Task<string?> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
+    public Task<string?> GetOwner(CancellationToken cancellationToken = default, params string[] ids)
     {
         var owners = _resources.Where(r => ids.Contains(r.Resource.Id)).Select(x => x.Owner).Distinct();
 
@@ -89,14 +89,14 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public  Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken = default)
+    public Task<ResourceSet[]> GetAll(string owner, CancellationToken cancellationToken = default)
     {
         var result = _resources.Where(x => x.Owner == owner).Select(x => x.Resource).ToArray();
         return Task.FromResult(result);
     }
 
     /// <inheritdoc />
-    public  Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken = default)
+    public Task<bool> Add(string owner, ResourceSet resourceSet, CancellationToken cancellationToken = default)
     {
         if (resourceSet == null)
         {
@@ -108,7 +108,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public  async Task<PagedResult<ResourceSetDescription>> Search(
+    public async Task<PagedResult<ResourceSetDescription>> Search(
         IReadOnlyList<Claim> owner,
         SearchResourceSet? parameter,
         CancellationToken cancellationToken = default)
@@ -120,10 +120,10 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
 
         var result = _resources.AsEnumerable();//.Select(x => x.Resource);
 
-            result = result.Where(
-                r => parameter.Terms.Any(t => r.Resource.Name.Contains(t, StringComparison.OrdinalIgnoreCase))
-                     || parameter.Terms.Any(t => r.Resource.Description.Contains(t, StringComparison.OrdinalIgnoreCase))
-                     || parameter.Terms.Any(t => r.Resource.Type.Contains(t, StringComparison.OrdinalIgnoreCase)));
+        result = result.Where(
+            r => parameter.Terms.Any(t => r.Resource.Name.Contains(t, StringComparison.OrdinalIgnoreCase))
+                 || parameter.Terms.Any(t => r.Resource.Description.Contains(t, StringComparison.OrdinalIgnoreCase))
+                 || parameter.Terms.Any(t => r.Resource.Type.Contains(t, StringComparison.OrdinalIgnoreCase)));
 
         if (parameter.Types.Any())
         {
@@ -177,7 +177,7 @@ internal sealed class InMemoryResourceSetRepository : IResourceSetRepository
     }
 
     /// <inheritdoc />
-    public  Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken = default)
+    public Task<Option> Update(ResourceSet resourceSet, CancellationToken cancellationToken = default)
     {
         var rec = _resources.FirstOrDefault(p => p.Resource.Id == resourceSet.Id);
         if (rec == null)

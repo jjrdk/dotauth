@@ -66,6 +66,6 @@ public sealed class AwsSmsClient : ISmsClient
 
         var pubResponse = await _client.PublishAsync(pubRequest).ConfigureAwait(false);
 
-        return ((int) pubResponse.HttpStatusCode < 400, pubResponse.MessageId);
+        return ((int)pubResponse.HttpStatusCode < 400, pubResponse.MessageId);
     }
 }

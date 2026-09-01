@@ -27,7 +27,8 @@ public sealed class PasswordUiEndpointHandlersTests
         await authenticationService.Received(1).ChallengeAsync(
             httpContext,
             "Google",
-            Arg.Is<AuthenticationProperties>(props => props.RedirectUri == "http://localhost:8001/authenticate/logincallback"));
+            Arg.Is<AuthenticationProperties>(props =>
+                props!.RedirectUri == "http://localhost:8001/authenticate/logincallback"));
         Assert.NotNull(result);
     }
 
@@ -50,8 +51,8 @@ public sealed class PasswordUiEndpointHandlersTests
             httpContext,
             "Google",
             Arg.Is<AuthenticationProperties>(props =>
-                props.RedirectUri != null
-                && props.RedirectUri.StartsWith("http://localhost:8001/authenticate/logincallbackopenid?code=")));
+                props!.RedirectUri != null
+             && props.RedirectUri.StartsWith("http://localhost:8001/authenticate/logincallbackopenid?code=")));
         var setCookieHeaders = httpContext.Response.Headers.SetCookie.ToArray();
         Assert.Contains(setCookieHeaders, header => header is not null && header.Contains("ExternalAuth-"));
         Assert.NotNull(result);
@@ -69,16 +70,15 @@ public sealed class PasswordUiEndpointHandlersTests
         httpContext.Request.Method = HttpMethods.Post;
         httpContext.Request.ContentType = "application/x-www-form-urlencoded";
         httpContext.Features.Set<IFormFeature>(
-            new FormFeature(new FormCollection(formValues.ToDictionary(kvp => kvp.Key, kvp => new Microsoft.Extensions.Primitives.StringValues(kvp.Value)))));
+            new FormFeature(new FormCollection(formValues.ToDictionary(kvp => kvp.Key,
+                kvp => new Microsoft.Extensions.Primitives.StringValues(kvp.Value)))));
 
         if (queryValues != null && queryValues.Count > 0)
         {
-            httpContext.Request.QueryString = QueryString.Create(queryValues.Select(kvp => new KeyValuePair<string, string?>(kvp.Key, kvp.Value)));
+            httpContext.Request.QueryString =
+                QueryString.Create(queryValues.Select(kvp => new KeyValuePair<string, string?>(kvp.Key, kvp.Value)));
         }
 
         return httpContext;
     }
 }
-
-
-

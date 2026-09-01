@@ -47,10 +47,11 @@ public static class StringExtensions
         public string ToSha256SimplifiedBase64(Encoding? encoding = null)
         {
             var enc = encoding ?? Encoding.UTF8;
-            using var sha256 = SHA256.Create();
-            var entryBytes = enc.GetBytes(entry);
-            var hash = sha256.ComputeHash(entryBytes);
-            return hash.ToBase64Simplified();
+            Span<byte> entryBytes = stackalloc byte[enc.GetByteCount(entry)];
+            _ = Encoding.UTF8.GetBytes(entry, entryBytes);
+            Span<byte> destination = stackalloc byte[32];
+            _ = SHA256.HashData(entryBytes, destination);
+            return destination.ToBase64Simplified();
         }
 
         /// <summary>
@@ -69,44 +70,50 @@ public static class StringExtensions
     /// </summary>
     /// <param name="bytes">The bytes to encode.</param>
     /// <returns></returns>
-    public static string ToBase64Simplified(this byte[]? bytes)
+    public static string ToBase64Simplified(this Span<byte> bytes)
     {
-        return bytes == null
+        return bytes.Length == 0
             ? string.Empty
             : Convert.ToBase64String(bytes).Split('=')[0].Replace('+', '-').Replace('/', '_');
     }
 
-    /// <summary>
-    /// Base64 decode.
-    /// </summary>
     /// <param name="base64EncodedData">The base64 encoded data.</param>
-    /// <returns></returns>
-    public static string Base64Decode(this string base64EncodedData)
+    extension(string base64EncodedData)
     {
-        var decodeBytes = base64EncodedData.Base64DecodeBytes();
-        return Encoding.UTF8.GetString(decodeBytes);
-    }
-
-    /// <summary>
-    /// Base64 decode.
-    /// </summary>
-    /// <param name="base64EncodedData">The base64 encoded data.</param>
-    /// <returns></returns>
-    public static byte[] Base64DecodeBytes(this string base64EncodedData)
-    {
-        var s = base64EncodedData.Trim().Replace(" ", "+").Replace('-', '+').Replace('_', '/');
-        switch (s.Length % 4)
+        /// <summary>
+        /// Base64 decode.
+        /// </summary>
+        /// <returns></returns>
+        public string Base64Decode()
         {
-            case 0:
-                return Convert.FromBase64String(s);
-            case 2:
-                s += "==";
-                goto case 0;
-            case 3:
-                s += "=";
-                goto case 0;
-            default:
-                throw new InvalidOperationException("Illegal base64url string!");
+            var decodeBytes = base64EncodedData.Base64DecodeBytes();
+            return Encoding.UTF8.GetString(decodeBytes);
+        }
+
+        /// <summary>
+        /// Base64 decode.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] Base64DecodeBytes()
+        {
+            var start = base64EncodedData.ToCharArray().AsSpan().Trim();
+            start.Replace(' ', '+');
+            start.Replace('-', '+');
+            start.Replace('_', '/');
+            var s = new string(start);
+            switch (start.Length % 4)
+            {
+                case 0:
+                    return Convert.FromBase64String(s);
+                case 2:
+                    s += "==";
+                    goto case 0;
+                case 3:
+                    s += "=";
+                    goto case 0;
+                default:
+                    throw new InvalidOperationException("Illegal base64url string!");
+            }
         }
     }
 }

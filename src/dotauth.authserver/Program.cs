@@ -23,8 +23,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.Extensions.Hosting;
 
-public sealed class Program
+/// <summary>
+/// Class for application entry point
+/// </summary>
+public static class Program
 {
+    /// <summary>
+    /// Application entry point
+    /// </summary>
     public static async Task Main()
     {
 #if DEBUG
@@ -32,7 +38,7 @@ public sealed class Program
 #endif
         Trace.Listeners.Clear();
         Trace.Listeners.Add(new ConsoleTraceListener
-            { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
+        { TraceOutputOptions = TraceOptions.DateTime | TraceOptions.ThreadId });
         using var webHost = new HostBuilder().ConfigureWebHost(builder =>
             {
                 builder

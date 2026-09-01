@@ -17,7 +17,7 @@ public partial class FeatureTest
     {
         Assert.NotNull(_token);
         var option = await _managerClient.AddResourceOwner(
-                new AddResourceOwnerRequest {Subject = "tester", Password = "tester"},
+                new AddResourceOwnerRequest { Subject = "tester", Password = "tester" },
                 _token.AccessToken)
             ;
         var created = Assert.IsType<Option<AddResourceOwnerResponse>.Result>(option);

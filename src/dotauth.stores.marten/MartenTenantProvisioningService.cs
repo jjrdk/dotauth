@@ -40,7 +40,7 @@ using Microsoft.IdentityModel.Tokens;
 /// HTTP-context-based <c>ITenantContext</c>, so provisioning can run safely from
 /// hosted services and background jobs with no active HTTP request.
 /// </summary>
-public sealed class MartenTenantProvisioningService : ITenantProvisioningService
+public sealed partial class MartenTenantProvisioningService : ITenantProvisioningService
 {
     /// <summary>
     /// Standard OIDC scopes seeded for every new tenant.
@@ -137,13 +137,13 @@ public sealed class MartenTenantProvisioningService : ITenantProvisioningService
 
     /// <inheritdoc />
     public async Task<bool> IsProvisionedAsync(
-        string tenantId,
+        string customerId,
         CancellationToken cancellationToken = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(customerId);
 
         // Open a read-only query session scoped to the target tenant.
-        await using var session = _documentStore.QuerySession(tenantId);
+        await using var session = _documentStore.QuerySession(customerId);
         return await session.Query<JsonWebKeyContainer>()
             .AnyAsync(x => x.Jwk.HasPrivateKey == true, cancellationToken)
             .ConfigureAwait(false);
@@ -151,35 +151,35 @@ public sealed class MartenTenantProvisioningService : ITenantProvisioningService
 
     /// <inheritdoc />
     public async Task<bool> ProvisionAsync(
-        string tenantId,
+        string customerId,
         Scope[]? additionalScopes = null,
         CancellationToken cancellationToken = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(customerId);
 
-        _logger.LogDebug("Provisioning tenant '{TenantId}'", tenantId);
+        LogProvisioningCustomerId(customerId);
 
         // Open a write session scoped directly to this tenant, bypassing
         // the HTTP-context ITenantContext so provisioning works from any context.
-        await using var session = _documentStore.LightweightSession(tenantId);
+        await using var session = _documentStore.LightweightSession(customerId);
 
-        await EnsureSigningKeyAsync(session, tenantId, cancellationToken).ConfigureAwait(false);
+        await EnsureSigningKeyAsync(session, customerId, cancellationToken).ConfigureAwait(false);
         await EnsureScopesAsync(session, additionalScopes, cancellationToken).ConfigureAwait(false);
 
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        _logger.LogInformation("Tenant '{TenantId}' provisioned", tenantId);
+        LogTenantCustomerIdProvisioned(customerId);
         return true;
     }
 
     /// <summary>
-    /// Generates and stores an RSA-2048 signing key pair for the tenant if none
+    /// Generates and stores an RSA-2048 signing key pair for the customer if none
     /// exists yet. Both the private and public JWKs are stored so that signing
     /// and JWKS discovery work out of the box.
     /// </summary>
     private async Task EnsureSigningKeyAsync(
         IDocumentSession session,
-        string tenantId,
+        string customerId,
         CancellationToken cancellationToken)
     {
         var hasKey = await session.Query<JsonWebKeyContainer>()
@@ -188,17 +188,17 @@ public sealed class MartenTenantProvisioningService : ITenantProvisioningService
 
         if (hasKey)
         {
-            _logger.LogDebug("Tenant '{TenantId}' already has a signing key — skipping key generation", tenantId);
+            LogTenantCustomerIdAlreadyHasASigningKeySkippingKeyGeneration(customerId);
             return;
         }
 
-        _logger.LogInformation("Generating RSA-2048 signing key for tenant '{TenantId}'", tenantId);
+        LogGeneratingRsaSigningKeyForCustomerId(customerId);
 
         // Generate a fresh RSA-2048 key pair.
         using var rsa = RSA.Create(2048);
         var keyId = Guid.CreateVersion7().ToString("N");
 
-        // Private key — stored per-tenant with HasPrivateKey=true.
+        // Private key — stored per-customer with HasPrivateKey=true.
         // Used internally for signing JWTs.
         var privateRsaKey = new RsaSecurityKey(rsa) { KeyId = keyId };
         var privateJwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(privateRsaKey);
@@ -243,11 +243,26 @@ public sealed class MartenTenantProvisioningService : ITenantProvisioningService
                 continue;
             }
 
-            _logger.LogDebug("Seeding scope '{ScopeName}'", scope.Name);
+            LogSeedingScopeScopeName(scope.Name);
             session.Store(ScopeContainer.Create(scope));
             existingNames.Add(scope.Name); // avoid duplicates within the same batch
         }
     }
+
+    [LoggerMessage(LogLevel.Debug, "Provisioning customer '{CustomerId}'")]
+    partial void LogProvisioningCustomerId(string customerId);
+
+    [LoggerMessage(LogLevel.Information, "Customer '{CustomerId}' provisioned")]
+    partial void LogTenantCustomerIdProvisioned(string customerId);
+
+    [LoggerMessage(LogLevel.Debug, "Customer '{CustomerId}' already has a signing key — skipping key generation")]
+    partial void LogTenantCustomerIdAlreadyHasASigningKeySkippingKeyGeneration(string customerId);
+
+    [LoggerMessage(LogLevel.Information, "Generating RSA-2048 signing key for customer '{CustomerId}'")]
+    partial void LogGeneratingRsaSigningKeyForCustomerId(string customerId);
+
+    [LoggerMessage(LogLevel.Debug, "Seeding scope '{ScopeName}'")]
+    partial void LogSeedingScopeScopeName(string scopeName);
 }
 
 

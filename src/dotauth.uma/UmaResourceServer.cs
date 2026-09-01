@@ -33,7 +33,7 @@ public class UmaResourceServer : IUmaResourceServer
             return new ErrorDetails { Detail = "No user", Status = HttpStatusCode.Unauthorized, Title = "No user" };
         }
         var registration = await _store.GetById(resourceId, cancellationToken).ConfigureAwait(false);
-        
+
         if (registration == null)
         {
             return new Option<ResourceResult>.Error(

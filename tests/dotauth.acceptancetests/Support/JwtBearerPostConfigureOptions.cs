@@ -82,16 +82,16 @@ internal sealed class JwtBearerPostConfigureOptions : IPostConfigureOptions<JwtB
                     "The MetadataAddress or Authority must use HTTPS unless disabled for development by setting RequireHttpsMetadata=false.");
             }
 
-//            var httpClient = new HttpClient(options.BackchannelHttpHandler ?? _server.CreateHandler())
-//            {
-//                Timeout = options.BackchannelTimeout,
-//                MaxResponseContentBufferSize = 1024 * 1024 * 10 // 10 MB
-//            };
-//
-//            options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-//                options.MetadataAddress,
-//                new TestConfigurationRetriever(),
-//                new HttpDocumentRetriever(httpClient) { RequireHttps = options.RequireHttpsMetadata });
+            //            var httpClient = new HttpClient(options.BackchannelHttpHandler ?? _server.CreateHandler())
+            //            {
+            //                Timeout = options.BackchannelTimeout,
+            //                MaxResponseContentBufferSize = 1024 * 1024 * 10 // 10 MB
+            //            };
+            //
+            //            options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+            //                options.MetadataAddress,
+            //                new TestConfigurationRetriever(),
+            //                new HttpDocumentRetriever(httpClient) { RequireHttps = options.RequireHttpsMetadata });
         }
     }
 }

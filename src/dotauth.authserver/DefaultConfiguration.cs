@@ -8,7 +8,10 @@ using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using Microsoft.IdentityModel.Tokens;
 
-public static class DefaultConfiguration
+/// <summary>
+/// Default configuration seeding.
+/// </summary>
+internal static class DefaultConfiguration
 {
     public static List<Client> GetClients()
     {

@@ -28,7 +28,7 @@ public partial class FeatureTest
     [When(@"posting code to openid authentication")]
     public async Task WhenPostingCodeToOpenidAuthentication()
     {
-        var authorizationRequest = new AuthorizationRequest {client_id = "client"};
+        var authorizationRequest = new AuthorizationRequest { client_id = "client" };
         var code = Uri.EscapeDataString(Protect(_dataProtector, authorizationRequest));
         var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/authenticate/openid?code={code}");
         request.Headers.Add("Accept", "text/html");

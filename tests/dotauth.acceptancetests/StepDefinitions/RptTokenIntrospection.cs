@@ -32,7 +32,10 @@ public partial class FeatureTest
     {
         var resourceSet = new ResourceSet
         {
-            Description = "Test resource", Name = "Test resource", Scopes = ["read"], Type = "Test resource"
+            Description = "Test resource",
+            Name = "Test resource",
+            Scopes = ["read"],
+            Type = "Test resource"
         };
         Assert.NotNull(_token);
         var response =

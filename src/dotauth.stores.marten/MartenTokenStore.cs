@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 /// Defines the Marten based token store.
 /// </summary>
 /// <seealso cref="ITokenStore" />
-public sealed class MartenTokenStore : ITokenStore
+public sealed partial class MartenTokenStore : ITokenStore
 {
     private readonly Func<IDocumentSession> _sessionFactory;
     private readonly ILogger<MartenTokenStore> _logger;
@@ -91,7 +91,7 @@ public sealed class MartenTokenStore : ITokenStore
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{Error}", ex.Message);
+            LogError(ex.Message, ex);
             return false;
         }
     }
@@ -109,7 +109,7 @@ public sealed class MartenTokenStore : ITokenStore
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{Error}", ex.Message);
+            LogError(ex.Message, ex);
             return false;
         }
     }
@@ -127,7 +127,7 @@ public sealed class MartenTokenStore : ITokenStore
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{Error}", ex.Message);
+            LogError(ex.Message, ex);
             return false;
         }
     }
@@ -155,8 +155,11 @@ public sealed class MartenTokenStore : ITokenStore
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{Error}", ex.Message);
+            LogError(ex.Message, ex);
             return null;
         }
     }
+
+    [LoggerMessage(LogLevel.Error, "{Error}")]
+    partial void LogError(string error, Exception exception);
 }

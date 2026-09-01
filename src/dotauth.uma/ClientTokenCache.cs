@@ -36,13 +36,15 @@ public abstract class ClientTokenCache : ITokenCache
         Uri authority,
         HttpMessageHandler? backChannelHandler = null)
     {
-        HttpClient ClientFunc() => new(backChannelHandler ?? new HttpClientHandler { AllowAutoRedirect = true });
         _tokens = new List<StoredToken>();
         _tokenClient = new TokenClient(
             TokenCredentials.FromClientCredentials(clientId, clientSecret),
             ClientFunc,
             authority);
         _permissionClient = new UmaClient(ClientFunc, authority);
+        return;
+
+        HttpClient ClientFunc() => new(backChannelHandler ?? new HttpClientHandler { AllowAutoRedirect = true });
     }
 
     protected abstract AuthenticateClientBase CreateAuthenticateClient(string[] scopes);

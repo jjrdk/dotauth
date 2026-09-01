@@ -56,8 +56,8 @@ public interface ITenantProvisioningService
     /// Returns <c>true</c> when the specified tenant already has at least one
     /// signing key configured, meaning previous provisioning completed.
     /// </summary>
-    /// <param name="tenantId">The tenant identifier to check.</param>
+    /// <param name="customerId">The tenant identifier to check.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    Task<bool> IsProvisionedAsync(string tenantId, CancellationToken cancellationToken = default);
+    Task<bool> IsProvisionedAsync(string customerId, CancellationToken cancellationToken = default);
 }
 

@@ -42,6 +42,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
@@ -77,10 +78,7 @@ public static class ServiceCollectionExtensions
             (string roleName, string roleClaim) administratorRoleDefinition,
             params string[] authenticationSchemes)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(options);
 
             options.AddPolicy(
                 "authenticated",
@@ -302,6 +300,13 @@ public static class ServiceCollectionExtensions
                         : new TelemetryJwksRepository(repository);
                 })
                 .AddSingleton<IJwksStore>(sp => sp.GetRequiredService<IJwksRepository>())
+                .AddSingleton<IClientAssertionJtiStore>(sp =>
+                {
+                    var distributedCache = sp.GetService<IDistributedCache>();
+                    return distributedCache is null
+                        ? new InMemoryClientAssertionJtiStore()
+                        : new DistributedClientAssertionJtiStore(distributedCache);
+                })
                 .AddSingleton(sp => configuration.Clients?.Invoke(sp)
                  ?? new InMemoryClientRepository(
                         sp.GetRequiredService<IHttpClientFactory>(),
@@ -409,7 +414,7 @@ public static class ServiceCollectionExtensions
         {
             var publisher = app.ApplicationServices.GetService(typeof(IEventPublisher)) ?? new NoOpPublisher();
             var forwardedHeadersOptions = new ForwardedHeadersOptions
-                { ForwardedHeaders = ForwardedHeaders.All, ForwardLimit = 1 };
+            { ForwardedHeaders = ForwardedHeaders.All, ForwardLimit = 1 };
             forwardedHeaderConfiguration?.Invoke(forwardedHeadersOptions);
             return app
                 .UseForwardedHeaders(forwardedHeadersOptions)
@@ -423,7 +428,7 @@ public static class ServiceCollectionExtensions
                     {
                         if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
                         {
-                            context.Response.Headers["Content-Security-Policy"] =
+                            context.Response.Headers.ContentSecurityPolicy =
                                 "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'";
                         }
 

@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-internal static class CoreUiEndpointHandlers
+internal static partial class CoreUiEndpointHandlers
 {
     private const string HomeView = "/Views/Home/Index.cshtml";
     private const string ErrorView = "/Views/Error/Index.cshtml";
@@ -37,7 +37,7 @@ internal static class CoreUiEndpointHandlers
         await UiEndpointHelpers.SetUserAsync(httpContext, authenticationService).ConfigureAwait(false);
         if (settings.RedirectToLogin)
         {
-            logger.LogDebug("Redirecting to login page");
+            logger.LogRedirectingToLoginPage();
             return Results.Redirect("/authenticate");
         }
 
@@ -239,6 +239,9 @@ internal static class CoreUiEndpointHandlers
             .ConfigureAwait(false);
         return Results.Redirect(request.redirect_uri.AbsoluteUri);
     }
+
+    [LoggerMessage(LogLevel.Debug, "Redirecting to login page")]
+    static partial void LogRedirectingToLoginPage(this ILogger logger);
 }
 
 

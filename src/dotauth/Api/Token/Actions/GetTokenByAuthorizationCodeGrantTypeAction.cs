@@ -15,7 +15,6 @@
 namespace DotAuth.Api.Token.Actions;
 
 using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -26,6 +25,7 @@ using System.Threading.Tasks;
 using DotAuth.Authenticate;
 using DotAuth.Events;
 using DotAuth.Extensions;
+using DotAuth.Repositories;
 using DotAuth.JwtToken;
 using DotAuth.Parameters;
 using DotAuth.Properties;
@@ -35,6 +35,7 @@ using DotAuth.Shared.Events.OAuth;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.Telemetry;
+using Microsoft.Extensions.Caching.Memory;
 
 internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
 {
@@ -54,8 +55,8 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
     /// Tracks auth-code → issued access-token/refresh-token for RFC 6749 §10.5 double-exchange revocation.
     /// When a code is reused the server MUST revoke all tokens previously issued for that code.
     /// </summary>
-    private static readonly ConcurrentDictionary<string, (string AccessToken, string? RefreshToken)> _codeToIssuedToken =
-        new(StringComparer.Ordinal);
+    private static readonly MemoryCache CodeToIssuedToken = new(new MemoryCacheOptions
+    { ExpirationScanFrequency = TimeSpan.FromHours(1) });
 
     private readonly IAuthorizationCodeStore _authorizationCodeStore;
     private readonly RuntimeSettings _configurationService;
@@ -74,7 +75,10 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
     {
         _authorizationCodeStore = authorizationCodeStore;
         _configurationService = configurationService;
-        _authenticateClient = new AuthenticateClient(clientStore, jwksStore);
+        _authenticateClient = new AuthenticateClient(
+            clientStore,
+            jwksStore,
+            new InMemoryClientAssertionJtiStore());
         _eventPublisher = eventPublisher;
         _tokenStore = tokenStore;
         _jwksStore = jwksStore;
@@ -87,9 +91,12 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         string issuerName,
         CancellationToken cancellationToken)
     {
-        using var activity = DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.TokenAuthorizationCode);
-        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId, DotAuthTelemetry.Normalize(authorizationCodeGrantTypeParameter.ClientId));
-        activity?.SetTag(DotAuthTelemetry.TagKeys.PkcePresent, !string.IsNullOrWhiteSpace(authorizationCodeGrantTypeParameter.CodeVerifier));
+        using var activity =
+            DotAuthTelemetry.StartInternalActivity(DotAuthTelemetry.ActivityNames.TokenAuthorizationCode);
+        activity?.SetTag(DotAuthTelemetry.TagKeys.ClientId,
+            DotAuthTelemetry.Normalize(authorizationCodeGrantTypeParameter.ClientId));
+        activity?.SetTag(DotAuthTelemetry.TagKeys.PkcePresent,
+            !string.IsNullOrWhiteSpace(authorizationCodeGrantTypeParameter.CodeVerifier));
         var option = await ValidateParameter(
                 authorizationCodeGrantTypeParameter,
                 authenticationHeaderValue,
@@ -174,7 +181,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
 
         // Track issued tokens for double-exchange revocation (RFC 6749 §10.5).
         // If the same code is presented again the server will revoke these tokens.
-        _codeToIssuedToken[result.AuthCode.Code] = (grantedToken.AccessToken, grantedToken.RefreshToken);
+        CodeToIssuedToken.Set(result.AuthCode.Code, (grantedToken.AccessToken, grantedToken.RefreshToken));
 
         DotAuthTelemetry.RecordAuthorizationCodeRedeemed(result.Client.ClientId);
         activity?.SetStatus(ActivityStatusCode.Ok);
@@ -182,7 +189,7 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
     }
 
     /// <summary>
-    /// Check the parameters based on the RFC : http://openid.net/specs/openid-connect-core-1_0.html#TokenRequestValidation
+    /// Check the parameters based on the RFC: http://openid.net/specs/openid-connect-core-1_0.html#TokenRequestValidation
     /// </summary>
     /// <param name="authorizationCodeGrantTypeParameter"></param>
     /// <param name="authenticationHeaderValue"></param>
@@ -271,8 +278,10 @@ internal sealed class GetTokenByAuthorizationCodeGrantTypeAction
         {
             // Double-exchange detected: revoke all tokens previously issued for this code (RFC 6749 §10.5).
             // A server MUST deny the request and SHOULD revoke any tokens already issued for the same code.
-            if (_codeToIssuedToken.TryRemove(authorizationCodeGrantTypeParameter.Code, out var prev))
+            if (CodeToIssuedToken.TryGetValue(authorizationCodeGrantTypeParameter.Code,
+                out (string AccessToken, string? RefreshToken) prev))
             {
+                CodeToIssuedToken.Remove(authorizationCodeGrantTypeParameter.Code);
                 await _tokenStore.RemoveAccessToken(prev.AccessToken, cancellationToken).ConfigureAwait(false);
                 if (prev.RefreshToken is not null)
                 {

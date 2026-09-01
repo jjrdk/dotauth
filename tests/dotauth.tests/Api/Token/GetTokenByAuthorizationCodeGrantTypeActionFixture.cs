@@ -35,7 +35,6 @@ using DotAuth.Shared.Repositories;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
@@ -66,7 +65,8 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
             ClientSecret = "clientSecret"
         };
 
-        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).ReturnsNull();
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<Client?>(null));
 
         var result = Assert.IsType<Option<GrantedToken>.Error>(await _getTokenByAuthorizationCodeGrantTypeAction
             .Execute(
@@ -572,11 +572,12 @@ public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
         _dotAuthOptions = new RuntimeSettings(authorizationCodeValidityPeriod: TimeSpan.FromSeconds(3000));
 
         _tokenStoreFake.GetToken(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<JwtPayload>(),
-            Arg.Any<JwtPayload>(),
-            Arg.Any<CancellationToken>()).ReturnsNull();
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<JwtPayload>(),
+                Arg.Any<JwtPayload>(),
+                Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<GrantedToken?>(null));
 
         var authenticationHeader = new AuthenticationHeaderValue(
             "Basic",

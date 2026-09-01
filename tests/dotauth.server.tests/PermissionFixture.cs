@@ -99,7 +99,8 @@ public sealed class PermissionFixture : IDisposable
                 "header",
                 requests: new PermissionRequest
                 {
-                    ResourceSetId = resource.Item.Id, Scopes = ["scopescopescope"]
+                    ResourceSetId = resource.Item.Id,
+                    Scopes = ["scopescopescope"]
                 },
                 cancellationToken: TestContext.Current.CancellationToken)
         );

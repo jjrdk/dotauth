@@ -9,7 +9,7 @@ public static class OpenIdClaimTypes
     /// The open id scope.
     /// </summary>
     public const string OpenId = "openid";
-    
+
     /// <summary>
     /// The offline access scope.
     /// </summary>

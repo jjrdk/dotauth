@@ -43,7 +43,7 @@ internal sealed class NullTenantProvisioningService : ITenantProvisioningService
 
     /// <inheritdoc />
     /// <remarks>Always returns <c>true</c> (assumes tenant is provisioned).</remarks>
-    public Task<bool> IsProvisionedAsync(string tenantId, CancellationToken cancellationToken = default)
+    public Task<bool> IsProvisionedAsync(string customerId, CancellationToken cancellationToken = default)
     {
         return Task.FromResult(true);
     }

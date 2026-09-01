@@ -18,7 +18,10 @@ public sealed class ProcessAuthorizationRequestFixture
             {
                 _ = new AuthorizationParameter
                 {
-                    ClientId = clientId, Prompt = "login", State = state, RedirectUrl = new Uri(redirectUrl)
+                    ClientId = clientId,
+                    Prompt = "login",
+                    State = state,
+                    RedirectUrl = new Uri(redirectUrl)
                 };
             });
     }

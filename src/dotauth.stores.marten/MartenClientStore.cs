@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 /// Defines the marten based client store.
 /// </summary>
 /// <seealso cref="IClientRepository" />
-public sealed class MartenClientStore : IClientRepository
+public sealed partial class MartenClientStore : IClientRepository
 {
     private readonly Func<IDocumentSession> _sessionFactory;
     private readonly ILogger<MartenClientStore> _logger;
@@ -41,9 +41,7 @@ public sealed class MartenClientStore : IClientRepository
     {
         var session = _sessionFactory();
         await using var _ = session.ConfigureAwait(false);
-        var client = await session.Query<Client>()
-            .Where(x => x.ClientId == clientId)
-            .FirstOrDefaultAsync(cancellationToken)
+        var client = await session.LoadAsync<Client>(clientId, cancellationToken)
             .ConfigureAwait(false);
         if (client != null)
         {
@@ -52,11 +50,11 @@ public sealed class MartenClientStore : IClientRepository
 
         if (session is IMartenSession martenSession)
         {
-            _logger.LogWarning("Client {ClientId} not found in tenant {Tenant}", clientId, martenSession.TenantId);
+            LogClientClientidNotFoundInTenantTenant(clientId, martenSession.TenantId);
         }
         else
         {
-            _logger.LogWarning("Client {ClientId} not found", clientId);
+            LogClientClientidNotFound(clientId);
         }
 
         return null;
@@ -147,4 +145,10 @@ public sealed class MartenClientStore : IClientRepository
         await session.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
     }
+
+    [LoggerMessage(LogLevel.Warning, "Client {ClientId} not found in tenant {Tenant}")]
+    partial void LogClientClientidNotFoundInTenantTenant(string clientId, string tenant);
+
+    [LoggerMessage(LogLevel.Warning, "Client {ClientId} not found")]
+    partial void LogClientClientidNotFound(string clientId);
 }

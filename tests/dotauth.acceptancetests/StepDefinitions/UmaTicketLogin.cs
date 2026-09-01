@@ -54,7 +54,8 @@ public partial class FeatureTest
     {
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = new Uri($"http://localhost/data/{_resourceSetResponse.Id}")
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"http://localhost/data/{_resourceSetResponse.Id}")
         };
         Assert.NotNull(_token);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
@@ -89,7 +90,8 @@ public partial class FeatureTest
     {
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = new Uri($"http://localhost/data/{_resourceSetResponse.Id}")
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"http://localhost/data/{_resourceSetResponse.Id}")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(_umaToken!.TokenType, _umaToken.AccessToken);
         var response = await _fixture!.Client().SendAsync(request);

@@ -13,7 +13,6 @@ using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.Authenticate;
 using MartinCostello.Logging.XUnit;
 using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 public sealed class LocalOpenIdUserAuthenticationActionFixture
@@ -36,7 +35,7 @@ public sealed class LocalOpenIdUserAuthenticationActionFixture
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<CancellationToken>())
-            .ReturnsNull();
+            .Returns(Task.FromResult<ResourceOwner?>(null));
         InitializeFakeObjects(authenticateService);
         var localAuthenticationParameter = new LocalAuthenticationParameter();
         var authorizationParameter = new AuthorizationParameter();

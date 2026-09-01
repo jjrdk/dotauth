@@ -12,7 +12,7 @@ public sealed record SearchResourceSet
     /// </summary>
     [JsonPropertyName("id_token")]
     public string IdToken { get; set; } = "";
-    
+
     /// <summary>
     /// Gets or sets the search terms.
     /// </summary>
@@ -21,7 +21,7 @@ public sealed record SearchResourceSet
     /// </value>
     [JsonPropertyName("terms")]
     public string[] Terms { get; set; } = [];
-    
+
     /// <summary>
     /// Gets or sets the requested resource types.
     /// </summary>

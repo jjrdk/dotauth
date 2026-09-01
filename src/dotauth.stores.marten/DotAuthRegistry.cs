@@ -217,6 +217,7 @@ public sealed class DotAuthRegistry : MartenRegistry
             .GinIndexJsonData(idx => { idx.IsConcurrent = false; });
         For<JsonWebKeyContainer>()
             .Identity(x => x.Id)
+            .Duplicate(x => x.Jwk.Kid)
             .Duplicate(x => x.Jwk.Alg, pgType: "character(20)")
             .Duplicate(x => x.Jwk.Use, "character(3)")
             .Duplicate(x => x.Jwk.HasPrivateKey, dbType: NpgsqlDbType.Boolean)

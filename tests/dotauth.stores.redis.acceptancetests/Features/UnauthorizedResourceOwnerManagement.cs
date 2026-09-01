@@ -15,7 +15,7 @@ public partial class FeatureTest
     private Option<AddResourceOwnerResponse> _addResourceOwnerResponseOption = null!;
     private Option<ResourceOwner[]> _listResourceOwnerResponseOption = null!;
     private Option _option = null!;
-    
+
     [Given(@"an admin token")]
     public async Task GivenAnAdminToken()
     {

@@ -6,8 +6,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using DotAuth.Client;
-using DotAuth.Properties;
-using DotAuth.Shared;
 using Xunit;
 
 public sealed class ScopeFixture : IDisposable

@@ -34,4 +34,21 @@ public sealed class CreateClientViewModel
     /// Gets or sets the grant types.
     /// </summary>
     public List<string> GrantTypes { get; set; } = new();
+
+     /// <summary>
+     /// Gets or sets the token endpoint authentication method
+     /// (e.g. <c>private_key_jwt</c>, <c>client_secret_jwt</c>).
+     /// </summary>
+    public string? TokenEndPointAuthMethod { get; set; }
+
+     /// <summary>
+     /// Gets or sets the client's JSON Web Key Set document as a JSON string,
+     /// published so the server can verify client assertions (private_key_jwt).
+     /// </summary>
+    public string? Jwks { get; set; }
+
+     /// <summary>
+     /// Gets or sets the URL at which the client publishes its JWKS.
+     /// </summary>
+    public string? JwksUri { get; set; }
 }

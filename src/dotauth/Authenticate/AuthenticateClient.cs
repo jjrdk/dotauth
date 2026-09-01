@@ -39,9 +39,10 @@ internal sealed class AuthenticateClient
     /// </summary>
     /// <param name="clientRepository">The client repository.</param>
     /// <param name="jwksStore">The key store.</param>
-    public AuthenticateClient(IClientStore clientRepository, IJwksStore jwksStore)
+    /// <param name="jtiStore">The replay protection store.</param>
+    public AuthenticateClient(IClientStore clientRepository, IJwksStore jwksStore, IClientAssertionJtiStore jtiStore)
     {
-        _clientAssertionAuthentication = new ClientAssertionAuthentication(clientRepository, jwksStore);
+        _clientAssertionAuthentication = new ClientAssertionAuthentication(clientRepository, jwksStore, jtiStore);
         _clientRepository = clientRepository;
     }
 
@@ -100,6 +101,19 @@ internal sealed class AuthenticateClient
                 }
 
                 break;
+            case TokenEndPointAuthenticationMethods.PrivateKeyJwt:
+                if (!ClientAssertionAuthentication.IsJwtBearerAssertion(instruction))
+                {
+                    client = null;
+                    errorMessage = Strings.TheClientAssertionIsNotAJwsToken;
+                    break;
+                }
+
+                var privateKeyResult = await _clientAssertionAuthentication
+                    .AuthenticateClientWithPrivateKeyJwt(instruction, issuerName, cancellationToken)
+                    .ConfigureAwait(false);
+                RecordClientAuthenticationResult(activity, authMethod, clientId, privateKeyResult.Client != null, privateKeyResult.ErrorMessage);
+                return privateKeyResult;
             case TokenEndPointAuthenticationMethods.ClientSecretJwt:
                 if (client.Secrets.Any(s => s.Type == ClientSecretTypes.SharedSecret))
                 {
@@ -110,17 +124,11 @@ internal sealed class AuthenticateClient
                     return jwtResult;
                 }
 
+                client = null;
                 errorMessage = string.Format(
                     Strings.TheClientDoesntContainASharedSecret,
-                    client.ClientId);
+                    client?.ClientId);
                 break;
-
-            case TokenEndPointAuthenticationMethods.PrivateKeyJwt:
-                var privateKeyResult = await _clientAssertionAuthentication
-                    .AuthenticateClientWithPrivateKeyJwt(instruction, issuerName, cancellationToken)
-                    .ConfigureAwait(false);
-                RecordClientAuthenticationResult(activity, authMethod, clientId, privateKeyResult.Client != null, privateKeyResult.ErrorMessage);
-                return privateKeyResult;
             case TokenEndPointAuthenticationMethods.TlsClientAuth:
                 client = AuthenticateTlsClient(instruction, client);
                 if (client == null)

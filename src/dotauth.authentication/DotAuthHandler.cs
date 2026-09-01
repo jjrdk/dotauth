@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 public class DotAuthHandler<T> : RemoteAuthenticationHandler<T>
     where T : DotAuthOptions, new()
 {
+    private static readonly JwtSecurityTokenHandler Handler = new();
     private readonly TokenClient _client;
     private readonly Pkce? _pkce;
 
@@ -59,8 +60,7 @@ public class DotAuthHandler<T> : RemoteAuthenticationHandler<T>
         switch (option)
         {
             case Option<GrantedTokenResponse>.Result result:
-                var handler = new JwtSecurityTokenHandler();
-                var v = await handler.ValidateTokenAsync(result.Item.AccessToken, Options.TokenValidationParameters);
+                var v = await Handler.ValidateTokenAsync(result.Item.AccessToken, Options.TokenValidationParameters);
                 return HandleRequestResult.Success(
                     new AuthenticationTicket(new ClaimsPrincipal(v.ClaimsIdentity),
                         DotAuthDefaults.AuthenticationScheme));
@@ -98,15 +98,15 @@ public class DotAuthHandler<T> : RemoteAuthenticationHandler<T>
                 ));
                 break;
             case Option<Uri>.Error error:
-            {
-                var context = new RemoteFailureContext(Context,
-                    authenticationScheme,
-                    Options,
-                    new Exception(error.Details.Title));
-                await Options.Events.OnRemoteFailure(
-                    context);
-                break;
-            }
+                {
+                    var context = new RemoteFailureContext(Context,
+                        authenticationScheme,
+                        Options,
+                        new Exception(error.Details.Title));
+                    await Options.Events.OnRemoteFailure(
+                        context);
+                    break;
+                }
         }
     }
 }

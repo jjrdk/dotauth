@@ -2,13 +2,13 @@
 
 using System;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Api.Token;
 using DotAuth.Events;
 using DotAuth.Parameters;
 using DotAuth.Policies;
+using DotAuth.Repositories;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Policies;
@@ -70,6 +70,7 @@ public class UmaTokenActionsTests
             jwksStore,
             authorizationPolicyValidator,
             eventPublisher,
+            new InMemoryClientAssertionJtiStore(),
             NullLogger.Instance);
     }
 
@@ -79,7 +80,9 @@ public class UmaTokenActionsTests
         var option = await _tokenActions.GetTokenByTicketId(
             new GetTokenViaTicketIdParameter
             {
-                Ticket = "ticket_id", ClientId = "client", ClientSecret = "secret",
+                Ticket = "ticket_id",
+                ClientId = "client",
+                ClientSecret = "secret",
                 ClaimToken = new ClaimTokenParameter { Format = "", Token = "token" }
             },
             new AuthenticationHeaderValue("Bearer", "rtttdvdtgdtg"),

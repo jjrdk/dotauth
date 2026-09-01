@@ -28,7 +28,7 @@ public sealed class UpdateResourceOwnerViewModel
     {
         IsLocalAccount = isLocalAccount;
         SelectedTwoFactorAuthType = selectedTwoFactorAuthType;
-        Credentials = new UpdateResourceOwnerCredentialsViewModel {Login = login};
+        Credentials = new UpdateResourceOwnerCredentialsViewModel { Login = login };
         EditableClaims = editableClaims;
         NotEditableClaims = notEditableClaims;
         TwoFactorAuthTypes = twoFactorAuthTypes;

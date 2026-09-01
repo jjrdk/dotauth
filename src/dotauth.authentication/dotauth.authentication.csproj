@@ -1,24 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../../shared.proj" />
     <PropertyGroup>
         <RootNamespace>DotAuth.Authentication</RootNamespace>
 
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
         <Description>DotAuth authentication handler for ASP.NET Core.</Description>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.9" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
-      <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.7" />
-      <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Options"/>
+        <PackageReference Include="System.Security.Cryptography.Xml"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\dotauth.client\dotauth.client.csproj" />
+        <ProjectReference Include="..\dotauth.client\dotauth.client.csproj"/>
     </ItemGroup>
 
 </Project>

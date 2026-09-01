@@ -51,7 +51,7 @@ public sealed class UpdateResourceSetActionFixture
         _resourceSetRepositoryStub.Get(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(resourceSet);
         _resourceSetRepositoryStub.Update(Arg.Any<ResourceSet>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<Option>(new Option.Error(new ErrorDetails{Title = "", Detail = ""})));
+            .Returns(Task.FromResult<Option>(new Option.Error(new ErrorDetails { Title = "", Detail = "" })));
 
         var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter, CancellationToken.None);
         Assert.IsType<Option.Error>(result);

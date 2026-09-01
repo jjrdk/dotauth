@@ -23,7 +23,7 @@ public partial class FeatureTest
     [When(@"requesting an sms")]
     public async Task WhenRequestingAnSms()
     {
-        var response = await _tokenClient.RequestSms(new ConfirmationCodeRequest {PhoneNumber = "phone"})
+        var response = await _tokenClient.RequestSms(new ConfirmationCodeRequest { PhoneNumber = "phone" })
             ;
 
         Assert.IsType<Option.Success>(response);

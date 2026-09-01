@@ -59,7 +59,15 @@ internal sealed class JwtGenerator
             { SecurityAlgorithms.RsaSha512, HashWithSha512 }
         };
 
-    public JwtGenerator(IClientStore clientRepository, IScopeStore scopeRepository, IJwksStore jwksStore, ILogger logger)
+    // The authentication methods reference (amr) value used on every identity token.
+    // Hoisted out of FillInIdentityTokenClaims so it is not re-allocated on a hot path.
+    private static readonly string[] AmrValues = ["password"];
+
+    public JwtGenerator(
+        IClientStore clientRepository,
+        IScopeStore scopeRepository,
+        IJwksStore jwksStore,
+        ILogger logger)
     {
         _clientRepository = clientRepository;
         _scopeRepository = scopeRepository;
@@ -118,16 +126,16 @@ internal sealed class JwtGenerator
         var payload = new JwtPayload(
         [
             new Claim(StandardClaimNames.Audiences, client.ClientId),
-                new Claim(StandardClaimNames.Issuer, issuerName),
-                new Claim(
-                    StandardClaimNames.ExpirationTime,
-                    expirationInSeconds.ToString(CultureInfo.InvariantCulture),
-                    ClaimValueTypes.Double),
-                new Claim(
-                    StandardClaimNames.Iat,
-                    issuedAtTime.ToString(CultureInfo.InvariantCulture),
-                    ClaimValueTypes.Double),
-                new Claim(StandardClaimNames.Scopes, string.Join(" ", scopes))
+            new Claim(StandardClaimNames.Issuer, issuerName),
+            new Claim(
+                StandardClaimNames.ExpirationTime,
+                expirationInSeconds.ToString(CultureInfo.InvariantCulture),
+                ClaimValueTypes.Double),
+            new Claim(
+                StandardClaimNames.Iat,
+                issuedAtTime.ToString(CultureInfo.InvariantCulture),
+                ClaimValueTypes.Double),
+            new Claim(StandardClaimNames.Scopes, string.Join(" ", scopes))
         ]);
         var token = new JwtSecurityToken(jwtHeader, payload);
 
@@ -159,6 +167,7 @@ internal sealed class JwtGenerator
         {
             return result;
         }
+
         var payload = await FillInResourceOwnerClaimsFromScopes(
                 r.Item,
                 authorizationParameter,
@@ -247,12 +256,11 @@ internal sealed class JwtGenerator
             return;
         }
 
-        if (!_mappingJwsAlgToHashingFunctions.ContainsKey(signedAlg))
+        if (!_mappingJwsAlgToHashingFunctions.TryGetValue(signedAlg, out var callback))
         {
             throw new InvalidOperationException($"the alg {signedAlg} is not supported");
         }
 
-        var callback = _mappingJwsAlgToHashingFunctions[signedAlg];
         if (!string.IsNullOrWhiteSpace(authorizationCode))
         {
             var hashingAuthorizationCode = callback(authorizationCode);
@@ -285,8 +293,8 @@ internal sealed class JwtGenerator
         var claims = await GetClaimsFromRequestedScopes(claimsPrincipal, cancellationToken, scopes)
             .ConfigureAwait(false);
         foreach (var claim in claims
-                     .GroupBy(c => c.Type)
-                     .Where(x => x.Key != OpenIdClaimTypes.Subject))
+            .GroupBy(c => c.Type)
+            .Where(x => x.Key != OpenIdClaimTypes.Subject))
         {
             jwsPayload.Add(claim.Key, string.Join(" ", claim.Select(c => c.Value)));
         }
@@ -308,7 +316,7 @@ internal sealed class JwtGenerator
                 Name = OpenIdClaimTypes.Subject,
                 Parameters = new Dictionary<string, object>
                 {
-                    {CoreConstants.StandardClaimParameterValueNames.EssentialName, true}
+                    { CoreConstants.StandardClaimParameterValueNames.EssentialName, true }
                 }
             };
 
@@ -369,43 +377,51 @@ internal sealed class JwtGenerator
         var maxAge = authorizationParameter.MaxAge;
         //var amrValues = authorizationParameter.AmrValues;
         var cl = await _clientRepository.GetById(clientId, cancellationToken).ConfigureAwait(false);
-        var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Issuer);
-        var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Audiences);
+        // Resolve the identity-token claim parameters from a single lookup table instead of
+        // nine independent FirstOrDefault scans over the (usually tiny) claimParameters array.
+        var parameterLookup = claimParameters
+            .GroupBy(parameter => parameter.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+
+        var issuerClaimParameter = ResolveParameter(parameterLookup, StandardClaimNames.Issuer);
+        var audiencesClaimParameter =
+            ResolveParameter(parameterLookup, StandardClaimNames.Audiences);
         var expirationTimeClaimParameter =
-            claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.ExpirationTime);
-        var issuedAtTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Iat);
+            ResolveParameter(parameterLookup, StandardClaimNames.ExpirationTime);
+        var issuedAtTimeClaimParameter =
+            ResolveParameter(parameterLookup, StandardClaimNames.Iat);
         var authenticationTimeParameter =
-            claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.AuthenticationTime);
-        var nonceParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Nonce);
-        var acrParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Acr);
-        var amrParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Amr);
-        var azpParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Azp);
+            ResolveParameter(parameterLookup, StandardClaimNames.AuthenticationTime);
+        var nonceParameter = ResolveParameter(parameterLookup, StandardClaimNames.Nonce);
+        var acrParameter = ResolveParameter(parameterLookup, StandardClaimNames.Acr);
+        var amrParameter = ResolveParameter(parameterLookup, StandardClaimNames.Amr);
+        var azpParameter = ResolveParameter(parameterLookup, StandardClaimNames.Azp);
 
         var (expirationInSeconds, issuedAtTime) = GetExpirationAndIssuedTime(cl?.TokenLifetime);
         const string acrValues = $"{CoreConstants.StandardArcParameterNames.OpenIdCustomAuthLevel}.password=1";
-        var amr = new[] { "password" };
-
         var azp = string.Empty;
 
-        var clients = await _clientRepository.GetAll(cancellationToken).ConfigureAwait(false);
-        var stringComparer = StringComparer.OrdinalIgnoreCase;
-        var audiences = clients
-            .Select(client => (client.ClientId, client.CheckResponseTypes(ResponseTypeNames.IdToken)))
-            .Where(
-                t => t.Item2
-                     || t.ClientId == authorizationParameter.ClientId)
-            .Select(t => t.ClientId)
-            .Where(c => !string.IsNullOrWhiteSpace(c))
-            .Distinct(stringComparer).ToArray();
+        // Standard-correct audiences (OIDC Core 1.0, section 2 and section 3.1.3.7): the ID
+        // Token's `aud` is the OAuth 2.0 client_id of the requesting Relying Party. It MUST
+        // contain that client_id and MAY contain other explicitly-declared audiences - it is
+        // NOT the whole client registry and it is NOT the OP issuer. Folding either into `aud`
+        // broke the intended-recipient binding, allowed cross-client/cross-tenant token
+        // replay, bloated/forced azp on every token, and forced a full client-table scan on
+        // every id_token issuance. Additional audiences, when a use case genuinely requires
+        // them (token substitution, federation), should be supplied as explicit, validated
+        // inputs rather than derived from the entire client store.
+        //
+        // Guard against null/empty clientId: a null aud entry would NPE inside
+        // JwtPayload.AddListofObjects when the payload materialises its claims.
+        var audiences = string.IsNullOrWhiteSpace(clientId)
+            ? Array.Empty<string>()
+            : new[] { clientId };
 
-        // The identity token can be reused by the identity server.
-        if (!string.IsNullOrWhiteSpace(issuerName) && !audiences.Contains(issuerName, stringComparer))
-        {
-            audiences = audiences.Add(issuerName);
-        }
-
-        var authenticationInstant = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.AuthenticationInstant).MaxBy(x => x.Value);
-        var authenticationInstantValue = authenticationInstant == null ? string.Empty : authenticationInstant.Value;
+        // Single-pass replacement for the previous Where(...).MaxBy(...) on claimsPrincipal,
+        // which scanned the claim collection twice. Preserves the original "max by string
+        // value of the AuthenticationInstant claim" semantics.
+        var authenticationInstantValue =
+            GetLatestAuthenticationInstantValue(claimsPrincipal.Claims);
 
         if (issuerClaimParameter != null)
         {
@@ -443,7 +459,8 @@ internal sealed class JwtGenerator
 
         if (issuedAtTimeClaimParameter != null)
         {
-            var issuedAtTimeIsValid = ValidateClaimValue(issuedAtTime.ToString(CultureInfo.InvariantCulture), issuedAtTimeClaimParameter);
+            var issuedAtTimeIsValid = ValidateClaimValue(issuedAtTime.ToString(CultureInfo.InvariantCulture),
+                issuedAtTimeClaimParameter);
             if (!issuedAtTimeIsValid)
             {
                 return CreateClaimError(StandardClaimNames.Iat, state);
@@ -481,7 +498,7 @@ internal sealed class JwtGenerator
 
         if (amrParameter != null)
         {
-            var isAmrParameterValid = ValidateClaimValues(amr, amrParameter);
+            var isAmrParameterValid = ValidateClaimValues(AmrValues, amrParameter);
             if (!isAmrParameterValid)
             {
                 return CreateClaimError(StandardClaimNames.Amr, state);
@@ -499,14 +516,14 @@ internal sealed class JwtGenerator
         }
 
         jwsPayload.Add(StandardClaimNames.Issuer, issuerName);
-        jwsPayload.Add(StandardClaimNames.Audiences, audiences.ToArray());
+        jwsPayload.Add(StandardClaimNames.Audiences, audiences);
         jwsPayload.Add(StandardClaimNames.ExpirationTime, expirationInSeconds);
         jwsPayload.Add(StandardClaimNames.Iat, issuedAtTime);
 
         // Set the auth_time if it's requested as an essential claim OR the max_age request is specified
         if ((authenticationTimeParameter is { Essential: true }
              || !maxAge.Equals(0))
-            && !string.IsNullOrWhiteSpace(authenticationInstantValue))
+         && !string.IsNullOrWhiteSpace(authenticationInstantValue))
         {
             jwsPayload.Add(StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstantValue));
         }
@@ -517,13 +534,18 @@ internal sealed class JwtGenerator
         }
 
         jwsPayload.Add(StandardClaimNames.Acr, acrValues);
-        jwsPayload.Add(StandardClaimNames.Amr, amr);
+        jwsPayload.Add(StandardClaimNames.Amr, AmrValues);
         if (!string.IsNullOrWhiteSpace(azp))
         {
             jwsPayload.Add(StandardClaimNames.Azp, azp);
         }
 
         return new Option<JwtPayload>.Result(jwsPayload);
+
+        static ClaimParameter? ResolveParameter(
+            IReadOnlyDictionary<string, ClaimParameter> lookup,
+            string name)
+            => lookup.GetValueOrDefault(name);
     }
 
     private Option<JwtPayload> CreateClaimError(string claimName, string? state)
@@ -538,8 +560,8 @@ internal sealed class JwtGenerator
     private static bool ValidateClaimValue(object? claimValue, ClaimParameter claimParameter)
     {
         if (claimParameter.EssentialParameterExist
-            && (claimValue == null || string.IsNullOrWhiteSpace(claimValue.ToString()))
-            && claimParameter.Essential)
+         && (claimValue == null || string.IsNullOrWhiteSpace(claimValue.ToString()))
+         && claimParameter.Essential)
         {
             return false;
         }
@@ -550,28 +572,28 @@ internal sealed class JwtGenerator
         }
 
         return !claimParameter.ValuesParameterExist
-               || claimParameter.Values == null
-               || !claimParameter.Values.Contains(claimValue);
+         || claimParameter.Values == null
+         || !claimParameter.Values.Contains(claimValue);
     }
 
     private static bool ValidateClaimValues(string[]? claimValues, ClaimParameter claimParameter)
     {
         if (claimParameter.EssentialParameterExist
-            && (claimValues == null || claimValues.Any())
-            && claimParameter.Essential)
+         && (claimValues == null || claimValues.Any())
+         && claimParameter.Essential)
         {
             return false;
         }
 
         if (claimParameter.ValueParameterExist
-            && (claimValues == null || !claimValues.Contains(claimParameter.Value)))
+         && (claimValues == null || !claimValues.Contains(claimParameter.Value)))
         {
             return false;
         }
 
         return !claimParameter.ValuesParameterExist
-               || claimParameter.Values == null
-               || (claimValues != null && claimParameter.Values.All(claimValues.Contains));
+         || claimParameter.Values == null
+         || (claimValues != null && claimParameter.Values.All(claimValues.Contains));
     }
 
     private async Task<List<Claim>> GetClaimsFromRequestedScopes(
@@ -592,12 +614,11 @@ internal sealed class JwtGenerator
 
     private static IEnumerable<Claim> MapToOpenIdClaims(IEnumerable<Claim> claims)
     {
-        return claims.Select(
-            claim => new Claim(
-                Shared.JwtConstants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type)
-                    ? Shared.JwtConstants.MapWifClaimsToOpenIdClaims[claim.Type]
-                    : claim.Type,
-                claim.Value));
+        return claims.Select(claim => new Claim(
+            Shared.JwtConstants.MapWifClaimsToOpenIdClaims.TryGetValue(claim.Type, out var idClaim)
+                ? idClaim
+                : claim.Type,
+            claim.Value));
     }
 
     private static KeyValuePair<double, double> GetExpirationAndIssuedTime(TimeSpan? duration)
@@ -609,39 +630,50 @@ internal sealed class JwtGenerator
         return new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds);
     }
 
+    // Returns the most recent AuthenticationInstant claim value (a single pass over
+    // claimsPrincipal), or an empty string when no such claim is present. Mirrors the
+    // previous Where(...).MaxBy(x => x.Value) semantics (ordinal max, empty default).
+    private static string GetLatestAuthenticationInstantValue(IEnumerable<Claim> claims)
+    {
+        var authenticationInstantValue = string.Empty;
+        var comparer = StringComparer.Ordinal;
+        foreach (var claim in claims)
+        {
+            var value = claim.Value;
+            if (claim.Type == ClaimTypes.AuthenticationInstant
+             && comparer.Compare(value, authenticationInstantValue) > 0)
+            {
+                authenticationInstantValue = value;
+            }
+        }
+
+        return authenticationInstantValue;
+    }
+
     private static string HashWithSha256(string parameter)
     {
-        using var sha256 = SHA256.Create();
-        return GetFirstPart(parameter, sha256);
+        Span<byte> entryBytes = stackalloc byte[Encoding.UTF8.GetByteCount(parameter)];
+        _ = Encoding.UTF8.GetBytes(parameter, entryBytes);
+        Span<byte> destination = stackalloc byte[32];
+        _ = SHA256.HashData(entryBytes, destination);
+        return destination[..16].ToBase64Simplified();
     }
 
     private static string HashWithSha384(string parameter)
     {
-        using var sha384 = SHA384.Create();
-        return GetFirstPart(parameter, sha384);
+        Span<byte> entryBytes = stackalloc byte[Encoding.UTF8.GetByteCount(parameter)];
+        _ = Encoding.UTF8.GetBytes(parameter, entryBytes);
+        Span<byte> destination = stackalloc byte[48];
+        _ = SHA384.HashData(entryBytes, destination);
+        return destination[..24].ToBase64Simplified();
     }
 
     private static string HashWithSha512(string parameter)
     {
-        using var sha512 = SHA512.Create();
-        return GetFirstPart(parameter, sha512);
-    }
-
-    private static string GetFirstPart(string parameter, HashAlgorithm alg)
-    {
-        var hashingResultBytes = alg.ComputeHash(Encoding.UTF8.GetBytes(parameter));
-        var split = SplitByteArrayInHalf(hashingResultBytes);
-        var firstPart = split[0];
-        return firstPart.ToBase64Simplified();
-    }
-
-    private static byte[][] SplitByteArrayInHalf(byte[] arr)
-    {
-        var halfIndex = arr.Length / 2;
-        var firstHalf = new byte[halfIndex];
-        var secondHalf = new byte[halfIndex];
-        Buffer.BlockCopy(arr, 0, firstHalf, 0, halfIndex);
-        Buffer.BlockCopy(arr, halfIndex, secondHalf, 0, halfIndex);
-        return [firstHalf, secondHalf];
+        Span<byte> entryBytes = stackalloc byte[Encoding.UTF8.GetByteCount(parameter)];
+        _ = Encoding.UTF8.GetBytes(parameter, entryBytes);
+        Span<byte> destination = stackalloc byte[64];
+        _ = SHA512.HashData(entryBytes, destination);
+        return destination[..32].ToBase64Simplified();
     }
 }

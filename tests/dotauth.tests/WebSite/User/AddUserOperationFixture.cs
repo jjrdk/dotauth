@@ -14,13 +14,11 @@
 
 namespace DotAuth.Tests.WebSite.User;
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth;
 using DotAuth.Events;
 using DotAuth.Services;
-using DotAuth.Shared;
 using DotAuth.Shared.Events.Logging;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;

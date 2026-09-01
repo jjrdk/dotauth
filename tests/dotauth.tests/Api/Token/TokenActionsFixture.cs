@@ -12,7 +12,6 @@ using DotAuth.Events;
 using DotAuth.Extensions;
 using DotAuth.Parameters;
 using DotAuth.Repositories;
-using DotAuth.Services;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;
 using DotAuth.Shared.Models;
@@ -68,6 +67,7 @@ public sealed class TokenActionsFixture
             eventPublisher,
             Substitute.For<ITokenStore>(),
             Substitute.For<IDeviceAuthorizationStore>(),
+            new InMemoryClientAssertionJtiStore(),
             Substitute.For<ILogger<TokenActions>>());
     }
 

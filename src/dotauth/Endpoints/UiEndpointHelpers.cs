@@ -54,25 +54,25 @@ internal static class UiEndpointHelpers
         return Results.Json(model, statusCode: statusCode);
     }
 
-        internal static IResult RedirectToError(string message, string? code = null, string? title = null)
+    internal static IResult RedirectToError(string message, string? code = null, string? title = null)
+    {
+        var query = new Dictionary<string, string?>
         {
-            var query = new Dictionary<string, string?>
-            {
-                ["code"] = code,
-                ["title"] = title,
-                ["message"] = message
-            };
+            ["code"] = code,
+            ["title"] = title,
+            ["message"] = message
+        };
 
-            // query is never null here so no null-forgiving operator is needed
-            return Results.Redirect(QueryHelpers.AddQueryString("/error", query));
-        }
+        // query is never null here so no null-forgiving operator is needed
+        return Results.Redirect(QueryHelpers.AddQueryString("/error", query));
+    }
 
     internal static IResult ToRedirectResult(HttpContext httpContext, ActionResult actionResult)
     {
-            return actionResult switch
-            {
-                // Url is annotated as non-null; no null-forgiving operator required
-                RedirectResult redirectResult => Results.Redirect(redirectResult.Url),
+        return actionResult switch
+        {
+            // Url is annotated as non-null; no null-forgiving operator required
+            RedirectResult redirectResult => Results.Redirect(redirectResult.Url),
             RedirectToRouteResult redirectToRouteResult =>
                 Results.Redirect(
                     httpContext.RequestServices.GetRequiredService<LinkGenerator>().GetPathByRouteValues(
@@ -120,7 +120,7 @@ internal static class UiEndpointHelpers
         return linkGenerator.GetPathByRouteValues(httpContext, routeName: null, values: routeValues) ?? "/";
     }
 
-        private static string BuildPathFromRouteValues(RouteValueDictionary? values)
+    private static string BuildPathFromRouteValues(RouteValueDictionary? values)
     {
         if (values == null)
         {
@@ -137,9 +137,16 @@ internal static class UiEndpointHelpers
         }
 
         var parts = new List<string>();
-        if (!string.IsNullOrWhiteSpace(area)) parts.Add(area.Trim('/'));
+        if (!string.IsNullOrWhiteSpace(area))
+        {
+            parts.Add(area.Trim('/'));
+        }
+
         parts.Add(controller.Trim('/'));
-        if (!string.IsNullOrWhiteSpace(action)) parts.Add(action.Trim('/'));
+        if (!string.IsNullOrWhiteSpace(action))
+        {
+            parts.Add(action.Trim('/'));
+        }
 
         var path = "/" + string.Join('/', parts);
 

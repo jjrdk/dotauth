@@ -262,7 +262,8 @@ public partial class FeatureTest
         Assert.NotNull(_token);
         var request = new HttpRequestMessage
         {
-            Method = HttpMethod.Delete, RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners")
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri($"{_fixture!.Server.GetTestServer().BaseAddress}resource_owners")
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
         _responseMessage = await _fixture.Client().SendAsync(request);

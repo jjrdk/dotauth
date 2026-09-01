@@ -13,48 +13,48 @@ using Microsoft.AspNetCore.Http;
 
 internal static class UserInfoEndpointHandlers
 {
-	internal static async Task<IResult> GetUserInfo(
-		HttpContext httpContext,
-		IRequestThrottle requestThrottle,
-		ITokenStore tokenStore,
-		CancellationToken cancellationToken)
-	{
-		using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.UserInfoRequest);
-		var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
-		if (throttled != null)
-		{
-			return throttled;
-		}
+    internal static async Task<IResult> GetUserInfo(
+        HttpContext httpContext,
+        IRequestThrottle requestThrottle,
+        ITokenStore tokenStore,
+        CancellationToken cancellationToken)
+    {
+        using var activity = DotAuthTelemetry.StartServerActivity(DotAuthTelemetry.ActivityNames.UserInfoRequest);
+        var throttled = await EndpointHandlerHelpers.TryThrottleAsync(httpContext, requestThrottle).ConfigureAwait(false);
+        if (throttled != null)
+        {
+            return throttled;
+        }
 
-		var accessToken = await EndpointHandlerHelpers.TryGetAccessTokenAsync(httpContext.Request).ConfigureAwait(false);
-		if (string.IsNullOrWhiteSpace(accessToken))
-		{
-			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidToken);
-			activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidToken);
-			DotAuthTelemetry.RecordUserInfoRequest(false);
-			return Results.BadRequest(new ErrorDetails { Title = ErrorCodes.InvalidToken, Detail = ErrorCodes.InvalidToken });
-		}
+        var accessToken = await EndpointHandlerHelpers.TryGetAccessTokenAsync(httpContext.Request).ConfigureAwait(false);
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidToken);
+            activity?.SetStatus(ActivityStatusCode.Error, ErrorCodes.InvalidToken);
+            DotAuthTelemetry.RecordUserInfoRequest(false);
+            return Results.BadRequest(new ErrorDetails { Title = ErrorCodes.InvalidToken, Detail = ErrorCodes.InvalidToken });
+        }
 
-		var grantedToken = await tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
-		if (grantedToken == null)
-		{
-			activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidToken);
-			activity?.SetStatus(ActivityStatusCode.Error, Strings.TheTokenIsNotValid);
-			DotAuthTelemetry.RecordUserInfoRequest(false);
-			return Results.BadRequest(new ErrorDetails { Detail = Strings.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken });
-		}
+        var grantedToken = await tokenStore.GetAccessToken(accessToken, cancellationToken).ConfigureAwait(false);
+        if (grantedToken == null)
+        {
+            activity?.SetTag(DotAuthTelemetry.TagKeys.ErrorCode, ErrorCodes.InvalidToken);
+            activity?.SetStatus(ActivityStatusCode.Error, Strings.TheTokenIsNotValid);
+            DotAuthTelemetry.RecordUserInfoRequest(false);
+            return Results.BadRequest(new ErrorDetails { Detail = Strings.TheTokenIsNotValid, Title = ErrorCodes.InvalidToken });
+        }
 
-		activity?.SetStatus(ActivityStatusCode.Ok);
-		DotAuthTelemetry.RecordUserInfoRequest(true);
+        activity?.SetStatus(ActivityStatusCode.Ok);
+        DotAuthTelemetry.RecordUserInfoRequest(true);
 
-		// RFC 6750 §5.3: Responses that bear access tokens in the URI MUST include a
-		// Cache-Control response-header field with no-store to prevent inadvertent caching.
-		// Always set no-store on userinfo since it contains sensitive PII.
-		httpContext.Response.Headers["Cache-Control"] = "no-store";
-		httpContext.Response.Headers["Pragma"] = "no-cache";
+        // RFC 6750 §5.3: Responses that bear access tokens in the URI MUST include a
+        // Cache-Control response-header field with no-store to prevent inadvertent caching.
+        // Always set no-store on userinfo since it contains sensitive PII.
+        httpContext.Response.Headers["Cache-Control"] = "no-store";
+        httpContext.Response.Headers["Pragma"] = "no-cache";
 
-		return Results.Json(grantedToken.UserInfoPayLoad ?? grantedToken.IdTokenPayLoad ?? new JwtPayload());
-	}
+        return Results.Json(grantedToken.UserInfoPayLoad ?? grantedToken.IdTokenPayLoad ?? new JwtPayload());
+    }
 }
 
 

@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Events;
 using DotAuth.Services;
-using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using DotAuth.WebSite.User;

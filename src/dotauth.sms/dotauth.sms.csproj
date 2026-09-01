@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-    <Import Project="../../shared.proj" />
-
     <PropertyGroup>
         <Description>DotAuth SMS Authentication Library</Description>
         <Title>DotAuth SMS Authentication</Title>
@@ -17,10 +15,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\dotauth\dotauth.csproj" />
+        <ProjectReference Include="..\dotauth\dotauth.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AWSSDK.SimpleNotificationService" Version="4.0.2.30" />
+        <PackageReference Include="AWSSDK.SimpleNotificationService"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Properties\SmsStrings.Designer.cs">

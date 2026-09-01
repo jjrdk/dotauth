@@ -29,7 +29,7 @@ public class DefaultAuthenticateClient : AuthenticateClientBase
         {
             var context = await listener.GetContextAsync().ConfigureAwait(false);
             var code = context.Request.QueryString.Get("code");
-            
+
             context.Response.StatusCode = (int)HttpStatusCode.OK;
             await context.Response.OutputStream.WriteAsync(
                     "<html><head><title>Token flow completed</title><head><body><script>window.close();</script></body></html>"u8

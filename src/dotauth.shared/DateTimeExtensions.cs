@@ -31,8 +31,7 @@ public static class DateTimeExtensions
     /// <returns></returns>
     public static long ConvertToUnixTimestamp(this DateTimeOffset dateTime)
     {
-        return (dateTime.ToUniversalTime().Ticks - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero).Ticks)
-               / TicksFactor;
+        return (dateTime.ToUniversalTime().Ticks - UnixStart.Ticks) / TicksFactor;
     }
 
     /// <summary>
@@ -42,8 +41,7 @@ public static class DateTimeExtensions
     /// <returns></returns>
     public static long ConvertToUnixTimestamp(this DateTime date)
     {
-        var diff = date.ToUniversalTime() - UnixStart;
-        return (long)Math.Floor(diff.TotalSeconds);
+        return (date.ToUniversalTime().Ticks - UnixStart.Ticks) / TicksFactor;
     }
 
     /// <summary>

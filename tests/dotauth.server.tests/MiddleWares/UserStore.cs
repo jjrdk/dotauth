@@ -4,7 +4,7 @@ using System;
 
 public sealed class UserStore
 {
-    private static readonly UserStore InnerInstance = new ();
+    private static readonly UserStore InnerInstance = new();
     private const string DefaultSubject = "administrator";
 
     private UserStore()

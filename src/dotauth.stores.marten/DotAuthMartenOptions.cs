@@ -1,6 +1,9 @@
 ﻿namespace DotAuth.Stores.Marten;
 
+using System.Text.Json.Serialization.Metadata;
+
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -18,6 +21,8 @@ using global::Marten;
 using JasperFx;
 using JasperFx.Core.Reflection;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
+using NpgsqlTypes;
 using Weasel.Core;
 
 /// <summary>
@@ -29,16 +34,26 @@ public sealed class DotAuthMartenOptions : StoreOptions
     /// Initializes a new instance of the <see cref="DotAuthMartenOptions"/> class.
     /// </summary>
     /// <param name="connectionString">The connection string</param>
-    /// <param name="logger">The logger.</param>
-    /// <param name="searchPath">The schema name</param>
+    /// <param name="logger">The optional logger.</param>
+    /// <param name="searchPath">The optional schema name.</param>
+    /// <param name="serializerOptions">The optional serializer context.</param>
     /// <param name="autoCreate">Schema creation options</param>
     public DotAuthMartenOptions(
         string connectionString,
         IMartenLogger? logger = null,
         string searchPath = "",
+        JsonSerializerOptions? serializerOptions = null,
         AutoCreate autoCreate = AutoCreate.CreateOrUpdate)
     {
-        Serializer<CustomJsonSerializer>();
+        if (serializerOptions != null)
+        {
+            Serializer(new CustomJsonSerializer(serializerOptions));
+        }
+        else
+        {
+            Serializer<CustomJsonSerializer>();
+        }
+
         Connection(connectionString);
         if (logger != null)
         {
@@ -57,8 +72,20 @@ public sealed class DotAuthMartenOptions : StoreOptions
         Advanced.DuplicatedFieldUseTimestampWithoutTimeZoneForDateTime = true;
     }
 
-    private sealed class CustomJsonSerializer : ISerializer
+    private sealed class CustomJsonSerializer : global::Marten.ISerializer
     {
+        private readonly JsonSerializerOptions _options;
+
+        public CustomJsonSerializer()
+        {
+            _options = MartenSerializerContext.Default.Options;
+        }
+
+        public CustomJsonSerializer(JsonSerializerOptions options)
+        {
+            _options = options;
+        }
+
         public string ToJson(object? document)
         {
             if (document is null)
@@ -66,69 +93,96 @@ public sealed class DotAuthMartenOptions : StoreOptions
                 return "null";
             }
 
-            if (document is Dictionary<string, object> dict)
+            if (document is not Dictionary<string, object> dict)
             {
-                var jsonObj = new JsonObject();
-                foreach (var (key, value) in dict)
-                {
-                    if (value is IList list)
-                    {
-                        var jsonArray = new JsonArray();
-                        foreach (var item in list)
-                        {
-                            if (item is null)
-                            {
-                                jsonArray.Add(null);
-                            }
-                            else if (item.GetType().IsSimple())
-                            {
-                                jsonArray.Add(JsonValue.Create(item));
-                            }
-                            else
-                            {
-                                var serializedItem =
-                                    JsonSerializer.SerializeToElement(item, MartenSerializerContext.Default.Options);
-                                jsonArray.Add(serializedItem);
-                            }
-                        }
-
-                        jsonObj[key] = jsonArray;
-                    }
-                    else if (value.GetType().IsSimple())
-                    {
-                        jsonObj[key] = JsonValue.Create(value);
-                    }
-                    else
-                    {
-                        var serializedValue =
-                            JsonSerializer.SerializeToNode(value, MartenSerializerContext.Default.Options);
-                        jsonObj[key] = serializedValue;
-                    }
-                }
-                return jsonObj.ToJsonString(MartenSerializerContext.Default.Options);
+                return JsonSerializer.Serialize(document, document.GetType(), _options);
             }
 
-            return JsonSerializer.Serialize(document, document.GetType(), MartenSerializerContext.Default);
+            var jsonObj = new JsonObject();
+            foreach (var (key, value) in dict)
+            {
+                if (value is IList list)
+                {
+                    var jsonArray = new JsonArray();
+                    foreach (var item in list)
+                    {
+                        if (item is null)
+                        {
+                            jsonArray.Add(null);
+                        }
+                        else if (item.GetType().IsSimple())
+                        {
+                            jsonArray.Add(JsonValue.Create(item));
+                        }
+                        else
+                        {
+                            var serializedItem = JsonSerializer.SerializeToElement(item, _options);
+                            jsonArray.Add(serializedItem);
+                        }
+                    }
+
+                    jsonObj[key] = jsonArray;
+                }
+                else if (value.GetType().IsSimple())
+                {
+                    jsonObj[key] = JsonValue.Create(value);
+                }
+                else
+                {
+                    var serializedValue =
+                        JsonSerializer.SerializeToNode(value, _options);
+                    jsonObj[key] = serializedValue;
+                }
+            }
+
+            return jsonObj.ToJsonString(_options);
+        }
+
+        public void WriteTo(IBufferWriter<byte> writer, object? value)
+        {
+            var type = value?.GetType() ?? typeof(object) ??
+                throw new NullReferenceException(
+                    $"Could not get JsonTypeInfo for type {value?.GetType().FullName ?? "object"}");
+            var jsonTypeInfo = _options.GetTypeInfo(type);
+            writer.Write(JsonSerializer.SerializeToUtf8Bytes(
+                value,
+                jsonTypeInfo));
+        }
+
+        public void WriteToParameter(NpgsqlParameter parameter, object? value)
+        {
+            ArgumentNullException.ThrowIfNull(parameter);
+
+            parameter.NpgsqlDbType = NpgsqlDbType.Jsonb;
+            if (value is null)
+            {
+                parameter.Value = DBNull.Value;
+                return;
+            }
+
+            var type = value.GetType();
+            var typeInfo = _options.GetTypeInfo(type);
+            parameter.Value = JsonSerializer.SerializeToUtf8Bytes(value, typeInfo);
         }
 
         /// <inheritdoc />
         public T FromJson<T>(Stream stream)
         {
-            return JsonSerializer.Deserialize<T>(stream, MartenSerializerContext.Default.Options) ??
+            return JsonSerializer.Deserialize<T>(stream, _options) ??
                 throw new NullReferenceException("Could not deserialize from stream");
         }
 
         /// <inheritdoc />
         public T FromJson<T>(DbDataReader reader, int index)
         {
-            return JsonSerializer.Deserialize<T>(reader.GetString(index), MartenSerializerContext.Default.Options)
+            return JsonSerializer.Deserialize<T>(reader.GetString(index), _options)
              ?? throw new NullReferenceException("Could not deserialize from DbDataReader");
         }
 
         /// <inheritdoc />
         public async ValueTask<T> FromJsonAsync<T>(Stream stream, CancellationToken cancellationToken = new())
         {
-            return await JsonSerializer.DeserializeAsync<T>(stream, MartenSerializerContext.Default.Options,
+            return await JsonSerializer.DeserializeAsync<T>(stream, _options,
                     cancellationToken)
              ?? throw new NullReferenceException("Could not deserialize from stream");
         }
@@ -140,11 +194,10 @@ public sealed class DotAuthMartenOptions : StoreOptions
             CancellationToken cancellationToken = new())
         {
             await using var stream = reader.GetStream(index);
-            using var sr = new StreamReader(stream, Encoding.UTF8);
-            var json = await sr.ReadToEndAsync(cancellationToken);
-            var result = JsonSerializer.Deserialize<T>(
-                    json.Trim((char)1),
-                    MartenSerializerContext.Default.Options)
+            stream.ReadByte();
+            var typeInfo = (JsonTypeInfo<T>)_options.GetTypeInfo(typeof(T));
+            var result = JsonSerializer.Deserialize<T>(stream, typeInfo)
+             //json.Trim((char)1), _options)
              ?? throw new NullReferenceException("Could not deserialize from stream");
             return result;
         }
@@ -152,14 +205,14 @@ public sealed class DotAuthMartenOptions : StoreOptions
         /// <inheritdoc />
         public object FromJson(Type type, Stream stream)
         {
-            return JsonSerializer.Deserialize(stream, type, MartenSerializerContext.Default)
+            return JsonSerializer.Deserialize(stream, type, _options)
              ?? throw new NullReferenceException("Could not deserialize from stream");
         }
 
         /// <inheritdoc />
         public object FromJson(Type type, DbDataReader reader, int index)
         {
-            return JsonSerializer.Deserialize(reader.GetString(index), type, MartenSerializerContext.Default)
+            return JsonSerializer.Deserialize(reader.GetString(index), type, _options)
              ?? throw new NullReferenceException("Could not deserialize from DbDataReader");
         }
 
@@ -170,7 +223,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
             CancellationToken cancellationToken = new())
         {
             return await JsonSerializer.DeserializeAsync(stream,
-                    options: MartenSerializerContext.Default.Options,
+                    options: _options,
                     returnType: type,
                     cancellationToken: cancellationToken)
              ?? throw new NullReferenceException("Could not deserialize from stream");
@@ -185,7 +238,7 @@ public sealed class DotAuthMartenOptions : StoreOptions
         {
             return await JsonSerializer.DeserializeAsync(reader.GetStream(index),
                     type,
-                    MartenSerializerContext.Default,
+                    _options,
                     cancellationToken)
              ?? throw new NullReferenceException("Could not deserialize from stream");
         }
@@ -195,10 +248,20 @@ public sealed class DotAuthMartenOptions : StoreOptions
             return document == null ? "null" : ToJson(document);
         }
 
+        public void WriteToCleanJson(IBufferWriter<byte> writer, object? value)
+        {
+            WriteTo(writer, value);
+        }
+
         /// <inheritdoc />
         public string ToJsonWithTypes(object document)
         {
             return ToJson(document);
+        }
+
+        public void WriteToJsonWithTypes(IBufferWriter<byte> writer, object value)
+        {
+            WriteTo(writer, value);
         }
 
         public EnumStorage EnumStorage
@@ -269,3 +332,4 @@ public sealed class DotAuthMartenOptions : StoreOptions
 public partial class MartenSerializerContext : JsonSerializerContext
 {
 }
+

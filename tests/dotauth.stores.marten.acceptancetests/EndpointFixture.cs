@@ -31,7 +31,7 @@ public sealed class EndpointFixture : IAsyncDisposable
 
     public EndpointFixture(ITestOutputHelper outputHelper)
     {
-        _postgresContainer = new PostgreSqlBuilder("postgres:latest").WithUsername("dotauth").WithPassword("dotauth")
+        _postgresContainer = new PostgreSqlBuilder("postgres:alpine").WithUsername("dotauth").WithPassword("dotauth")
             .WithDatabase("dotauth").Build();
         _postgresContainer.StartAsync().GetAwaiter().GetResult();
         _connectionString = _postgresContainer.GetConnectionString();
@@ -61,7 +61,8 @@ public sealed class EndpointFixture : IAsyncDisposable
     {
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Get, RequestUri = new Uri($"{BaseUrl}/{path}")
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"{BaseUrl}/{path}")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);

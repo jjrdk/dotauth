@@ -16,7 +16,10 @@ public class UmaRequestSubmittedResult : ObjectResult
     /// <summary>
     /// Initializes a new instance of the <see cref="UmaRequestSubmittedResult"/> class.
     /// </summary>
-    /// <param name="ticketId"></param>
+    /// <param name="id">The result id</param>
+    /// <param name="ticketId">The result ticket id</param>
+    /// <param name="clientId">The result client id</param>
+    /// <param name="claims">The result claims</param>
     public UmaRequestSubmittedResult(string id, string ticketId, string clientId, params ClaimData[] claims)
         : base(new UmaRequestSubmitted(id, ticketId, clientId, claims, DateTimeOffset.UtcNow))
     {

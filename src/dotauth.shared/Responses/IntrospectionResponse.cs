@@ -29,7 +29,7 @@ public abstract record IntrospectionResponse
     /// Gets or sets the token type
     /// </summary>
     [JsonPropertyName("token_type")]
-    public string TokenType { get; set; }= null!;
+    public string TokenType { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the expiration in seconds

@@ -505,7 +505,10 @@ public partial class FeatureTest
                 }
             }
 
-            if (parameters.TryGetValue("code", out var c)) code = c;
+            if (parameters.TryGetValue("code", out var c))
+            {
+                code = c;
+            }
         }
 
         Assert.False(string.IsNullOrWhiteSpace(code), "No authorization code available to inspect.");
@@ -2016,7 +2019,10 @@ public partial class FeatureTest
         try
         {
             var parts = token.Split('.');
-            if (parts.Length != 3) return token;
+            if (parts.Length != 3)
+            {
+                return token;
+            }
 
             var payloadJson = Base64UrlDecodeToString(parts[1]);
             var payloadDict = JsonSerializer.Deserialize<Dictionary<string, object>>(payloadJson) ??
@@ -2053,7 +2059,11 @@ public partial class FeatureTest
     // Helper: compute the bit length of a base64url-encoded unsigned integer (e.g., RSA modulus 'n')
     private static int GetBase64UrlDecodedBitLength(string base64Url)
     {
-        if (string.IsNullOrEmpty(base64Url)) return 0;
+        if (string.IsNullOrEmpty(base64Url))
+        {
+            return 0;
+        }
+
         var s = base64Url.Replace('-', '+').Replace('_', '/');
         switch (s.Length % 4)
         {
@@ -2071,7 +2081,10 @@ public partial class FeatureTest
             return 0;
         }
 
-        if (bytes.Length == 0) return 0;
+        if (bytes.Length == 0)
+        {
+            return 0;
+        }
 
         // Count leading zero bits
         int leadingZeroBits = 0;
@@ -2086,8 +2099,14 @@ public partial class FeatureTest
             // found first non-zero byte; count leading zero bits in that byte
             for (int i = 7; i >= 0; i--)
             {
-                if ((b & (1 << i)) == 0) leadingZeroBits++;
-                else break;
+                if ((b & (1 << i)) == 0)
+                {
+                    leadingZeroBits++;
+                }
+                else
+                {
+                    break;
+                }
             }
             break;
         }
@@ -2176,7 +2195,7 @@ public partial class FeatureTest
         _response = _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["new_scope_xyz"], [ResponseTypeNames.Code], "authcode_client",
                 new Uri("http://localhost:5000/callback"), pkce.CodeChallenge, CodeChallengeMethods.S256, "state")
-            { prompt = PromptNames.Login }).GetAwaiter().GetResult();
+        { prompt = PromptNames.Login }).GetAwaiter().GetResult();
     }
 
     [When("an authorization request is sent with an unknown parameter")]
@@ -2450,7 +2469,7 @@ public partial class FeatureTest
                 if (!queries.TryGetValue("code", out var consentCode))
                 {
                     _pkceTokenResult = new Option<GrantedTokenResponse>.Error(new ErrorDetails
-                        { Title = ErrorCodes.InvalidGrant, Detail = "invalid" });
+                    { Title = ErrorCodes.InvalidGrant, Detail = "invalid" });
                     return;
                 }
 
@@ -2484,7 +2503,7 @@ public partial class FeatureTest
             {
                 _pkceTokenResult = await Task
                     .FromResult(new Option<GrantedTokenResponse>.Error(new ErrorDetails
-                        { Title = ErrorCodes.InvalidGrant, Detail = "invalid" })).ConfigureAwait(false);
+                    { Title = ErrorCodes.InvalidGrant, Detail = "invalid" })).ConfigureAwait(false);
                 return;
             }
 
@@ -2504,7 +2523,7 @@ public partial class FeatureTest
 
         _pkceTokenResult = await Task
             .FromResult(new Option<GrantedTokenResponse>.Error(new ErrorDetails
-                { Title = ErrorCodes.InvalidGrant, Detail = "invalid" })).ConfigureAwait(false);
+            { Title = ErrorCodes.InvalidGrant, Detail = "invalid" })).ConfigureAwait(false);
     }
 
     [When("posting an authorization request to the authorization endpoint")]
@@ -2537,20 +2556,18 @@ public partial class FeatureTest
     public async Task WhenRequestingATokenUsingPrivate_Key_JwtClientAuthentication()
     {
         // Use private_key_client which is registered with TokenEndPointAuthMethod = PrivateKeyJwt
-        // and JsonWebKeys containing an HMAC key derived from TestKeys.SecretKey.
-        // The server validates the assertion's signature using that key.
-        // The JWT audience must match what GetAbsoluteUriWithVirtualPath() returns for the
-        // token endpoint request — this is the server base URL (scheme+host), NOT the full token path.
+        // and an RS256 key pair from SharedContext. Sign the assertion with the private key
+        // so the server can verify it with the stored public key. (G8 fix: real asymmetric auth)
         const string clientId = "private_key_client";
         // The audience in the JWT assertion must be the server's base URI (per GetAbsoluteUriWithVirtualPath).
         const string jwtAudience = "https://localhost";
         // The actual token endpoint to POST to.
         const string tokenEndpoint = "https://localhost/token";
 
-        // Sign the JWT with HS256 using the same key registered for private_key_client
-        var signingKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(TestKeys.SecretKey));
-        var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+        // Sign the JWT with RS256 using the private key registered for private_key_client
+        var signingCredentials = new SigningCredentials(
+            SharedContext.Instance.PrivateKeyClientSigningKey,
+            SecurityAlgorithms.RsaSha256);
 
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = new JwtSecurityToken(
@@ -2595,7 +2612,8 @@ public partial class FeatureTest
 
         var initialResponse = await _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["api1"], [ResponseTypeNames.Code], "authcode_client", new Uri("http://localhost:5000/callback"),
-                codeChallenge, CodeChallengeMethods.S256, "state") { prompt = PromptNames.Login })
+                codeChallenge, CodeChallengeMethods.S256, "state")
+        { prompt = PromptNames.Login })
             .ConfigureAwait(false);
 
         // Complete login + consent to obtain the real authorization code, then attempt
@@ -2609,8 +2627,10 @@ public partial class FeatureTest
             var parameters = new Dictionary<string, string>(StringComparer.Ordinal);
             var callbackUri = r.Item;
             if (!string.IsNullOrWhiteSpace(callbackUri.Query))
+            {
                 foreach (var (key, value) in QueryHelpers.ParseQuery(callbackUri.Query))
                     parameters[key] = value.ToString();
+            }
 
             if (parameters.TryGetValue("code", out var code) && !string.IsNullOrWhiteSpace(code))
             {
@@ -2778,7 +2798,8 @@ public partial class FeatureTest
                     new Uri("http://localhost:5000/callback/../other"),
                     pkce.CodeChallenge,
                     CodeChallengeMethods.S256,
-                    "state") { prompt = PromptNames.None })
+                    "state")
+                { prompt = PromptNames.None })
             .ConfigureAwait(false);
     }
 
@@ -2804,7 +2825,8 @@ public partial class FeatureTest
     {
         _response = _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["api1"], ["invalid_response_type"], "authcode_client", new Uri("http://localhost:5000/callback"),
-                null, null, "state") { prompt = PromptNames.None }).GetAwaiter().GetResult();
+                null, null, "state")
+        { prompt = PromptNames.None }).GetAwaiter().GetResult();
     }
 
     [When("requesting authorization with an unsupported response type")]
@@ -2812,7 +2834,8 @@ public partial class FeatureTest
     {
         _response = _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["api1"], ["unsupported"], "authcode_client", new Uri("http://localhost:5000/callback"), null, null,
-                "state") { prompt = PromptNames.None }).GetAwaiter().GetResult();
+                "state")
+        { prompt = PromptNames.None }).GetAwaiter().GetResult();
     }
 
     [When("requesting authorization without a redirect URI")]
@@ -2821,7 +2844,8 @@ public partial class FeatureTest
         // Use an unregistered or missing redirect URI scenario by supplying a redirect URI not registered
         _response = _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["api1"], [ResponseTypeNames.Code], "authcode_client", new Uri("http://localhost:5000/not-registered"),
-                null, null, "state") { prompt = PromptNames.None }).GetAwaiter().GetResult();
+                null, null, "state")
+        { prompt = PromptNames.None }).GetAwaiter().GetResult();
     }
 
     [When("requesting implicit flow with response_type id_token without nonce")]
@@ -2838,7 +2862,7 @@ public partial class FeatureTest
         _response = await _tokenClient.GetAuthorization(new AuthorizationRequest(
                 ["openid"], [ResponseTypeNames.IdToken], "implicit_client",
                 new Uri("http://localhost:5000/callback"), null, null, "state")
-            { prompt = PromptNames.None }).ConfigureAwait(false);
+        { prompt = PromptNames.None }).ConfigureAwait(false);
     }
 
     [When("requesting implicit flow with response_type token")]
@@ -2916,7 +2940,9 @@ public partial class FeatureTest
         var redirect = r.Item;
         var parameters = new Dictionary<string, string>(StringComparer.Ordinal);
         if (!string.IsNullOrWhiteSpace(redirect.Query))
+        {
             foreach (var (key, value) in QueryHelpers.ParseQuery(redirect.Query)) parameters[key] = value.ToString();
+        }
 
         var fragment = redirect.Fragment;
         if (!string.IsNullOrWhiteSpace(fragment))
@@ -2962,7 +2988,9 @@ public partial class FeatureTest
         var redirect = r.Item;
         var parameters = new Dictionary<string, string>(StringComparer.Ordinal);
         if (!string.IsNullOrWhiteSpace(redirect.Query))
+        {
             foreach (var (key, value) in QueryHelpers.ParseQuery(redirect.Query)) parameters[key] = value.ToString();
+        }
 
         var fragment = redirect.Fragment;
         if (!string.IsNullOrWhiteSpace(fragment))
@@ -2994,7 +3022,9 @@ public partial class FeatureTest
         var redirect = r.Item;
         var parameters = new Dictionary<string, string>(StringComparer.Ordinal);
         if (!string.IsNullOrWhiteSpace(redirect.Query))
+        {
             foreach (var (key, value) in QueryHelpers.ParseQuery(redirect.Query)) parameters[key] = value.ToString();
+        }
 
         var fragment = redirect.Fragment;
         if (!string.IsNullOrWhiteSpace(fragment))
@@ -3041,8 +3071,14 @@ public partial class FeatureTest
     {
         // Attempt to exchange the original refresh token (before rotation)
         string? original = null;
-        if (_token is not null && !string.IsNullOrWhiteSpace(_token.RefreshToken)) original = _token.RefreshToken;
-        else if (_refreshResult1 is not null && _refreshResult1 is Option<GrantedTokenResponse>.Result r1) original = r1.Item.RefreshToken;
+        if (_token is not null && !string.IsNullOrWhiteSpace(_token.RefreshToken))
+        {
+            original = _token.RefreshToken;
+        }
+        else if (_refreshResult1 is not null && _refreshResult1 is Option<GrantedTokenResponse>.Result r1)
+        {
+            original = r1.Item.RefreshToken;
+        }
 
         if (string.IsNullOrWhiteSpace(original))
         {
@@ -3274,7 +3310,10 @@ public partial class FeatureTest
             if (cookiePairs.Count > 0)
             {
                 if (http.DefaultRequestHeaders.Contains("Cookie"))
+                {
                     http.DefaultRequestHeaders.Remove("Cookie");
+                }
+
                 http.DefaultRequestHeaders.Add("Cookie", string.Join("; ", cookiePairs));
             }
         }

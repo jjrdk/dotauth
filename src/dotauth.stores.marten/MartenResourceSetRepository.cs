@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 /// Defines the marten based resource set repository.
 /// </summary>
 /// <seealso cref="IResourceSetRepository" />
-public sealed class MartenResourceSetRepository : IResourceSetRepository
+public sealed partial class MartenResourceSetRepository : IResourceSetRepository
 {
     private readonly Func<IDocumentSession> _sessionFactory;
     private readonly ILogger<MartenResourceSetRepository> _logger;
@@ -101,7 +101,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{Error}", ex.Message);
+            LogError(ex.Message, ex);
             return new PagedResult<ResourceSetDescription>
             {
                 Content = [],
@@ -198,4 +198,7 @@ public sealed class MartenResourceSetRepository : IResourceSetRepository
 
         return resourceSets.Select(x => x.AsResourceSet()).ToArray();
     }
+
+    [LoggerMessage(LogLevel.Error, "{Error}")]
+    partial void LogError(string error, Exception exception);
 }

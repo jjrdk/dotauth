@@ -142,7 +142,9 @@ internal sealed class ProcessAuthorizationRequest
             return EndpointResult.CreateBadRequestResult(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 });
         }
 
@@ -234,7 +236,7 @@ internal sealed class ProcessAuthorizationRequest
         handler.ValidateToken(token, validationParameters, out var securityToken);
         var jwsPayload = (securityToken as JwtSecurityToken)?.Payload;
 
-        if (jwsPayload?.Aud == null || !jwsPayload.Aud.Contains(issuerName))
+        if (jwsPayload?.GetClaimValue(StandardClaimNames.Issuer) != issuerName)
         {
             _logger.LogError(Strings.TheIdentityTokenDoesntContainDotAuthAsAudience);
             return new Option.Error(

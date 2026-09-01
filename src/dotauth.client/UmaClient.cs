@@ -133,6 +133,18 @@ public sealed class UmaClient : ClientBase, IUmaPermissionClient, IUmaResourceSe
     }
 
     /// <inheritdoc />
+    public async Task<string[]> GetResourceSetScopes(string resourceSetId, CancellationToken cancellationToken = default)
+    {
+        var resourceSetOption = await GetResourceSet(resourceSetId, string.Empty, cancellationToken).ConfigureAwait(false);
+        return resourceSetOption switch
+        {
+            Option<ResourceSet>.Error e => throw new Exception(e.Details.Detail),
+            Option<ResourceSet>.Result r => r.Item.Scopes,
+            _ => throw new InvalidOperationException("Invalid option type")
+        };
+    }
+
+    /// <inheritdoc />
     public async Task<Option<UpdateResourceSetResponse>> UpdateResourceSet(
         ResourceSet request,
         string token,

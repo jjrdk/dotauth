@@ -51,7 +51,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 parameter.State);
         }
@@ -65,7 +67,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 parameter.State);
         }
@@ -79,7 +83,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 parameter.State);
         }
@@ -93,7 +99,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 parameter.State);
         }
@@ -120,7 +128,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 parameter.State);
         }
@@ -133,7 +143,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 parameter.State);
         }
@@ -145,7 +157,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option<Client>.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 parameter.State);
         }
@@ -176,7 +190,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 state);
         }
@@ -206,7 +222,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 state);
         }
@@ -222,7 +240,9 @@ internal sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator
             return new Option.Error(
                 new ErrorDetails
                 {
-                    Title = ErrorCodes.InvalidRequest, Detail = message, Status = HttpStatusCode.BadRequest
+                    Title = ErrorCodes.InvalidRequest,
+                    Detail = message,
+                    Status = HttpStatusCode.BadRequest
                 },
                 state);
         }

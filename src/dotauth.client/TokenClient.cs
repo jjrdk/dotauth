@@ -149,7 +149,8 @@ public sealed class TokenClient : ClientBase, ITokenClient
         var requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = uriBuilder.Uri };
         requestMessage.Headers.Accept.Clear();
         requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMimeType));
-        var response = await _client().SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+        var client = _client();
+        var response = await client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
         return (int)response.StatusCode switch
         {

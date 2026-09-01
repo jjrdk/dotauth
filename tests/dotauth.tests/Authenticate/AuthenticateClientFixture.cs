@@ -18,7 +18,10 @@ public sealed class AuthenticateClientFixture
     public AuthenticateClientFixture()
     {
         _clientRepositoryStub = Substitute.For<IClientStore>();
-        _authenticateClient = new AuthenticateClient(_clientRepositoryStub, new InMemoryJwksRepository());
+        _authenticateClient = new AuthenticateClient(
+            _clientRepositoryStub,
+            new InMemoryJwksRepository(),
+            new InMemoryClientAssertionJtiStore());
     }
 
     [Fact]

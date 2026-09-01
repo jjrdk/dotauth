@@ -2,10 +2,9 @@ namespace DotAuth.Build;
 
 using Cake.Common.IO;
 using Cake.Common.Tools.DotNet;
-using Cake.Common.Tools.DotNet.Test;
+using Cake.Common.Tools.DotNet.Run;
 using Cake.Core;
 using Cake.Core.Diagnostics;
-using Cake.Core.IO;
 using Cake.Frosting;
 
 [TaskName("Tests")]
@@ -30,16 +29,18 @@ public sealed class TestsTask : FrostingTask<BuildContext>
 
             context.Log.Information(reportName);
 
-            var coreTestSettings = new DotNetTestSettings()
+            var coreTestSettings = new DotNetRunSettings
             {
                 NoBuild = true,
+                Verbosity = DotNetVerbosity.Minimal,
                 NoRestore = true,
                 // Set configuration as passed by command line
                 Configuration = context.BuildConfiguration,
-                ArgumentCustomization = x => x.Append($"--logger \"trx;LogFileName={reportName}\"")
+                ArgumentCustomization =
+                    x => x.Append("--").AppendSwitchQuoted("-result-xml", reportName)
             };
 
-            context.DotNetTest(project.FullPath, coreTestSettings);
+            context.DotNetRun(project.FullPath, coreTestSettings);
         }
     }
 }

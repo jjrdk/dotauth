@@ -21,56 +21,57 @@ using DotAuth.Shared;
 
 internal static class ClaimsParameterExtensions
 {
-    /// <summary>
-    /// Gets all the standard claim names from the ClaimsParameter
-    /// </summary>
     /// <param name="parameter"></param>
-    /// <returns></returns>
-    public static string[] GetClaimNames(this ClaimsParameter? parameter)
+    extension(ClaimsParameter? parameter)
     {
-        var result = new List<string>();
-        if (parameter?.IdToken != null)
+        /// <summary>
+        /// Gets all the standard claim names from the ClaimsParameter
+        /// </summary>
+        /// <returns></returns>
+        public HashSet<string> GetClaimNames()
         {
-            foreach (var claimParameter in parameter.IdToken)
+            var result = new HashSet<string>();
+            if (parameter?.IdToken != null)
             {
-                if (IsStandardClaim(claimParameter.Name))
+                foreach (var claimParameter in parameter.IdToken)
                 {
-                    result.Add(claimParameter.Name);
+                    if (IsStandardClaim(claimParameter.Name))
+                    {
+                        result.Add(claimParameter.Name);
+                    }
                 }
             }
-        }
-        if (parameter?.UserInfo != null)
-        {
-            foreach (var claimParameter in parameter.UserInfo)
+            if (parameter?.UserInfo != null)
             {
-                if (IsStandardClaim(claimParameter.Name))
+                foreach (var claimParameter in parameter.UserInfo)
                 {
-                    result.Add(claimParameter.Name);
+                    if (IsStandardClaim(claimParameter.Name))
+                    {
+                        result.Add(claimParameter.Name);
+                    }
                 }
             }
+
+            return result;
         }
 
-        return result.ToArray();
-    }
+        /// <summary>
+        /// Return a boolean which indicates if the ClaimsParameter contains at least one user-info claim parameter
+        /// </summary>
+        /// <returns></returns>
+        public bool IsAnyUserInfoClaimParameter()
+        {
+            return parameter?.UserInfo != null && parameter.UserInfo.Any();
+        }
 
-    /// <summary>
-    /// Return a boolean which indicates if the ClaimsParameter contains at least one user-info claim parameter
-    /// </summary>
-    /// <param name="parameter"></param>
-    /// <returns></returns>
-    public static bool IsAnyUserInfoClaimParameter(this ClaimsParameter? parameter)
-    {
-        return parameter?.UserInfo != null && parameter.UserInfo.Any();
-    }
-
-    /// <summary>
-    /// Returns a boolean which indicates if the ClaimsParameter contains at least one identity-token claim parameter
-    /// </summary>
-    /// <param name="parameter"></param>
-    /// <returns></returns>
-    public static bool IsAnyIdentityTokenClaimParameter(this ClaimsParameter? parameter)
-    {
-        return parameter?.IdToken != null && parameter.IdToken.Any();
+        /// <summary>
+        /// Returns a boolean which indicates if the ClaimsParameter contains at least one identity-token claim parameter
+        /// </summary>
+        /// <returns></returns>
+        public bool IsAnyIdentityTokenClaimParameter()
+        {
+            return parameter?.IdToken != null && parameter.IdToken.Any();
+        }
     }
 
     private static bool IsStandardClaim(string claimName)

@@ -46,7 +46,8 @@ public sealed class RevokeTokenClientFixture
     {
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, RequestUri = new Uri($"{BaseUrl}/token/revoke")
+            Method = HttpMethod.Post,
+            RequestUri = new Uri($"{BaseUrl}/token/revoke")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);
@@ -66,7 +67,9 @@ public sealed class RevokeTokenClientFixture
         var body = new FormUrlEncodedContent(request);
         var httpRequest = new HttpRequestMessage
         {
-            Method = HttpMethod.Post, Content = body, RequestUri = new Uri($"{BaseUrl}/token/revoke")
+            Method = HttpMethod.Post,
+            Content = body,
+            RequestUri = new Uri($"{BaseUrl}/token/revoke")
         };
 
         var httpResult = await _server.Client().SendAsync(httpRequest, TestContext.Current.CancellationToken);

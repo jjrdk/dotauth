@@ -109,7 +109,8 @@ public sealed class TokenFixture : IDisposable
                 "header",
                 requests: new PermissionRequest // Add permission & retrieve a ticket id.
                 {
-                    ResourceSetId = resource.Item.Id, Scopes = ["read"]
+                    ResourceSetId = resource.Item.Id,
+                    Scopes = ["read"]
                 },
                 cancellationToken: TestContext.Current.CancellationToken));
 

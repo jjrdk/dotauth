@@ -26,7 +26,6 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Repositories;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 public sealed class RevokeTokenActionFixture
@@ -51,7 +50,8 @@ public sealed class RevokeTokenActionFixture
     {
         var parameter = new RevokeTokenParameter { Token = "access_token" };
 
-        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>()).ReturnsNull();
+        _clientStore.GetById(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<Client?>(null));
 
         var error = Assert.IsType<Option.Error>(await _revokeTokenAction
             .Execute(parameter, null, null, "", CancellationToken.None));

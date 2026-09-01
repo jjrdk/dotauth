@@ -27,6 +27,8 @@ using Microsoft.IdentityModel.Tokens;
 
 internal static class GrantedTokenValidator
 {
+    private static readonly JwtSecurityTokenHandler Handler = new();
+
     public static async Task<GrantedTokenValidationResult> CheckGrantedToken(
         this GrantedToken grantedToken,
         string issuer,
@@ -46,7 +48,6 @@ internal static class GrantedTokenValidator
         }
 
         var publicKeys = await jwksStore.GetPublicKeys(cancellationToken).ConfigureAwait(false);
-        var handler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
         {
             ValidIssuer = issuer,
@@ -56,7 +57,7 @@ internal static class GrantedTokenValidator
 
         try
         {
-            handler.ValidateToken(grantedToken.AccessToken, validationParameters, out _);
+            Handler.ValidateToken(grantedToken.AccessToken, validationParameters, out _);
 
             return new GrantedTokenValidationResult { IsValid = true };
         }

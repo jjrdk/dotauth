@@ -21,8 +21,14 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
+/// <summary>
+/// The entry point class.
+/// </summary>
 public sealed class Program
 {
+    /// <summary>
+    /// The application entry point
+    /// </summary>
     public static async Task Main()
     {
         using var webHost = new HostBuilder().ConfigureWebHost(builder =>

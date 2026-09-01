@@ -62,7 +62,7 @@ public sealed class ServerStartup
         _context = context;
         _connectionString = connectionString;
         _outputHelper = outputHelper;
-        var builder = new NpgsqlConnectionStringBuilder { ConnectionString = _connectionString};
+        var builder = new NpgsqlConnectionStringBuilder { ConnectionString = _connectionString };
         _schemaName = builder.SearchPath ?? "public";
     }
 
