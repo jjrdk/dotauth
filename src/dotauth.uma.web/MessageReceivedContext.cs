@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
 /// <summary>
-/// A context for <see cref="JwtBearerEvents.OnMessageReceived"/>.
+/// A context for <see cref="UmaBearerEvents.OnMessageReceived"/>.
 /// </summary>
 public class MessageReceivedContext : ResultContext<UmaBearerOptions>
 {
