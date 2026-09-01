@@ -69,7 +69,7 @@ public sealed class UserTools(IResourceOwnerStore users)
         var user = await users.Get(subject, cancellationToken);
         if (user is null)
         {
-            return $"{{\"error\":\"User '{subject}' not found\"}}";
+            return JsonSerializer.Serialize(new { error = $"User '{subject}' not found" });
         }
 
         return JsonSerializer.Serialize(Redact(user));
