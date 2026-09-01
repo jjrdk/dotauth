@@ -4,12 +4,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AspNetCore.HealthChecks.Npgsql" Version="9.0.0" />
-    <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="4.0.100.10" />
+    <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="4.0.100.11" />
     <PackageVersion Include="Cake.Docker" Version="1.5.0" />
     <PackageVersion Include="Cake.Frosting" Version="6.2.0" />
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
     <PackageVersion Include="GitVersion.MsBuild" Version="6.8.2" />
-    <PackageVersion Include="marten" Version="9.29.0" />
+    <PackageVersion Include="marten" Version="9.30.0" />
     <PackageVersion Include="MartinCostello.Logging.XUnit.v3" Version="0.7.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication" Version="2.3.12" />
     <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.11" />
@@ -21,8 +21,10 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols" Version="8.22.0" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.22.0" />
+    <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.22.0" />
     <PackageVersion Include="Microsoft.Maui.Essentials" Version="10.0.100" />
-    <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="NuGet.Packaging" Version="7.9.0" />
     <PackageVersion Include="NuGet.Protocol" Version="7.9.0" />
