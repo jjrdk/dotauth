@@ -1,14 +1,8 @@
 namespace DotAuth.Uma.Web.Tests.Support;
 
 using System;
-using System.Threading;
 using DotAuth.Client;
-using DotAuth.Shared.Requests;
-using DotAuth.Shared.Responses;
-using DotAuth.Shared;
-using Microsoft.AspNetCore.Authentication;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 
 /// <summary>
 /// Scenario-scoped bag of shared mocked UMA services.

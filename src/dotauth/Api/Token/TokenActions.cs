@@ -28,7 +28,6 @@ using DotAuth.Api.Token.Actions;
 using DotAuth.Authenticate;
 using DotAuth.Events;
 using DotAuth.Extensions;
-using DotAuth.Repositories;
 using DotAuth.Parameters;
 using DotAuth.Properties;
 using DotAuth.Services;

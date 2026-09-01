@@ -1,7 +1,5 @@
 namespace DotAuth.Uma.Web.Tests.StepDefinitions;
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Reqnroll;
 
 [Binding]

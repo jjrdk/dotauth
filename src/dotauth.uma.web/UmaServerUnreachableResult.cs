@@ -2,7 +2,6 @@
 
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
@@ -29,6 +28,6 @@ public class UmaServerUnreachableResult : UmaResult<string>
         response.Headers[HeaderNames.Warning] = UmaAuthorizationServerUnreachable;
         response.Headers["Retry-After"] = "60";
 
-        return Task.CompletedTask;
+        return base.ExecuteResultAsync(context);
     }
 }

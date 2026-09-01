@@ -2,13 +2,10 @@ namespace DotAuth.Uma.Web;
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
@@ -57,8 +54,8 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
     /// </summary>
     protected new UmaBearerEvents Events
     {
-        get => (UmaBearerEvents)base.Events!;
-        set => base.Events = value;
+        get { return (UmaBearerEvents)base.Events!; }
+        set { base.Events = value; }
     }
 
     /// <inheritdoc />
@@ -182,7 +179,7 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
                 {
                     var resourceSetId = await ResolveResourceSetIdFromRouteAsync().ConfigureAwait(false);
                     if (!string.IsNullOrEmpty(resourceSetId)
-                        && !DotAuth.Uma.ClaimsPrincipalExtensions.CheckResourceAccess(principal, resourceSetId))
+                        && !principal.CheckResourceAccess(resourceSetId))
                     {
                         // Store the resolved ID so HandleChallengeAsync can issue the right ticket.
                         Context.Items["uma:resource_set_id"] = resourceSetId;
@@ -418,24 +415,6 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
         return await _resourceMap.GetResourceSetId(resourceId, Context.RequestAborted).ConfigureAwait(false);
     }
 
-    private async Task<string?> GetIdToken(HttpRequest request)
-    {
-        var idToken = await request.HttpContext.GetTokenAsync("id_token").ConfigureAwait(false);
-        if (!string.IsNullOrEmpty(idToken))
-        {
-            return idToken;
-        }
-
-        if (request.Query.TryGetValue(Options.IdTokenHeader, out var token))
-        {
-            return token;
-        }
-
-        return AuthenticationHeaderValue.TryParse(request.Headers[Options.IdTokenHeader], out var idTokenHeader)
-            ? idTokenHeader.Parameter
-            : null;
-    }
-
     private void RecordTokenValidationError(Exception? exception, List<Exception> exceptions)
     {
         if (exception != null)
@@ -521,49 +500,6 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
                 identity.AddClaim(new Claim(permissionsClaimType, claim.Value, claim.ValueType, claim.Issuer));
             }
         }
-    }
-
-    private static string CreateErrorDescription(Exception authFailure)
-    {
-        IReadOnlyCollection<Exception> exceptions;
-        if (authFailure is AggregateException agEx)
-        {
-            exceptions = agEx.InnerExceptions;
-        }
-        else
-        {
-            exceptions = [authFailure];
-        }
-
-        var messages = new List<string>(exceptions.Count);
-
-        foreach (var ex in exceptions)
-        {
-            var message = ex switch
-            {
-                SecurityTokenInvalidAudienceException stia =>
-                    $"The audience '{stia.InvalidAudience ?? "(null)"}' is invalid",
-                SecurityTokenInvalidIssuerException stii => $"The issuer '{stii.InvalidIssuer ?? "(null)"}' is invalid",
-                SecurityTokenNoExpirationException _ => "The token has no expiration",
-                SecurityTokenInvalidLifetimeException stil => "The token lifetime is invalid; NotBefore: "
-                  + $"'{stil.NotBefore?.ToString(CultureInfo.InvariantCulture) ?? "(null)"}'"
-                  + $", Expires: '{stil.Expires?.ToString(CultureInfo.InvariantCulture) ?? "(null)"}'",
-                SecurityTokenNotYetValidException stnyv =>
-                    $"The token is not valid before '{stnyv.NotBefore.ToString(CultureInfo.InvariantCulture)}'",
-                SecurityTokenExpiredException ste =>
-                    $"The token expired at '{ste.Expires.ToString(CultureInfo.InvariantCulture)}'",
-                SecurityTokenSignatureKeyNotFoundException _ => "The signature key was not found",
-                SecurityTokenInvalidSignatureException _ => "The signature is invalid",
-                _ => null,
-            };
-
-            if (message is not null)
-            {
-                messages.Add(message);
-            }
-        }
-
-        return string.Join("; ", messages);
     }
 
     [LoggerMessage(LogLevel.Error, "Could not retrieve protection API token (uma_protection scope)")]

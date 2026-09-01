@@ -6,7 +6,6 @@ using DotAuth.Client;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Reqnroll;
-using Reqnroll.UnitTestProvider;
 using Testcontainers.PostgreSql;
 using Xunit;
 

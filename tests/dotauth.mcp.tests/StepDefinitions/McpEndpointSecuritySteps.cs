@@ -1,6 +1,5 @@
 namespace DotAuth.Mcp.Tests.StepDefinitions;
 
-using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;

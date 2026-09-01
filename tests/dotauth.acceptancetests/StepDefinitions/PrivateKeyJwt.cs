@@ -18,7 +18,6 @@ using DotAuth.Shared.Models;
 using DotAuth.Shared.Responses;
 using Microsoft.IdentityModel.Tokens;
 using Reqnroll;
-using Reqnroll.UnitTestProvider;
 using Xunit;
 
 public partial class FeatureTest

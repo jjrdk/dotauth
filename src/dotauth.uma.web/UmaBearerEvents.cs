@@ -2,7 +2,6 @@ namespace DotAuth.Uma.Web;
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.BearerToken;
 
 /// <summary>
 /// Defines events which the <see cref="UmaBearerHandler"/> invokes to enable developer control over the authentication process.

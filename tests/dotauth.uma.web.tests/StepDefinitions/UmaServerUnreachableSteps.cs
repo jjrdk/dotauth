@@ -1,6 +1,5 @@
 namespace DotAuth.Uma.Web.Tests.StepDefinitions;
 
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +23,7 @@ public class UmaServerUnreachableSteps
 
         // Provide a minimal MVC service provider so the result can execute.
         var services = new ServiceCollection();
+        services.AddMvc();
         services.AddLogging();
         _httpContext.RequestServices = services.BuildServiceProvider();
         _actionContext = new ActionContext(_httpContext, new RouteData(), new ActionDescriptor());

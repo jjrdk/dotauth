@@ -25,7 +25,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DotAuth.Client;
-using DotAuth.Extensions;
 using DotAuth.Properties;
 using DotAuth.Shared;
 using DotAuth.Shared.Errors;

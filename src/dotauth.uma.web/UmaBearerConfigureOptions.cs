@@ -18,7 +18,7 @@ internal sealed class UmaBearerConfigureOptions : IConfigureNamedOptions<UmaBear
     /// Initializes a new <see cref="UmaBearerConfigureOptions"/> given the configuration
     /// provided by the <paramref name="configurationProvider"/>.
     /// </summary>
-    /// <param name="configurationProvider">An <see cref="IAuthenticationConfigurationProvider"/> instance.</param>\
+    /// <param name="configurationProvider">An <see cref="IAuthenticationConfigurationProvider"/> instance.</param>
     public UmaBearerConfigureOptions(IAuthenticationConfigurationProvider configurationProvider)
     {
         _authenticationConfigurationProvider = configurationProvider;
