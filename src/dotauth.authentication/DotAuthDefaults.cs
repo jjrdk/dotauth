@@ -1,4 +1,4 @@
-namespace dotauth.authentication;
+namespace DotAuth.Authentication;
 
 /// <summary>
 /// Defines the authentication scheme defaults.

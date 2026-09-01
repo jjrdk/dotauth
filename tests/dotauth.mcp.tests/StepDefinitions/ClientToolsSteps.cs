@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DotAuth.Mcp.Tests.Support;
-using DotAuth.Mcp.Tools;
+using dotauth.mcp.Tools;
 using DotAuth.Shared.Models;
 using NSubstitute;
 using Reqnroll;

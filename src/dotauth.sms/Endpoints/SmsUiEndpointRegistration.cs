@@ -1,5 +1,6 @@
-namespace DotAuth.Endpoints;
+namespace DotAuth.Sms.Endpoints;
 
+using DotAuth.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 

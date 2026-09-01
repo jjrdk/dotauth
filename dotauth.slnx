@@ -36,6 +36,7 @@
   <Project Path="src/dotauth.authentication/dotauth.authentication.csproj" />
   <Project Path="src/dotauth.client.maui/dotauth.client.maui.csproj" />
   <Project Path="src/dotauth.client/dotauth.client.csproj" />
+  <Project Path="src/dotauth.mcp/dotauth.mcp.csproj" />
   <Project Path="src/dotauth.shared/dotauth.shared.csproj" />
   <Project Path="src/dotauth.sms.ui/dotauth.sms.ui.csproj" />
   <Project Path="src/dotauth.sms/dotauth.sms.csproj" />
