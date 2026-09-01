@@ -1,5 +1,7 @@
-namespace dotauth.authentication;
+namespace DotAuth.Authentication;
 
+using System;
+using System.Collections.Generic;
 using DotAuth.Shared;
 using DotAuth.Shared.Models;
 using Microsoft.AspNetCore.Authentication;

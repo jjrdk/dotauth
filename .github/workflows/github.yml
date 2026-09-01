@@ -15,6 +15,9 @@ jobs:
       - name: Run the acceptance tests
         run: dotnet test ./tests/dotauth.acceptancetests/dotauth.acceptancetests.csproj -c Release
         shell: bash
+      - name: Run the MCP tests
+        run: dotnet test ./tests/dotauth.mcp.tests/dotauth.mcp.tests.csproj -c Release
+        shell: bash
       - name: Build DotAuth
         run: dotnet build ./src/dotauth/dotauth.csproj -c Release -o ./artifacts/buildOutput/dotauth --sc
       - name: Generate SBOM

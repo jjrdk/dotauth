@@ -4,6 +4,7 @@ using System;
 using DotAuth;
 using DotAuth.Endpoints;
 using DotAuth.Services;
+using DotAuth.Sms.Endpoints;
 using DotAuth.Sms.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

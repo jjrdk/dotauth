@@ -1,4 +1,4 @@
-namespace DotAuth.Endpoints;
+namespace DotAuth.Sms.Endpoints;
 
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using DotAuth.Endpoints;
 using DotAuth.Events;
 using DotAuth.Exceptions;
 using DotAuth.Extensions;

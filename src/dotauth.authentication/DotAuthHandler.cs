@@ -1,8 +1,10 @@
-namespace dotauth.authentication;
+namespace DotAuth.Authentication;
 
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using DotAuth.Client;
 using DotAuth.Shared;
 using DotAuth.Shared.Requests;

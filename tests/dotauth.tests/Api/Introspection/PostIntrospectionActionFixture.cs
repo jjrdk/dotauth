@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace DotAuth.Tests.Api.Introspection.Actions;
+namespace DotAuth.Tests.Api.Introspection;
 
 using System;
 using System.Collections.Generic;

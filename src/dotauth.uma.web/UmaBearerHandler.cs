@@ -67,7 +67,7 @@ public partial class UmaBearerHandler : AuthenticationHandler<UmaBearerOptions>
     /// <summary>
     /// Validates the RPT (Requesting Party Token) carried in the <c>Authorization: Bearer</c> header.
     /// On success the resulting <see cref="ClaimsPrincipal"/> preserves the <c>permissions</c> claim
-    /// so that <see cref="DotAuth.Uma.ClaimsPrincipalExtensions.CheckResourceAccess"/> works in the
+    /// so that <see cref="ClaimsPrincipalExtensions.CheckResourceAccess"/> works in the
     /// downstream authorization layer.
     /// </summary>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()

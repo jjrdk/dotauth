@@ -1,5 +1,6 @@
-﻿namespace dotauth.authentication;
+﻿namespace DotAuth.Authentication;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authentication;
 
