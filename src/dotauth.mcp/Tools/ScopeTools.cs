@@ -59,7 +59,7 @@ public sealed class ScopeTools(IScopeStore scopes)
         var scope = await scopes.Get(name, cancellationToken);
         if (scope is null)
         {
-            return $"{{\"error\":\"Scope '{name}' not found\"}}";
+            return JsonSerializer.Serialize(new { error = $"Scope '{name}' not found" });
         }
 
         return JsonSerializer.Serialize(scope);
